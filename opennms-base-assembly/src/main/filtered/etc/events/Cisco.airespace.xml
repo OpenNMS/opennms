@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: AIRESPACE-WIRELESS-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: AIRESPACE-WIRELESS-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -51,7 +50,7 @@ disassociation&lt;/p&gt;&lt;table&gt;
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationDisassociate trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -59,7 +58,7 @@ disassociation&lt;/p&gt;&lt;table&gt;
 			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -112,7 +111,7 @@ deauthentication.&lt;/p&gt;&lt;table&gt;
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationDeauthenticate trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -120,7 +119,7 @@ deauthentication.&lt;/p&gt;&lt;table&gt;
 			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -173,7 +172,7 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationAuthenticateFail trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -181,7 +180,7 @@ frame was sent and the reason for the authentication failure.&lt;/p&gt;&lt;table
 			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -235,7 +234,7 @@ authentication failure.&lt;/p&gt;&lt;table&gt;
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationAssociateFail trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -243,7 +242,7 @@ authentication failure.&lt;/p&gt;&lt;table&gt;
 			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -270,12 +269,12 @@ sent&lt;/p&gt;&lt;table&gt;
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPUp trap received 
 			bsnAPDot3MacAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -302,12 +301,12 @@ sent&lt;/p&gt;&lt;table&gt;
 	bsnAPDot3MacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPDown trap received 
 			bsnAPDot3MacAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -340,13 +339,13 @@ Airespace AP and add to system.&lt;/p&gt;&lt;table&gt;
 	bsnAPPortNumberTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPAssociated trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnAPPortNumberTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDisassociated:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPDisassociated:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -375,12 +374,12 @@ this Airespace Switch&lt;/p&gt;&lt;table&gt;
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPDisassociated trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -428,7 +427,7 @@ trap will be sent&lt;/p&gt;&lt;table&gt;
 		configNetwork(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPIfUp trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -436,7 +435,7 @@ trap will be sent&lt;/p&gt;&lt;table&gt;
 			bsnAPIfUpDownCause=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPIfDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPIfDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -494,7 +493,7 @@ this trap will be sent.&lt;/p&gt;&lt;table&gt;
 		configNetwork(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPIfDown trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -503,7 +502,7 @@ this trap will be sent.&lt;/p&gt;&lt;table&gt;
 			bsnAPIfUpDownCause=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -536,13 +535,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPLoadProfileFailed trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -575,13 +574,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPNoiseProfileFailed trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -614,13 +613,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPInterferenceProfileFailed trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -681,7 +680,7 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnClientSnr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPCoverageProfileFailed trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnAPNameTrapVariable=%parm[#2]% 
@@ -694,7 +693,7 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 			bsnClientSnr=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -733,14 +732,14 @@ currentTxPower for this Airespace AP IF&lt;/p&gt;&lt;table&gt;
 	bsnAPIfPhyTxPowerLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPCurrentTxPowerChanged trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfPhyTxPowerLevel=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -787,7 +786,7 @@ with the currentChannel for this Airespace AP IF&lt;/p&gt;&lt;table&gt;
 	bsnInterferenceEnergyAfterChannelUpdate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPCurrentChannelChanged trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnAPSlotIdTrapVariable=%parm[#2]% 
@@ -796,7 +795,7 @@ with the currentChannel for this Airespace AP IF&lt;/p&gt;&lt;table&gt;
 			bsnInterferenceEnergyAfterChannelUpdate=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -824,12 +823,12 @@ MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	bsnRrmDot11aGroupLeaderMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRrmDot11aGroupingDone trap received 
 			bsnRrmDot11aGroupLeaderMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -857,12 +856,12 @@ MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 	bsnRrmDot11bGroupLeaderMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRrmDot11bGroupingDone trap received 
 			bsnRrmDot11bGroupLeaderMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -885,7 +884,7 @@ MAC address of the new Group Leader.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;When configuration is save either from CLI or web interface
 This trap will be sent to inform NMS to do refresh&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnConfigSaved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -915,12 +914,12 @@ be sent along with EssIndex&lt;/p&gt;&lt;table&gt;
 	bsnDot11EssIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11EssCreated trap received 
 			bsnDot11EssIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -947,12 +946,12 @@ sent along with EssIndex&lt;/p&gt;&lt;table&gt;
 	bsnDot11EssIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11EssDeleted trap received 
 			bsnDot11EssIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -976,11 +975,11 @@ sent along with EssIndex&lt;/p&gt;&lt;table&gt;
 to authentication requests sent by the RADIUS client within the
 MWAR device(Switch).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRADIUSServerNotResponding trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1022,13 +1021,13 @@ MacAddress of Mac Authorized User&lt;/p&gt;&lt;table&gt;
 	bsnAuthFailureUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAuthenticationFailure trap received 
 			bsnAuthFailureUserType=%parm[#1]% 
 			bsnAuthFailureUserName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1066,13 +1065,13 @@ MacAddress of Mac Authorized User&lt;/p&gt;&lt;table&gt;
 	bsnAuthFailureUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAuthenticationFailure trap received 
 			bsnAuthFailureUserType=%parm[#1]% 
 			bsnAuthFailureUserName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1110,13 +1109,13 @@ packet.&lt;/p&gt;&lt;table&gt;
 	bsnIpsecErrorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecEspAuthFailureTrap trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnIpsecErrorCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1154,13 +1153,13 @@ packet.&lt;/p&gt;&lt;table&gt;
 	bsnIpsecErrorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecEspReplayFailureTrap trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnIpsecErrorCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1203,13 +1202,13 @@ packet.&lt;/p&gt;&lt;table&gt;
 	bsnIpsecSPI&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecEspInvalidSpiTrap trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnIpsecSPI=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1266,7 +1265,7 @@ counters for ISAKMP.&lt;/p&gt;&lt;table&gt;
 	bsnNotifiesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecIkeNegFailure trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnRemoteUdpPort=%parm[#2]% 
@@ -1278,7 +1277,7 @@ counters for ISAKMP.&lt;/p&gt;&lt;table&gt;
 			bsnNotifiesReceived=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1324,7 +1323,7 @@ failure.&lt;/p&gt;&lt;table&gt;
 	bsnNotifiesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecSuiteNegFailure trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnSuiteInitFailures=%parm[#2]% 
@@ -1333,7 +1332,7 @@ failure.&lt;/p&gt;&lt;table&gt;
 			bsnNotifiesReceived=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1386,7 +1385,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 	bsnIsakmpInvalidCookies&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnIpsecInvalidCookieTrap trap received 
 			bsnRemoteIPv4Address=%parm[#1]% 
 			bsnRemoteUdpPort=%parm[#2]% 
@@ -1395,7 +1394,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 			bsnIsakmpInvalidCookies=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1472,7 +1471,7 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 	bsnRogueAPAirespaceAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueAPDetected trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnRogueAPAirespaceAPMacAddress=%parm[#2]% 
@@ -1487,7 +1486,7 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 			bsnRogueAPAirespaceAPName=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[11]%"/>
 </event>
 <event>
 	<mask>
@@ -1520,13 +1519,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPLoadProfileUpdatedToPass trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1559,13 +1558,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPNoiseProfileUpdatedToPass trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1598,13 +1597,13 @@ enable /disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPInterferenceProfileUpdatedToPass trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPInterferenceProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPInterferenceProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1637,13 +1636,13 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPCoverageProfileUpdatedToPass trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1691,7 +1690,7 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 	bsnRogueAPAirespaceAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueAPRemoved trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnRogueAPAirespaceAPMacAddress=%parm[#2]% 
@@ -1700,7 +1699,7 @@ with APMacAddress on which its detected&lt;/p&gt;&lt;table&gt;
 			bsnRogueAPAirespaceAPName=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%"/>
 </event>
 <event>
 	<mask>
@@ -1731,13 +1730,13 @@ This trap will be sent to annoy the Customer&lt;/p&gt;&lt;table&gt;
 	bsnLicenseRadioCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRadiosExceedLicenseCount trap received 
 			bsnCurrentRadiosCount=%parm[#1]% 
 			bsnLicenseRadioCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1764,12 +1763,12 @@ Immediate action should be taken&lt;/p&gt;&lt;table&gt;
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnSensedTemperatureTooHigh trap received 
 			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1796,12 +1795,12 @@ Immediate action should be taken&lt;/p&gt;&lt;table&gt;
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnSensedTemperatureTooLow trap received 
 			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1824,11 +1823,11 @@ Immediate action should be taken&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;Temperature sensor hw failure - temp sensor has failed.  
 Temperature is unknown&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTemperatureSensorFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1855,12 +1854,12 @@ sensor is operating within proper temp range&lt;/p&gt;&lt;table&gt;
 	bsnSensorTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTemperatureSensorClear trap received 
 			bsnSensorTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange:%dpname%:%nodeid%:%interface%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1883,11 +1882,11 @@ sensor is operating within proper temp range&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;POE Controller has failed. Its a very critical trap.
 User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnPOEControllerFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1913,12 +1912,12 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnMaxRogueCountExceeded trap received 
 			bsnMaxRogueCount=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1944,12 +1943,12 @@ User intervention is required.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnMaxRogueCountClear trap received 
 			bsnMaxRogueCount=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1980,13 +1979,13 @@ the AP&lt;/p&gt;&lt;table&gt;
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnApMaxRogueCountExceeded trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnMaxRogueCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -2017,13 +2016,13 @@ AP&lt;/p&gt;&lt;table&gt;
 	bsnMaxRogueCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnApMaxRogueCountClear trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnMaxRogueCount=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -2073,7 +2072,7 @@ reason for black listing.&lt;/p&gt;&lt;table&gt;
 	bsnStationMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationBlacklisted trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -2081,7 +2080,7 @@ reason for black listing.&lt;/p&gt;&lt;table&gt;
 			bsnStationMacAddress=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -2123,7 +2122,7 @@ to which the station Associated.&lt;/p&gt;&lt;table&gt;
 	bsnStationUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDot11StationAssociate trap received 
 			bsnStationAPMacAddr=%parm[#1]% 
 			bsnStationAPIfSlotId=%parm[#2]% 
@@ -2131,7 +2130,7 @@ to which the station Associated.&lt;/p&gt;&lt;table&gt;
 			bsnStationUserName=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2166,14 +2165,14 @@ to which the station Associated.&lt;/p&gt;&lt;table&gt;
 	bsnNavDosAttackSourceMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnApBigNavDosAttack trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnAPSlotIdTrapVariable=%parm[#2]% 
 			bsnNavDosAttackSourceMacAddr=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2203,13 +2202,13 @@ to which the station Associated.&lt;/p&gt;&lt;table&gt;
 	bsnStationUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTooManyUnsuccessLoginAttempts trap received 
 			bsnUserIpAddress=%parm[#1]% 
 			bsnStationUserName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2244,14 +2243,14 @@ the station may be wrong.&lt;/p&gt;&lt;table&gt;
 	bsnStationAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnWepKeyDecryptError trap received 
 			bsnStationMacAddress=%parm[#1]% 
 			bsnStationAPMacAddr=%parm[#2]% 
 			bsnStationAPIfSlotId=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2290,7 +2289,7 @@ activated at the AP.&lt;/p&gt;&lt;table&gt;
 	bsnWlanIdTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnWpaMicErrorCounterActivated trap received 
 			bsnStationMacAddress=%parm[#1]% 
 			bsnStationAPMacAddr=%parm[#2]% 
@@ -2298,7 +2297,7 @@ activated at the AP.&lt;/p&gt;&lt;table&gt;
 			bsnWlanIdTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -2338,13 +2337,13 @@ clear the previous trap.&lt;/p&gt;&lt;table&gt;
 		yes(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueAPDetectedOnWiredNetwork trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnRogueAPOnWiredNetwork=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2380,13 +2379,13 @@ clear the previous trap.&lt;/p&gt;&lt;table&gt;
 		yes(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueAPDetectedOnWiredNetwork trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnRogueAPOnWiredNetwork=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2413,12 +2412,12 @@ sends this trap.&lt;/p&gt;&lt;table&gt;
 	bsnAPMacAddrTrapVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnApHasNoRadioCards trap received 
 			bsnAPMacAddrTrapVariable=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2480,7 +2479,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDuplicateIpAddressReported trap received 
 			bsnDuplicateIpReportedByAP=%parm[#1]% 
 			bsnAPMacAddrTrapVariable=%parm[#2]% 
@@ -2489,7 +2488,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP:%dpname%:%nodeid%:%interface%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2547,7 +2546,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDuplicateIpAddressReported trap received 
 			bsnDuplicateIpReportedByAP=%parm[#1]% 
 			bsnAPMacAddrTrapVariable=%parm[#2]% 
@@ -2556,7 +2555,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2614,7 +2613,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDuplicateIpAddressReported trap received 
 			bsnDuplicateIpReportedByAP=%parm[#1]% 
 			bsnAPMacAddrTrapVariable=%parm[#2]% 
@@ -2623,7 +2622,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch:%dpname%:%nodeid%:%interface%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2677,7 +2676,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnDuplicateIpAddressReported trap received 
 			bsnDuplicateIpReportedByAP=%parm[#1]% 
 			bsnAPMacAddrTrapVariable=%parm[#2]% 
@@ -2686,7 +2685,7 @@ be using the duplicate IP.&lt;/p&gt;&lt;table&gt;
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2737,7 +2736,7 @@ longer being contained.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPContainedAsARogue trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -2745,7 +2744,7 @@ longer being contained.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2792,7 +2791,7 @@ longer being contained.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPContainedAsARogue trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -2800,7 +2799,7 @@ longer being contained.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2840,13 +2839,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidSsid trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2882,13 +2881,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidSsid trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2927,13 +2926,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApIsMissing trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApIsMissing:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApIsMissing:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2968,13 +2967,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApIsMissing trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3013,13 +3012,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAdhocRogueAutoContained trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3054,13 +3053,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAdhocRogueAutoContained trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3099,13 +3098,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueApAutoContained trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueApAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnRogueApAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3140,13 +3139,13 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRogueApAutoContained trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3205,7 +3204,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidEncryption trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApEncryptionUsed=%parm[#2]% 
@@ -3213,7 +3212,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3268,7 +3267,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidEncryption trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApEncryptionUsed=%parm[#2]% 
@@ -3276,7 +3275,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3335,7 +3334,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidRadioPolicy trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApRadioPolicyUsed=%parm[#2]% 
@@ -3343,7 +3342,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3398,7 +3397,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidRadioPolicy trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApRadioPolicyUsed=%parm[#2]% 
@@ -3406,7 +3405,7 @@ earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3447,13 +3446,13 @@ is issued.&lt;/p&gt;&lt;table&gt;
 		enable(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnNetworkStateChanged trap received 
 			bsnNetworkType=%parm[#1]% 
 			bsnNetworkState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3490,13 +3489,13 @@ is issued.&lt;/p&gt;&lt;table&gt;
 		enable(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnNetworkStateChanged trap received 
 			bsnNetworkType=%parm[#1]% 
 			bsnNetworkState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3602,7 +3601,7 @@ bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
 		bsnSignatureMacBoth(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnSignatureAttackDetected trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -3619,7 +3618,7 @@ bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
 			bsnSignatureMacInfo=%parm[#13]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%"/>
 </event>
 <event>
 	<mask>
@@ -3721,7 +3720,7 @@ bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
 		bsnSignatureMacBoth(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnSignatureAttackDetected trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
@@ -3738,7 +3737,7 @@ bsnSignatureMacInfo. &lt;/p&gt;&lt;table&gt;
 			bsnSignatureMacInfo=%parm[#13]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%"/>
 </event>
 <event>
 	<mask>
@@ -3777,14 +3776,14 @@ stops transmitting.&lt;/p&gt;&lt;table&gt;
 		uwb(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPRadioCardTxFailure trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3823,14 +3822,14 @@ starts transmitting again after a prior failure.&lt;/p&gt;&lt;table&gt;
 		uwb(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPRadioCardTxFailureClear trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3869,14 +3868,14 @@ stops receiving.&lt;/p&gt;&lt;table&gt;
 		uwb(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPRadioCardRxFailure trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3915,14 +3914,14 @@ starts receiving again after a prior failure.&lt;/p&gt;&lt;table&gt;
 		uwb(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPRadioCardRxFailureClear trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3967,7 +3966,7 @@ authenticated neighbor of the detecting AP.&lt;/p&gt;&lt;table&gt;
 		uwb(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPImpersonationDetected trap received 
 			bsnImpersonatedAPMacAddr=%parm[#1]% 
 			bsnAPDot3MacAddress=%parm[#2]% 
@@ -3975,7 +3974,7 @@ authenticated neighbor of the detecting AP.&lt;/p&gt;&lt;table&gt;
 			bsnAPIfType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -4031,7 +4030,7 @@ true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidPreamble trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApPreambleUsed=%parm[#2]% 
@@ -4039,7 +4038,7 @@ true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -4091,7 +4090,7 @@ true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
 		true(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnTrustedApHasInvalidPreamble trap received 
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnTrustedApPreambleUsed=%parm[#2]% 
@@ -4099,7 +4098,7 @@ true, then the trap clears the earlier alert.&lt;/p&gt;&lt;table&gt;
 			bsnClearTrapVariable=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -4135,14 +4134,14 @@ and starts using DHCP as a fallback option.&lt;/p&gt;&lt;table&gt;
 	bsnAPStaticIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPIPAddressFallback trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnApIpAddress=%parm[#2]% 
 			bsnAPStaticIPAddress=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -4186,14 +4185,14 @@ or has been deleted or doesn't match the switch image.&lt;/p&gt;&lt;table&gt;
 		all(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPFunctionalityDisabled trap received 
 			bsnApFunctionalityDisableReasonCode=%parm[#1]% 
 			bsnLicenseKeyTrapVariable=%parm[#2]% 
 			bsnLicenseKeyFeatureSetTrapVariable=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4313,7 +4312,7 @@ mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt;table&gt;
 		philippines(68)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPRegulatoryDomainMismatch trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPName=%parm[#2]% 
@@ -4321,7 +4320,7 @@ mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt;table&gt;
 			bsnGlobalDot11CountryIndex=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4344,11 +4343,11 @@ mismatch, the AP will fail to associate with the Switch.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This trap indicates that the CPU's Receive Multicast Queue is
 Full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRxMulticastQueueFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4427,14 +4426,14 @@ current channel&lt;/p&gt;&lt;table&gt;
 		ch169(169)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRadarChannelDetected trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfPhyChannelNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4513,14 +4512,14 @@ generated earlier, after the expiry of Non-Occupancy Period.&lt;/p&gt;&lt;table&
 		ch169(169)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnRadarChannelCleared trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfPhyChannelNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRadarChannelDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/bsnRadarChannelDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4571,7 +4570,7 @@ bsnAPName is name of AP&lt;/p&gt;&lt;table&gt;
 		entryIsMIC(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			bsnAPAuthorizationFailure trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPName=%parm[#2]% 
@@ -4579,7 +4578,7 @@ bsnAPName is name of AP&lt;/p&gt;&lt;table&gt;
 			bsnAPAuthorizationFailureCause=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4611,13 +4610,13 @@ on demand.&lt;/p&gt;&lt;table&gt;
 	bsnAPIfSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			radioCoreDumpTrap trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4655,14 +4654,14 @@ used.&lt;/p&gt;&lt;table&gt;
 		unsupportedRadio(0)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			invalidRadioTrap trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPInvalidRadioType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4756,12 +4755,12 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 		philippines(68)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			countryChangeTrap trap received 
 			bsnGlobalDot11CountryIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4792,13 +4791,13 @@ country of operation. New country code will be sent in trap.&lt;/p&gt;&lt;table&
 	bsnAPName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			unsupportedAPTrap trap received 
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4823,11 +4822,11 @@ connection with the Supervisor Switch in which it
 is physically embedded and doesn't hear the
 heartbeat keepalives from the Supervisor. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			heartbeatLossTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4854,12 +4853,12 @@ for notifications of location events.&lt;/p&gt;&lt;table&gt;
 	locationNotifyContent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			locationNotifyTrap trap received 
 			locationNotifyContent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <!-- End of auto generated data from MIB: AIRESPACE-WIRELESS-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-LWAPP-DOT11-CLIENT-MIB -->
@@ -4909,14 +4908,14 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		uwb(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoLwappDot11ClientKeyDecryptError trap received 
 			cldcAssociationMode=%parm[#1]% 
 			cldcApMacAddress=%parm[#2]% 
 			cldcIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4964,14 +4963,14 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		uwb(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoLwappDot11ClientKeyDecryptError trap received 
 			cldcAssociationMode=%parm[#1]% 
 			cldcApMacAddress=%parm[#2]% 
 			cldcIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -5019,14 +5018,14 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		uwb(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoLwappDot11ClientKeyDecryptError trap received 
 			cldcAssociationMode=%parm[#1]% 
 			cldcApMacAddress=%parm[#2]% 
 			cldcIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -5070,14 +5069,14 @@ configured at the station may be wrong.&lt;/p&gt;&lt;table&gt;
 		uwb(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoLwappDot11ClientKeyDecryptError trap received 
 			cldcAssociationMode=%parm[#1]% 
 			cldcApMacAddress=%parm[#2]% 
 			cldcIfType=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-LWAPP-DOT11-CLIENT-MIB -->
 </events>

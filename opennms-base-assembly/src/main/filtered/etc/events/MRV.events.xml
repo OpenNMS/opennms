@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DEV-CFG-MIB -->
 <event>
 	<mask>
@@ -42,14 +42,14 @@ invalid password was used in the current protocol session.&lt;/p&gt;&lt;table&gt
 	nbsTrapHostIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			invalidPassword trap received 
 			nbsDevSessionType=%parm[#1]% 
 			nbsDevAuthenticationRejectReason=%parm[#2]% 
 			nbsTrapHostIpAddress=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -101,7 +101,7 @@ wrong access attempt is occured.&lt;/p&gt;&lt;table&gt;
 	nbsTrapHostIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wrongAccess trap received 
 			nbsTrapWrongAccessDateTime=%parm[#1]% 
 			nbsDevSessionType=%parm[#2]% 
@@ -110,7 +110,7 @@ wrong access attempt is occured.&lt;/p&gt;&lt;table&gt;
 			nbsTrapHostIpAddress=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -137,12 +137,12 @@ state of the device is changed.&lt;/p&gt;&lt;table&gt;
 	nbsTrapRCMredundancyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			deviceRCMredundancyState trap received 
 			nbsTrapRCMredundancyState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -173,12 +173,12 @@ mode of the device is changed.&lt;/p&gt;&lt;table&gt;
 		readOffWriteOff(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snmpAccessMode trap received 
 			nbsDevSNMPAccessMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -209,12 +209,12 @@ is rejected due to SNMP Access Mode of the Device.&lt;/p&gt;&lt;table&gt;
 		readOffWriteOff(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snmpRequestRejected trap received 
 			nbsDevSNMPAccessMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -241,12 +241,12 @@ power supply unit changes it's state from notActive to active&lt;/p&gt;&lt;table
 	nbsDevPSIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			powerSupplyUp trap received 
 			nbsDevPSIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -273,12 +273,12 @@ power supply unit changes it's state from active to notActive&lt;/p&gt;&lt;table
 	nbsDevPSIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			powerSupplyDown trap received 
 			nbsDevPSIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: DEV-CFG-MIB -->
 <!-- Start of auto generated data from MIB: MSCR-MIB -->
@@ -312,13 +312,13 @@ table.&lt;/p&gt;&lt;table&gt;
 	nbMacScrRunPortLockingMAC&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			unresolvedMAC trap received 
 			nbMacScrRunPort=%parm[#1]% 
 			nbMacScrRunPortLockingMAC=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: MSCR-MIB -->
 <!-- Start of auto generated data from MIB: VLAN-MIB -->
@@ -356,14 +356,14 @@ for the Port is exceeded.&lt;/p&gt;&lt;table&gt;
 	nbVlansRunPortMacLimitActionDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			portMacLimitExceeded trap received 
 			nbVlansRunPortMacLimitPortNumber=%parm[#1]% 
 			nbVlansRunPortMacLimitValue=%parm[#2]% 
 			nbVlansRunPortMacLimitActionDescription=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: VLAN-MIB -->
 <!-- Start of auto generated data from MIB: NSTACK-MIB -->
@@ -392,12 +392,12 @@ Link status was changed on the GER Module.&lt;/p&gt;&lt;table&gt;
 	nbsStackSlotSpecNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			specSlotLinkChanged trap received 
 			nbsStackSlotSpecNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: NSTACK-MIB -->
 <!-- Start of auto generated data from MIB: OADWDM-MIB -->
@@ -426,12 +426,12 @@ power supply unit changes it's state from notActive to active&lt;/p&gt;&lt;table
 	oaLdDevPSIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			powerSupplyUp trap received 
 			oaLdDevPSIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -458,12 +458,12 @@ power supply unit changes it's state from active to notActive&lt;/p&gt;&lt;table
 	oaLdDevPSIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			powerSupplyDown trap received 
 			oaLdDevPSIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -490,12 +490,12 @@ Fan unit changes it's state from notActive or fail to active&lt;/p&gt;&lt;table&
 	oaLdDevFANIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanUp trap received 
 			oaLdDevFANIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/fanDown:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/fanDown:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -522,12 +522,12 @@ Fan unit changes it's state from active to notActive or fail&lt;/p&gt;&lt;table&
 	oaLdDevFANIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanDown trap received 
 			oaLdDevFANIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -554,12 +554,12 @@ a card is inserted into the chassis&lt;/p&gt;&lt;table&gt;
 	oaLdCardIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			configChangeIn trap received 
 			oaLdCardIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/configChangeOut:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/configChangeOut:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -598,13 +598,13 @@ a transponder card changes it's Access receive indication&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderAccessRx trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptAccRx=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/transponderAccessRx:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/transponderAccessRx:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -639,13 +639,13 @@ a transponder card changes it's Access receive indication&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderAccessRx trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptAccRx=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -684,13 +684,13 @@ a transponder card changes it's WDM receive indication&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderWdmRx trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptDwdmRx=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/transponderWdmRx:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/transponderWdmRx:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -725,13 +725,13 @@ a transponder card changes it's WDM receive indication&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderWdmRx trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptDwdmRx=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -758,12 +758,12 @@ a card is taken out of the chassis&lt;/p&gt;&lt;table&gt;
 	oaLdCardIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			configChangeOut trap received 
 			oaLdCardIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -804,13 +804,13 @@ a transponder card changes it's LoopBack state&lt;/p&gt;&lt;table&gt;
 		localLoopback(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderCardLoopBack trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardLoopBack=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -847,13 +847,13 @@ a transponder card changes it's LoopBack state&lt;/p&gt;&lt;table&gt;
 		localLoopback(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			transponderCardLoopBack trap received 
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardLoopBack=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -877,11 +877,11 @@ a transponder card changes it's LoopBack state&lt;/p&gt;&lt;table&gt;
 optical switch on redundant card changes it's state
 from Secondary to Primary&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			switchPrimary trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" clear-key="uei.opennms.org/vendors/MRV/switchSecondary:%nodeid%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/switchSecondary:%nodeid%" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -905,7 +905,7 @@ from Secondary to Primary&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 optical switch on redundant card changes it's state
 from Primary to Secondary&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			switchSecondary trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -943,13 +943,13 @@ on redundant card the Primary fiber Receive status is changed&lt;/p&gt;&lt;table
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			redundantCardPrimaryRx trap received 
 			oaLdRedOptSlotNumber=%parm[#1]% 
 			oaLdRedOptPrimaryRx=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/redundantCardSecondaryRx:%nodeid%:%parm[#1]%" alarm-type="2"/>
+	<alarm-data alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/redundantCardSecondaryRx:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -984,7 +984,7 @@ on redundant card the Secondary fiber Receive status is changed&lt;/p&gt;&lt;tab
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			redundantCardSecondaryRx trap received 
 			oaLdRedOptSlotNumber=%parm[#1]% 
 			oaLdRedOptSecondaryRx=%parm[#2]%&lt;/p&gt;
@@ -1032,14 +1032,14 @@ the link status of a port at the card is changed&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cardPortsLink trap received 
 			oaLdCardPortsSlotNumber=%parm[#1]% 
 			oaLdCardPortsPortNumber=%parm[#2]% 
 			oaLdCardPortsLink=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendors/MRV/cardPortsLink:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/cardPortsLink:%nodeid%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1078,14 +1078,14 @@ the link status of a port at the card is changed&lt;/p&gt;&lt;table&gt;
 		off(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cardPortsLink trap received 
 			oaLdCardPortsSlotNumber=%parm[#1]% 
 			oaLdCardPortsPortNumber=%parm[#2]% 
 			oaLdCardPortsLink=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: OADWDM-MIB -->
 <!-- Start of auto generated data from MIB: OA-VDSL-MIB -->
@@ -1126,7 +1126,7 @@ exceeds the value defined in oaVdslMaxOKBerValue.&lt;/p&gt;&lt;table&gt;
 	oaVdslBerMinValueToReport&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vdslPortBer trap received 
 			ifIndex=%parm[#1]% 
 			oaVdslPortBER=%parm[#2]% 
@@ -1134,7 +1134,7 @@ exceeds the value defined in oaVdslMaxOKBerValue.&lt;/p&gt;&lt;table&gt;
 			oaVdslBerMinValueToReport=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1161,12 +1161,12 @@ VDSL Link changes it's state to UP.&lt;/p&gt;&lt;table&gt;
 	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vdslPortLinkUp trap received 
 			ifIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendors/MRV/vdslPortLinkDown:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/vdslPortLinkDown:%nodeid%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1193,12 +1193,12 @@ VDSL Link changes it's state to DOWN.&lt;/p&gt;&lt;table&gt;
 	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vdslPortLinkDown trap received 
 			ifIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: OA-VDSL-MIB -->
 <!-- Start of auto generated data from MIB: OA-VOICE-MIB -->
@@ -1236,14 +1236,14 @@ to specific sub-trunk.&lt;/p&gt;&lt;table&gt;
 	oaVoiceSubTrunkIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaVoiceBrokenRtpConnection trap received 
 			oaVoiceSlotIndex=%parm[#1]% 
 			oaVoicePortIndex=%parm[#2]% 
 			oaVoiceSubTrunkIndex=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1279,14 +1279,14 @@ to specific sub-trunk.&lt;/p&gt;&lt;table&gt;
 	oaVoiceSubTrunkIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaVoiceRtpConnectionReastablished trap received 
 			oaVoiceSlotIndex=%parm[#1]% 
 			oaVoicePortIndex=%parm[#2]% 
 			oaVoiceSubTrunkIndex=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <!-- End of auto generated data from MIB: OA-VOICE-MIB -->
 <!-- Start of auto generated data from MIB: OAATERESCOPE-MIB -->
@@ -1317,7 +1317,7 @@ total laser power = arg[0] / 100mW&lt;/p&gt;&lt;table&gt;
 	oaATerTxTotalLaserPower&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerTxTotalLaserPowerAlarm trap received 
 			oaATerTxTotalLaserPower=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1355,12 +1355,12 @@ not present.&lt;/p&gt;&lt;table&gt;
 		off(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerTxUserDataStatusAlarm trap received 
 			oaATerTxUserDataStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" clear-key="uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm:%nodeid%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm:%nodeid%" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1390,12 +1390,12 @@ not present.&lt;/p&gt;&lt;table&gt;
 		off(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerTxUserDataStatusAlarm trap received 
 			oaATerTxUserDataStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1424,12 +1424,12 @@ APD current = arg[0] / 100uA&lt;/p&gt;&lt;table&gt;
 	oaATerRxAPDCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerRxAPDCurrentAlarm trap received 
 			oaATerRxAPDCurrent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1458,12 +1458,12 @@ temperature = arg[0] / 100 degrees C&lt;/p&gt;&lt;table&gt;
 	oaATerRxTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerRxTempAlarm trap received 
 			oaATerRxTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1492,12 +1492,12 @@ temperature = arg[0] / 100 degrees C&lt;/p&gt;&lt;table&gt;
 	oaATerTxTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			oaATerTxTempAlarm trap received 
 			oaATerTxTemperature=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: OAATERESCOPE-MIB -->
 </events>

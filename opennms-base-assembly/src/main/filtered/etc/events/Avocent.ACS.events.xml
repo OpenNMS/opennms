@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ACS-TRAP-MIB -->
 <event>
 	<mask>
@@ -26,7 +26,7 @@ in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
 	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsRebootStartedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -62,7 +62,7 @@ The name of the user who start the daemon is contained in acsTrapObjectUserName.
 	acsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDaemonStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
@@ -99,7 +99,7 @@ The name of the user who stop the daemon is contained in acsTrapObjectUserName.&
 	acsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDaemonStoped trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
@@ -138,7 +138,7 @@ in acsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
 	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsSessionTerminatedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
@@ -175,7 +175,7 @@ acsTrapObjectFileName is name of the file where the configuration was stored.&lt
 	acsTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsConfigurationStoredTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectFileName=%parm[#2]%&lt;/p&gt;
@@ -212,7 +212,7 @@ acsTrapObjectFileName is name of the file used to restored the configuration.&lt
 	acsTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsConfigurationRestoredTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectFileName=%parm[#2]%&lt;/p&gt;
@@ -249,7 +249,7 @@ The name of the new user is contained in acsTrapObjectTargetUserName.&lt;/p&gt;&
 	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsLocalUserAddedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
@@ -286,7 +286,7 @@ The name of the user who was deleted is contained in acsTrapObjectTargetUserName
 	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsLocalUserDeletedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
@@ -323,7 +323,7 @@ The name of the user who was modified is contained in acsTrapObjectTargetUserNam
 	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsLocalUserModifiedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
@@ -366,7 +366,7 @@ The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p&gt;&lt
 	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsFirmwareUpgradeStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapFirmwareVersion=%parm[#2]% 
@@ -407,7 +407,7 @@ The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p&gt
 	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsFirmwareUpgradeResultsTrap trap received 
 			acsTrapFirmwareUpgradeResult=%parm[#1]% 
 			acsTrapNewFirmwareVersion=%parm[#2]%&lt;/p&gt;
@@ -457,7 +457,7 @@ in acsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
 	acsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsApplianceAlertTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectAlertIndex=%parm[#2]% 
@@ -486,7 +486,7 @@ in acsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;This trap is generated when the appliance is started.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsApplianceStartedTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -528,7 +528,7 @@ is contained in acsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
 		plugdevice(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsUserLoginTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
@@ -572,7 +572,7 @@ is contained in acsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
 		plugdevice(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsUserLogoutTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
@@ -604,7 +604,7 @@ The name of the user who failed to authenticate is contained in acsTrapObjectUse
 	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsAuthenticationFailureTrap trap received 
 			acsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -655,7 +655,7 @@ The type of protocol configured on this port is contained in acsTrapObjectSerial
 		dial-in(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPortAuthenticationFailureTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
@@ -699,7 +699,7 @@ The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p
 	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPortPowerOnDetectTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
@@ -741,7 +741,7 @@ The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p
 	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPortPowerOffDetectTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
@@ -798,7 +798,7 @@ The numbe of sessions openned in this port is contained in acsTrapObjecSerialSes
 	acsTrapObjectSerialSessionNumbers&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsSerialSessionStartedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
@@ -858,7 +858,7 @@ The number of serial sessions openned in this port is contained in acsTrapObject
 	acsTrapObjectSerialSessionNumbers&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsSerialSessionStoppedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
@@ -913,7 +913,7 @@ The line text where the port alert was detected is contained in acsTrapObjectAle
 	acsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPortAlertTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
@@ -944,7 +944,7 @@ The line text where the port alert was detected is contained in acsTrapObjectAle
 &lt;p&gt;This trap is generated when the appliance is sending data buffering data to a NFS server 
 and the write operation fails.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDataBufferNFSFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -970,7 +970,7 @@ and the write operation fails.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;This trap is generated when the NFS server is back online after a failure in a 
 Data Buffering write operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDataBufferNFSRecovery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1001,7 +1001,7 @@ acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt
 	acsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDataBufferFullThresholdLowTrap trap received 
 			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1033,7 +1033,7 @@ acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt
 	acsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDataBufferFullThresholdMedTrap trap received 
 			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1060,7 +1060,7 @@ acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt
 &lt;p&gt;This trap is generated when the appliance is managed by DsView and 
 global data buffer has exceeded beyond the size of buffer and data lost has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsDataBufferFullLostDataTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -1114,7 +1114,7 @@ The vendor of the power device is contained in acsTrapObjectPduVendor&lt;/p&gt;&
 		serverTech(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduOnlineTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1173,7 +1173,7 @@ The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p&gt;
 		serverTech(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduOfflineTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1232,7 +1232,7 @@ The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p&gt;
 		serverTech(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduIdChangedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1292,7 +1292,7 @@ The current value detected when this trap was originated is contained in acsTrap
 	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduMaxLoadHighTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1353,7 +1353,7 @@ The current value detected when this trap was originated is contained in acsTrap
 	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduMinLoadLowTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1413,7 +1413,7 @@ The Name of the Pdu Element that detected the problem is contained in the acsTra
 	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduInletTotalLoadHighTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1473,7 +1473,7 @@ The Name of the Pdu Element that detected the problem is contained in the acsTra
 	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduInletTotalLoadLowTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1529,7 +1529,7 @@ The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p&gt;&lt
 	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduFirmwareUpgradeStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
@@ -1582,7 +1582,7 @@ The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p&gt
 	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduFirmwareUpgradeResultsTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1626,7 +1626,7 @@ The ID of the PDU that was tripped is contained in the acsTrapObjectPduId. &lt;/
 	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduHwOcpTripped trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1669,7 +1669,7 @@ The ID of the PDU ID whose HW OCP was reset is contained in the acsTrapObjectPdu
 	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduHwOcpReset trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1727,7 +1727,7 @@ The current value detected when this trap was originated is contained in acsTrap
 	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPduMaxLoadBackTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1788,7 +1788,7 @@ The socket name that has changed to the on state is contained in acsTrapObjectSo
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletNameChangedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1849,7 +1849,7 @@ The socket name that was issued the on command is contained in acsTrapObjectSock
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletCmdOnTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
@@ -1905,7 +1905,7 @@ The socket name that has changed to the on state is contained in acsTrapObjectSo
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletStatusOnTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -1965,7 +1965,7 @@ The name of the user who issued the off command is contained in acsTrapObjectUse
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletCmdOffTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
@@ -2021,7 +2021,7 @@ The socket name that has changed to the off state is contained in acsTrapObjectS
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletStatusOffTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -2081,7 +2081,7 @@ The name of the user who issued the cycle command is contained in acsTrapObjectU
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletCmdCycleTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
@@ -2137,7 +2137,7 @@ The socket name that was issued the cycle command is contained in acsTrapObjectS
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletCycleFinishedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -2193,7 +2193,7 @@ The socket name that has changed to the on state is contained in acsTrapObjectSo
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletOnSenseFailTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -2249,7 +2249,7 @@ The socket name that has changed to the on state is contained in acsTrapObjectSo
 	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsOutletOffSenseFailTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
@@ -2294,7 +2294,7 @@ The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&g
 	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsTemperatureExceededMaxTrap trap received 
 			acsTrapObjectTemperatureMaximumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMaxThreshold=%parm[#2]% 
@@ -2337,7 +2337,7 @@ The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&g
 	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsTemperatureReachedMaxTrap trap received 
 			acsTrapObjectTemperatureMaximumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMaxThreshold=%parm[#2]% 
@@ -2380,7 +2380,7 @@ The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&g
 	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsTemperatureExceededMinTrap trap received 
 			acsTrapObjectTemperatureMinimumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMinThreshold=%parm[#2]% 
@@ -2423,7 +2423,7 @@ The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&g
 	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsTemperatureReachedMinTrap trap received 
 			acsTrapObjectTemperatureMinimumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMinThreshold=%parm[#2]% 
@@ -2472,7 +2472,7 @@ The new state of the power supply is contained in acsTrapObjectSupplyNewState.&l
 		powerSupplyOff(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPowerSupplyTrap trap received 
 			acsTrapObjectPowerSupplyNumber=%parm[#1]% 
 			acsTrapObjectPowerSupplyOldState=%parm[#2]% 
@@ -2515,7 +2515,7 @@ The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&l
 	acsTrapObjectPlugDeviceInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPlugDeviceInsertTrap trap received 
 			acsTrapObjectPlugDeviceName=%parm[#1]% 
 			acsTrapObjectPlugDeviceType=%parm[#2]% 
@@ -2558,7 +2558,7 @@ The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&l
 	acsTrapObjectPlugDeviceInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctAcsPlugDeviceEjectTrap trap received 
 			acsTrapObjectPlugDeviceName=%parm[#1]% 
 			acsTrapObjectPlugDeviceType=%parm[#2]% 

@@ -1,14 +1,13 @@
-<?xml version="1.0"?>
-<datacollection-group name="Ericsson">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Ericsson">
       <!-- Ericsson IPWorks Resource Types -->
-      <group name="ericsson-ipworks" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.1.3" instance="0" alias="ipwksDnsSrvCnfUpTim" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.1" instance="0" alias="ipwksDnsSrvQrySucc" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.2" instance="0" alias="ipwksDnsSrvQryRefer" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.3" instance="0" alias="ipwksDnsSrvQryNxrst" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.4" instance="0" alias="ipwksDnsSrvQryNxdom" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.5" instance="0" alias="ipwksDnsSrvQryRecur" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.6" instance="0" alias="ipwksDnsSrvQryFail" type="counter" />
+      <group ifType="ignore" name="ericsson-ipworks">
+        <mibObj alias="ipwksDnsSrvCnfUpTim" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.1.3" type="gauge"/>
+        <mibObj alias="ipwksDnsSrvQrySucc" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.1" type="counter"/>
+        <mibObj alias="ipwksDnsSrvQryRefer" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.2" type="counter"/>
+        <mibObj alias="ipwksDnsSrvQryNxrst" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.3" type="counter"/>
+        <mibObj alias="ipwksDnsSrvQryNxdom" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.4" type="counter"/>
+        <mibObj alias="ipwksDnsSrvQryRecur" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.5" type="counter"/>
+        <mibObj alias="ipwksDnsSrvQryFail" instance="0" oid=".1.3.6.1.4.1.193.113.1.1.1.1.2.6" type="counter"/>
       </group>
 
       <systemDef name="Ericsson IPWorks">

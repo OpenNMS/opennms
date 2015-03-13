@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: OVERLAND-NEXTGEN -->
 <event>
 	<mask>
@@ -12,7 +12,7 @@
 	<descr>
 &lt;p&gt;A library door has been opened.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventDoorOpen trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -29,7 +29,7 @@
 	<descr>
 &lt;p&gt;A mail slot is being accessed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventMailSlotAccessed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -46,7 +46,7 @@
 	<descr>
 &lt;p&gt;The library has posted a hard fault.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventHardFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -63,7 +63,7 @@
 	<descr>
 &lt;p&gt;A slave module has faulted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventSlaveFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -80,7 +80,7 @@
 	<descr>
 &lt;p&gt;One of the redundant power supplies has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventPowerSupplyFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -98,7 +98,7 @@
 &lt;p&gt;One of the library tape drives has requested a
 cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventRequestDriveClean trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -115,7 +115,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;A tape drive fan has stalled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventFanStalled trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -132,7 +132,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;A tape drive error has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventDriveError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -149,7 +149,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;A tape drive has been removed from the library.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventDriveRemoved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -166,7 +166,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;A slave module has been removed from the library.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventSlaveRemoved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -183,7 +183,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;The library is failed over to the Secondary Master.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventFailedOver trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -200,7 +200,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;The library has detected excessive loader retries.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventLoaderRetriesExcessive trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -217,7 +217,7 @@ cleaning cycle to ensure continued data reliability.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;The library has reverted to normal operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			OVERLAND-NEXTGEN defined trap event: eventLoaderOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>

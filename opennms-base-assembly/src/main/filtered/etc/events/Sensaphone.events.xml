@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- event definitions for traps from Sensaphone IMS-4000 environmental monitors -->
 <event>
 	<mask>
@@ -24,7 +24,7 @@
 	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sensaphone Event: environment-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -54,7 +54,7 @@
 	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sensaphone Event: ip-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -84,7 +84,7 @@
 	ims-trap-string&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sensaphone Event: diagnostic-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p&gt;
 		</logmsg>

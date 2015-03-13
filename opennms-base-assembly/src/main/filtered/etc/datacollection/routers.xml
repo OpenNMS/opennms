@@ -1,35 +1,33 @@
-<?xml version="1.0"?>
-<datacollection-group name="Routers">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Routers">
 
-    <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
+    <resourceType label="Frame-Relay (RFC1315)" name="frCircuitIfIndex">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="bgpPeerEntry" label="BGP Peer"
-                  resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
+    <resourceType label="BGP Peer" name="bgpPeerEntry" resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <group name="rfc1315-frame-relay" ifType="all">
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.1" instance="frCircuitIfIndex" alias="frIfIndex"        type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.2" instance="frCircuitIfIndex" alias="frDlci"           type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.3" instance="frCircuitIfIndex" alias="frState"          type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.4" instance="frCircuitIfIndex" alias="frReceivedFECNs"  type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.5" instance="frCircuitIfIndex" alias="frReceivedBECNs"  type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.6" instance="frCircuitIfIndex" alias="frSentFrames"     type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.7" instance="frCircuitIfIndex" alias="frSentOctets"     type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.8" instance="frCircuitIfIndex" alias="frReceivedFrames" type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.9" instance="frCircuitIfIndex" alias="frReceivedOctets" type="Counter" />
+      <group ifType="all" name="rfc1315-frame-relay">
+        <mibObj alias="frIfIndex" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.1" type="string"/>
+        <mibObj alias="frDlci" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.2" type="string"/>
+        <mibObj alias="frState" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.3" type="string"/>
+        <mibObj alias="frReceivedFECNs" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.4" type="Counter"/>
+        <mibObj alias="frReceivedBECNs" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.5" type="Counter"/>
+        <mibObj alias="frSentFrames" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.6" type="Counter"/>
+        <mibObj alias="frSentOctets" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.7" type="Counter"/>
+        <mibObj alias="frReceivedFrames" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.8" type="Counter"/>
+        <mibObj alias="frReceivedOctets" instance="frCircuitIfIndex" oid=".1.3.6.1.2.1.10.32.2.1.9" type="Counter"/>
       </group>
 
       <!-- Stats from the IETF BGP4-MIB -->
-      <group name="ietf-bgp4-peer-stats" ifType="all">
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.7"  instance="bgpPeerEntry" alias="bgpPeerRemoteAddr" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.9"  instance="bgpPeerEntry" alias="bgpPeerRemoteAs" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.10" instance="bgpPeerEntry" alias="bgpPeerInUpdates" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.11" instance="bgpPeerEntry" alias="bgpPeerOutUpdates" type="counter" />
+      <group ifType="all" name="ietf-bgp4-peer-stats">
+        <mibObj alias="bgpPeerRemoteAddr" instance="bgpPeerEntry" oid=".1.3.6.1.2.1.15.3.1.7" type="string"/>
+        <mibObj alias="bgpPeerRemoteAs" instance="bgpPeerEntry" oid=".1.3.6.1.2.1.15.3.1.9" type="string"/>
+        <mibObj alias="bgpPeerInUpdates" instance="bgpPeerEntry" oid=".1.3.6.1.2.1.15.3.1.10" type="counter"/>
+        <mibObj alias="bgpPeerOutUpdates" instance="bgpPeerEntry" oid=".1.3.6.1.2.1.15.3.1.11" type="counter"/>
       </group>
 
 </datacollection-group>

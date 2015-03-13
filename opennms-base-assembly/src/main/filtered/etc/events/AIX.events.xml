@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: IBM-AIX-MIB -->
 <event>
 	<mask>
@@ -26,12 +26,12 @@ aixFsTable.&lt;/p&gt;&lt;table&gt;
 	aixFsName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixFileSystemMounted trap received 
 			aixFsName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -82,7 +82,7 @@ aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
 	aixFsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixFileSystemFull trap received 
 			aixFsName=%parm[#1]% 
 			aixFsSize=%parm[#2]% 
@@ -90,7 +90,7 @@ aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
 			aixFsThreshold=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -137,7 +137,7 @@ aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
 	aixFsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixFileSystemFull trap received 
 			aixFsName=%parm[#1]% 
 			aixFsSize=%parm[#2]% 
@@ -145,7 +145,7 @@ aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
 			aixFsThreshold=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -192,7 +192,7 @@ aixVgThreshold - the threshold for the volume group.&lt;/p&gt;&lt;table&gt;
 	aixVgThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixVolumeGroupFull trap received 
 			aixVgName=%parm[#1]% 
 			aixVgSize=%parm[#2]% 
@@ -200,7 +200,7 @@ aixVgThreshold - the threshold for the volume group.&lt;/p&gt;&lt;table&gt;
 			aixVgThreshold=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -248,14 +248,14 @@ aixPageThreshold - the threshold value of the paging
 	aixPageThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixPageFull trap received 
 			aixPageName=%parm[#1]% 
 			aixPagePercentUsed=%parm[#2]% 
 			aixPageThreshold=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixPageFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/IBM/AIX/aixPageFull:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -299,14 +299,14 @@ aixPageThreshold - the threshold value of the paging
 	aixPageThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixPageFull trap received 
 			aixPageName=%parm[#1]% 
 			aixPagePercentUsed=%parm[#2]% 
 			aixPageThreshold=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -338,12 +338,12 @@ attempts occurred.&lt;/p&gt;&lt;table&gt;
 	aixFailedLoginTimePeriod&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixUserLoginFailed trap received 
 			aixFailedLoginTimePeriod=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -377,13 +377,13 @@ aixSeThresholdCPU - Threshold value.  &lt;/p&gt;&lt;table&gt;
 	aixSeCPUThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixUtilizationCPU trap received 
 			aixSeCPUUtilization=%parm[#1]% 
 			aixSeCPUThreshold=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -408,7 +408,7 @@ delivered. The snmptrap command sends a trap message
 to the agent. This object is place holder for 
 snmptrap command. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aixSnmptrapHolder trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -432,7 +432,7 @@ AIX-specific trap is received for which no event definition
 has been configured.
 &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Unknown AIX-specific trap received (enterprise:%id% generic:%generic%
                         specific:%specific%. %parm[##]% varbinds:%parm[all]%&lt;/p&gt;
 		</logmsg>

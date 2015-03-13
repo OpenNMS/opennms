@@ -1,18 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tns:chart-configuration xmlns:tns="http://xmlns.opennms.org/xsd/config/charts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd ">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><tns:chart-configuration xmlns:tns="http://xmlns.opennms.org/xsd/config/charts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd ">
 
-  <tns:bar-chart name="sample-bar-chart" 
-  	variation="2d" 
-  	domain-axis-label="Severity" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count"
-  	sub-label-class="org.opennms.web.charts.SeveritySubLabels" 
-  	show-urls="false"
-    show-tool-tips="false">
+  <tns:bar-chart domain-axis-label="Severity" draw-bar-outline="true" name="sample-bar-chart" plot-orientation="vertical" range-axis-label="Count" show-legend="true" show-tool-tips="false" show-urls="false" sub-label-class="org.opennms.web.charts.SeveritySubLabels" variation="2d">
       
-    <tns:title font="SansSerif" style="" value="Alarms" pitch="12" />
+    <tns:title font="SansSerif" pitch="12" style="" value="Alarms"/>
     <tns:image-size>
       <tns:hz-size>
         <tns:pixels>450</tns:pixels>
@@ -21,8 +11,8 @@
         <tns:pixels>300</tns:pixels>
       </tns:vt-size>
     </tns:image-size>
-    <tns:sub-title position="top" horizontal-alignment="center">
-    		<tns:title font="SansSerif" style="" value="Severity Chart" pitch="10" />
+    <tns:sub-title horizontal-alignment="center" position="top">
+    		<tns:title font="SansSerif" pitch="10" style="" value="Severity Chart"/>
     </tns:sub-title>
     <tns:grid-lines visible="true">
         <tns:rgb>
@@ -37,8 +27,8 @@
             </tns:blue>
         </tns:rgb>
     </tns:grid-lines>
-    <tns:series-def number="1" series-name="Events" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select eventseverity, count(*) as count from events where eventseverity &gt; 4 group by eventseverity order by count desc" />
+    <tns:series-def number="1" series-name="Events" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select eventseverity, count(*) as count from events where eventseverity &gt; 4 group by eventseverity order by count desc"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
@@ -51,8 +41,8 @@
         </tns:blue>
       </tns:rgb>
     </tns:series-def>
-    <tns:series-def number="2" series-name="Alarms" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms where severity &gt; 4 group by severity order by count desc" />
+    <tns:series-def number="2" series-name="Alarms" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms where severity &gt; 4 group by severity order by count desc"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
@@ -69,17 +59,9 @@
 
 
 
-  <tns:bar-chart name="sample-bar-chart2" 
-  	variation="2d" 
-  	domain-axis-label="Service" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count" 
-  	show-urls="false"
-    show-tool-tips="false">
+  <tns:bar-chart domain-axis-label="Service" draw-bar-outline="true" name="sample-bar-chart2" plot-orientation="vertical" range-axis-label="Count" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d">
       
-    <tns:title font="SansSerif" style="" value="Last 7 Days Outages" pitch="12" />
+    <tns:title font="SansSerif" pitch="12" style="" value="Last 7 Days Outages"/>
     <tns:image-size>
       <tns:hz-size>
         <tns:pixels>450</tns:pixels>
@@ -88,8 +70,8 @@
         <tns:pixels>300</tns:pixels>
       </tns:vt-size>
     </tns:image-size>
-    <tns:sub-title position="top" horizontal-alignment="center">
-    		<tns:title font="SansSerif" style="" value="Outages Chart" pitch="10" />
+    <tns:sub-title horizontal-alignment="center" position="top">
+    		<tns:title font="SansSerif" pitch="10" style="" value="Outages Chart"/>
     </tns:sub-title>
     <tns:grid-lines visible="true">
         <tns:rgb>
@@ -104,8 +86,8 @@
             </tns:blue>
         </tns:rgb>
     </tns:grid-lines>
-    <tns:series-def number="1" series-name="Current" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
+    <tns:series-def number="1" series-name="Current" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NULL and iflostservice &gt; now() - interval '7 days' group by service.servicename order by Count desc;"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
@@ -118,8 +100,8 @@
         </tns:blue>
       </tns:rgb>
     </tns:series-def>
-    <tns:series-def number="2" series-name="Resolved" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NOT NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
+    <tns:series-def number="2" series-name="Resolved" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NOT NULL and iflostservice &gt; now() - interval '7 days' group by service.servicename order by Count desc;"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>0</tns:rgb-color>
@@ -134,17 +116,9 @@
     </tns:series-def>
   </tns:bar-chart>
 
-  <tns:bar-chart name="sample-bar-chart3" 
-  	variation="2d" 
-  	domain-axis-label="Nodes/Interfaces/Services" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count"
-  	show-urls="false"
-    show-tool-tips="false">
+  <tns:bar-chart domain-axis-label="Nodes/Interfaces/Services" draw-bar-outline="true" name="sample-bar-chart3" plot-orientation="vertical" range-axis-label="Count" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d">
       
-    <tns:title font="SansSerif" style="" value="Node Inventory" pitch="12" />
+    <tns:title font="SansSerif" pitch="12" style="" value="Node Inventory"/>
     <tns:image-size>
       <tns:hz-size>
         <tns:pixels>450</tns:pixels>
@@ -166,8 +140,8 @@
             </tns:blue>
         </tns:rgb>
     </tns:grid-lines>
-    <tns:series-def number="1" series-name="Nodes" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Nodes', count(*) from node" />
+    <tns:series-def number="1" series-name="Nodes" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select 'Nodes', count(*) from node"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
@@ -180,8 +154,8 @@
         </tns:blue>
       </tns:rgb>
     </tns:series-def>
-    <tns:series-def number="2" series-name="Interfaces" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Interfaces', count(*) from ipinterface" />
+    <tns:series-def number="2" series-name="Interfaces" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select 'Interfaces', count(*) from ipinterface"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>0</tns:rgb-color>
@@ -194,8 +168,8 @@
         </tns:blue>
       </tns:rgb>
     </tns:series-def>
-    <tns:series-def number="3" series-name="Services" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Services', count(*) from ifservices" />
+    <tns:series-def number="3" series-name="Services" use-labels="true">
+	  <tns:jdbc-data-set db-name="opennms" sql="select 'Services', count(*) from ifservices"/>
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>0</tns:rgb-color>

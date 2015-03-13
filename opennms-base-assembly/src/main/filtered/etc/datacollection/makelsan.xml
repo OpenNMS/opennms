@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<datacollection-group name="Makelsan">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Makelsan">
 
       <systemDef name="Makelsan UPS">
         <sysoidMask>.1.3.6.1.4.1.332.</sysoidMask>

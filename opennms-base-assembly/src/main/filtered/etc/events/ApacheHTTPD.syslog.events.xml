@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 
     <!-- Begin syslog event definitions for Apache HTTPD -->
     <event>
@@ -14,11 +14,11 @@
             PID: %parm[processid]%
             &lt;/p&gt;
         </descr>
-        <logmsg dest='logndisplay'>
+        <logmsg dest="logndisplay">
             &lt;p&gt;Apache HTTPD DocumentRoot %parm[documentRoot]% does not exist &lt;/p&gt;
         </logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[documentRoot]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[documentRoot]%"/>
     </event>
     <event>
         <uei>uei.opennms.org/vendor/apache/syslog/httpd/unknownMessage</uei>
@@ -33,7 +33,7 @@
             PID: %parm[processid]%
             &lt;/p&gt;
         </descr>
-        <logmsg dest='logndisplay'>
+        <logmsg dest="logndisplay">
             &lt;p&gt;An unknown Apache HTTPD syslog message has been received &lt;/p&gt;
             Message: %parm[syslogmessage]% &lt;br&gt;
         </logmsg>

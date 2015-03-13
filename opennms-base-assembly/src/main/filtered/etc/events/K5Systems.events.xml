@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of K5 Systems -->
 	<event>
 		<uei>uei.k5systems.com/analysis/outOfBounds</uei>
@@ -10,11 +10,11 @@
 			have reached an out of bounds condition &lt;/p&gt; &lt;p&gt;
 			See operator instructions.&lt;/p&gt;
 		</descr>
-		<logmsg dest='logndisplay'>
+		<logmsg dest="logndisplay">
 			Node %nodelabel% is failing.
 		</logmsg>
 		<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
+        <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%"/>
 	</event>
 	<event>
 		<uei>uei.k5systems.com/analysis/inBounds</uei>
@@ -26,12 +26,10 @@
 			have been restored from an out of bounds condition &lt;/p&gt; &lt;p&gt;
 			See operator instructions.&lt;/p&gt;
 		</descr>
-		<logmsg dest='logndisplay'>
+		<logmsg dest="logndisplay">
 			Node %nodelabel% is no longer failing.
 		</logmsg>
 		<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" 
-                    alarm-type="2" 
-                    clear-key="uei.k5systems.com/analysis/outOfBounds:%dpname%:%nodeid%" />
+        <alarm-data alarm-type="2" clear-key="uei.k5systems.com/analysis/outOfBounds:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 	</event>
 </events>

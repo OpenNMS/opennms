@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <!-- Begin syslog event definitions for POSIX utilities  -->
     <event>
         <uei>uei.opennms.org/vendor/posix/syslog/su/authenFailure</uei>
@@ -15,11 +15,11 @@
             PID: %parm[processid]%
             &lt;/p&gt;
         </descr>
-        <logmsg dest='logndisplay'>
+        <logmsg dest="logndisplay">
             &lt;p&gt;su failure for user %parm[user]% to user %parm[targetUser]% on %parm[tty]% &lt;/p&gt;
         </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[user]%:%parm[targetUser]%"/>
     </event>
     <!-- End syslog event definitions for POSIX utilities  -->
 </events>

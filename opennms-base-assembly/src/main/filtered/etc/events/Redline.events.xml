@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Event definitions for traps from Redline Networks TX Web I/O Processor -->
 
 <event>
@@ -21,7 +21,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that the current VIP state is up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: vipStateUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -46,7 +46,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that the current VIP state is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: vipStateDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -71,7 +71,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that the current target server state is up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: targetServerStateUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -96,7 +96,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that the current target server state is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: targetServerStateDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -121,7 +121,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that the redline accelerator is running in Active mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: failoverStateActive trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -146,7 +146,7 @@
 	<descr>
 &lt;p&gt;This trap indicates that user defined maximum connection threshold limit is reached.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Redline Event: connectionThresholdTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>

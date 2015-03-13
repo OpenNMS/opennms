@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of mib2events auto-generated data for MIB: MIB-Dell-10900 -->
   <event>
 	  <mask>
@@ -840,5 +840,4 @@
 	  </logmsg>
 	  <severity>Major</severity>
   </event>
-</events>
-<!-- End of mib2events auto-generated data for MIB: MIB-Dell-10900 -->
+</events><!-- End of mib2events auto-generated data for MIB: MIB-Dell-10900 -->

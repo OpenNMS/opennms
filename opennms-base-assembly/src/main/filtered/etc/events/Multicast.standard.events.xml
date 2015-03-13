@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: PIM-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: PIM-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <event>
     <mask>
       <maskelement>
@@ -18,9 +17,9 @@
     <uei>uei.opennms.org/mib2opennms/pimNeighborLoss</uei>
     <event-label>PIM-MIB defined trap event: pimNeighborLoss</event-label>
     <descr>&lt;p&gt;A pimNeighborLoss trap signifies the loss of an adjacency with a neighbor. This trap should be generated when the neighbor timer expires, and the router has no other neighbors on the same interface with a lower IP address than itself.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; pimNeighborIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; pimNeighborLoss trap received pimNeighborIfIndex=%parm[#1]%&lt;/p&gt; </logmsg>
+    <logmsg dest="logndisplay">&lt;p&gt; pimNeighborLoss trap received pimNeighborIfIndex=%parm[#1]%&lt;/p&gt; </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%interface%:%parm[#1]%"/>
   </event>
   <event>
     <mask>
@@ -40,9 +39,9 @@
     <uei>uei.opennms.org/mib2opennms/msdpEstablished</uei>
     <event-label>MSDP-MIB defined trap event: msdpEstablished</event-label>
     <descr>&lt;p&gt;The MSDP Established event is generated when the MSDP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; msdpPeerFsmEstablishedTransitions&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; msdpEstablished trap received msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p&gt; </logmsg>
+    <logmsg dest="logndisplay">&lt;p&gt; msdpEstablished trap received msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p&gt; </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/mib2opennms/msdpBackwardTransition:%nodeid%:%interface%:%parm[#1]%" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/mib2opennms/msdpBackwardTransition:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:nodeid%:%interface%:%parm[#1]%"/>
   </event>
   <event>
     <mask>
@@ -62,8 +61,8 @@
     <uei>uei.opennms.org/mib2opennms/msdpBackwardTransition</uei>
     <event-label>MSDP-MIB defined trap event: msdpBackwardTransition</event-label>
     <descr>&lt;p&gt;The MSDPBackwardTransition Event is generated when the MSDP FSM moves from a higher-numbered state to a lower-numbered state.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; msdpPeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt; inactive(1) listen(2) connecting(3) established(4) disabled(5) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-    <logmsg dest='logndisplay'>&lt;p&gt; msdpBackwardTransition trap received msdpPeerState=%parm[#1]%&lt;/p&gt; </logmsg>
+    <logmsg dest="logndisplay">&lt;p&gt; msdpBackwardTransition trap received msdpPeerState=%parm[#1]%&lt;/p&gt; </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:nodeid%:%interface%:%parm[#1]%"/>
   </event>
 </events><!-- End of auto generated data from MIB: MSDP-MIB -->

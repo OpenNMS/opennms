@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Xerox Traps -->
 <!-- Start of Xerox MIB: XEROX-HOST-RESOURCES-EXT-MIB -->
 <event>
@@ -58,7 +58,7 @@
  xcmHrDevInfoXConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Device Status Change Notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Xerox Event: Device Status Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -137,7 +137,7 @@
  authorizationError(16) notWritable(17) inconsistentName(18)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Command Completed Notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Xerox Event: Command Completed Notification.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -211,7 +211,7 @@
  xcmHrDevDetailIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Detail Event Notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Xerox Event: Detail Event Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Xerox MIB: XEROX-HOST-RESOURCES-EXT-MIB -->
@@ -234,7 +234,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

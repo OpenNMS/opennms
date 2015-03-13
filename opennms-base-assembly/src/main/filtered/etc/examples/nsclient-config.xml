@@ -1,6 +1,4 @@
-<?xml version="1.0"?>
-<nsclient-config port="1248" retry="3" timeout="800"
-             password="apassword">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><nsclient-config password="apassword" port="1248" retry="3" timeout="800">
   
   
 	<definition password="differentPassword">
@@ -30,4 +28,3 @@
 	</definition>
 
 </nsclient-config>
-

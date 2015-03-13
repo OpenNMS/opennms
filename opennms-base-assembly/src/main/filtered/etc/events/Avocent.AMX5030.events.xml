@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: AMX5030-TRAP-MIB -->
 <event>
 	<mask>
@@ -31,7 +31,7 @@ following string
 	amx5030TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030RebootStartedTrap trap received 
 			amx5030TrapObjectUserName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -84,7 +84,7 @@ amx5030TrapObjectAmiqConnectMode&lt;/p&gt;&lt;table&gt;
 		nspmMAINTAIN(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030RouteConnectTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]% 
 			amx5030TrapObjectAmiqUid=%parm[#2]% 
@@ -120,7 +120,7 @@ in amx5030TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
 	amx5030TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030RouteDisconnectTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -249,7 +249,7 @@ in amx5030TrapObjectAmiqPortNum.&lt;/p&gt;&lt;table&gt;
 		portNumNULL(255)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030AmiqConnectedTrap trap received 
 			amx5030TrapObjectAmiqUid=%parm[#1]% 
 			amx5030TrapObjectAmiqName=%parm[#2]% 
@@ -284,7 +284,7 @@ in amx5030TrapObjectAmiqUid.&lt;/p&gt;&lt;table&gt;
 	amx5030TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030AmiqDisconnectedTrap trap received 
 			amx5030TrapObjectAmiqUid=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -413,7 +413,7 @@ in amx5030TrapObjectUserStnPortNum.&lt;/p&gt;&lt;table&gt;
 		portNumNULL(255)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030UserStationConnectedTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]% 
 			amx5030TrapObjectUserStationName=%parm[#2]% 
@@ -448,7 +448,7 @@ in amx5030TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
 	amx5030TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030UserStnDisconnectedTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -488,7 +488,7 @@ in amx5030TrapObjectUserStationName.&lt;/p&gt;&lt;table&gt;
 	amx5030TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030UserStationLoginTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]% 
 			amx5030TrapObjectUserName=%parm[#2]%&lt;/p&gt;
@@ -522,7 +522,7 @@ in amx5030TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
 	amx5030TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			amx5030UserStationLogoutTrap trap received 
 			amx5030TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
 		</logmsg>

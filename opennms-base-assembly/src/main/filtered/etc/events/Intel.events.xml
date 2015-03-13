@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of INTEL Events -->
 <!-- Start of auto generated data from MIB: INTEL-GEN-MIB -->
 <event>
@@ -36,7 +36,7 @@
  noAccess(1) readOnly(2) writeOnly(3) readWrite(4) readOnlySecureSNMPObjects(5) 
  readWriteSecureSNMPObjects(6)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Snmp Authentication Violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Snmp Authentication Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -62,7 +62,7 @@
  &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Inserted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Chassis Inserted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -88,7 +88,7 @@
  &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Removed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Chassis Removed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -116,7 +116,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Inserted into Chassis.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Module Inserted into Chassis.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -144,7 +144,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Removed from Chassis.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Module Removed from Chassis.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -174,7 +174,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Inserted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Media Module Inserted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -204,7 +204,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Removed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Media Module Removed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of auto generated data from MIB: INTEL-GEN-MIB -->
@@ -242,7 +242,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  portConfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Permanent Entry Violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Permanent Entry Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -284,7 +284,7 @@
  cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
  adaptiveStoreAndForward(6) notAvailable(99)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Forwarding Mode Changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Forwarding Mode Changed.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -311,7 +311,7 @@
  temperatureLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;normal(1) high(2) critical(3)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Temperature Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Temperature Status Change.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -339,7 +339,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notPresent(1) present(2) active(3)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Redundant Power Supply Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Intel Event: Redundant Power Supply Status Change.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- End of auto generated data from MIB: INTEL-S500-MIB -->
@@ -365,11 +365,11 @@
 &lt;p&gt;Dummy Trap for testing&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>
+		<logmsg dest="logndisplay">
 		&lt;p&gt;Dummy Trap for testing trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -400,13 +400,13 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Loginfailed trap received 
 			userLoginName=%parm[#1]% 
 			remoteHost=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -437,13 +437,13 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Loginsuccess trap received 
 			userLoginName=%parm[#1]% 
 			remoteHost=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -474,13 +474,13 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SecurityViolation trap received 
 			userLoginName=%parm[#1]% 
 			remoteHost=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -511,13 +511,13 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Generic trap received 
 			eventType=%parm[#1]% 
 			eventDesc=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -548,13 +548,13 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Logout trap received 
 			userLoginName=%parm[#1]% 
 			remoteHost=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of quasi-auto generated data from MIB: RMM2-MIB -->
 <event>
@@ -576,7 +576,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
@@ -604,7 +604,7 @@
 	<descr>
 &lt;p&gt;Temperature Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Temperature trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -629,7 +629,7 @@
 	<descr>
 &lt;p&gt;Voltage Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Voltage trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -654,7 +654,7 @@
 	<descr>
 &lt;p&gt;Fan Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Fan trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -706,7 +706,7 @@
 	<descr>
 &lt;p&gt;Processor Missing&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_ProcessorMissing trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -731,7 +731,7 @@
 	<descr>
 &lt;p&gt;LAN Leash Tamper&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_LANLeash trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -756,7 +756,7 @@
 	<descr>
 &lt;p&gt;Surprised Undock event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Undock trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -833,7 +833,7 @@
 	<descr>
 &lt;p&gt;Fan/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Fan_Temperature trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -910,7 +910,7 @@
 	<descr>
 &lt;p&gt;Watchdog Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_Watchdog trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -935,7 +935,7 @@
 	<descr>
 &lt;p&gt;Alert on LAN 2 Event has occured&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_AlertOnLAN trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -960,7 +960,7 @@
 	<descr>
 &lt;p&gt;Presence Heartbeat Expired&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: pET_PresenceHeartbeat trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -991,7 +991,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: presenceHeartbeat trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1021,7 +1021,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: coverTamper trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1051,7 +1051,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: voltage_Fan_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1081,7 +1081,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: lANLeash trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1111,7 +1111,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: temperature trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1141,7 +1141,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: processorMissing trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1171,7 +1171,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: processorTemperature trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1201,7 +1201,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: watchdog trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1231,7 +1231,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: p_O_S_T trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1261,7 +1261,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: unknownEvent trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1291,7 +1291,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: processor_0_Missing trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1321,7 +1321,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: processor_1_Missing trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1351,7 +1351,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: voltage_Fan trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1381,7 +1381,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: voltage trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1411,7 +1411,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: fan trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1441,7 +1441,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: fan_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1471,7 +1471,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: voltage_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1501,7 +1501,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: undock trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1531,7 +1531,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: eventClear trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1561,7 +1561,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: clientAdded trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1591,7 +1591,7 @@
 	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Intel: clientDeleted trap received 
 			systemName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1619,7 +1619,7 @@
 	<descr>
 &lt;p&gt;Under-Temperature Warning (Lower non-critical, going low)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderTemperatureWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1644,7 +1644,7 @@
 	<descr>
 &lt;p&gt;Critical Under-Temperature Problem (Lower Critical - going low)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderTemperatureCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1669,7 +1669,7 @@
 	<descr>
 &lt;p&gt;Over-Temperature Warning (Upper non-critical, going high)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverTemperatureWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1694,7 +1694,7 @@
 	<descr>
 &lt;p&gt;Critical Over-Temperature Problem (Upper Critical - going high)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverTemperatureCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1719,7 +1719,7 @@
 	<descr>
 &lt;p&gt;Under-Temperature Warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderTemperatureWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1744,7 +1744,7 @@
 	<descr>
 &lt;p&gt;Under-Temperature Problem Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderTemperatureCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1769,7 +1769,7 @@
 	<descr>
 &lt;p&gt;Over-Temperature warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverTemperatureWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1794,7 +1794,7 @@
 	<descr>
 &lt;p&gt;Over-Temperature Problem Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverTemperatureCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1819,7 +1819,7 @@
 	<descr>
 &lt;p&gt;Generic Critical Temperature Problem (Transition to Critical from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericCriticalTemperature trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1844,7 +1844,7 @@
 	<descr>
 &lt;p&gt;Generic Temperature Warning (Transition to Warning from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericTemperatureWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1869,7 +1869,7 @@
 	<descr>
 &lt;p&gt;Under-Voltage Warning (Lower Non Critical - going low)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderAnalogVoltageWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1894,7 +1894,7 @@
 	<descr>
 &lt;p&gt;Critical Under-Voltage Problem (Lower Critical - going low)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderAnalogVoltageCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1919,7 +1919,7 @@
 	<descr>
 &lt;p&gt;Over-Voltage Warning (Upper Non Critical - going high)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverAnalogVoltageWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1944,7 +1944,7 @@
 	<descr>
 &lt;p&gt;Critical Over-Voltage Problem (Upper Critical - going high)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverAnalogVoltageCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1969,7 +1969,7 @@
 	<descr>
 &lt;p&gt;Under-Voltage Warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderAnalogVoltageWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1994,7 +1994,7 @@
 	<descr>
 &lt;p&gt;Under-Voltage Problem Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapUnderAnalogVoltageCriticalCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2019,7 +2019,7 @@
 	<descr>
 &lt;p&gt;Over-Voltage Warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverAnalogVoltageWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2044,7 +2044,7 @@
 	<descr>
 &lt;p&gt;Over-Voltage Problem Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOverAnalogVoltageCriticalCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2069,7 +2069,7 @@
 	<descr>
 &lt;p&gt;Generic Critical Voltage Problem Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericCriticalDiscreteVoltageCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2094,7 +2094,7 @@
 	<descr>
 &lt;p&gt;Generic Critical Voltage Problem (Transition to Critical from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericCriticalDiscreteVoltage trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2119,7 +2119,7 @@
 	<descr>
 &lt;p&gt;Generic Critical Voltage Problem (Transition to Critical from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericCriticalDiscreteVoltage2 trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2144,7 +2144,7 @@
 	<descr>
 &lt;p&gt;Generic Voltage Warning (Transition to Non-Critical from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapGenericDiscreteVoltageWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2169,7 +2169,7 @@
 	<descr>
 &lt;p&gt;Fan speed warning (Fan speed below expected speed)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanUnderSpeedWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2194,7 +2194,7 @@
 	<descr>
 &lt;p&gt;Generic Critical Fan Failure (Transition to Critical from less severe)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanCriticalUnderSpeed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2219,7 +2219,7 @@
 	<descr>
 &lt;p&gt;Fan speed Warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanUnderSpeedWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2244,7 +2244,7 @@
 	<descr>
 &lt;p&gt;Critical Fan Failure Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanCriticalUnderSpeedCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2269,7 +2269,7 @@
 	<descr>
 &lt;p&gt;Fan redundancy has returned to Normal&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanFullRedundancy trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2294,7 +2294,7 @@
 	<descr>
 &lt;p&gt;Fan Redundancy has been Lost&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanRedundancyLost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2319,7 +2319,7 @@
 	<descr>
 &lt;p&gt;Fan Redundancy is in a degraded state&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapFanRedundancyDegraded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2344,7 +2344,7 @@
 	<descr>
 &lt;p&gt;Chassis Intrusion - Physical Security Violation&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapChassisIntrusion trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2369,7 +2369,7 @@
 	<descr>
 &lt;p&gt;Chassis Intrusion (Physical Security Violation) Event Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapChassisIntrusionCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2394,7 +2394,7 @@
 	<descr>
 &lt;p&gt;Processor Internal Error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorInternalError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2419,7 +2419,7 @@
 	<descr>
 &lt;p&gt;Processor Thermal Trip (Over Temperature Shutdown)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorThermalTrip trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2444,7 +2444,7 @@
 	<descr>
 &lt;p&gt;Processor Fault Resilient Booting (FRB) 1 / BIST (Built In Self Test) Failure&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorBistError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2469,7 +2469,7 @@
 	<descr>
 &lt;p&gt;Processor Fault Resilient Booting (FRB) 2 / Hang in Power On Self Test (POST) Failure&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorFRB2Failure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2494,7 +2494,7 @@
 	<descr>
 &lt;p&gt;Processor Fault Resilient Booting (FRB) 3 / Processor Setup / Initialization Failure&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorFRB3Failure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2519,7 +2519,7 @@
 	<descr>
 &lt;p&gt;Processor Configuration Error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorConfigError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2544,7 +2544,7 @@
 	<descr>
 &lt;p&gt;Processor Throttled (Processor Speed Reduced)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorThrottle trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2569,7 +2569,7 @@
 	<descr>
 &lt;p&gt;Processor Internal Error Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorInternalErrorCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2594,7 +2594,7 @@
 	<descr>
 &lt;p&gt;Processor Thermal Trip (Over Temperature Shutdown) Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorThermalTripCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2619,7 +2619,7 @@
 	<descr>
 &lt;p&gt;Processor BIST (Built In Self Test) Failure Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorBistErrorCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2644,7 +2644,7 @@
 	<descr>
 &lt;p&gt;Processor Configuration Error Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorConfigErrorCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2669,7 +2669,7 @@
 	<descr>
 &lt;p&gt;Processor Throttle Cleared (Normal Processor Speed)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapProcessorThrottleCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2694,7 +2694,7 @@
 	<descr>
 &lt;p&gt;Power Supply Redundancy Has Returned to Normal&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyFullRedundancy trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2719,7 +2719,7 @@
 	<descr>
 &lt;p&gt;Power Supply Redundancy has been Lost&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyRedundancyLost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2744,7 +2744,7 @@
 	<descr>
 &lt;p&gt;Power Supply Redundancy is in a degraded state&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyRedundancyDegraded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2769,7 +2769,7 @@
 	<descr>
 &lt;p&gt;Power Supply Inserted&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyPresenceDeteced trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2794,7 +2794,7 @@
 	<descr>
 &lt;p&gt;Power supply Failure detected&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyFailureDetected trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2819,7 +2819,7 @@
 	<descr>
 &lt;p&gt;Power supply Warning&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2844,7 +2844,7 @@
 	<descr>
 &lt;p&gt;Power Supply AC Lost&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyACLost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2869,7 +2869,7 @@
 	<descr>
 &lt;p&gt;Power Supply Removed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyPresenceRemoved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2894,7 +2894,7 @@
 	<descr>
 &lt;p&gt;Power Supply Failure Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyFailureCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2919,7 +2919,7 @@
 	<descr>
 &lt;p&gt;Power Supply Warning Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyWarningCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2944,7 +2944,7 @@
 	<descr>
 &lt;p&gt;Power Supply AC Restored&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapPowerSupplyACBack trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2969,7 +2969,7 @@
 	<descr>
 &lt;p&gt;Uncorrectable ECC or other uncorrectable memory error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapMemoryUncorrectableECC trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -2994,7 +2994,7 @@
 	<descr>
 &lt;p&gt;System Firmware Progress: BIOS POST code error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapBIOSPOSTCodeError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3019,7 +3019,7 @@
 	<descr>
 &lt;p&gt;System Event Log (SEL) Cleared&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapSystemEventLogCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3044,7 +3044,7 @@
 	<descr>
 &lt;p&gt;System Event Log (SEL) Full (Logging Disabled)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapSystemEventLogFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3069,7 +3069,7 @@
 	<descr>
 &lt;p&gt;System Boot Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapSystemBootEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3094,7 +3094,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, Bus Timeout error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptBusTimeout trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3119,7 +3119,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, IO Channel check NMI error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptIOChannelNMI trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3144,7 +3144,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, software NMI error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptSoftwareNMI trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3169,7 +3169,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, PCI PERR parity error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptPCIPERR trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3194,7 +3194,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, PCI SERR parity error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptPCISERR trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3219,7 +3219,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, Bus Uncorrectable error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptBusUncorrect trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3244,7 +3244,7 @@
 	<descr>
 &lt;p&gt;Critical Interrupt, Fatal NMI error&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapCriticalInterruptFatalNMI trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3269,7 +3269,7 @@
 	<descr>
 &lt;p&gt;OS Critical Stop occurred&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapOSCriticalStop trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3294,7 +3294,7 @@
 	<descr>
 &lt;p&gt;Watchdog Reset&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapWatchdogReset trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3319,7 +3319,7 @@
 	<descr>
 &lt;p&gt;Watchdog Power Down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapWatchdogPowerDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3344,7 +3344,7 @@
 	<descr>
 &lt;p&gt;Watchdog Power Cycle&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			TrapWatchdogPowerCycle trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>

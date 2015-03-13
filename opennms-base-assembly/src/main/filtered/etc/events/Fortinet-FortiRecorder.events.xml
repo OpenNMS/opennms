@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>
@@ -74,13 +73,13 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="systemHalt"/>
-            <decode varbindvalue="2" varbinddecodedstring="systemReboot"/>
-            <decode varbindvalue="3" varbinddecodedstring="systemReload"/>
-            <decode varbindvalue="4" varbinddecodedstring="systemUpgrade"/>
-            <decode varbindvalue="5" varbinddecodedstring="guiUpgrade"/>
-            <decode varbindvalue="6" varbinddecodedstring="logdiskFormat"/>
-            <decode varbindvalue="7" varbinddecodedstring="videodiskFormat"/>
+            <decode varbinddecodedstring="systemHalt" varbindvalue="1"/>
+            <decode varbinddecodedstring="systemReboot" varbindvalue="2"/>
+            <decode varbinddecodedstring="systemReload" varbindvalue="3"/>
+            <decode varbinddecodedstring="systemUpgrade" varbindvalue="4"/>
+            <decode varbinddecodedstring="guiUpgrade" varbindvalue="5"/>
+            <decode varbinddecodedstring="logdiskFormat" varbindvalue="6"/>
+            <decode varbinddecodedstring="videodiskFormat" varbindvalue="7"/>
         </varbindsdecode>
     </event>
     <event>
@@ -122,8 +121,8 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="false"/>
-            <decode varbindvalue="1" varbinddecodedstring="true"/>
+            <decode varbinddecodedstring="false" varbindvalue="0"/>
+            <decode varbinddecodedstring="true" varbindvalue="1"/>
         </varbindsdecode>
     </event>
     <event>
@@ -174,12 +173,12 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#3]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="enable"/>
-            <decode varbindvalue="2" varbinddecodedstring="disable"/>
-            <decode varbindvalue="3" varbinddecodedstring="communicationFail"/>
-            <decode varbindvalue="4" varbinddecodedstring="recordingFail"/>
-            <decode varbindvalue="5" varbinddecodedstring="ipChange"/>
-            <decode varbindvalue="6" varbinddecodedstring="reboot"/>
+            <decode varbinddecodedstring="enable" varbindvalue="1"/>
+            <decode varbinddecodedstring="disable" varbindvalue="2"/>
+            <decode varbinddecodedstring="communicationFail" varbindvalue="3"/>
+            <decode varbinddecodedstring="recordingFail" varbindvalue="4"/>
+            <decode varbinddecodedstring="ipChange" varbindvalue="5"/>
+            <decode varbinddecodedstring="reboot" varbindvalue="6"/>
         </varbindsdecode>
     </event>
 </events>

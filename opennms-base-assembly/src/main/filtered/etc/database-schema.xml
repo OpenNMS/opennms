@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<database-schema>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><database-schema>
 
 	<table name="distPoller" visible="false">
 		<column name="dpNumber"/>
@@ -29,19 +28,19 @@
 	</table>
 
 	<table name="categories">
-		<join type="left" column="categoryID" table="category_node" table-column="categoryID"/>
-		<column name="categoryID" />
-		<column name="categoryName" />
-		<column name="categoryDescription" />
+		<join column="categoryID" table="category_node" table-column="categoryID" type="left"/>
+		<column name="categoryID"/>
+		<column name="categoryName"/>
+		<column name="categoryDescription"/>
 	</table>
 
 	<table name="category_node">
-		<join type="left" column="nodeID" table="ipInterface" table-column="nodeID"/>
-		<column name="categoryID" visible="false" />
-		<column name="nodeID" visible="false" />
+		<join column="nodeID" table="ipInterface" table-column="nodeID" type="left"/>
+		<column name="categoryID" visible="false"/>
+		<column name="nodeID" visible="false"/>
 	</table>
 
-	<table name="ipInterface" key="primary">
+	<table key="primary" name="ipInterface">
 		<join column="snmpInterfaceId" table="snmpInterface" table-column="id"/>
 		<column name="id" visible="false"/>
 		<column name="nodeID" visible="false"/>
@@ -71,8 +70,8 @@
 	</table>
 
 	<table name="service">
-		<join column="serviceID" table="ifServices" table-column="serviceID" />
-		<column name="serviceID" visible="false" />
+		<join column="serviceID" table="ifServices" table-column="serviceID"/>
+		<column name="serviceID" visible="false"/>
 		<column name="serviceName"/>
 	</table>
 
@@ -148,15 +147,14 @@
 	<table name="applications">
 		<join column="id" table="application_service_map" table-column="appId"/>
 		<column name="id" visible="false"/>
-		<column name="name" />
+		<column name="name"/>
 	</table>
 
 	<table name="application_service_map">
 		<join column="ifServiceId" table="ifServices" table-column="id"/>
 		<join column="appId" table="applications" table-column="id"/>
-		<column name="appId" visible="false" />
-		<column name="ifServiceId" visible="false" />
+		<column name="appId" visible="false"/>
+		<column name="ifServiceId" visible="false"/>
 	</table>
 
 </database-schema>
-

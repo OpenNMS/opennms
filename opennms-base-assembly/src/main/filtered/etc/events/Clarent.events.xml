@@ -1,10 +1,9 @@
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 Clarent Command Center Trap Events for OpenNMS
 Created 09-01-2004
 mlwilson@acegroup.cc
 mikew@isphone.net
--->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+--><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 
 <!-- Start of auto generated data from MIB: CLARENT-MIB -->
 <event>
@@ -27,7 +26,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Gateway is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gatewayIsDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -52,7 +51,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Gateway restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartGWSuccess trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -77,7 +76,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Gateway failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartGWFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -102,7 +101,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Command Center is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: ccIsDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -127,7 +126,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Command Center restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartCCSuccess trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -152,7 +151,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Command Center failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartCCFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -181,7 +180,7 @@ mikew@isphone.net
 	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: lostCC trap received 
 			serverIpAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -211,7 +210,7 @@ mikew@isphone.net
 	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: connectCCFailed trap received 
 			serverIpAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -241,7 +240,7 @@ mikew@isphone.net
 	portIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: portOutOfService trap received 
 			portIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -271,7 +270,7 @@ mikew@isphone.net
 	portIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: portInService trap received 
 			portIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -297,7 +296,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Gateway cannot dial number; no voice port is available&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: dialUpNoVoicePort trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -322,7 +321,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Gateway cannot connect to another gateway; not responding&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: connectNoVoicePort trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -351,7 +350,7 @@ mikew@isphone.net
 	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gatewayConnect trap received 
 			serverIpAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -381,7 +380,7 @@ mikew@isphone.net
 	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gatewayDisconnect trap received 
 			serverIpAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -411,7 +410,7 @@ mikew@isphone.net
 	gwId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gwNotRegistered trap received 
 			gwId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -441,7 +440,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: callRatingFailed trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -467,7 +466,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Invalid Command Center license&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: invalidCCLicense trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -492,7 +491,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Valid temporary Command Center license&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: validCCTmpLicense trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -517,7 +516,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;SS7 link is up&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: ss7LinkUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -542,7 +541,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;SS7 link is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: ss7LinkDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -571,7 +570,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gwAppShutdown trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -601,7 +600,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: resettingDSPBrd trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -631,7 +630,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: clrHseCreditSChg trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -661,7 +660,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: ccCreditSChg trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -691,7 +690,7 @@ mikew@isphone.net
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: validateEGErr trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -717,7 +716,7 @@ mikew@isphone.net
 	<descr>
 &lt;p&gt;Clarent Command Center license key change rolled back&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: licRollBack trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -779,7 +778,7 @@ Descriptive text string&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: clarentInfo trap received 
 			trapSeverity=%parm[#1]% 
 			trapClass=%parm[#2]% 
@@ -843,7 +842,7 @@ Error count&lt;/p&gt;&lt;table&gt;
 	errorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: softwareUpdate trap received 
 			packageName=%parm[#1]% 
 			packageOperation=%parm[#2]% 
@@ -876,7 +875,7 @@ Error count&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: numberIntercept trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -902,7 +901,7 @@ Error count&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent ThroughPacket server is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: tpIsDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -927,7 +926,7 @@ Error count&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent ThroughPacket server failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartTPFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -952,7 +951,7 @@ Error count&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent ThroughPacket server restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: tpRestarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1019,7 +1018,7 @@ has been exceeded or rearmed by the named Application. This trap contains
 		rearmed(1)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: threshHoldTrap trap received 
 			trapSeverity=%parm[#1]% 
 			trapAppName=%parm[#2]% 
@@ -1054,7 +1053,7 @@ has been exceeded or rearmed by the named Application. This trap contains
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: systemReboot trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1084,7 +1083,7 @@ has been exceeded or rearmed by the named Application. This trap contains
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: rebootCommand trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1115,7 +1114,7 @@ if the condition persists.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: cDiskSpaceLow trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1146,7 +1145,7 @@ no more than once every 5 minutes.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: cNoConnectRoute trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1199,7 +1198,7 @@ Count of total number of database error traps sent since machine power up&lt;/p&
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: dbError trap received 
 			trapSeverity=%parm[#1]% 
 			trapNumber=%parm[#2]% 
@@ -1233,7 +1232,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: dbClerkStarted trap received 
 			trapNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1259,7 +1258,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent Distribution Service failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: restartDMFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1284,7 +1283,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent Distribution Service restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: dmRestarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1309,7 +1308,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Clarent Distribution Service is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: dmIsDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1338,7 +1337,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: sigGWMTPPause trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1368,7 +1367,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: sigGWMTPResume trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1398,7 +1397,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: sigGWTaskActive trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1428,7 +1427,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: pinSuspended trap received 
 			trapText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1472,7 +1471,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkIsDown trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1518,7 +1517,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkRestartFailed trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1564,7 +1563,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkRestarted trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1610,7 +1609,7 @@ clerks running.&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkNotRegistered trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1664,7 +1663,7 @@ disabled (0), enabled (1).&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkOpStateChg trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1713,7 +1712,7 @@ Dangerously Heavy (4), and Critical (5).&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkLoadStateCritical trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1760,7 +1759,7 @@ Clarent::For Future Release&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkIsRejectingRasMsg trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1810,7 +1809,7 @@ Clarent::For Future Release&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkEndpointUnreachable trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
@@ -1861,7 +1860,7 @@ Clarent::For Future Release&lt;/p&gt;&lt;table&gt;
 	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarent Event: gkEndPointURQFailed trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 

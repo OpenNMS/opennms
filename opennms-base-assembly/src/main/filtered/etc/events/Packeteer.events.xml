@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: BLUECOAT-PACKETSHAPER-MIB -->
 <event>
 	<mask>
@@ -32,7 +32,7 @@ this trap provides more information.&lt;/p&gt;&lt;table&gt;
 		none(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmSiteRouter trap received 
 			psAlarmSiteRouterStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -59,7 +59,7 @@ this trap provides more information.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;A psAlarmPowerSystemOne trap signifies that the first power
 supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmPowerSystemOne trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -85,7 +85,7 @@ supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A psAlarmPowerSystemTwo trap signifies that
 the second power supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmPowerSystemTwo trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -111,7 +111,7 @@ the second power supply of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/tab
 &lt;p&gt;A psAlarmFanOne trap signifies that the first fan
 of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmFanOne trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -137,7 +137,7 @@ of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A psAlarmFanTwo trap signifies that second fan
 of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmFanTwo trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -165,7 +165,7 @@ file of the device has been corrupted, or otherwise changed
 to a state of less readiness. This trap is obsolete and
 should not be used.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmCfgFile trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -244,7 +244,7 @@ give more information on the event.&lt;/p&gt;&lt;table&gt;
 	userEventTrapDayLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmUserEvent trap received 
 			userEventTrapName=%parm[#1]% 
 			userEventTrapExpression=%parm[#2]% 
@@ -297,7 +297,7 @@ startup. &lt;/p&gt;&lt;table&gt;
 		restore(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmMeasurementEngine trap received 
 			psAlarmMeasurementEngineStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -340,7 +340,7 @@ this trap provides more information.&lt;/p&gt;&lt;table&gt;
 		unsupported(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmStandby trap received 
 			psAlarmStandbyStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -386,7 +386,7 @@ is the router that went down, the interface name will not be specified.&lt;/p&gt
 	psFeatureHighAvDeviceDownInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psFeatureHighAvDeviceDown trap received 
 			psFeatureHighAvDeviceDownStatus=%parm[#1]% 
 			psFeatureHighAvDeviceDownRouter=%parm[#2]% 
@@ -438,7 +438,7 @@ give more information on the event.&lt;/p&gt;&lt;table&gt;
 	agentEventTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmAgentEvent trap received 
 			agentEventTrapName=%parm[#1]% 
 			agentEventTrapDate=%parm[#2]% 
@@ -468,7 +468,7 @@ give more information on the event.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;A psAlarmFanThree trap signifies that 3rd fan
 of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmFanThree trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -494,7 +494,7 @@ of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A psAlarmFanFour trap signifies that 4th fan
 of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmFanFour trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -520,7 +520,7 @@ of the device has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A psAlarmVoltage trap signifies one or more
 voltage inputs are outside the proper range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmVoltage trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -607,7 +607,7 @@ the current psAlarmUserEvent trap as it now adds the status of the event.&lt;/p&
 		rearmed(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmExtendedUserEvent trap received 
 			userEventTrapName=%parm[#1]% 
 			userEventTrapExpression=%parm[#2]% 
@@ -646,7 +646,7 @@ the current psAlarmUserEvent trap as it now adds the status of the event.&lt;/p&
 &lt;p&gt;A psAlarmHardDriveDown trap signifies the hard drive
 is down or not responding.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psAlarmHardDriveDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>

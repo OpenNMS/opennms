@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: VMWARE-VMINFO-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: VMWARE-VMINFO-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -38,14 +37,14 @@ poll the vmwVmTable to obtain current status.</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmwVmPoweredOn trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -84,14 +83,14 @@ poll the vmwVmTable to obtain current status.</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmwVmPoweredOff trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -131,14 +130,14 @@ poll the vmwVmTable to obtain current status.</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmwVmHBLost trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -177,14 +176,14 @@ poll the vmwVmTable to obtain current status.</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmwVmHBDetected trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -223,14 +222,13 @@ poll the vmwVmTable to obtain current status.</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmwVmSuspended trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%</p>
 ]]>		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
-</events>
-<!-- End of auto generated data from MIB: VMWARE-VMINFO-MIB -->
+</events><!-- End of auto generated data from MIB: VMWARE-VMINFO-MIB -->

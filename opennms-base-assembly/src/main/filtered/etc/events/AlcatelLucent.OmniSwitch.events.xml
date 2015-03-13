@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ALCATEL-IND1-CHASSIS-MIB -->
 <event>
 	<mask>
@@ -58,7 +58,7 @@ want to aware the user of for maintenance purpose.	&lt;/p&gt;&lt;table&gt;
 	chassisTrapsStrdataInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisTrapsStr trap received 
 			chassisTrapsStrLevel=%parm[#1]% 
 			chassisTrapsStrAppID=%parm[#2]% 
@@ -178,7 +178,7 @@ whatever it's a failure or not				&lt;/p&gt;&lt;table&gt;
 	chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisTrapsAlert trap received 
 			physicalIndex=%parm[#1]% 
 			chassisTrapsObjectType=%parm[#2]% 
@@ -241,7 +241,7 @@ whatever it's a failure or not				&lt;/p&gt;&lt;table&gt;
 		master(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisTrapsStateChange trap received 
 			physicalIndex=%parm[#1]% 
 			chassisTrapsObjectType=%parm[#2]% 
@@ -324,7 +324,7 @@ a binding rule which has been configured gets violated.&lt;/p&gt;&lt;table&gt;
 	gmBindRuleDsapSsap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmBindRuleViolation trap received 
 			gmBindRuleType=%parm[#1]% 
 			gmBindRuleVlanId=%parm[#2]% 
@@ -415,7 +415,7 @@ due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 	gmOverloadRuleIpxNetwork&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmHwVlanRuleTableOverloadAlert trap received 
 			gmOverloadRuleTable=%parm[#1]% 
 			gmOverloadRuleType=%parm[#2]% 
@@ -457,7 +457,7 @@ in OS6800 due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 	gmOverloadRuleSlice&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmHwMixModeSubnetRuleTableOverloadAlert trap received 
 			gmSubnetRuleTable=%parm[#1]% 
 			gmOverloadRuleSlice=%parm[#2]%&lt;/p&gt;
@@ -493,7 +493,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	alaGvrpMaxVlanLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gvrpVlanLimitReachedEvent trap received 
 			alaGvrpMaxVlanLimit=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -569,7 +569,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonDeviceTrap trap received 
 			healthMonRxStatus=%parm[#1]% 
 			healthMonRxTxStatus=%parm[#2]% 
@@ -668,7 +668,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonModuleTrap trap received 
 			healthModuleSlot=%parm[#1]% 
 			healthMonRxStatus=%parm[#2]% 
@@ -726,7 +726,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonPortTrap trap received 
 			healthPortSlot=%parm[#1]% 
 			healthPortIF=%parm[#2]% 
@@ -761,7 +761,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	pethSourceSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pethPwrSupplyConflict trap received 
 			pethSourceSlot=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -791,7 +791,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	pethSourceSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pethPwrSupplyNotSupported trap received 
 			pethSourceSlot=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -832,7 +832,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	aipAMAPLastTrapPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aipAMAPStatusTrap trap received 
 			aipAMAPLastTrapReason=%parm[#1]% 
 			aipAMAPLastTrapPort=%parm[#2]%&lt;/p&gt;
@@ -886,7 +886,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	aipGMAPLastTrapVlan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aipGMAPConflictTrap trap received 
 			aipGMAPLastTrapReason=%parm[#1]% 
 			aipGMAPLastTrapPort=%parm[#2]% 
@@ -958,7 +958,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -1017,7 +1017,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -1065,7 +1065,7 @@ Overload state.&lt;/p&gt;&lt;table&gt;
 	isisSysL2State&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisDatabaseOverload trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			isisSysL1State=%parm[#2]% 
@@ -1104,7 +1104,7 @@ dropped.&lt;/p&gt;&lt;table&gt;
 	isisManAreaAddrExistState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisManualAddressDrops trap received 
 			isisManAreaAddrExistState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1147,7 +1147,7 @@ be corrupted.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisTrapLSPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisCorruptedLSPDetected trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]%&lt;/p&gt;
@@ -1192,7 +1192,7 @@ useful information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisTrapLSPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisMaxSeqExceedAttempt trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]%&lt;/p&gt;
@@ -1239,7 +1239,7 @@ the circuit or on some MAC level information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisIDLenMismatch trap received 
 			vRtrIsisFieldLen=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -1286,7 +1286,7 @@ source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisMaxAreaAddrsMismatch trap received 
 			vRtrIsisMaxAreaAddress=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -1333,7 +1333,7 @@ confusion.&lt;/p&gt;&lt;table&gt;
 		l1l2(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisOwnLSPPurge trap received 
 			vRtrIsisIfIndex=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]% 
@@ -1382,7 +1382,7 @@ the same System ID, this notification will fire.&lt;/p&gt;&lt;table&gt;
 		l1l2(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisSequenceNumberSkip trap received 
 			vRtrIsisTrapLSPID=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -1433,7 +1433,7 @@ same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAutTypeFail trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisPDUFragment=%parm[#2]% 
@@ -1484,7 +1484,7 @@ source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAuthFail trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisPDUFragment=%parm[#2]% 
@@ -1544,7 +1544,7 @@ information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisVersionSkew trap received 
 			vRtrIsisProtocolVersion=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -1605,7 +1605,7 @@ information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAreaMismatch trap received 
 			vRtrIsisLSPSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -1652,7 +1652,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisRejectedAdjacency trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]%&lt;/p&gt;
@@ -1705,7 +1705,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisLSPTooLargeToPropagate trap received 
 			vRtrIsisLSPSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -1768,7 +1768,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisOrigLSPBufSizeMismatch trap received 
 			vRtrIsisOriginatingBufferSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -1828,7 +1828,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisProtoSuppMismatch trap received 
 			vRtrIsisProtocolsSupported=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -1880,7 +1880,7 @@ The isisISAdjState is the new state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	isisISAdjState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAdjacencyChange trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -1922,7 +1922,7 @@ receive a unique circId.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisCircIdExhausted trap received 
 			vRtrIsisIfIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1972,7 +1972,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 		helping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAdjRestartStatusChange trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -2012,7 +2012,7 @@ This trap is sent when any one port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggAggUp trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -2049,7 +2049,7 @@ This trap is sent when all  ports of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggAggDown trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -2086,7 +2086,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortJoin trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -2123,7 +2123,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortLeave trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -2160,7 +2160,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortRemove trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -2225,7 +2225,7 @@ This trap is sent when given  port of the link aggregation
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsViolationTrap trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchIpAddr=%parm[#2]% 
@@ -2281,7 +2281,7 @@ generated as a notification. This trap will also be generated at the time
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsPortUpAfterLearningWindowExpiredTrap trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchSlice=%parm[#2]% 
@@ -2335,7 +2335,7 @@ generated as a notification. This trap will also be generated at the time
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsLearnMac trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchSlice=%parm[#2]% 
@@ -2385,7 +2385,7 @@ generated as a notification. This trap will also be generated at the time
 		full(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slPCAMStatusTrap trap received 
 			slPCAMSlotNumber=%parm[#1]% 
 			slPCAMSliceNumber=%parm[#2]% 
@@ -2447,7 +2447,7 @@ generated as a notification. This trap will also be generated at the time
 		target(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaNetSecPortTrapAnomaly trap received 
 			alaNetSecPortTrapInfoIfId=%parm[#1]% 
 			alaNetSecPortTrapInfoAnomaly=%parm[#2]% 
@@ -2479,7 +2479,7 @@ generated as a notification. This trap will also be generated at the time
 	alaNetSecPortTrapInfoIfId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaNetSecPortTrapQuarantine trap received 
 			alaNetSecPortTrapInfoIfId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2519,7 +2519,7 @@ alaPimBsrCandidateBSRElectedBSR becomes FALSE.&lt;/p&gt;&lt;table&gt;
 		false(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimBsrElectedBSRLostElection trap received 
 			alaPimBsrCandidateBSRElectedBSR=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2557,7 +2557,7 @@ alaPimBsrCandidateBSRElectedBSR becomes TRUE&lt;/p&gt;&lt;table&gt;
 		false(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimBsrCandidateBSRWinElection trap received 
 			alaPimBsrCandidateBSRElectedBSR=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2598,7 +2598,7 @@ alaPimNeighborLossNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimNeighborUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimNeighborLoss trap received 
 			alaPimNeighborUpTime=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2664,7 +2664,7 @@ alaPimInvalidRegisterNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimInvalidRegisterRp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInvalidRegister trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimInvalidRegisterAddressType=%parm[#2]% 
@@ -2738,7 +2738,7 @@ alaPimInvalidJoinPruneNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimNeighborUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInvalidJoinPrune trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimInvalidJoinPruneAddressType=%parm[#2]% 
@@ -2790,7 +2790,7 @@ alaPimRPMappingChangeNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimGroupMappingPrecedence&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimRPMappingChange trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimGroupMappingPrecedence=%parm[#2]%&lt;/p&gt;
@@ -2838,7 +2838,7 @@ alaPimInterfaceElectionNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimInterfaceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInterfaceElection trap received 
 			alaPimInterfaceAddressType=%parm[#1]% 
 			alaPimInterfaceAddress=%parm[#2]%&lt;/p&gt;
@@ -2938,7 +2938,7 @@ NMS application. &lt;/p&gt;&lt;table&gt;
 		pyEventPolicyCacheLoaded(58)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			policyEventNotification trap received 
 			policyTrapEventDetailString=%parm[#1]% 
 			policyTrapEventCode=%parm[#2]%&lt;/p&gt;
@@ -2988,7 +2988,7 @@ excessive errors, a Trap is sent.&lt;/p&gt;&lt;table&gt;
 	esmDrvTrapDrops&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			esmDrvTrapDropsLink trap received 
 			esmPortSlot=%parm[#1]% 
 			esmPortIF=%parm[#2]% 
@@ -3051,7 +3051,7 @@ Due to this error, port mirroring session will be terminated.&lt;/p&gt;&lt;table
 		swQError(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mirrorConfigError trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -3099,7 +3099,7 @@ by the user has been written by the port monitoring instance.&lt;/p&gt;&lt;table
 	monitorFileSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorFileWritten trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -3150,7 +3150,7 @@ continue with the insertion of different NI type in the same slot. &lt;/p&gt;&lt
 	mirMonErrorNi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mirrorUnlikeNi trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -3207,7 +3207,7 @@ authentication is refused.&lt;/p&gt;&lt;table&gt;
 		unknownUser(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionAuthenticationTrap trap received 
 			sessionAccessType=%parm[#1]% 
 			sessionUserName=%parm[#2]% 
@@ -3242,7 +3242,7 @@ authentication is refused.&lt;/p&gt;&lt;table&gt;
 	slbTrapInfoException&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapException trap received 
 			slbTrapInfoException=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3284,7 +3284,7 @@ authentication is refused.&lt;/p&gt;&lt;table&gt;
 	slbTrapInfoServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapConfigChanged trap received 
 			slbTrapInfoEntityGroup=%parm[#1]% 
 			slbTrapInfoClusterName=%parm[#2]% 
@@ -3335,7 +3335,7 @@ authentication is refused.&lt;/p&gt;&lt;table&gt;
 	slbTrapInfoServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapOperStatus trap received 
 			slbTrapInfoEntityGroup=%parm[#1]% 
 			slbTrapInfoOperStatus=%parm[#2]% 
@@ -3373,7 +3373,7 @@ The elements will be put in pass through mode.&lt;/p&gt;&lt;table&gt;
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrDuplicateSlotTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3429,7 +3429,7 @@ indicate where the Stack is broken&lt;/p&gt;&lt;table&gt;
 		linkB52(52)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrNeighborChangeTrap trap received 
 			alaStackMgrStackStatus=%parm[#1]% 
 			alaStackMgrSlotNINumber=%parm[#2]% 
@@ -3465,7 +3465,7 @@ indicate where the Stack is broken&lt;/p&gt;&lt;table&gt;
 	alaStackMgrSecondary&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrRoleChangeTrap trap received 
 			alaStackMgrPrimary=%parm[#1]% 
 			alaStackMgrSecondary=%parm[#2]%&lt;/p&gt;
@@ -3509,7 +3509,7 @@ alaStackMgrChasRole on the stack.&lt;/p&gt;&lt;table&gt;
 		passthrough(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrDuplicateRoleTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]% 
 			alaStackMgrChasRole=%parm[#2]%&lt;/p&gt;
@@ -3541,7 +3541,7 @@ mode because its operational slot was cleared with immediate effect.&lt;/p&gt;&l
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrClearedSlotTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3568,7 +3568,7 @@ mode because its operational slot was cleared with immediate effect.&lt;/p&gt;&l
 &lt;p&gt;One element of the stack will enter the pass through mode because there 
 are no slot numbers available to be assigned to this element.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfSlotsTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -3598,7 +3598,7 @@ mode because there are no tokens available to be assigned to this element.&lt;/p
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfTokensTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3625,7 +3625,7 @@ mode because there are no tokens available to be assigned to this element.&lt;/p
 &lt;p&gt;There are no pass through slots available to be assigned to an element
 that is supposed to enter the pass through mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfPassThruSlotsTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -3655,7 +3655,7 @@ mode because it is not compatible with the existing stack.&lt;/p&gt;&lt;table&gt
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrBadMixTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3700,7 +3700,7 @@ absorbed at least once.&lt;/p&gt;&lt;table&gt;
 	trapAbsorTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapAbsorptionTrap trap received 
 			trapAbsorStamp=%parm[#1]% 
 			trapAbsorTrapId=%parm[#2]% 
@@ -3755,7 +3755,7 @@ raising the Trap. Notify the Management Entity the previous
 		bidirectional(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			udldStateChange trap received 
 			alaUdldPortIfIndex=%parm[#1]% 
 			alaUdldPrevState=%parm[#2]% 
@@ -3794,7 +3794,7 @@ its election.&lt;/p&gt;&lt;table&gt;
 	vStpNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			stpNewRoot trap received 
 			vStpNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3832,7 +3832,7 @@ instance by a bridge when its root port has changed.
 	vStpRootPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			stpRootPortChange trap received 
 			vStpNumber=%parm[#1]% 
 			vStpRootPortNumber=%parm[#2]%&lt;/p&gt;
@@ -3885,7 +3885,7 @@ has transitioned to 'Master' state.&lt;/p&gt;&lt;table&gt;
 		masterNoResponse(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaVrrp3TrapNewMaster trap received 
 			alaVrrp3OperMasterIpAddrType=%parm[#1]% 
 			alaVrrp3OperMasterIpAddr=%parm[#2]% 
@@ -3924,7 +3924,7 @@ ErrorReason.&lt;/p&gt;&lt;table&gt;
 		vridError(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaVrrp3TrapProtoError trap received 
 			alaVrrp3TrapProtoErrReason=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3975,7 +3975,7 @@ ErrorReason.&lt;/p&gt;&lt;table&gt;
 	wccpTrapInfoWebCacheIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wccpTrapOperStatus trap received 
 			wccpTrapInfoEntityGroup=%parm[#1]% 
 			wccpTrapInfoOperStatus=%parm[#2]% 
@@ -4022,7 +4022,7 @@ server detects it is under attack.&lt;/p&gt;&lt;table&gt;
 	httpServerDoSAttackSrcIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			httpServerDoSAttackTrap trap received 
 			httpConnectionStats=%parm[#1]% 
 			httpsConnectionStats=%parm[#2]% 
@@ -4142,7 +4142,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4263,7 +4263,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4384,7 +4384,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4505,7 +4505,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4626,7 +4626,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4747,7 +4747,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4868,7 +4868,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -4989,7 +4989,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5110,7 +5110,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5231,7 +5231,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5352,7 +5352,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5473,7 +5473,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5594,7 +5594,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5715,7 +5715,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5836,7 +5836,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -5957,7 +5957,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6078,7 +6078,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6199,7 +6199,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6320,7 +6320,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6441,7 +6441,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6562,7 +6562,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6683,7 +6683,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6804,7 +6804,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -6925,7 +6925,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7046,7 +7046,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7167,7 +7167,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7288,7 +7288,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7409,7 +7409,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7530,7 +7530,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7651,7 +7651,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7772,7 +7772,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -7893,7 +7893,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8014,7 +8014,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8135,7 +8135,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8256,7 +8256,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8377,7 +8377,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8498,7 +8498,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8619,7 +8619,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8740,7 +8740,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8861,7 +8861,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -8982,7 +8982,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9103,7 +9103,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9224,7 +9224,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9345,7 +9345,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9466,7 +9466,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9587,7 +9587,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9708,7 +9708,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9829,7 +9829,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -9950,7 +9950,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10071,7 +10071,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10192,7 +10192,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10313,7 +10313,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10434,7 +10434,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10555,7 +10555,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10676,7 +10676,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10797,7 +10797,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10918,7 +10918,7 @@ whatever it's a failure or not                          &lt;/p&gt;&lt;table&gt;
         chassisTrapsAlertDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         chassisTrapsAlert trap received
                         physicalIndex=%parm[#1]%
                         chassisTrapsObjectType=%parm[#2]%
@@ -10960,7 +10960,7 @@ GVRP and the configured GVRP vlan limit.&lt;/p&gt;&lt;table&gt;
 	alaGvrpMaxVlanLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gvrpVlanLimitReachedEvent trap received 
 			alaGvrpMaxVlanLimit=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -11040,7 +11040,7 @@ a binding rule which has been configured gets violated.&lt;/p&gt;&lt;table&gt;
 	gmBindRuleDsapSsap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmBindRuleViolation trap received 
 			gmBindRuleType=%parm[#1]% 
 			gmBindRuleVlanId=%parm[#2]% 
@@ -11131,7 +11131,7 @@ due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 	gmOverloadRuleIpxNetwork&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmHwVlanRuleTableOverloadAlert trap received 
 			gmOverloadRuleTable=%parm[#1]% 
 			gmOverloadRuleType=%parm[#2]% 
@@ -11173,7 +11173,7 @@ in OS6800 due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 	gmOverloadRuleSlice&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gmHwMixModeSubnetRuleTableOverloadAlert trap received 
 			gmSubnetRuleTable=%parm[#1]% 
 			gmOverloadRuleSlice=%parm[#2]%&lt;/p&gt;
@@ -11250,7 +11250,7 @@ in OS6800 due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonDeviceTrap trap received 
 			healthMonRxStatus=%parm[#1]% 
 			healthMonRxTxStatus=%parm[#2]% 
@@ -11349,7 +11349,7 @@ in OS6800 due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonModuleTrap trap received 
 			healthModuleSlot=%parm[#1]% 
 			healthMonRxStatus=%parm[#2]% 
@@ -11407,7 +11407,7 @@ in OS6800 due to the overload of the table.&lt;/p&gt;&lt;table&gt;
 		crossedAboveThreshold(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			healthMonPortTrap trap received 
 			healthPortSlot=%parm[#1]% 
 			healthPortIF=%parm[#2]% 
@@ -11482,7 +11482,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11558,7 +11558,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11634,7 +11634,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11710,7 +11710,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11786,7 +11786,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11862,7 +11862,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -11938,7 +11938,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12014,7 +12014,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12090,7 +12090,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12166,7 +12166,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12242,7 +12242,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12318,7 +12318,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12394,7 +12394,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12470,7 +12470,7 @@ has received DoS attack&lt;/p&gt;&lt;table&gt;
 	alaDoSPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaDoSTrap trap received 
 			alaDoSType=%parm[#1]% 
 			alaDoSDetected=%parm[#2]% 
@@ -12533,7 +12533,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12594,7 +12594,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12655,7 +12655,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12716,7 +12716,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12777,7 +12777,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12838,7 +12838,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12899,7 +12899,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -12960,7 +12960,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -13021,7 +13021,7 @@ has dropped certain packets (to blocked IP ports,
 	pktDropFrag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pktDrop trap received 
 			pktDropType=%parm[#1]% 
 			pktDropIfIndex=%parm[#2]% 
@@ -13070,7 +13070,7 @@ Overload state.&lt;/p&gt;&lt;table&gt;
 	isisSysL2State&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisDatabaseOverload trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			isisSysL1State=%parm[#2]% 
@@ -13109,7 +13109,7 @@ dropped.&lt;/p&gt;&lt;table&gt;
 	isisManAreaAddrExistState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisManualAddressDrops trap received 
 			isisManAreaAddrExistState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -13152,7 +13152,7 @@ be corrupted.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisTrapLSPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisCorruptedLSPDetected trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]%&lt;/p&gt;
@@ -13197,7 +13197,7 @@ useful information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisTrapLSPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisMaxSeqExceedAttempt trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]%&lt;/p&gt;
@@ -13244,7 +13244,7 @@ the circuit or on some MAC level information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisIDLenMismatch trap received 
 			vRtrIsisFieldLen=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -13291,7 +13291,7 @@ source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisMaxAreaAddrsMismatch trap received 
 			vRtrIsisMaxAreaAddress=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -13338,7 +13338,7 @@ confusion.&lt;/p&gt;&lt;table&gt;
 		l1l2(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisOwnLSPPurge trap received 
 			vRtrIsisIfIndex=%parm[#1]% 
 			vRtrIsisTrapLSPID=%parm[#2]% 
@@ -13387,7 +13387,7 @@ the same System ID, this notification will fire.&lt;/p&gt;&lt;table&gt;
 		l1l2(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisSequenceNumberSkip trap received 
 			vRtrIsisTrapLSPID=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -13438,7 +13438,7 @@ same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAutTypeFail trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisPDUFragment=%parm[#2]% 
@@ -13489,7 +13489,7 @@ source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAuthFail trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisPDUFragment=%parm[#2]% 
@@ -13549,7 +13549,7 @@ information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisVersionSkew trap received 
 			vRtrIsisProtocolVersion=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -13610,7 +13610,7 @@ information.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisPDUFragment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAreaMismatch trap received 
 			vRtrIsisLSPSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -13657,7 +13657,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisRejectedAdjacency trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]%&lt;/p&gt;
@@ -13710,7 +13710,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisLSPTooLargeToPropagate trap received 
 			vRtrIsisLSPSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -13773,7 +13773,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisOrigLSPBufSizeMismatch trap received 
 			vRtrIsisOriginatingBufferSize=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -13833,7 +13833,7 @@ PDUs received from the same source.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisProtoSuppMismatch trap received 
 			vRtrIsisProtocolsSupported=%parm[#1]% 
 			vRtrIsisSystemLevel=%parm[#2]% 
@@ -13885,7 +13885,7 @@ The isisISAdjState is the new state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	isisISAdjState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAdjacencyChange trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -13927,7 +13927,7 @@ receive a unique circId.&lt;/p&gt;&lt;table&gt;
 	vRtrIsisIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisCircIdExhausted trap received 
 			vRtrIsisIfIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -13977,7 +13977,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 		helping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vRtrIsisAdjRestartStatusChange trap received 
 			vRtrIsisSystemLevel=%parm[#1]% 
 			vRtrIsisIfIndex=%parm[#2]% 
@@ -14011,7 +14011,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	pethSourceSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pethPwrSupplyConflict trap received 
 			pethSourceSlot=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14041,7 +14041,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	pethSourceSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pethPwrSupplyNotSupported trap received 
 			pethSourceSlot=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14082,7 +14082,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	aipAMAPLastTrapPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aipAMAPStatusTrap trap received 
 			aipAMAPLastTrapReason=%parm[#1]% 
 			aipAMAPLastTrapPort=%parm[#2]%&lt;/p&gt;
@@ -14136,7 +14136,7 @@ graceful restart state of the adjacency.&lt;/p&gt;&lt;table&gt;
 	aipGMAPLastTrapVlan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			aipGMAPConflictTrap trap received 
 			aipGMAPLastTrapReason=%parm[#1]% 
 			aipGMAPLastTrapPort=%parm[#2]% 
@@ -14178,7 +14178,7 @@ This trap is sent when any one port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggAggUp trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -14215,7 +14215,7 @@ This trap is sent when all  ports of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggAggDown trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -14252,7 +14252,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortJoin trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -14289,7 +14289,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortLeave trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -14326,7 +14326,7 @@ This trap is sent when given  port of the link aggregation
 	traplnkaggPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lnkaggPortRemove trap received 
 			traplnkaggAggId=%parm[#1]% 
 			traplnkaggPortIfIndex=%parm[#2]%&lt;/p&gt;
@@ -14391,7 +14391,7 @@ This trap is sent when given  port of the link aggregation
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsViolationTrap trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchIpAddr=%parm[#2]% 
@@ -14447,7 +14447,7 @@ generated as a notification. This trap will also be generated at the time
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsPortUpAfterLearningWindowExpiredTrap trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchSlice=%parm[#2]% 
@@ -14501,7 +14501,7 @@ generated as a notification. This trap will also be generated at the time
 	systemServicesTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lpsLearnMac trap received 
 			lpsTrapSwitchName=%parm[#1]% 
 			lpsTrapSwitchSlice=%parm[#2]% 
@@ -14551,7 +14551,7 @@ generated as a notification. This trap will also be generated at the time
 		full(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slPCAMStatusTrap trap received 
 			slPCAMSlotNumber=%parm[#1]% 
 			slPCAMSliceNumber=%parm[#2]% 
@@ -14613,7 +14613,7 @@ generated as a notification. This trap will also be generated at the time
 		target(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaNetSecPortTrapAnomaly trap received 
 			alaNetSecPortTrapInfoIfId=%parm[#1]% 
 			alaNetSecPortTrapInfoAnomaly=%parm[#2]% 
@@ -14645,7 +14645,7 @@ generated as a notification. This trap will also be generated at the time
 	alaNetSecPortTrapInfoIfId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaNetSecPortTrapQuarantine trap received 
 			alaNetSecPortTrapInfoIfId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14685,7 +14685,7 @@ alaPimBsrCandidateBSRElectedBSR becomes FALSE.&lt;/p&gt;&lt;table&gt;
 		false(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimBsrElectedBSRLostElection trap received 
 			alaPimBsrCandidateBSRElectedBSR=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14723,7 +14723,7 @@ alaPimBsrCandidateBSRElectedBSR becomes TRUE&lt;/p&gt;&lt;table&gt;
 		false(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimBsrCandidateBSRWinElection trap received 
 			alaPimBsrCandidateBSRElectedBSR=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14764,7 +14764,7 @@ alaPimNeighborLossNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimNeighborUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimNeighborLoss trap received 
 			alaPimNeighborUpTime=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14830,7 +14830,7 @@ alaPimInvalidRegisterNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimInvalidRegisterRp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInvalidRegister trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimInvalidRegisterAddressType=%parm[#2]% 
@@ -14904,7 +14904,7 @@ alaPimInvalidJoinPruneNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimNeighborUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInvalidJoinPrune trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimInvalidJoinPruneAddressType=%parm[#2]% 
@@ -14956,7 +14956,7 @@ alaPimRPMappingChangeNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimGroupMappingPrecedence&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimRPMappingChange trap received 
 			alaPimGroupMappingPimMode=%parm[#1]% 
 			alaPimGroupMappingPrecedence=%parm[#2]%&lt;/p&gt;
@@ -15004,7 +15004,7 @@ alaPimInterfaceElectionNotificationPeriod.&lt;/p&gt;&lt;table&gt;
 	alaPimInterfaceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaPimInterfaceElection trap received 
 			alaPimInterfaceAddressType=%parm[#1]% 
 			alaPimInterfaceAddress=%parm[#2]%&lt;/p&gt;
@@ -15104,7 +15104,7 @@ NMS application. &lt;/p&gt;&lt;table&gt;
 		pyEventPolicyCacheLoaded(58)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			policyEventNotification trap received 
 			policyTrapEventDetailString=%parm[#1]% 
 			policyTrapEventCode=%parm[#2]%&lt;/p&gt;
@@ -15154,7 +15154,7 @@ excessive errors, a Trap is sent.&lt;/p&gt;&lt;table&gt;
 	esmDrvTrapDrops&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			esmDrvTrapDropsLink trap received 
 			esmPortSlot=%parm[#1]% 
 			esmPortIF=%parm[#2]% 
@@ -15217,7 +15217,7 @@ Due to this error, port mirroring session will be terminated.&lt;/p&gt;&lt;table
 		swQError(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mirrorConfigError trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -15265,7 +15265,7 @@ by the user has been written by the port monitoring instance.&lt;/p&gt;&lt;table
 	monitorFileSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorFileWritten trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -15316,7 +15316,7 @@ continue with the insertion of different NI type in the same slot. &lt;/p&gt;&lt
 	mirMonErrorNi&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mirrorUnlikeNi trap received 
 			mirmonPrimarySlot=%parm[#1]% 
 			mirmonPrimaryPort=%parm[#2]% 
@@ -15352,7 +15352,7 @@ continue with the insertion of different NI type in the same slot. &lt;/p&gt;&lt
 	slbTrapInfoException&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapException trap received 
 			slbTrapInfoException=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15394,7 +15394,7 @@ continue with the insertion of different NI type in the same slot. &lt;/p&gt;&lt
 	slbTrapInfoServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapConfigChanged trap received 
 			slbTrapInfoEntityGroup=%parm[#1]% 
 			slbTrapInfoClusterName=%parm[#2]% 
@@ -15445,7 +15445,7 @@ continue with the insertion of different NI type in the same slot. &lt;/p&gt;&lt
 	slbTrapInfoServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			slbTrapOperStatus trap received 
 			slbTrapInfoEntityGroup=%parm[#1]% 
 			slbTrapInfoOperStatus=%parm[#2]% 
@@ -15501,7 +15501,7 @@ authentication is refused.&lt;/p&gt;&lt;table&gt;
 		unknownUser(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionAuthenticationTrap trap received 
 			sessionAccessType=%parm[#1]% 
 			sessionUserName=%parm[#2]% 
@@ -15539,7 +15539,7 @@ The elements will be put in pass through mode.&lt;/p&gt;&lt;table&gt;
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrDuplicateSlotTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15595,7 +15595,7 @@ indicate where the Stack is broken&lt;/p&gt;&lt;table&gt;
 		linkB52(52)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrNeighborChangeTrap trap received 
 			alaStackMgrStackStatus=%parm[#1]% 
 			alaStackMgrSlotNINumber=%parm[#2]% 
@@ -15631,7 +15631,7 @@ indicate where the Stack is broken&lt;/p&gt;&lt;table&gt;
 	alaStackMgrSecondary&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrRoleChangeTrap trap received 
 			alaStackMgrPrimary=%parm[#1]% 
 			alaStackMgrSecondary=%parm[#2]%&lt;/p&gt;
@@ -15675,7 +15675,7 @@ alaStackMgrChasRole on the stack.&lt;/p&gt;&lt;table&gt;
 		passthrough(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrDuplicateRoleTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]% 
 			alaStackMgrChasRole=%parm[#2]%&lt;/p&gt;
@@ -15707,7 +15707,7 @@ mode because its operational slot was cleared with immediate effect.&lt;/p&gt;&l
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrClearedSlotTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15734,7 +15734,7 @@ mode because its operational slot was cleared with immediate effect.&lt;/p&gt;&l
 &lt;p&gt;One element of the stack will enter the pass through mode because there 
 are no slot numbers available to be assigned to this element.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfSlotsTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -15764,7 +15764,7 @@ mode because there are no tokens available to be assigned to this element.&lt;/p
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfTokensTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15791,7 +15791,7 @@ mode because there are no tokens available to be assigned to this element.&lt;/p
 &lt;p&gt;There are no pass through slots available to be assigned to an element
 that is supposed to enter the pass through mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrOutOfPassThruSlotsTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -15821,7 +15821,7 @@ mode because it is not compatible with the existing stack.&lt;/p&gt;&lt;table&gt
 	alaStackMgrSlotNINumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaStackMgrBadMixTrap trap received 
 			alaStackMgrSlotNINumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15866,7 +15866,7 @@ absorbed at least once.&lt;/p&gt;&lt;table&gt;
 	trapAbsorTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapAbsorptionTrap trap received 
 			trapAbsorStamp=%parm[#1]% 
 			trapAbsorTrapId=%parm[#2]% 
@@ -15921,7 +15921,7 @@ raising the Trap. Notify the Management Entity the previous
 		bidirectional(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			udldStateChange trap received 
 			alaUdldPortIfIndex=%parm[#1]% 
 			alaUdldPrevState=%parm[#2]% 
@@ -15960,7 +15960,7 @@ its election.&lt;/p&gt;&lt;table&gt;
 	vStpNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			stpNewRoot trap received 
 			vStpNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -15998,7 +15998,7 @@ instance by a bridge when its root port has changed.
 	vStpRootPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			stpRootPortChange trap received 
 			vStpNumber=%parm[#1]% 
 			vStpRootPortNumber=%parm[#2]%&lt;/p&gt;
@@ -16051,7 +16051,7 @@ has transitioned to 'Master' state.&lt;/p&gt;&lt;table&gt;
 		masterNoResponse(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaVrrp3TrapNewMaster trap received 
 			alaVrrp3OperMasterIpAddrType=%parm[#1]% 
 			alaVrrp3OperMasterIpAddr=%parm[#2]% 
@@ -16090,7 +16090,7 @@ ErrorReason.&lt;/p&gt;&lt;table&gt;
 		vridError(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alaVrrp3TrapProtoError trap received 
 			alaVrrp3TrapProtoErrReason=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -16141,7 +16141,7 @@ ErrorReason.&lt;/p&gt;&lt;table&gt;
 	wccpTrapInfoWebCacheIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wccpTrapOperStatus trap received 
 			wccpTrapInfoEntityGroup=%parm[#1]% 
 			wccpTrapInfoOperStatus=%parm[#2]% 
@@ -16188,7 +16188,7 @@ server detects it is under attack.&lt;/p&gt;&lt;table&gt;
 	httpServerDoSAttackSrcIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			httpServerDoSAttackTrap trap received 
 			httpConnectionStats=%parm[#1]% 
 			httpsConnectionStats=%parm[#2]% 

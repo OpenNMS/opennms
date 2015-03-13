@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: NET-SNMP-AGENT-MIB -->
 <event>
 	<mask>
@@ -20,7 +20,7 @@
 	<descr>
 &lt;p&gt;An indication that the agent has started running.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nsNotifyStart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -45,7 +45,7 @@
 	<descr>
 &lt;p&gt;An indication that the agent is in the process of being shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nsNotifyShutdown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -72,7 +72,7 @@
 This does not imply anything about whether the configuration has
 changed or not (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nsNotifyRestart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>

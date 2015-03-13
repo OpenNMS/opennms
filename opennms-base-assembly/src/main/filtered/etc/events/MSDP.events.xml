@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DRAFT-MSDP-MIB -->
 <event>
 	<mask>
@@ -25,12 +25,12 @@ FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
 	msdpPeerFsmEstablishedTransitions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			msdpEstablished trap received 
 			msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" alarm-type="2" clear-key="uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%"/>
 </event>
 <event>
 	<mask>
@@ -64,12 +64,12 @@ lower numbered state.&lt;/p&gt;&lt;table&gt;
 		disabled(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			msdpBackwardTransition trap received 
 			msdpPeerState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%"/>
 </event>
 <!-- End of auto generated data from MIB: DRAFT-MSDP-MIB -->
 </events>

@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: VMWARE-TRAPS-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: VMWARE-TRAPS-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -29,7 +28,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vmConfigFile&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vmPoweredOn trap received 
 			vmID=%parm[#1]% 
 			vmConfigFile=%parm[#2]%&lt;/p&gt;
@@ -64,7 +63,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vmConfigFile&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vmPoweredOff trap received 
 			vmID=%parm[#1]% 
 			vmConfigFile=%parm[#2]%&lt;/p&gt;
@@ -99,7 +98,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vmConfigFile&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vmHBLost trap received 
 			vmID=%parm[#1]% 
 			vmConfigFile=%parm[#2]%&lt;/p&gt;
@@ -134,7 +133,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vmConfigFile&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vmHBDetected trap received 
 			vmID=%parm[#1]% 
 			vmConfigFile=%parm[#2]%&lt;/p&gt;
@@ -169,7 +168,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vmConfigFile&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vmSuspended trap received 
 			vmID=%parm[#1]% 
 			vmConfigFile=%parm[#2]%&lt;/p&gt;
@@ -221,7 +220,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vpxdObjValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vpxdTrap trap received 
 			vpxdTrapType=%parm[#1]% 
 			vpxdHostName=%parm[#2]% 
@@ -277,7 +276,7 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 	vpxdObjValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vpxdTrap trap received 
 			vpxdTrapType=%parm[#1]% 
 			vpxdHostName=%parm[#2]% 
@@ -288,5 +287,4 @@ or a powered off state.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: VMWARE-TRAPS-MIB -->
+</events><!-- End of auto generated data from MIB: VMWARE-TRAPS-MIB -->

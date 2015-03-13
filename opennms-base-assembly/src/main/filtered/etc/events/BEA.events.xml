@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
  <mask>
   <maskelement>
@@ -18,7 +18,7 @@
  <event-label>BEA Weblogic Server Startup Event</event-label>
  <descr>&lt;p&gt;The following Weblogic Server has started: %parm[#2]%
  at the following time: %parm[#1]% </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Server Startup. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;BEA Event: Server Startup. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -41,7 +41,7 @@
  <event-label>BEA Weblogic Server Shutdown Event</event-label>
  <descr>&lt;p&gt;The following Weblogic Server has shutdown: %parm[#2]%
  at the following time: %parm[#1]% </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Server Shutdown. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;BEA Event: Server Shutdown. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -73,7 +73,7 @@
  &lt;br&gt;Attribute Name: %parm[#8]%
  &lt;br&gt;Attribute Type: %parm[#9]%
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Attribute Change on %parm[#2]%: &lt;br&gt; %parm[#7]%.%parm[#8]% changed to %parm[#4]% &lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;BEA Event: Attribute Change on %parm[#2]%: &lt;br&gt; %parm[#7]%.%parm[#8]% changed to %parm[#4]% &lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -104,7 +104,7 @@
  &lt;br&gt;MBean Name: %parm[#7]%
  &lt;br&gt;Attribute Name: %parm[#8]%
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: A %parm[#3]% Monitor Trap has been triggered on %parm[#2]%.&lt;br&gt;MBean Type: %parm[#6]% Attribute Name: %parm[#8]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;BEA Event: A %parm[#3]% Monitor Trap has been triggered on %parm[#2]%.&lt;br&gt;MBean Type: %parm[#6]% Attribute Name: %parm[#8]%&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -137,7 +137,7 @@
  &lt;br&gt;Severity: %parm[#9]%
  &lt;br&gt;Log Message: %parm[#10]%
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: A Log Filter Trap has been triggered.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;BEA Event: A Log Filter Trap has been triggered.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 </events>

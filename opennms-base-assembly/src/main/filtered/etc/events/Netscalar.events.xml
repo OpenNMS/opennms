@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: NS-ROOT-MIB -->
 <event>
 	<mask>
@@ -24,7 +24,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			changeToPrimary trap received 
 			sysIpAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -54,7 +54,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			changeToSecondary trap received 
 			sysIpAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -92,7 +92,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuUtilization trap received 
 			nsCPUusage=%parm[#1]% 
 			alarmHighThreshold=%parm[#2]% 
@@ -120,7 +120,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -145,7 +145,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -170,7 +170,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			discoverFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -195,7 +195,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			memUtilization trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -228,7 +228,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entitydown trap received 
 			entityName=%parm[#1]% 
 			sysIpAddress=%parm[#2]%&lt;/p&gt;
@@ -263,7 +263,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entityup trap received 
 			entityName=%parm[#1]% 
 			sysIpAddress=%parm[#2]%&lt;/p&gt;
@@ -302,7 +302,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			synflood trap received 
 			unackSynCount=%parm[#1]% 
 			alarmHighThreshold=%parm[#2]% 
@@ -342,7 +342,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuUtilizationNormal trap received 
 			nsCPUusage=%parm[#1]% 
 			alarmNormalThreshold=%parm[#2]% 
@@ -382,7 +382,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			synfloodNormal trap received 
 			unackSynCount=%parm[#1]% 
 			alarmNormalThreshold=%parm[#2]% 
@@ -422,7 +422,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			memoryUtilization trap received 
 			resMemUsage=%parm[#1]% 
 			alarmHighThreshold=%parm[#2]% 
@@ -462,7 +462,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			memoryUtilizationNormal trap received 
 			resMemUsage=%parm[#1]% 
 			alarmNormalThreshold=%parm[#2]% 
@@ -506,7 +506,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vServerRequestRate trap received 
 			vsvrName=%parm[#1]% 
 			vsvrRequestRate=%parm[#2]% 
@@ -551,7 +551,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vServerRequestRateNormal trap received 
 			vsvrName=%parm[#1]% 
 			vsvrRequestRate=%parm[#2]% 
@@ -596,7 +596,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceRequestRate trap received 
 			svcServiceName=%parm[#1]% 
 			svcRequestRate=%parm[#2]% 
@@ -641,7 +641,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceRequestRateNormal trap received 
 			svcServiceName=%parm[#1]% 
 			svcRequestRate=%parm[#2]% 
@@ -670,7 +670,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entityRxRate trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -695,7 +695,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entityRxRateNormal trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -720,7 +720,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entityTxRate trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -745,7 +745,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entityTxRateNormal trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -770,7 +770,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entitySynflood trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -795,7 +795,7 @@
 	<descr>
 &lt;p&gt;...OBSOLETE&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			entitySynfloodNormal trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -846,7 +846,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netScalerConfigChange trap received 
 			nsUserName=%parm[#1]% 
 			configurationCmd=%parm[#2]% 
@@ -892,7 +892,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			maxClients trap received 
 			svcServiceName=%parm[#1]% 
 			svcEstablishedConn=%parm[#2]% 
@@ -937,7 +937,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			maxClientsNormal trap received 
 			svcServiceName=%parm[#1]% 
 			svcEstablishedConn=%parm[#2]% 
@@ -974,7 +974,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netScalerConfigSave trap received 
 			nsUserName=%parm[#1]% 
 			sysIpAddress=%parm[#2]%&lt;/p&gt;
@@ -1017,7 +1017,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceRxBytesRate trap received 
 			svcServiceName=%parm[#1]% 
 			svcRxBytesRate=%parm[#2]% 
@@ -1062,7 +1062,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceRxBytesRateNormal trap received 
 			svcServiceName=%parm[#1]% 
 			svcRxBytesRate=%parm[#2]% 
@@ -1107,7 +1107,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverRxBytesRate trap received 
 			vsvrName=%parm[#1]% 
 			vsvrRxBytesRate=%parm[#2]% 
@@ -1152,7 +1152,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverRxBytesRateNormal trap received 
 			vsvrName=%parm[#1]% 
 			vsvrRxBytesRate=%parm[#2]% 
@@ -1197,7 +1197,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceTxBytesRate trap received 
 			svcServiceName=%parm[#1]% 
 			svcTxBytesRate=%parm[#2]% 
@@ -1242,7 +1242,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceTxBytesRateNormal trap received 
 			svcServiceName=%parm[#1]% 
 			svcTxBytesRate=%parm[#2]% 
@@ -1287,7 +1287,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverTxBytesRate trap received 
 			vsvrName=%parm[#1]% 
 			vsvrTxBytesRate=%parm[#2]% 
@@ -1332,7 +1332,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverTxBytesRateNormal trap received 
 			vsvrName=%parm[#1]% 
 			vsvrTxBytesRate=%parm[#2]% 
@@ -1377,7 +1377,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceSynfloodRate trap received 
 			svcServiceName=%parm[#1]% 
 			svcSynfloodRate=%parm[#2]% 
@@ -1422,7 +1422,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			serviceSynfloodNormal trap received 
 			svcServiceName=%parm[#1]% 
 			svcSynfloodRate=%parm[#2]% 
@@ -1467,7 +1467,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverSynfloodRate trap received 
 			vsvrName=%parm[#1]% 
 			vsvrSynfloodRate=%parm[#2]% 
@@ -1512,7 +1512,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vserverSynfloodNormal trap received 
 			vsvrName=%parm[#1]% 
 			vsvrSynfloodRate=%parm[#2]% 
@@ -1557,7 +1557,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberRequestRate trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberRequestRate=%parm[#2]% 
@@ -1602,7 +1602,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberRequestRateNormal trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberRequestRate=%parm[#2]% 
@@ -1647,7 +1647,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberRxBytesRate trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberRxBytesRate=%parm[#2]% 
@@ -1692,7 +1692,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberRxBytesRateNormal trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberRxBytesRate=%parm[#2]% 
@@ -1737,7 +1737,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberTxBytesRate trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberTxBytesRate=%parm[#2]% 
@@ -1782,7 +1782,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberTxBytesRateNormal trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberTxBytesRate=%parm[#2]% 
@@ -1827,7 +1827,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberSynfloodRate trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberSynfloodRate=%parm[#2]% 
@@ -1872,7 +1872,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberSynfloodNormal trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberSynfloodRate=%parm[#2]% 
@@ -1917,7 +1917,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberMaxClients trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberEstablishedConn=%parm[#2]% 
@@ -1962,7 +1962,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			svcGroupMemberMaxClientsNormal trap received 
 			svcGrpMemberName=%parm[#1]% 
 			svcGrpMemberEstablishedConn=%parm[#2]% 
@@ -2003,7 +2003,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			averageCpuUtilization trap received 
 			resCpuUsage=%parm[#1]% 
 			alarmHighThreshold=%parm[#2]% 
@@ -2043,7 +2043,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			averageCpuUtilizationNormal trap received 
 			resCpuUsage=%parm[#1]% 
 			alarmNormalThreshold=%parm[#2]% 
@@ -2091,7 +2091,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monRespTimeoutAboveThresh trap received 
 			monServiceName=%parm[#1]% 
 			monitorName=%parm[#2]% 
@@ -2141,7 +2141,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monRespTimeoutBelowThresh trap received 
 			monServiceName=%parm[#1]% 
 			monitorName=%parm[#2]% 
@@ -2179,7 +2179,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netScalerLoginFailure trap received 
 			nsUserName=%parm[#1]% 
 			sysIpAddress=%parm[#2]%&lt;/p&gt;
@@ -2218,7 +2218,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sslCertificateExpiry trap received 
 			sslCertKeyName=%parm[#1]% 
 			sslDaysToExpire=%parm[#2]% 
@@ -2262,7 +2262,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanSpeedLow trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2307,7 +2307,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanSpeedNormal trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2352,7 +2352,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			voltageLow trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2397,7 +2397,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			voltageNormal trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2442,7 +2442,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			voltageHigh trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2487,7 +2487,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			temperatureHigh trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2532,7 +2532,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			temperatureNormal trap received 
 			sysHealthCounterName=%parm[#1]% 
 			sysHealthCounterValue=%parm[#2]% 
@@ -2577,7 +2577,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			diskUsageHigh trap received 
 			sysHealthDiskName=%parm[#1]% 
 			sysHealthDiskPerusage=%parm[#2]% 
@@ -2622,7 +2622,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			diskUsageNormal trap received 
 			sysHealthDiskName=%parm[#1]% 
 			sysHealthDiskPerusage=%parm[#2]% 
@@ -2667,7 +2667,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			interfaceThroughputLow trap received 
 			ifName=%parm[#1]% 
 			ifThroughput=%parm[#2]% 
@@ -2712,7 +2712,7 @@
 	sysIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			interfaceThroughputNormal trap received 
 			ifName=%parm[#1]% 
 			ifThroughput=%parm[#2]% 

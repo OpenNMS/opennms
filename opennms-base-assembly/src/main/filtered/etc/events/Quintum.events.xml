@@ -1,11 +1,9 @@
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 Quintum Tenor, Call Relay & Gatekeeper Trap Events for OpenNMS
 Revised 09-01-2004
 mlwilson@acegroup.cc
 mikew@isphone.net
--->
-
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+--><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Quintum Traps -->
 <!-- Start of Quintum MIB: Critical Alert -->
 <event>
@@ -38,7 +36,7 @@ mikew@isphone.net
  &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Critical Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Quintum Event - Critical Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
  <severity>Critical</severity>
 </event>
 <!-- Start of Quintum MIB: Major Alert -->
@@ -72,7 +70,7 @@ mikew@isphone.net
  &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Major Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Quintum Event - Major Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 <!-- Start of Quintum MIB: Minor Alert -->
@@ -106,7 +104,7 @@ mikew@isphone.net
  &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Minor Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Quintum Event - Minor Alarm - %parm[#3]%&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- Start of Quintum MIB: Warning -->
@@ -140,7 +138,7 @@ mikew@isphone.net
  &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Warning - %parm[#3]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Quintum Event - Warning - %parm[#3]%&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- Start of Quintum MIB: Normal Status2 -->
@@ -174,7 +172,7 @@ mikew@isphone.net
  &lt;/b&gt;&lt;/td&gt;&lt;td&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Quintum Event - Status Normal - %parm[#3]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Quintum Event - Status Normal - %parm[#3]%&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <!-- End of Quintum Traps -->

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Hyperic Events -->
   <event>
     <uei>uei.opennms.org/external/hyperic/alert</uei>
@@ -8,13 +8,13 @@
       the Hyperic Alert Notification mechanism.&lt;p&gt;
 
       &lt;p&gt;Long reason: %parm[action.longReason]% &lt;/p&gt;
-      &lt;p&gt;&lt;a href=&quot;%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;a href="%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       &lt;p&gt;Hyperic HQ Alert: %parm[action.longReason]% &lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%parm[platform.id]%:%parm[resource.id]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[platform.id]%:%parm[resource.id]%"/>
   </event>
 
 </events>

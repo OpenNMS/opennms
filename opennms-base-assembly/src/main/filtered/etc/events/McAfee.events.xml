@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
 	<mask>
 		<maskelement>
@@ -201,7 +201,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_VIRFOUND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -452,7 +452,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILECLEANED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -703,7 +703,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILECLEANERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -954,7 +954,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILEDELETED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -1205,7 +1205,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILEDELETEERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -1456,7 +1456,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILEEXCLUDING trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -1707,7 +1707,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EXCLUDEERR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -1958,7 +1958,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_INFECTION_ACESSDENIED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -2209,7 +2209,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_VIRUS_QUARANTINED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -2460,7 +2460,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_VIRUS_QUARANTINE_FAILURE trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -2711,7 +2711,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCANEND_NO_VIRUSES trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -2962,7 +2962,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_CANCELED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -3213,7 +3213,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_VIRUS_FOUND_IN_MEMORY trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -3464,7 +3464,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_VIRUS_IN_BOOT_RECORD trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -3715,7 +3715,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_FOUND_INFECTED_FILES trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -3966,7 +3966,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_FOUND_AND_CLEANED_INFECTIONS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -4217,7 +4217,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_ALOG_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -4468,7 +4468,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MEMALLOC_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -4719,7 +4719,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DIR_ACCESS_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -4970,7 +4970,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_WRITE_PROTECT_ERR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -5221,7 +5221,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MEDIA_NOT_FOUND_ERR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -5472,7 +5472,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_ITEM_INVALID trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -5723,7 +5723,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_FILE_IO_ERRORS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -5974,7 +5974,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DISK_IO_ERR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -6225,7 +6225,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_GEN_SYSTEM_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -6476,7 +6476,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_INTERNAL_APP_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -6727,7 +6727,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_INFECTION_PASSWORD_PROTECTED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -6978,7 +6978,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_NOT_SCANNED_PASSWORD trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -7229,7 +7229,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_INFECTED_BINDARY trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -7480,7 +7480,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_INFECTED_HEURISTICS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -7731,7 +7731,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETED_HEURISTICS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -7982,7 +7982,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETE_ERR_HEURISTICS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -8233,7 +8233,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_QUARANTINED_HEURISTICS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -8484,7 +8484,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_QUAR_ERROR_HEURISTICS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -8735,7 +8735,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_TIMEOUT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -8986,7 +8986,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_BOOT_SECTOR_CLEANED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -9237,7 +9237,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERROR_BOOTSECTOR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -9488,7 +9488,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_ALERTERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -9739,7 +9739,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_OPTIONSERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -9990,7 +9990,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SERVICE_STARTED_1064 trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -10241,7 +10241,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SERVICE_ENDING_1065 trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -10492,7 +10492,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCED_START_TASK_OK trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -10743,7 +10743,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCHED_START_TASK_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -10994,7 +10994,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCED_TASK_END_OK trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -11245,7 +11245,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCHED_TASK_STOP_ERROR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -11496,7 +11496,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCHED_TASK_SUCCESS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -11747,7 +11747,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCHED_TASK_CANCELED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -11998,7 +11998,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_TASKERR_LOGFILE trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -12249,7 +12249,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_TASK_ERR_MEMALLOC trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -12500,7 +12500,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_PROC_ERR trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -12751,7 +12751,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_OAS_START trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -13002,7 +13002,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_OAS_STOP trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -13253,7 +13253,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_SETTINGS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -13504,7 +13504,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MACRO_VIRUS_DETECTED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -13755,7 +13755,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MACRO_VIRUS_DELETED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -14006,7 +14006,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPDATEOK trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -14257,7 +14257,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPDATEFAILED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -14508,7 +14508,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPDATE_RUNNING trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -14759,7 +14759,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPDATECANCELED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -15010,7 +15010,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPGRADE_RUNNING trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -15261,7 +15261,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPGRADE_FAILED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -15512,7 +15512,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPGRADE_CANCELED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -15763,7 +15763,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_UPDATE_VERSION_OLDER trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -16014,7 +16014,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_CANCELED_BY_UPD trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -16265,7 +16265,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCANNER_DISABLED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -16516,7 +16516,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_START_PROCESS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -16767,7 +16767,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_PROCESS_ENDED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -17018,7 +17018,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_ODS_SCAN_STARTED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -17269,7 +17269,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_ODS_SCAN_ENDED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -17520,7 +17520,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_SCAN_REPORT_OS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -17771,7 +17771,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_Q trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -18022,7 +18022,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_Q trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -18273,7 +18273,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_Q trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -18524,7 +18524,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_E_Q trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -18775,7 +18775,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_NQ trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -19026,7 +19026,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_NQ trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -19277,7 +19277,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_NQ trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -19528,7 +19528,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_E_NQ trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -19779,7 +19779,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_D trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -20030,7 +20030,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_D trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -20281,7 +20281,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_D trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -20532,7 +20532,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_E_D trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -20783,7 +20783,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_ND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -21034,7 +21034,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_ND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -21285,7 +21285,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_ND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -21536,7 +21536,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_E_ND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -21787,7 +21787,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -22038,7 +22038,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -22289,7 +22289,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -22540,7 +22540,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_E_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -22791,7 +22791,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_N_C_OAS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -23042,7 +23042,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_H_C_OAS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -23293,7 +23293,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_CLEANERR_U_C_OAS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -23544,7 +23544,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MOVEERR_D trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -23795,7 +23795,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MOVEERR_ND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -24046,7 +24046,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MOVEERR_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -24297,7 +24297,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MOVEERR_C_OAS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -24548,7 +24548,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETEERR_Q trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -24799,7 +24799,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETEERR_NQ trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -25050,7 +25050,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETEERR_C trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -25301,7 +25301,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_DELETEERR_C_OAS trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -25552,7 +25552,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUSCLEANED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -25803,7 +25803,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUSQUARANTINED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -26054,7 +26054,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_NOTCLEANED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -26305,7 +26305,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_DETECTED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -26556,7 +26556,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_DELETED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -26807,7 +26807,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_FILTERED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -27058,7 +27058,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_CONTENTBLOCK trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -27309,7 +27309,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_LOWDISKLIMIT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -27560,7 +27560,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_UPPERDISKLIMIT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -27811,7 +27811,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_SERVICE_START trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -28062,7 +28062,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_SERVICE_SHUTDOWN_OK trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -28313,7 +28313,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_SERVICE_ABEND trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -28564,7 +28564,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_SERVICE_MAX_LOAD trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -28815,7 +28815,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_QUARANTINEDCLEANED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -29066,7 +29066,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_MAIL_VIRUS_QUARANTINED trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -29317,7 +29317,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_NEW_MIB trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -29568,7 +29568,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_AMG_TEST_ALERT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -29819,7 +29819,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_AMG_TEST_ALERT2 trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -30070,7 +30070,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EPO_FAILE_INSTPRODUCT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -30321,7 +30321,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EPO_AGENT_RETRYLIMIT trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -30572,7 +30572,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EPO_AGENT_DISKSPACE trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -30823,7 +30823,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EPO_SPIPE_DISKSPACE trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -31074,7 +31074,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_EPO_AGENT_WRONG_PLATFORM trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -31325,7 +31325,7 @@
 	mcafee_EVENTNAME&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#44]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mcafee_EVENT_TEST_TRAP trap received 
 			naiTrapAgent=%parm[#1]% 
 			naiTrapShortDescription=%parm[#2]% 
@@ -31476,7 +31476,7 @@
 	
 	&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			EPO Server Alert 
 			Notification Rule = %parm[#1]% 
 		</logmsg>

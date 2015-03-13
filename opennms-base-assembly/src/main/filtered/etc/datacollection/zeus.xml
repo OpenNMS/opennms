@@ -1,176 +1,175 @@
-<?xml version="1.0"?>
-<datacollection-group name="Zeus">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Zeus">
 
-    <resourceType name="virtualserverName" label="Zeus ZXTM Virtual Servers" resourceLabel="${virtualserverName}">
+    <resourceType label="Zeus ZXTM Virtual Servers" name="virtualserverName" resourceLabel="${virtualserverName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="poolName" label="Zeus ZXTM Pools" resourceLabel="${poolName}">
+    <resourceType label="Zeus ZXTM Pools" name="poolName" resourceLabel="${poolName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <group name="zxtm" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.1"     instance="0" alias="version"             type="string" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.2"     instance="0" alias="numbChildProc"       type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.3"     instance="0" alias="upTime"              type="TimeTicks" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.5"     instance="0" alias="totalBytesInLo"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.6"     instance="0" alias="totalBytesInHi"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.7"     instance="0" alias="totalBytesOutLo"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.8"     instance="0" alias="totalBytesOutHi"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.9"     instance="0" alias="totalCurrentConn"    type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.10"    instance="0" alias="totalConn"           type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.11"    instance="0" alias="DNSARequests"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.12"    instance="0" alias="DNSACacheHits"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.13"    instance="0" alias="DNSPTRRequests"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.14"    instance="0" alias="DNSPTRCacheHits"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.15"    instance="0" alias="SNMPUnauthorisedReq" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.16"    instance="0" alias="SNMPBadRequests"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.17"    instance="0" alias="SNMPGetRequests"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.18"    instance="0" alias="SNMPGetNextRequests" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.19"    instance="0" alias="Encrypts"            type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.20"    instance="0" alias="Decrypts"            type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.21"    instance="0" alias="RC4Encrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.22"    instance="0" alias="RC4Decrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.23"    instance="0" alias="DESEncrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.24"    instance="0" alias="DESDecrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.25"    instance="0" alias="3DESEncrypts"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.26"    instance="0" alias="3DESDecrypts"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.27"    instance="0" alias="AESEncrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.28"    instance="0" alias="AESDecrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.29"    instance="0" alias="RSAEncrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.30"    instance="0" alias="RSADecrypts"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.31"    instance="0" alias="RSADecryptsExt"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.32"    instance="0" alias="sslHandshakeSSLv2"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.33"    instance="0" alias="sslHandshakeSSLv3"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.34"    instance="0" alias="sslHandshakeTLSv1"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.35"    instance="0" alias="ClientCertNotSent"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.36"    instance="0" alias="ClientCertInvalid"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.37"    instance="0" alias="ClientCertExpired"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.38"    instance="0" alias="ClientCertRevoked"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.39"    instance="0" alias="SessIDCacheHit"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.40"    instance="0" alias="SessIDCacheMiss"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.41"    instance="0" alias="SessIDDskCacheHit"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.42"    instance="0" alias="SessIDDskCacheMiss"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.43"    instance="0" alias="sslHandshakeTLSv11"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.44"    instance="0" alias="sslConnections"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.57"    instance="0" alias="RSAEncryptsExt"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.45"    instance="0" alias="sysCPUIdlePercent"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.46"    instance="0" alias="sysCPUBusyPercent"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.47"    instance="0" alias="sysCPUUserBusyPc"    type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.48"    instance="0" alias="sysCPUSystemBusyPc"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.49"    instance="0" alias="sysFDsFree"          type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.50"    instance="0" alias="sysMemTotal"         type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.51"    instance="0" alias="sysMemFree"          type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.52"    instance="0" alias="sysMemInUse"         type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.53"    instance="0" alias="sysMemBuffered"      type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.54"    instance="0" alias="sysMemSwapped"       type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.55"    instance="0" alias="sysMemSwapTotal"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.56"    instance="0" alias="numIdleConnections"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.58"    instance="0" alias="dataEntries"         type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.59"    instance="0" alias="dataMemoryUsage"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.1.60"    instance="0" alias="eventsSeen"          type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.1"  instance="0" alias="webCacheHitsLo"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.2"  instance="0" alias="webCacheHitsHi"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.3"  instance="0" alias="webCacheMissesLo"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.4"  instance="0" alias="webCacheMissesHi"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.5"  instance="0" alias="webCacheLookupsLo"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.6"  instance="0" alias="webCacheLookupsHi"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.7"  instance="0" alias="webCacheMemUsed"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.8"  instance="0" alias="webCacheMemMaximum"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.9"  instance="0" alias="webCacheHitRate"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.10" instance="0" alias="webCacheEntries"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.11" instance="0" alias="webCacheMaxEntries"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.1.12" instance="0" alias="webCacheOldest"      type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.1"  instance="0" alias="sslCacheHits"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.2"  instance="0" alias="sslCacheMisses"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.3"  instance="0" alias="sslCacheLookups"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.4"  instance="0" alias="sslCacheHitRate"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.5"  instance="0" alias="sslCacheEntries"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.6"  instance="0" alias="sslCacheEntriesMax"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.2.7"  instance="0" alias="sslCacheOldest"      type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.1"  instance="0" alias="aspSessCacheHits"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.2"  instance="0" alias="aspSessCacheMiss"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.3"  instance="0" alias="aspSessCacheLookups" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.4"  instance="0" alias="aspSessCacheHitRate" type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.5"  instance="0" alias="aspSessCacheEnt"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.6"  instance="0" alias="aspSessCacheEntMax"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.3.7"  instance="0" alias="aspSessCacheOldest"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.1"  instance="0" alias="ipSessCacheHits"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.2"  instance="0" alias="ipSessCacheMisses"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.3"  instance="0" alias="ipSessCacheLookups"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.4"  instance="0" alias="ipSessCacheHitRate"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.5"  instance="0" alias="ipSessCacheEnt"      type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.6"  instance="0" alias="ipSessCacheEntMax"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.4.7"  instance="0" alias="ipSessCacheOldest"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.1"  instance="0" alias="j2SessCacheHits"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.2"  instance="0" alias="j2SessCacheMisses"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.3"  instance="0" alias="j2SessCacheLookups"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.4"  instance="0" alias="j2SessCacheHitRate"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.5"  instance="0" alias="j2SessCacheEnt"      type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.6"  instance="0" alias="j2SessCacheEntMax"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.5.7"  instance="0" alias="j2SessCacheOldest"   type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.1"  instance="0" alias="uniSessCacheHits"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.2"  instance="0" alias="uniSessCacheMisses"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.3"  instance="0" alias="uniSessCacheLookups" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.4"  instance="0" alias="uniSessCacheHitRate" type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.5"  instance="0" alias="uniSessCacheEnt"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.6"  instance="0" alias="uniSessCacheEntMax"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.6.7"  instance="0" alias="uniSessCacheOldest"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.1"  instance="0" alias="sslSessCacheHits"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.2"  instance="0" alias="sslSessCacheMisses"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.3"  instance="0" alias="sslSessCacheLookups" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.4"  instance="0" alias="sslSessCacheHitRate" type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.5"  instance="0" alias="sslSessCacheEnt"     type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.6"  instance="0" alias="sslSessCacheEntMax"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.17.7.7"  instance="0" alias="sslSessCacheOldest"  type="Gauge" />
+      <group ifType="ignore" name="zxtm">
+        <mibObj alias="version" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.1" type="string"/>
+        <mibObj alias="numbChildProc" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.2" type="INTEGER"/>
+        <mibObj alias="upTime" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.3" type="TimeTicks"/>
+        <mibObj alias="totalBytesInLo" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.5" type="Counter"/>
+        <mibObj alias="totalBytesInHi" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.6" type="Counter"/>
+        <mibObj alias="totalBytesOutLo" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.7" type="Counter"/>
+        <mibObj alias="totalBytesOutHi" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.8" type="Counter"/>
+        <mibObj alias="totalCurrentConn" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.9" type="Gauge"/>
+        <mibObj alias="totalConn" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.10" type="Counter"/>
+        <mibObj alias="DNSARequests" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.11" type="Counter"/>
+        <mibObj alias="DNSACacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.12" type="Counter"/>
+        <mibObj alias="DNSPTRRequests" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.13" type="Counter"/>
+        <mibObj alias="DNSPTRCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.14" type="Counter"/>
+        <mibObj alias="SNMPUnauthorisedReq" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.15" type="Counter"/>
+        <mibObj alias="SNMPBadRequests" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.16" type="Counter"/>
+        <mibObj alias="SNMPGetRequests" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.17" type="Counter"/>
+        <mibObj alias="SNMPGetNextRequests" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.18" type="Counter"/>
+        <mibObj alias="Encrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.19" type="Counter"/>
+        <mibObj alias="Decrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.20" type="Counter"/>
+        <mibObj alias="RC4Encrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.21" type="Counter"/>
+        <mibObj alias="RC4Decrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.22" type="Counter"/>
+        <mibObj alias="DESEncrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.23" type="Counter"/>
+        <mibObj alias="DESDecrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.24" type="Counter"/>
+        <mibObj alias="3DESEncrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.25" type="Counter"/>
+        <mibObj alias="3DESDecrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.26" type="Counter"/>
+        <mibObj alias="AESEncrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.27" type="Counter"/>
+        <mibObj alias="AESDecrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.28" type="Counter"/>
+        <mibObj alias="RSAEncrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.29" type="Counter"/>
+        <mibObj alias="RSADecrypts" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.30" type="Counter"/>
+        <mibObj alias="RSADecryptsExt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.31" type="Counter"/>
+        <mibObj alias="sslHandshakeSSLv2" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.32" type="Counter"/>
+        <mibObj alias="sslHandshakeSSLv3" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.33" type="Counter"/>
+        <mibObj alias="sslHandshakeTLSv1" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.34" type="Counter"/>
+        <mibObj alias="ClientCertNotSent" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.35" type="Counter"/>
+        <mibObj alias="ClientCertInvalid" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.36" type="Counter"/>
+        <mibObj alias="ClientCertExpired" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.37" type="Counter"/>
+        <mibObj alias="ClientCertRevoked" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.38" type="Counter"/>
+        <mibObj alias="SessIDCacheHit" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.39" type="Counter"/>
+        <mibObj alias="SessIDCacheMiss" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.40" type="Counter"/>
+        <mibObj alias="SessIDDskCacheHit" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.41" type="Counter"/>
+        <mibObj alias="SessIDDskCacheMiss" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.42" type="Counter"/>
+        <mibObj alias="sslHandshakeTLSv11" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.43" type="Counter"/>
+        <mibObj alias="sslConnections" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.44" type="Counter"/>
+        <mibObj alias="RSAEncryptsExt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.57" type="Counter"/>
+        <mibObj alias="sysCPUIdlePercent" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.45" type="Gauge"/>
+        <mibObj alias="sysCPUBusyPercent" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.46" type="Gauge"/>
+        <mibObj alias="sysCPUUserBusyPc" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.47" type="Gauge"/>
+        <mibObj alias="sysCPUSystemBusyPc" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.48" type="Gauge"/>
+        <mibObj alias="sysFDsFree" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.49" type="Gauge"/>
+        <mibObj alias="sysMemTotal" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.50" type="Gauge"/>
+        <mibObj alias="sysMemFree" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.51" type="Gauge"/>
+        <mibObj alias="sysMemInUse" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.52" type="Gauge"/>
+        <mibObj alias="sysMemBuffered" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.53" type="Gauge"/>
+        <mibObj alias="sysMemSwapped" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.54" type="Gauge"/>
+        <mibObj alias="sysMemSwapTotal" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.55" type="Gauge"/>
+        <mibObj alias="numIdleConnections" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.56" type="Gauge"/>
+        <mibObj alias="dataEntries" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.58" type="Gauge"/>
+        <mibObj alias="dataMemoryUsage" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.59" type="Gauge"/>
+        <mibObj alias="eventsSeen" instance="0" oid=".1.3.6.1.4.1.7146.1.2.1.60" type="Counter"/>
+        <mibObj alias="webCacheHitsLo" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.1" type="Counter"/>
+        <mibObj alias="webCacheHitsHi" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.2" type="Counter"/>
+        <mibObj alias="webCacheMissesLo" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.3" type="Counter"/>
+        <mibObj alias="webCacheMissesHi" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.4" type="Counter"/>
+        <mibObj alias="webCacheLookupsLo" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.5" type="Counter"/>
+        <mibObj alias="webCacheLookupsHi" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.6" type="Counter"/>
+        <mibObj alias="webCacheMemUsed" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.7" type="Gauge"/>
+        <mibObj alias="webCacheMemMaximum" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.8" type="Gauge"/>
+        <mibObj alias="webCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.9" type="Gauge"/>
+        <mibObj alias="webCacheEntries" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.10" type="Gauge"/>
+        <mibObj alias="webCacheMaxEntries" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.11" type="Gauge"/>
+        <mibObj alias="webCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.1.12" type="Gauge"/>
+        <mibObj alias="sslCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.1" type="Counter"/>
+        <mibObj alias="sslCacheMisses" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.2" type="Counter"/>
+        <mibObj alias="sslCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.3" type="Counter"/>
+        <mibObj alias="sslCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.4" type="Gauge"/>
+        <mibObj alias="sslCacheEntries" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.5" type="Gauge"/>
+        <mibObj alias="sslCacheEntriesMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.6" type="Gauge"/>
+        <mibObj alias="sslCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.2.7" type="Gauge"/>
+        <mibObj alias="aspSessCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.1" type="Counter"/>
+        <mibObj alias="aspSessCacheMiss" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.2" type="Counter"/>
+        <mibObj alias="aspSessCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.3" type="Counter"/>
+        <mibObj alias="aspSessCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.4" type="Gauge"/>
+        <mibObj alias="aspSessCacheEnt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.5" type="Gauge"/>
+        <mibObj alias="aspSessCacheEntMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.6" type="Gauge"/>
+        <mibObj alias="aspSessCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.3.7" type="Gauge"/>
+        <mibObj alias="ipSessCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.1" type="Counter"/>
+        <mibObj alias="ipSessCacheMisses" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.2" type="Counter"/>
+        <mibObj alias="ipSessCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.3" type="Counter"/>
+        <mibObj alias="ipSessCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.4" type="Gauge"/>
+        <mibObj alias="ipSessCacheEnt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.5" type="Gauge"/>
+        <mibObj alias="ipSessCacheEntMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.6" type="Gauge"/>
+        <mibObj alias="ipSessCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.4.7" type="Gauge"/>
+        <mibObj alias="j2SessCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.1" type="Counter"/>
+        <mibObj alias="j2SessCacheMisses" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.2" type="Counter"/>
+        <mibObj alias="j2SessCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.3" type="Counter"/>
+        <mibObj alias="j2SessCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.4" type="Gauge"/>
+        <mibObj alias="j2SessCacheEnt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.5" type="Gauge"/>
+        <mibObj alias="j2SessCacheEntMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.6" type="Gauge"/>
+        <mibObj alias="j2SessCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.5.7" type="Gauge"/>
+        <mibObj alias="uniSessCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.1" type="Counter"/>
+        <mibObj alias="uniSessCacheMisses" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.2" type="Counter"/>
+        <mibObj alias="uniSessCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.3" type="Counter"/>
+        <mibObj alias="uniSessCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.4" type="Gauge"/>
+        <mibObj alias="uniSessCacheEnt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.5" type="Gauge"/>
+        <mibObj alias="uniSessCacheEntMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.6" type="Gauge"/>
+        <mibObj alias="uniSessCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.6.7" type="Gauge"/>
+        <mibObj alias="sslSessCacheHits" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.1" type="Counter"/>
+        <mibObj alias="sslSessCacheMisses" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.2" type="Counter"/>
+        <mibObj alias="sslSessCacheLookups" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.3" type="Counter"/>
+        <mibObj alias="sslSessCacheHitRate" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.4" type="Gauge"/>
+        <mibObj alias="sslSessCacheEnt" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.5" type="Gauge"/>
+        <mibObj alias="sslSessCacheEntMax" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.6" type="Gauge"/>
+        <mibObj alias="sslSessCacheOldest" instance="0" oid=".1.3.6.1.4.1.7146.1.2.17.7.7" type="Gauge"/>
       </group>
 
-      <group name="zxtmvs" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.1"  instance="virtualserverName" alias="virtualserverName"   type="string" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.2"  instance="virtualserverName" alias="vsPort"              type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.3"  instance="virtualserverName" alias="vsProtocol"          type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.4"  instance="virtualserverName" alias="vsDefaultTraffPool"  type="string" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.5"  instance="virtualserverName" alias="vsBytesInLo"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.6"  instance="virtualserverName" alias="vsBytesInHi"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.7"  instance="virtualserverName" alias="vsBytesOutLo"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.8"  instance="virtualserverName" alias="vsBytesOutHi"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.9"  instance="virtualserverName" alias="vsCurrentConn"       type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.10" instance="virtualserverName" alias="vsMaxConn"           type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.11" instance="virtualserverName" alias="vsTotalConn"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.12" instance="virtualserverName" alias="vsDiscard"           type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.13" instance="virtualserverName" alias="vsDirectReplies"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.14" instance="virtualserverName" alias="vsConnectTimedOut"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.15" instance="virtualserverName" alias="vsDataTimedOut"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.16" instance="virtualserverName" alias="vsKeepaliveTimedOut" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.17" instance="virtualserverName" alias="vsUdpTimedOut"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.18" instance="virtualserverName" alias="vsTotalDgram"        type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.19" instance="virtualserverName" alias="vsGzip"              type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.20" instance="virtualserverName" alias="vsGzipBytesSavedLo"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.21" instance="virtualserverName" alias="vsGzipBytesSavedHi"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.22" instance="virtualserverName" alias="vsHttpRewriteLoc"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.23" instance="virtualserverName" alias="vsHttpRewriteCookie" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.24" instance="virtualserverName" alias="vsHttpCacheHits"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.25" instance="virtualserverName" alias="vsHttpCacheLookups"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.26" instance="virtualserverName" alias="vsHttpCacheHitRate"  type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.27" instance="virtualserverName" alias="vsSIPTotalCalls"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.2.2.1.28" instance="virtualserverName" alias="vsSIPRejRequests"    type="Counter" />
+      <group ifType="all" name="zxtmvs">
+        <mibObj alias="virtualserverName" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.1" type="string"/>
+        <mibObj alias="vsPort" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.2" type="INTEGER"/>
+        <mibObj alias="vsProtocol" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.3" type="INTEGER"/>
+        <mibObj alias="vsDefaultTraffPool" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.4" type="string"/>
+        <mibObj alias="vsBytesInLo" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.5" type="Counter"/>
+        <mibObj alias="vsBytesInHi" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.6" type="Counter"/>
+        <mibObj alias="vsBytesOutLo" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.7" type="Counter"/>
+        <mibObj alias="vsBytesOutHi" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.8" type="Counter"/>
+        <mibObj alias="vsCurrentConn" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.9" type="Gauge"/>
+        <mibObj alias="vsMaxConn" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.10" type="Gauge"/>
+        <mibObj alias="vsTotalConn" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.11" type="Counter"/>
+        <mibObj alias="vsDiscard" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.12" type="Counter"/>
+        <mibObj alias="vsDirectReplies" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.13" type="Counter"/>
+        <mibObj alias="vsConnectTimedOut" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.14" type="Counter"/>
+        <mibObj alias="vsDataTimedOut" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.15" type="Counter"/>
+        <mibObj alias="vsKeepaliveTimedOut" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.16" type="Counter"/>
+        <mibObj alias="vsUdpTimedOut" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.17" type="Counter"/>
+        <mibObj alias="vsTotalDgram" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.18" type="Counter"/>
+        <mibObj alias="vsGzip" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.19" type="Counter"/>
+        <mibObj alias="vsGzipBytesSavedLo" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.20" type="Counter"/>
+        <mibObj alias="vsGzipBytesSavedHi" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.21" type="Counter"/>
+        <mibObj alias="vsHttpRewriteLoc" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.22" type="Counter"/>
+        <mibObj alias="vsHttpRewriteCookie" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.23" type="Counter"/>
+        <mibObj alias="vsHttpCacheHits" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.24" type="Counter"/>
+        <mibObj alias="vsHttpCacheLookups" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.25" type="Counter"/>
+        <mibObj alias="vsHttpCacheHitRate" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.26" type="Gauge"/>
+        <mibObj alias="vsSIPTotalCalls" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.27" type="Counter"/>
+        <mibObj alias="vsSIPRejRequests" instance="virtualserverName" oid=".1.3.6.1.4.1.7146.1.2.2.2.1.28" type="Counter"/>
       </group>
 
-      <group name="zxtmpool" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.1"  instance="poolName" alias="poolName"            type="string" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.2"  instance="poolName" alias="poolAlgorithm"       type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.3"  instance="poolName" alias="poolNodes"           type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.4"  instance="poolName" alias="poolDraining"        type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.5"  instance="poolName" alias="poolFailPool"        type="string" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.6"  instance="poolName" alias="poolBytesInLo"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.7"  instance="poolName" alias="poolBytesInHi"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.8"  instance="poolName" alias="poolBytesOutLo"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.9"  instance="poolName" alias="poolBytesOutHi"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.10" instance="poolName" alias="poolTotalConn"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.11" instance="poolName" alias="poolPersistence"     type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.7146.1.2.3.2.1.12" instance="poolName" alias="poolSessionMigrated" type="Counter" />
+      <group ifType="all" name="zxtmpool">
+        <mibObj alias="poolName" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.1" type="string"/>
+        <mibObj alias="poolAlgorithm" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.2" type="INTEGER"/>
+        <mibObj alias="poolNodes" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.3" type="INTEGER"/>
+        <mibObj alias="poolDraining" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.4" type="INTEGER"/>
+        <mibObj alias="poolFailPool" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.5" type="string"/>
+        <mibObj alias="poolBytesInLo" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.6" type="Counter"/>
+        <mibObj alias="poolBytesInHi" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.7" type="Counter"/>
+        <mibObj alias="poolBytesOutLo" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.8" type="Counter"/>
+        <mibObj alias="poolBytesOutHi" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.9" type="Counter"/>
+        <mibObj alias="poolTotalConn" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.10" type="Counter"/>
+        <mibObj alias="poolPersistence" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.11" type="INTEGER"/>
+        <mibObj alias="poolSessionMigrated" instance="poolName" oid=".1.3.6.1.4.1.7146.1.2.3.2.1.12" type="Counter"/>
       </group>
 
       <systemDef name="Zeus - Net-SNMP (UCD)">

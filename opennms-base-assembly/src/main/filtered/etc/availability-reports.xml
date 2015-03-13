@@ -1,17 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<opennms-reports
-	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
-	<report id="local_defaultCalendarReport" 
-		type="calendar">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><opennms-reports xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-reports">
+	<report id="local_defaultCalendarReport" type="calendar">
 		<logo>${install.etc.dir}/reports/logo.gif</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>
 		<parameters>
-			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+			<string-parm display-name="report category" input-type="reportCategorySelector" name="reportCategory"/>
+			<date-parm display-name="end date" name="endDate" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
 				<default-time>
@@ -21,15 +16,14 @@
 			</date-parm>
 		</parameters>
 	</report>
-	<report id="local_defaultClassicReport" 
-		type="classic">
+	<report id="local_defaultClassicReport" type="classic">
 		<logo>${install.etc.dir}/reports/logo.gif</logo>
 		<svg-template>file://${install.etc.dir}/reports/SVGAvailReport.xsl</svg-template>
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>
 		<parameters>
-			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+			<string-parm display-name="report category" input-type="reportCategorySelector" name="reportCategory"/>
+			<date-parm display-name="end date" name="endDate" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
 				<default-time>

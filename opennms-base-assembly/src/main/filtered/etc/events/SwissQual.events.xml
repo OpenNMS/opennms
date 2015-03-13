@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: SWISSQUAL-NQAGENT-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: SWISSQUAL-NQAGENT-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -307,7 +306,7 @@
 		ttVMS(192)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nqAgentAlarm trap received 
 			nqaaPerceivedSeverity=%parm[#1]% 
 			nqaaProbableCause=%parm[#2]% 
@@ -318,7 +317,7 @@
 			nqaaTestType=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%"/>
 </event>
 <event>
 	<mask>
@@ -627,7 +626,7 @@
 		ttVMS(192)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nqAgentAlarm trap received 
 			nqaaPerceivedSeverity=%parm[#1]% 
 			nqaaProbableCause=%parm[#2]% 
@@ -638,7 +637,7 @@
 			nqaaTestType=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%"/>
 </event>
 <event>
 	<mask>
@@ -943,7 +942,7 @@
 		ttVMS(192)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			nqAgentAlarm trap received 
 			nqaaPerceivedSeverity=%parm[#1]% 
 			nqaaProbableCause=%parm[#2]% 
@@ -954,7 +953,6 @@
 			nqaaTestType=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%"/>
 </event>
-</events>
-<!-- End of auto generated data from MIB: SWISSQUAL-NQAGENT-MIB -->
+</events><!-- End of auto generated data from MIB: SWISSQUAL-NQAGENT-MIB -->

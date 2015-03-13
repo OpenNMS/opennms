@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: OPENNMS-MIB -->
 <event>
 	<mask>
@@ -99,7 +99,7 @@ that caused the event) and severity.&lt;/p&gt;&lt;table&gt;
 	nodelabel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#19]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
       with UEI: %parm[#5]%.&lt;/p&gt;
     </logmsg>
@@ -180,7 +180,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	tl1amAdditionalParams&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			tl1AutonomousMessageTrap trap received 
 			nodeid=%parm[#1]% 
 			time=%parm[#2]% 
@@ -302,7 +302,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	synchronizing&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#21]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
       with UEI: %parm[#5]%.&lt;/p&gt;
     </logmsg>
@@ -328,7 +328,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Trap sent periodically by OpenNMS to keep alive external SNMP Manager&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			heartbeatTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -353,7 +353,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;OpenNMS Synchronization Process is starting&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			startSyncTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -378,7 +378,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;OpenNMS Synchronization Process is successfully ended&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			endSyncTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -403,7 +403,7 @@ order to realize value from this trap.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;OpenNMS synchronization request&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			syncRequestTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>

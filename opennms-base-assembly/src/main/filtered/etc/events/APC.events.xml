@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: PowerNet-MIB -->
 <event>
 	<mask>
@@ -25,12 +25,12 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: communicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -57,12 +57,12 @@ of its rated capacity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOverload trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -88,12 +88,12 @@ of its rated capacity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsDiagnosticsFailed trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -121,12 +121,12 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsDischarged trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -152,12 +152,12 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOnBattery trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -183,7 +183,7 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartBoostOn trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -215,12 +215,12 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: lowBattery trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -246,12 +246,12 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: communicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -277,12 +277,12 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: powerRestored trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -308,7 +308,7 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsDiagnosticsPassed trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -339,12 +339,12 @@ condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: returnFromLowBattery trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/lowBattery:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/lowBattery:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -370,7 +370,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsTurnedOff trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -401,12 +401,12 @@ to the load will be cut off.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsSleeping trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -433,12 +433,12 @@ to the load has been restored.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsWokeUp trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsSleeping:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/upsSleeping:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -465,7 +465,7 @@ The UPS will reboot itself at this time.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsRebootStarted trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -496,7 +496,7 @@ changed, possibly altering UPS performance.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsDipSwitchChanged trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -526,7 +526,7 @@ changed, possibly altering UPS performance.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsBatteryNeedsReplacement trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -562,7 +562,7 @@ the contact number that is faulted.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: contactFault trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -599,7 +599,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: contactFaultResolved trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -630,7 +630,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: hardwareFailureBypass trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -660,7 +660,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: softwareBypass trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -690,7 +690,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: switchedBypass trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -720,7 +720,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: returnFromBypass trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -750,7 +750,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bypassPowerSupplyFailure trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -780,7 +780,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: baseFanFailure trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -810,12 +810,12 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryPackCommLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -841,12 +841,12 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryPackCommEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/batteryPackCommLost:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/batteryPackCommLost:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -872,7 +872,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: calibrationStart trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -902,7 +902,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: restartAgent trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -932,7 +932,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsTurnedOn trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -962,7 +962,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartAvrReducing trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1001,7 +1001,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 		invalidAgentCodeImage(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: codeAuthenticationDone trap received 
 			mconfigTFTPServerIP=%parm[#1]% 
 			newCodeAuthentViaTFTP=%parm[#2]%&lt;/p&gt;
@@ -1032,12 +1032,12 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOverloadCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsOverload:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/upsOverload:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1063,7 +1063,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartBoostOff trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1093,7 +1093,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartAvrReducingOff trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1123,7 +1123,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsBatteryReplaced trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1153,7 +1153,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: calibrationEnd trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1183,12 +1183,12 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dischargeCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/upsDischarged:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/upsDischarged:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1214,7 +1214,7 @@ the contact number that has been resolved.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: gracefullShutdown trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1246,7 +1246,7 @@ turned on.&lt;/p&gt;&lt;table&gt;
 	sPDUOutletControlIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: outletOn trap received 
 			sPDUOutletControlIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1278,7 +1278,7 @@ have turned off.&lt;/p&gt;&lt;table&gt;
 	sPDUOutletControlIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: outletOff trap received 
 			sPDUOutletControlIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1310,7 +1310,7 @@ have rebooted.&lt;/p&gt;&lt;table&gt;
 	sPDUOutletControlIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: outletReboot trap received 
 			sPDUOutletControlIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1340,7 +1340,7 @@ have rebooted.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: configChangeSNMP trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1372,7 +1372,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	sPDUOutletConfigIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: configChangeOutlet trap received 
 			sPDUOutletConfigIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1402,7 +1402,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: accessViolationConsole trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1432,7 +1432,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: accessViolationHTTP trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1462,7 +1462,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: passwordChange trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1492,12 +1492,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: badVoltage trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1523,12 +1523,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: badVoltageCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/badVoltage:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/badVoltage:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1554,12 +1554,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: chargerFailure trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1585,12 +1585,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: chargerFailureCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/chargerFailure:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/chargerFailure:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1616,12 +1616,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryOverTemperature trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1647,12 +1647,12 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryOverTemperatureCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/batteryOverTemperature:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/batteryOverTemperature:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1678,7 +1678,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartRelayFault trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1708,7 +1708,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smartRelayFaultCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1743,7 +1743,7 @@ first variable is the current humidity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: humidityThresholdViolation1 trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -1774,7 +1774,7 @@ first variable is the current humidity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: humidityThresholdViolationCleared1 trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1809,7 +1809,7 @@ The first variable is the current temperature.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: temperatureThresholdViolation1 trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -1840,7 +1840,7 @@ The first variable is the current temperature.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: temperatureThresholdViolationCleared1 trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1875,7 +1875,7 @@ The first variable is the current humidity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: humidityThresholdViolation2 trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -1906,7 +1906,7 @@ The first variable is the current humidity.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: humidityThresholdViolationCleared2 trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1941,7 +1941,7 @@ The first variable is the current temperature.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: temperatureThresholdViolation2 trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -1972,7 +1972,7 @@ The first variable is the current temperature.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: temperatureThresholdViolationCleared2 trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2002,7 +2002,7 @@ The first variable is the current temperature.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mupsCommunicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2033,7 +2033,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mupsCommunicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2063,7 +2063,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryIncrease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2093,7 +2093,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: batteryDecrease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2123,7 +2123,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: powerModuleIncrease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2153,7 +2153,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: powerModuleDecrease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2183,7 +2183,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: intelligenceModuleInserted trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2213,7 +2213,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: intelligenceModuleRemoved trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2243,7 +2243,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rintelligenceModuleInserted trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2273,7 +2273,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rintelligenceModuleRemoved trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2303,7 +2303,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: extBatteryFrameIncease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2333,7 +2333,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: extBatteryFrameDecrease trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2368,13 +2368,13 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: abnormalCondition trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -2405,13 +2405,13 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: abnormalConditionCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/abnormalCondition:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/abnormalCondition:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -2437,7 +2437,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: deviceStatusChange trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2467,7 +2467,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: noBatteries trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2497,7 +2497,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: noBatteriesCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2527,7 +2527,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: userAdded trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2557,7 +2557,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: userDeleted trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2587,7 +2587,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: userModified trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2625,7 +2625,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmCommunicationEstablished trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2665,7 +2665,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmCommunicationLost trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2705,7 +2705,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmOverload trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2745,7 +2745,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmOverloadCleared trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2793,7 +2793,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmOutletOn trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2843,7 +2843,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmOutletOff trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2885,7 +2885,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmDeviceConfigChange trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2933,7 +2933,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmOutletConfigChange trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -2975,7 +2975,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmLowLoad trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -3015,7 +3015,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmLowLoadCleared trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -3055,7 +3055,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmNearOverload trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -3095,7 +3095,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmNearOverloadCleared trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -3139,7 +3139,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: msvmPowerSupplyStatusChange trap received 
 			sPDUMasterControlVMIndex=%parm[#1]% 
 			sPDUMasterControlVMName=%parm[#2]% 
@@ -3180,7 +3180,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspCommunicationEstablished trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3220,7 +3220,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspCommunicationLost trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3268,7 +3268,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspOutletOn trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3318,7 +3318,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspOutletOff trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3360,7 +3360,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspDeviceConfigChange trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3408,7 +3408,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: mspOutletConfigChange trap received 
 			sPDUMasterControlMSPIndex=%parm[#1]% 
 			sPDUMasterControlMSPName=%parm[#2]% 
@@ -3466,7 +3466,7 @@ The fourth variable is a character string listing the transfer cause.&lt;/p&gt;&
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsSourceSwitched trap received 
 			mtrapargsInteger02=%parm[#1]% 
 			mtrapargsString03=%parm[#2]% 
@@ -3510,7 +3510,7 @@ The second variable is the 32-character name of the source which is no longer av
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsLostRedundancy trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -3552,7 +3552,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsRedundancyRestored trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -3584,7 +3584,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsConfigChange trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3614,7 +3614,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsCommunicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3644,7 +3644,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rsCommunicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3674,7 +3674,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcCommunicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3704,7 +3704,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcCommunicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3734,7 +3734,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcPINChanged trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3764,7 +3764,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMajorAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3794,7 +3794,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMajorAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3824,7 +3824,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMinorAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3854,7 +3854,7 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMinorAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3894,7 +3894,7 @@ The second variable is the 16-character name of the output relay.&lt;/p&gt;&lt;t
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcOutputRelayOn trap received 
 			dm3StatusOutRlyIndex=%parm[#1]% 
 			dm3StatusOutRlyName=%parm[#2]% 
@@ -3936,7 +3936,7 @@ The second variable is the 16-character name of the output relay.&lt;/p&gt;&lt;t
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcOutputRelayOff trap received 
 			dm3StatusOutRlyIndex=%parm[#1]% 
 			dm3StatusOutRlyName=%parm[#2]% 
@@ -3978,7 +3978,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcInputRelayOn trap received 
 			dm3StatusInRlyIndex=%parm[#1]% 
 			dm3StatusInRlyName=%parm[#2]% 
@@ -4020,7 +4020,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcInputRelayOff trap received 
 			dm3StatusInRlyIndex=%parm[#1]% 
 			dm3StatusInRlyName=%parm[#2]% 
@@ -4052,7 +4052,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: logicPowerSuppliesIncreased trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4082,7 +4082,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: logicPowerSuppliesDecreased trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4116,7 +4116,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: externalSwitchGearClosed trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -4151,7 +4151,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: externalSwitchGearOpened trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -4182,7 +4182,7 @@ The second variable is the 16-character name of the input relay.&lt;/p&gt;&lt;ta
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: generalDeviceEvent trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4222,7 +4222,7 @@ The second variable is the 32-character name of the current source.&lt;/p&gt;&lt
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsSourceSwitched trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -4264,14 +4264,14 @@ The second variable is the 32-character name of the source which is no longer av
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsLostRedundancy trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4307,14 +4307,14 @@ The second variable is the 32-character name of the source which has been restor
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsRedundancyRestored trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -4347,7 +4347,7 @@ The first variable is an integer representing the configuration setting which ch
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsConfigChange trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -4378,7 +4378,7 @@ The first variable is an integer representing the configuration setting which ch
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsCommunicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4408,7 +4408,7 @@ The first variable is an integer representing the configuration setting which ch
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsCommunicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4438,7 +4438,7 @@ The first variable is an integer representing the configuration setting which ch
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsOverCurrent trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4468,7 +4468,7 @@ The first variable is an integer representing the configuration setting which ch
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsOverCurrentCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4504,7 +4504,7 @@ has failed: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsPowerSupplyFailure trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -4541,7 +4541,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: atsPowerSupplyFailureCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -4572,7 +4572,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMainsFailAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4602,7 +4602,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMainsFailAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4632,7 +4632,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcFanFailAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4662,7 +4662,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcFanFailAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4692,7 +4692,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierOvertempAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4722,7 +4722,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierOvertempAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4752,7 +4752,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcCurrentLimitAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4782,7 +4782,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcCurrentLimitAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4812,7 +4812,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierFailAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4842,7 +4842,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierFailAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4872,7 +4872,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMultRectFailAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4902,7 +4902,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcMultRectFailAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4932,7 +4932,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcBatteryBreakerAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4962,7 +4962,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcBatteryBreakerAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4992,7 +4992,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierOVPAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5022,7 +5022,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcRectifierOVPAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5052,7 +5052,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcLVDImminentAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5082,7 +5082,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcLVDImminentAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5112,7 +5112,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcFuseCBAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5142,7 +5142,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcFuseCBAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5172,7 +5172,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcBatteryTestFail trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5202,7 +5202,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcTemperatureAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5232,7 +5232,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcTemperatureAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5262,7 +5262,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcHumidityAlarm trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5292,7 +5292,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcHumidityAlarmCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5322,7 +5322,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcBBCommunicationEstablished trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5352,7 +5352,7 @@ has cleared: 0=24V, 1=12V 2=5V.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: dcBBCommunicationLost trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5405,7 +5405,7 @@ variable is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemHighTempThresholdViolation trap received 
 			iemStatusProbeCurrentTemp=%parm[#1]% 
 			iemStatusProbeTempUnits=%parm[#2]% 
@@ -5414,7 +5414,7 @@ variable is the probe name.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5450,14 +5450,14 @@ is the probe number. The second variable is the probe name.&lt;/p&gt;&lt;table&g
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemHighTempThresholdViolationCleared trap received 
 			iemStatusProbeNumber=%parm[#1]% 
 			iemStatusProbeName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemHighTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/iemHighTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5506,7 +5506,7 @@ probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemLowTempThresholdViolation trap received 
 			iemStatusProbeCurrentTemp=%parm[#1]% 
 			iemStatusProbeTempUnits=%parm[#2]% 
@@ -5550,7 +5550,7 @@ The second variable is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemLowTempThresholdViolationCleared trap received 
 			iemStatusProbeNumber=%parm[#1]% 
 			iemStatusProbeName=%parm[#2]% 
@@ -5597,7 +5597,7 @@ is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemHighHumidThresholdViolation trap received 
 			iemStatusProbeCurrentHumid=%parm[#1]% 
 			iemStatusProbeNumber=%parm[#2]% 
@@ -5640,7 +5640,7 @@ variable is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemHighHumidThresholdViolationCleared trap received 
 			iemStatusProbeNumber=%parm[#1]% 
 			iemStatusProbeName=%parm[#2]% 
@@ -5687,7 +5687,7 @@ is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemLowHumidThresholdViolation trap received 
 			iemStatusProbeCurrentHumid=%parm[#1]% 
 			iemStatusProbeNumber=%parm[#2]% 
@@ -5730,7 +5730,7 @@ variable is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemLowHumidThresholdViolationCleared trap received 
 			iemStatusProbeNumber=%parm[#1]% 
 			iemStatusProbeName=%parm[#2]% 
@@ -5766,7 +5766,7 @@ longer communicate.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemProbeDisconnected trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5799,7 +5799,7 @@ probe that had previously not been connected.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemProbeConnected trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5840,7 +5840,7 @@ contact.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemContactFault trap received 
 			iemStatusContactNumber=%parm[#1]% 
 			iemStatusContactName=%parm[#2]% 
@@ -5883,7 +5883,7 @@ argument is the name of the contact.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemContactFaultCleared trap received 
 			iemStatusContactNumber=%parm[#1]% 
 			iemStatusContactName=%parm[#2]% 
@@ -5931,7 +5931,7 @@ argument is the event that caused the fault.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemRelayFault trap received 
 			iemStatusRelayNumber=%parm[#1]% 
 			iemStatusRelayName=%parm[#2]% 
@@ -5975,7 +5975,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: iemRelayFaultCleared trap received 
 			iemStatusRelayNumber=%parm[#1]% 
 			iemStatusRelayName=%parm[#2]% 
@@ -6011,7 +6011,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManCommEstab trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6046,7 +6046,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManCommLost trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6081,7 +6081,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManKneeAlarm trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6116,7 +6116,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManKneeAlarmCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6151,7 +6151,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManChargerAlarm trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6186,7 +6186,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManChargerAlarmCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6221,7 +6221,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManBatteryAlarm trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6256,7 +6256,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManBatteryAlarmCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6291,7 +6291,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManEnvironmentAlarm trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6326,7 +6326,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManEnvironmentAlarmCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6361,7 +6361,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManMaintenanceAlarm trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6396,7 +6396,7 @@ argument is the name of the output relay.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: bmBatManMaintenanceAlarmCleared trap received 
 			mtrapargsInteger=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -6437,7 +6437,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCommunicationEstablished trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6479,7 +6479,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCommunicationLost trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6526,7 +6526,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUtilityLineUndervoltage trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6574,7 +6574,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUtilityLineUndervoltageCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6622,7 +6622,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUtilityLineOvervoltage trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6670,7 +6670,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUtilityLineOvervoltageCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6713,7 +6713,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduGroundOvercurrent trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6755,7 +6755,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduGroundOvercurrentCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6802,7 +6802,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputUndervoltage trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6850,7 +6850,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputUndervoltageCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6898,7 +6898,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputOvervoltage trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6946,7 +6946,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputOvervoltageCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -6994,7 +6994,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputUndercurrent trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7042,7 +7042,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputUndercurrentCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7090,7 +7090,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputOvercurrent trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7138,7 +7138,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelInputOvercurrentCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7181,7 +7181,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelFrequencyOutOfRange trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7223,7 +7223,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelFrequencyOutofRangeCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7265,7 +7265,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelNeutralOvercurrent trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7307,7 +7307,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduCircuitPanelNeutralOvercurrentCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7349,7 +7349,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduSystemOff trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7391,7 +7391,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduOnBatteryMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7433,7 +7433,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduMaintenanceBypassMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7475,7 +7475,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduAtypicalBypassMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7517,7 +7517,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduNoPanelFeedMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7559,7 +7559,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUpsOperationMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7601,7 +7601,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduForcedBypassMode trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7643,7 +7643,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduInputTransformerOverTemperature trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7685,7 +7685,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduInputTransformerOverTemperatureCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7732,7 +7732,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUPSInputVoltageLost trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7780,7 +7780,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduUPSInputVoltageRestored trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7828,7 +7828,7 @@ The third argument is the number of the contact.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduContactFault trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7876,7 +7876,7 @@ The third argument is the number of the contact.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: pduContactFaultCleared trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -7924,7 +7924,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankLowLoad trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -7973,7 +7973,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankLowLoadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -8021,7 +8021,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankNearOverload trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -8070,7 +8070,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankNearOverloadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -8119,7 +8119,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankOverload trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -8168,7 +8168,7 @@ The third argument is the bank number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUBankOverloadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -8221,7 +8221,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruDeviceConfigChange trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8265,7 +8265,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rmPDUCommunicationLost trap received 
 			mtrapargsString03=%parm[#1]% 
 			mtrapargsString02=%parm[#2]% 
@@ -8307,7 +8307,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsCommunicationEstablished trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8349,7 +8349,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsCommunicationLost trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8401,7 +8401,7 @@ The fourth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsProbeConnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8455,7 +8455,7 @@ The fourth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsProbeDisconnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8509,7 +8509,7 @@ The fourth argument is the sensor name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsSensorConnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8563,7 +8563,7 @@ The fourth argument is the sensor name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsSensorDisconnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8617,7 +8617,7 @@ The fourth argument is the sensor name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsSensorFault trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8671,7 +8671,7 @@ The fourth argument is the sensor name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsSensorFaultCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8715,7 +8715,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsBeaconConnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8757,7 +8757,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsBeaconDisconnected trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8799,7 +8799,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsBeaconOn trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8841,7 +8841,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsBeaconOff trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8883,7 +8883,7 @@ The second argument is the EMS name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsMajorAlarm trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8925,7 +8925,7 @@ The second argument is the EMS name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsMajorAlarmCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -8967,7 +8967,7 @@ The second argument is the EMS name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsMinorAlarm trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9009,7 +9009,7 @@ The second argument is the EMS name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsMinorAlarmCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9077,7 +9077,7 @@ The sixth argument is the configured normal outlet state (1=ON, 2=OFF).&lt;/p&gt
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsOutletStateAbnormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9149,7 +9149,7 @@ The sixth argument is the configured normal outlet state (1=ON, 2=OFF).&lt;/p&gt
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsOutletStateNormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9221,7 +9221,7 @@ The sixth argument is the configured normal input contact state (1=CLOSED, 2=OPE
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsInputContactStateAbnormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9293,7 +9293,7 @@ The sixth argument is the configured normal input contact state (1=CLOSED, 2=OPE
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsInputContactStateNormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9365,7 +9365,7 @@ The sixth argument is the configured normal output relay state (1=CLOSED, 2=OPEN
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsOutputRelayStateAbnormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9437,7 +9437,7 @@ The sixth argument is the configured normal output relay state (1=CLOSED, 2=OPEN
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsOutputRelayStateNormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9483,7 +9483,7 @@ The second argument is the EMS name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsDeviceConfigChange trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9548,7 +9548,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envHighTempThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9617,7 +9617,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envHighTempThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9686,7 +9686,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLowTempThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9755,7 +9755,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLowTempThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9816,7 +9816,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envHighHumidityThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9876,7 +9876,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envHighHumidityThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9936,7 +9936,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLowHumidityThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -9996,7 +9996,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLowHumidityThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -10041,7 +10041,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUCommunicationEstablished trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10083,7 +10083,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUCommunicationLost trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10135,7 +10135,7 @@ The fourth argument is the outlet name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUOutletOn trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10189,7 +10189,7 @@ The fourth argument is the outlet name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUOutletOff trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10234,7 +10234,7 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUDeviceConfigChange trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10287,7 +10287,7 @@ The fourth argument is the outlet name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUOutletConfigChange trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10336,7 +10336,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDULowLoad trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10344,7 +10344,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
+        <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10386,7 +10386,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDULowLoadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10394,7 +10394,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDULowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="true"/>
+        <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/APC/traps/rPDULowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10435,7 +10435,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUNearOverload trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10443,7 +10443,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10485,7 +10485,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUNearOverloadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10493,7 +10493,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/rPDUNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10534,7 +10534,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUOverload trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10542,7 +10542,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10584,7 +10584,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUOverloadCleared trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10592,7 +10592,7 @@ The third argument is the phase number.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/rPDUOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -10628,14 +10628,14 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUPowerSupply1Fail trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10671,14 +10671,14 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUPowerSupply1Ok trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUPowerSupply1Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/APC/traps/rPDUPowerSupply1Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10714,14 +10714,14 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUPowerSupply2Fail trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10757,14 +10757,14 @@ The second argument is the device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUPowerSupply2Ok trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10810,7 +10810,7 @@ The third argument is the phase index number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUPhaseConfigChange trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10864,7 +10864,7 @@ The fourth argument is the outlet name (or device name if all outlets).&lt;/p&gt
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: rPDUCancelPendingCommand trap received 
 			rPDUIdentSerialNumber=%parm[#1]% 
 			rPDUIdentName=%parm[#2]% 
@@ -10918,7 +10918,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruAlinkCommunicationEstablished trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -10972,7 +10972,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruAlinkCommunicationLost trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11026,7 +11026,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruFanFail trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11080,7 +11080,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruFanFailCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11134,7 +11134,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruSmokeAlarm trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11188,7 +11188,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruSmokeAlarmCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11242,7 +11242,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruHighTemperatureAlarm trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11296,7 +11296,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruHighTemperatureAlarmCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11350,7 +11350,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruExhaustTemperatureAlarm trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11404,7 +11404,7 @@ The fourth argument is the ARU name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: aruExhaustTemperatureAlarmCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11458,7 +11458,7 @@ The fourth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envAlinkCommunicationEstablished trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11512,7 +11512,7 @@ The fourth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envAlinkCommunicationLost trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11556,7 +11556,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsAlinkPowerOverload trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11598,7 +11598,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsAlinkPowerOverloadCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -11634,7 +11634,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOutletGroupTurnedOn trap received 
 			upsOutletGroupControlIndex=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11669,7 +11669,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOutletGroupTurnedOff trap received 
 			upsOutletGroupControlIndex=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11705,7 +11705,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwCriticalCondition trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11741,7 +11741,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwCriticalConditionCleared trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11777,7 +11777,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwWarningCondition trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11813,7 +11813,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwWarningConditionCleared trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11849,7 +11849,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwInformationalCondition trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11885,7 +11885,7 @@ The first variable is the fault condition.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: smwInformationalConditionCleared trap received 
 			mtrapargsGauge=%parm[#1]% 
 			mtrapargsString=%parm[#2]%&lt;/p&gt;
@@ -11926,7 +11926,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airCriticalCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -11968,7 +11968,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airCriticalConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -12010,7 +12010,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airWarningCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -12052,7 +12052,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airWarningConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -12094,7 +12094,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airInformationalCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -12136,7 +12136,7 @@ The second variable is the error number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: airInformationalConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -12194,7 +12194,7 @@ The fifth argument is the type of alarm (1=HIGH, 2=LOW).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseInputVoltageAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12249,7 +12249,7 @@ The fourth argument is the measured voltage in 0.1 VRMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseInputVoltageNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12308,7 +12308,7 @@ The fifth argument is the type of alarm (1=HIGH, 2=LOW).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseBypassVoltageAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12363,7 +12363,7 @@ The fourth argument is the measured voltage in 0.1 VRMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseBypassVoltageNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12422,7 +12422,7 @@ The fifth argument is the type of alarm (1=HIGH, 2=LOW).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseOutputVoltageAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12477,7 +12477,7 @@ The fourth argument is the measured voltage in 0.1 VRMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseOutputVoltageNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12536,7 +12536,7 @@ The fifth argument is the type of alarm (1=HIGH, 2=LOW).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseOutputCurrentAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12591,7 +12591,7 @@ The fourth argument is the measured current in 0.1 ARMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUThreePhaseOutputCurrentNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12640,7 +12640,7 @@ The third argument is the frequency deviation in Hz.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUOutputFrequencyAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12683,7 +12683,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUOutputFrequencyNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12730,7 +12730,7 @@ The third argument is the measured current in 0.1 ARMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUSystemGroundCurrentAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12778,7 +12778,7 @@ The third argument is the measured current in 0.1 ARMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUSystemGroundCurrentNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12841,7 +12841,7 @@ The sixth argument is the configured normal input contact state (1=CLOSED, 2=OPE
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUInputContactStateAbnormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12907,7 +12907,7 @@ The sixth argument is the configured normal input contact state (1=CLOSED, 2=OPE
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUInputContactStateNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -12973,7 +12973,7 @@ The sixth argument is the configured normal Output Relay state (1=CLOSED, 2=OPEN
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUOutputRelayStateAbnormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13039,7 +13039,7 @@ The sixth argument is the configured normal Output Relay state (1=CLOSED, 2=OPEN
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUOutputRelayStateNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13085,7 +13085,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUCoolingFanAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13127,7 +13127,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUCoolingFanAlarmCleared trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13169,7 +13169,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUTransformerTempAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13211,7 +13211,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUTransformerTempAlarmCleared trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13269,7 +13269,7 @@ The fifth argument is the type of alarm (1=HIGH, 2=LOW).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUBranchCurrentAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13329,7 +13329,7 @@ The fourth argument is the measured current in 0.1 ARMS.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUBranchCurrentNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13394,7 +13394,7 @@ are CLOSED and Q2, Q1 breakers are OPEN.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUBreakerChangeEvent trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13439,7 +13439,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUInternalCommError trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13481,7 +13481,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUInternalCommEstablished trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13530,7 +13530,7 @@ The third argument is the type of alarm
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUSystemStateAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13579,7 +13579,7 @@ The third argument is the type of alarm (1=UPS OPERATION, 2=MAINTENANCE BYPASS).
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUSystemStateNormal trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13623,7 +13623,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUEpoTestMode trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13666,7 +13666,7 @@ The second argument is the host device name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUEpoArmed trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13714,7 +13714,7 @@ The third argument is the phase (1=L1, 2=L2, 3=L3).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUFuseBlownAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13763,7 +13763,7 @@ The third argument is the phase (1=L1, 2=L2, 3=L3).&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUFuseBlownAlarmCleared trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13816,7 +13816,7 @@ The fourth argument is the breaker position (1=OPEN, 2=CLOSED).&lt;/p&gt;&lt;tab
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUBreakerPositionAlarm trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13869,7 +13869,7 @@ The third argument is the breaker (1=MAIN INPUT, 2=BYPASS INPUT, 3=CROSS TIE).&l
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: xPDUBreakerPositionAlarmCleared trap received 
 			xPDUIdentSerialNumber=%parm[#1]% 
 			xPDUIdentProductName=%parm[#2]% 
@@ -13913,7 +13913,7 @@ connected to the EMS ports or Alink Current limit detection.&lt;/p&gt;&lt;table&
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsHardwareStateAbnormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -13954,7 +13954,7 @@ The first argument is the host device serial number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: emsHardwareStateNormal trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -13996,7 +13996,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceSevereCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14038,7 +14038,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceSevereConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14080,7 +14080,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceWarningCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14122,7 +14122,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceWarningConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14164,7 +14164,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceInformationalCondition trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14206,7 +14206,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: ceInformationalConditionCleared trap received 
 			mtrapargsString02=%parm[#1]% 
 			mtrapargsInteger=%parm[#2]% 
@@ -14238,7 +14238,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsInternalOverTemperature trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14268,7 +14268,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsInternalOverTemperatureCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14298,7 +14298,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsMpuReset trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14328,7 +14328,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOutputSwitchClosed trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14358,7 +14358,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsOutputSwitchOpened trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14388,7 +14388,7 @@ The second variable is the custom event number.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: upsCalibrationStackChanged trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -14451,7 +14451,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMaxTempThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14520,7 +14520,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMaxTempThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14589,7 +14589,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMinTempThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14658,7 +14658,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMinTempThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14719,7 +14719,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMaxHumidityThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14779,7 +14779,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMaxHumidityThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14839,7 +14839,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMinHumidityThresholdViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14899,7 +14899,7 @@ The fifth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envMinHumidityThresholdViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -14967,7 +14967,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envSTIncTempRateViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15036,7 +15036,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envSTIncTempRateViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15105,7 +15105,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envSTDecTempRateViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15174,7 +15174,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envSTDecTempRateViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15243,7 +15243,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLTIncTempRateViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15312,7 +15312,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLTIncTempRateViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15381,7 +15381,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLTDecTempRateViolation trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15450,7 +15450,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
 	mtrapargsString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC Event: envLTDecTempRateViolationCleared trap received 
 			emsIdentSerialNumber=%parm[#1]% 
 			emsIdentEMSName=%parm[#2]% 
@@ -15482,7 +15482,7 @@ The sixth argument is the probe name.&lt;/p&gt;&lt;table&gt;
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

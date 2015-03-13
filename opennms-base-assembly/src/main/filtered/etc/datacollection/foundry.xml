@@ -1,12 +1,11 @@
-<?xml version="1.0"?>
-<datacollection-group name="Foundry Networks">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Foundry Networks">
   <!-- Foundry Systems MIBs -->
-  <group name="foundry-sys" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.18" instance="0" alias="sbChAcTemperature" type="gauge"/>
-    <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.19" instance="0" alias="snChWarnTemp" type="INTEGER"/>
-    <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.20" instance="0" alias="snChShutTemp" type="INTEGER"/>
-    <mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.52" instance="0" alias="snAgGbCpu1MinAvg" type="gauge"/>
-    <mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.53" instance="0" alias="snAgGblDynMemUtil" type="gauge"/>
+  <group ifType="ignore" name="foundry-sys">
+    <mibObj alias="sbChAcTemperature" instance="0" oid=".1.3.6.1.4.1.1991.1.1.1.1.18" type="gauge"/>
+    <mibObj alias="snChWarnTemp" instance="0" oid=".1.3.6.1.4.1.1991.1.1.1.1.19" type="INTEGER"/>
+    <mibObj alias="snChShutTemp" instance="0" oid=".1.3.6.1.4.1.1991.1.1.1.1.20" type="INTEGER"/>
+    <mibObj alias="snAgGbCpu1MinAvg" instance="0" oid=".1.3.6.1.4.1.1991.1.1.2.1.52" type="gauge"/>
+    <mibObj alias="snAgGblDynMemUtil" instance="0" oid=".1.3.6.1.4.1.1991.1.1.2.1.53" type="gauge"/>
   </group>
   <systemDef name="Foundry Networks">
     <sysoidMask>.1.3.6.1.4.1.1991.1.</sysoidMask>

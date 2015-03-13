@@ -1,8 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
-  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources    http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
   <!-- 
     Available implementations:
@@ -30,24 +26,9 @@
         - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
           highly concurrent pooling API.  Extremely experimental.
   -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
-    idleTimeout="600"
-    loginTimeout="3"
-    minPool="50"
-    maxPool="50"
-    maxSize="50" />
+  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory" idleTimeout="600" loginTimeout="3" maxPool="50" maxSize="50" minPool="50"/>
 
-  <jdbc-data-source name="opennms" 
-                    database-name="${install.database.name}" 
-                    class-name="${install.database.driver}" 
-                    url="jdbc:postgresql://localhost:5432/${install.database.name}"
-                    user-name="${install.database.user}"
-                    password="${install.database.password}" />
+  <jdbc-data-source class-name="${install.database.driver}" database-name="${install.database.name}" name="opennms" password="${install.database.password}" url="jdbc:postgresql://localhost:5432/${install.database.name}" user-name="${install.database.user}"/>
 
-  <jdbc-data-source name="opennms-admin" 
-                    database-name="template1" 
-                    class-name="${install.database.driver}" 
-                    url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="${install.database.admin.user}"
-                    password="${install.database.admin.password}" />
+  <jdbc-data-source class-name="${install.database.driver}" database-name="template1" name="opennms-admin" password="${install.database.admin.password}" url="jdbc:postgresql://localhost:5432/template1" user-name="${install.database.admin.user}"/>
 </datasource-configuration>

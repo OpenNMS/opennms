@@ -1,12 +1,8 @@
-<?xml version="1.0"?>
-
-<!-- Syslog message match definitions for POSIX utilities -->
-
-<syslogd-configuration-group>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Syslog message match definitions for POSIX utilities --><syslogd-configuration-group>
     <ueiList>
         <ueiMatch>
-            <process-match expression="^su$" />
-            <match type="regex" expression="su:.*?:\s+authentication failure; logname=(.*?) uid=(\d+) euid=(\d+) tty=(.*?) ruser=.*? rhost=.*? user=(.*?)$" />
+            <process-match expression="^su$"/>
+            <match expression="su:.*?:\s+authentication failure; logname=(.*?) uid=(\d+) euid=(\d+) tty=(.*?) ruser=.*? rhost=.*? user=(.*?)$" type="regex"/>
             <uei>uei.opennms.org/vendor/posix/syslog/su/authenFailure</uei>
         </ueiMatch>
     </ueiList>

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: LUCENT-SECURE-VPN-SOLUTIONS-LSMS-NOTIFICATION-MIB -->
 <event>
 	<mask>
@@ -49,7 +49,7 @@ An internal error has been reported on	the Brick.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmLastErrorCodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -111,7 +111,7 @@ Security Management Server.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmLastErrorCodeNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsSMSError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -179,7 +179,7 @@ password.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmUnauthSMSConnReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsUnauthSMSConn trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -237,7 +237,7 @@ password.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickLost trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -326,7 +326,7 @@ Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmZoneRuleProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsZoneAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -430,7 +430,7 @@ a message from the RealSecure Internet Security System (ISS).&lt;/p&gt;&lt;table
 	lsmsAlarmISSEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsISSAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -502,7 +502,7 @@ the threshold. Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmBrickPMFirstExceededParameter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -561,7 +561,7 @@ the threshold. Check the SMS for further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmSMSPMFirstExceededParameter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsSMSPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -650,7 +650,7 @@ further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmUserAuthReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsUserAuthAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -723,7 +723,7 @@ Check SMS for further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmLocalTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsVGCLocalMapPoolAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -788,7 +788,7 @@ Check SMS for further details.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickInterfaceDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -846,7 +846,7 @@ Brick failover occured. Active Brick switched over to standby.&lt;/p&gt;&lt;tabl
 	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickFailoverEvent trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -914,7 +914,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmRemoteTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsLanToLanTunnelDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -986,7 +986,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		contacted(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsLSMSStatusChange trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1044,7 +1044,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmTriggerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickFound trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1107,7 +1107,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmBrkIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickInterfaceUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1207,7 +1207,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		newSessionsPerSecond(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsQosBWExceeded trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1313,7 +1313,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		newSessionsPerSecond(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsQosRuleLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1415,7 +1415,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		newSessionsPerSecond(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsQosZoneLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1520,7 +1520,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		newSessionsPerSecond(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsQosRuleGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1622,7 +1622,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 		newSessionsPerSecond(-4195544)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsQosZoneGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1692,7 +1692,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmSLAConfiguredThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsSLARoundTripDelayAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1761,7 +1761,7 @@ for this tunnel&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmRemoteTEPIpAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsLanToLanTunnelUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 
@@ -1837,7 +1837,7 @@ in brick ICM configuration.&lt;/p&gt;&lt;table&gt;
 	lsmsAlarmBrkSessionsAfterICM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lsmsBrickICMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
 			lsmsAlarmTriggerTime=%parm[#2]% 

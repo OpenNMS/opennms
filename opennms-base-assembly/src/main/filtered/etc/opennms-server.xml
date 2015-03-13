@@ -1,2 +1,2 @@
-<local-server server-name="nms1" verify-server="false">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><local-server server-name="nms1" verify-server="false">
 </local-server>

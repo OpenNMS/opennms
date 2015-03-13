@@ -1,24 +1,23 @@
-<?xml version="1.0"?>
-<datacollection-group name="Checkpoint">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Checkpoint">
 
       <!-- Checkpoint MIBs -->
-      <group name="checkpoint" ifType="ignore">
-        <mibObj oid=".1.3.6.1.2.1.25.1.5"         instance="0" alias="stateInfoStored"  type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.1.6"         instance="0" alias="processContexts"  type="integer" />
-        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6"     instance="1" alias="allocatedStorage" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.94.1.21.1.6.1"  instance="0" alias="cpuUtilization"   type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.4"     instance="0" alias="pktsAccepted"     type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.5"     instance="0" alias="pktsRejected"     type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.6"     instance="0" alias="pktsDropped"      type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.7"     instance="0" alias="pktsLogged"       type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.1.1" instance="0" alias="cpvEncPackets"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.1.2" instance="0" alias="cpvDecPackets"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.1" instance="0" alias="cpvErrOut"        type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.2" instance="0" alias="cpvErrIn"         type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.3" instance="0" alias="cpvErrIke"        type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.4" instance="0" alias="cpvErrPolicy"     type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.25.3"  instance="0" alias="fwNumConn"        type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2620.1.1.25.4"  instance="0" alias="fwPeakNumConn"    type="integer" />
+      <group ifType="ignore" name="checkpoint">
+        <mibObj alias="stateInfoStored" instance="0" oid=".1.3.6.1.2.1.25.1.5" type="integer"/>
+        <mibObj alias="processContexts" instance="0" oid=".1.3.6.1.2.1.25.1.6" type="integer"/>
+        <mibObj alias="allocatedStorage" instance="1" oid=".1.3.6.1.2.1.25.2.3.1.6" type="integer"/>
+        <mibObj alias="cpuUtilization" instance="0" oid=".1.3.6.1.4.1.94.1.21.1.6.1" type="integer"/>
+        <mibObj alias="pktsAccepted" instance="0" oid=".1.3.6.1.4.1.2620.1.1.4" type="integer"/>
+        <mibObj alias="pktsRejected" instance="0" oid=".1.3.6.1.4.1.2620.1.1.5" type="integer"/>
+        <mibObj alias="pktsDropped" instance="0" oid=".1.3.6.1.4.1.2620.1.1.6" type="integer"/>
+        <mibObj alias="pktsLogged" instance="0" oid=".1.3.6.1.4.1.2620.1.1.7" type="integer"/>
+        <mibObj alias="cpvEncPackets" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.1.1" type="integer"/>
+        <mibObj alias="cpvDecPackets" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.1.2" type="integer"/>
+        <mibObj alias="cpvErrOut" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.2.1" type="integer"/>
+        <mibObj alias="cpvErrIn" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.2.2" type="integer"/>
+        <mibObj alias="cpvErrIke" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.2.3" type="integer"/>
+        <mibObj alias="cpvErrPolicy" instance="0" oid=".1.3.6.1.4.1.2620.1.2.4.2.4" type="integer"/>
+        <mibObj alias="fwNumConn" instance="0" oid=".1.3.6.1.4.1.2620.1.1.25.3" type="integer"/>
+        <mibObj alias="fwPeakNumConn" instance="0" oid=".1.3.6.1.4.1.2620.1.1.25.4" type="integer"/>
       </group>
 
       <systemDef name="CheckPoint">

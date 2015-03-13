@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ATM-FORUM-ILMI40-MIB -->
 <event>
         <mask>
@@ -42,14 +42,14 @@ reconfigured VPC at this ATM Interface.&lt;/p&gt;&lt;table&gt;
                 localDown(5)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         atmfVpcChange trap received 
                         atmfVpcPortIndex=%parm[#1]% 
                         atmfVpcVpi=%parm[#2]% 
                         atmfVpcOperStatus=%parm[#3]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
         <mask>
@@ -98,7 +98,7 @@ Interface.&lt;/p&gt;&lt;table&gt;
                 localDown(5)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         atmfVccChange trap received 
                         atmfVccPortIndex=%parm[#1]% 
                         atmfVccVci=%parm[#2]% 
@@ -106,7 +106,7 @@ Interface.&lt;/p&gt;&lt;table&gt;
                         atmfVccOperStatus=%parm[#4]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+	    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: ATM-FORUM-ILMI40-MIB -->
 </events>

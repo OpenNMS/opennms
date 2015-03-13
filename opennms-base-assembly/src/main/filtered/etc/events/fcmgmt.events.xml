@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: FCMGMT-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: FCMGMT-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -40,7 +39,7 @@ Recommended severity level (for filtering): alert&lt;/p&gt;&lt;table&gt;
 		offline(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			connUnitStatusChange trap received 
 			connUnitStatus=%parm[#1]% 
 			connUnitState=%parm[#2]%&lt;/p&gt;
@@ -72,7 +71,7 @@ Recommended severity level (for filtering): warning&lt;/p&gt;&lt;table&gt;
 	connUnitId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			connUnitDeletedTrap trap received 
 			connUnitId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -122,7 +121,7 @@ Recommended severity level (for filtering): info&lt;/p&gt;&lt;table&gt;
 	connUnitEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			connUnitEventTrap trap received 
 			connUnitEventId=%parm[#1]% 
 			connUnitEventType=%parm[#2]% 
@@ -163,7 +162,7 @@ Recommended severity level (for filtering): alert&lt;/p&gt;&lt;table&gt;
 		failed(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			connUnitSensorStatusChange trap received 
 			connUnitSensorStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -216,12 +215,11 @@ Recommended severity level (for filtering): alert&lt;/p&gt;&lt;table&gt;
 		diagnostics(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			connUnitPortStatusChange trap received 
 			connUnitPortStatus=%parm[#1]% 
 			connUnitPortState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: FCMGMT-MIB -->
+</events><!-- End of auto generated data from MIB: FCMGMT-MIB -->

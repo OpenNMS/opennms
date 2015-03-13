@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: OSPF-TRAP-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: OSPF-TRAP-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -49,7 +48,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 		pointToPoint(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -57,7 +56,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 			ospfVirtIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -108,7 +107,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 		pointToPoint(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -116,10 +115,7 @@ state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 			ospfVirtIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -181,7 +177,7 @@ ospfIfStateChange.&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfNbrStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfNbrIpAddr=%parm[#2]% 
@@ -245,7 +241,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtNbrStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtNbrArea=%parm[#2]% 
@@ -253,10 +249,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 			ospfVirtNbrState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -312,7 +305,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtNbrStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtNbrArea=%parm[#2]% 
@@ -320,10 +313,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 			ospfVirtNbrState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -375,7 +365,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtNbrStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtNbrArea=%parm[#2]% 
@@ -383,7 +373,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 			ospfVirtNbrState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -452,7 +442,7 @@ prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfConfigError trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -462,7 +452,7 @@ prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -527,7 +517,7 @@ jacency from forming.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtIfConfigError trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -536,7 +526,7 @@ jacency from forming.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -604,7 +594,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfAuthFailure trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -614,7 +604,7 @@ type.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -677,7 +667,7 @@ authentication key or authentication type.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtIfAuthFailure trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -686,7 +676,7 @@ authentication key or authentication type.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -736,7 +726,7 @@ interface that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfRxBadPacket trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -745,7 +735,7 @@ interface that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -791,7 +781,7 @@ that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 		lsAck(5)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfVirtIfRxBadPacket trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -799,7 +789,7 @@ that cannot be parsed.&lt;/p&gt;&lt;table&gt;
 			ospfPacketType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -872,7 +862,7 @@ identify the LSDB entry.&lt;/p&gt;&lt;table&gt;
 	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			ospfTxRetransmit trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -952,7 +942,7 @@ the LSDB entry.&lt;/p&gt;&lt;table&gt;
 	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			ospfVirtIfTxRetransmit trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfVirtIfAreaId=%parm[#2]% 
@@ -1020,7 +1010,7 @@ MaxAge.&lt;/p&gt;&lt;table&gt;
 	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfOriginateLsa trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfLsdbAreaId=%parm[#2]% 
@@ -1029,7 +1019,7 @@ MaxAge.&lt;/p&gt;&lt;table&gt;
 			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1081,7 +1071,7 @@ aged to MaxAge.&lt;/p&gt;&lt;table&gt;
 	ospfLsdbRouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfMaxAgeLsa trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfLsdbAreaId=%parm[#2]% 
@@ -1090,7 +1080,7 @@ aged to MaxAge.&lt;/p&gt;&lt;table&gt;
 			ospfLsdbRouterId=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1122,13 +1112,13 @@ base has exceeded ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	ospfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfLsdbOverflow trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1161,13 +1151,13 @@ ospfExtLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	ospfExtLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfLsdbApproachingOverflow trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfExtLsdbLimit=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true" />
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1223,7 +1213,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -1231,10 +1221,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 			ospfIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1290,7 +1277,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -1298,10 +1285,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 			ospfIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1357,7 +1341,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -1365,10 +1349,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 			ospfIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1424,7 +1405,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -1432,10 +1413,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 			ospfIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                auto-clean="true" />
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1487,7 +1465,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ospfIfStateChange trap received 
 			ospfRouterId=%parm[#1]% 
 			ospfIfIpAddress=%parm[#2]% 
@@ -1495,7 +1473,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 			ospfIfState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
   <event>
     <mask>
@@ -1549,7 +1527,7 @@ a per-area basis.&lt;/p&gt;&lt;table&gt;
 	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -1603,7 +1581,7 @@ a per-area basis.&lt;/p&gt;&lt;table&gt;
 	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" clear-key="uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -1657,7 +1635,7 @@ a per-area basis.&lt;/p&gt;&lt;table&gt;
 	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -1717,7 +1695,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 	ospfRestartExitReason=%parm[#4]%&lt;/p&gt;
 	</logmsg>
     <severity>Indeterminate</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
   </event>
   <event>
     <mask>
@@ -1795,7 +1773,7 @@ transitions for a neighbor.&lt;/p&gt;&lt;table&gt;
 	ospfNbrRestartHelperExitReason=%parm[#7]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
   </event>
   <event>
     <mask>
@@ -1873,7 +1851,7 @@ transitions for a neighbor.&lt;/p&gt;&lt;table&gt;
 	ospfNbrRestartHelperExitReason=%parm[#7]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" clear-key="uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%"/>
   </event>
   <event>
     <mask>
@@ -1946,7 +1924,7 @@ status transitions for a virtual neighbor.&lt;/p&gt;&lt;table&gt;
 	ospfVirtNbrRestartHelperExitReason=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
   </event>
   <event>
     <mask>
@@ -2019,8 +1997,7 @@ status transitions for a virtual neighbor.&lt;/p&gt;&lt;table&gt;
 	ospfVirtNbrRestartHelperExitReason=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
   </event>
 
-</events>
-<!-- End of auto generated data from MIB: OSPF-TRAP-MIB -->
+</events><!-- End of auto generated data from MIB: OSPF-TRAP-MIB -->

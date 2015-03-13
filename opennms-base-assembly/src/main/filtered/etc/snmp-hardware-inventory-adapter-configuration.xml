@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<hardware-inventory-adapter-configuration>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><hardware-inventory-adapter-configuration>
 
   <!-- 
        The standard ENTITY-MIB provides the following data:
@@ -27,39 +26,39 @@
   -->
 
   <hw-extension name="CISCO-ENTITY-EXT-MIB" sysOidMask=".1.3.6.1.4.1.9.">
-    <mibObj oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" type="integer" alias="ceExtProcessorRam" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" type="integer" alias="ceExtNVRAMSize" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.195.1.1.1.3" type="integer" alias="ceExtNVRAMUsed" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.195.1.1.1.4" type="integer" alias="ceExtProcessorRamOverflow" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.195.1.1.1.5" type="integer" alias="ceExtHCProcessorRam" />
+    <mibObj alias="ceExtProcessorRam" oid=".1.3.6.1.4.1.9.9.195.1.1.1.1" type="integer"/>
+    <mibObj alias="ceExtNVRAMSize" oid=".1.3.6.1.4.1.9.9.195.1.1.1.2" type="integer"/>
+    <mibObj alias="ceExtNVRAMUsed" oid=".1.3.6.1.4.1.9.9.195.1.1.1.3" type="integer"/>
+    <mibObj alias="ceExtProcessorRamOverflow" oid=".1.3.6.1.4.1.9.9.195.1.1.1.4" type="integer"/>
+    <mibObj alias="ceExtHCProcessorRam" oid=".1.3.6.1.4.1.9.9.195.1.1.1.5" type="integer"/>
   </hw-extension> 
 
   <hw-extension name="CISCO-ENTITY-ASSET-MIB" sysOidMask=".1.3.6.1.4.1.9.">
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.1"  type="string" alias="ceAssetOEMString" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.2"  type="string" alias="ceAssetSerialNumber" replace="entPhysicalSerialNum" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.3"  type="string" alias="ceAssetOrderablePartNumber" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.4"  type="string" alias="ceAssetHardwareRevision" replace="entPhysicalHardwareRev" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.5"  type="string" alias="ceAssetMfgAssyNumber" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.6"  type="string" alias="ceAssetMfgAssyRevision" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.7"  type="string" alias="ceAssetFirmwareID" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.8"  type="string" alias="ceAssetFirmwareRevision" replace="entPhysicalFirmwareRev" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.9"  type="string" alias="ceAssetSoftwareID" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.10" type="string" alias="ceAssetSoftwareRevision" replace="entPhysicalSoftwareRev" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.11" type="string" alias="ceAssetCLEI" />
-    <mibObj oid=".1.3.6.1.4.1.9.9.92.1.1.1.12" type="string" alias="ceAssetAlias" />
+    <mibObj alias="ceAssetOEMString" oid=".1.3.6.1.4.1.9.9.92.1.1.1.1" type="string"/>
+    <mibObj alias="ceAssetSerialNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.2" replace="entPhysicalSerialNum" type="string"/>
+    <mibObj alias="ceAssetOrderablePartNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.3" type="string"/>
+    <mibObj alias="ceAssetHardwareRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.4" replace="entPhysicalHardwareRev" type="string"/>
+    <mibObj alias="ceAssetMfgAssyNumber" oid=".1.3.6.1.4.1.9.9.92.1.1.1.5" type="string"/>
+    <mibObj alias="ceAssetMfgAssyRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.6" type="string"/>
+    <mibObj alias="ceAssetFirmwareID" oid=".1.3.6.1.4.1.9.9.92.1.1.1.7" type="string"/>
+    <mibObj alias="ceAssetFirmwareRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.8" replace="entPhysicalFirmwareRev" type="string"/>
+    <mibObj alias="ceAssetSoftwareID" oid=".1.3.6.1.4.1.9.9.92.1.1.1.9" type="string"/>
+    <mibObj alias="ceAssetSoftwareRevision" oid=".1.3.6.1.4.1.9.9.92.1.1.1.10" replace="entPhysicalSoftwareRev" type="string"/>
+    <mibObj alias="ceAssetCLEI" oid=".1.3.6.1.4.1.9.9.92.1.1.1.11" type="string"/>
+    <mibObj alias="ceAssetAlias" oid=".1.3.6.1.4.1.9.9.92.1.1.1.12" type="string"/>
   </hw-extension> 
 
   <hw-extension name="ALCATEL-IND1-CHASSIS-MIB" sysOidMask=".1.3.6.1.4.1.637.">
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7"  type="string" alias="chasEntPhysPartNumber" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22" type="string" alias="chasEntPhysAsicRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.23" type="string" alias="chasEntPhysCpldRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.24" type="string" alias="chasEntPhysDefaultMinibootRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.25" type="string" alias="chasEntPhysBackUpMinibootRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.26" type="string" alias="chasEntPhysBootromRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.30" type="string" alias="chasEntPhysUbootRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.31" type="string" alias="chasEntPhysUbootMinibootRev" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.32" type="string" alias="chasEntPhysMacAddress" />
-    <mibObj oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.33" type="string" alias="chasEntPhysPoeSwVersion" />
+    <mibObj alias="chasEntPhysPartNumber" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.7" type="string"/>
+    <mibObj alias="chasEntPhysAsicRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.22" type="string"/>
+    <mibObj alias="chasEntPhysCpldRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.23" type="string"/>
+    <mibObj alias="chasEntPhysDefaultMinibootRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.24" type="string"/>
+    <mibObj alias="chasEntPhysBackUpMinibootRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.25" type="string"/>
+    <mibObj alias="chasEntPhysBootromRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.26" type="string"/>
+    <mibObj alias="chasEntPhysUbootRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.30" type="string"/>
+    <mibObj alias="chasEntPhysUbootMinibootRev" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.31" type="string"/>
+    <mibObj alias="chasEntPhysMacAddress" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.32" type="string"/>
+    <mibObj alias="chasEntPhysPoeSwVersion" oid=".1.3.6.1.4.1.637.800.1.1.1.1.1.1.1.33" type="string"/>
   </hw-extension>
 
 </hardware-inventory-adapter-configuration>

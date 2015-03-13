@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: MADGECAU-MIB -->
 <event>
 	<mask>
@@ -29,7 +29,7 @@ ring changes.&lt;/p&gt;&lt;table&gt;
 		badly-cabled(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			backupPathStateChange trap received 
 			madgeCauTopBackupRing=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -63,7 +63,7 @@ usage changes.&lt;/p&gt;&lt;table&gt;
 		used(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			backupPathStateUse trap received 
 			madgeCauTopBackupUsed=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -99,7 +99,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		wrap-both(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wrapStateChange trap received 
 			madgeCauTopWrap=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -127,7 +127,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 either a wrong speed node inserting or a faulty node
 being detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lamPortDisabled trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -156,7 +156,7 @@ being detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	madgeCauInfoFanSpeed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mCaufanSpeedFailed trap received 
 			madgeCauInfoFanSpeed=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -187,7 +187,7 @@ device has exceeded safe limits.&lt;/p&gt;&lt;table&gt;
 	madgeCauInfoTherm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			temperatureExceeded trap received 
 			madgeCauInfoTherm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -244,7 +244,7 @@ reinserted onto the ring.&lt;/p&gt;&lt;table&gt;
 		resurrected(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			killInformation trap received 
 			madgeCauKillNodeAddress=%parm[#1]% 
 			madgeCauKillReason=%parm[#2]% 
@@ -312,7 +312,7 @@ but with extra information.&lt;/p&gt;&lt;table&gt;
 	madgeCauKillPortNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			killInformation2 trap received 
 			madgeCauKillNodeAddress=%parm[#1]% 
 			madgeCauKillReason=%parm[#2]% 
@@ -361,7 +361,7 @@ being detected.&lt;/p&gt;&lt;table&gt;
 		fault(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lamPortDisabled2 trap received 
 			madgeCauTrapInfoLamNo=%parm[#1]% 
 			madgeCauTrapInfoPortNo=%parm[#2]% 
@@ -402,7 +402,7 @@ being detected.&lt;/p&gt;&lt;table&gt;
 		fault(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lamStateChanged trap received 
 			madgeCauTrapInfoLamNo=%parm[#1]% 
 			madgeCauTrapInfoState=%parm[#2]%&lt;/p&gt;

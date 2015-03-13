@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: GGSN-MIB -->
 <event>
 	<mask>
@@ -70,7 +70,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -82,7 +82,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -154,7 +154,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -166,7 +166,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -238,7 +238,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -250,7 +250,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -322,7 +322,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -334,7 +334,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -406,7 +406,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -418,7 +418,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -490,7 +490,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -502,7 +502,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -570,7 +570,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -582,7 +582,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -650,7 +650,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -662,7 +662,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -730,7 +730,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -742,7 +742,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -810,7 +810,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -822,7 +822,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -886,7 +886,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapNew trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -898,7 +898,7 @@ the nature of the problem.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -967,7 +967,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -979,7 +979,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1048,7 +1048,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -1060,7 +1060,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1129,7 +1129,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -1141,7 +1141,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1210,7 +1210,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -1222,7 +1222,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1287,7 +1287,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapChanged trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -1299,7 +1299,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1361,7 +1361,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 	ggsnAlarmDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ggsnTrapCleared trap received 
 			ggsnAlarmId=%parm[#1]% 
 			ggsnAlarmName=%parm[#2]% 
@@ -1373,7 +1373,7 @@ of the change.&lt;/p&gt;&lt;table&gt;
 			ggsnAlarmDescription=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="ggsnAlarmsClear:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]" reduction-key="ggsnAlarmsClear:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: GGSN-MIB -->
 </events>

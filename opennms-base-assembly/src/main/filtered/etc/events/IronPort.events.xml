@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ASYNCOS-MAIL-MIB -->
 <event>
         <mask>
@@ -35,7 +35,7 @@ conservation mode.&lt;/p&gt;&lt;table&gt;
                 queueFull(4)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: resourceConservationMode trap received 
                         resourceConservationReason=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -72,7 +72,7 @@ conservation mode.&lt;/p&gt;&lt;table&gt;
                 queueFull(4)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: resourceConservationMode trap received 
                         resourceConservationReason=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -112,7 +112,7 @@ powerSupplyStatusChange</event-label>
                 powerSupplyFaulty(4)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: powerSupplyStatusChange trap received 
                         powerSupplyStatus=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -148,7 +148,7 @@ powerSupplyStatusChange</event-label>
                 powerSupplyFaulty(4)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: powerSupplyStatusChange trap received 
                         powerSupplyStatus=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -181,7 +181,7 @@ threshold.&lt;/p&gt;&lt;table&gt;
        
 %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: highTemperature trap received 
                         temperatureName=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -213,7 +213,7 @@ fanFailure</event-label>
        
 %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: fanFailure trap received 
                         fanName=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -245,7 +245,7 @@ keyExpiration</event-label>
        
 %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: keyExpiration trap received 
                         keyDescription=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -278,7 +278,7 @@ etc.)&lt;/p&gt;&lt;table&gt;
        
 %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: updateFailure trap received 
                         updateServiceName=%parm[#1]%&lt;/p&gt;
                 </logmsg>
@@ -310,7 +310,7 @@ raidStatusChange</event-label>
        
 %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         IronPort Event: raidStatusChange trap received 
                         raidID=%parm[#1]%&lt;/p&gt;
                 </logmsg>

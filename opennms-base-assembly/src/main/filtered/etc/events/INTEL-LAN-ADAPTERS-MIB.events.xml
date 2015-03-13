@@ -1,5 +1,4 @@
-<!-- Start of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 	<event>
 		<mask>
 			<maskelement>
@@ -423,5 +422,4 @@
 		</logmsg>
 		<severity>Warning</severity>
 	</event>
-</events>
-<!-- End of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB -->
+</events><!-- End of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB -->

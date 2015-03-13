@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: MG-SNMP-UPS-MIB -->
 <event>
 	<mask>
@@ -20,7 +20,7 @@
 	<descr>
 &lt;p&gt;Trap UPS Battery entering Fault status.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -45,7 +45,7 @@
 	<descr>
 &lt;p&gt;Trap UPS Battery returned to OK status.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -70,7 +70,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryReplacementIndicated trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -95,7 +95,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery does not need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryReplaceNotIndicated trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -128,7 +128,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgAtLowBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -163,7 +163,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgFromLowBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -190,7 +190,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery charger is not active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgChargerFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -215,7 +215,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery charger is active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgChargerOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -248,7 +248,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgAtLowCondition trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -283,7 +283,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgFromLowCondition trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -318,7 +318,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -353,7 +353,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgReturnFromBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -380,7 +380,7 @@
 	<descr>
 &lt;p&gt;Trap UPS is on by pass.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnByPass trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -405,7 +405,7 @@
 	<descr>
 &lt;p&gt;Trap UPS return from by pass.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgReturnFromByPass trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -430,7 +430,7 @@
 	<descr>
 &lt;p&gt;Trap UPS by pass unavailable.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgByPassUnavailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -455,7 +455,7 @@
 	<descr>
 &lt;p&gt;Trap UPS by pass available.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgByPassAvailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -480,7 +480,7 @@
 	<descr>
 &lt;p&gt;Trap UPS utility power failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgUtilityFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -505,7 +505,7 @@
 	<descr>
 &lt;p&gt;Trap UPS utility power restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgUtilityRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -530,7 +530,7 @@
 	<descr>
 &lt;p&gt;Trap UPS is on boost.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnBoost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -555,7 +555,7 @@
 	<descr>
 &lt;p&gt;Trap UPS has returned from boost.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgReturnFromBoost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -580,7 +580,7 @@
 	<descr>
 &lt;p&gt;Trap UPS has overload condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOverLoad trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -605,7 +605,7 @@
 	<descr>
 &lt;p&gt;Trap UPS quit overload condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgLoadOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -630,7 +630,7 @@
 	<descr>
 &lt;p&gt;Trap UPS has overtemperature condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOverTemperature trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -655,7 +655,7 @@
 	<descr>
 &lt;p&gt;Trap UPS quit overtemperature condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgTemperatureOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -705,7 +705,7 @@
 	mgreceptacleRestartDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
@@ -742,7 +742,7 @@
 	mgreceptacleOnDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOnDelay=%parm[#2]%&lt;/p&gt;
@@ -790,7 +790,7 @@
 	mgreceptacleBootUpDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
@@ -826,7 +826,7 @@
 	mgreceptacleOnDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOnDelay=%parm[#2]%&lt;/p&gt;
@@ -882,7 +882,7 @@
 	upsmgConfigSysShutDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOffToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
@@ -920,7 +920,7 @@
 	mgreceptacleOffDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOffAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOffDelay=%parm[#2]%&lt;/p&gt;
@@ -968,7 +968,7 @@
 	mgreceptacleShutdownDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOffInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
@@ -1004,7 +1004,7 @@
 	mgreceptacleOffDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOffComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOffDelay=%parm[#2]%&lt;/p&gt;
@@ -1039,7 +1039,7 @@
 	mgreceptacleToggleDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgToggleToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDelay=%parm[#2]%&lt;/p&gt;
@@ -1074,7 +1074,7 @@
 	mgreceptacleToggleDelay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgToggleAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDelay=%parm[#2]%&lt;/p&gt;
@@ -1109,7 +1109,7 @@
 	mgreceptacleToggleDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgToggleInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDuration=%parm[#2]%&lt;/p&gt;
@@ -1144,7 +1144,7 @@
 	mgreceptacleToggleDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgToggleComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDuration=%parm[#2]%&lt;/p&gt;
@@ -1171,7 +1171,7 @@
 	<descr>
 &lt;p&gt;Trap UPS serial communication failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgCommunicationFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1196,7 +1196,7 @@
 	<descr>
 &lt;p&gt;Trap UPS serial communication restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgCommunicationRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1221,7 +1221,7 @@
 	<descr>
 &lt;p&gt;Trap UPS input has bad condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgInputBad trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1246,7 +1246,7 @@
 	<descr>
 &lt;p&gt;Trap UPS input quit bad condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgInputOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1271,7 +1271,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery is unavailable.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryUnavailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1296,7 +1296,7 @@
 	<descr>
 &lt;p&gt;Trap UPS battery return from unavailable condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryAvailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1329,7 +1329,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgAtLowRecharge trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -1364,7 +1364,7 @@
 	upsmgBatteryLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgFromLowRecharge trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
@@ -1391,7 +1391,7 @@
 	<descr>
 &lt;p&gt;Trap UPS self test failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgDiagnosticTestFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1416,7 +1416,7 @@
 	<descr>
 &lt;p&gt;Trap UPS self test succeeded.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgDiagnosticTestOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1441,7 +1441,7 @@
 	<descr>
 &lt;p&gt;Trap UPS passed battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryTestOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1466,7 +1466,7 @@
 	<descr>
 &lt;p&gt;Trap UPS failed battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgBatteryTestFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1499,7 +1499,7 @@
 	mgextAlarmUID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgExternalAlarmActive trap received 
 			mgextAlarmIndex=%parm[#1]% 
 			mgextAlarmUID=%parm[#2]%&lt;/p&gt;
@@ -1534,7 +1534,7 @@
 	mgextAlarmUID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgExternalAlarmInactive trap received 
 			mgextAlarmIndex=%parm[#1]% 
 			mgextAlarmUID=%parm[#2]%&lt;/p&gt;
@@ -1561,7 +1561,7 @@
 	<descr>
 &lt;p&gt;Trap UPS is on buck.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgOnBuck trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1586,7 +1586,7 @@
 	<descr>
 &lt;p&gt;Trap UPS has returned from buck.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgReturnFromBuck trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1611,7 +1611,7 @@
 	<descr>
 &lt;p&gt;Environment Probe communication failure.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironComFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1636,7 +1636,7 @@
 	<descr>
 &lt;p&gt;Environment Probe communication restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironComOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1661,7 +1661,7 @@
 	<descr>
 &lt;p&gt;Temperature is below low threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironTemperatureLow trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1686,7 +1686,7 @@
 	<descr>
 &lt;p&gt;Temperature is above high threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironTemperatureHigh trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1711,7 +1711,7 @@
 	<descr>
 &lt;p&gt;Temperature is in normal range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironTemperatureOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1736,7 +1736,7 @@
 	<descr>
 &lt;p&gt;Humidity is below low threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironHumidityLow trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1761,7 +1761,7 @@
 	<descr>
 &lt;p&gt;Humidity is above high threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironHumidityHigh trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1786,7 +1786,7 @@
 	<descr>
 &lt;p&gt;Humidity is in normal range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironHumidityOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1811,7 +1811,7 @@
 	<descr>
 &lt;p&gt;Input #1 is Closed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironInput1Closed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1836,7 +1836,7 @@
 	<descr>
 &lt;p&gt;Input #1 is Open.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironInput1Open trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1861,7 +1861,7 @@
 	<descr>
 &lt;p&gt;Input #2 is Closed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironInput2Closed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1886,7 +1886,7 @@
 	<descr>
 &lt;p&gt;Input #2 is Open.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			MGE Event: upsmgEnvironInput2Open trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>

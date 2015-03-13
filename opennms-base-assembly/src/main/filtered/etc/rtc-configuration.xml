@@ -1,10 +1,2 @@
-<RTCConfiguration
-	updaters="10"
-	senders="5"
-	rollingWindow="24h"
-	maxEventsBeforeResend="100"
-	lowThresholdInterval="20s"
-	highThresholdInterval="45s"
-	userRefreshInterval="2m"
-	errorsBeforeUrlUnsubscribe="5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><RTCConfiguration errorsBeforeUrlUnsubscribe="5" highThresholdInterval="45s" lowThresholdInterval="20s" maxEventsBeforeResend="100" rollingWindow="24h" senders="5" updaters="10" userRefreshInterval="2m">
 </RTCConfiguration>

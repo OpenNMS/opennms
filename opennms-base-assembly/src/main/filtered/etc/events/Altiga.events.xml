@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -19,7 +19,7 @@
 	<descr>
 &lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 		Altiga Event: %parm[#1]%
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -48,7 +48,7 @@
         <descr>
 &lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='discardtraps'>&lt;p&gt;
+                <logmsg dest="discardtraps">&lt;p&gt;
                 Altiga Event: %parm[#1]%
                 </logmsg>
         <severity>Indeterminate</severity>
@@ -73,7 +73,7 @@
         <descr>
 &lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                 Altiga Event: %parm[#1]%
                 </logmsg>
         <severity>Indeterminate</severity>

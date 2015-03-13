@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: UPS-MIB -->
 <event>
 	<mask>
@@ -35,7 +35,7 @@ battery.&lt;/p&gt;&lt;table&gt;
 	upsConfigLowBattTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsTrapOnBattery trap received 
 			upsEstimatedMinutesRemaining=%parm[#1]% 
 			upsSecondsOnBattery=%parm[#2]% 
@@ -95,7 +95,7 @@ test.&lt;/p&gt;&lt;table&gt;
 	upsTestElapsedTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsTrapTestCompleted trap received 
 			upsTestId=%parm[#1]% 
 			upsTestSpinLock=%parm[#2]% 
@@ -137,7 +137,7 @@ upsAlarmTestInProgress.&lt;/p&gt;&lt;table&gt;
 	upsAlarmDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsTrapAlarmEntryAdded trap received 
 			upsAlarmId=%parm[#1]% 
 			upsAlarmDescr=%parm[#2]%&lt;/p&gt;
@@ -174,7 +174,7 @@ alarms except for upsAlarmTestInProgress.&lt;/p&gt;&lt;table&gt;
 	upsAlarmDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsTrapAlarmEntryRemoved trap received 
 			upsAlarmId=%parm[#1]% 
 			upsAlarmDescr=%parm[#2]%&lt;/p&gt;

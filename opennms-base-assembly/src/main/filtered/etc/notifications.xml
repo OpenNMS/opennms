@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
     <header>
         <rev>1.2</rev>
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
@@ -52,7 +51,7 @@ on node %nodelabel% failed at %time%.
         <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>Due to extended downtime or operator action, the interface %interfaceresolve% (%interface%) 
-on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>
+on node %nodelabel% has been deleted from OpenNMS's polling database.</text-message>
         <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: SNA-NAU-MIB -->
 <event>
 	<mask>
@@ -45,13 +45,13 @@
 		stopping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaNodeStateChangeTrap trap received 
 			snaNodeOperName=%parm[#1]% 
 			snaNodeOperState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -96,13 +96,13 @@
 		stopping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaNodeStateChangeTrap trap received 
 			snaNodeOperName=%parm[#1]% 
 			snaNodeOperState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive:%dpname%:%nodeid%:%parm[#1]%" />	
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive:%dpname%:%nodeid%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>	
 </event>
 <event>
 	<mask>
@@ -151,14 +151,14 @@ the failure reason.&lt;/p&gt;&lt;table&gt;
 		internalError(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaNodeActFailTrap trap received 
 			snaNodeOperName=%parm[#1]% 
 			snaNodeOperState=%parm[#2]% 
 			snaNodeOperActFailureReason=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>	
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>	
 </event>
 <event>
 	<mask>
@@ -206,14 +206,14 @@ state after change.&lt;/p&gt;&lt;table&gt;
 		active(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaLuStateChangeTrap trap received 
 			snaLuOperName=%parm[#1]% 
 			snaLuOperSnaName=%parm[#2]% 
 			snaLuOperState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -261,14 +261,14 @@ state after change.&lt;/p&gt;&lt;table&gt;
 		active(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaLuStateChangeTrap trap received 
 			snaLuOperName=%parm[#1]% 
 			snaLuOperSnaName=%parm[#2]% 
 			snaLuOperState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap:%dpname%:%nodeid%:%parm[#2]%" />	
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap:%dpname%:%nodeid%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>	
 </event>
 <event>
 	<mask>
@@ -322,7 +322,7 @@ traffic on the network.&lt;/p&gt;&lt;table&gt;
 	snaLuSessnSenseData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			snaLuSessnBindFailTrap trap received 
 			snaLuSessnLocalApplName=%parm[#1]% 
 			snaLuSessnRemoteLuName=%parm[#2]% 
@@ -330,7 +330,7 @@ traffic on the network.&lt;/p&gt;&lt;table&gt;
 			snaLuSessnSenseData=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: SNA-NAU-MIB -->
 </events>

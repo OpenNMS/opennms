@@ -1,28 +1,27 @@
-<?xml version="1.0"?>
-<datacollection-group name="Microsoft">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Microsoft">
 
-      <group name="windows-host" ifType="ignore">
-        <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+      <group ifType="ignore" name="windows-host">
+        <mibObj alias="cpuPercentBusy" instance="1" oid=".1.3.6.1.2.1.25.3.3.1.2" type="integer"/>
         <!-- Memory in KBytes -->
-        <mibObj oid=".1.3.6.1.2.1.25.2.2"     instance="0" alias="memorySize"     type="integer" />
+        <mibObj alias="memorySize" instance="0" oid=".1.3.6.1.2.1.25.2.2" type="integer"/>
       </group>
 
       <!-- Microsoft MIBs -->
-      <group name="microsoft-http" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.5"  instance="0" alias="totalFilesSent"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.6"  instance="0" alias="currAnonUsers"       type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.7"  instance="0" alias="currNonAnonUsers"    type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.12" instance="0" alias="currentConnections"  type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.13" instance="0" alias="maxConnections"      type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.14" instance="0" alias="connectionAttempts"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.15" instance="0" alias="logonAttempts"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.16" instance="0" alias="totalGets"           type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.17" instance="0" alias="totalPosts"          type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.18" instance="0" alias="totalHeads"          type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.19" instance="0" alias="totalOthers"         type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.20" instance="0" alias="totalCGIRequests"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.21" instance="0" alias="totalBGIRequests"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.22" instance="0" alias="totalNotFoundErrors" type="Counter" />
+      <group ifType="ignore" name="microsoft-http">
+        <mibObj alias="totalFilesSent" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.5" type="Counter"/>
+        <mibObj alias="currAnonUsers" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.6" type="gauge"/>
+        <mibObj alias="currNonAnonUsers" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.7" type="gauge"/>
+        <mibObj alias="currentConnections" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.12" type="gauge"/>
+        <mibObj alias="maxConnections" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.13" type="gauge"/>
+        <mibObj alias="connectionAttempts" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.14" type="Counter"/>
+        <mibObj alias="logonAttempts" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.15" type="Counter"/>
+        <mibObj alias="totalGets" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.16" type="Counter"/>
+        <mibObj alias="totalPosts" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.17" type="Counter"/>
+        <mibObj alias="totalHeads" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.18" type="Counter"/>
+        <mibObj alias="totalOthers" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.19" type="Counter"/>
+        <mibObj alias="totalCGIRequests" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.20" type="Counter"/>
+        <mibObj alias="totalBGIRequests" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.21" type="Counter"/>
+        <mibObj alias="totalNotFoundErrors" instance="0" oid=".1.3.6.1.4.1.311.1.7.3.1.22" type="Counter"/>
       </group>
 
       <systemDef name="Microsoft Windows NT/2000">

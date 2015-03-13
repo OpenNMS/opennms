@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>
@@ -94,18 +93,18 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#3]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="arrayOK"/>
-            <decode varbindvalue="2" varbinddecodedstring="arrayDegraded"/>
-            <decode varbindvalue="3" varbinddecodedstring="arrayFailed"/>
-            <decode varbindvalue="4" varbinddecodedstring="arrayRebuilding"/>
-            <decode varbindvalue="5" varbinddecodedstring="arrayRebuildingStarted"/>
-            <decode varbindvalue="6" varbinddecodedstring="arrayRebuildingFinished"/>
-            <decode varbindvalue="7" varbinddecodedstring="arrayInitializing"/>
-            <decode varbindvalue="8" varbinddecodedstring="arrayInitializingStarted"/>
-            <decode varbindvalue="9" varbinddecodedstring="arrayInitializingFinished"/>
-            <decode varbindvalue="10" varbinddecodedstring="diskOK"/>
-            <decode varbindvalue="11" varbinddecodedstring="diskDegraded"/>
-            <decode varbindvalue="12" varbinddecodedstring="diskFailEvent"/>
+            <decode varbinddecodedstring="arrayOK" varbindvalue="1"/>
+            <decode varbinddecodedstring="arrayDegraded" varbindvalue="2"/>
+            <decode varbinddecodedstring="arrayFailed" varbindvalue="3"/>
+            <decode varbinddecodedstring="arrayRebuilding" varbindvalue="4"/>
+            <decode varbinddecodedstring="arrayRebuildingStarted" varbindvalue="5"/>
+            <decode varbinddecodedstring="arrayRebuildingFinished" varbindvalue="6"/>
+            <decode varbinddecodedstring="arrayInitializing" varbindvalue="7"/>
+            <decode varbinddecodedstring="arrayInitializingStarted" varbindvalue="8"/>
+            <decode varbinddecodedstring="arrayInitializingFinished" varbindvalue="9"/>
+            <decode varbinddecodedstring="diskOK" varbindvalue="10"/>
+            <decode varbinddecodedstring="diskDegraded" varbindvalue="11"/>
+            <decode varbinddecodedstring="diskFailEvent" varbindvalue="12"/>
         </varbindsdecode>
     </event>
     <event>

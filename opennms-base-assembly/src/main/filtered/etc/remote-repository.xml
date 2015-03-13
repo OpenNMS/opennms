@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<remoteRepositoryConfig>
+<?xml version="1.0" encoding="UTF-8"?><remoteRepositoryConfig>
 	<remoteRepository>
 		<active>false</active>
 		<id>community</id>
@@ -12,4 +11,3 @@
 		<uri>http://localhost:8080/opennms/connect/rest/repo/</uri>
 	</remoteRepository>
 </remoteRepositoryConfig>
-

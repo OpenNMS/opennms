@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: CISCO-IPMROUTE-MIB -->
 <event>
 	<mask>
@@ -39,7 +39,7 @@ configured time interval.&lt;/p&gt;&lt;table&gt;
 	ciscoIpMRouteHeartBeatCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoIpMRouteMissingHeartBeats trap received 
 			ciscoIpMRouteHeartBeatSourceAddr=%parm[#1]% 
 			ciscoIpMRouteHeartBeatInterval=%parm[#2]% 
@@ -47,7 +47,7 @@ configured time interval.&lt;/p&gt;&lt;table&gt;
 			ciscoIpMRouteHeartBeatCount=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-IPMROUTE-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-MVPN-MIB -->
@@ -105,12 +105,12 @@ event only.&lt;/p&gt;&lt;table&gt;
 		modifiedMvrfDataMdtConfig(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoMvpnMvrfChange trap received  - MVRF Created
 			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -166,12 +166,12 @@ event only.&lt;/p&gt;&lt;table&gt;
 		modifiedMvrfDataMdtConfig(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoMvpnMvrfChange trap received - MVRF Deleted
 			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -227,12 +227,12 @@ event only.&lt;/p&gt;&lt;table&gt;
 		modifiedMvrfDataMdtConfig(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoMvpnMvrfChange trap received - Modified default MDT Config
 			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -288,12 +288,12 @@ event only.&lt;/p&gt;&lt;table&gt;
 		modifiedMvrfDataMdtConfig(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoMvpnMvrfChange trap received - Modified Data MDT Config
 			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -345,12 +345,12 @@ event only.&lt;/p&gt;&lt;table&gt;
 		modifiedMvrfDataMdtConfig(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoMvpnMvrfChange trap received 
 			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-MVPN-MIB -->
 <!-- Start of auto generated data from MIB: CISCO-PIM-MIB -->
@@ -390,12 +390,12 @@ was involved in the generation of this notification.&lt;/p&gt;&lt;table&gt;
 		destroy(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimInterfaceUp trap received 
 			pimInterfaceStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown:%nodeid%:%dpname%:%parm[names-all]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown:%nodeid%:%dpname%:%parm[names-all]%" reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%"/>
 </event>
 <event>
 	<mask>
@@ -433,12 +433,12 @@ was involved in the generation of this notification.&lt;/p&gt;&lt;table&gt;
 		destroy(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimInterfaceDown trap received 
 			pimInterfaceStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%"/>
 </event>
 <event>
 	<mask>
@@ -496,13 +496,13 @@ exists, enable this notification with utmost care.&lt;/p&gt;&lt;table&gt;
 		modifiedNewMapping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimRPMappingChange trap received - New Mapping
 			pimRPSetHoldTime=%parm[#1]% 
 			cpimRPMappingChangeType=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -560,13 +560,13 @@ exists, enable this notification with utmost care.&lt;/p&gt;&lt;table&gt;
 		modifiedNewMapping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimRPMappingChange trap received - Mapping Deleted
 			pimRPSetHoldTime=%parm[#1]% 
 			cpimRPMappingChangeType=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -624,13 +624,13 @@ exists, enable this notification with utmost care.&lt;/p&gt;&lt;table&gt;
 		modifiedNewMapping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimRPMappingChange trap received - Modified Old Mapping
 			pimRPSetHoldTime=%parm[#1]% 
 			cpimRPMappingChangeType=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -688,13 +688,13 @@ exists, enable this notification with utmost care.&lt;/p&gt;&lt;table&gt;
 		modifiedNewMapping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimRPMappingChange trap received - Modified New Mapping
 			pimRPSetHoldTime=%parm[#1]% 
 			cpimRPMappingChangeType=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -748,13 +748,13 @@ exists, enable this notification with utmost care.&lt;/p&gt;&lt;table&gt;
 		modifiedNewMapping(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimRPMappingChange trap received 
 			pimRPSetHoldTime=%parm[#1]% 
 			cpimRPMappingChangeType=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -833,7 +833,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 	cpimInvalidRegisterMsgsRcvd&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimInvalidRegister trap received 
 			cpimLastErrorOriginType=%parm[#1]% 
 			cpimLastErrorOrigin=%parm[#2]% 
@@ -844,7 +844,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 			cpimInvalidRegisterMsgsRcvd=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -923,7 +923,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 	cpimInvalidJoinPruneMsgsRcvd&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoPimInvalidJoinPrune trap received 
 			cpimLastErrorOriginType=%parm[#1]% 
 			cpimLastErrorOrigin=%parm[#2]% 
@@ -934,7 +934,7 @@ packet.&lt;/p&gt;&lt;table&gt;
 			cpimInvalidJoinPruneMsgsRcvd=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-PIM-MIB -->
 </events>

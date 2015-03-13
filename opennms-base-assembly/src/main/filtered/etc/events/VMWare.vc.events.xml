@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: VMWARE-VC-EVENT-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: VMWARE-VC-EVENT-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -52,7 +51,7 @@ for details.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vpxdAlarm trap received 
 			vmwVpxdTrapType=%parm[#1]% 
 			vmwVpxdHostName=%parm[#2]% 
@@ -88,7 +87,7 @@ configured to be sent periodically at a specified time interval via
 vCenter Server configuration by the vCenter Server SNMP agent.</p><table></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vpxdDiagnostic trap received</p>
 ]]>		</logmsg>
 	<severity>Normal</severity>
@@ -146,7 +145,7 @@ for details.</p><table>
 	%parm[#5]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vpxdAlarmInfo trap received 
 			vmwVpxdTargetObjType=%parm[#1]% 
 			vmwVpxdOldStatus=%parm[#2]% 
@@ -156,5 +155,4 @@ for details.</p><table>
 ]]>		</logmsg>
 	<severity>Warning</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: VMWARE-VC-EVENT-MIB -->
+</events><!-- End of auto generated data from MIB: VMWARE-VC-EVENT-MIB -->

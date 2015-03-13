@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: BGP4-V2-MIB-JUNIPER -->
 <event>
 	<mask>
@@ -62,7 +62,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
 		established(6)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxBgpM2Established trap received 
 			jnxBgpM2PeerLocalAddrType=%parm[#1]% 
 			jnxBgpM2PeerLocalAddr=%parm[#2]% 
@@ -72,7 +72,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
 			jnxBgpM2PeerState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxBgpM2BackwardTransition:%dpname%:%nodeid%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxBgpM2BackwardTransition:%dpname%:%nodeid%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -141,7 +141,7 @@ state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
 		established(6)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxBgpM2BackwardTransition trap received 
 			jnxBgpM2PeerLocalAddrType=%parm[#1]% 
 			jnxBgpM2PeerLocalAddr=%parm[#2]% 
@@ -152,7 +152,7 @@ state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
 			jnxBgpM2PeerState=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#4]%"/>
 </event>
 <!-- End of auto generated data from MIB: BGP4-V2-MIB-JUNIPER -->
 <!-- Start of auto generated data from MIB: JUNIPER-CFGMGMT-MIB -->
@@ -206,7 +206,7 @@ recorded in jnxCmCfgChgEventTable.&lt;/p&gt;&lt;table&gt;
 	jnxCmCfgChgEventLog&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCmCfgChange trap received 
 			jnxCmCfgChgEventTime=%parm[#1]% 
 			jnxCmCfgChgEventDate=%parm[#2]% 
@@ -269,7 +269,7 @@ change.&lt;/p&gt;&lt;table&gt;
 		updated(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCmRescueChange trap received 
 			jnxCmRescueChgTime=%parm[#1]% 
 			jnxCmRescueChgDate=%parm[#2]% 
@@ -337,7 +337,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 		standby(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPowerSupplyFailure trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -347,7 +347,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -405,7 +405,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 		standby(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFanFailure trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -415,7 +415,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -465,7 +465,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 	jnxOperatingTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOverTemperature trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -475,7 +475,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingTemp=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -559,7 +559,7 @@ vice versa.&lt;/p&gt;&lt;table&gt;
 		autoSwitched(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxRedundancySwitchover trap received 
 			jnxRedundancyContentsIndex=%parm[#1]% 
 			jnxRedundancyL1Index=%parm[#2]% 
@@ -640,7 +640,7 @@ has been removed from the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruRemoval trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -651,7 +651,7 @@ has been removed from the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -719,7 +719,7 @@ inserted into the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruInsertion trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -730,7 +730,7 @@ inserted into the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+   <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruRemoval:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -835,7 +835,7 @@ has been powered off in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruLastPowerOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruPowerOff trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -849,7 +849,7 @@ has been powered off in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruLastPowerOn=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -954,7 +954,7 @@ powered on in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruLastPowerOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruPowerOn trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -968,7 +968,7 @@ powered on in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruLastPowerOn=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruPowerOff:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1036,7 +1036,7 @@ able to load ukernel. In these cases, fru is replaced.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruFailed trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1047,7 +1047,7 @@ able to load ukernel. In these cases, fru is replaced.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1152,7 +1152,7 @@ has gone offline in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruLastPowerOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruOffline trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1166,7 +1166,7 @@ has gone offline in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruLastPowerOn=%parm[#10]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1234,7 +1234,7 @@ gone online in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruOnline trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1245,7 +1245,7 @@ gone online in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffLine:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruOffLine:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1314,7 +1314,7 @@ check state in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruCheck trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1394,7 +1394,7 @@ switched over.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFEBSwitchover trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1405,7 +1405,7 @@ switched over.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1476,7 +1476,7 @@ failed state in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxHardDiskFailed trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1487,7 +1487,7 @@ failed state in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1557,7 +1557,7 @@ from boot device list.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxHardDiskMissing trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1568,7 +1568,7 @@ from boot device list.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1626,7 +1626,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 		standby(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPowerSupplyOK trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -1636,7 +1636,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1693,7 +1693,7 @@ has recovered from the failure (not spinning) condition.&lt;/p&gt;&lt;table&gt;
 		standby(7)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFanOK trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -1703,7 +1703,7 @@ has recovered from the failure (not spinning) condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingState=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFanFailure:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1753,7 +1753,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 	jnxOperatingTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxTemperatureOK trap received 
 			jnxContentsContainerIndex=%parm[#1]% 
 			jnxContentsL1Index=%parm[#2]% 
@@ -1763,7 +1763,7 @@ condition.&lt;/p&gt;&lt;table&gt;
 			jnxOperatingTemp=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -1834,7 +1834,7 @@ is in ok state in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxFruOK trap received 
 			jnxFruContentsIndex=%parm[#1]% 
 			jnxFruL1Index=%parm[#2]% 
@@ -1845,7 +1845,7 @@ is in ok state in the chassis.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-LDP-MIB -->
@@ -1885,7 +1885,7 @@ is in ok state in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxLdpInstanceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxLdpLspUp trap received 
 			jnxLdpLspFec=%parm[#1]% 
 			jnxLdpRtrid=%parm[#2]% 
@@ -1940,7 +1940,7 @@ is in ok state in the chassis.&lt;/p&gt;&lt;table&gt;
 	jnxLdpInstanceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxLdpLspDown trap received 
 			jnxLdpLspFec=%parm[#1]% 
 			jnxLdpRtrid=%parm[#2]% 
@@ -1979,7 +1979,7 @@ enters the 'operational(5) state.&lt;/p&gt;&lt;table&gt;
 	jnxLdpSesUpIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxLdpSesUp trap received 
 			mplsLdpSesState=%parm[#1]% 
 			jnxLdpSesUpIf=%parm[#2]%&lt;/p&gt;
@@ -2036,7 +2036,7 @@ the last neighbor when jnxLdpSesDownReason is allAdjacenciesDown (3).&lt;/p&gt;&
 	jnxLdpSesDownIf&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxLdpSesDown trap received 
 			mplsLdpSesState=%parm[#1]% 
 			jnxLdpSesDownReason=%parm[#2]% 
@@ -2076,7 +2076,7 @@ path for the LSP is mplsPathInfoName.&lt;/p&gt;&lt;table&gt;
 	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspInfoUp trap received 
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
@@ -2113,7 +2113,7 @@ active path mplsPathInfoName went down.&lt;/p&gt;&lt;table&gt;
 	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspInfoDown trap received 
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
@@ -2151,7 +2151,7 @@ the specified LSP has switched traffic to
 	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspInfoChange trap received 
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
@@ -2188,7 +2188,7 @@ LSP mplsLspInfoName went down&lt;/p&gt;&lt;table&gt;
 	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspInfoPathDown trap received 
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
@@ -2225,7 +2225,7 @@ LSP mplsLspInfoName came up&lt;/p&gt;&lt;table&gt;
 	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspInfoPathUp trap received 
 			mplsLspInfoName=%parm[#1]% 
 			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
@@ -2262,7 +2262,7 @@ path for the LSP is mplsPathName.&lt;/p&gt;&lt;table&gt;
 	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspUp trap received 
 			mplsLspName=%parm[#1]% 
 			mplsPathName=%parm[#2]%&lt;/p&gt;
@@ -2299,7 +2299,7 @@ active path mplsPathName went down.&lt;/p&gt;&lt;table&gt;
 	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspDown trap received 
 			mplsLspName=%parm[#1]% 
 			mplsPathName=%parm[#2]%&lt;/p&gt;
@@ -2337,7 +2337,7 @@ the specified LSP has switched traffic to
 	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspChange trap received 
 			mplsLspName=%parm[#1]% 
 			mplsPathName=%parm[#2]%&lt;/p&gt;
@@ -2374,7 +2374,7 @@ LSP mplsLspName went down&lt;/p&gt;&lt;table&gt;
 	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspPathDown trap received 
 			mplsLspName=%parm[#1]% 
 			mplsPathName=%parm[#2]%&lt;/p&gt;
@@ -2411,7 +2411,7 @@ LSP mplsLspName came up&lt;/p&gt;&lt;table&gt;
 	mplsPathName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsLspPathUp trap received 
 			mplsLspName=%parm[#1]% 
 			mplsPathName=%parm[#2]%&lt;/p&gt;
@@ -2448,7 +2448,7 @@ of the 'jnxMplsLdpEntityInitSesThreshold' object.&lt;/p&gt;&lt;table&gt;
 	jnxMplsLdpEntityInitSesThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxMplsLdpInitSesThresholdExceeded trap received 
 			jnxMplsLdpEntityInitSesThreshold=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2487,7 +2487,7 @@ a specific Entity.&lt;/p&gt;&lt;table&gt;
 	jnxMplsLdpPeerPathVectorLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxMplsLdpPathVectorLimitMismatch trap received 
 			jnxMplsLdpEntityPathVectorLimit=%parm[#1]% 
 			jnxMplsLdpPeerPathVectorLimit=%parm[#2]%&lt;/p&gt;
@@ -2539,7 +2539,7 @@ the 'operational(5)' state.&lt;/p&gt;&lt;table&gt;
 	jnxMplsLdpSesStatsUnkTlvErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxMplsLdpSessionUp trap received 
 			jnxMplsLdpSesState=%parm[#1]% 
 			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
@@ -2593,7 +2593,7 @@ the 'operational(5)' state.&lt;/p&gt;&lt;table&gt;
 	jnxMplsLdpSesStatsUnkTlvErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxMplsLdpSessionDown trap received 
 			jnxMplsLdpSesState=%parm[#1]% 
 			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
@@ -2683,7 +2683,7 @@ set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt;
 	jnxPingResultsRttUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingRttThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -2781,7 +2781,7 @@ rttStdDevThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt
 	jnxPingResultsStdDevRttUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingRttStdDevThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -2875,7 +2875,7 @@ rttJitterThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt
 	jnxPingCtlRttJitterThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingRttJitterThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -2968,7 +2968,7 @@ egressThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt;
 	jnxPingResultsEgressUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingEgressThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3065,7 +3065,7 @@ egressStdDevThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table
 	jnxPingResultsStddevEgressUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingEgressStdDevThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3156,7 +3156,7 @@ jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt;
 	jnxPingCtlEgressJitterThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingEgressJitterThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3248,7 +3248,7 @@ ingressThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt;
 	jnxPingResultsIngressUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingIngressThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3345,7 +3345,7 @@ ingressStdDevThreshold bit is set in jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;tabl
 	jnxPingResultsStddevIngressUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingIngressStddevThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3436,7 +3436,7 @@ jnxPingCtlTrapGeneration.&lt;/p&gt;&lt;table&gt;
 	jnxPingCtlIngressJitterThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPingIngressJitterThresholdExceeded trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -3502,7 +3502,7 @@ Monitoring interface.&lt;/p&gt;&lt;table&gt;
 	jnxPMonLastOverloadDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPMonOverloadSet trap received 
 			ifDescr=%parm[#1]% 
 			jnxPMonLastOverload=%parm[#2]% 
@@ -3558,7 +3558,7 @@ Monitoring interface.&lt;/p&gt;&lt;table&gt;
 	jnxPMonLastOverloadDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxPMonOverloadCleared trap received 
 			ifDescr=%parm[#1]% 
 			jnxPMonLastOverload=%parm[#2]% 
@@ -3615,7 +3615,7 @@ jnxRmonAlarmGetFailReason.&lt;/p&gt;&lt;table&gt;
 		processRestarted(11)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxRmonAlarmGetFailure trap received 
 			alarmIndex=%parm[#1]% 
 			alarmVariable=%parm[#2]% 
@@ -3653,7 +3653,7 @@ were unsuccessful.&lt;/p&gt;&lt;table&gt;
 	alarmVariable&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxRmonGetOk trap received 
 			alarmIndex=%parm[#1]% 
 			alarmVariable=%parm[#2]%&lt;/p&gt;
@@ -3776,7 +3776,7 @@ were unsuccessful.&lt;/p&gt;&lt;table&gt;
 	jnxSonetLastAlarmDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSonetAlarmSet trap received 
 			ifDescr=%parm[#1]% 
 			jnxSonetLastAlarmId=%parm[#2]% 
@@ -3899,7 +3899,7 @@ were unsuccessful.&lt;/p&gt;&lt;table&gt;
 	jnxSonetLastAlarmDate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSonetAlarmCleared trap received 
 			ifDescr=%parm[#1]% 
 			jnxSonetLastAlarmId=%parm[#2]% 
@@ -3945,7 +3945,7 @@ value of an instance of apsChanStatusSwitchovers increments.&lt;/p&gt;&lt;table&
 		wtr(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			apsEventSwitchover trap received 
 			apsChanStatusSwitchovers=%parm[#1]% 
 			apsChanStatusCurrent=%parm[#2]%&lt;/p&gt;
@@ -3987,7 +3987,7 @@ value of an instance of apsStatusModeMismatches increments.&lt;/p&gt;&lt;table&g
 		extraTraffic(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			apsEventModeMismatch trap received 
 			apsStatusModeMismatches=%parm[#1]% 
 			apsStatusCurrent=%parm[#2]%&lt;/p&gt;
@@ -4029,7 +4029,7 @@ value of an instance of apsStatusChannelMismatches increments.&lt;/p&gt;&lt;tabl
 		extraTraffic(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			apsEventChannelMismatch trap received 
 			apsStatusChannelMismatches=%parm[#1]% 
 			apsStatusCurrent=%parm[#2]%&lt;/p&gt;
@@ -4071,7 +4071,7 @@ value of an instance of apsStatusPSBFs increments.&lt;/p&gt;&lt;table&gt;
 		extraTraffic(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			apsEventPSBF trap received 
 			apsStatusPSBFs=%parm[#1]% 
 			apsStatusCurrent=%parm[#2]%&lt;/p&gt;
@@ -4113,7 +4113,7 @@ value of an instance of apsStatusFEPLFs increments.&lt;/p&gt;&lt;table&gt;
 		extraTraffic(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			apsEventFEPLF trap received 
 			apsStatusFEPLFs=%parm[#1]% 
 			apsStatusCurrent=%parm[#2]%&lt;/p&gt;
@@ -4167,7 +4167,7 @@ of type jnxVpnIfVpnType transitions out of the 'down' state.&lt;/p&gt;&lt;table&
 	jnxVpnIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxVpnIfUp trap received 
 			jnxVpnIfVpnType=%parm[#1]% 
 			jnxVpnIfVpnName=%parm[#2]% 
@@ -4220,7 +4220,7 @@ of type jnxVpnIfVpnType transitions to the 'down' state.&lt;/p&gt;&lt;table&gt;
 	jnxVpnIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxVpnIfDown trap received 
 			jnxVpnIfVpnType=%parm[#1]% 
 			jnxVpnIfVpnName=%parm[#2]% 
@@ -4273,7 +4273,7 @@ of type jnxVpnPwVpnType transitions out of the 'down' state.&lt;/p&gt;&lt;table&
 	jnxVpnPwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxVpnPwUp trap received 
 			jnxVpnPwVpnType=%parm[#1]% 
 			jnxVpnPwVpnName=%parm[#2]% 
@@ -4326,7 +4326,7 @@ of type jnxVpnPwVpnType transitions to the 'down' state.&lt;/p&gt;&lt;table&gt;
 	jnxVpnPwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxVpnPwDown trap received 
 			jnxVpnPwVpnType=%parm[#1]% 
 			jnxVpnPwVpnName=%parm[#2]% 
@@ -4357,7 +4357,7 @@ of type jnxVpnPwVpnType transitions to the 'down' state.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;An access authentication trap signifies that the 
 specified service has started. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxAccessAuthServiceUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -4383,7 +4383,7 @@ specified service has started. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;An access authentication trap signifies that the 
 specified service has been stopped.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxAccessAuthServiceDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -4413,7 +4413,7 @@ the External authentication server is not responding.&lt;/p&gt;&lt;table&gt;
 	jnxUserAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxAccessAuthServerDisabled trap received 
 			jnxUserAAAServerName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4445,7 +4445,7 @@ again.&lt;/p&gt;&lt;table&gt;
 	jnxUserAAAServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxAccessAuthServerEnabled trap received 
 			jnxUserAAAServerName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4501,7 +4501,7 @@ while transferring a collector file.&lt;/p&gt;&lt;table&gt;
 	jnxCollNotifyInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollUnavailableDest trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollNotifyDate=%parm[#2]% 
@@ -4559,7 +4559,7 @@ has been resolved.&lt;/p&gt;&lt;table&gt;
 	jnxCollNotifyInetAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollUnavailableDestCleared trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollNotifyDate=%parm[#2]% 
@@ -4633,7 +4633,7 @@ a file transfer.&lt;/p&gt;&lt;table&gt;
 	jnxCollNotifyFtpErrorText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollUnsuccessfulTransfer trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollNotifyDate=%parm[#2]% 
@@ -4695,7 +4695,7 @@ triggered.&lt;/p&gt;&lt;table&gt;
 	jnxCollPicIfDestroyedFiles&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollFlowOverload trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollPicIfStateChangeDate=%parm[#2]% 
@@ -4754,7 +4754,7 @@ cleared.&lt;/p&gt;&lt;table&gt;
 	jnxCollPicIfDestroyedFiles&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollFlowOverloadCleared trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollPicIfStateChangeDate=%parm[#2]% 
@@ -4806,7 +4806,7 @@ triggered.&lt;/p&gt;&lt;table&gt;
 	jnxCollNotifyMemFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollMemoryUnavailable trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollPicIfStateChangeDate=%parm[#2]% 
@@ -4857,7 +4857,7 @@ cleared.&lt;/p&gt;&lt;table&gt;
 	jnxCollNotifyMemFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollMemoryAvailable trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollPicIfStateChangeDate=%parm[#2]% 
@@ -4946,7 +4946,7 @@ cleared.&lt;/p&gt;&lt;table&gt;
 		automatic(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxCollFtpSwitchover trap received 
 			ifDescr=%parm[#1]% 
 			jnxCollNotifyDate=%parm[#2]% 
@@ -4997,7 +4997,7 @@ is identified by jnxSpSvcSetIfMemoryZone.&lt;/p&gt;&lt;table&gt;
 	jnxSpSvcSetIfTableName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSpSvcSetZoneEntered trap received 
 			jnxSpSvcSetIfMemoryZone=%parm[#1]% 
 			jnxSpSvcSetIfTableName=%parm[#2]%&lt;/p&gt;
@@ -5039,7 +5039,7 @@ identified by jnxSpSvcSetIfMemoryZone.&lt;/p&gt;&lt;table&gt;
 	jnxSpSvcSetIfTableName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSpSvcSetZoneExited trap received 
 			jnxSpSvcSetIfMemoryZone=%parm[#1]% 
 			jnxSpSvcSetIfTableName=%parm[#2]%&lt;/p&gt;
@@ -5075,7 +5075,7 @@ for CPU utilization (85%).&lt;/p&gt;&lt;table&gt;
 	jnxSpSvcSetIfTableName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSpSvcSetCpuExceeded trap received 
 			jnxSpSvcSetIfCpuUtil=%parm[#1]% 
 			jnxSpSvcSetIfTableName=%parm[#2]%&lt;/p&gt;
@@ -5111,7 +5111,7 @@ threshold for CPU utilization (85%).&lt;/p&gt;&lt;table&gt;
 	jnxSpSvcSetIfTableName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSpSvcSetCpuOk trap received 
 			jnxSpSvcSetIfCpuUtil=%parm[#1]% 
 			jnxSpSvcSetIfTableName=%parm[#2]%&lt;/p&gt;
@@ -5157,7 +5157,7 @@ or progresses to a terminal state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
 		pointToPoint(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3VirtIfStateChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3VirtIfState=%parm[#2]%&lt;/p&gt;
@@ -5212,7 +5212,7 @@ ospfIfStateChange.&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3NbrStateChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3NbrState=%parm[#2]%&lt;/p&gt;
@@ -5261,7 +5261,7 @@ progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
 		full(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3VirtNbrStateChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3VirtNbrState=%parm[#2]%&lt;/p&gt;
@@ -5340,7 +5340,7 @@ prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
 		nullPacket(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3IfConfigError trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3IfState=%parm[#2]% 
@@ -5413,7 +5413,7 @@ adjacency from forming.&lt;/p&gt;&lt;table&gt;
 		nullPacket(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3VirtIfConfigError trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3VirtIfState=%parm[#2]% 
@@ -5475,7 +5475,7 @@ non-virtual interface.&lt;/p&gt;&lt;table&gt;
 		nullPacket(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3IfRxBadPacket trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3IfState=%parm[#2]% 
@@ -5528,7 +5528,7 @@ on a virtual interface.&lt;/p&gt;&lt;table&gt;
 		nullPacket(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3VirtIfRxBadPacket trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3VirtIfState=%parm[#2]% 
@@ -5566,7 +5566,7 @@ database has exceeded ospfv3ExtAreaLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	jnxOspfv3ExtAreaLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3LsdbOverflow trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3ExtAreaLsdbLimit=%parm[#2]%&lt;/p&gt;
@@ -5604,7 +5604,7 @@ ospfv3ExtAreaLsdbLimit.&lt;/p&gt;&lt;table&gt;
 	jnxOspfv3ExtAreaLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3LsdbApproachingOverflow trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3ExtAreaLsdbLimit=%parm[#2]%&lt;/p&gt;
@@ -5653,7 +5653,7 @@ Backup).&lt;/p&gt;&lt;table&gt;
 		otherDesignatedRouter(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3IfStateChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3IfState=%parm[#2]%&lt;/p&gt;
@@ -5697,7 +5697,7 @@ status on a per area basis.&lt;/p&gt;&lt;table&gt;
 		disabled(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3NssaTranslatorStatusChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3AreaNssaTranslatorState=%parm[#2]%&lt;/p&gt;
@@ -5754,7 +5754,7 @@ changes.&lt;/p&gt;&lt;table&gt;
 		topologyChanged(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3RestartStatusChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3RestartStatus=%parm[#2]% 
@@ -5812,7 +5812,7 @@ neighbor restart helper status transitions for a neighbor.&lt;/p&gt;&lt;table&gt
 		topologyChanged(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3NbrRestartHelperStatusChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3NbrRestartHelperStatus=%parm[#2]% 
@@ -5871,7 +5871,7 @@ transitions for a virtual neighbor.&lt;/p&gt;&lt;table&gt;
 		topologyChanged(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxOspfv3VirtNbrRestartHelperStatusChange trap received 
 			jnxOspfv3RouterId=%parm[#1]% 
 			jnxOspfv3VirtNbrRestartHelperStatus=%parm[#2]% 
@@ -5975,7 +5975,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSyslogTrap emergency trap received 
 			jnxSyslogEventName=%parm[#1]% 
 			jnxSyslogTimestamp=%parm[#2]% 
@@ -6081,7 +6081,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSyslogTrap alert trap received 
 			jnxSyslogEventName=%parm[#1]% 
 			jnxSyslogTimestamp=%parm[#2]% 
@@ -6187,7 +6187,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSyslogTrap critical trap received 
 			jnxSyslogEventName=%parm[#1]% 
 			jnxSyslogTimestamp=%parm[#2]% 
@@ -6293,7 +6293,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSyslogTrap error trap received 
 			jnxSyslogEventName=%parm[#1]% 
 			jnxSyslogTimestamp=%parm[#2]% 
@@ -6395,7 +6395,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jnxSyslogTrap trap received 
 			jnxSyslogEventName=%parm[#1]% 
 			jnxSyslogTimestamp=%parm[#2]% 
@@ -6464,7 +6464,7 @@ the jnxSyslogTrap objects, this notification can include
 	jnxJsChClusterSwitchoverInfoReason=%parm[#6]%&lt;/p&gt;
 	</logmsg>
 	<severity>Minor</severity>
-	<alarm-data auto-clean="true" alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-CHASSIS-CLUSTER-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-JS-AUTH-MIB -->
@@ -6520,7 +6520,7 @@ jnxJsFwAuthServiceDesc=%parm[#3]%
 jnxJsFwAuthReason=%parm[#4]%&lt;/p&gt;
 	</logmsg>
 	<severity>Warning</severity>
-	<alarm-data alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%:%parm[#1]%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -6546,7 +6546,7 @@ jnxJsFwAuthReason=%parm[#4]%&lt;/p&gt;
 jnxJsFwAuthServiceUp trap received&lt;/p&gt;
 	</logmsg>
 	<severity>Normal</severity>
-	<alarm-data alarm-type="2" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxJsFwAuthServiceDown:%dpname%:%nodeid%:%ipaddr%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxJsFwAuthServiceDown:%dpname%:%nodeid%:%ipaddr%" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%"/>
 </event>
 <event>
 	<mask>
@@ -6572,7 +6572,7 @@ jnxJsFwAuthServiceUp trap received&lt;/p&gt;
 jnxJsFwAuthServiceDown trap received&lt;/p&gt;
 	</logmsg>
 	<severity>Minor</severity>
-	<alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%"/>
 </event>
 <event>
 	<mask>
@@ -6602,7 +6602,7 @@ users. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 jnxJsFwAuthCapacityExceeded trap received&lt;/p&gt;
 	</logmsg>
 	<severity>Minor</severity>
-	<alarm-data alarm-type="3" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%ipaddr%"/>
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-JS-AUTH-MIB -->
 </events>

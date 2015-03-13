@@ -1,14 +1,11 @@
-<?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.threshd.ThreshdConfiguration"?>
-<threshd-configuration 
-	threads="5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?castor class-name="org.opennms.netmgt.threshd.ThreshdConfiguration"?><threshd-configuration threads="5">
 
 	<package name="mib2">
 		<filter>IPADDR != '0.0.0.0'</filter>	 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="mib2"/>
 		</service>
 	</package>
@@ -16,9 +13,9 @@
 	<package name="hrstorage">
 		<filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.311.%' | nodeSysOID LIKE '.1.3.6.1.4.1.2.3.1.2.1.1.3.%')</filter>	 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="hrstorage"/>
 		</service>
 	</package>
@@ -26,9 +23,9 @@
 	<package name="cisco">
 		<filter>IPADDR != '0.0.0.0' &amp; nodeSysOID LIKE '.1.3.6.1.4.1.9.%'</filter>	 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="cisco"/>
 		</service>
 	</package>
@@ -36,9 +33,9 @@
 	<package name="netsnmp">
 		<filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.2021.%' | nodeSysOID LIKE '.1.3.6.1.4.1.8072.%')</filter>	 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="netsnmp"/>
 		</service>
 	</package>
@@ -46,9 +43,9 @@
 	<package name="netsnmp-memory-linux">
 		<filter>IPADDR != '0.0.0.0' &amp; nodeSysOID == '.1.3.6.1.4.1.8072.3.2.10'</filter> 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="netsnmp-memory-linux"/>
 		</service>
 	</package>
@@ -56,12 +53,11 @@
 	<package name="netsnmp-memory-nonlinux">
 		<filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.2021.%' | nodeSysOID LIKE '.1.3.6.1.4.1.8072.%') &amp; nodeSysOID != '.1.3.6.1.4.1.8072.3.2.10'</filter> 
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
 		
-		<service name="SNMP" interval="300000" user-defined="false" status="on">
+		<service interval="300000" name="SNMP" status="on" user-defined="false">
 			<parameter key="thresholding-group" value="netsnmp-memory-nonlinux"/>
 		</service>
 	</package>
 
 </threshd-configuration>
-

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>

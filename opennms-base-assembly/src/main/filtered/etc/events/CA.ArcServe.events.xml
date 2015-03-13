@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -27,7 +27,7 @@
 	arcServetrapdesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ARCServe: arcServetrapHigh trap received 
 			arcServeServerName=%parm[#1]% 
 			arcServetrapdesc=%parm[#2]%&lt;/p&gt;
@@ -62,7 +62,7 @@
 	arcServetrapdesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ARCServe: arcServetrapMed trap received 
 			arcServeServerName=%parm[#1]% 
 			arcServetrapdesc=%parm[#2]%&lt;/p&gt;
@@ -97,7 +97,7 @@
 	arcServetrapdesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ARCServe: arcServetrapLow trap received 
 			arcServeServerName=%parm[#1]% 
 			arcServetrapdesc=%parm[#2]%&lt;/p&gt;

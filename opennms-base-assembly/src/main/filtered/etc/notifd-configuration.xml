@@ -1,43 +1,30 @@
-<?xml version="1.0"?>
-<notifd-configuration 
-        status="off"
-	match-all="true">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><notifd-configuration match-all="true" status="off">
         
-	<auto-acknowledge resolution-prefix="RESOLVED: " 
-                          uei="uei.opennms.org/nodes/serviceResponsive" 
-                          acknowledge="uei.opennms.org/nodes/serviceUnresponsive">
+	<auto-acknowledge acknowledge="uei.opennms.org/nodes/serviceUnresponsive" resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/serviceResponsive">
                           <match>nodeid</match>
                           <match>interfaceid</match>
                           <match>serviceid</match>
         </auto-acknowledge>
 	
-        <auto-acknowledge resolution-prefix="RESOLVED: " 
-                          uei="uei.opennms.org/nodes/nodeRegainedService" 
-                          acknowledge="uei.opennms.org/nodes/nodeLostService">
+        <auto-acknowledge acknowledge="uei.opennms.org/nodes/nodeLostService" resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeRegainedService">
                           <match>nodeid</match>
                           <match>interfaceid</match>
                           <match>serviceid</match>
         </auto-acknowledge>
         
-        <auto-acknowledge resolution-prefix="RESOLVED: " 
-                          uei="uei.opennms.org/nodes/interfaceUp" 
-                          acknowledge="uei.opennms.org/nodes/interfaceDown">
+        <auto-acknowledge acknowledge="uei.opennms.org/nodes/interfaceDown" resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/interfaceUp">
                           <match>nodeid</match>
                           <match>interfaceid</match>
         </auto-acknowledge>
         
-        <auto-acknowledge resolution-prefix="RESOLVED: " 
-                          uei="uei.opennms.org/nodes/nodeUp" 
-                          acknowledge="uei.opennms.org/nodes/nodeDown">
+        <auto-acknowledge acknowledge="uei.opennms.org/nodes/nodeDown" resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeUp">
                           <match>nodeid</match>
         </auto-acknowledge>
         
-        <auto-acknowledge resolution-prefix="RESOLVED: "
-                          uei="uei.opennms.org/correlation/remote/wideSpreadOutageResolved"
-                          acknowledge="uei.opennms.org/correlation/remote/wideSpreadOutage">
-                          <match xmlns="">nodeid</match>
-                          <match xmlns="">interfaceid</match>
-                          <match xmlns="">serviceid</match>
+        <auto-acknowledge acknowledge="uei.opennms.org/correlation/remote/wideSpreadOutage" resolution-prefix="RESOLVED: " uei="uei.opennms.org/correlation/remote/wideSpreadOutageResolved">
+                          <match>nodeid</match>
+                          <match>interfaceid</match>
+                          <match>serviceid</match>
         </auto-acknowledge>
         
         <queue>

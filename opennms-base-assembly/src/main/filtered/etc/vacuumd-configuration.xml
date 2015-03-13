@@ -1,4 +1,4 @@
-<VacuumdConfiguration period="86400000" >
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><VacuumdConfiguration period="86400000">
   <statement>
     <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
     DELETE FROM element
@@ -71,57 +71,29 @@
   </statement>
     
   <automations>
-    <automation name="cosmicClear" interval="30000" active="true" 
-                trigger-name="selectResolvers" 
-                action-name="clearProblems" />
+    <automation action-name="clearProblems" active="true" interval="30000" name="cosmicClear" trigger-name="selectResolvers"/>
                 
-    <automation name="cleanUp" interval="60000" active="true"
-                action-name="deletePastClearedAlarms" />
+    <automation action-name="deletePastClearedAlarms" active="true" interval="60000" name="cleanUp"/>
                 
-    <automation name="fullCleanUp" interval="300000" active="true" 
-                action-name="deleteAllPastClearedAlarms" />
+    <automation action-name="deleteAllPastClearedAlarms" active="true" interval="300000" name="fullCleanUp"/>
                 
-    <automation name="GC" interval="300000" active="true" 
-                action-name="garbageCollect" />
+    <automation action-name="garbageCollect" active="true" interval="300000" name="GC"/>
                 
-    <automation name="fullGC" interval="300000" active="true" 
-                action-name="fullGarbageCollect" />
+    <automation action-name="fullGarbageCollect" active="true" interval="300000" name="fullGC"/>
                 
-    <automation name="unclear" interval="30000"  active="true" 
-                trigger-name="selectClearedAlarms" 
-                action-name="resetSeverity" />
+    <automation action-name="resetSeverity" active="true" interval="30000" name="unclear" trigger-name="selectClearedAlarms"/>
                 
-    <automation name="escalation" interval="30000" active="false" 
-                trigger-name="selectSuspectAlarms" 
-                action-name="escalateAlarm" 
-                action-event="eventEscalated" />
+    <automation action-event="eventEscalated" action-name="escalateAlarm" active="false" interval="30000" name="escalation" trigger-name="selectSuspectAlarms"/>
                 
-    <automation name="purgeStatisticsReports" active="true"
-                interval="3600000" 
-                action-name="deletePurgeableStatisticsReports" />
+    <automation action-name="deletePurgeableStatisticsReports" active="true" interval="3600000" name="purgeStatisticsReports"/>
     
     <!-- Enable these automation for automatic Trouble Ticketing -->
-    <automation name="createTickets" interval="30000" active="false" 
-                trigger-name="selectNullTicketStateAlarms" 
-                action-name="acknowledgeAlarm" 
-                action-event="createTicket" />
-    <automation name="createCriticalTicket" interval="30000" active="false" 
-                trigger-name="selectCritialOpenAlarms" 
-                action-name="acknowledgeAlarm" 
-                action-event="createTicket" />
-    <automation name="updateTickets" interval="15000" active="false"
-                trigger-name="selectNotNullTicketStateAlarms" 
-                action-name="updateAutomationTime" 
-                action-event="updateTicket" />
-    <automation name="closeClearedAlarmTickets" interval="60000" active="false" 
-                trigger-name="selectClearedAlarmWithOpenTicketState" 
-                action-name="updateAutomationTime" 
-                action-event="closeTicket" />
-    <automation name="clearAlarmsForClosedTickets" interval="60000" active="false" 
-                trigger-name="selectClosedTicketStateForProblemAlarms" 
-                action-name="clearClosedTicketAlarms" />
-    <automation name="cleanUpRpStatusChanges" interval="600000" active="true" 
-                action-name="cleanUpRpStatusChanges" />
+    <automation action-event="createTicket" action-name="acknowledgeAlarm" active="false" interval="30000" name="createTickets" trigger-name="selectNullTicketStateAlarms"/>
+    <automation action-event="createTicket" action-name="acknowledgeAlarm" active="false" interval="30000" name="createCriticalTicket" trigger-name="selectCritialOpenAlarms"/>
+    <automation action-event="updateTicket" action-name="updateAutomationTime" active="false" interval="15000" name="updateTickets" trigger-name="selectNotNullTicketStateAlarms"/>
+    <automation action-event="closeTicket" action-name="updateAutomationTime" active="false" interval="60000" name="closeClearedAlarmTickets" trigger-name="selectClearedAlarmWithOpenTicketState"/>
+    <automation action-name="clearClosedTicketAlarms" active="false" interval="60000" name="clearAlarmsForClosedTickets" trigger-name="selectClosedTicketStateForProblemAlarms"/>
+    <automation action-name="cleanUpRpStatusChanges" active="true" interval="600000" name="cleanUpRpStatusChanges"/>
     
     <!-- Enable these automation for monitoring maintenance contracts -->
     <!--
@@ -147,7 +119,7 @@
   
   <triggers>
     <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
-    <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  now() AS _ts
@@ -159,7 +131,7 @@
     </trigger>
   
     <!-- Find Alarms that are older than 15 minutes with no Ticket ID (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectNullTicketStateAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectNullTicketStateAlarms" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  a.eventuei AS _eventuei, 
@@ -178,7 +150,7 @@
     <!-- Find Alarms that are in critical state with no TicketID and open ticket.  This handles issues where 
          alarms are continuously being reduced and has escalated high enough to require a ticket when 
          the alarm hasn't been escalated. (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectCritialOpenAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectCritialOpenAlarms" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  a.eventuei AS _eventuei, 
@@ -195,7 +167,7 @@
     </trigger>
     
     <!-- Find Alarms that have a TicketState (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectNotNullTicketStateAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectNotNullTicketStateAlarms" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  a.eventuei AS _eventuei, 
@@ -211,7 +183,7 @@
     </trigger>
 
     <!-- Find Alarms that have cleared and have an open ticket state (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectClearedAlarmWithOpenTicketState" operator="&gt;=" row-count="1" >
+    <trigger name="selectClearedAlarmWithOpenTicketState" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  a.eventuei AS _eventuei, 
@@ -226,7 +198,7 @@
       </statement>
     </trigger>    
   
-    <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1">
       <statement>
           SELECT a.alarmid AS _alarmid, 
                  a.eventuei AS _eventuei, 
@@ -247,7 +219,7 @@
     </trigger>
   
     <!-- This finds problems that have reoccurred since the previoius clear -->
-    <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1">
       <statement>
         SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
           FROM alarms a
@@ -255,12 +227,12 @@
             ON e.eventid = a.lasteventid
          WHERE severity = 2
            AND alarmtype = 1
-           AND a.lasteventtime > a.lastautomationtime
+           AND a.lasteventtime &gt; a.lastautomationtime
       </statement>
     </trigger>
  
     <!-- Find all alarms that potentially clear problems --> 
-    <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
+    <trigger name="selectResolvers" operator="&gt;=" row-count="1">
       <statement>
         SELECT *, now() AS _ts 
           FROM alarms 
@@ -319,7 +291,7 @@
   </triggers>
     
   <actions>
-    <action name="acknowledgeAlarm" >
+    <action name="acknowledgeAlarm">
       <statement>
         UPDATE alarms
            SET alarmackuser = ${_user}, alarmacktime = ${_ts}, lastautomationtime = ${_ts}
@@ -327,7 +299,7 @@
       </statement>
     </action>
   
-    <action name="updateAutomationTime" >
+    <action name="updateAutomationTime">
       <statement>
         UPDATE alarms
            SET lastautomationtime = ${_ts}
@@ -335,7 +307,7 @@
       </statement>
     </action>
   
-    <action name="escalateAlarm" >
+    <action name="escalateAlarm">
       <statement>
         UPDATE alarms
            SET alarmAckUser = null, alarmAckTime = null, severity = severity +1, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
@@ -343,7 +315,7 @@
       </statement>
     </action>
   
-    <action name="resetSeverity" >
+    <action name="resetSeverity">
       <statement>
         UPDATE alarms
            SET severity = ${_sev}, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
@@ -352,7 +324,7 @@
     </action>
 
     <!-- action used for postgres 7.4 compatibility -->
-    <action name="garbageCollect" >
+    <action name="garbageCollect">
       <statement>
         DELETE FROM alarms
          WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
@@ -371,7 +343,7 @@
     -->
   
     <!-- action used for postgres 7.4 compatibility -->
-    <action name="fullGarbageCollect" >
+    <action name="fullGarbageCollect">
       <statement>
         DELETE FROM alarms
          WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
@@ -388,7 +360,7 @@
     -->
     
     <!--  ticket state of 3 is closed -->
-    <action name="deletePastClearedAlarms" >
+    <action name="deletePastClearedAlarms">
       <statement>
         DELETE FROM alarms
          WHERE severity &lt;= 3
@@ -399,7 +371,7 @@
 
     <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
          update ticket action-event -->
-    <action name="deleteAllPastClearedAlarms" >
+    <action name="deleteAllPastClearedAlarms">
       <statement>
         DELETE from alarms
          WHERE severity &lt;= 3
@@ -409,7 +381,7 @@
     </action>
   
     <!--  New and optimized version of clearing problems -->
-    <action name="clearProblems" >
+    <action name="clearProblems">
       <statement>
         UPDATE alarms 
            SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
@@ -421,7 +393,7 @@
     </action>
     
     <!--  clear alarms that have a trouble ticket assigned as closed and alarm has not cleared-->
-    <action name="clearClosedTicketAlarms" >
+    <action name="clearClosedTicketAlarms">
       <statement>
         UPDATE alarms 
            SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
@@ -429,7 +401,7 @@
       </statement> 
     </action>
     
-    <action name="deletePurgeableStatisticsReports" >
+    <action name="deletePurgeableStatisticsReports">
       <statement>
         DELETE from statisticsReport
          WHERE purgeDate &lt; now()
@@ -437,7 +409,7 @@
     </action>
 
     <!-- Does nothing while still meeting the requirements of all actions -->
-    <action name="doNothingAction" >
+    <action name="doNothingAction">
       <statement>
         UPDATE node
            SET nodeid = -1
@@ -500,43 +472,43 @@
 
   <!--  Deprecating this element... see the new <action-events> element -->    
   <auto-events>
-    <auto-event name="escalationEvent" >
+    <auto-event name="escalationEvent">
       <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
     </auto-event>
   </auto-events>
 
   <!-- Note: action events that have tokens require the for-each-result attribute to be set to true -->
   <action-events>
-    <action-event name="createTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/create" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
+    <action-event for-each-result="true" name="createTicket">
+      <assignment name="uei" type="field" value="uei.opennms.org/troubleTicket/create"/>
+      <assignment name="alarmUei" type="parameter" value="${_eventuei}"/>
+      <assignment name="user" type="parameter" value="${_user}"/>
+      <assignment name="alarmId" type="parameter" value="${_alarmid}"/>
     </action-event>
     
-    <action-event name="updateTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/update" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
+    <action-event for-each-result="true" name="updateTicket">
+      <assignment name="uei" type="field" value="uei.opennms.org/troubleTicket/update"/>
+      <assignment name="alarmUei" type="parameter" value="${_eventuei}"/>
+      <assignment name="user" type="parameter" value="${_user}"/>
+      <assignment name="alarmId" type="parameter" value="${_alarmid}"/>
+      <assignment name="troubleTicket" type="parameter" value="${_tticketID}"/>
     </action-event>
 
-    <action-event name="closeTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/close" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
+    <action-event for-each-result="true" name="closeTicket">
+      <assignment name="uei" type="field" value="uei.opennms.org/troubleTicket/close"/>
+      <assignment name="alarmUei" type="parameter" value="${_eventuei}"/>
+      <assignment name="user" type="parameter" value="${_user}"/>
+      <assignment name="alarmId" type="parameter" value="${_alarmid}"/>
+      <assignment name="troubleTicket" type="parameter" value="${_tticketID}"/>
     </action-event>
     
-    <action-event name="eventEscalated" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
-      <assignment type="field" name="nodeid" value="${_nodeid}" />
-      <assignment type="field" name="interface" value="${_ipaddr}" />
-      <assignment type="field" name="service" value="${_servicename}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
+    <action-event for-each-result="true" name="eventEscalated">
+      <assignment name="uei" type="field" value="uei.opennms.org/vacuumd/alarmEscalated"/>
+      <assignment name="nodeid" type="field" value="${_nodeid}"/>
+      <assignment name="interface" type="field" value="${_ipaddr}"/>
+      <assignment name="service" type="field" value="${_servicename}"/>
+      <assignment name="alarmId" type="parameter" value="${_alarmid}"/>
+      <assignment name="alarmEventUei" type="parameter" value="${_eventUei}"/>
     </action-event>
     
     <!-- Monitoring maintenance conracts -->

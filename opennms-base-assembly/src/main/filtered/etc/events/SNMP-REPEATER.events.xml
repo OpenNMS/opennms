@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: SNMP-REPEATER-MIB -->
 <event>
 	<mask>
@@ -53,7 +53,7 @@ configured recipients.)&lt;/p&gt;&lt;table&gt;
 		generalFailure(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrHealth trap received 
 			rptrOperStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -100,7 +100,7 @@ recipients.)&lt;/p&gt;&lt;table&gt;
 	rptrGroupIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrGroupChange trap received 
 			rptrGroupIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -167,7 +167,7 @@ well.&lt;/p&gt;&lt;table&gt;
 		generalFailure(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrResetEvent trap received 
 			rptrOperStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -219,12 +219,12 @@ to all configured recipients.)&lt;/p&gt;&lt;table&gt;
 		failure(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrInfoHealth trap received 
 			rptrInfoOperStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -271,12 +271,12 @@ to all configured recipients.)&lt;/p&gt;&lt;table&gt;
 		failure(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrInfoHealth trap received 
 			rptrInfoOperStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure:%dpname%:%nodeid%" />
+<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -332,12 +332,12 @@ and warmStart trap PDUs.&lt;/p&gt;&lt;table&gt;
 		failure(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rptrInfoResetEvent trap received 
 			rptrInfoOperStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: SNMP-REPEATER-MIB -->
 </events>

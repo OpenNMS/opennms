@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Brocade Traps -->
 <!-- Start of Brocade MIB: FCMGMT-MIB -->
 <event>
@@ -30,7 +30,7 @@
  unknown(1) online(2) offline(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Connectivity Unit Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Connectivity Unit Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -56,7 +56,7 @@
  connUnitId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: connUnit Deleted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: connUnit Deleted.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -91,7 +91,7 @@
  connUnitEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 </descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Connectivity Unit Event: %parm[#4]%.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Connectivity Unit Event: %parm[#4]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -120,7 +120,7 @@
  unknown(1) other(2) ok(3) warning(4) failed(5)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Connectivity Unit Sensor Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Connectivity Unit Sensor Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -153,7 +153,7 @@
  unknown(1) online(2) offline(3) bypassed(4) diagnostics(5)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Connectivity Unit Port Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Connectivity Unit Port Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Brocade MIB: FCMGMT-MIB -->
@@ -183,7 +183,7 @@
  sw-ok(1) sw-central-memory-fault(2) sw-embedded-port-fault(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Software Fault.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Software Fault.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -227,7 +227,7 @@
  swSensorInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Evironmental Sensor has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Evironmental Sensor has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -265,7 +265,7 @@
  portNum-14(15) portNum-15(16)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: An FC Port has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: An FC Port has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -301,7 +301,7 @@
  swEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Event Description: %parm[#5]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Event Description: %parm[#5]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -341,7 +341,7 @@
  swFwLastState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: A Fabric Watch event has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: A Fabric Watch event has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -367,7 +367,7 @@
  swTrackChangesInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Brocade Event: Configuration Change has occurred: %parm[#1]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Brocade Event: Configuration Change has occurred: %parm[#1]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Brocade MIB: SW-TRAP -->
@@ -390,7 +390,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

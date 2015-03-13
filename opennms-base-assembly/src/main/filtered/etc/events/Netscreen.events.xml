@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: NETSCREEN-TRAP-MIB -->
 <event>
 	<mask>
@@ -165,7 +165,7 @@ occured.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapHw trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -337,7 +337,7 @@ been triggered.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapFw trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -509,7 +509,7 @@ occured.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapSw trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -681,7 +681,7 @@ been triggered.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapTrf trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -852,7 +852,7 @@ been triggered.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapVpn trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -1023,7 +1023,7 @@ been triggered.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapNsrp trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -1195,7 +1195,7 @@ occurred.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapGPRO trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -1366,7 +1366,7 @@ occurred.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapDrp trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -1538,7 +1538,7 @@ occured.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapIFFailover trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;
@@ -1709,7 +1709,7 @@ occured.&lt;/p&gt;&lt;table&gt;
 	netscreenTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			netscreenTrapIDPAttack trap received 
 			netscreenTrapType=%parm[#1]% 
 			netscreenTrapDesc=%parm[#2]%&lt;/p&gt;

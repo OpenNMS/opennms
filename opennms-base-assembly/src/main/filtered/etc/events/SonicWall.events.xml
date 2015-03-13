@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of SonicWall Traps -->
 <!-- Start of SonicWall MIB: SONICWALL-FIREWALL-TRAP-MIB -->
 <event>
@@ -45,7 +45,7 @@
  swTrapInfoTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SonicWall Event: Firewall Has Detected an Attack.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SonicWall Event: Firewall Has Detected an Attack.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -93,7 +93,7 @@
  swTrapInfoTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SonicWall Event: System Problem with SonicWALL Appliance.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SonicWall Event: System Problem with SonicWALL Appliance.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -140,7 +140,7 @@
  swTrapInfoTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SonicWall Event: Firewall Blocked Web Site.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SonicWall Event: Firewall Blocked Web Site.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of SonicWall MIB: SONICWALL-FIREWALL-TRAP-MIB -->
@@ -163,7 +163,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

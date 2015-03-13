@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>
@@ -55,13 +54,13 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#4]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="off"/>
-            <decode varbindvalue="1" varbinddecodedstring="on"/>
+            <decode varbinddecodedstring="off" varbindvalue="0"/>
+            <decode varbinddecodedstring="on" varbindvalue="1"/>
         </varbindsdecode>
         <varbindsdecode>
             <parmid>parm[#5]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="normal"/>
-            <decode varbindvalue="1" varbinddecodedstring="alarm"/>
+            <decode varbinddecodedstring="normal" varbindvalue="0"/>
+            <decode varbinddecodedstring="alarm" varbindvalue="1"/>
         </varbindsdecode>
     </event>
     <event>
@@ -142,26 +141,26 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#5]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="invalid"/>
-            <decode varbindvalue="1" varbinddecodedstring="normal"/>
-            <decode varbindvalue="2" varbinddecodedstring="alarmstate"/>
-            <decode varbindvalue="3" varbinddecodedstring="alarm"/>
+            <decode varbinddecodedstring="invalid" varbindvalue="0"/>
+            <decode varbinddecodedstring="normal" varbindvalue="1"/>
+            <decode varbinddecodedstring="alarmstate" varbindvalue="2"/>
+            <decode varbinddecodedstring="alarm" varbindvalue="3"/>
         </varbindsdecode>
         <varbindsdecode>
             <parmid>parm[#7]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="celsius"/>
-            <decode varbindvalue="1" varbinddecodedstring="fahrenheit"/>
-            <decode varbindvalue="2" varbinddecodedstring="kelvin"/>
-            <decode varbindvalue="3" varbinddecodedstring="percent"/>
-            <decode varbindvalue="4" varbinddecodedstring="volt"/>
-            <decode varbindvalue="5" varbinddecodedstring="miliAmper"/>
-            <decode varbindvalue="6" varbinddecodedstring="noUnit"/>
-            <decode varbindvalue="7" varbinddecodedstring="pulse"/>
-            <decode varbindvalue="8" varbinddecodedstring="switch"/>
-            <decode varbindvalue="9" varbinddecodedstring="dewPoint"/>
-            <decode varbindvalue="10" varbinddecodedstring="absoluteHumidity"/>
-            <decode varbindvalue="11" varbinddecodedstring="pressure"/>
-            <decode varbindvalue="12" varbinddecodedstring="universal"/>
+            <decode varbinddecodedstring="celsius" varbindvalue="0"/>
+            <decode varbinddecodedstring="fahrenheit" varbindvalue="1"/>
+            <decode varbinddecodedstring="kelvin" varbindvalue="2"/>
+            <decode varbinddecodedstring="percent" varbindvalue="3"/>
+            <decode varbinddecodedstring="volt" varbindvalue="4"/>
+            <decode varbinddecodedstring="miliAmper" varbindvalue="5"/>
+            <decode varbinddecodedstring="noUnit" varbindvalue="6"/>
+            <decode varbinddecodedstring="pulse" varbindvalue="7"/>
+            <decode varbinddecodedstring="switch" varbindvalue="8"/>
+            <decode varbinddecodedstring="dewPoint" varbindvalue="9"/>
+            <decode varbinddecodedstring="absoluteHumidity" varbindvalue="10"/>
+            <decode varbinddecodedstring="pressure" varbindvalue="11"/>
+            <decode varbinddecodedstring="universal" varbindvalue="12"/>
         </varbindsdecode>
     </event>
     <event>
@@ -210,11 +209,11 @@
 	tsAlarmId=%parm[#3]%
 	tsAlarmDescr=%parm[#4]%&lt;/p&gt;</logmsg>
         <severity>Warning</severity>
-        <operinstruct></operinstruct>
+        <operinstruct/>
         <varbindsdecode>
             <parmid>parm[#4]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="inputStateAlarm"/>
-            <decode varbindvalue="2" varbinddecodedstring="temperatureOutOfRange"/>
+            <decode varbinddecodedstring="inputStateAlarm" varbindvalue="1"/>
+            <decode varbinddecodedstring="temperatureOutOfRange" varbindvalue="2"/>
         </varbindsdecode>
     </event>
     <event>
@@ -263,11 +262,11 @@
 	tsAlarmId=%parm[#3]%
 	tsAlarmDescr=%parm[#4]%&lt;/p&gt;</logmsg>
         <severity>Normal</severity>
-        <operinstruct></operinstruct>
+        <operinstruct/>
         <varbindsdecode>
             <parmid>parm[#4]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="inputStateAlarm"/>
-            <decode varbindvalue="2" varbinddecodedstring="temperatureOutOfRange"/>
+            <decode varbinddecodedstring="inputStateAlarm" varbindvalue="1"/>
+            <decode varbinddecodedstring="temperatureOutOfRange" varbindvalue="2"/>
         </varbindsdecode>
     </event>
 </events>

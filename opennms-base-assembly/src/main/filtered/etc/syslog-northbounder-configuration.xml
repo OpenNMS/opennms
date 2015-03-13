@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<syslog-northbounder-config>
+<?xml version="1.0" encoding="UTF-8"?><syslog-northbounder-config>
 
 <!--
 The following are set to the default values.

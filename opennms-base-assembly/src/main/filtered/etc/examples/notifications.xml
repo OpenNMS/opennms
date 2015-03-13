@@ -1,25 +1,24 @@
-<?xml version="1.0"?>
-<notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
     <header>
         <rev>1.2</rev>
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
         <mstation>localhost</mstation>
     </header>
     <!-- Sample notification using HTTP Post -->
-    <notification name="httpPost" status="on" >
+    <notification name="httpPost" status="on">
       <uei>uei.opennms.org/nodes/nodeDown</uei>
       <rule>IPADDR != '0.0.0.0'</rule>
       <destinationPath>httpPostNotifier</destinationPath>
       <text-message>All services are down on node %nodeid%</text-message>
       <subject>node: %nodeid% down</subject>
-      <parameter name="url" value="http://172.16.1.1/cgi-bin/noauth/rt.pl" />
-      <parameter name="timeout" value="2000" />
-      <parameter name="retries" value="1" />
-      <parameter name="post-NodeID" value="%nodeid%" />
-      <parameter name="post-event" value="%eventid%" />
-      <parameter name="post-message" value="-tm" />
-      <parameter name="result-match" value="(?s).*OK\\s+([0-9]+).*" />
-      <parameter name="sql" value="UPDATE alarms SET tticketID=${1} WHERE lastEventID = %eventid%" />
+      <parameter name="url" value="http://172.16.1.1/cgi-bin/noauth/rt.pl"/>
+      <parameter name="timeout" value="2000"/>
+      <parameter name="retries" value="1"/>
+      <parameter name="post-NodeID" value="%nodeid%"/>
+      <parameter name="post-event" value="%eventid%"/>
+      <parameter name="post-message" value="-tm"/>
+      <parameter name="result-match" value="(?s).*OK\\s+([0-9]+).*"/>
+      <parameter name="sql" value="UPDATE alarms SET tticketID=${1} WHERE lastEventID = %eventid%"/>
     </notification>
     <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier") -->
     <notification name="snmpTrap" status="on">
@@ -31,15 +30,15 @@
     	</text-message>
     	<subject>node %nodeid% down.</subject>
     	<numeric-message>111-%noticeid%</numeric-message>
-    	<parameter name="trapVersion" value="v1" />
-    	<parameter name="trapTransport" value="UDP" />
-    	<parameter name="trapHost" value="my-trap-host.mydomain.org" />
-    	<parameter name="trapPort" value="162" />
-    	<parameter name="trapCommunity" value="public" />
-    	<parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813" />
-    	<parameter name="trapGeneric" value="6" />
-    	<parameter name="trapSpecific" value="1" />
-    	<parameter name="trapVarbind" value="Node: %nodelabel%" />
+    	<parameter name="trapVersion" value="v1"/>
+    	<parameter name="trapTransport" value="UDP"/>
+    	<parameter name="trapHost" value="my-trap-host.mydomain.org"/>
+    	<parameter name="trapPort" value="162"/>
+    	<parameter name="trapCommunity" value="public"/>
+    	<parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813"/>
+    	<parameter name="trapGeneric" value="6"/>
+    	<parameter name="trapSpecific" value="1"/>
+    	<parameter name="trapVarbind" value="Node: %nodelabel%"/>
     </notification>
     <notification name="serviceUnresponsive" status="on">
         <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
@@ -123,7 +122,7 @@ on node %nodelabel% failed at %time%.
         <destinationPath>Email-Admin</destinationPath>
         <text-message>%service% service restored on interface %interfaceresolve% (%interface%) 
 on node %nodelabel%.</text-message>
-        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%'s %service% service restored.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="coldStart" status="on">
@@ -162,8 +161,8 @@ attempt or an SNMP request failed due to incorrect community string.</text-messa
         <destinationPath>Email-Admin</destinationPath>
         <text-message>Due to extended downtime or operator action, the %service% service on
 interface %interfaceresolve% (%interface%) on node %nodelabel% 
-has been deleted from OpenNMS&apos;s polling database.</text-message>
-        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>
+has been deleted from OpenNMS's polling database.</text-message>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%'s %service% service deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeAdded" status="on">
@@ -194,7 +193,7 @@ network.  The new information is included:    System Name:
         <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>Due to extended downtime or operator action, the interface %interfaceresolve% (%interface%) 
-on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>
+on node %nodelabel% has been deleted from OpenNMS's polling database.</text-message>
         <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>

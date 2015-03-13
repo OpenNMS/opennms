@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: A3COM51-SS9000SX -->
 <event>
 	<mask>
@@ -33,13 +33,13 @@ the unit has come back on line.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			overheat trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -72,13 +72,13 @@ normal operation.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanfailed trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -109,13 +109,13 @@ is now operating correctly.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fanOK trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/fanfailed:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/fanfailed:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -146,13 +146,13 @@ access due to incorrect username or password&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			invalidLoginAttempt trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: A3COM51-SS9000SX -->
 <!-- Start of auto generated data from MIB: EXTREME-CABLE-MIB -->
@@ -197,7 +197,7 @@ whether Diagnostics for a particular port failed&lt;/p&gt;&lt;table&gt;
 		diagfail(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeTrapDiagPortDiagnostics trap received 
 			extremeDiagPortCfgPortIfIndex=%parm[#1]% 
 			extremeDiagPortCfgMode=%parm[#2]% 
@@ -263,7 +263,7 @@ whether Diagnostics for a particular port failed&lt;/p&gt;&lt;table&gt;
 	extremeClearflowPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeClearflowMessage trap received 
 			extremeClearflowMsgId=%parm[#1]% 
 			extremeClearflowMsg=%parm[#2]% 
@@ -304,12 +304,12 @@ the DOS threshold is cleared .&lt;/p&gt;&lt;table&gt;
 	extremeDosAlertLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeDosThresholdCleared trap received 
 			extremeDosAlertLevel=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeDosThresholdReached:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeDosThresholdReached:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -336,12 +336,12 @@ the DOS threshold is crossed for any of the ports.&lt;/p&gt;&lt;table&gt;
 	extremeDosAlertLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeDosThresholdReached trap received 
 			extremeDosAlertLevel=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-DOS-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-ENH-DOS-MIB -->
@@ -374,13 +374,13 @@ the DOS threshold is crossed for any of the ports.&lt;/p&gt;&lt;table&gt;
 	extremeEnhDosPortRateLimitThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEnhDosThresholdReached trap received 
 			extremeEnhDosPortIfIndex=%parm[#1]% 
 			extremeEnhDosPortRateLimitThreshold=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true" />
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -411,13 +411,13 @@ the DOS threshold is cleared for any of the ports.&lt;/p&gt;&lt;table&gt;
 	extremeEnhDosPortRateLimitThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEnhDosThresholdCleared trap received 
 			extremeEnhDosPortIfIndex=%parm[#1]% 
 			extremeEnhDosPortRateLimitThreshold=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeEnhDosThresholdReached:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeEnhDosThresholdReached:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-ENH-DOS-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-ESRP-MIB -->
@@ -495,7 +495,7 @@ the DOS threshold is cleared for any of the ports.&lt;/p&gt;&lt;table&gt;
 	extremeEsrpDmnTrackedActivePortWeight&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEsrpDomainStateChange trap received 
 			extremeEsrpDmnName=%parm[#1]% 
 			extremeEsrpDmnGroup=%parm[#2]% 
@@ -566,7 +566,7 @@ Security protections&lt;/p&gt;&lt;table&gt;
 		badMacInArpPacket(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityViolation trap received 
 			extremeIpSecurityVlanIfIndex=%parm[#1]% 
 			extremeIpSecurityVlanDescr=%parm[#2]% 
@@ -662,7 +662,7 @@ received on that port if the packet's source IP == destination IP&lt;/p&gt;&lt;t
 		udp(17)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityAnomalyIpViolation trap received 
 			esAnomalyPortIfIndex=%parm[#1]% 
 			esAnomalyVlanIfIndex=%parm[#2]% 
@@ -773,7 +773,7 @@ received on that port if
 	esAnomalyDestL4Port&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityAnomalyL4PortViolation trap received 
 			esAnomalyPortIfIndex=%parm[#1]% 
 			esAnomalyVlanIfIndex=%parm[#2]% 
@@ -897,7 +897,7 @@ packet received on that port if
 	esAnomalyTcpSeq&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#15]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityAnomalyTcpFlagViolation trap received 
 			esAnomalyPortIfIndex=%parm[#1]% 
 			esAnomalyVlanIfIndex=%parm[#2]% 
@@ -1007,7 +1007,7 @@ received on that port if
 	esAnomalyTcpHdrSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityAnomalyTcpFragmentViolation trap received 
 			esAnomalyPortIfIndex=%parm[#1]% 
 			esAnomalyVlanIfIndex=%parm[#2]% 
@@ -1110,7 +1110,7 @@ packet received on that port if
 		icmpFragmented(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeIpSecurityAnomalyIcmpViolation trap received 
 			esAnomalyPortIfIndex=%parm[#1]% 
 			esAnomalyVlanIfIndex=%parm[#2]% 
@@ -1163,7 +1163,7 @@ packet received on that port if
 		empty(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremePortMauChangeTrap trap received 
 			ifIndex=%parm[#1]% 
 			extremePortMauType=%parm[#2]% 
@@ -1209,7 +1209,7 @@ packet received on that port if
 	extremeCpuMonitorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeSwMonitorCpuUtilization trap received 
 			extremeCpuMonitorSlotId=%parm[#1]% 
 			extremeCpuMonitorProcessName=%parm[#2]% 
@@ -1217,7 +1217,7 @@ packet received on that port if
 			extremeCpuMonitorThreshold=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1255,7 +1255,7 @@ packet received on that port if
 	noOfDaysLeft&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeServiceLicenseExpiration trap received 
 			extremeServiceLicenseExpiryDate=%parm[#1]% 
 			extremeServiceLicenseType=%parm[#2]% 
@@ -1263,7 +1263,7 @@ packet received on that port if
 			noOfDaysLeft=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1297,14 +1297,14 @@ packet received on that port if
 	noOfDaysLeft&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeTrialLicenseExpiration trap received 
 			trialPeriod=%parm[#1]% 
 			imageDescription=%parm[#2]% 
 			noOfDaysLeft=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-SOFTWARE-MONITOR-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-STACKING-MIB -->
@@ -1346,7 +1346,7 @@ threshold temperature&lt;/p&gt;&lt;table&gt;
 	extremeStackMemberSlotId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeStackMemberOverheat trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -1389,7 +1389,7 @@ changes&lt;/p&gt;&lt;table&gt;
 		mismatch(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeStackMemberStatusChanged trap received 
 			extremeStackMemberSlotId=%parm[#1]% 
 			extremeStackMemberOperStatus=%parm[#2]%&lt;/p&gt;
@@ -1437,7 +1437,7 @@ changes&lt;/p&gt;&lt;table&gt;
 		down(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeStackingPortStatusChanged trap received 
 			ifIndex=%parm[#1]% 
 			extremeStackingPortRemoteMac=%parm[#2]% 
@@ -1482,13 +1482,13 @@ The trap will not be generated for discovering state.&lt;/p&gt;&lt;table&gt;
 		insufficientPower(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeSystemPowerStatus trap received 
 			sysDescr=%parm[#1]% 
 			extremeSystemPowerState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of auto generated data from MIB: EXTREME-SYSTEM-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-TRAP-MIB -->
@@ -1529,14 +1529,14 @@ the unit has come back on line.&lt;/p&gt;&lt;table&gt;
 	extremeCurrentTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeOverheat trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremeCurrentTemperature=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>	
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>	
 </event>
 <event>
 	<mask>
@@ -1573,14 +1573,14 @@ normal operation.&lt;/p&gt;&lt;table&gt;
 	extremeFanNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeFanfailed trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremeFanNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="1" auto-clean="true"/>	
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>	
 </event>
 <event>
 	<mask>
@@ -1615,14 +1615,14 @@ is now operating correctly.&lt;/p&gt;&lt;table&gt;
 	extremeFanNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeFanOK trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremeFanNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeFanfailed:%dpname%:%nodeid%:%parm[#3]%"/>	
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeFanfailed:%dpname%:%nodeid%:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>	
 </event>
 <event>
 	<mask>
@@ -1653,13 +1653,13 @@ refused access due to incorrect username or password&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeInvalidLoginAttempt trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>	
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>	
 </event>
 <event>
 	<mask>
@@ -1694,14 +1694,14 @@ Presumably a redundant power-supply has taken over.&lt;/p&gt;&lt;table&gt;
 	extremePowerSupplyNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremePowerSupplyFail trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremePowerSupplyNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1736,14 +1736,14 @@ has come back to life without causing an agent restart.&lt;/p&gt;&lt;table&gt;
 	extremePowerSupplyNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremePowerSupplyGood trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremePowerSupplyNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/extreme/traps/extremePowerSupplyFail:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/extreme/traps/extremePowerSupplyFail:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1774,13 +1774,13 @@ an alarm condition.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeRpsAlarm trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1811,13 +1811,13 @@ indicating an alarm condition.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeRpsNoAlarm trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/extreme/traps/extremeRpsAlarm:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/extreme/traps/extremeRpsAlarm:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -1853,13 +1853,13 @@ was created in the last thirty seconds.&lt;/p&gt;&lt;table&gt;
 	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeSmartTrap trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2068,7 +2068,7 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 		invalid(100)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeModuleStateChanged trap received 
 			sysUpTime=%parm[#1]% 
 			extremeSlotNumber=%parm[#2]% 
@@ -2077,7 +2077,7 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 			extremeSlotModuleState=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2151,7 +2151,7 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 	extremeEsrpTrackedIpRoutes&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEsrpStateChange trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -2167,7 +2167,7 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 			extremeEsrpTrackedIpRoutes=%parm[#12]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2191,11 +2191,11 @@ the specified extremeSlotNumber has changed.&lt;/p&gt;&lt;table&gt;
 servers that it normally would not activate.  This may be
 due to the failure of another server load balancer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeSlbUnitAdded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2220,11 +2220,11 @@ servers that it normally has active.  This indicates that
 something is wrong in the server load balancer; for example,
 its ping check may be failing.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeSlbUnitRemoved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2271,7 +2271,7 @@ Protocol.&lt;/p&gt;&lt;table&gt;
 	ifDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEdpNeighborAdded trap received 
 			sysUpTime=%parm[#1]% 
 			extremeEdpPortIfIndex=%parm[#2]% 
@@ -2328,7 +2328,7 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 	ifDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEdpNeighborRemoved trap received 
 			sysUpTime=%parm[#1]% 
 			extremeEdpPortIfIndex=%parm[#2]% 
@@ -2371,14 +2371,14 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 	extremeSlotNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeCpuHealthCheckFailed trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
 			extremeSlotNumber=%parm[#3]%&lt;/p&gt;
 		</logmsg>
         <severity>Minor</severity>
-    	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="3" auto-clean="true"/>	
+    	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>	
 </event>
 <!-- End of auto generated data from MIB: EXTREME-TRAP-MIB -->
 <!-- Start of auto generated data from MIB: EXTREME-UPM-MIB -->
@@ -2440,7 +2440,7 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 	upmTimerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upmProfileEventExecution trap received 
 			upmProfileName=%parm[#1]% 
 			upmExecutionId=%parm[#2]% 
@@ -2506,7 +2506,7 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 	extremeHealthCheckMaxRetries&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeHealthCheckFailed trap received 
 			sysDescr=%parm[#1]% 
 			extremeSlotNumber=%parm[#2]% 
@@ -2515,7 +2515,7 @@ out by the device.&lt;/p&gt;&lt;table&gt;
 			extremeHealthCheckMaxRetries=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2550,14 +2550,14 @@ extremeCpuUtilRisingThreshold is touched/crossed &lt;/p&gt;&lt;table&gt;
 	extremeCpuUtilRisingThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeCpuUtilizationRisingTrap trap received 
 			extremeCpuTaskUtilPair=%parm[#1]% 
 			extremeCpuAggregateUtilization=%parm[#2]% 
 			extremeCpuUtilRisingThreshold=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2593,14 +2593,14 @@ extremeCpuUtilRisingThreshold&lt;/p&gt;&lt;table&gt;
 	extremeCpuUtilRisingThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeCpuUtilizationFallingTrap trap received 
 			extremeCpuTaskUtilPair=%parm[#1]% 
 			extremeCpuAggregateUtilization=%parm[#2]% 
 			extremeCpuUtilRisingThreshold=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeCpuUtilizationRisingTrap:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/extremeCpuUtilizationRisingTrap:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -2634,14 +2634,14 @@ extremeCpuUtilRisingThreshold&lt;/p&gt;&lt;table&gt;
 	extremeNPModuleProcessorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeProcessorStateChangeTrap trap received 
 			sysDescr=%parm[#1]% 
 			extremeSlotNumber=%parm[#2]% 
 			extremeNPModuleProcessorState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2683,14 +2683,14 @@ extremeCpuUtilRisingThreshold&lt;/p&gt;&lt;table&gt;
 		keepalive(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeMsmFailoverTrap trap received 
 			sysDescr=%parm[#1]% 
 			extremeMasterMSMSlot=%parm[#2]% 
 			extremeMsmFailoverCause=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2734,7 +2734,7 @@ Thus, a new master (this switch) was elected.&lt;/p&gt;&lt;table&gt;
 		slave(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEsrpTimedOutFailedOverMaster trap received 
 			sysDescr=%parm[#1]% 
 			extremeVlanIfIndex=%parm[#2]% 
@@ -2742,7 +2742,7 @@ Thus, a new master (this switch) was elected.&lt;/p&gt;&lt;table&gt;
 			extremeEsrpState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2790,7 +2790,7 @@ Thus, a new master (this switch) was elected.&lt;/p&gt;&lt;table&gt;
 	extremeExceededByteCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeRateLimitExceededTrap trap received 
 			extremeRateLimitExceededTrapType=%parm[#1]% 
 			extremeRateLimitExceededTrapIndicator=%parm[#2]% 
@@ -2799,7 +2799,7 @@ Thus, a new master (this switch) was elected.&lt;/p&gt;&lt;table&gt;
 			extremeExceededByteCount=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2827,12 +2827,12 @@ peer session reaches the threshold limit.&lt;/p&gt;&lt;table&gt;
 	bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeBgpPrefixReachedThreshold trap received 
 			bgpPeerRemoteAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2860,12 +2860,12 @@ peer session reaches the maximum configured limit.&lt;/p&gt;&lt;table&gt;
 	bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeBgpPrefixMaxExceeded trap received 
 			bgpPeerRemoteAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2909,7 +2909,7 @@ port.&lt;/p&gt;&lt;table&gt;
 	extremeMacSecurityVlanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeMacLimitExceeded trap received 
 			extremeMacSecurityVlanIfIndex=%parm[#1]% 
 			extremeMacSecurityVlanDescr=%parm[#2]% 
@@ -2918,7 +2918,7 @@ port.&lt;/p&gt;&lt;table&gt;
 			extremeMacSecurityVlanId=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -2962,7 +2962,7 @@ configured  as a 'secure mac' on some other port(s).&lt;/p&gt;&lt;table&gt;
 	extremeMacSecurityPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeUnauthorizedPortForMacDetected trap received 
 			extremeMacSecurityVlanIfIndex=%parm[#1]% 
 			extremeMacSecurityVlanDescr=%parm[#2]% 
@@ -2971,7 +2971,7 @@ configured  as a 'secure mac' on some other port(s).&lt;/p&gt;&lt;table&gt;
 			extremeMacSecurityPortIfIndex=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3014,7 +3014,7 @@ configured, when a new MAC address is learnt on that port.&lt;/p&gt;&lt;table&gt
 	extremeMacSecurityPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeMacDetectedOnLockedPort trap received 
 			extremeMacSecurityVlanIfIndex=%parm[#1]% 
 			extremeMacSecurityVlanDescr=%parm[#2]% 
@@ -3023,7 +3023,7 @@ configured, when a new MAC address is learnt on that port.&lt;/p&gt;&lt;table&gt
 			extremeMacSecurityPortIfIndex=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3098,7 +3098,7 @@ authentication and logs in successfully into the network.&lt;/p&gt;&lt;table&gt;
 		remoteAuthenticationServerFailure(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeNetloginUserLogin trap received 
 			extremeNetloginStationMac=%parm[#1]% 
 			extremeNetloginStationAddr=%parm[#2]% 
@@ -3111,7 +3111,7 @@ authentication and logs in successfully into the network.&lt;/p&gt;&lt;table&gt;
 			extremeNetloginSessionStatus=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -3187,7 +3187,7 @@ authenticated and logged in supplicant. &lt;/p&gt;&lt;table&gt;
 		remoteAuthenticationServerFailure(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeNetloginUserLogout trap received 
 			extremeNetloginStationMac=%parm[#1]% 
 			extremeNetloginStationAddr=%parm[#2]% 
@@ -3200,7 +3200,7 @@ authenticated and logged in supplicant. &lt;/p&gt;&lt;table&gt;
 			extremeNetloginSessionStatus=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -3275,7 +3275,7 @@ netlogin supplicant&lt;/p&gt;&lt;table&gt;
 		remoteAuthenticationServerFailure(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeNetloginAuthFailure trap received 
 			extremeNetloginStationMac=%parm[#1]% 
 			extremeNetloginStationAddr=%parm[#2]% 
@@ -3288,7 +3288,7 @@ netlogin supplicant&lt;/p&gt;&lt;table&gt;
 			extremeNetloginSessionStatus=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
         <mask>
@@ -3331,7 +3331,7 @@ configured, when a gratuitous ARP does not match the internal static or secured 
         extremeArpSecurityMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         extremeGratuitousArpViolation trap received
                         extremeArpSecurityVlanIfIndex=%parm[#1]%
                         extremeArpSecurityVlanDescr=%parm[#2]%
@@ -3340,7 +3340,7 @@ configured, when a gratuitous ARP does not match the internal static or secured 
                         extremeArpSecurityMacAddress=%parm[#5]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3367,7 +3367,7 @@ in its inventory database occurs. This trap is not send by a router or switch.&l
 	extremeNMSDeviceAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeNMSInventoryChanged trap received 
 			extremeNMSDeviceAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3394,7 +3394,7 @@ in its inventory database occurs. This trap is not send by a router or switch.&l
 &lt;p&gt;This trap is sent by Extreme's Network Management Applications when a change 
 in its Topology database occurs. This trap is not send by a router or switch.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeNMSTopologyChanged trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -3424,7 +3424,7 @@ when the ELRP client detects a loop in the vlan.&lt;/p&gt;&lt;table&gt;
 	extremeVlanIfDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeElrpVlanLoopDetected trap received 
 			extremeVlanIfDescr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3487,7 +3487,7 @@ when the EAPS domain has a state change.&lt;/p&gt;&lt;table&gt;
 		init(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsStateChange trap received 
 			extremeEapsName=%parm[#1]% 
 			extremeEapsMode=%parm[#2]% 
@@ -3495,7 +3495,7 @@ when the EAPS domain has a state change.&lt;/p&gt;&lt;table&gt;
 			extremeEapsState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3555,7 +3555,7 @@ for the first time, while its state is not in Fail state.&lt;/p&gt;&lt;table&gt;
 		init(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsFailTimerExpFlagSet trap received 
 			extremeEapsName=%parm[#1]% 
 			extremeEapsMode=%parm[#2]% 
@@ -3563,7 +3563,7 @@ for the first time, while its state is not in Fail state.&lt;/p&gt;&lt;table&gt;
 			extremeEapsState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3623,7 +3623,7 @@ is cleared.&lt;/p&gt;&lt;table&gt;
 		init(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsFailTimerExpFlagClear trap received 
 			extremeEapsName=%parm[#1]% 
 			extremeEapsMode=%parm[#2]% 
@@ -3631,7 +3631,7 @@ is cleared.&lt;/p&gt;&lt;table&gt;
 			extremeEapsState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3692,7 +3692,7 @@ switch that has issued this trap message.&lt;/p&gt;&lt;table&gt;
 		init(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsLinkDownRingComplete trap received 
 			extremeEapsName=%parm[#1]% 
 			extremeEapsMode=%parm[#2]% 
@@ -3700,7 +3700,7 @@ switch that has issued this trap message.&lt;/p&gt;&lt;table&gt;
 			extremeEapsState=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3749,7 +3749,7 @@ generated when an EAPS primary or secondary port changes state.&lt;/p&gt;&lt;tab
 	extremeEapsLastStatusChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsPortStatusChange trap received 
 			extremeEapsName=%parm[#1]% 
 			extremeEapsPrimaryStatus=%parm[#2]% 
@@ -3757,7 +3757,7 @@ generated when an EAPS primary or secondary port changes state.&lt;/p&gt;&lt;tab
 			extremeEapsLastStatusChange=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3785,12 +3785,12 @@ after the first change is made to limit the number of traps sent&lt;/p&gt;&lt;ta
 	extremeEapsLastConfigurationChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsConfigChange trap received 
 			extremeEapsLastConfigurationChange=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -3825,7 +3825,7 @@ traps are dropped due to be being sent while the network is converging.&lt;/p&gt
 	extremeEapsStatusTrapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsLastStatusChangeTime trap received 
 			extremeEapsLastStatusChange=%parm[#1]% 
 			extremeEapsStatusTrapCount=%parm[#2]%&lt;/p&gt;
@@ -3870,7 +3870,7 @@ peer session reaches the threshold limit.&lt;/p&gt;&lt;table&gt;
 	bgpM2PeerLocalAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeBgpM2PrefixReachedThreshold trap received 
 			bgpM2PeerRemoteAddr=%parm[#1]% 
 			bgpM2PeerRemoteAddrType=%parm[#2]% 
@@ -3878,7 +3878,7 @@ peer session reaches the threshold limit.&lt;/p&gt;&lt;table&gt;
 			bgpM2PeerLocalAddrType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3918,7 +3918,7 @@ peer session reaches the maximum configured limit.&lt;/p&gt;&lt;table&gt;
 	bgpM2PeerLocalAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeBgpM2PrefixMaxExceeded trap received 
 			bgpM2PeerRemoteAddr=%parm[#1]% 
 			bgpM2PeerRemoteAddrType=%parm[#2]% 
@@ -3926,7 +3926,7 @@ peer session reaches the maximum configured limit.&lt;/p&gt;&lt;table&gt;
 			bgpM2PeerLocalAddrType=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -3958,7 +3958,7 @@ for the first time.&lt;/p&gt;&lt;table&gt;
 	extremeSharedPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsSegmentTimerExpFlagSet trap received 
 			extremeSegmentPort=%parm[#1]% 
 			extremeSharedPort=%parm[#2]%&lt;/p&gt;
@@ -3995,7 +3995,7 @@ expired flag is cleared.&lt;/p&gt;&lt;table&gt;
 	extremeSharedPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsSegmentTimerExpFlagClear trap received 
 			extremeSegmentPort=%parm[#1]% 
 			extremeSharedPort=%parm[#2]%&lt;/p&gt;
@@ -4060,7 +4060,7 @@ when the EAPS shared port state changes.&lt;/p&gt;&lt;table&gt;
 	extremeEapsLastStatusChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsSharedPortStateChange trap received 
 			extremeEapsSharedPortIfIndex=%parm[#1]% 
 			extremeEapsSharedPortLinkId=%parm[#2]% 
@@ -4112,7 +4112,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 	extremeEapsLastStatusChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeEapsRootBlockerStatusChange trap received 
 			extremeEapsSharedPortIfIndex=%parm[#1]% 
 			extremeEapsSharedPortRootBlockerStatus=%parm[#2]% 
@@ -4153,7 +4153,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 	extremePethSlotMainPseIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremePethPSUStatusNotification trap received 
 			extremePethSlotPSUActive=%parm[#1]% 
 			extremePethSlotMainPseIndex=%parm[#2]%&lt;/p&gt;
@@ -4188,7 +4188,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 	extremeLacpMemberPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeLacpAddPortToAggregator trap received 
 			extremeLacpGroup=%parm[#1]% 
 			extremeLacpMemberPort=%parm[#2]%&lt;/p&gt;
@@ -4223,7 +4223,7 @@ when each switch detects a new rootblocker ID on the networks.&lt;/p&gt;&lt;tabl
 	extremeLacpMemberPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeLacpDeletePortFromAggregator trap received 
 			extremeLacpGroup=%parm[#1]% 
 			extremeLacpMemberPort=%parm[#2]%&lt;/p&gt;
@@ -4270,7 +4270,7 @@ into enabled, disabled or online.&lt;/p&gt;&lt;table&gt;
 		error(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessPortStateChange trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessPortState=%parm[#2]%&lt;/p&gt;
@@ -4302,7 +4302,7 @@ port fails to boot too many times.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessPortIfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessPortBootFailure trap received 
 			extremeWirelessPortIfIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4337,7 +4337,7 @@ of the table.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessClientID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessClientStationAgedOut trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessClientID=%parm[#2]%&lt;/p&gt;
@@ -4374,7 +4374,7 @@ enabled.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessClientID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessNetloginClientAssociated trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessClientID=%parm[#2]%&lt;/p&gt;
@@ -4505,7 +4505,7 @@ is true.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessScanResultsExtRateSet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#18]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessAPAdded trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessScanResultsStationId=%parm[#2]% 
@@ -4559,7 +4559,7 @@ is true.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessScanResultsStationId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessAPRemoved trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessScanResultsStationId=%parm[#2]%&lt;/p&gt;
@@ -4689,7 +4689,7 @@ generated if the value of SendAPUpdatedTrap is true.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessScanResultsExtRateSet&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#18]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessAPUpdated trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessScanResultsStationId=%parm[#2]% 
@@ -4742,7 +4742,7 @@ value of extremeWirelessProbeInfoSendAddedTrap is true.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessProbeInfoSource&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessProbeInfoAdded trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessProbeInfoSource=%parm[#2]%&lt;/p&gt;
@@ -4780,7 +4780,7 @@ true.&lt;/p&gt;&lt;table&gt;
 	extremeWirelessProbeInfoSource&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessProbeInfoRemoved trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessProbeInfoSource=%parm[#2]%&lt;/p&gt;
@@ -4857,7 +4857,7 @@ running.&lt;/p&gt;&lt;table&gt;
 		scanChannel165(39)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessOffChannelScanStarted trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessOffChannelScanList=%parm[#2]%&lt;/p&gt;
@@ -4934,7 +4934,7 @@ running.&lt;/p&gt;&lt;table&gt;
 		scanChannel165(39)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessOffChannelScanFinished trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessOffChannelScanList=%parm[#2]%&lt;/p&gt;
@@ -4973,7 +4973,7 @@ on a wireless interface.&lt;/p&gt;&lt;table&gt;
 		micFailure(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessCounterMeasureStarted trap received 
 			ifIndex=%parm[#1]% 
 			extremeWirelessCounterMeasureSource=%parm[#2]%&lt;/p&gt;
@@ -5005,7 +5005,7 @@ on a wireless interface.&lt;/p&gt;&lt;table&gt;
 	ifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			extremeWirelessCounterMeasureStopped trap received 
 			ifIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5052,7 +5052,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
                 restartedDueToInterference(5)
         &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         extremeWirelessInterfaceChannelRescan trap received
                         ifIndex=%parm[#1]%
                         extremeWirelessPhysInterfacePHYChannel=%parm[#2]%
@@ -5082,7 +5082,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Uncatagorized trap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapMisc trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5107,7 +5107,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Service Came Down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapServiceDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -5132,7 +5132,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Service Came Up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapServiceUP trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -5157,7 +5157,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;System Reset.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapReset trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5182,7 +5182,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;REQUEST DENIAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapDenial trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5207,7 +5207,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Root Login.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapLogin trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5232,7 +5232,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Removing unit. Potential failover of this load balancer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapRemoveUnit trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5257,7 +5257,7 @@ successful, or if it failed then the reason for the failure.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Adding unit. This load balancer has taken responsibility for a new unit id.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loadBalTrapAddUnit trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -5305,7 +5305,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx1LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx1LineStatusChange trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5314,7 +5314,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx1LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5357,7 +5357,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx1LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx1LossOfMasterClock trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5366,7 +5366,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx1LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5409,7 +5409,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx1LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx1NoLossOfMasterClock trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5418,7 +5418,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx1LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx1LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx1LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5461,7 +5461,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx3LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx3LineStatusChange trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5470,7 +5470,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx3LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5513,7 +5513,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx3LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx3LossOfMasterClock trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5522,7 +5522,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx3LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -5565,7 +5565,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 	dsx3LineStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			wanDsx3NoLossOfMasterClock trap received 
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]% 
@@ -5574,7 +5574,7 @@ the specified interface has been detected.&lt;/p&gt;&lt;table&gt;
 			dsx3LineStatus=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx3LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx3LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <!-- End of auto generated data from MIB: WAN-TRAP-MIB -->
 </events>

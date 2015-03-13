@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -49,7 +48,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwDefGwUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
@@ -109,7 +108,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwDefGwDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
@@ -170,7 +169,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwDefGwInService trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
@@ -231,7 +230,7 @@ ipCurCfgGwAddr is the IP address of the default gateway.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwDefGwNotInService trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			ipCurCfgGwIndex=%parm[#2]% 
@@ -293,7 +292,7 @@ vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwVrrpNewMaster trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgVirtRtrIndx=%parm[#2]% 
@@ -355,7 +354,7 @@ vrrpCurCfgVirtRtrAddr is the VRRP virtual router IP address.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwVrrpNewBackup trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgVirtRtrIndx=%parm[#2]% 
@@ -419,7 +418,7 @@ DisplayString of 0 to 7 characters.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwVrrpAuthFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			vrrpCurCfgIfIndx=%parm[#2]% 
@@ -472,7 +471,7 @@ address of the host from which the attempt was made.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwLoginFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -520,7 +519,7 @@ switch temperature has exceeded maximum safety limits.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwTempExceedThreshold trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -567,7 +566,7 @@ switch temperature has exceeded maximum safety limits.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwValidLogin trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -615,7 +614,7 @@ has been applied.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwApplyComplete trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -663,7 +662,7 @@ has been saved.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwSaveComplete trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -711,7 +710,7 @@ has been downloaded to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwFwDownloadSucess trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -759,7 +758,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwFwDownloadFailure trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -810,7 +809,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#5]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStgNewRoot trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			stgCurCfgIndex=%parm[#2]% 
@@ -858,7 +857,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwCistNewRoot trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -909,7 +908,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#5]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStgTopologyChanged trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			stgCurCfgIndex=%parm[#2]% 
@@ -957,7 +956,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwCistTopologyChanged trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1004,7 +1003,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwHotlinksMasterUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1051,7 +1050,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwHotlinksMasterDn trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1098,7 +1097,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwHotlinksBackupUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1145,7 +1144,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwHotlinksBackupDn trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1192,7 +1191,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwHotlinksNone trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1235,7 +1234,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwNtpNotServer trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
@@ -1277,7 +1276,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwNtpUpdateClock trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
@@ -1323,7 +1322,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwValidLogout trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1366,7 +1365,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#3]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStgBlockingState trap received 
 			sysName=%parm[#1]% 
 			sysLocation=%parm[#2]% 
@@ -1412,7 +1411,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwECMPGatewayUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1459,7 +1458,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwECMPGatewayDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1506,7 +1505,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwLACPPortBlocked trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1553,7 +1552,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwLACPPortUnblocked trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1600,7 +1599,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackSwitchAttached trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1647,7 +1646,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackSwitchDettached trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1694,7 +1693,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackBackupPresent trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1741,7 +1740,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackBackupGone trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1788,7 +1787,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altVMGroupVMotion trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1835,7 +1834,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altVMGroupVMOnline trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1882,7 +1881,7 @@ downloaded failed to [image1|image2|boot image].</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altVMGroupVMVlanChange trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1930,7 +1929,7 @@ has become master after init</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackMasterAfterInit trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -1978,7 +1977,7 @@ has become master from backup.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackMasterFromBackup trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2026,7 +2025,7 @@ with duplicate UUID/bay has tried to join the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackDuplicateJoinAttempt trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2073,7 +2072,7 @@ with duplicate UUID/bay has tried to join the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackLinkUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2121,7 +2120,7 @@ has become down.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackLinkDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2169,7 +2168,7 @@ the master and a member has terminated with error.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackXferError trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2217,7 +2216,7 @@ the master and a member has terminated with no errors.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackXferSuccess trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2265,7 +2264,7 @@ of different type has attempted to join the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackSwitchTypeMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2313,7 +2312,7 @@ image of a newly attached switch does not match that of the master.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackImageSlotMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2362,7 +2361,7 @@ that of the master.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackImageVersMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2411,7 +2410,7 @@ type has attempted to join the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackChassisTypeMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2460,7 +2459,7 @@ has attempted to join the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackBcsBayMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2508,7 +2507,7 @@ of a newly attached switch does not match that of the master.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackBootCfgMismatch trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2556,7 +2555,7 @@ configured as a master in NVRAM has attached to the stack.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackNvramMasterJoin trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2604,7 +2603,7 @@ a FORCE DETACH message to a member.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwStackForceDetach trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2652,7 +2651,7 @@ switch temperature has returned below maximum safety limits.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwTempReturnThreshold trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2701,7 +2700,7 @@ the trap message.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwAmpTopologyUp trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2750,7 +2749,7 @@ in the trap message.</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			altSwAmpTopologyDown trap received 
 			altSwTrapDisplayString=%parm[#1]% 
 			sysName=%parm[#2]% 
@@ -2759,5 +2758,4 @@ in the trap message.</p><table>
 ]]>		</logmsg>
 	<severity>Minor</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB -->
+</events><!-- End of auto generated data from MIB: BNT-GbESM-10Ub-RS-MIB -->

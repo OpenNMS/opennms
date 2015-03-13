@@ -1,73 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<javamail-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/javamail-configuration "
-                        default-read-config-name="localhost" default-send-config-name="localhost" >
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><javamail-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-read-config-name="localhost" default-send-config-name="localhost" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/javamail-configuration ">
 
   <!-- Sample localhost configuration using POP3 and SMTP -->
 
-  <sendmail-config name="localhost" 
-                   attempt-interval="3000" use-authentication="false" use-jmta="true" 
-                   debug="true" >
+  <sendmail-config attempt-interval="3000" debug="true" name="localhost" use-authentication="false" use-jmta="true">
     <sendmail-host host="127.0.0.1" port="25"/>
     
     <!--  Subject and body are currently only used by the MTM -->
-    <sendmail-protocol char-set="us-ascii" mailer="smtpsend" 
-                       message-content-type="text/plain" message-encoding="7-bit" 
-                       quit-wait="true" ssl-enable="false" start-tls="false" 
-                       transport="smtp"/>
-    <sendmail-message to="root@localhost"
-                      from="root@[127.0.0.1]" 
-                      subject="OpenNMS Test Message"  
-                      body="This is an OpenNMS test message." />
+    <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit" quit-wait="true" ssl-enable="false" start-tls="false" transport="smtp"/>
+    <sendmail-message body="This is an OpenNMS test message." from="root@[127.0.0.1]" subject="OpenNMS Test Message" to="root@localhost"/>
                       
-    <user-auth user-name="opennms" password="opennms" />
+    <user-auth password="opennms" user-name="opennms"/>
   </sendmail-config>
 
   <!-- Sample gmail configuration using SSL and IMAPS and SMTPS
        If you want to use either of these as a default, change the default attributes in the root element.
    -->
-  <sendmail-config name="google" attempt-interval="3000" use-authentication="true" use-jmta="true" debug="true" >
+  <sendmail-config attempt-interval="3000" debug="true" name="google" use-authentication="true" use-jmta="true">
   
     <sendmail-host host="smtp.gmail.com" port="465"/>
 
-    <sendmail-protocol char-set="us-ascii" mailer="smtpsend" 
-                       message-content-type="text/plain" message-encoding="7-bit" 
-                       quit-wait="true" ssl-enable="true" start-tls="false" 
-                       transport="smtps"/>
+    <sendmail-protocol char-set="us-ascii" mailer="smtpsend" message-content-type="text/plain" message-encoding="7-bit" quit-wait="true" ssl-enable="true" start-tls="false" transport="smtps"/>
 
-    <sendmail-message to="noc@networksRus.com"
-                      from="networksRusNOC@gmail.com" 
-                      subject="OpenNMS Test Message"  
-                      body="This is an OpenNMS test message." />
+    <sendmail-message body="This is an OpenNMS test message." from="networksRusNOC@gmail.com" subject="OpenNMS Test Message" to="noc@networksRus.com"/>
 
-    <user-auth user-name="networksRusNOC" password="w00t" />
+    <user-auth password="w00t" user-name="networksRusNOC"/>
     
   </sendmail-config>
 
   
-  <readmail-config name="localhost" 
-                   attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" 
-                   debug="true" >
+  <readmail-config attempt-interval="1000" debug="true" delete-all-mail="false" mail-folder="INBOX" name="localhost">
     <javamail-property name="mail.pop3.apop.enable" value="false"/>
-    <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+    <javamail-property name="mail.pop3.rsetbeforequit" value="false"/>
     <readmail-host host="127.0.0.1" port="110">
-      <readmail-protocol ssl-enable="false" start-tls="false"
-                         transport="pop3"/>
+      <readmail-protocol ssl-enable="false" start-tls="false" transport="pop3"/>
     </readmail-host>
-    <user-auth user-name="opennms" password="opennms" />
+    <user-auth password="opennms" user-name="opennms"/>
   </readmail-config>
   
-  <readmail-config name="google" attempt-interval="1000" delete-all-mail="false" mail-folder="INBOX" debug="true" >
+  <readmail-config attempt-interval="1000" debug="true" delete-all-mail="false" mail-folder="INBOX" name="google">
   
     <readmail-host host="imap.gmail.com" port="993">
       <readmail-protocol ssl-enable="true" start-tls="true" transport="imaps"/>
     </readmail-host>
 
-    <user-auth user-name="networksRusNOC" password="w00t" />
+    <user-auth password="w00t" user-name="networksRusNOC"/>
     
   </readmail-config>
     
-  <end2end-mail-config name="default" readmail-config-name="localhost" sendmail-config-name="localhost" />
+  <end2end-mail-config name="default" readmail-config-name="localhost" sendmail-config-name="localhost"/>
   
 </javamail-configuration>

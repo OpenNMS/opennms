@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" 
-  date-stamp="2008-01-24T13:13:10.756-05:00"
-  last-import="2008-01-24T13:13:10.753-05:00" foreign-source="HQ">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2008-01-24T13:13:10.756-05:00" foreign-source="HQ" last-import="2008-01-24T13:13:10.753-05:00">
   
-  <node node-label="barbrady.internal.opennms.com" foreign-id="10001">
-    <interface ip-addr="172.20.1.11" descr="agent-address" status="1" snmp-primary="N">
-      <monitored-service service-name="ICMP" />
-      <monitored-service service-name="HypericAgent" />
+  <node foreign-id="10001" node-label="barbrady.internal.opennms.com">
+    <interface descr="agent-address" ip-addr="172.20.1.11" snmp-primary="N" status="1">
+      <monitored-service service-name="ICMP"/>
+      <monitored-service service-name="HypericAgent"/>
     </interface>
   </node>
   

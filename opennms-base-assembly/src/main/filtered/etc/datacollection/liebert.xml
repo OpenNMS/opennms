@@ -1,98 +1,96 @@
-<?xml version="1.0"?>
-<datacollection-group name="Liebert">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Liebert">
 
     <!-- Liebert Resource Types -->
-    <resourceType name="lcUpsInputLine" label="Liebert Input Line Index">
+    <resourceType label="Liebert Input Line Index" name="lcUpsInputLine">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="lcUpsOutputLine" label="Liebert Output Line Index">
+    <resourceType label="Liebert Output Line Index" name="lcUpsOutputLine">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="lcUpsBypassLine" label="Liebert Bypass Line Index">
+    <resourceType label="Liebert Bypass Line Index" name="lcUpsBypassLine">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="lsUpsBypassLine" label="Liebert Bypass Line Index">
+    <resourceType label="Liebert Bypass Line Index" name="lsUpsBypassLine">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="ls43cUpsBypassLine" label="Liebert Bypass Line Index">
+    <resourceType label="Liebert Bypass Line Index" name="ls43cUpsBypassLine">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="lgpEnvTemperatureIdDegF" label="Liebert Temp Index Fahrenheit">
+    <resourceType label="Liebert Temp Index Fahrenheit" name="lgpEnvTemperatureIdDegF">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="lgpPwrMeasurementPtIndex" label="Liebert Power Measurement Index"
-                  resourceLabel="Measurement Point ${subIndex(0,1)}, Phase ${subIndex(1,1)}">
+    <resourceType label="Liebert Power Measurement Index" name="lgpPwrMeasurementPtIndex" resourceLabel="Measurement Point ${subIndex(0,1)}, Phase ${subIndex(1,1)}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Liebert SiteNet mibs for discontinued products -->
-      <group name="liebert-sitenet" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.2.1" instance="0" alias="lcUpsBatTimeRemain" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.2.2" instance="0" alias="lcUpsBatTemperature" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.2" instance="0" alias="lcUpsInputBrownOuts" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.3" instance="0" alias="lcUpsInputBlackOuts" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.4" instance="0" alias="lcUpsInputTransient" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.2" instance="0" alias="lcUpsOutputLoad" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.5" instance="0" alias="lcUpsOutputWatts" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.5.2" instance="0" alias="lcUpsInverterTemp" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.6.1" instance="0" alias="lcUpsAlarms" type="Gauge" />
+      <group ifType="ignore" name="liebert-sitenet">
+        <mibObj alias="lcUpsBatTimeRemain" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.2.1" type="INTEGER"/>
+        <mibObj alias="lcUpsBatTemperature" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.2.2" type="INTEGER"/>
+        <mibObj alias="lcUpsInputBrownOuts" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.3.2" type="Counter"/>
+        <mibObj alias="lcUpsInputBlackOuts" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.3.3" type="Counter"/>
+        <mibObj alias="lcUpsInputTransient" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.3.4" type="Counter"/>
+        <mibObj alias="lcUpsOutputLoad" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.4.2" type="INTEGER"/>
+        <mibObj alias="lcUpsOutputWatts" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.4.5" type="INTEGER"/>
+        <mibObj alias="lcUpsInverterTemp" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.5.2" type="INTEGER"/>
+        <mibObj alias="lcUpsAlarms" instance="0" oid=".1.3.6.1.4.1.476.1.1.1.1.6.1" type="Gauge"/>
       </group>
 
-      <group name="liebert-sitenet-power" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.1" instance="lcUpsInputLine" alias="lcUpsInputLine" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.2" instance="lcUpsInputLine" alias="lcUpsInputVoltage" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.3" instance="lcUpsInputLine" alias="lcUpsInputCurrent" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.4" instance="lcUpsInputLine" alias="lcUpsInputVA" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.1" instance="lcUpsOutputLine" alias="lcUpsOutputLine" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.2" instance="lcUpsOutputLine" alias="lcUpsOutputVoltage" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.3" instance="lcUpsOutputLine" alias="lcUpsOutputCurrent" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.4" instance="lcUpsOutputLine" alias="lcUpsOutputVA" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.1" instance="lcUpsBypassLine" alias="lcUpsBypassLine" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.2" instance="lcUpsBypassLine" alias="lcUpsBypassVoltage" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.3" instance="lcUpsBypassLine" alias="lcUpsBypassCurrent" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.1" instance="lsUpsBypassLine" alias="lsUpsBypassLine" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.2" instance="lsUpsBypassLine" alias="lsUpsBypassVoltage" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.3" instance="lsUpsBypassLine" alias="lsUpsBypassCurrent" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.1" instance="ls43cUpsBypassLine" alias="ls43cUpsBypassLine" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.2" instance="ls43cUpsBypassLine" alias="ls43cUpsBypassVolt" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.3" instance="ls43cUpsBypassLine" alias="ls43cUpsBypassCurr" type="INTEGER" />
+      <group ifType="all" name="liebert-sitenet-power">
+        <mibObj alias="lcUpsInputLine" instance="lcUpsInputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.1" type="INTEGER"/>
+        <mibObj alias="lcUpsInputVoltage" instance="lcUpsInputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.2" type="INTEGER"/>
+        <mibObj alias="lcUpsInputCurrent" instance="lcUpsInputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.3" type="INTEGER"/>
+        <mibObj alias="lcUpsInputVA" instance="lcUpsInputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.3.6.1.4" type="INTEGER"/>
+        <mibObj alias="lcUpsOutputLine" instance="lcUpsOutputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.1" type="INTEGER"/>
+        <mibObj alias="lcUpsOutputVoltage" instance="lcUpsOutputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.2" type="INTEGER"/>
+        <mibObj alias="lcUpsOutputCurrent" instance="lcUpsOutputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.3" type="INTEGER"/>
+        <mibObj alias="lcUpsOutputVA" instance="lcUpsOutputLine" oid=".1.3.6.1.4.1.476.1.1.1.1.4.4.1.4" type="INTEGER"/>
+        <mibObj alias="lcUpsBypassLine" instance="lcUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.1" type="INTEGER"/>
+        <mibObj alias="lcUpsBypassVoltage" instance="lcUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.2" type="INTEGER"/>
+        <mibObj alias="lcUpsBypassCurrent" instance="lcUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.1.13.4.1.3" type="INTEGER"/>
+        <mibObj alias="lsUpsBypassLine" instance="lsUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.1" type="INTEGER"/>
+        <mibObj alias="lsUpsBypassVoltage" instance="lsUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.2" type="INTEGER"/>
+        <mibObj alias="lsUpsBypassCurrent" instance="lsUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.2.13.4.1.3" type="INTEGER"/>
+        <mibObj alias="ls43cUpsBypassLine" instance="ls43cUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.1" type="INTEGER"/>
+        <mibObj alias="ls43cUpsBypassVolt" instance="ls43cUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.2" type="INTEGER"/>
+        <mibObj alias="ls43cUpsBypassCurr" instance="ls43cUpsBypassLine" oid=".1.3.6.1.4.1.476.1.1.1.10.13.4.1.3" type="INTEGER"/>
       </group>
 
       <!-- Liebert mibs -->
-      <group name="liebert-basics" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.8.1"  instance="0" alias="lgpPwrBrownOutCnt"  type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.8.2"  instance="0" alias="lgpPwrBlackOutCnt"  type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.1.18" instance="0" alias="lgpPwrBattTimeRem"  type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.1.19" instance="0" alias="lgpPwrBattCapacity" type="integer" />
+      <group ifType="ignore" name="liebert-basics">
+        <mibObj alias="lgpPwrBrownOutCnt" instance="0" oid=".1.3.6.1.4.1.476.1.42.3.5.8.1" type="integer"/>
+        <mibObj alias="lgpPwrBlackOutCnt" instance="0" oid=".1.3.6.1.4.1.476.1.42.3.5.8.2" type="integer"/>
+        <mibObj alias="lgpPwrBattTimeRem" instance="0" oid=".1.3.6.1.4.1.476.1.42.3.5.1.18" type="integer"/>
+        <mibObj alias="lgpPwrBattCapacity" instance="0" oid=".1.3.6.1.4.1.476.1.42.3.5.1.19" type="integer"/>
       </group>
 
-      <group name="liebert-temp" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.4.1.2.3.1.3" instance="lgpEnvTemperatureIdDegF" alias="lgpEnvTempDegF" type="Integer32" />
+      <group ifType="all" name="liebert-temp">
+        <mibObj alias="lgpEnvTempDegF" instance="lgpEnvTemperatureIdDegF" oid=".1.3.6.1.4.1.476.1.42.3.4.1.2.3.1.3" type="Integer32"/>
       </group>
 
-      <group name="liebert-power" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.6"  instance="lgpPwrMeasurementPtIndex" alias="lgpPwrCurrent"  type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.16" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrMaxVolts" type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.17" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrMinVolts" type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.20" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrVolts"    type="Integer32" />
+      <group ifType="all" name="liebert-power">
+        <mibObj alias="lgpPwrCurrent" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.6" type="Integer32"/>
+        <mibObj alias="lgpPwrMaxVolts" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.16" type="Integer32"/>
+        <mibObj alias="lgpPwrMinVolts" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.17" type="Integer32"/>
+        <mibObj alias="lgpPwrVolts" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.20" type="Integer32"/>
       </group>
 
-      <group name="liebert-power-more" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.14" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrPwrFactor" type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.17" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrPctLoad"   type="Integer32" />
+      <group ifType="all" name="liebert-power-more">
+        <mibObj alias="lgpPwrPwrFactor" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.14" type="Integer32"/>
+        <mibObj alias="lgpPwrPctLoad" instance="lgpPwrMeasurementPtIndex" oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.17" type="Integer32"/>
       </group>  
 
       <systemDef name="Liebert UPS">

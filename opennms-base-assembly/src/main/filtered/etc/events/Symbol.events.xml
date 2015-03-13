@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: SYMBOL-CC-WS2000-MIB -->
 <event>
 	<mask>
@@ -27,7 +27,7 @@ Portal MAC=%s1 has been adopted.&lt;/p&gt;&lt;table&gt;
 	ccPortalLastMac&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccPortalAdopted trap received
 			ccPortalLastMac=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -68,7 +68,7 @@ Portal MAC=%s1 has been UN-adopted for reason %s2.&lt;/p&gt;&lt;table&gt;
 		timeout(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccPortalUnAdopted trap received
 			ccPortalLastMac=%parm[#1]%
 			ccPortalLastReason=%parm[#2]%&lt;/p&gt;
@@ -110,7 +110,7 @@ Portal MAC=%s1 has been denied adopted for reason %s2.&lt;/p&gt;&lt;table&gt;
 		timeout(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccPortalDenied trap received
 			ccPortalLastMac=%parm[#1]%
 			ccPortalLastReason=%parm[#2]%&lt;/p&gt;
@@ -149,7 +149,7 @@ MU MAC=%s1 has associated to Portal MAC=%s2.&lt;/p&gt;&lt;table&gt;
 	ccMuLastPortal&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccMuAssociated trap received
 			ccMuLastMac=%parm[#1]%
 			ccMuLastPortal=%parm[#2]%&lt;/p&gt;
@@ -200,7 +200,7 @@ reason %s3.&lt;/p&gt;&lt;table&gt;
 		kerberosWrongUsername(6)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccMuUnAssociated trap received
 			ccMuLastMac=%parm[#1]%
 			ccMuLastPortal=%parm[#2]%
@@ -252,7 +252,7 @@ for reason %s3.&lt;/p&gt;&lt;table&gt;
 		kerberosWrongUsername(6)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccMuDenied trap received
 			ccMuLastMac=%parm[#1]%
 			ccMuLastPortal=%parm[#2]%
@@ -293,7 +293,7 @@ since reboot is now %s2.&lt;/p&gt;&lt;table&gt;
 	ccCfgHistChangeCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccConfigChange trap received
 			ccCfgHistChangeTime=%parm[#1]%
 			ccCfgHistChangeCount=%parm[#2]%&lt;/p&gt;
@@ -334,7 +334,7 @@ of such ACL violations = %s2.&lt;/p&gt;&lt;table&gt;
 	ccSnmpAclViolations&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccSnmpAclViolation trap received
 			ccSnmpLastDeniedIpAddr=%parm[#1]%
 			ccSnmpAclViolations=%parm[#2]%&lt;/p&gt;
@@ -359,8 +359,8 @@ of such ACL violations = %s2.&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/symbol/traps/ccPortStatusChange</uei>
 	<event-label>SYMBOL-CC-WS2000-MIB defined trap event: ccPortStatusChange</event-label>
 	<descr>
-&lt;p&gt;A [physical] port's state has changed from up-->down, or
-down-->up.
+&lt;p&gt;A [physical] port's state has changed from up--&gt;down, or
+down--&gt;up.
 
 Example:
 Port %i1 has changed state to %s1.&lt;/p&gt;&lt;table&gt;
@@ -372,7 +372,7 @@ Port %i1 has changed state to %s1.&lt;/p&gt;&lt;table&gt;
 		linkDown(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccPortStatusChange trap received
 			ccPortStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -415,7 +415,7 @@ Used=%s1, Capacity=%s2, Threshold=%s3.&lt;/p&gt;&lt;table&gt;
 	ccTrapCtrlCfAlmostFullThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccCfAlmostFull trap received
 			ccCompactFlashCapacity=%parm[#1]%
 			ccCompactFlashUsed=%parm[#2]%
@@ -450,7 +450,7 @@ The WAN firewall is being attached by method %s1.&lt;/p&gt;&lt;table&gt;
 	ccTrapCtrlFirewallUnderAttackDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccFirewallUnderAttack trap received
 			ccTrapCtrlFirewallUnderAttackDescription=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -487,7 +487,7 @@ Radar has been detected on Portal MAC=%s1, on channel %s2.&lt;/p&gt;&lt;table&gt
 	ccTrapCtrlRadarDetectedChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccRadarDetected trap received
 			ccTrapCtrlRadarDetectedPortalMac=%parm[#1]%
 			ccTrapCtrlRadarDetectedChannel=%parm[#2]%&lt;/p&gt;
@@ -539,7 +539,7 @@ by MU MAC=%s4 with IP-addr=%s5.&lt;/p&gt;&lt;table&gt;
 	ccMuIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccSumStatsMu trap received
 			ccTrapCtrlSumStatsDescr=%parm[#1]%
 			ccTrapCtrlSumStatsThresholdMu=%parm[#2]%
@@ -623,7 +623,7 @@ by Portal index=%s4 with MAC=%s5.&lt;/p&gt;&lt;table&gt;
 	ccPortalLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccSumStatsPortal trap received
 			ccTrapCtrlSumStatsIndex=%parm[#1]%
 			ccTrapCtrlSumStatsThresholdPortals=%parm[#2]%
@@ -684,7 +684,7 @@ by WLAN index=%s4 with name=%s5.&lt;/p&gt;&lt;table&gt;
 	ccWlanEssid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccSumStatsWlan trap received
 			ccTrapCtrlSumStatsDescr=%parm[#1]%
 			ccTrapCtrlSumStatsThresholdWlans=%parm[#2]%
@@ -732,7 +732,7 @@ by the entire switch.&lt;/p&gt;&lt;table&gt;
 	ccTrapCtrlSumStatsUnits&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccSumStatsSwitch trap received
 			ccTrapCtrlSumStatsDescr=%parm[#1]%
 			ccTrapCtrlSumStatsThresholdSwitch=%parm[#2]%
@@ -767,7 +767,7 @@ radius server, the specified VLAN is activated.
 	ccTrapCtrlLanVlanActivatedVlanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccLanVlanActivated trap received
 			ccTrapCtrlLanVlanActivatedVlanId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -848,7 +848,7 @@ and success=%s6 with result=%s7.
 	ccLoadCfgResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='donotpersist'>&lt;p&gt;
+		<logmsg dest="donotpersist">&lt;p&gt;
 			Symbol Event: ccDhcpOptionsFileTransferStatus trap received
 			ccTrapCtrlDhcpOptionsFileTransferStatusRequested=%parm[#1]%
 			ccLoadFwServerFilename=%parm[#2]%
@@ -902,7 +902,7 @@ The switch has changed it's redundancy state to %s1.
 		redundantUpgrade(4)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccRedundancyStateChange trap received
 			ccRedundancyOperState=%parm[#1]%
 			ccTrapCtrlRedundancyPreviousOperState=%parm[#2]%&lt;/p&gt;
@@ -950,7 +950,7 @@ authorized.&lt;/p&gt;&lt;table&gt;
 		viaRadius(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccRapNewApprovedAp trap received
 			ccRapResultsApprovedPortalPtr=%parm[#1]%
 			ccRapResultsApprovedHowFound=%parm[#2]%
@@ -991,7 +991,7 @@ authorized.&lt;/p&gt;&lt;table&gt;
 		viaDetector(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccRapNewRogueAp trap received
 			ccRapResultsRoguePortalPtr=%parm[#1]%
 			ccRapResultsRogueHowFound=%parm[#2]%&lt;/p&gt;
@@ -1027,7 +1027,7 @@ authorized.&lt;/p&gt;&lt;table&gt;
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: coldStart trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1065,7 +1065,7 @@ authorized.&lt;/p&gt;&lt;table&gt;
 	apAPMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: authenticationFailure trap received
 			apMyMacAddr=%parm[#1]%
 			apAPMacAddr=%parm[#2]%&lt;/p&gt;
@@ -1098,7 +1098,7 @@ authorized.&lt;/p&gt;&lt;table&gt;
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPRFStartUpTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1137,7 +1137,7 @@ Table.
 	muMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPACLViolationTrap trap received
 			apMyMacAddr=%parm[#1]%
 			muMacAddr=%parm[#2]%&lt;/p&gt;
@@ -1170,7 +1170,7 @@ Table.
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPRFInterferenceTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1217,7 +1217,7 @@ with this Access Point.
 	apCurrentMUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPMUAssocTrap trap received
 			apMyMacAddr=%parm[#1]%
 			muMacAddr=%parm[#2]%
@@ -1266,7 +1266,7 @@ associating with this Access Point anymore.
 	apCurrentMUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPMUUnAssocTrap trap received
 			apMyMacAddr=%parm[#1]%
 			muMacAddr=%parm[#2]%
@@ -1307,7 +1307,7 @@ Access Point is at the threshold set by apMaxMUTrigger.
 	apCurrentMUs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPMUMaxAssocTrap trap received
 			apMyMacAddr=%parm[#1]%
 			apCurrentMUs=%parm[#2]%&lt;/p&gt;
@@ -1352,7 +1352,7 @@ is ready to forward data.
 	apNbrOfWLAPItfs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSRootWLAPUpTrap trap received
 			apMyMacAddr=%parm[#1]%
 			apAPMacAddr=%parm[#2]%
@@ -1401,7 +1401,7 @@ topology.
 	apNbrOfWLAPItfs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSRootWLAPLostTrap trap received
 			apMyMacAddr=%parm[#1]%
 			apAPMacAddr=%parm[#2]%
@@ -1448,7 +1448,7 @@ and is ready to forward data.
 	apNbrOfWLAPItfs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSDsgntedWLAPUpTrap trap received
 			apMyMacAddr=%parm[#1]%
 			apAPMacAddr=%parm[#2]%
@@ -1497,7 +1497,7 @@ Designated WLAP is lost.
 	apNbrOfWLAPItfs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSDsgnatedWLAPLostTrap trap received
 			apMyMacAddr=%parm[#1]%
 			apAPMacAddr=%parm[#2]%
@@ -1533,7 +1533,7 @@ change, This trap will be issued.
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPDHCPConfigChgTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1567,7 +1567,7 @@ lease before the lease is expired, this trap is generated.
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apDSAPDHCPLeaseUpTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1601,7 +1601,7 @@ with the KDC, this trap is generated.
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apKerbAuthFailTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1635,7 +1635,7 @@ with the KDC Via the AP, this trap is generated.
 	apMyMacAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apKerbMUAuthFailTrap trap received
 			apMyMacAddr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1670,7 +1670,7 @@ sysLowFlashSpace &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapLowFlashSpace trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1703,7 +1703,7 @@ etherDisconnect &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapNicDropping trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1736,7 +1736,7 @@ apMaxMU &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapAPMUMaxExceed trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1769,7 +1769,7 @@ wlanMaxMUCount &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapWLANMUMaxExceed trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1802,7 +1802,7 @@ apDetected &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapAPDetected trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1835,7 +1835,7 @@ apAdopted &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapAPAdopted trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1868,7 +1868,7 @@ apReset &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapAPReset trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1901,7 +1901,7 @@ apOffline &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: AP is offline:
 			%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1934,7 +1934,7 @@ apAlert &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapAPAlert trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1967,7 +1967,7 @@ userAuthRejected &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapUserAuthFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2000,7 +2000,7 @@ userAuthFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapRadiusAuthFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2033,7 +2033,7 @@ muAssocFailACL &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapACLViolation trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2066,7 +2066,7 @@ apAdoptFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapDenyAPAdoption trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2099,7 +2099,7 @@ hsbPrimHBLoss &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHsbPrimaryNoHeartbeat trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2132,7 +2132,7 @@ hsbFailover &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHsbStandbyEntersFailover trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2165,7 +2165,7 @@ hsbPrimFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHsbPrimaryFailedResetting trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2198,7 +2198,7 @@ hsbStdbyFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHsbStandbyFailedResetting trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2231,7 +2231,7 @@ muKDCAuthFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapKDCUserAuthFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2264,7 +2264,7 @@ kdcPropFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapKDCPropagationFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2297,7 +2297,7 @@ muTKIPDecyptFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHighDecryptFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2330,7 +2330,7 @@ muTKIPReplayFail &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapHighReplyFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2363,7 +2363,7 @@ muTKIPMicError &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapTKIPMICFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2396,7 +2396,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccTrapWPACounterMeasureStart trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2428,7 +2428,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: licenseChanged trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2460,7 +2460,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: clockChanged trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2492,7 +2492,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: pktDiscWrongNIC trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2524,7 +2524,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: pktDiscWrongVLAN trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2556,7 +2556,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apAdoptFailPol trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2588,7 +2588,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apAdoptFailACL trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2620,7 +2620,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apAdoptFailLimit trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2652,7 +2652,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apAdoptFailLic trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2684,7 +2684,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apAdoptFailNoImg trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2716,7 +2716,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: apCfgFailESS trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2748,7 +2748,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: devDropInfoMsg trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2780,7 +2780,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: devdropLoadmeMsg trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2812,7 +2812,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: etherConnect trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2844,7 +2844,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muAssocFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2876,7 +2876,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muAssocOK trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2908,7 +2908,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muRoamed trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2940,7 +2940,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muDisassoc trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -2972,7 +2972,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muEAPAuthFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3004,7 +3004,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muEAPAuthOK trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3036,7 +3036,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: muKDCAuthOK trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3068,7 +3068,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: wlanAuthOK trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3100,7 +3100,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: wlanAuthFail trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3132,7 +3132,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: userAuthOK trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3164,7 +3164,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: radiusSrvTimeout trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3196,7 +3196,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: kdcPrincAdd trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3228,7 +3228,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: kdcPrincChgd trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3260,7 +3260,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: kdcPrincDel trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3292,7 +3292,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: kdcDBReplaced trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3324,7 +3324,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: hsbStdbyAutoRev trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3356,7 +3356,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: hsbPrimAutoRev trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3388,7 +3388,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: acsError trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3420,7 +3420,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: eopActive trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3452,7 +3452,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: eopInactive trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3484,7 +3484,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: debugEvent trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3516,7 +3516,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: hsbStartUp trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3548,7 +3548,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: hsbPeerConnect trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3578,7 +3578,7 @@ wpaCntrMsrAct &lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccFanAndTempNotification trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3610,7 +3610,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	ccTargetTrapString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: ccAccessChangedNotification trap received
 			ccTargetTrapString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3636,7 +3636,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Radio power is reduced [TPC]&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: tpcPowerReduced trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -3661,7 +3661,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Radar is detected [DFS]&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: dfsRadarDetect trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -3686,7 +3686,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Channel selected to avoid radar [DFS]&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: dfsChannelSelect trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -3711,7 +3711,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Switch to new channel [DFS]&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: dfsChannelSwitch trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -3736,7 +3736,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Revert back to original channel [DFS]&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: dfsChannelRevert trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -3761,7 +3761,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Radio is suspended - no available channels&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: radioSuspend trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -3786,7 +3786,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Radio is resumed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: radioResume trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -3811,7 +3811,7 @@ methods permitted generates a separate notification.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Radio is moved to random channel&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Symbol Event: radioRandomChannel trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>

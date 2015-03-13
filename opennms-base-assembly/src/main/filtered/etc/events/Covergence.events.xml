@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: CXC-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: CXC-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -47,14 +46,14 @@
 		deny(1)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			accessRequest trap received 
 			accessRequestUsername=%parm[#1]% 
 			accessRequestType=%parm[#2]% 
 			accessRequestResult=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -103,7 +102,7 @@
 		deny(1)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			accessRequest trap received 
 			accessRequestUsername=%parm[#1]% 
 			accessRequestType=%parm[#2]% 
@@ -155,7 +154,7 @@
 	callConnectedFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			callConnected trap received 
 			callConnectedRequestId=%parm[#1]% 
 			callConnectedHandle=%parm[#2]% 
@@ -165,7 +164,7 @@
 			callConnectedFrom=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -211,7 +210,7 @@
 	callCreatedFrom&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			callCreated trap received 
 			callCreatedRequestId=%parm[#1]% 
 			callCreatedHandle=%parm[#2]% 
@@ -257,7 +256,7 @@
 		true(1)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			callHeld trap received 
 			callHeldRequestId=%parm[#1]% 
 			callHeldHandle=%parm[#2]% 
@@ -293,7 +292,7 @@
 	callRetrievedHandle&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			callRetrieved trap received 
 			callRetrievedRequestId=%parm[#1]% 
 			callRetrievedHandle=%parm[#2]%&lt;/p&gt;
@@ -332,7 +331,7 @@
 	callTerminatedCallDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			callTerminated trap received 
 			callTerminatedRequestId=%parm[#1]% 
 			callTerminatedHandle=%parm[#2]% 
@@ -368,13 +367,13 @@
 	cAMissingFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cAMissing trap received 
 			cAMissingEntryName=%parm[#1]% 
 			cAMissingFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -404,13 +403,13 @@
 	certDecryptErrorFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certDecryptError trap received 
 			certDecryptErrorEntryName=%parm[#1]% 
 			certDecryptErrorFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -444,14 +443,14 @@
 	certExpiredExpiredTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certExpired trap received 
 			certExpiredEntryName=%parm[#1]% 
 			certExpiredFileName=%parm[#2]% 
 			certExpiredExpiredTime=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -489,7 +488,7 @@
 	certExpiringExpiresIn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certExpiring trap received 
 			certExpiringEntryName=%parm[#1]% 
 			certExpiringFileName=%parm[#2]% 
@@ -497,7 +496,7 @@
 			certExpiringExpiresIn=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -527,13 +526,13 @@
 	certFormatFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certFormat trap received 
 			certFormatEntryName=%parm[#1]% 
 			certFormatFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -563,13 +562,13 @@
 	certMissingFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certMissing trap received 
 			certMissingEntryName=%parm[#1]% 
 			certMissingFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -599,13 +598,13 @@
 	certNoPrivateKeyFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certNoPrivateKey trap received 
 			certNoPrivateKeyEntryName=%parm[#1]% 
 			certNoPrivateKeyFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -639,14 +638,14 @@
 	certNotYetValidStartTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			certNotYetValid trap received 
 			certNotYetValidEntryName=%parm[#1]% 
 			certNotYetValidFileName=%parm[#2]% 
 			certNotYetValidStartTime=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -676,13 +675,13 @@
 	cRLMissingFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cRLMissing trap received 
 			cRLMissingEntryName=%parm[#1]% 
 			cRLMissingFileName=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -712,13 +711,13 @@
 	directoryFailedReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			directoryFailed trap received 
 			directoryFailedDirectory=%parm[#1]% 
 			directoryFailedReason=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -752,14 +751,14 @@
 	dosSIPPolicyTrapMissive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dosSIPPolicyTrap trap received 
 			dosSIPPolicyTrapVspName=%parm[#1]% 
 			dosSIPPolicyTrapDosPolicyName=%parm[#2]% 
 			dosSIPPolicyTrapMissive=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -793,14 +792,14 @@
 	dosTransportPolicyTrapMissive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dosTransportPolicyTrap trap received 
 			dosTransportPolicyTrapVspName=%parm[#1]% 
 			dosTransportPolicyTrapDosPolicyName=%parm[#2]% 
 			dosTransportPolicyTrapMissive=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -834,14 +833,14 @@
 	dosUrlPolicyTrapMissive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dosUrlPolicyTrap trap received 
 			dosUrlPolicyTrapVspName=%parm[#1]% 
 			dosUrlPolicyTrapDosPolicyName=%parm[#2]% 
 			dosUrlPolicyTrapMissive=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -875,14 +874,14 @@
 	fileTransferAntiVirusFailFilename&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fileTransferAntiVirusFail trap received 
 			fileTransferAntiVirusFailSessionID=%parm[#1]% 
 			fileTransferAntiVirusFailSender=%parm[#2]% 
 			fileTransferAntiVirusFailFilename=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -920,7 +919,7 @@
 	iMContentScanTrapAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iMContentScanTrap trap received 
 			iMContentScanTrapFrom=%parm[#1]% 
 			iMContentScanTrapTo=%parm[#2]% 
@@ -928,7 +927,7 @@
 			iMContentScanTrapAction=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -958,13 +957,13 @@
 	licenseExpiringExpires&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			licenseExpiring trap received 
 			licenseExpiringName=%parm[#1]% 
 			licenseExpiringExpires=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -998,14 +997,14 @@
 	mediaVerificationFailFailure&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mediaVerificationFail trap received 
 			mediaVerificationFailSessionID=%parm[#1]% 
 			mediaVerificationFailSender=%parm[#2]% 
 			mediaVerificationFailFailure=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%"/>
 </event>
 
 
@@ -1079,7 +1078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1087,7 +1086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1159,7 +1158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1167,7 +1166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1239,7 +1238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1247,7 +1246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1319,7 +1318,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1327,7 +1326,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1399,7 +1398,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1407,7 +1406,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1479,7 +1478,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1487,7 +1486,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1559,7 +1558,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1567,7 +1566,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1639,7 +1638,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1647,7 +1646,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1719,7 +1718,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1727,7 +1726,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1799,7 +1798,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1807,7 +1806,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1879,7 +1878,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1887,7 +1886,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -1959,7 +1958,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -1967,7 +1966,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2039,7 +2038,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2047,7 +2046,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2119,7 +2118,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2127,7 +2126,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2199,7 +2198,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2207,7 +2206,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2279,7 +2278,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2287,7 +2286,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2359,7 +2358,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2367,7 +2366,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2439,7 +2438,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2447,7 +2446,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2519,7 +2518,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2527,7 +2526,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2599,7 +2598,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2607,7 +2606,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2679,7 +2678,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2687,7 +2686,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2759,7 +2758,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2767,7 +2766,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2839,7 +2838,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2847,7 +2846,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2919,7 +2918,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -2927,7 +2926,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -2999,7 +2998,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3007,7 +3006,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3079,7 +3078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3087,7 +3086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3159,7 +3158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3167,7 +3166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3239,7 +3238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3247,7 +3246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3319,7 +3318,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3327,7 +3326,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3399,7 +3398,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3407,7 +3406,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3479,7 +3478,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3487,7 +3486,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3559,7 +3558,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3567,7 +3566,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3639,7 +3638,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3647,7 +3646,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3719,7 +3718,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3727,7 +3726,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3799,7 +3798,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3807,7 +3806,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3879,7 +3878,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3887,7 +3886,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -3959,7 +3958,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -3967,7 +3966,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4039,7 +4038,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4047,7 +4046,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4119,7 +4118,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4127,7 +4126,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4199,7 +4198,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4207,7 +4206,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4279,7 +4278,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4287,7 +4286,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4359,7 +4358,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4367,7 +4366,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4439,7 +4438,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4447,7 +4446,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4519,7 +4518,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4527,7 +4526,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4599,7 +4598,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4607,7 +4606,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4679,7 +4678,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4687,7 +4686,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4759,7 +4758,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4767,7 +4766,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4839,7 +4838,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4847,7 +4846,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4919,7 +4918,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -4927,7 +4926,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -4999,7 +4998,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5007,7 +5006,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5079,7 +5078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5087,7 +5086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5159,7 +5158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5167,7 +5166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5239,7 +5238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5247,7 +5246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5319,7 +5318,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5327,7 +5326,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5399,7 +5398,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5407,7 +5406,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5479,7 +5478,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5487,7 +5486,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5559,7 +5558,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5567,7 +5566,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5639,7 +5638,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5647,7 +5646,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5719,7 +5718,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5727,7 +5726,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5799,7 +5798,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5807,7 +5806,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5879,7 +5878,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5887,7 +5886,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -5959,7 +5958,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -5967,7 +5966,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6039,7 +6038,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6047,7 +6046,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6119,7 +6118,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6127,7 +6126,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6199,7 +6198,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6207,7 +6206,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6279,7 +6278,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6287,7 +6286,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6359,7 +6358,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6367,7 +6366,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6439,7 +6438,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6447,7 +6446,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6519,7 +6518,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6527,7 +6526,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6599,7 +6598,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6607,7 +6606,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6679,7 +6678,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6687,7 +6686,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6759,7 +6758,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6767,7 +6766,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6839,7 +6838,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6847,7 +6846,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6919,7 +6918,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -6927,7 +6926,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -6999,7 +6998,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7007,7 +7006,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7079,7 +7078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7087,7 +7086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7159,7 +7158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7167,7 +7166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7239,7 +7238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7247,7 +7246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7319,7 +7318,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7327,7 +7326,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7399,7 +7398,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7407,7 +7406,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7479,7 +7478,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7487,7 +7486,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7559,7 +7558,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7567,7 +7566,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7639,7 +7638,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7647,7 +7646,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7719,7 +7718,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7727,7 +7726,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7799,7 +7798,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7807,7 +7806,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7879,7 +7878,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7887,7 +7886,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -7959,7 +7958,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -7967,7 +7966,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8039,7 +8038,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8047,7 +8046,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8119,7 +8118,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8127,7 +8126,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8199,7 +8198,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8207,7 +8206,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8279,7 +8278,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8287,7 +8286,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8359,7 +8358,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8367,7 +8366,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8439,7 +8438,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8447,7 +8446,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8519,7 +8518,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8527,7 +8526,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8599,7 +8598,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8607,7 +8606,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8679,7 +8678,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8687,7 +8686,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8759,7 +8758,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8767,7 +8766,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8839,7 +8838,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8847,7 +8846,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8919,7 +8918,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -8927,7 +8926,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -8999,7 +8998,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9007,7 +9006,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9079,7 +9078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9087,7 +9086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9159,7 +9158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9167,7 +9166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9239,7 +9238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9247,7 +9246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9319,7 +9318,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9327,7 +9326,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9399,7 +9398,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9407,7 +9406,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9479,7 +9478,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9487,7 +9486,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9559,7 +9558,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9567,7 +9566,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9639,7 +9638,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9647,7 +9646,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9719,7 +9718,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9727,7 +9726,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9799,7 +9798,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9807,7 +9806,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9879,7 +9878,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9887,7 +9886,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -9959,7 +9958,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -9967,7 +9966,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10039,7 +10038,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10047,7 +10046,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10119,7 +10118,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10127,7 +10126,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10199,7 +10198,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10207,7 +10206,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10279,7 +10278,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10287,7 +10286,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10359,7 +10358,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10367,7 +10366,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10439,7 +10438,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10447,7 +10446,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10519,7 +10518,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10527,7 +10526,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10599,7 +10598,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10607,7 +10606,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10679,7 +10678,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10687,7 +10686,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10759,7 +10758,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10767,7 +10766,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10839,7 +10838,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10847,7 +10846,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10919,7 +10918,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -10927,7 +10926,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -10999,7 +10998,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -11007,7 +11006,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -11079,7 +11078,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -11087,7 +11086,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -11159,7 +11158,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -11167,7 +11166,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -11239,7 +11238,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -11247,7 +11246,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%:%parm[#2]%"/>
 </event>
 
 <event>
@@ -11312,7 +11311,7 @@
 	monitorAlertValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			monitorAlert trap received 
 			monitorAlertParameter=%parm[#1]% 
 			monitorAlertProcess=%parm[#2]% 
@@ -11320,7 +11319,7 @@
 			monitorAlertValue=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -11350,7 +11349,7 @@
 	playCompleteHandle&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			playComplete trap received 
 			playCompleteRequestId=%parm[#1]% 
 			playCompleteHandle=%parm[#2]%&lt;/p&gt;
@@ -11404,12 +11403,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11456,7 +11455,7 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -11507,12 +11506,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11559,12 +11558,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11611,12 +11610,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11663,12 +11662,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11715,12 +11714,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11767,12 +11766,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11819,12 +11818,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11871,12 +11870,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11923,12 +11922,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -11975,12 +11974,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -12027,12 +12026,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -12079,12 +12078,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -12131,12 +12130,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -12183,12 +12182,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 
 <event>
@@ -12232,12 +12231,12 @@
 		av(16)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			processDown trap received 
 			processDownProcess=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -12263,7 +12262,7 @@
 	raidEventTrapLog&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			raidEventTrap trap received 
 			raidEventTrapLog=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -12301,14 +12300,14 @@
 	recordCompleteFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='discardtraps'>&lt;p&gt;
+		<logmsg dest="discardtraps">&lt;p&gt;
 			recordComplete trap received 
 			recordCompleteRequestId=%parm[#1]% 
 			recordCompleteHandle=%parm[#2]% 
 			recordCompleteFileName=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 
 
@@ -12408,7 +12407,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12416,7 +12415,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -12514,7 +12513,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12522,7 +12521,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -12620,7 +12619,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12628,7 +12627,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -12726,7 +12725,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12734,7 +12733,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -12832,7 +12831,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12840,7 +12839,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -12938,7 +12937,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -12946,7 +12945,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -13044,7 +13043,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -13052,7 +13051,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -13150,7 +13149,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -13158,7 +13157,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 
 <event>
@@ -13253,7 +13252,7 @@
 	sensorEventDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sensorEvent trap received 
 			sensorEventSeverity=%parm[#1]% 
 			sensorEventSensor=%parm[#2]% 
@@ -13261,7 +13260,7 @@
 			sensorEventDescription=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -13303,7 +13302,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13312,7 +13311,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13355,14 +13354,14 @@
 		down(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipServerEvent trap received 
 			sipServerEventPeer=%parm[#1]% 
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -13405,14 +13404,14 @@
 		down(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipServerEvent trap received 
 			sipServerEventPeer=%parm[#1]% 
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -13455,17 +13454,14 @@
 		down(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipServerEvent trap received 
 			sipServerEventPeer=%parm[#1]% 
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                auto-clean="true"/>
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -13508,17 +13504,14 @@
 		down(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipServerEvent trap received 
 			sipServerEventPeer=%parm[#1]% 
 			sipServerEventServer=%parm[#2]% 
 			sipServerEventState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" 
-                alarm-type="2" 
-                auto-clean="true"/>
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -13583,7 +13576,7 @@
 	storageDeviceFullDiskFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			storageDeviceFull trap received 
 			storageDeviceFullDevice=%parm[#1]% 
 			storageDeviceFullSeverity=%parm[#2]% 
@@ -13592,7 +13585,7 @@
 			storageDeviceFullDiskFree=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%"/>
 </event>
 <!-- The following definitions are to work around a bug that
      causes Covergence devices to send systemHalt traps when they
@@ -13641,7 +13634,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (487 Request Terminated) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13650,7 +13643,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13696,7 +13689,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (481 Call/Transaction Does Not Exist) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13705,7 +13698,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13751,7 +13744,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (488 Not Acceptable Here) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13760,7 +13753,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13806,7 +13799,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (404 Not Found) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13815,7 +13808,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13861,7 +13854,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (406 Not Acceptable) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13870,7 +13863,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13916,7 +13909,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (403 Forbidden) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13925,7 +13918,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -13971,7 +13964,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (403 Forbidden) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -13980,7 +13973,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14026,7 +14019,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (480 Temporarily Unavailable) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14035,7 +14028,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14081,7 +14074,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (486 Busy Here) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14090,7 +14083,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14136,7 +14129,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (408 Request Timeout) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14145,7 +14138,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14191,7 +14184,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (484 Address Incomplete) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14200,7 +14193,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14246,7 +14239,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (483 Too Many Hops) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14255,7 +14248,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14301,7 +14294,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (482 Loop Detected) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14310,7 +14303,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14356,7 +14349,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (300 Multiple Choices) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14365,7 +14358,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14411,7 +14404,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (500 Server Internal Error) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14420,7 +14413,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14466,7 +14459,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (501 Not Implemented) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14475,7 +14468,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14521,7 +14514,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (502 Bad Gateway) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14530,7 +14523,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14576,7 +14569,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (503 Service Unavailable) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14585,7 +14578,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14631,7 +14624,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (504 Server Time-out) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14640,7 +14633,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14686,7 +14679,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (505 Version Not Supported) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14695,7 +14688,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14741,7 +14734,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (513 Message Too Large) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14750,7 +14743,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14796,7 +14789,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (600 Busy Everywhere) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14805,7 +14798,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14851,7 +14844,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (603 Decline) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14860,7 +14853,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14906,7 +14899,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (604 Does Not Exist Anywhere) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14915,7 +14908,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -14937,15 +14930,15 @@
 		</varbind>
 		<varbind>
 			<vbnumber>4</vbnumber>
-			<vbvalue></vbvalue>
+			<vbvalue/>
 		</varbind>
 		<varbind>
 			<vbnumber>3</vbnumber>
-			<vbvalue></vbvalue>
+			<vbvalue/>
 		</varbind>
 		<varbind>
 			<vbnumber>2</vbnumber>
-			<vbvalue></vbvalue>
+			<vbvalue/>
 		</varbind>
 	</mask>
 	<uei>uei.opennms.org/vendors/Covergence/CXC-MIB/sIPCallFail/NoUsefulInfo</uei>
@@ -14973,7 +14966,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (call ID only, no From, To, or Reason) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -14982,7 +14975,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -15004,7 +14997,7 @@
 		</varbind>
 		<varbind>
 			<vbnumber>4</vbnumber>
-			<vbvalue></vbvalue>
+			<vbvalue/>
 		</varbind>
 	</mask>
 	<uei>uei.opennms.org/vendors/Covergence/CXC-MIB/sIPCallFail/NoReason</uei>
@@ -15032,7 +15025,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (empty reason) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -15041,7 +15034,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -15087,7 +15080,7 @@
 	sIPCallFailAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sIPCallFail trap received (other reason) 
 			sIPCallFailSessionID=%parm[#1]% 
 			sIPCallFailFrom=%parm[#2]% 
@@ -15096,7 +15089,7 @@
 			sIPCallFailAction=%parm[#5]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%"/>
 </event>
 <event>
 	<mask>
@@ -15118,11 +15111,11 @@
 	<descr>
 &lt;p&gt;system: report that a system halt has been initiated&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			systemHalt trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -15168,14 +15161,14 @@
 		unavailable(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			webServiceAvailablityChange trap received 
 			webServiceAvailablityChangeServer=%parm[#1]% 
 			webServiceAvailablityChangeNewState=%parm[#2]% 
 			webServiceAvailablityChangeOldState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -15221,14 +15214,14 @@
 		unavailable(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			webServiceAvailablityChange trap received 
 			webServiceAvailablityChangeServer=%parm[#1]% 
 			webServiceAvailablityChangeNewState=%parm[#2]% 
 			webServiceAvailablityChangeOldState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -15274,14 +15267,13 @@
 		unavailable(2)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			webServiceAvailablityChange trap received 
 			webServiceAvailablityChangeServer=%parm[#1]% 
 			webServiceAvailablityChangeNewState=%parm[#2]% 
 			webServiceAvailablityChangeOldState=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
-</events>
-<!-- End of auto generated data from MIB: CXC-MIB -->
+</events><!-- End of auto generated data from MIB: CXC-MIB -->

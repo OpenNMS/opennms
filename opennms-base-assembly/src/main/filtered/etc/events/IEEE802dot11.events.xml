@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!--  event definitions for traps from IEEE802.11 MIB -->
 <event>
 	<mask>
@@ -39,7 +39,7 @@ frame was sent and the reason for the disassociation.
 	dot11DisassociateStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			IEEE 802.11 Event: dot11Disassociate trap received 
 			ifIndex=%parm[#1]% 
 			dot11DisassociateReason=%parm[#2]% 
@@ -86,7 +86,7 @@ frame was sent and the reason for the deauthentication.
 	dot11DeauthenticateStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			IEEE 802.11 Event: dot11Deauthenticate trap received 
 			ifIndex=%parm[#1]% 
 			dot11DeauthenticateReason=%parm[#2]% 
@@ -134,7 +134,7 @@ frame was sent and the reason for the authentication failure.
 	dot11AuthenticateFailStation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			IEEE 802.11 Event: dot11AuthenticateFail trap received 
 			ifIndex=%parm[#1]% 
 			dot11AuthenticateFailStatus=%parm[#2]% 

@@ -1,7 +1,4 @@
-<!-- Generated from MIB: I3IC-MIB version 1.1 (ININ Interaction Center servers version 2.0 and higher) -->
-<!-- additional information is available, it can be found at http://www.inin.com/Support/EventLogs/FindEntry.asp -->
-
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Generated from MIB: I3IC-MIB version 1.1 (ININ Interaction Center servers version 2.0 and higher) --><!-- additional information is available, it can be found at http://www.inin.com/Support/EventLogs/FindEntry.asp --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -66,7 +63,7 @@ been restarted. See accompanying MIB variable.&lt;/p&gt;&lt;table&gt;
 		unknown(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTrapRestart trap received 
 			i3IcTrapInfoSubsys=%parm[#1]% 
 			i3IcTrapInfoRestartReason=%parm[#2]%&lt;/p&gt;
@@ -107,7 +104,7 @@ written an informational entry to the Event Log on the Interaction Center server
 	i3IcTrapInfoEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTrapInformationalEventLog trap received 
 			i3IcTrapInfoEventLogSubsys=%parm[#1]% 
 			i3IcTrapInfoEventLogMsgID=%parm[#2]% 
@@ -149,7 +146,7 @@ written a warning entry to the Event Log on the Interaction Center server
 	i3IcTrapWarningEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTrapWarningEventLog trap received 
 			i3IcTrapWarningEventLogSubsys=%parm[#1]% 
 			i3IcTrapWarningEventLogMsgID=%parm[#2]% 
@@ -191,7 +188,7 @@ written an error entry to the Event Log on the Interaction Center server
 	i3IcTrapErrorEventLogMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTrapErrorEventLog trap received 
 			i3IcTrapErrorEventLogSubsys=%parm[#1]% 
 			i3IcTrapErrorEventLogMsgID=%parm[#2]% 
@@ -219,7 +216,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when the backup Interaction Center server is becoming active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcCommenceSwitchoverEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -248,7 +245,7 @@ written an error entry to the Event Log on the Interaction Center server
 	i3IcTrapYellowAlarmTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTSInterfaceYellowAlarm trap received 
 			i3IcTrapYellowAlarmTSInterface=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -278,7 +275,7 @@ written an error entry to the Event Log on the Interaction Center server
 	i3IcTrapRedAlarmTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTSInterfaceRedAlarm trap received 
 			i3IcTrapRedAlarmTSInterface=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -308,7 +305,7 @@ written an error entry to the Event Log on the Interaction Center server
 	i3IcTrapAlarmClearedTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTSInterfaceAlarmCleared trap received 
 			i3IcTrapAlarmClearedTSInterface=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -338,7 +335,7 @@ written an error entry to the Event Log on the Interaction Center server
 	i3IcTrapDChannelDownTSInterface&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTSInterfaceDChannelDown trap received 
 			i3IcTrapDChannelDownTSInterface=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -364,7 +361,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when the primary Interaction Center server is becoming inactive.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcDiscontinueSwitchoverEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -389,7 +386,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when Interaction Center server is experiencing a high latency condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcHighLatencyState trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -414,7 +411,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when Interaction Center server is no longer experiencing a high latency condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcHighLatencyStateClear trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -439,7 +436,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when tracing was stopped due to insufficient disk space.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTracingStoppedInsufficientDiskSpace trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -464,7 +461,7 @@ written an error entry to the Event Log on the Interaction Center server
 	<descr>
 &lt;p&gt;This trap is generated when tracing is resumed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Interactive Intelligence: i3IcTracingStoppedInsufficientDiskSpaceCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>

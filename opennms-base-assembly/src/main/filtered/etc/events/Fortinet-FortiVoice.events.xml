@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>
@@ -74,13 +73,13 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="systemHalt"/>
-            <decode varbindvalue="2" varbinddecodedstring="systemReboot"/>
-            <decode varbindvalue="3" varbinddecodedstring="systemReload"/>
-            <decode varbindvalue="4" varbinddecodedstring="systemUpgrade"/>
-            <decode varbindvalue="5" varbinddecodedstring="guiUpgrade"/>
-            <decode varbindvalue="6" varbinddecodedstring="logDiskFormat"/>
-            <decode varbindvalue="7" varbinddecodedstring="storageDiskFormat"/>
+            <decode varbinddecodedstring="systemHalt" varbindvalue="1"/>
+            <decode varbinddecodedstring="systemReboot" varbindvalue="2"/>
+            <decode varbinddecodedstring="systemReload" varbindvalue="3"/>
+            <decode varbinddecodedstring="systemUpgrade" varbindvalue="4"/>
+            <decode varbinddecodedstring="guiUpgrade" varbindvalue="5"/>
+            <decode varbinddecodedstring="logDiskFormat" varbindvalue="6"/>
+            <decode varbinddecodedstring="storageDiskFormat" varbindvalue="7"/>
         </varbindsdecode>
     </event>
     <event>
@@ -133,9 +132,9 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="masterUnitSwitch"/>
-            <decode varbindvalue="2" varbinddecodedstring="slaveUnitSwitch"/>
-            <decode varbindvalue="3" varbinddecodedstring="unitShutdown"/>
+            <decode varbinddecodedstring="masterUnitSwitch" varbindvalue="1"/>
+            <decode varbinddecodedstring="slaveUnitSwitch" varbindvalue="2"/>
+            <decode varbinddecodedstring="unitShutdown" varbindvalue="3"/>
         </varbindsdecode>
     </event>
 </events>

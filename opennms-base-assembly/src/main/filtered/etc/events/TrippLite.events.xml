@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: TRIPPUPS-MIB -->
 <event>
 	<mask>
@@ -28,7 +28,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsCritical trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;
@@ -63,7 +63,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsWarning trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;
@@ -98,7 +98,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsInformation trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;
@@ -133,7 +133,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsAlarmCleared trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;
@@ -168,7 +168,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsAgentStarted trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;
@@ -203,7 +203,7 @@
 	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upsAgentStopped trap received 
 			upsTrapCode=%parm[#1]% 
 			upsTrapDescription=%parm[#2]%&lt;/p&gt;

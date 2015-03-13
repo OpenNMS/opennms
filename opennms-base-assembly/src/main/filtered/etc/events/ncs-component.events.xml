@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!--
 function void sendImpactedComponentEvent( DroolsCorrelationEngine engine, Component c, Event e )
 {
@@ -29,11 +29,11 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <descr>
       &lt;p&gt;%parm[componentType]% %parm[componentName]% was impacted due to event &lt;a href="/opennms/event/detail.jsp?id=%parm[cause]%"&gt;%parm[cause]%&lt;/a&gt;. &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       %parm[componentType]% %parm[componentName]% was impacted due to event %parm[cause]%.
     </logmsg>
     <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" alarm-type="1" auto-clean="false" />
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/ncs/componentResolved</uei>
@@ -42,15 +42,12 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
       &lt;p&gt;%parm[componentType]% %parm[componentName]% was previously impacted due to event &lt;a href="/opennms/event/detail.jsp?id=%parm[cause]%"&gt;%parm[cause]%&lt;/a&gt;.
       and has been resolved. &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       %parm[componentType]% %parm[componentName]% was previously impacted due to event %parm[cause]%
       and has been resolved
     </logmsg>
     <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"
-                    alarm-type="2"
-                    clear-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"
-                    auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/ncs/componentAdded</uei>
@@ -58,7 +55,7 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <descr>
       &lt;p&gt;%parm[componentType]% %parm[componentName]% was added with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) added
     </logmsg>
     <severity>Warning</severity>
@@ -69,7 +66,7 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <descr>
       &lt;p&gt;%parm[componentType]% %parm[componentName]% was deleted with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) deleted
     </logmsg>
     <severity>Warning</severity>
@@ -80,7 +77,7 @@ function void sendResolvedComponentEvent( DroolsCorrelationEngine engine, Compon
     <descr>
       &lt;p&gt;%parm[componentType]% %parm[componentName]% was updated with foreign source %parm[componentForeignSource]% and foreign ID %parm[componentForeignId]%.&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       %parm[componentType]% %parm[componentName]% (%parm[componentForeignSource]%:%parm[componentForeignId]%) updated
     </logmsg>
     <severity>Warning</severity>

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: LIEBERT-GP-AGENT-MIB -->
   <event>
     <mask>
@@ -150,10 +150,10 @@ now corrupt.&lt;/p&gt;&lt;table&gt;
     <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentDnsLookupFailure</event-label>
     <descr>
 &lt;p&gt;A Domain Name System (DNS) lookup of a network name failed to
-resolve.  This may result in one or more of the following:&#xd;
-   1. failure to notify a target address of an important condition&#xd;
-   2. failure allow access for monitoring purposes&#xd;
-This issue should be resolved as soon as possible with a&#xd;
+resolve.  This may result in one or more of the following:&#13;
+   1. failure to notify a target address of an important condition&#13;
+   2. failure allow access for monitoring purposes&#13;
+This issue should be resolved as soon as possible with a&#13;
 network or system administrator.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -223,7 +223,7 @@ conditions table.&lt;/p&gt;&lt;table&gt;
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="lgpConditionsWellKnown" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1"/>
-      <decode varbinddecodedstring="lgpConditionHighTemperature"  varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1"/>
+      <decode varbinddecodedstring="lgpConditionHighTemperature" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1"/>
       <decode varbinddecodedstring="lgpConditionLowTemperature" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.2"/>
       <decode varbinddecodedstring="lgpConditionHighHumidity" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.3"/>
       <decode varbinddecodedstring="lgpConditionLowHumidity" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.4"/>
@@ -254,7 +254,7 @@ conditions table.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="lgpConditionLocalAlarm4" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.4"/>
       <decode varbinddecodedstring="lgpConditionStandbyUnitOn" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.22"/>
     </varbindsdecode>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -299,7 +299,7 @@ conditions table.&lt;/p&gt;&lt;table&gt;
     <varbindsdecode>
       <parmid>parm[#2]</parmid>
       <decode varbinddecodedstring="lgpConditionsWellKnown" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1"/>
-      <decode varbinddecodedstring="lgpConditionHighTemperature"  varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1"/>
+      <decode varbinddecodedstring="lgpConditionHighTemperature" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1"/>
       <decode varbinddecodedstring="lgpConditionLowTemperature" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.2"/>
       <decode varbinddecodedstring="lgpConditionHighHumidity" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.3"/>
       <decode varbinddecodedstring="lgpConditionLowHumidity" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.4"/>
@@ -330,7 +330,7 @@ conditions table.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="lgpConditionLocalAlarm4" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.4"/>
       <decode varbinddecodedstring="lgpConditionStandbyUnitOn" varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.22"/>
     </varbindsdecode>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>

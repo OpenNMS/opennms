@@ -1,46 +1,45 @@
-<?xml version="1.0"?>
-<datacollection-group name="NetEnforcer">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="NetEnforcer">
 
-    <resourceType name="pipePosition" label="Allot NetEnforcer Pipe Position" resourceLabel="${pipeName}">
+    <resourceType label="Allot NetEnforcer Pipe Position" name="pipePosition" resourceLabel="${pipeName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
     
-    <resourceType name="vcPipePosition" label="Allot NetEnforcer VC Position" resourceLabel="${vcName}">
+    <resourceType label="Allot NetEnforcer VC Position" name="vcPipePosition" resourceLabel="${vcName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Allot NetEnforcer MIBs -->
-      <group  name="netenforcer-allot-ne" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.1" instance="0" alias="neByteCountIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.2" instance="0" alias="neByteCountOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.4" instance="0" alias="neLiveConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.5" instance="0" alias="neNewConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.6" instance="0" alias="nePacketsIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.1.1.7" instance="0" alias="nePacketsOut" type="counter" />
+      <group ifType="ignore" name="netenforcer-allot-ne">
+        <mibObj alias="neByteCountIn" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.1" type="counter"/>
+        <mibObj alias="neByteCountOut" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.2" type="counter"/>
+        <mibObj alias="neLiveConnections" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.4" type="counter"/>
+        <mibObj alias="neNewConnections" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.5" type="counter"/>
+        <mibObj alias="nePacketsIn" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.6" type="counter"/>
+        <mibObj alias="nePacketsOut" instance="0" oid=".1.3.6.1.4.1.2603.1.1.1.7" type="counter"/>
       </group>
 
-      <group  name="netenforcer-allot-pipe" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.1" instance="pipePosition" alias="pipePosition" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.3" instance="pipePosition" alias="pipeName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.4" instance="pipePosition" alias="pipeByteCountIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.5" instance="pipePosition" alias="pipeByteCountOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.7" instance="pipePosition" alias="pipeLiveConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.8" instance="pipePosition" alias="pipeNewConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.9" instance="pipePosition" alias="pipePacketsIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.2.1.1.1.10" instance="pipePosition" alias="pipePacketsOut" type="counter" />
+      <group ifType="all" name="netenforcer-allot-pipe">
+        <mibObj alias="pipePosition" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.1" type="integer"/>
+        <mibObj alias="pipeName" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.3" type="string"/>
+        <mibObj alias="pipeByteCountIn" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.4" type="counter"/>
+        <mibObj alias="pipeByteCountOut" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.5" type="counter"/>
+        <mibObj alias="pipeLiveConnections" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.7" type="counter"/>
+        <mibObj alias="pipeNewConnections" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.8" type="counter"/>
+        <mibObj alias="pipePacketsIn" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.9" type="counter"/>
+        <mibObj alias="pipePacketsOut" instance="pipePosition" oid=".1.3.6.1.4.1.2603.1.2.1.1.1.10" type="counter"/>
       </group>
 
-      <group  name="netenforcer-allot-vc" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.1" instance="vcPipePosition" alias="vcPipePosition" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.5" instance="vcPipePosition" alias="vcName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.6" instance="vcPipePosition" alias="vcByteCountIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.7" instance="vcPipePosition" alias="vcByteCountOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.9" instance="vcPipePosition" alias="vcLiveConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.10" instance="vcPipePosition" alias="vcNewConnections" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.11" instance="vcPipePosition" alias="vcPacketsIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.2603.1.3.1.1.1.12" instance="vcPipePosition" alias="vcPacketsOut" type="counter" />
+      <group ifType="all" name="netenforcer-allot-vc">
+        <mibObj alias="vcPipePosition" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.1" type="integer"/>
+        <mibObj alias="vcName" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.5" type="string"/>
+        <mibObj alias="vcByteCountIn" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.6" type="counter"/>
+        <mibObj alias="vcByteCountOut" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.7" type="counter"/>
+        <mibObj alias="vcLiveConnections" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.9" type="counter"/>
+        <mibObj alias="vcNewConnections" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.10" type="counter"/>
+        <mibObj alias="vcPacketsIn" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.11" type="counter"/>
+        <mibObj alias="vcPacketsOut" instance="vcPipePosition" oid=".1.3.6.1.4.1.2603.1.3.1.1.1.12" type="counter"/>
       </group>
 
       <systemDef name="Allot NetEnforcer">

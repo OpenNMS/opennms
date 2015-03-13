@@ -1,57 +1,55 @@
-<?xml version="1.0"?>
-<datacollection-group name="Network Appliance">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Network Appliance">
 
-    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)"
-                  resourceLabel="${naDfFileSys} (index ${index})">
+    <resourceType label="Disk Space (Network Appliance MIB)" name="naDfIndex" resourceLabel="${naDfFileSys} (index ${index})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Netapp MIBS -->
-      <group name="netapp-cpu" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
+      <group ifType="ignore" name="netapp-cpu">
+        <mibObj alias="cpuBusyTimePct" instance="0" oid=".1.3.6.1.4.1.789.1.2.1.3" type="INTEGER"/>
+        <mibObj alias="cpuIdleTimePct" instance="0" oid=".1.3.6.1.4.1.789.1.2.1.5" type="INTEGER"/>
       </group>
 
-      <group name="netapp-filesys" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.1"   instance="0" alias="fsMaxfilesAvail"    type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.2"   instance="0" alias="fsMaxfilesUsed"     type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.3"   instance="0" alias="fsMaxfilesPossible" type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.7.3" instance="0" alias="fsMaxUsedBytesPct"  type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.7.4" instance="0" alias="fsMaxUsedInodesPct" type="INTEGER" />
+      <group ifType="ignore" name="netapp-filesys">
+        <mibObj alias="fsMaxfilesAvail" instance="0" oid=".1.3.6.1.4.1.789.1.5.1" type="INTEGER"/>
+        <mibObj alias="fsMaxfilesUsed" instance="0" oid=".1.3.6.1.4.1.789.1.5.2" type="INTEGER"/>
+        <mibObj alias="fsMaxfilesPossible" instance="0" oid=".1.3.6.1.4.1.789.1.5.3" type="INTEGER"/>
+        <mibObj alias="fsMaxUsedBytesPct" instance="0" oid=".1.3.6.1.4.1.789.1.5.7.3" type="INTEGER"/>
+        <mibObj alias="fsMaxUsedInodesPct" instance="0" oid=".1.3.6.1.4.1.789.1.5.7.4" type="INTEGER"/>
       </group>
 
-      <group name="netapp-dfEntry" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.2"  instance="naDfIndex" alias="naDfFileSys"      type="string" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.6"  instance="naDfIndex" alias="naDfPctKB"        type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.7"  instance="naDfIndex" alias="naDfInodeUsed"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.8"  instance="naDfIndex" alias="naDfInodeFree"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.9"  instance="naDfIndex" alias="naDfInodePct"     type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.11" instance="naDfIndex" alias="naDfMaxFileAvail" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.12" instance="naDfIndex" alias="naDfMaxFileUsed"  type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.17" instance="naDfIndex" alias="naDfLowUsedKB"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.19" instance="naDfIndex" alias="naDfLowFreeKB"    type="integer" />
+      <group ifType="all" name="netapp-dfEntry">
+        <mibObj alias="naDfFileSys" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.2" type="string"/>
+        <mibObj alias="naDfPctKB" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.6" type="integer"/>
+        <mibObj alias="naDfInodeUsed" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.7" type="integer"/>
+        <mibObj alias="naDfInodeFree" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.8" type="integer"/>
+        <mibObj alias="naDfInodePct" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.9" type="integer"/>
+        <mibObj alias="naDfMaxFileAvail" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.11" type="integer"/>
+        <mibObj alias="naDfMaxFileUsed" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.12" type="integer"/>
+        <mibObj alias="naDfLowUsedKB" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.17" type="integer"/>
+        <mibObj alias="naDfLowFreeKB" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.19" type="integer"/>
       </group>
 
-      <group name="netapp-filer" ifType="ignore"> 
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.6"       instance="0" alias="naMiscLowNfsOps"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.8"       instance="0" alias="naMiscLowCifsOps" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.5"   instance="0" alias="naCifsReads"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.6"   instance="0" alias="naCifsWrites"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.7" instance="0" alias="naV2cReads"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.8" instance="0" alias="naV2cWrcaches"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.9" instance="0" alias="naV2cWrites"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.7" instance="0" alias="naV3cReads"       type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.8" instance="0" alias="naV3cWrites"      type="Counter" />
+      <group ifType="ignore" name="netapp-filer"> 
+        <mibObj alias="naMiscLowNfsOps" instance="0" oid=".1.3.6.1.4.1.789.1.2.2.6" type="Counter"/>
+        <mibObj alias="naMiscLowCifsOps" instance="0" oid=".1.3.6.1.4.1.789.1.2.2.8" type="Counter"/>
+        <mibObj alias="naCifsReads" instance="0" oid=".1.3.6.1.4.1.789.1.7.3.1.1.5" type="Counter"/>
+        <mibObj alias="naCifsWrites" instance="0" oid=".1.3.6.1.4.1.789.1.7.3.1.1.6" type="Counter"/>
+        <mibObj alias="naV2cReads" instance="0" oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.7" type="Counter"/>
+        <mibObj alias="naV2cWrcaches" instance="0" oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.8" type="Counter"/>
+        <mibObj alias="naV2cWrites" instance="0" oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.9" type="Counter"/>
+        <mibObj alias="naV3cReads" instance="0" oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.7" type="Counter"/>
+        <mibObj alias="naV3cWrites" instance="0" oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.8" type="Counter"/>
       </group>
 
-      <group name="netapp-misc" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.16"      instance="0" alias="naMiscLowDiskReadBytes"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.18"      instance="0" alias="naMiscLowDiskWriteBytes"  type="Counter" />
+      <group ifType="ignore" name="netapp-misc">
+        <mibObj alias="naMiscLowDiskReadBytes" instance="0" oid=".1.3.6.1.4.1.789.1.2.2.16" type="Counter"/>
+        <mibObj alias="naMiscLowDiskWriteBytes" instance="0" oid=".1.3.6.1.4.1.789.1.2.2.18" type="Counter"/>
       </group>
 
-      <group name="netapp-sis" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.28" instance="naDfIndex" alias="naSisPercent"    type="integer" />
+      <group ifType="all" name="netapp-sis">
+        <mibObj alias="naSisPercent" instance="naDfIndex" oid=".1.3.6.1.4.1.789.1.5.4.1.28" type="integer"/>
       </group>
 
       <systemDef name="Network Appliance">

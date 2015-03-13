@@ -1,31 +1,31 @@
-<mbeans>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mbeans>
   <mbean name="SystemInfo" objectname="jboss.system:type=ServerInfo">
-    <attrib name="FreeMemory" alias="FreeMemory" type="gauge"/>
-    <attrib name="TotalMemory" alias="TotalMemory" type="gauge"/>
+    <attrib alias="FreeMemory" name="FreeMemory" type="gauge"/>
+    <attrib alias="TotalMemory" name="TotalMemory" type="gauge"/>
   </mbean>
   <mbean name="DefaultDSManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=DefaultDS">
-    <attrib name="AvailableConnectionCount" alias="DefDS_AvailConns" type="gauge"/>
-    <attrib name="ConnectionCount" alias="DefDS_Conns" type="gauge"/>
-    <attrib name="InUseConnectionCount" alias="DefDS_InUseConns" type="gauge"/>
-    <attrib name="ConnectionCreatedCount" alias="DefDS_CreatedConns" type="counter"/>
-    <attrib name="ConnectionDestroyedCount" alias="DefDS_DestroyConns" type="counter"/>
+    <attrib alias="DefDS_AvailConns" name="AvailableConnectionCount" type="gauge"/>
+    <attrib alias="DefDS_Conns" name="ConnectionCount" type="gauge"/>
+    <attrib alias="DefDS_InUseConns" name="InUseConnectionCount" type="gauge"/>
+    <attrib alias="DefDS_CreatedConns" name="ConnectionCreatedCount" type="counter"/>
+    <attrib alias="DefDS_DestroyConns" name="ConnectionDestroyedCount" type="counter"/>
   </mbean>
   <!-- Global Request Processor -->
   <mbean name="GlobalRequestProcessor" objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
-    <attrib name="requestCount" alias="GRP_requests" type="counter"/>
-    <attrib name="maxTime" alias="GRP_maxTime" type="gauge"/>
-    <attrib name="bytesSent" alias="GRP_bytesSent" type="counter"/>
-    <attrib name="bytesReceived" alias="GRP_bytesRec" type="counter"/>
-    <attrib name="processingTime" alias="GRP_procTime" type="counter"/>
-    <attrib name="errorCount" alias="GRP_errors" type="counter"/>
+    <attrib alias="GRP_requests" name="requestCount" type="counter"/>
+    <attrib alias="GRP_maxTime" name="maxTime" type="gauge"/>
+    <attrib alias="GRP_bytesSent" name="bytesSent" type="counter"/>
+    <attrib alias="GRP_bytesRec" name="bytesReceived" type="counter"/>
+    <attrib alias="GRP_procTime" name="processingTime" type="counter"/>
+    <attrib alias="GRP_errors" name="errorCount" type="counter"/>
   </mbean>
   <!-- Thread Pool -->
   <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
-    <attrib name="currentThreadsBusy" alias="BusyThreads" type="gauge"/>
-    <attrib name="currentThreadCount" alias="Threads" type="gauge"/>
-    <attrib name="minSpareThreads" alias="MinSpareThreads" type="gauge"/>
-    <attrib name="maxSpareThreads" alias="MaxSpareThreads" type="gauge"/>
-    <attrib name="maxThreads" alias="MaxThreads" type="gauge"/>
+    <attrib alias="BusyThreads" name="currentThreadsBusy" type="gauge"/>
+    <attrib alias="Threads" name="currentThreadCount" type="gauge"/>
+    <attrib alias="MinSpareThreads" name="minSpareThreads" type="gauge"/>
+    <attrib alias="MaxSpareThreads" name="maxSpareThreads" type="gauge"/>
+    <attrib alias="MaxThreads" name="maxThreads" type="gauge"/>
   </mbean>
   <!-- JmsXA Connector Pool
           <mbean name="JmsXAManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=JmsXA">  

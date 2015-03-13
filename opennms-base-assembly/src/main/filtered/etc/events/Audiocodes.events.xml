@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: AcBoard -->
 <event>
 	<mask>
@@ -154,7 +154,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardFatalError trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -324,7 +324,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardConfigurationError trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -494,7 +494,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardTemperatureAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -664,7 +664,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardEvBoardStarted trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -834,7 +834,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardEvResettingBoard trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1004,7 +1004,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acFeatureKeyError trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1174,7 +1174,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acgwAdminStateChange trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1344,7 +1344,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardCallResourcesAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1514,7 +1514,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardControllerFailureAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1684,7 +1684,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardEthernetLinkAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -1854,7 +1854,7 @@
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acBoardOverloadAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2030,7 +2030,7 @@ compatible. (This is for when after the alarm was raised there were some clears,
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acActiveAlarmTableOverflow trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2200,7 +2200,7 @@ compatible. (This is for when after the alarm was raised there were some clears,
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acAtmPortAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2370,7 +2370,7 @@ compatible. (This is for when after the alarm was raised there were some clears,
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acAudioProvisioningAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2540,7 +2540,7 @@ compatible. (This is for when after the alarm was raised there were some clears,
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acOperationalStateChange trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2712,7 +2712,7 @@ Note that all traps are sent out from the SNMP Port (usually 161).&lt;/p&gt;&lt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acKeepAlive trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -2882,7 +2882,7 @@ Note that all traps are sent out from the SNMP Port (usually 161).&lt;/p&gt;&lt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acNATTraversalAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3054,7 +3054,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acEnhancedBITStatus trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3224,7 +3224,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7LinkStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3394,7 +3394,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7LinkInhibitStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3564,7 +3564,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7LinkBlockStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3734,7 +3734,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7LinkCongestionStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -3904,7 +3904,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7LinkSetStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4074,7 +4074,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7RouteSetStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4244,7 +4244,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7SNSetStateChangeAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4414,7 +4414,7 @@ The information is presented in the additional info fields.&lt;/p&gt;&lt;table&g
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSS7RedundancyAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4589,7 +4589,7 @@ for which the threshold is being crossed.&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acPerformanceMonitoringThresholdCrossing trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4759,7 +4759,7 @@ for which the threshold is being crossed.&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHTTPDownloadResult trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -4931,7 +4931,7 @@ If more then one and less the X fans are faulty the severity will be Major.&lt;/
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acFanTrayAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5101,7 +5101,7 @@ If more then one and less the X fans are faulty the severity will be Major.&lt;/
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acPowerSupplyAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5271,7 +5271,7 @@ If more then one and less the X fans are faulty the severity will be Major.&lt;/
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acPEMAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5442,7 +5442,7 @@ Note - relevant only for M3K.&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSAMissingAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5617,7 +5617,7 @@ Minor severity -  waiting for redunadant to connect (after reset!). &lt;/p&gt;&l
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHASystemFaultAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5787,7 +5787,7 @@ Minor severity -  waiting for redunadant to connect (after reset!). &lt;/p&gt;&l
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHASystemConfigMismatchAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -5957,7 +5957,7 @@ Minor severity -  waiting for redunadant to connect (after reset!). &lt;/p&gt;&l
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHASystemSwitchOverAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6127,7 +6127,7 @@ Minor severity -  waiting for redunadant to connect (after reset!). &lt;/p&gt;&l
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acUserInputAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6300,7 +6300,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acDChannelStatus trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6470,7 +6470,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSonetSectionLOFAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6640,7 +6640,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSonetSectionLOSAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6810,7 +6810,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSonetLineAISAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -6980,7 +6980,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSonetLineRDIAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -7150,7 +7150,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acSonetIfHwFailureAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -7320,7 +7320,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHwFailureAlarm trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -7490,7 +7490,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acH248LostConnectionWithCA trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -7660,7 +7660,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acDialPlanFileReplaced trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -7830,7 +7830,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acAnalogPortSPIOutOfService trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -8000,7 +8000,7 @@ D-channel not-synchronized&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acAnalogPortHighTemperature trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -8172,7 +8172,7 @@ Relevant to HA systems only.&lt;/p&gt;&lt;table&gt;
 	acBoardTrapGlobalsDateAndTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: acHitlessUpdateStatus trap received 
 			acBoardTrapGlobalsName=%parm[#1]% 
 			acBoardTrapGlobalsTextualDescription=%parm[#2]% 
@@ -8233,7 +8233,7 @@ due to throttling or transmission loss.&lt;/p&gt;&lt;table&gt;
 	alarmActiveResourceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: alarmActiveState trap received 
 			alarmActiveModelPointer=%parm[#1]% 
 			alarmActiveResourceId=%parm[#2]%&lt;/p&gt;
@@ -8285,7 +8285,7 @@ due to throttling or transmission loss.&lt;/p&gt;&lt;table&gt;
 	alarmActiveResourceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: alarmClearState trap received 
 			alarmActiveModelPointer=%parm[#1]% 
 			alarmActiveResourceId=%parm[#2]%&lt;/p&gt;
@@ -8327,7 +8327,7 @@ the ds1 are sent.&lt;/p&gt;&lt;table&gt;
 	dsx1LineStatusLastChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dsx1LineStatusChange trap received 
 			dsx1LineStatus=%parm[#1]% 
 			dsx1LineStatusLastChange=%parm[#2]%&lt;/p&gt;
@@ -8378,7 +8378,7 @@ entLastChangeTime to detect any missed entConfigChange
 notification-events, e.g., due to throttling or transmission
 loss.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: entConfigChange trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8434,7 +8434,7 @@ of ifOperStatus.&lt;/p&gt;&lt;table&gt;
 		lowerLayerDown(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: linkDown trap received 
 			ifIndex=%parm[#1]% 
 			ifAdminStatus=%parm[#2]% 
@@ -8491,7 +8491,7 @@ included value of ifOperStatus.&lt;/p&gt;&lt;table&gt;
 		lowerLayerDown(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: linkUp trap received 
 			ifIndex=%parm[#1]% 
 			ifAdminStatus=%parm[#2]% 
@@ -8547,7 +8547,7 @@ traps.&lt;/p&gt;&lt;table&gt;
 	alarmRisingThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: risingAlarm trap received 
 			alarmIndex=%parm[#1]% 
 			alarmVariable=%parm[#2]% 
@@ -8603,7 +8603,7 @@ traps.&lt;/p&gt;&lt;table&gt;
 	alarmFallingThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: fallingAlarm trap received 
 			alarmIndex=%parm[#1]% 
 			alarmVariable=%parm[#2]% 
@@ -8656,7 +8656,7 @@ Sent immediately when the condition is detected.&lt;/p&gt;&lt;table&gt;
 	rtcpXrVoipAlertPointer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: rtcpXrVoipThresholdViolation trap received 
 			rtcpXrVoipAlertSeverity=%parm[#1]% 
 			rtcpXrVoipAlertType=%parm[#2]% 
@@ -8690,7 +8690,7 @@ supporting a notification originator application, is
 reinitializing itself and that its configuration may
 have been altered.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: coldStart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8718,7 +8718,7 @@ supporting a notification originator application,
 is reinitializing itself such that its configuration
 is unaltered.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: warmStart trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8748,7 +8748,7 @@ of SNMP entities MAY be capable of generating this
 trap, the snmpEnableAuthenTraps object indicates
 whether this trap will be generated.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Audiocodes Event: authenticationFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>

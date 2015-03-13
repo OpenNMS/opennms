@@ -1,32 +1,31 @@
-<?xml version="1.0"?>
-<datacollection-group name="Bluecat">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Bluecat">
 
-    <resourceType name="dhcpSubnetIP" label="Bluecat Networks Adonis DHCP">
+    <resourceType label="Bluecat Networks Adonis DHCP" name="dhcpSubnetIP">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <group name="adonisdns" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.1" instance="0" alias="dnsDaemonRunning"    type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.2" instance="0" alias="dnsDaemonNumOfZones" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.3" instance="0" alias="dnsDaemonDebugLevel" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.4" instance="0" alias="dnsDaemonZoneTInPrg" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.5" instance="0" alias="dnsDaemonZoneTDefer" type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.6" instance="0" alias="dnsDaemonSOAInProg"  type="Gauge32" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.7" instance="0" alias="dnsDaemonQLogState"  type="INTEGER" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.8" instance="0" alias="dnsDaemon"           type="STRING" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.1" instance="0" alias="dnsStatsSuccess"     type="Counter64" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.2" instance="0" alias="dnsStatsReferral"    type="Counter64" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.3" instance="0" alias="dnsStatsNXRRSet"     type="Counter64" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.4" instance="0" alias="dnsStatsNXDomain"    type="Counter64" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.5" instance="0" alias="dnsStatsRecursion"   type="Counter64" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.6" instance="0" alias="dnsStatsFailure"     type="Counter64" />
+      <group ifType="ignore" name="adonisdns">
+        <mibObj alias="dnsDaemonRunning" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.1" type="INTEGER"/>
+        <mibObj alias="dnsDaemonNumOfZones" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.2" type="Gauge32"/>
+        <mibObj alias="dnsDaemonDebugLevel" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.3" type="Gauge32"/>
+        <mibObj alias="dnsDaemonZoneTInPrg" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.4" type="Gauge32"/>
+        <mibObj alias="dnsDaemonZoneTDefer" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.5" type="Gauge32"/>
+        <mibObj alias="dnsDaemonSOAInProg" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.6" type="Gauge32"/>
+        <mibObj alias="dnsDaemonQLogState" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.7" type="INTEGER"/>
+        <mibObj alias="dnsDaemon" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.1.8" type="STRING"/>
+        <mibObj alias="dnsStatsSuccess" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.1" type="Counter64"/>
+        <mibObj alias="dnsStatsReferral" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.2" type="Counter64"/>
+        <mibObj alias="dnsStatsNXRRSet" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.3" type="Counter64"/>
+        <mibObj alias="dnsStatsNXDomain" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.4" type="Counter64"/>
+        <mibObj alias="dnsStatsRecursion" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.5" type="Counter64"/>
+        <mibObj alias="dnsStatsFailure" instance="0" oid=".1.3.6.1.4.1.13315.100.101.1.1.2.6" type="Counter64"/>
       </group>
 
-      <group name="dhcpSubnetIP" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.1" instance="dhcpSubnetIP" alias="dhcpSubnetIP"   type="string" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.3" instance="dhcpSubnetIP" alias="dhcpSubnetSize" type="Gauge" />
-        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.4" instance="dhcpSubnetIP" alias="dhcpSubnetUsed" type="Gauge" />
+      <group ifType="all" name="dhcpSubnetIP">
+        <mibObj alias="dhcpSubnetIP" instance="dhcpSubnetIP" oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.1" type="string"/>
+        <mibObj alias="dhcpSubnetSize" instance="dhcpSubnetIP" oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.3" type="Gauge"/>
+        <mibObj alias="dhcpSubnetUsed" instance="dhcpSubnetIP" oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.4" type="Gauge"/>
       </group>
 
       <systemDef name="Bluecat">

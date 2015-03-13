@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Oracle Traps -->
 <!-- Start of Oracle MIB: RDBMS-MIB -->
 <event>
@@ -30,7 +30,7 @@
  other(1) active(2) available(3) restricted(4) unavailable(5)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: RDBMS State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: RDBMS State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -60,7 +60,7 @@
  rdbmsSrvInfoDiskOutOfSpaces&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: RDBMS Out of Space.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: RDBMS Out of Space.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 <!-- End of Oracle MIB: RDBMS-MIB -->
@@ -91,7 +91,7 @@
  up(1) down(2)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Oracle Listener State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: Oracle Listener State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Oracle MIB: ORALISTENER-MIB -->
@@ -121,7 +121,7 @@
  up(1) down(2)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Navigator State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: Navigator State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -149,7 +149,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  up(1) down(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Connection Manager State Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: Connection Manager State Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Oracle MIB: ORAINTERCHANGE-MIB -->
@@ -197,7 +197,7 @@
  oraAgentEventResults&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Enterprise Manager unknown event notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Oracle Event: Enterprise Manager unknown event notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Oracle MIB: ORACLE-AGENT-MIB -->
@@ -266,7 +266,7 @@
         oraEM4AlertRuleOwner&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         oraEM4Alert trap received 
                         oraEM4AlertTargetName=%parm[#1]% 
                         oraEM4AlertTargetType=%parm[#2]% 
@@ -302,7 +302,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: CCU3000PMAC-TRAPS-MIB -->
 <event>
 	<mask>
@@ -40,7 +40,7 @@ incorrectly configured networks at an EUM or attempts to spoof MAC addresses.&lt
 	ccuTrapACNewId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ccuAddressChangeTrap trap received 
 			ccuTrapACMacAddress=%parm[#1]% 
 			ccuTrapACOldId=%parm[#2]% 
@@ -77,7 +77,7 @@ configured with the same IP address as the CCU.&lt;/p&gt;&lt;table&gt;
 	ccuTrapDupEumId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ccuDuplicateIpTrap trap received 
 			ccuTrapDupEumId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -103,7 +103,7 @@ configured with the same IP address as the CCU.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full address table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ccuAddressTableFullTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -128,7 +128,7 @@ configured with the same IP address as the CCU.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full authorization table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ccuAuthTableFullTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -153,7 +153,7 @@ configured with the same IP address as the CCU.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full registration table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ccuRegTableFullTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>

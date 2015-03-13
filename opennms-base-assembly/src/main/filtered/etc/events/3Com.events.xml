@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of 3Com Traps -->
 <!-- Start of 3Com MIB: A3COM-SWITCHING-SYSTEMS-FDDI-MIB -->
 <event>
@@ -28,7 +28,7 @@
  a3ComFddiSMTHoldState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;not-implemented(1) not-holding(2) holding-prm(3) holding-sec(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI SMT Hold Condition has been established.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI SMT Hold Condition has been established.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -61,7 +61,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibSMTPeerWrapFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI SMT Peer Wrap Condition Set.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI SMT Peer Wrap Condition Set.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -97,7 +97,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACUnaDaFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;
  &lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A duplicate MAC address has been found on a FDDI ring.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A duplicate MAC address has been found on a FDDI ring.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -135,7 +135,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACFrameErrorRatio&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A FDDI Frame Error threshold has been exceeded.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A FDDI Frame Error threshold has been exceeded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -169,7 +169,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACNotCopiedFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A FDDI MAC Not Copied Ratio has been exceeded.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A FDDI MAC Not Copied Ratio has been exceeded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -207,7 +207,7 @@
  &lt;p;&gt;isolated(1) local(2) secondary(3) primary(4) concatenated(5) thru(6)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACSMTAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A MAC's neighbor has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A MAC's neighbor has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -240,7 +240,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACRequestedPaths&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The FDDI Current Path had changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The FDDI Current Path had changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -277,7 +277,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTLerFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Port LER Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Port LER Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -314,7 +314,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTPCWithhold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;none(1) m-m(2) otherincompatible(3) pathnotavailable(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An undesired FDDI connection attempt has been made.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An undesired FDDI connection attempt has been made.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -341,7 +341,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComFddiPORTEBErrorCt&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The FDDI Buffer Error Count has incremented.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: The FDDI Buffer Error Count has incremented.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -379,7 +379,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTNeighborType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;a(1) b(2) s(3) m(4) none(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3COM-SWITCHING-SYSTEMS-FDDI-MIB -->
@@ -405,7 +405,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  adminLastTrap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: User has logged into the AccessBuilder.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: User has logged into the AccessBuilder.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -430,7 +430,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  adminLastTrap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>3Com Event: User has logged out of the AccessBuilder.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">3Com Event: User has logged out of the AccessBuilder.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
  
@@ -456,7 +456,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  adminLastTrap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: User has been logged out of the AccessBuilder due to being idle.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: User has been logged out of the AccessBuilder due to being idle.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <!-- End of 3Com MIB: Centrum-MIB -->
@@ -485,7 +485,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Data Link Switch transport connection now connected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Data Link Switch transport connection now connected.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -513,7 +513,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Data Link Switch transport connection now disconnected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Data Link Switch transport connection now disconnected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -545,7 +545,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Data Link Switch circuit is now connected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Data Link Switch circuit is now connected.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -577,7 +577,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Data Link Switch circuit is now disconnected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Data Link Switch circuit is now disconnected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3Com-DLSW-r1-MIB -->
@@ -605,7 +605,7 @@
  lpsSystemOvertemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2) notSupported(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Lanplex system over temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Lanplex system over temperature.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -636,7 +636,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpsPowerSupplyStatusSupported&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Lanplex system power supply failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Lanplex system power supply failure.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -672,7 +672,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpsSlotOvertemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2) notSupported(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Card in Lanplex is over temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Card in Lanplex is over temperature.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -703,7 +703,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpsSlotBoardRevision&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been inserted into a Lanplex.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been inserted into a Lanplex.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -729,7 +729,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpsSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been removed from a Lanplex.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been removed from a Lanplex.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -755,7 +755,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpsBridgeIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Number of addresses in Lanplex bridge has reached threshold.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: Number of addresses in Lanplex bridge has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -781,7 +781,7 @@
  lpsSystemFanFailure&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2) notSupported(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A fan has failed in a Lanplex.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A fan has failed in a Lanplex.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LANPLEX-SYSTEMS-MIB-1-2-2 -->
@@ -809,7 +809,7 @@
  ecsPSUStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;ok(1) psu1failed(2) psu2failed(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Power Supply has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Power Supply has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -832,7 +832,7 @@
  <event-label>LBHUB-ECS-MIB defined trap event: fanFailure</event-label>
  <descr>&lt;p&gt;A LinkBuilder ECS Fan has failed, requiring
  immediate attenstion.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A LinkBuilder fan has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A LinkBuilder fan has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -857,7 +857,7 @@
  been added or removed, a port disabled or enabled from the front
  panel or a AUI port has been selected/deselected.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: LinkBuilder configuration has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: LinkBuilder configuration has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -890,7 +890,7 @@
  high-alignment-errorrate(6) high-traffic-rate(7) high-jabber-errorrate(8) high-carriersense-errorrate(9) 
  unpartitioned(10) linkstatechange-up(11) linkstatechange-down(12) acknowledged(255)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Port has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Port has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -930,7 +930,7 @@
  invalid(1) operational(2) non-operational(3) switchlink(4) standby-jumperfault(5) main-absent(6) 
  standby-absent(7) main-failed(8) standby-failed(9) both-failed(10)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The LinkBuilder ECS Resilient Link system has operated.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The LinkBuilder ECS Resilient Link system has operated.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -964,7 +964,7 @@
  high-traffic-rate(7) high-jabber-errorrate(8) high-carriersense-errorrate(9) unpartitioned(10) 
  linkstatechange-up(11) linkstatechange-down(12) acknowledged(255)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A threshold has been exceeded on a port.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A threshold has been exceeded on a port.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -992,7 +992,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  changed(1) unchanged(2) clear(3) full(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Station Locate database has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Station Locate database has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1021,7 +1021,7 @@
  enabled(1) disabled(2) secure-menu-entered(3) secure-password-violation(4) 
  secure-config-update(5)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Security menus have been accessed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Security menus have been accessed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1057,7 +1057,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ecsSecRLCMACAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A secure port has been activated.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A secure port has been activated.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End 3Com MIB: LBHUB-ECS-MIB -->
@@ -1086,7 +1086,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  configId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Device configuration has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Device configuration has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1115,7 +1115,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lastInstallErrCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Configuration change attempt has generated an error.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Configuration change attempt has generated an error.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1142,7 +1142,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  dumpFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Device has generated a core dump.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Device has generated a core dump.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1168,7 +1168,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lastTrapSeqNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Memory dump file has been archived.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Memory dump file has been archived.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1202,7 +1202,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  linePhysicalIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Line has changed status.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Line has changed status.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1234,7 +1234,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lanControlFailureCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3C0m Event: LAN Port has changed status.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3C0m Event: LAN Port has changed status.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1267,7 +1267,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  linePhysicalIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Line quality error.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Line quality error.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1303,7 +1303,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  puControlPUAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: PU has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: PU has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1335,7 +1335,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  puLastClearCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: PU has changed connection state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: PU has changed connection state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1367,7 +1367,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  netviewLastClearCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The Netview PU has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The Netview PU has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1398,7 +1398,7 @@
  connected(1) not-connected(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  netviewAltLastClearCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The alternate Netview PU has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The alternate Netview PU has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1428,7 +1428,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  puControlPUAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: PU has established connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: PU has established connection.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1460,7 +1460,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  puControlPUAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: PU has lost connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: PU has lost connection.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1486,7 +1486,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lastTrapSeqNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The Netview PU has established a connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The Netview PU has established a connection.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1514,7 +1514,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  netviewLastClearCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The Netview PU has lost its connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The Netview PU has lost its connection.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1541,7 +1541,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lastTrapSeqNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: the alternate Netview PU has established a connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: the alternate Netview PU has established a connection.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1570,7 +1570,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  netviewAltLastClearCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: the alternative Netview PU has lost connection.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: the alternative Netview PU has lost connection.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: SYNC-RESEARCH-MIB -->
@@ -1605,7 +1605,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  sdlcPortOperLastFailCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;undefined(1) physical(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: SDLC port has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: SDLC port has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1656,7 +1656,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  sdlcLSOperLastFailREPLYTOs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An SDLC link station has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An SDLC link station has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3Com-Sdlc-r1-MIB -->
@@ -1687,7 +1687,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  active(1) notInService(2) notReady(3) createAndGo(4) createAndWait(5) destroy(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A new station has been learned.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A new station has been learned.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1719,7 +1719,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  mrmPortAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port level security violation has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port level security violation has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: SECURITY-MIB -->
@@ -1746,7 +1746,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3sysBogusDhcpSvr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An unauthorized DHCP or BOOTP server has been detected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An unauthorized DHCP or BOOTP server has been detected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3Com-System-r8-MIB -->
@@ -1791,7 +1791,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComPollFramesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Poll response received.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Poll response received.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -1835,7 +1835,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComPollFramesReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Poll failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Poll failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3COM-SWITCHING-SYSTEMS-POLL-MIB -->
@@ -1868,7 +1868,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComQosFlowClassDestAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An intruder has tried to enter a classified network.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An intruder has tried to enter a classified network.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- End of 3Com MIB: A3COM-SWITCHING-SYSTEMS-QOS-MIB -->
@@ -1895,7 +1895,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysBridgeIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Number of addresses in bridge has reached threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Number of addresses in bridge has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1926,7 +1926,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysBridgePortAddressViolation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port is now in an abnormal state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port is now in an abnormal state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1955,7 +1955,7 @@
  a3ComSysBridgePortRateLimitReceiveState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  enabled(1) disabled(2) bmfrl-disabled(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port has exceeded a rate limiting threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port has exceeded a rate limiting threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1985,7 +1985,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  active(1) loopDetected(2) bpduDetected(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port is in a loop.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port is in a loop.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3COM-SWITCHING-SYSTEMS-BRIDGE-MIB -->
@@ -2011,7 +2011,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysSystemOvertemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2) notSupported(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: System is over temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: System is over temperature.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -2040,7 +2040,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysPowerSupplyStatusSupported&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A power supply has failed.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: A power supply has failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -2062,7 +2062,7 @@
  <uei>uei.opennms.org/vendor/3Com/traps/a3ComSysReservedTrap3</uei>
  <event-label>A3COM-SWITCHING-SYSTEMS-MIB defined trap event: a3ComSysReservedTrap3</event-label>
  <descr>&lt;p&gt;This trap is reserved for future use.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
  <severity>Indeterminate</severity>
 </event>
 
@@ -2084,7 +2084,7 @@
  <uei>uei.opennms.org/vendor/3Com/traps/a3ComSysReservedTrap4</uei>
  <event-label>A3COM-SWITCHING-SYSTEMS-MIB defined trap event: a3ComSysReservedTrap4</event-label>
  <descr>&lt;p&gt;This trap is reserved for future use.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
  <severity>Indeterminate</severity>
 </event>
 
@@ -2106,7 +2106,7 @@
  <uei>uei.opennms.org/vendor/3Com/traps/a3ComSysReservedTrap5</uei>
  <event-label>A3COM-SWITCHING-SYSTEMS-MIB defined trap event: a3ComSysReservedTrap5</event-label>
  <descr>&lt;p&gt;This trap is reserved for future use.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: (trap reserved).&lt;/p&gt;</logmsg>
  <severity>Indeterminate</severity>
 </event>
 
@@ -2132,7 +2132,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysBridgeIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Address threshold reached.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Address threshold reached.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2159,7 +2159,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  true(1) false(2) notSupported(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A system fan has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A system fan has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2195,7 +2195,7 @@
  adapterCard-3Port(8) mezzanine-1Port(9) mezzanine-2Port(10) mezzanine-1-2Port(11) mezzanine-3Port(12) 
  systemDaughterCard-9Port(13)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: System has exceeded temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: System has exceeded temperature.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -2240,7 +2240,7 @@
  enet10or100BaseTxRJ45(225) enet100BaseFXMultiModeFiberSC(227) enet100BaseFXSingleModeFiberSC(228) 
  fddiMultiModeFiberSC(241) fddiSingleModeFiberSC(242)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been inserted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been inserted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2266,7 +2266,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComSysModuleCardInfoIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been removed from a slot.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been removed from a slot.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: A3COM-SWITCHING-SYSTEMS-MIB -->
@@ -2293,7 +2293,7 @@
  being sent when either the agent receives an authenticate
  SNMP request, or after 255 minutes.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: chipHello trap received.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: chipHello trap received.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2323,7 +2323,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  olModSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Communication lost with slot.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Communication lost with slot.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2361,7 +2361,7 @@
  module-51nnM-TS(21) module-51nnM-FL(22) module-50nnM-RCTL(23) module-51nnM-FB(24) module-53nnM-MGT(25) 
  module-53nnM-FIBLC(26) module-53nnM-FIBST(27) module-53nnM-STP(28) module-51nnM-TPCL(29) module-52nnB-TT(30) 
  module-52nnM-MGT(32) module-50nnM-HCTL(33)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Communication gained with slot.%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Communication gained with slot.%&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2384,7 +2384,7 @@
  <event-label>CHIPCOMMIB defined trap event: chipEnvironment</event-label>
  <descr>&lt;p&gt;A chipEnvironment trap indicates a change in the 
  concentrator's environment has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An environment change has occurred.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: An environment change has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2409,7 +2409,7 @@
  failure has been detected.  An example of a soft
  hardware failure is too many writes to non-volatile
  storage.  This is an indication to get the unit serviced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Soft hardware failure detected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Soft hardware failure detected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2433,7 +2433,7 @@
  <descr>&lt;p&gt;A chipSoftware trap indicates that a soft software
  failure has been detected.  This is an indication
  to get the unit serviced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A soft software failure has been detected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A soft software failure has been detected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2456,7 +2456,7 @@
  <event-label>CHIPCOMMIB defined trap event: chipChange</event-label>
  <descr>&lt;p&gt;A chipChange trap is used to indicate that a configuration
  change has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;i3Com Event: a configuration change has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;i3Com Event: a configuration change has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2480,7 +2480,7 @@
  <descr>&lt;p&gt;A chipFatal trap is used to indicate that a fatal 
  error has occurred.  This is an indication to get
  the unit serviced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Fatal Error has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Fatal Error has occurred.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -2517,7 +2517,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  okay(1) linkFailure(2) fatalError(10) noCable(13) noSquelch(14) lostLock(16) upstreamNeighborLost(17) 
  invalidConfig(18)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Trunk has experienced an error.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Trunk has experienced an error.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2553,7 +2553,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  okay(1) linkFailure(2) fatalError(10) noCable(13) noSquelch(14) lostLock(16) upstreamNeighborLost(17) 
  invalidConfig(18)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Trunk has returned to normal operation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Trunk has returned to normal operation.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2593,7 +2593,7 @@
  noCable(13) noSquelch(14) noPhantom(15) okay-standby(19) off(22) connecting(23) backup-link(24) 
  security-breach(25) beacon(27) wireFault(28) macRemoved(29) notInserted(30) speedMismatch(31)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Port is experiencing an error condition.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Port is experiencing an error condition.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2631,7 +2631,7 @@
  fifoUnderrun(9) fatalError(10) partition(11) mjlp(12) noCable(13) noSquelch(14) noPhantom(15) okay-standby(19) 
  off(22) connecting(23) backup-link(24) security-breach(25) beacon(27) wireFault(28) macRemoved(29) notInserted(30) 
  speedMismatch(31)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Port has returned to normal operation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Port has returned to normal operation.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2664,7 +2664,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  chipEchoResponseCounts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: SNMP initiated PING command is complete.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: SNMP initiated PING command is complete.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2708,7 +2708,7 @@
 	    olThreshActionData (%parm[#14]%),
 	    olThreshActionPriority (%parm[#15]%).&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A threshold has been exceeded.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A threshold has been exceeded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2732,7 +2732,7 @@
  <descr>&lt;p&gt;A chipBelowThreshold trap indicates that a Counter or 
  Gauge variable had exceeded its threshold but is now 
  below its threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3com Event: A gauge variable is now below threshold.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3com Event: A gauge variable is now below threshold.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2773,7 +2773,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocModDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: ONcore agent has lost communication with manager.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: ONcore agent has lost communication with manager.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2815,7 +2815,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocModDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: ONcore agent now communicating with manager.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: ONcore agent now communicating with manager.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2847,7 +2847,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  olNetOlSecTrapReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Security environment change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Security environment change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2883,7 +2883,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocBridgePortState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge port down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge port down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2917,7 +2917,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocBridgePortState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge port up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge port up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2954,7 +2954,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocBridgePortMauStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge MAU is now down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge MAU is now down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2989,7 +2989,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocBridgePortMauStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge MAU is now up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge MAU is now up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3026,7 +3026,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocPortStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port is now down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port is now down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3061,7 +3061,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ocPortStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port is now up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port is now up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3090,7 +3090,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ifNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The maximum number of interfaces has been reached.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The maximum number of interfaces has been reached.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3121,7 +3121,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibSMTCFState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Peer Wrap Condition Set.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Peer Wrap Condition Set.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3154,7 +3154,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACFrameErrorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3187,7 +3187,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACFrameErrorThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate is now below threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate is now below threshold.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3226,7 +3226,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACUnaDaFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC duplicate address error.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC duplicate address error.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3259,7 +3259,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACNotCopiedThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC not copied ratio is now below threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC not copied ratio is now below threshold.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3288,7 +3288,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI EBE Error Count has been incremented.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI EBE Error Count has been incremented.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3324,7 +3324,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTNeighborType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;true(1) false(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Undesirable Connection attempt made.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Undesirable Connection attempt made.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3351,7 +3351,7 @@
  as the new root, e.g., upon expiration of the
  Topology Change Timer immediately subsequent to
  its election.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge had been elected as root of Spanning Tree.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge had been elected as root of Spanning Tree.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3378,7 +3378,7 @@
  the Forwarding state to the Blocking state.  The
  trap is not sent if a newRoot trap is sent for the
  same transition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge Topology Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge Topology Change.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <!-- End of 3Com MIB: CHIPCOMMIB -->
@@ -3409,7 +3409,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) ok(2) rptrFailure(3) groupFailure(4) portFailure(5) generalFailure(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The repeater has changed status.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The repeater has changed status.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3438,7 +3438,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  deprRptrGroupIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A repeater has changed its group structure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A repeater has changed its group structure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3466,7 +3466,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) ok(2) rptrFailure(3) groupFailure(4) portFailure(5) generalFailure(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A repeater has been reset.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A repeater has been reset.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3490,7 +3490,7 @@
  <descr>&lt;p&gt;Generated at a regular interval to inform the manager this
  device is still operating and can be reached on the network.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Heartbeat received.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Heartbeat received.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -3516,7 +3516,7 @@
  via the ascii agent. This may be through Telnet or 
  the V24 port.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Device configuration has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Device configuration has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3550,7 +3550,7 @@
  incorrectPasswordFromSerialPort(8) securityViolationFromTelnet(9) securityViolationFromSerialPort(10) 
  nologin(11)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Three login failures received on device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Three login failures received on device.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3585,7 +3585,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A gauge threshold has been exceeded.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A gauge threshold has been exceeded.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3620,7 +3620,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A gauge has dropped below the recovery threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A gauge has dropped below the recovery threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3697,7 +3697,7 @@
  eraseFailed(18) progFailed(19) loadPending(20) loadActive(21) success(22) stoppedByUser(23) fileNotWanted(24)
  statusUnknown(25) modInvalidAdress(200) modChecksumError(201) modTimeout(202) modBusy(203) modRemoved(204)
  modNoResource(205) modFailure(255)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: System Load Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: System Load Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3723,7 +3723,7 @@
  trap is generated. The trap is sent once on this transition and not
  subsequently until the 'Database State' is changed back to 'noChange' by a
  manager.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: End-station table has been modified.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: End-station table has been modified.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3746,7 +3746,7 @@
  <event-label>PRODUCTMIB defined trap event: estTableFull</event-label>
  <descr>&lt;p&gt;
  When the end-station table becomes full this trap is generated.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: End-station Table has become full.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: End-station Table has become full.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3774,7 +3774,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) ok(2) rptrFailure(3) groupFailure(4) portFailure(5) generalFailure(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A managed MAU is jabbering.%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A managed MAU is jabbering.%&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3802,7 +3802,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) unknown(2) available(3) notAvailable(4) remoteFault(5) invalidSignal(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port MAU has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port MAU has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3830,7 +3830,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notAutoPartitioned(1) autoPartitioned(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Repeater SM has changed partitioned state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Repeater SM has changed partitioned state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3858,7 +3858,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  partitioned(1) unpartitioned(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port has changed partitioned state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port has changed partitioned state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3885,7 +3885,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  present(1) absent(2)&lt;/p&gt;&lt;/td;&gt;
  &lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port has changed link state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port has changed link state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3914,7 +3914,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  enabled(1) disabled(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port admin state has changes via a gauge.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port admin state has changes via a gauge.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3949,7 +3949,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port has exceeded bandwidth threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port has exceeded bandwidth threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3983,7 +3983,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Errors per packet has exceeded threshold on a given port.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Errors per packet has exceeded threshold on a given port.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4039,7 +4039,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  failed(1) ok(2) ok-and-active(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Resilient pair active port change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Resilient pair active port change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4096,7 +4096,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  failed(1) ok(2) ok-and-active(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Resilient pair state has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Resilient pair state has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4131,7 +4131,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) file-server(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Polls now successful.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Polls now successful.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4166,7 +4166,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) file-server(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Polls are now failing.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Polls are now failing.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4192,7 +4192,7 @@
  not stopped the RBS from functioning e.g. fan failed, unit
  overheating, or unit has switched to resilient power supply.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Backup Power Supply Fault.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Backup Power Supply Fault.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4217,7 +4217,7 @@
  connected to this repeater has recovered from an outstanding
  fault.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Backup Power Supply has recovered from fault.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Backup Power Supply has recovered from fault.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4245,7 +4245,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  noAction(1) notify(2) disconnect(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Unrecognized MAC detected on port.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Unrecognized MAC detected on port.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4281,7 +4281,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Repeater bandwidth has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Repeater bandwidth has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4315,7 +4315,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Repeater errors per packet has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Repeater errors per packet has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4351,7 +4351,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Card bandwidth has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Card bandwidth has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4386,7 +4386,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  nonAveraging(1) twoSamples(2) threeSamples(3) maxSamples(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Card errors per packet has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Card errors per packet has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: PRODUCTMIB -->
@@ -4415,7 +4415,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) unknown(2) noJabber(3) jabbering(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;iStandard Event: Repeater MAU is jabbering.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;iStandard Event: Repeater MAU is jabbering.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Standard MIB: Ethernet MAU -->
@@ -4448,7 +4448,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpSlotBoardRevision&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been inserted into the device.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been inserted into the device.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4474,7 +4474,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been removed from the device.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been removed from the device.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4503,7 +4503,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpBridgeBaseSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Number of addresses in bridge table has reached threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Number of addresses in bridge table has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4526,7 +4526,7 @@
  <event-label>LANPLEX-MIB-1-2-9 defined trap event: lpSystemOverTemperatureEvent</event-label>
  <descr>&lt;p&gt;The SNMP trap that is generated when the system 
  temperature exceeds a certain threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: System temperature has reached threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: System temperature has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4562,7 +4562,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notPresent(1) testing(2) offline(3) online(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Slot temperature for a board in this device has reached threahold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Slot temperature for a board in this device has reached threahold.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4596,7 +4596,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lpSystemPowerSupplyCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A power supply has failed in this device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A power supply has failed in this device.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- End of 3Com MIB: LANPLEX-MIB-1-2-9 -->
@@ -4621,7 +4621,7 @@
  <descr>&lt;p&gt;The filtering database within the bridge
  has become overloaded or full.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge filering database is full.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge filering database is full.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4644,7 +4644,7 @@
  <event-label>LBHUB-BLC-MIB defined trap event: permanentDataBaseFull</event-label>
  <descr>&lt;p&gt;The maximum number of permanent entries in the
  filtering database has been exceeded.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Maximum number of permanent database entries exceeded&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Maximum number of permanent database entries exceeded&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4667,7 +4667,7 @@
  <event-label>LBHUB-BLC-MIB defined trap event: accessGroupViolation</event-label>
  <descr>&lt;p&gt;A recent attempt has been made to violate the access
  groups in the bridge.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Access group violation attempt detected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Access group violation attempt detected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LBHUB-BLC-MIB -->
@@ -4703,7 +4703,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  ninetyPercent(90) oneHundredPercent(100)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Bridge database is full.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Bridge database is full.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LBHUB-BRIDGE-MIB -->
@@ -4749,7 +4749,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  phyEntityName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A new entity is present in the chassis.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A new entity is present in the chassis.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4780,7 +4780,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  phyEntityName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An entity has been removed from the chassis.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An entity has been removed from the chassis.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4815,7 +4815,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fcConnection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The facility table has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The facility table has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4848,7 +4848,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  phyServiceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been added to a service.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been added to a service.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4885,7 +4885,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  phyServiceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An entity has been removed from service.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: An entity has been removed from service.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4917,7 +4917,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  unknown(1) initialising(2) operational(3) failure(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A physical entity has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A physical entity has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4942,7 +4942,7 @@
  The combination of the power requirements of all the entities in the
  chassis has been calculated to exceed the power capacity of the power
  supplies present in the chassis.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Power supply exceeded capacity.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Power supply exceeded capacity.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4972,7 +4972,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  ok(1) warm(2) danger(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The temperature status for this device has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The temperature status for this device has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5003,7 +5003,7 @@
  open(1) closed(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  statusName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Card status input has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Card status input has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5034,7 +5034,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  mrmSecMACAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: An end-station address has been automatically learned.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: An end-station address has been automatically learned.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5063,7 +5063,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  other(1) unauthorised-station-seen(2) unauthorised-station-port-disabled(3) authorised-station-learnt(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A port has detected a security violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A port has detected a security violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5092,7 +5092,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  a3ComRingMapChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The device has detected a ring topology change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The device has detected a ring topology change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5120,7 +5120,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notAvailable(1) normal(2) beacon(3) soft-error(4) fault(5)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The state of the main ring has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The state of the main ring has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5148,7 +5148,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notAvailable(1) normal(2) beacon(3) soft-error(4) fault(5)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The state of the backup ring has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The state of the backup ring has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5176,7 +5176,7 @@
  a3ComRingWrapState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  ringNotWrapped(1) ringWrapped(2) notAvailable(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Either the main or backup rings have wrapped.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Either the main or backup rings have wrapped.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5204,7 +5204,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  absent(1) present(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Port attach state has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Port attach state has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5232,7 +5232,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  open(1) wrap(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The Ring In port has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The Ring In port has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5260,7 +5260,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  open(1) wrap(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The Ring Out port has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The Ring Out port has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5292,7 +5292,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  none(1) disabledByMgmt(2) disabledByZDL(3) disabledByDRI(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: MAU port has changed state do to ZDL or DRI.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: MAU port has changed state do to ZDL or DRI.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LBHUB-MSH-MIB -->
@@ -5323,7 +5323,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  not-implemented(1) not-holding(2) holding-prm(3) holding-sec(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI hold state is now active.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI hold state is now active.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5353,7 +5353,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibSMTPeerWrapFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Peer wrap has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Peer wrap has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5387,7 +5387,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACUnaDaFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Duplicate Address Condition has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Duplicate Address Condition has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5421,7 +5421,7 @@
  fddimibMACLostCts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACFrameErrorRatio&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Frame Error Ratio has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Frame Error Ratio has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5454,7 +5454,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACNotCopiedFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Not Copied Ratio has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Not Copied Ratio has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5492,7 +5492,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACSMTAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI change of neighbor has occurred.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI change of neighbor has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5524,7 +5524,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACRequestedPaths&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Current Path has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Current Path has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5562,7 +5562,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTLerFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Port LER has exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Port LER has exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5596,7 +5596,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTPCWithhold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI undesired connection attempt.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI undesired connection attempt.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5623,7 +5623,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lbOptPORTEBErrorCt&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Buffer Error Count has incremented.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Buffer Error Count has incremented.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5659,7 +5659,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibPORTNeighborType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LINKB-OPT-FDDI-MIB-1-1-2 -->
@@ -5693,7 +5693,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lbSlotBoardRevision&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been inserted into the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been inserted into the device.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5720,7 +5720,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lbSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A board has been removed from the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A board has been removed from the device.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5749,7 +5749,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lbBridgeBaseSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Number of addresses in bridge has reached threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Number of addresses in bridge has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5773,7 +5773,7 @@
  <descr>&lt;p&gt;The SNMP trap that is generated when the system 
  temperature exceeds a certain threshold.&lt;/p&gt;
  &lt;table&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Device temperature has reached threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Device temperature has reached threshold.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -5809,7 +5809,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  notPresent(1) testing(2) offline(3) online(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Board in device has reached temperature threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Board in device has reached temperature threshold.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -5843,7 +5843,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  lbSystemPowerSupplyCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A power supply in the device has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A power supply in the device has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- End of 3Com MIB: LB3GH-1-0-7 -->
@@ -5874,7 +5874,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  not-implemented(1) not-holding(2) holding-prm(3) holding-sec(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI SMT is now holding.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI SMT is now holding.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5907,7 +5907,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  true(1) false(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Peer Wrap condition has occurred.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Peer Wrap condition has occurred.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5943,7 +5943,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  true(1) false(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: MAC Duplicate Address Condition has changed state.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: MAC Duplicate Address Condition has changed state.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5979,7 +5979,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACFrameErrorRatio&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate exceeds threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Frame Error Rate exceeds threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6013,7 +6013,7 @@
  fddimibMACNotCopiedFlag&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  true(1) false(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Not Copied Ratio exceeded threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Not Copied Ratio exceeded threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6053,7 +6053,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACSMTAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC neighbor has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC neighbor has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6086,7 +6086,7 @@
  &lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  fddimibMACRequestedPaths&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI MAC Current Path has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI MAC Current Path has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6125,7 +6125,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  true(1) false(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Port LER exceeds threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Port LER exceeds threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6166,7 +6166,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  none(1) m-m(2) otherincompatible(3) pathnotavailable(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI undesirable connection attempt.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI undesirable connection attempt.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6193,7 +6193,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  swSysFddiPORTEBErrorCt&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Elasticity Buffer Error Count exceeds threshold.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Elasticity Buffer Error Count exceeds threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6232,7 +6232,7 @@
  fddimibPORTNeighborType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  a(1) b(2) s(3) m(4) none(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: FDDI Port Current Path has changed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: LANPLEX-OPT-FDDI-MIB-1-2-2 -->
@@ -6255,7 +6255,7 @@
  <uei>uei.opennms.org/vendor/3Com/traps/confChange</uei>
  <event-label>NCDCHASS-MIB defined trap event: confChange</event-label>
  <descr>&lt;p&gt;An unsolicited change in device configuration&lt;/p&gt;&lt;table&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The device has changed configuration.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;3Com Event: The device has changed configuration.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: NCDCHASS-MIB -->
@@ -6290,7 +6290,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  backplaneOrMotherboard(1) processorBoard(2) enet10MbAnd100MbAdaptor(3) enet1GbAdaptor(4) fddiAdaptor(5) atmAdaptor(6)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A Card in the system is over temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A Card in the system is over temperature.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6331,7 +6331,7 @@
  enet100Mb100BaseTx(225) enet100Mb100BaseT2(226) enet100Mb100BaseFx(227) enet100Mb100BaseT4(228) 
  enet100Mb100BaseTxSTP(229) fddiMultimodeSC(241) fddiSingleModeSC(242) fddiCopperUTP(243) fddiCopperSTP(244)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been inserted into the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been inserted into the device.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6357,7 +6357,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  swSysModuleCardInfoIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been removed from the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been removed from the device.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: SWITCHING-SYSTEMS-MIB -->
@@ -6392,7 +6392,7 @@
  uchasSlotModuleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been inserted into the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been inserted into the device.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6426,7 +6426,7 @@
  uchasSlotModuleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A card has been removed from the device.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A card has been removed from the device.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6460,7 +6460,7 @@
  uchasPowerSupplyOutOfferedVolt&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: The power supply voltage for this device is out of range.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: The power supply voltage for this device is out of range.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6492,7 +6492,7 @@
  uchasPowerSupplyIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Power Supply Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Power Supply Failure.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6524,7 +6524,7 @@
  nmcStatTemperature&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Internal temperature out of range.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Internal temperature out of range.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6554,7 +6554,7 @@
  nmcGmtime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: A cooling fan has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: A cooling fan has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6590,7 +6590,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Possible software failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Possible software failure.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6627,7 +6627,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Management Bus Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Management Bus Failure.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6663,7 +6663,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Incoming connection established on modem.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Incoming connection established on modem.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6699,7 +6699,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Outgoing connection established on modem.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Outgoing connection established on modem.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6735,7 +6735,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Incoming modem connection terminated.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Incoming modem connection terminated.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6771,7 +6771,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Outgoing modem connection terminiated.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Outgoing modem connection terminiated.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6807,7 +6807,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem connection attempt failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem connection attempt failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6844,7 +6844,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem connection dropped due to timeout.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem connection dropped due to timeout.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6882,7 +6882,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem Idle DTE connection timeout.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem Idle DTE connection timeout.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -6919,7 +6919,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem DTR has been asserted "true" on DTE.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem DTR has been asserted "true" on DTE.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6956,7 +6956,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem DTR has been asserted "false" on DTE.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem DTR has been asserted "false" on DTE.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6993,7 +6993,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem Block Error Count Threshold Exceeded on call.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem Block Error Count Threshold Exceeded on call.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7030,7 +7030,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem Fallback Counter Threshold exceeded on call.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem Fallback Counter Threshold exceeded on call.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7055,7 +7055,7 @@
  hook to dial.&lt;/p&gt;&lt;table&gt;
  &lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem No Dial Tone.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem No Dial Tone.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7092,7 +7092,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem no loop current.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem no loop current.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7129,7 +7129,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: DS1 Yellow Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: DS1 Yellow Alarm.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -7166,7 +7166,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: DS1 Red Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: DS1 Red Alarm.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -7203,7 +7203,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: DS1 Loss of Signal.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: DS1 Loss of Signal.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -7241,7 +7241,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: DS1 Blue Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: DS1 Blue Alarm.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -7276,7 +7276,7 @@
  uchasSlotModuleType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: T1 card has changed timing source.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: T1 card has changed timing source.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7313,7 +7313,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem reset by DTE.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem reset by DTE.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7351,7 +7351,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem DTR Ring No Answer.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem DTR Ring No Answer.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7389,7 +7389,7 @@
  uchasEntityObjectID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem DTE Ring No Answer.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem DTE Ring No Answer.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7424,7 +7424,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pbSessionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Packet Bus Session Active.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Packet Bus Session Active.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -7460,7 +7460,7 @@
  pbSessionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Packet Bus Congested.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Packet Bus Congested.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7496,7 +7496,7 @@
  pbSessionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Packet Bus Lost.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Packet Bus Lost.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -7532,7 +7532,7 @@
  pbSessionIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Packet Bus Session Inactive.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Packet Bus Session Inactive.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7564,7 +7564,7 @@
  uchasSlotIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: NAC Reset.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: NAC Reset.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7599,7 +7599,7 @@
  uchasEntityIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Gateway WAN port is Out of Service.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Gateway WAN port is Out of Service.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7633,7 +7633,7 @@
  uchasEntityIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Gateway WAN port is now Active.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Gateway WAN port is now Active.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -7669,7 +7669,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem Dial Out login failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem Dial Out login failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7705,7 +7705,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem Dial In login failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem Dial In login failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7742,7 +7742,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem dailed restricted number.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem dailed restricted number.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7779,7 +7779,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem dail back failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem dail back failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7816,7 +7816,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem User Blacklisted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem User Blacklisted.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7853,7 +7853,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem login attempt by blacklisted user.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem login attempt by blacklisted user.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7890,7 +7890,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: No valid response before timeout.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: No valid response before timeout.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7927,7 +7927,7 @@
  mdmCsSecurityUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem user not in security database.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem user not in security database.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -7965,7 +7965,7 @@
  mdmCsCallDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem dial out call ended.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem dial out call ended.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -8003,7 +8003,7 @@
  mdmCsCallDuration&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Modem dial in call has ended.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Modem dial in call has ended.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -8041,7 +8041,7 @@
  pbSessionErrorStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;noError(1) invalidParm(2) socketNotOpened(3) noMoreSocket(4) connectionExist(5) connectionFailed(6) noMoreConnObj(7) noActiveConn(8) ackWaitTimeout(9) hwNakRcvd(10) otherBusError(11) linkStartRcvd(12) outOfSeqFrame(13) noMemory(14) nullPointer(15) invalidBlock(16) notInitialized(17) failedToRecv(18) invalidMsgType(19) exceedMaxSends(20) connectionReset(21) socketClosed(22) uiReqPending(23) heartbeatTimeout(24) remoteBusy(25) localBusy(26) noResponse(27) linkdownNoTx(28) noDataToTx(29) txPreAck(30) txTardyAck(31) txBusTimeOut(32) rxBusTimeOut(33) txTAL(34) rxTAL(35) txMasterTimeOut(36) clkVanished(37) clkReturned(38) shutdown(39) frameError(40) xIDTimeOut(41) recvLSinInfoTransferState(42) recvIFrameWithWrongSeq(43) rxMsgBufferOverflow(44)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Packet Bus Session Error.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Packet Bus Session Error.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -8077,7 +8077,7 @@
  nmcArTrapId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: NMC Auto Response.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: NMC Auto Response.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -8109,7 +8109,7 @@
  nmcCfgLogSrvrSelect&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;primary(1) secondary(2) none(3)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: Contact lost with RADIUS server.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: Contact lost with RADIUS server.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <!-- End of 3Com MIB: USR-TRAP-MIB -->
@@ -8139,9 +8139,9 @@
  vrrpOperVrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: VRRP New Master.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: VRRP New Master.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
 <event>
@@ -8178,7 +8178,7 @@
  invalidAuthType(1) authTypeMismatch(2) authFailure(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;3Com Event: VRRP Authentication Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;3Com Event: VRRP Authentication Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of 3Com MIB: VRRP-MIB -->
@@ -8201,7 +8201,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
@@ -8227,7 +8227,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

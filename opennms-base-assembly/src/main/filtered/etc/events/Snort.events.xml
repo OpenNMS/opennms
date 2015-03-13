@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
         <mask>
                 <maskelement>
@@ -89,7 +89,7 @@ Alert is found applicable.&lt;/p&gt;&lt;table&gt;
         sidaAlertDstPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Snort Event: sidaAlertGeneric trap received
                         sidaSensorVersion=%parm[#1]%
                         sidaSensorAddressType=%parm[#2]%

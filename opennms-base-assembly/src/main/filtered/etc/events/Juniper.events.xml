@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: Juniper-System-MIB -->
 <event>
 	<mask>
@@ -44,7 +44,7 @@ juniSystemMemKBytesCapacity.&lt;/p&gt;&lt;table&gt;
 	juniSystemMemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemHighMemUtil trap received 
 			juniSystemMemCapacity=%parm[#1]% 
 			juniSystemMemUtilPct=%parm[#2]% 
@@ -98,7 +98,7 @@ juniSystemMemKBytesCapacity.&lt;/p&gt;&lt;table&gt;
 	juniSystemMemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemAbatedMemUtil trap received 
 			juniSystemMemCapacity=%parm[#1]% 
 			juniSystemMemUtilPct=%parm[#2]% 
@@ -292,7 +292,7 @@ are also included in the notification.&lt;/p&gt;&lt;table&gt;
 	juniSystemModuleDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemModuleOperStatusChange trap received 
 			juniSystemModuleCurrentType=%parm[#1]% 
 			juniSystemModuleAdminStatus=%parm[#2]% 
@@ -337,7 +337,7 @@ are also included in the notification.&lt;/p&gt;&lt;table&gt;
 		unknown(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemPowerStatusChange trap received 
 			entPhysicalDescr=%parm[#1]% 
 			juniSystemPowerStatus=%parm[#2]%&lt;/p&gt;
@@ -378,7 +378,7 @@ Protection hold off time begins.&lt;/p&gt;&lt;table&gt;
 		warning(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemFanStatusChange trap received 
 			entPhysicalDescr=%parm[#1]% 
 			juniSystemFanStatus=%parm[#2]%&lt;/p&gt;
@@ -419,7 +419,7 @@ mode.&lt;/p&gt;&lt;table&gt;
 		tooHighWarning(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemTempStatusChange trap received 
 			juniSystemTempStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -461,7 +461,7 @@ sent when the holdOffTimeRemaining is 50% of the holdOffTime.&lt;/p&gt;&lt;table
 	juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemTempProtectionStatusChange trap received 
 			juniSystemTempProtectionStatus=%parm[#1]% 
 			juniSystemTempProtectionHoldOffTimeRemaining=%parm[#2]%&lt;/p&gt;
@@ -492,7 +492,7 @@ on an individual slot then the following object is included in the
 notification:
     juniSystemReloadSlotNumber &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemReloadCommand trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -547,7 +547,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	juniSystemUtilizationHoldDownTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Juniper Event: juniSystemUtilizationThreshold trap received 
 			juniSystemUtilizationThresholdDirection=%parm[#1]% 
 			juniSystemUtilizationMaxCapacity=%parm[#2]% 
@@ -590,7 +590,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Major</severity>
 </event>
 <event>
@@ -623,7 +623,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Major</severity>
 </event>
 <event>
@@ -656,7 +656,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Major</severity>
 </event>
 <event>
@@ -689,7 +689,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Minor</severity>
 </event>
 <event>
@@ -722,7 +722,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Warning</severity>
 </event>
 <event>
@@ -755,7 +755,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Normal</severity>
 </event>
 <event>
@@ -788,7 +788,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Normal</severity>
 </event>
 <event>
@@ -821,7 +821,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Normal</severity>
 </event>
 <event>
@@ -851,7 +851,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniCliSecurityAlertTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;</descr>
-	<logmsg dest='logndisplay'>Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of data from MIB: Juniper-CLI-MIB -->
@@ -878,9 +878,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;NextAvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: RADIUS authentication server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: RADIUS authentication server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -900,9 +900,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
-	<logmsg dest='logndisplay'>Juniper Event: No RADIUS authentication server available.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: No RADIUS authentication server available.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -926,9 +926,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;NextAvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: RADIUS accounting server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: RADIUS accounting server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -948,9 +948,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	<uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientNoServerAvailable</uei>
 	<event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientNoServerAvailable</event-label>
 	<descr>This trap will be generated when all of the requested servers were not available.</descr>
-	<logmsg dest='logndisplay'>Juniper Event: No RADIUS accounting server available.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: No RADIUS accounting server available.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -973,9 +973,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: RADIUS authentication server %parm[#1]% available.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: RADIUS authentication server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -998,9 +998,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;AvailableServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: RADUS accounting server %parm[#1]% available.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: RADUS accounting server %parm[#1]% available.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: Juniper-RADIUS-CLIENT-MIB -->
 <!-- Start of data from MIB: Juniper-System-MIB -->
@@ -1033,9 +1033,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;MemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: High Memory Utilization MemCapacity=%parm[#1]% MemUtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% MemKBytesCapacity=%parm[#5]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: High Memory Utilization MemCapacity=%parm[#1]% MemUtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% MemKBytesCapacity=%parm[#5]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1066,9 +1066,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemMemKBytesCapacity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: System Memory utilization abated. Capacity=%parm[#1]% UtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% KBytesCapacity=%parm[#5]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: System Memory utilization abated. Capacity=%parm[#1]% UtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% KBytesCapacity=%parm[#5]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemHighMemUtil:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemHighMemUtil:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1100,7 +1100,7 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemModuleDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Module Operational Status Change. CurrentType=%parm[#1]% AdminStatus=%parm[#2]% OperStatus=%parm[#3]% DisableReason=%parm[#4]% Descr=%parm[#5]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Module Operational Status Change. CurrentType=%parm[#1]% AdminStatus=%parm[#2]% OperStatus=%parm[#3]% DisableReason=%parm[#4]% Descr=%parm[#5]%</logmsg>
 	<severity>Warning</severity>
 </event>
 <event>
@@ -1129,9 +1129,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemPowerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;notPresent(0) inactive(1) good(2) failed(3) sensorFailed(4) unknown(5)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemPowerStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemPowerStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1155,9 +1155,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemPowerStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;notPresent(0) inactive(1) good(2) failed(3) sensorFailed(4) unknown(5)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1187,9 +1187,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;failed(0) ok(1) warning(2)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1219,9 +1219,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;failed(0) ok(1) warning(2)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1251,9 +1251,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;failed(0) ok(1) warning(2)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1279,9 +1279,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;failed(0) ok(1) warning(2)&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1310,9 +1310,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1341,9 +1341,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1372,9 +1372,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1403,9 +1403,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1434,9 +1434,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1465,9 +1465,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1492,9 +1492,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1525,9 +1525,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1558,9 +1558,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1591,9 +1591,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1624,9 +1624,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1657,9 +1657,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1686,9 +1686,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniSystemTempProtectionHoldOffTimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1711,9 +1711,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	about to restart due to a system console reload command. If the
 	reload is only on an individual slot then the following object is
 	included in the notification: juniSystemReloadSlotNumber</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Reload command issued.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Reload command issued.</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1743,9 +1743,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;HoldDownTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: System Utilization Threshold rising. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: System Utilization Threshold rising. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1775,9 +1775,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;HoldDownTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: System Utilization Threshold falling. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: System Utilization Threshold falling. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdRising:%dpname%:%nodeid%:%interface%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdRising:%dpname%:%nodeid%:%interface%" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <!-- End of data from MIB: Juniper-System-MIB -->
 <!-- Start of data from MIB: Juniper-System-Clock-MIB -->
@@ -1802,9 +1802,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpSysClockFrequencyError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: NTP Frequency Calibration Start, Error %parm[#1]%s.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: NTP Frequency Calibration Start, Error %parm[#1]%s.</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1827,9 +1827,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpSysClockFrequencyError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: NTP Frequency Calibration End, Error %parm[#1]%s.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: NTP Frequency Calibration End, Error %parm[#1]%s.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpFrequencyCalibrationStart:%dpname%:%nodeid%:%interface%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpFrequencyCalibrationStart:%dpname%:%nodeid%:%interface%" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1854,9 +1854,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	whether time synchronization is done with all the configured time
 	servers or any one of them (there may be reachability or other
 	problems) when NTP is enabled on the router.</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Time Synchronisation Up.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Time Synchronisation Up.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeSynDown:%dpname%:%nodeid%:%interface%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeSynDown:%dpname%:%nodeid%:%interface%" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1878,9 +1878,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	<descr>This trap will be generated when the NTP client is not able
 	to time synchronize with any of the configured time servers for any
 	reasons when NTP is enabled on the router.</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Time Synchronisation Down.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Time Synchronisation Down.</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1906,9 +1906,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpPeerCfgIsPreferred&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;true(1) false(2) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Time Server Synchronisation Up.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Time Server Synchronisation Up.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeServerSynDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeServerSynDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1934,9 +1934,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpPeerCfgIsPreferred&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;true(1) false(2) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Time Server Synchronisation Down.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Time Server Synchronisation Down.</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1963,9 +1963,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpSysClockState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;neverFrequencyCalibrated(0) frequencyCalibrated(1) setToServerTime(2) frequencyCalibrationIsGoingOn(3) synchronized(4) spikeDetected(5) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: First Time System Clock Set.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: First Time System Clock Set.</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -1994,9 +1994,9 @@ what conditions trigger a resource utilization notification.&lt;/p&gt;&lt;table&
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;juniNtpSysClockState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;neverFrequencyCalibrated(0) frequencyCalibrated(1) setToServerTime(2) frequencyCalibrationIsGoingOn(3) synchronized(4) spikeDetected(5) &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
 	&lt;/table&gt;
 	</descr>
-	<logmsg dest='logndisplay'>Juniper Event: Clock Offset Limit Crossed by %parm[#1]%s.</logmsg>
+	<logmsg dest="logndisplay">Juniper Event: Clock Offset Limit Crossed by %parm[#1]%s.</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+	<alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei:%dpname%:%nodeid%:%interface%"/>
 </event>
 <!-- End of data from MIB: Juniper-System-Clock-MIB -->
 <!-- Start of auto generated data from MIB: Juniper-ADDRESS-POOL-MIB -->
@@ -2041,7 +2041,7 @@ utilization threshold.&lt;/p&gt;&lt;table&gt;
         juniAddressPoolUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         juniAddressPoolHighAddrUtil trap received 
                         juniRouterName=%parm[#1]% 
                         juniAddressPoolName=%parm[#2]% 
@@ -2050,7 +2050,7 @@ utilization threshold.&lt;/p&gt;&lt;table&gt;
                         juniAddressPoolUtilPct=%parm[#5]%&lt;/p&gt;
                 </logmsg>
         <severity>Minor</severity>
-	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false" />
+	    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
         <mask>
@@ -2093,7 +2093,7 @@ threshold level.&lt;/p&gt;&lt;table&gt;
         juniAddressPoolUtilPct&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         juniAddressPoolAbatedAddrUtil trap received 
                         juniRouterName=%parm[#1]% 
                         juniAddressPoolName=%parm[#2]% 
@@ -2102,7 +2102,7 @@ threshold level.&lt;/p&gt;&lt;table&gt;
                         juniAddressPoolUtilPct=%parm[#5]%&lt;/p&gt;
                 </logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>  
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>  
 </event>
 <event>
         <mask>
@@ -2138,14 +2138,14 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
         juniAddressPoolSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         juniAddressPoolNoAddresses trap received 
                         juniRouterName=%parm[#1]% 
                         juniAddressPoolName=%parm[#2]% 
                         juniAddressPoolSize=%parm[#3]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-	    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+	    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: Juniper-ADDRESS-POOL-MIB -->        
 <!-- Start of auto generated data from MIB: Juniper-REDUNDANCY-MIB -->
@@ -2181,7 +2181,7 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 		userInitiated(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyColdSwitchoverNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%
 	juniRedundancyLastResetReason=%parm[#2]%&lt;/p&gt;
@@ -2193,7 +2193,7 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="notKnown" varbindvalue="2"/>
       <decode varbinddecodedstring="userInitiated" varbindvalue="3"/>
     </varbindsdecode>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+  <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
   <mask>
@@ -2227,7 +2227,7 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 		userInitiated(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyWarmSwitchoverNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%
 	juniRedundancyLastResetReason=%parm[#2]%&lt;/p&gt;
@@ -2239,7 +2239,7 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="notKnown" varbindvalue="2"/>
       <decode varbinddecodedstring="userInitiated" varbindvalue="3"/>
     </varbindsdecode>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+  <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
   <mask>
@@ -2265,12 +2265,12 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyStateEnabledNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
 	</logmsg>
   <severity>Normal</severity>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification:%dpname%:%nodeid%:%parm[#1]%"/>
+  <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification:%dpname%:%nodeid%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
   <mask>
@@ -2296,12 +2296,12 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyStateDisabledNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
 	</logmsg>
   <severity>Warning</severity>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false" /> </event> <event>
+  <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/> </event> <event>
   <mask>
     <maskelement>
       <mename>id</mename>
@@ -2325,12 +2325,12 @@ fully utilized pool.&lt;/p&gt;&lt;table&gt;
 	juniRedundancyActiveSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyStatePendingNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%&lt;/p&gt;
 	</logmsg>
   <severity>Warning</severity>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false" /> </event> <event>
+  <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/> </event> <event>
   <mask>
     <maskelement>
       <mename>id</mename>
@@ -2362,7 +2362,7 @@ and vice versa.&lt;/p&gt;&lt;table&gt;
 		highAvailability(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-  <logmsg dest='logndisplay'>&lt;p&gt;
+  <logmsg dest="logndisplay">&lt;p&gt;
 	juniRedundancyModeNotification trap received
 	juniRedundancyActiveSlot=%parm[#1]%
 	juniRedundancyCfgRedundancyMode=%parm[#2]%&lt;/p&gt;
@@ -2373,7 +2373,7 @@ and vice versa.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="fileSystemSynchronization" varbindvalue="1"/>
       <decode varbinddecodedstring="highAvailability" varbindvalue="2"/>
     </varbindsdecode>
-  <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false" />
+  <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: Juniper-REDUNDANCY-MIB -->
 </events>

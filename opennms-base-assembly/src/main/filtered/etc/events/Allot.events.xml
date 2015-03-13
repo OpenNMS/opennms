@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ALLOT-MIB -->
 <event>
 	<mask>
@@ -41,7 +41,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDeviceConfChangeTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
 			alGenericLastChangeIntVal=%parm[#2]% 
@@ -84,7 +84,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alCatalogConfChangeTrap trap received 
 			alCatalogLastCommand=%parm[#1]% 
 			alCatalogLastChangeOrigin=%parm[#2]%</p>
@@ -125,7 +125,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alLineConfChangeTrap trap received 
 			alLineLastCommand=%parm[#1]% 
 			alLineLastChangeOrigin=%parm[#2]%</p>
@@ -166,7 +166,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alPipeConfChangeTrap trap received 
 			alPipeLastCommand=%parm[#1]% 
 			alPipeLastChangeOrigin=%parm[#2]%</p>
@@ -207,7 +207,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alVCConfChangeTrap trap received 
 			alVCLastCommand=%parm[#1]% 
 			alVCLastChangeOrigin=%parm[#2]%</p>
@@ -252,7 +252,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alAlertRisingTrap trap received 
 			alAlertConfVariable=%parm[#1]% 
 			alAlertConfValue=%parm[#2]% 
@@ -299,7 +299,7 @@ alGenericLastChangeVar</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alAlertFallingTrap trap received 
 			alAlertConfVariable=%parm[#1]% 
 			alAlertConfValue=%parm[#2]% 
@@ -337,7 +337,7 @@ alGenericLastChangeVar</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDosAttackOnTrap trap received 
 			alDOSAttackStatus=%parm[#1]%</p>
 ]]>		</logmsg>
@@ -372,7 +372,7 @@ alGenericLastChangeVar</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDosAttackOffTrap trap received 
 			alDOSAttackStatus=%parm[#1]%</p>
 ]]>		</logmsg>
@@ -415,7 +415,7 @@ alGenericLastChangeVar</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDataSourceDownTrap trap received 
 			alDataSourceIPAddr=%parm[#1]% 
 			alDataSourceType=%parm[#2]%</p>
@@ -459,7 +459,7 @@ alGenericLastChangeVar</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDataSourceUpTrap trap received 
 			alDataSourceIPAddr=%parm[#1]% 
 			alDataSourceType=%parm[#2]%</p>
@@ -507,7 +507,7 @@ blocked (disabled).</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alSoftwareProblemTrap trap received 
 			alSevereSoftwareProblem=%parm[#1]% 
 			alLastMessage=%parm[#2]%</p>
@@ -540,7 +540,7 @@ blocked (disabled).</p><table>
 	%parm[#1]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alAccessViolationTrap trap received 
 			alLastMessage=%parm[#1]%</p>
 ]]>		</logmsg>
@@ -583,7 +583,7 @@ blocked (disabled).</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alIpAddrConfChangeTrap trap received 
 			alIpXEntryStatus=%parm[#1]% 
 			alIpXAddr=%parm[#2]%</p>
@@ -627,7 +627,7 @@ blocked (disabled).</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alConnRouteConfChangeTrap trap received 
 			alConnRouteEntryStatus=%parm[#1]% 
 			alConnRouteIfIndex=%parm[#2]%</p>
@@ -664,7 +664,7 @@ blocked (disabled).</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDeviceStatusUpTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
 			alGenericLastChangeIntVal=%parm[#2]%</p>
@@ -701,7 +701,7 @@ blocked (disabled).</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alDeviceStatusDownTrap trap received 
 			alGenericLastChangeVar=%parm[#1]% 
 			alGenericLastChangeIntVal=%parm[#2]%</p>
@@ -735,7 +735,7 @@ blocked (disabled).</p><table>
 	%parm[#1]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alApplicationInfoTrap trap received 
 			alLastMessage=%parm[#1]%</p>
 ]]>		</logmsg>
@@ -797,7 +797,7 @@ blocked (disabled).</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alBoardStatusChangeTrap trap received 
 			alBoardType=%parm[#1]% 
 			alBoardSoftwareStatus=%parm[#2]% 
@@ -806,31 +806,31 @@ blocked (disabled).</p><table>
 	<severity>Warning</severity>
         <varbindsdecode>
                 <parmid>parm[#1]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
-                <decode varbindvalue="2" varbinddecodedstring="apc"/>
-                <decode varbindvalue="3" varbinddecodedstring="dpic"/>
-                <decode varbindvalue="4" varbinddecodedstring="host"/>
-                <decode varbindvalue="5" varbinddecodedstring="byc"/>
-                <decode varbindvalue="6" varbinddecodedstring="spider"/>
-                <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
-                <decode varbindvalue="8" varbinddecodedstring="switch"/>
-                <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
-                <decode varbindvalue="10" varbinddecodedstring="byp"/>
-                <decode varbindvalue="11" varbinddecodedstring="vas"/>
-                <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
-                <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
+                <decode varbinddecodedstring="thirdParty" varbindvalue="1"/>
+                <decode varbinddecodedstring="apc" varbindvalue="2"/>
+                <decode varbinddecodedstring="dpic" varbindvalue="3"/>
+                <decode varbinddecodedstring="host" varbindvalue="4"/>
+                <decode varbinddecodedstring="byc" varbindvalue="5"/>
+                <decode varbinddecodedstring="spider" varbindvalue="6"/>
+                <decode varbinddecodedstring="scorpion" varbindvalue="7"/>
+                <decode varbinddecodedstring="switch" varbindvalue="8"/>
+                <decode varbinddecodedstring="dispatcher" varbindvalue="9"/>
+                <decode varbinddecodedstring="byp" varbindvalue="10"/>
+                <decode varbinddecodedstring="vas" varbindvalue="11"/>
+                <decode varbinddecodedstring="exc-cc" varbindvalue="13"/>
+                <decode varbinddecodedstring="exc-sbh" varbindvalue="14"/>
         </varbindsdecode>
         <varbindsdecode>
                 <parmid>parm[#2]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="notActive"/>
-                <decode varbindvalue="2" varbinddecodedstring="active"/>
-                <decode varbindvalue="3" varbinddecodedstring="standBy"/>
-                <decode varbindvalue="4" varbinddecodedstring="notApplicable"/>
+                <decode varbinddecodedstring="notActive" varbindvalue="1"/>
+                <decode varbinddecodedstring="active" varbindvalue="2"/>
+                <decode varbinddecodedstring="standBy" varbindvalue="3"/>
+                <decode varbinddecodedstring="notApplicable" varbindvalue="4"/>
         </varbindsdecode>
         <varbindsdecode>
                 <parmid>parm[#3]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="on"/>
-                <decode varbindvalue="2" varbinddecodedstring="off"/>
+                <decode varbinddecodedstring="on" varbindvalue="1"/>
+                <decode varbinddecodedstring="off" varbindvalue="2"/>
         </varbindsdecode>
 </event>
 <event>
@@ -871,7 +871,7 @@ blocked (disabled).</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alWebUpdateTrap trap received 
 			alCurrentVersion=%parm[#1]% 
 			alLastUpdateStatus=%parm[#2]%</p>
@@ -915,7 +915,7 @@ blocked (disabled).</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alAsymmetricRemoteDeviceConfTrap trap received 
 			alAsymmetricGroupId=%parm[#1]% 
 			alAsymmetricEntryStatus=%parm[#2]%</p>
@@ -960,7 +960,7 @@ blocked (disabled).</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alAsymmetricRemoteDeviceStatusTrap trap received 
 			alAsymmetricGroupId=%parm[#1]% 
 			alAsymmetricOwnDeviceId=%parm[#2]% 
@@ -1037,7 +1037,7 @@ blocked (disabled).</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alLicenseWarnEventTrap trap received 
 			alLicenseAttrType=%parm[#1]% 
 			alLicenseLimitType=%parm[#2]% 
@@ -1115,7 +1115,7 @@ blocked (disabled).</p><table>
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alLicenseCritEventTrap trap received 
 			alLicenseAttrType=%parm[#1]% 
 			alLicenseLimitType=%parm[#2]% 
@@ -1172,7 +1172,7 @@ blocked (disabled).</p><table>
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alBoardTemperatureStatusTrap trap received 
 			alBoardType=%parm[#1]% 
 			alBoardTemperatureRange=%parm[#2]%</p>
@@ -1180,25 +1180,25 @@ blocked (disabled).</p><table>
 	<severity>Major</severity>
         <varbindsdecode>
                 <parmid>parm[#1]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="thirdParty"/>
-                <decode varbindvalue="2" varbinddecodedstring="apc"/>
-                <decode varbindvalue="3" varbinddecodedstring="dpic"/>
-                <decode varbindvalue="4" varbinddecodedstring="host"/>
-                <decode varbindvalue="5" varbinddecodedstring="byc"/>
-                <decode varbindvalue="6" varbinddecodedstring="spider"/>
-                <decode varbindvalue="7" varbinddecodedstring="scorpion"/>
-                <decode varbindvalue="8" varbinddecodedstring="switch"/>
-                <decode varbindvalue="9" varbinddecodedstring="dispatcher"/>
-                <decode varbindvalue="10" varbinddecodedstring="byp"/>
-                <decode varbindvalue="11" varbinddecodedstring="vas"/>
-                <decode varbindvalue="13" varbinddecodedstring="exc-cc"/>
-                <decode varbindvalue="14" varbinddecodedstring="exc-sbh"/>
+                <decode varbinddecodedstring="thirdParty" varbindvalue="1"/>
+                <decode varbinddecodedstring="apc" varbindvalue="2"/>
+                <decode varbinddecodedstring="dpic" varbindvalue="3"/>
+                <decode varbinddecodedstring="host" varbindvalue="4"/>
+                <decode varbinddecodedstring="byc" varbindvalue="5"/>
+                <decode varbinddecodedstring="spider" varbindvalue="6"/>
+                <decode varbinddecodedstring="scorpion" varbindvalue="7"/>
+                <decode varbinddecodedstring="switch" varbindvalue="8"/>
+                <decode varbinddecodedstring="dispatcher" varbindvalue="9"/>
+                <decode varbinddecodedstring="byp" varbindvalue="10"/>
+                <decode varbinddecodedstring="vas" varbindvalue="11"/>
+                <decode varbinddecodedstring="exc-cc" varbindvalue="13"/>
+                <decode varbinddecodedstring="exc-sbh" varbindvalue="14"/>
         </varbindsdecode>
         <varbindsdecode>
                 <parmid>parm[#2]</parmid>
-                <decode varbindvalue="1" varbinddecodedstring="low"/>
-                <decode varbindvalue="2" varbinddecodedstring="middle"/>
-                <decode varbindvalue="3" varbinddecodedstring="high"/>
+                <decode varbinddecodedstring="low" varbindvalue="1"/>
+                <decode varbinddecodedstring="middle" varbindvalue="2"/>
+                <decode varbinddecodedstring="high" varbindvalue="3"/>
         </varbindsdecode>
 </event>
 <!-- End of auto generated data from MIB: ALLOT-MIB -->

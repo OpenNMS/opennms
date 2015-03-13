@@ -1,5 +1,2 @@
-<?xml version="1.0"?>
-<ami-config retry="2" timeout="1500" 
-	username="opennms" password="p455w0rd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ami-config password="p455w0rd" retry="2" timeout="1500" username="opennms">
 </ami-config>
-

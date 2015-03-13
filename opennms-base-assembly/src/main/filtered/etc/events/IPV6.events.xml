@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: IPV6-MIB -->
 <event>
 	<mask>
@@ -38,7 +38,7 @@ status transitions to or from the up(1) state.&lt;/p&gt;&lt;table&gt;
 		notPresent(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ipv6IfStateChange trap received 
 			ipv6IfDescr=%parm[#1]% 
 			ipv6IfOperStatus=%parm[#2]%&lt;/p&gt;

@@ -1,6 +1,4 @@
-<?xml version="1.0"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 Configuration file generated for:
 
 Full name.......: VMware vCenter Server 4.1.0 Build-258902
@@ -9,31 +7,29 @@ API version.....: 4.1
 Product name....: VMware VirtualCenter Server
 Product version.: 4.0
 OS type.........: win32-x86
--->
+--><datacollection-group name="VMware4">
 
-<datacollection-group name="VMware4">
-
-  <resourceType name="vmware4Cpu" label="VMware v4 Cpu" resourceLabel="${vmware4CpuName}">
+  <resourceType label="VMware v4 Cpu" name="vmware4Cpu" resourceLabel="${vmware4CpuName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware4MgtAgt" label="VMware v4 MgtAgt" resourceLabel="${vmware4MgtAgtName}">
+  <resourceType label="VMware v4 MgtAgt" name="vmware4MgtAgt" resourceLabel="${vmware4MgtAgtName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware4Net" label="VMware v4 Net" resourceLabel="${vmware4NetName}">
+  <resourceType label="VMware v4 Net" name="vmware4Net" resourceLabel="${vmware4NetName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware4Disk" label="VMware v4 Disk" resourceLabel="${vmware4DiskName}">
+  <resourceType label="VMware v4 Disk" name="vmware4Disk" resourceLabel="${vmware4DiskName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>
 
-  <resourceType name="vmware4Sys" label="VMware v4 Sys" resourceLabel="${vmware4SysName}">
+  <resourceType label="VMware v4 Sys" name="vmware4Sys" resourceLabel="${vmware4SysName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
   </resourceType>

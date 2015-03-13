@@ -1,6 +1,5 @@
-<?xml version="1.0"?>
-<scriptd-configuration>
-	<engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><scriptd-configuration>
+	<engine className="bsh.util.BeanShellBSFEngine" extensions="bsh" language="beanshell"/>
 	<start-script language="beanshell">
 
 		import org.opennms.netmgt.scriptd.ins.events.InsServerListener;
@@ -20,7 +19,7 @@
 		//isl.setSharedASCIIString("1234567890");
 		
 		//required properties
-		isl.setCriteriaRestriction("eventuei = 'uei.opennms.org/internal/alarms/AlarmRaised' and EXISTS (select 1 from alarms where alarmtype = 1 and severity > 3 and eventoperinstruct = alarmid and eventtime > lasteventtime)");
+		isl.setCriteriaRestriction("eventuei = 'uei.opennms.org/internal/alarms/AlarmRaised' and EXISTS (select 1 from alarms where alarmtype = 1 and severity &gt; 3 and eventoperinstruct = alarmid and eventtime &gt; lasteventtime)");
 		isl.start();
 
 	</start-script>
@@ -49,4 +48,3 @@
 
 
 </scriptd-configuration>
-

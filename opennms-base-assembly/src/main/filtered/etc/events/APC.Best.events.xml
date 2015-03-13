@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: BESTPOWER-MIB -->
 <event>
 	<mask>
@@ -20,7 +20,7 @@
 	<descr>
 &lt;p&gt;WARNING: Utility power not available.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapPowerFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -45,7 +45,7 @@
 	<descr>
 &lt;p&gt;INFORMATION: Utility power has been restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapPowerRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -86,7 +86,7 @@
 	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSOnBattery trap received 
 			upsBatteryTimeOnBattery=%parm[#1]% 
 			upsBatteryRuntimeRemaining=%parm[#2]% 
@@ -115,7 +115,7 @@
 	<descr>
 &lt;p&gt;INFORMATION: The UPS is not on battery power.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSNotOnBattery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -141,7 +141,7 @@
 &lt;p&gt;SEVERE: The runtime remaining on battery power is very short,
 and the UPS will soon shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapLowRuntime trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -167,7 +167,7 @@ and the UPS will soon shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;INFORMATION: The UPS has returned from a low runtime
 condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSCanRunOnBattery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -198,7 +198,7 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapNearLowBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -229,7 +229,7 @@ value that is too high for safe battery maintenance.&lt;/p&gt;&lt;table&gt;
 	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHighBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -256,7 +256,7 @@ value that is too high for safe battery maintenance.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;INFORMATION: The UPS has returned from a near low or high battery
 condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapBatteryOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -286,7 +286,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapLowBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -312,7 +312,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	<descr>
 &lt;p&gt;SEVERE: The UPS has failed a scheduled or manual battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckBattery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -337,7 +337,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	<descr>
 &lt;p&gt;SEVERE: One or more UPS batteries need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapReplaceBattery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -362,7 +362,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	<descr>
 &lt;p&gt;SEVERE: The UPS has failed a scheduled or manual inverter test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckInverter trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -387,7 +387,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	<descr>
 &lt;p&gt;WARNING: The UPS battery voltage is either too low or missing to start up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapBatteriesDisconnected trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -412,7 +412,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 	<descr>
 &lt;p&gt;WARNING: The output load exceeds the UPS output capacity.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapOutputOverload trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -438,7 +438,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&
 &lt;p&gt;INFORMATION: The UPS has returned from an output overload
 condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSNoLongerOverloaded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -463,7 +463,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The output load has exceeded the UPS output capacity, and the UPS has shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapLowAcOut trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -489,7 +489,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: To much load equipment has been connected to the UPS and
 has has caused excess current draw  from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCircuitBreakerWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -515,7 +515,7 @@ has has caused excess current draw  from the output.&lt;/p&gt;&lt;table&gt;&lt;/
 &lt;p&gt;INFORMATION: The UPS has returned from a circuit breaker warning
 condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCircuitBreakerOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -541,7 +541,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: The UPS has shut down due to an extended excess of current
 draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCircuitBreakerShdn trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -566,7 +566,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The Bypass is presently engaged on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapBypassOn trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -591,7 +591,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The UPS has returned from an on bypass condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSOnline trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -616,7 +616,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The UPS has found a problem in your wall outlet.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapSiteWiringFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -641,7 +641,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The fan on the UPS has stopped .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckFan trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -666,7 +666,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The internal temperature inside the UPS is too hot.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHighUPSTemp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -692,7 +692,7 @@ draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;INFORMATION: The UPS has returned from a high ambient temp
 condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapTempOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -717,7 +717,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The Inverter heatsink assembly inside the UPS is too hot .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHighHSTemp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -742,7 +742,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The UPS has returned from a high heatsink temp condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHSTempOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -767,7 +767,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The temperature of the main transformer inside the UPS is too hot .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHighXFMRTemp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -792,7 +792,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The temperature of the PFM module inside the UPS is too hot.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHighPFMTemp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -817,7 +817,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: One or all of the temperature probes has been disconnected on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapProbeMissing trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -842,7 +842,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The UPS has returned from a probe missing condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapProbeReconnected trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -867,7 +867,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The internal DC supply voltages are attenuated or missing.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckPowerSupply trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -892,7 +892,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The UPS detected a possible failure in the tap changer (open or welded relay, etc.)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapTapRegulatorFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -917,7 +917,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: There is a hardware problem inside the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapRelayFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -942,7 +942,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The failure of one or more fuses has been detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckFuse trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -967,7 +967,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: One or more MOVs have failed due to a voltage surge.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCheckMOV trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -992,7 +992,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The UPS has lost the programmed settings in the memory of the logic board.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapMemoryError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1018,7 +1018,7 @@ condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: A hardware malfunction has occurred inside the UPS.
 Please consult a factory authorized service  representative for assistance.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCallService trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1044,7 +1044,7 @@ Please consult a factory authorized service  representative for assistance.&lt;/
 &lt;p&gt;INFORMATION: A  manual test of the alarm beeper is being performed
 on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapManualAlarmBeeperTestInitiated trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1069,7 +1069,7 @@ on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The test of UPS has completed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapManualAlarmBeeperTestAborted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1094,7 +1094,7 @@ on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: A test is in progress.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapScheduledTestInProgress trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1119,7 +1119,7 @@ on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SEVERE: The last test performed failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapScheduledTestFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1145,7 +1145,7 @@ on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: Communication to the UPS has been lost.  Steps
 to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCommunicationLost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1171,7 +1171,7 @@ to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;&lt;/table&g
 &lt;p&gt;INFORMATION: Communication with the UPS has been
 restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapCommunicationRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1197,7 +1197,7 @@ restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;WARNING: The ups has been given shutdown command
 by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSGoingDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1223,7 +1223,7 @@ by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;INFORMATION: The ups has been turned off
 by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSTurnedOff trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1249,7 +1249,7 @@ by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;INFORMATION: The UPS has entered in 'sleep' mode. Power to the
 load has been cut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSSleeping trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1274,7 +1274,7 @@ load has been cut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The UPS woke up from 'sleep' mode. Power to the load has been restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSWokeUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1299,7 +1299,7 @@ load has been cut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;INFORMATION: The UPS is rebooted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSRebooted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1325,7 +1325,7 @@ load has been cut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: The Emergency Power OFF feature has been activiated at
 the RS-232 port on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapEmergencyPowerOFF trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1350,7 +1350,7 @@ the RS-232 port on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;WARNING: The ups history log buffer is almost full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapHistLogWarn trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1375,7 +1375,7 @@ the RS-232 port on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;WARNING: The ups event log buffer is almost full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapEventLogWarn trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1401,7 +1401,7 @@ the RS-232 port on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;SEVERE: A critical fault has been detected inside the UPS.
 Power to the load has been shut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			APC-Best Power event: upsTrapUPSFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1425,7 +1425,7 @@ Power to the load has been shut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 for this event in eventconf.xml.&lt;/p&gt;&lt;
 &lt;p&gt;(enterprise:%id% generic:%generic% specific:%specific%). %parm[##]%&lt;/p&gt;&lt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         APC XUPS Event: Generic Unknown Event
                         xupsAlarmID=%parm[#1]%
                         xupsAlarmDescr=%parm[#2]%

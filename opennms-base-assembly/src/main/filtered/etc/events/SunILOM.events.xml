@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: SUN-PLATFORM-MIB -->
 <event>
 	<mask>
@@ -45,7 +45,7 @@ has been created as defined in X.721, sec. 13.6.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatObjectCreation trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -101,7 +101,7 @@ has been deleted as defined in X.721, sec. 13.7.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationAdditionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatObjectDeletion trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -348,7 +348,7 @@ in X.721, sec. 13.2.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatCommunicationsAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -599,7 +599,7 @@ in X.721, sec. 13.3.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatEnvironmentalAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -850,7 +850,7 @@ in X.721, sec. 13.4.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatEquipmentAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1101,7 +1101,7 @@ in X.721, sec. 13.10.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatProcessingErrorAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1170,7 +1170,7 @@ This is as defined in X.721, sec. 13.14.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationNewInteger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatStateChange trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1234,7 +1234,7 @@ This is as defined in X.721, sec. 13.1.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationNewInteger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatAttributeChangeInteger trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1298,7 +1298,7 @@ This is as defined in X.721, sec. 13.1.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationNewString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatAttributeChangeString trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1362,7 +1362,7 @@ This is as defined in X.721, sec. 13.1.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationNewOID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatAttributeChangeOID trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1610,7 +1610,7 @@ X.721, sec 13.11.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatQualityOfServiceAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1860,7 +1860,7 @@ X.721, sec 13.11.&lt;/p&gt;&lt;table&gt;
 	sunPlatNotificationRepairAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunPlatIndeterminateAlarm trap received 
 			sunPlatNotificationEventId=%parm[#1]% 
 			sunPlatNotificationTime=%parm[#2]% 
@@ -1951,7 +1951,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageFatalThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2039,7 +2039,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageFatalThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2127,7 +2127,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2215,7 +2215,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageCritThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2303,7 +2303,7 @@ was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageNonCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2389,7 +2389,7 @@ operating range.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapVoltageOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2477,7 +2477,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempFatalThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2565,7 +2565,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempFatalThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2653,7 +2653,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2741,7 +2741,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempCritThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2829,7 +2829,7 @@ the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempNonCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -2915,7 +2915,7 @@ operating range.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTempOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3003,7 +3003,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentFatalThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3091,7 +3091,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentFatalThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3179,7 +3179,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3267,7 +3267,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentCritThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3355,7 +3355,7 @@ the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentNonCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3441,7 +3441,7 @@ the normal operating range.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapElectricalCurrentOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3529,7 +3529,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedFatalThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3617,7 +3617,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedFatalThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3705,7 +3705,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3793,7 +3793,7 @@ an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedCritThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3881,7 +3881,7 @@ threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedNonCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -3967,7 +3967,7 @@ the normal operating range.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanSpeedOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4056,7 +4056,7 @@ indicates whether the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorFatalThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4145,7 +4145,7 @@ indicates whether the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorFatalThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4234,7 +4234,7 @@ indicates whether the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4323,7 +4323,7 @@ indicates whether the threshold was an upper or lower.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorCritThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4412,7 +4412,7 @@ object indicates whether the threshold was an upper or lower.&lt;/p&gt;&lt;table
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorNonCritThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4499,7 +4499,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSensorThresholdOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4574,7 +4574,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerSupplyFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4633,7 +4633,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerSupplyError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4688,7 +4688,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerSupplyOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4759,7 +4759,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4818,7 +4818,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4873,7 +4873,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -4944,7 +4944,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapProcessorFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5003,7 +5003,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapProcessorError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5058,7 +5058,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapProcessorOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5129,7 +5129,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapMemoryFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5188,7 +5188,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapMemoryError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5243,7 +5243,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapMemoryOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5331,7 +5331,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 		startstopmax(14)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHardDriveFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5408,7 +5408,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 		startstopmax(14)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHardDriveError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5464,7 +5464,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHardDriveOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5535,7 +5535,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapIOFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5594,7 +5594,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapIOError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5649,7 +5649,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapIOOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5720,7 +5720,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSlotOrConnectorFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5779,7 +5779,7 @@ recognize the component type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSlotOrConnectorError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5835,7 +5835,7 @@ to its normal state.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSlotOrConnectorOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5908,7 +5908,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -5968,7 +5968,7 @@ generated when the SNMP agent does not recognize the component type.&lt;/p&gt;&l
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6025,7 +6025,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentOk trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6076,7 +6076,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFruInserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6126,7 +6126,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFruRemoved trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6189,7 +6189,7 @@ to disabled.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentDisabled trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6246,7 +6246,7 @@ to enabled.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAssocObjectId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentEnabled trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6294,7 +6294,7 @@ system has taken control of the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPreOSError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6360,7 +6360,7 @@ has changed state.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHAStateChange trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6408,7 +6408,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSecurityIntrusion trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6468,7 +6468,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 		rebuildAborted(10)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHardDriveStatus trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6514,7 +6514,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapTestMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapTestTrap trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6567,7 +6567,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerSupplyFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6622,7 +6622,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapFanFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6677,7 +6677,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapProcessorFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6732,7 +6732,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapMemoryFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6787,7 +6787,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapHardDriveFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6842,7 +6842,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapIOFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6897,7 +6897,7 @@ tampered with the system.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapSlotOrConnectorFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -6954,7 +6954,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapComponentFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7035,7 +7035,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerConsumptionThresholdExceeded trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7120,7 +7120,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		ok(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapPowerConsumptionThresholdDeasserted trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7205,7 +7205,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		controllerfailed(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapDriveControllerFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7265,7 +7265,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapDriveControllerFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7330,7 +7330,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		controllerfailed(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapDriveControllerError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7413,7 +7413,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		raiderror(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapStorageVolumeFault trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7473,7 +7473,7 @@ type.&lt;/p&gt;&lt;table&gt;
 	sunHwTrapAdditionalInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapStorageVolumeFaultCleared trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 
@@ -7539,7 +7539,7 @@ type.&lt;/p&gt;&lt;table&gt;
 		raiderror(8)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sunHwTrapStorageVolumeError trap received 
 			sunHwTrapSystemIdentifier=%parm[#1]% 
 			sunHwTrapChassisId=%parm[#2]% 

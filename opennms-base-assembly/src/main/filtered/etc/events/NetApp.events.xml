@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: NETWORK-APPLIANCE-MIB -->
 <event>
 	<mask>
@@ -21,7 +21,7 @@
 &lt;p&gt;A polling-style trap built using the 'snmp traps'
 command on the filer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: userDefined trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -47,7 +47,7 @@ command on the filer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Disk Health Monitor -
 Reported a Disk Degraded-I/O  Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: dhmNoticeDegradedIO trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -73,7 +73,7 @@ Reported a Disk Degraded-I/O  Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Disk Health Monitor -
 Reported a Disk Predictive-Failure Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: dhmNoticePFAEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -100,7 +100,7 @@ Reported a Disk Predictive-Failure Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 situation, usually indicating that the system has
 failed and is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: emergencyTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -126,7 +126,7 @@ failed and is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A user-defined trap indicating a condition that
 should be corrected immediately, such as a failed disk.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: alertTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -152,7 +152,7 @@ should be corrected immediately, such as a failed disk.&lt;/p&gt;&lt;table&gt;&l
 &lt;p&gt;A user-defined trap indicating a critical condition,
 such as a hard device error.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: criticalTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -178,7 +178,7 @@ such as a hard device error.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A user-defined trap indicating an error condition,
 such as a mistake in a configuration file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: errorTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -204,7 +204,7 @@ such as a mistake in a configuration file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A user-defined trap indicating a condition which
 is not an error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: warningTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -230,7 +230,7 @@ is not an error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&
 &lt;p&gt;A user-defined trap meant to provide notification,
 such as an hourly uptime message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: notificationTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -255,7 +255,7 @@ such as an hourly uptime message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A user-defined trap used for informational purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: informationalTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -285,7 +285,7 @@ actually, been trap 18.  The name change is to avoid
 issues with environments that already have a record
 for debugTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: dbgTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -312,7 +312,7 @@ for debugTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 running in degraded mode for 24 hours.
 The trap includes a string describing the failed disk.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: diskFailedShutdown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -338,7 +338,7 @@ The trap includes a string describing the failed disk.&lt;/p&gt;&lt;table&gt;&lt
 &lt;p&gt;One or more disks failed.
 The trap includes a string describing the failed disk(s).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: diskFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -365,7 +365,7 @@ The trap includes a string describing the failed disk(s).&lt;/p&gt;&lt;table&gt;
 This trap is a placeholder -
 it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: diskRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -391,7 +391,7 @@ it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Critical chassis or cpu fans have failed and the system
 is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: fanFailureShutdown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -417,7 +417,7 @@ is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;One or more chassis fans failed.
 The trap includes a string describing the failed fan(s).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: fanFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -444,7 +444,7 @@ The trap includes a string describing the failed fan(s).&lt;/p&gt;&lt;table&gt;&
 The trap includes a string describing the fan(s) in
 the warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: fanWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -469,7 +469,7 @@ the warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;All fans are repaired.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: fanRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -495,7 +495,7 @@ the warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Critical power supplies or power rails failed and
 the system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: powerSupplyFailureShutdown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -522,7 +522,7 @@ the system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 Include in the trap a string describing
 the failed power supply(ies).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: powerSupplyFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -550,7 +550,7 @@ warning state. Include in the trap a string describing
 the power supply(ies) or the power rail(s) in the
 warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: powerSupplyWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -576,7 +576,7 @@ warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Previously-failed power supplies or power rails have been
 repaired.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: powerSupplyRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -607,7 +607,7 @@ Note that as the threshold for this trap is
 checked once a minute it is possible to receive
 multiple instances of this trap in a short time.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: cpuTooBusy trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -634,7 +634,7 @@ multiple instances of this trap in a short time.&lt;/p&gt;&lt;table&gt;&lt;/tabl
 This trap is a placeholder -
 it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: cpuOk trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -659,7 +659,7 @@ it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The NVRAM battery is fully discharged.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: nvramBatteryDischarged trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -684,7 +684,7 @@ it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The charge in the NVRAM battery is low.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: nvramBatteryLow trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -710,7 +710,7 @@ it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;A node in a Cluster FailOver configuration failed.
 Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: clusterNodeFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -735,7 +735,7 @@ Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;The partner has taken over for a failed cluster node.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: clusterNodeTakenOver trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -760,7 +760,7 @@ Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/
 	<descr>
 &lt;p&gt;A cluster node has resumed operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: clusterNodeRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -787,7 +787,7 @@ Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/
 Volume or volumes which exceed the threshold: %parm[#1]%
 &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -814,7 +814,7 @@ Volume or volumes which exceed the threshold: %parm[#1]%
 Volume or volumes which exceed the threshold: %parm[#1]%
 &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeNearlyFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -839,7 +839,7 @@ Volume or volumes which exceed the threshold: %parm[#1]%
 	<descr>
 &lt;p&gt;All volumes are now under 95% full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -865,7 +865,7 @@ Volume or volumes which exceed the threshold: %parm[#1]%
 &lt;p&gt;System temperature is too high to continue
 operating.  The system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: overTempShutdown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -891,7 +891,7 @@ operating.  The system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;System temperature is too high and in the
 warning level.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: overTemp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -917,7 +917,7 @@ warning level.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;System temperature has returned to an
 acceptable value.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: overTempRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -944,7 +944,7 @@ acceptable value.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 to a problem with drive placement, fans, power,
 or temperature.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: shelfFault trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -969,7 +969,7 @@ or temperature.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A previously-reported shelf fault is now corrected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: shelfRepaired trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -996,7 +996,7 @@ or temperature.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 'nonRecoverable', indicating a problem so severe
 that the appliance is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: globalStatusNonRecoverable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -1022,7 +1022,7 @@ that the appliance is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The appliance's overall status changed to 'critical',
 indicating a problem that needs immediate attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: globalStatusCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -1048,7 +1048,7 @@ indicating a problem that needs immediate attention.&lt;/p&gt;&lt;table&gt;&lt;/
 &lt;p&gt;The appliance's overall status changed to 'nonCritical',
 indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: globalStatusNonCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1073,7 +1073,7 @@ indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The appliance's overall status returned to normal.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: globalStatusOk trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1098,7 +1098,7 @@ indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A user has exceeded their soft quota limit.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: softQuotaExceeded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1123,7 +1123,7 @@ indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A user is safely back under their soft quota limit.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: softQuotaNormal trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1149,7 +1149,7 @@ indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Unable to send autosupport.
 The trap includes a string describing the reason for the failure.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: autosupportSendError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1175,7 +1175,7 @@ The trap includes a string describing the reason for the failure.&lt;/p&gt;&lt;t
 &lt;p&gt;Autosupport may be configured incorrectly.
 The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: autosupportConfigurationError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1200,7 +1200,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;Autosupport was sent successfully.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: autosupportSent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1225,7 +1225,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;UPS: Input line power has failed and UPS is now on battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: upsLinePowerOff trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1250,7 +1250,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;UPS: Battery exhausted, system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: upsBatteryCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Critical</severity>
@@ -1275,7 +1275,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;UPS: Warning: Time left on battery is getting critical.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: upsBatteryWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1300,7 +1300,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 	<descr>
 &lt;p&gt;UPS:  Input line power has been restored and UPS is now off battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: upsLinePowerRetored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1326,7 +1326,7 @@ The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&
 &lt;p&gt;The application encountered an extremely urgent
 situation and requires an immediate response.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appEmergency trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1352,7 +1352,7 @@ situation and requires an immediate response.&lt;/p&gt;&lt;table&gt;&lt;/table&g
 &lt;p&gt;The application is in a condition that should 
 be corrected immediately.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appAlert trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1377,7 +1377,7 @@ be corrected immediately.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The application encountered a critical condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appCritical trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1402,7 +1402,7 @@ be corrected immediately.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The application encountered an error condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1428,7 +1428,7 @@ be corrected immediately.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The application is in a condition which is not an 
 error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appWarning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1453,7 +1453,7 @@ error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&
 	<descr>
 &lt;p&gt;The application is notifing of a certain event.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appNotice trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -1479,7 +1479,7 @@ error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&
 &lt;p&gt;The application's message is meant for informational 
 purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appInfo trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1504,7 +1504,7 @@ purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The application requires to be debugged.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: appTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1530,7 +1530,7 @@ purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The internal audit file has wrapped. You are currently losing event
 records.Warning the user&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: alfFilewrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1556,7 +1556,7 @@ records.Warning the user&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The internal audit log has been autosaved to an external evt file.
 Notifying the user.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: alfFileSaved trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1582,7 +1582,7 @@ Notifying the user.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The internal audit log file is nearly full. The file is going to 
 wrap. Notifying the user&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: alfFileNearlyFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1624,7 +1624,7 @@ An example of a complete message would be:
 Additional key=value items may, in the future, be appended
 to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: quotaExceeded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1666,7 +1666,7 @@ An example of a complete message would be:
 Additional key=value items may, in the future, be appended
 to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: quotaNormal trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -1691,7 +1691,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The directory has been filled to its limit&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: waflDirFull trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1716,7 +1716,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Memory ECC: number of new correctable ECC errors&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: eccSummary trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1741,7 +1741,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Memory ECC: High frequency of ECC errors&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: eccMasked trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1766,7 +1766,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Ftp daemon: service stopped&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: ftpdError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1791,7 +1791,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Ftp daemon: number of connections hits maximum number&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: ftpdMaxConnNotice trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1816,7 +1816,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Ftp daemon: number of connections nearly hits maximum number&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: ftpdMaxConnThresholdNotice trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1841,7 +1841,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SCSI Target: FCP Partner Path Misconfigured&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: scsitgtPartnerPathMisconfigured trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1866,7 +1866,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;SCSI Target: Throttle limit event notification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: scsitgtThrottleNotice trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1891,7 +1891,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Vif: The primary Interface on a Single mode vif has failed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vifPrimaryLinkFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1916,7 +1916,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Vif: All the links of the vif have failed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vifAllLinksFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -1941,7 +1941,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A vFiler has stopped.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vfStopped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -1966,7 +1966,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;A vFiler has started.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vfStarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -1991,7 +1991,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;VScan: Vscan scanner has detected a virus on the Filer&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vscanVirusDetectedError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2016,7 +2016,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;VScan: There has been a connection to the vscan servers dropped&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vscanDisConnection trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2041,7 +2041,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;VScan: There has been a change to the vscan configuration&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vscanConfigurationChange trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2066,7 +2066,7 @@ to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;VScan: The Vscan server has been upgraded&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: vscanServerUpgrade trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2095,7 +2095,7 @@ wafliron has failed. This trap is issued to alert operator
 that a volume is not accessible and wafliron must be started 
 to allow access to it.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeRestrictedByMirrorBigIo trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2121,7 +2121,7 @@ to allow access to it.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;This trap is issued when we unmount a volume due to an 
 inconsistency.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeInconsistentUmount trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2148,7 +2148,7 @@ inconsistency.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 The string sent with trap specifies name of affected volume 
 and its state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeStateChanged trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2174,7 +2174,7 @@ and its state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Volume is online now. The string sent with trap specifies 
 name of volume which is online now.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeOnline trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -2200,7 +2200,7 @@ name of volume which is online now.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Remote Management Controller card needs replacement. The trap 
 includes a string specifying the reason for replacement&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: rmcCardNeedsReplacement trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -2227,7 +2227,7 @@ includes a string specifying the reason for replacement&lt;/p&gt;&lt;table&gt;&l
 cable, or LAN cable or power supply cable. The trap includes 
 a string specifing the missing component.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: rmcCardMissingCables trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -2254,7 +2254,7 @@ a string specifing the missing component.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 string sent with trap specifies name of conflicting volume 
 which is being restricted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeRestrictedRootConflict trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2282,7 +2282,7 @@ larger than maximum allowed size. The string sent with trap
 specifies name of affected volume and its raw size, and 
 maximum allowed size.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeOfflineTooBig trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2309,7 +2309,7 @@ maximum allowed size.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 specifies name of affected volume and reason for being 
 taken offline.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeOffline trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2336,7 +2336,7 @@ taken offline.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 specifies name of affected volume and reason for being 
 restricted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeRestricted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -2363,7 +2363,7 @@ restricted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 run on this volume before it can be brought online. The string
 sent with trap specifies name of affected volume.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeDegradedDirty trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -2390,7 +2390,7 @@ sent with trap specifies name of affected volume.&lt;/p&gt;&lt;table&gt;&lt;/tab
 due to an error.  The string sent with trap specifies name of 
 affected volume and error description.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: volumeError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -2415,7 +2415,7 @@ affected volume and error description.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Synchronous SnapMirror failed and went into asynchronous mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: snapmirrorSyncFailed trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -2440,7 +2440,7 @@ affected volume and error description.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Synchronous SnapMirror went into synchronous mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Net-App Event: snapmirrorSyncOk trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>

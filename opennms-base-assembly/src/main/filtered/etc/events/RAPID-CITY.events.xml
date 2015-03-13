@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: RAPID-CITY -->
 <event>
 	<mask>
@@ -45,7 +45,7 @@ is about to transition into the down state.&lt;/p&gt;&lt;table&gt;
 		dormant(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcCardDown trap received 
 			rcCardIndex=%parm[#1]% 
 			rcCardAdminStatus=%parm[#2]% 
@@ -98,7 +98,7 @@ is about to transition into the up state.&lt;/p&gt;&lt;table&gt;
 		dormant(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcCardUp trap received 
 			rcCardIndex=%parm[#1]% 
 			rcCardAdminStatus=%parm[#2]% 
@@ -140,7 +140,7 @@ detected that an error condition has occured.&lt;/p&gt;&lt;table&gt;
 	rcErrorText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcErrorNotification trap received 
 			rcErrorLevel=%parm[#1]% 
 			rcErrorCode=%parm[#2]% 
@@ -176,7 +176,7 @@ the device to be the new root of the spanning
 	rcStgId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcStpNewRoot trap received 
 			rcStgId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -213,7 +213,7 @@ a topology change event.&lt;/p&gt;&lt;table&gt;
 	rcPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcStpTopologyChange trap received 
 			rcStgId=%parm[#1]% 
 			rcPortIndex=%parm[#2]%&lt;/p&gt;
@@ -257,7 +257,7 @@ about to transition into the down state.&lt;/p&gt;&lt;table&gt;
 		down(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcChasPowerSupplyDown trap received 
 			rcChasPowerSupplyId=%parm[#1]% 
 			rcChasPowerSupplyOperStatus=%parm[#2]%&lt;/p&gt;
@@ -300,7 +300,7 @@ transition into the down state.&lt;/p&gt;&lt;table&gt;
 		down(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcChasFanDown trap received 
 			rcChasFanId=%parm[#1]% 
 			rcChasFanOperStatus=%parm[#2]%&lt;/p&gt;
@@ -334,7 +334,7 @@ transitions on the specified port.&lt;/p&gt;&lt;table&gt;
 	rcPortIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rcLinkOscillation trap received 
 			rcPortIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>

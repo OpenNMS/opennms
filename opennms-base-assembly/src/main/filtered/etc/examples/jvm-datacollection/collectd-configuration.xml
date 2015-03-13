@@ -1,19 +1,17 @@
-<?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
-<collectd-configuration threads="50">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?><collectd-configuration threads="50">
   <package name="example1">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254"/>
     <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
-    <service name="SNMP" interval="300000" user-defined="false" status="on">
+    <service interval="300000" name="SNMP" status="on" user-defined="false">
       <parameter key="collection" value="default"/>
       <parameter key="thresholding-enabled" value="true"/>
     </service>
-    <service name="WMI" interval="300000" user-defined="false" status="off">
+    <service interval="300000" name="WMI" status="off" user-defined="false">
       <parameter key="collection" value="default"/>
       <parameter key="thresholding-enabled" value="true"/>
     </service>
-    <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+    <service interval="300000" name="OpenNMS-JVM" status="on" user-defined="false">
       <parameter key="port" value="18980"/>
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
@@ -25,7 +23,7 @@
       <parameter key="collection" value="OpenNMS-JVM"/>
       <parameter key="thresholding-enabled" value="true"/>
     </service>
-    <service name="Cassandra" interval="300000" user-defined="false" status="off">
+    <service interval="300000" name="Cassandra" status="off" user-defined="false">
       <parameter key="port" value="7199"/>
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
@@ -37,7 +35,7 @@
       <parameter key="collection" value="Cassandra"/>
       <parameter key="thresholding-enabled" value="true"/>
     </service>
-    <service name="ActiveMQ" interval="300000" user-defined="false" status="off">
+    <service interval="300000" name="ActiveMQ" status="off" user-defined="false">
       <parameter key="port" value="11099"/>
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
@@ -50,9 +48,9 @@
       <parameter key="thresholding-enabled" value="true"/>
     </service>
   </package>
-  <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
-  <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
-  <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-  <collector service="Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-  <collector service="ActiveMQ" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+  <collector class-name="org.opennms.netmgt.collectd.SnmpCollector" service="SNMP"/>
+  <collector class-name="org.opennms.netmgt.collectd.WmiCollector" service="WMI"/>
+  <collector class-name="org.opennms.netmgt.collectd.Jsr160Collector" service="OpenNMS-JVM"/>
+  <collector class-name="org.opennms.netmgt.collectd.Jsr160Collector" service="Cassandra"/>
+  <collector class-name="org.opennms.netmgt.collectd.Jsr160Collector" service="ActiveMQ"/>
 </collectd-configuration>

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
         <mask>
                 <maskelement>
@@ -41,7 +41,7 @@ of the alarm.&lt;/p&gt;&lt;table&gt;
         sipxecsAlarmDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         sipxecsAlarmNotification trap received 
                         sipxecsAlarmId=%parm[#1]% 
                         sipxecsAlarmSource=%parm[#2]% 

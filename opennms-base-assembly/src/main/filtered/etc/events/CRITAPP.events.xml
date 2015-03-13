@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: CRITAPP-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: CRITAPP-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -33,14 +32,14 @@ critAppIndex changed status to down (exited.)&lt;/p&gt;&lt;table&gt;
 	critAppLastExitStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			critAppDown trap received 
 			critAppName=%parm[#1]% 
 			critAppProcID=%parm[#2]% 
 			critAppLastExitStatus=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -71,13 +70,13 @@ critAppIndex changed status to up.&lt;/p&gt;&lt;table&gt;
 	critAppProcID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			critAppUp trap received 
 			critAppName=%parm[#1]% 
 			critAppProcID=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <event>
 	<mask>
@@ -99,11 +98,11 @@ critAppIndex changed status to up.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;This trap means that all applications are up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			critAppAllRunning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppNotAllRunning:%dpname%:%nodeid%"/>
+	<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppNotAllRunning:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -126,11 +125,10 @@ critAppIndex changed status to up.&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This trap means that at least one applications is
 down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			critAppNotAllRunning trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
-</events>
-<!-- End of auto generated data from MIB: CRITAPP-MIB -->
+</events><!-- End of auto generated data from MIB: CRITAPP-MIB -->

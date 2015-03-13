@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: RFC1382-MIB -->
 <event>
 	<mask>
@@ -30,12 +30,12 @@ trap.&lt;/p&gt;&lt;table&gt;
 	x25OperIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			x25Restart trap received 
 			x25OperIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -66,13 +66,13 @@ agent should send an x25Reset trap.&lt;/p&gt;&lt;table&gt;
 	x25CircuitChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			x25Reset trap received 
 			x25CircuitIndex=%parm[#1]% 
 			x25CircuitChannel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+	<alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: RFC1382-MIB -->
 </events>

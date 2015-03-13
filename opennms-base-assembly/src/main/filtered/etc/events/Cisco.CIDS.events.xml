@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: CISCO-CIDS-MIB -->
 <!-- Start of ciscoCidsAlert derived events -->
 <event>
@@ -70,7 +70,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsAlertVictimAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsAlert trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -85,7 +85,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsAlertVictimAddress=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%"/>
 </event>
 <event>
 	<mask>
@@ -156,7 +156,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsAlertVictimAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsAlert trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -171,7 +171,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsAlertVictimAddress=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%"/>
 </event>
 <event>
 	<mask>
@@ -242,7 +242,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsAlertVictimAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsAlert trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -257,7 +257,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsAlertVictimAddress=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%"/>
 </event>
 <event>
 	<mask>
@@ -328,7 +328,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsAlertVictimAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsAlert trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -343,7 +343,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsAlertVictimAddress=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%"/>
 </event>
 <event>
 	<mask>
@@ -410,7 +410,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsAlertVictimAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsAlert trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -425,7 +425,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsAlertVictimAddress=%parm[#11]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%:%parm[#7]%:%parm[#8]%:%parm[#10]%:%parm[#11]%"/>
 </event>
 
 <!-- End of ciscoCidsAlert derived events -->
@@ -499,7 +499,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -510,7 +510,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -580,7 +580,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -591,7 +591,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -661,7 +661,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -672,7 +672,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -742,7 +742,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -753,7 +753,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -823,7 +823,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -834,7 +834,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -904,7 +904,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -915,7 +915,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -985,7 +985,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -996,7 +996,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1066,7 +1066,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1077,7 +1077,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1147,7 +1147,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1158,7 +1158,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1228,7 +1228,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1239,7 +1239,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1309,7 +1309,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1320,7 +1320,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1390,7 +1390,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1401,7 +1401,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1471,7 +1471,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1482,7 +1482,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1552,7 +1552,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1563,7 +1563,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -1629,7 +1629,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 	cidsErrorMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ciscoCidsError trap received 
 			cidsGeneralEventId=%parm[#1]% 
 			cidsGeneralLocalTime=%parm[#2]% 
@@ -1640,7 +1640,7 @@ activity has been detected on a monitored network.&lt;/p&gt;&lt;table&gt;
 			cidsErrorMessage=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#6]%"/>
 </event>
 <!-- End of auto generated data from MIB: CISCO-CIDS-MIB -->
 </events>

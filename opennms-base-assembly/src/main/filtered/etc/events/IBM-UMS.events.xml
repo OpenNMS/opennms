@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: UMSEVENT-MIB -->
 <event>
 	<mask>
@@ -44,7 +44,7 @@
 	iBMPSGGenericEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGGenericEvent trap received 
 			iBMPSGGenericEventIdentifier=%parm[#1]% 
 			iBMPSGGenericEventSourceObjectPath=%parm[#2]% 
@@ -99,7 +99,7 @@
 	iBMPSGTemperatureEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGTemperatureEvent trap received 
 			iBMPSGTemperatureEventIdentifier=%parm[#1]% 
 			iBMPSGTemperatureEventSourceObjectPath=%parm[#2]% 
@@ -154,7 +154,7 @@
 	iBMPSGVoltageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGVoltageEvent trap received 
 			iBMPSGVoltageEventIdentifier=%parm[#1]% 
 			iBMPSGVoltageEventSourceObjectPath=%parm[#2]% 
@@ -209,7 +209,7 @@
 	iBMPSGChassisEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGChassisEvent trap received 
 			iBMPSGChassisEventIdentifier=%parm[#1]% 
 			iBMPSGChassisEventSourceObjectPath=%parm[#2]% 
@@ -264,7 +264,7 @@
 	iBMPSGFanEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGFanEvent trap received 
 			iBMPSGFanEventIdentifier=%parm[#1]% 
 			iBMPSGFanEventSourceObjectPath=%parm[#2]% 
@@ -319,7 +319,7 @@
 	iBMPSGProcessorEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGProcessorEvent trap received 
 			iBMPSGProcessorEventIdentifier=%parm[#1]% 
 			iBMPSGProcessorEventSourceObjectPath=%parm[#2]% 
@@ -374,7 +374,7 @@
 	iBMPSGStorageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGStorageEvent trap received 
 			iBMPSGStorageEventIdentifier=%parm[#1]% 
 			iBMPSGStorageEventSourceObjectPath=%parm[#2]% 
@@ -429,7 +429,7 @@
 	iBMPSGAssetEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGAssetEvent trap received 
 			iBMPSGAssetEventIdentifier=%parm[#1]% 
 			iBMPSGAssetEventSourceObjectPath=%parm[#2]% 
@@ -484,7 +484,7 @@
 	iBMPSGSMARTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGSMARTEvent trap received 
 			iBMPSGSMARTEventIdentifier=%parm[#1]% 
 			iBMPSGSMARTEventSourceObjectPath=%parm[#2]% 
@@ -539,7 +539,7 @@
 	iBMPSGPOSTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGPOSTEvent trap received 
 			iBMPSGPOSTEventIdentifier=%parm[#1]% 
 			iBMPSGPOSTEventSourceObjectPath=%parm[#2]% 
@@ -594,7 +594,7 @@
 	iBMPSGConfigurationChangeEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGConfigurationChangeEvent trap received 
 			iBMPSGConfigurationChangeEventIdentifier=%parm[#1]% 
 			iBMPSGConfigurationChangeEventSourceObjectPath=%parm[#2]% 
@@ -649,7 +649,7 @@
 	iBMPSGLANLeashEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGLANLeashEvent trap received 
 			iBMPSGLANLeashEventIdentifier=%parm[#1]% 
 			iBMPSGLANLeashEventSourceObjectPath=%parm[#2]% 
@@ -704,7 +704,7 @@
 	iBMPSGLeaseExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGLeaseExpirationEvent trap received 
 			iBMPSGLeaseExpirationEventIdentifier=%parm[#1]% 
 			iBMPSGLeaseExpirationEventSourceObjectPath=%parm[#2]% 
@@ -759,7 +759,7 @@
 	iBMPSGWarrantyExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGWarrantyExpirationEvent trap received 
 			iBMPSGWarrantyExpirationEventIdentifier=%parm[#1]% 
 			iBMPSGWarrantyExpirationEventSourceObjectPath=%parm[#2]% 
@@ -814,7 +814,7 @@
 	iBMPSGRedundantNetworkAdapterEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGRedundantNetworkAdapterEvent trap received 
 			iBMPSGRedundantNetworkAdapterEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterEventSourceObjectPath=%parm[#2]% 
@@ -869,7 +869,7 @@
 	iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGRedundantNetworkAdapterSwitchoverEvent trap received 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath=%parm[#2]% 
@@ -924,7 +924,7 @@
 	iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGRedundantNetworkAdapterSwitchbackEvent trap received 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier=%parm[#1]% 
 			iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath=%parm[#2]% 
@@ -979,7 +979,7 @@
 	iBMPSGProcessorPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGProcessorPFEvent trap received 
 			iBMPSGProcessorPFEventIdentifier=%parm[#1]% 
 			iBMPSGProcessorPFEventSourceObjectPath=%parm[#2]% 
@@ -1034,7 +1034,7 @@
 	iBMPSGMemoryPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGMemoryPFEvent trap received 
 			iBMPSGMemoryPFEventIdentifier=%parm[#1]% 
 			iBMPSGMemoryPFEventSourceObjectPath=%parm[#2]% 
@@ -1089,7 +1089,7 @@
 	iBMPSGPFAEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGPFAEvent trap received 
 			iBMPSGPFAEventIdentifier=%parm[#1]% 
 			iBMPSGPFAEventSourceObjectPath=%parm[#2]% 
@@ -1144,7 +1144,7 @@
 	iBMPSGPowerSupplyEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGPowerSupplyEvent trap received 
 			iBMPSGPowerSupplyEventIdentifier=%parm[#1]% 
 			iBMPSGPowerSupplyEventSourceObjectPath=%parm[#2]% 
@@ -1199,7 +1199,7 @@
 	iBMPSGErrorLogEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGErrorLogEvent trap received 
 			iBMPSGErrorLogEventIdentifier=%parm[#1]% 
 			iBMPSGErrorLogEventSourceObjectPath=%parm[#2]% 
@@ -1254,7 +1254,7 @@
 	iBMPSGRemoteLoginEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			iBMPSGRemoteLoginEvent trap received 
 			iBMPSGRemoteLoginEventIdentifier=%parm[#1]% 
 			iBMPSGRemoteLoginEventSourceObjectPath=%parm[#2]% 

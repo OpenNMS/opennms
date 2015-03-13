@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Aedilis Traps -->
 <event>
  <mask>
@@ -21,7 +21,7 @@
  &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;KSM-1 coldStart&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;KSM-1 coldStart&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <event>
@@ -55,7 +55,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <event>
@@ -89,7 +89,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <event>
@@ -123,7 +123,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <event>
@@ -157,7 +157,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 <event>
@@ -191,7 +191,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Critical</severity>
 </event>
 <event>
@@ -225,7 +225,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <event>
@@ -259,7 +259,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <event>
@@ -293,7 +293,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 <event>
@@ -327,7 +327,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 <event>
@@ -361,7 +361,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
  <severity>Critical</severity>
 </event>
 <!-- End of Aedilis Traps -->

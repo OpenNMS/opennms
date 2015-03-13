@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Custom Net-SNMP Distributed Management Events -->
 <event>
         <mask>
@@ -26,12 +26,12 @@
 threshold. The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A dskTable threshold has been exceeded 
                         %parm[#6]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -59,12 +59,12 @@ threshold. The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
 The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A procTable alert has fired for process 
                         %parm[#6]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -92,12 +92,12 @@ The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A extTable alert has fired for script 
                         %parm[#6]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -122,15 +122,15 @@ The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
         <event-label>NET-SNMP: A logMatchTable Alert has been triggered.</event-label>
         <descr>
 &lt;p&gt;The Net-SNMP agent has detected an error with the configured logMatchTable entry %parm[#6]%.
-The log file %parm[#7]% contains entries matching the pattern &quot;%parm[#8]%&quot;.
+The log file %parm[#7]% contains entries matching the pattern "%parm[#8]%".
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A logMatchTable alert has fired for entry %parm[#6]%
                         in log file %parm[#7]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="3" auto-clean="false" />
+        <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -158,12 +158,12 @@ The log file %parm[#7]% contains entries matching the pattern &quot;%parm[#8]%&q
 The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A procTable rising alert has generated for process 
                         %parm[#6]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -190,15 +190,12 @@ The error message is &lt;strong&gt;%parm[#7]%&lt;/strong&gt;.
 &lt;p&gt;The Net-SNMP agent has detected that errors with the %parm[#6]% process are now resolved.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A procTable falling alert has generated for process 
                         %parm[#6]%&lt;/p&gt;
                 </logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" 
-                    alarm-type="2" 
-                    clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" 
-                    auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -227,12 +224,12 @@ The filesystem is %parm[#7]% percent full.
 The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A dskTable rising alert has generated for filesystem
                         %parm[#6]% (%parm[#7]% percent full)&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="1" auto-clean="false" />
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 <event>
         <mask>
@@ -260,11 +257,11 @@ The error message is &lt;strong&gt;%parm[#8]%&lt;/strong&gt;.
 The filesystem is now %parm[#7]% percent full.
 &lt;/p&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Net-SNMP Event: A dskTable falling alert has generated for filesystem %parm[#6]%. It is now %parm[#7]% percent full&lt;/p&gt;
                 </logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" auto-clean="false" />
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%"/>
 </event>
 
 <!-- Start of MIB: DISMAN-EVENT-MIB -->
@@ -310,7 +307,7 @@ instances has fired, for triggers with mteTriggerType
         mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Cisco Event: mteTriggerFired trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
@@ -360,7 +357,7 @@ with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
         mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Cisco Event: mteTriggerRising trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
@@ -411,7 +408,7 @@ with mteTriggerType 'threshold'.&lt;/p&gt;&lt;table&gt;
         mteHotValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Cisco Event: mteTriggerFalling trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
@@ -493,7 +490,7 @@ be found otherwise.&lt;/p&gt;&lt;table&gt;
                 inconsistentName(18)
         &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Cisco Event: mteTriggerFailure trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%
@@ -576,7 +573,7 @@ be found otherwise.&lt;/p&gt;&lt;table&gt;
                 inconsistentName(18)
         &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
         </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+                <logmsg dest="logndisplay">&lt;p&gt;
                         Cisco Event: mteEventSetFailure trap received
                         mteHotTrigger=%parm[#1]%
                         mteHotTargetName=%parm[#2]%

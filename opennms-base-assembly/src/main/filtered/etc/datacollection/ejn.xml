@@ -1,103 +1,102 @@
-<?xml version="1.0"?>
-<datacollection-group name="ejn">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="ejn">
 
   <!-- Ericsson Juniper Networks GGSN Resource Types -->
-  <resourceType name="ejnGgsnApnIndex" label="GPRS Access Point Name" resourceLabel="GPRS APN: ${ApnName}">
+  <resourceType label="GPRS Access Point Name" name="ejnGgsnApnIndex" resourceLabel="GPRS APN: ${ApnName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-      <parameter key="sibling-column-name" value="ApnName" />
-      <parameter key="replace-all" value="s/^-//" />
-      <parameter key="replace-all" value="s/\s//" />
-      <parameter key="replace-all" value="s/:\\.*//" />
+      <parameter key="sibling-column-name" value="ApnName"/>
+      <parameter key="replace-all" value="s/^-//"/>
+      <parameter key="replace-all" value="s/\s//"/>
+      <parameter key="replace-all" value="s/:\\.*//"/>
     </storageStrategy>
   </resourceType>
 
-  <resourceType name="ejnGgsnGtpcIndex" label="GGSN Control PICs" resourceLabel="CPIC: ${ggsnGtpcAddr} (${ggsnGtpcStatus})">
+  <resourceType label="GGSN Control PICs" name="ejnGgsnGtpcIndex" resourceLabel="CPIC: ${ggsnGtpcAddr} (${ggsnGtpcStatus})">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-      <parameter key="sibling-column-name" value="ggsnGtpcAddr" />
+      <parameter key="sibling-column-name" value="ggsnGtpcAddr"/>
     </storageStrategy>
   </resourceType>
 
-  <resourceType name="ejnGgsnGtpuIndex" label="GGSN User PICs" resourceLabel="UPIC: ${ggsnGtpuAddr} (${ggsnGtpuStatus})">
+  <resourceType label="GGSN User PICs" name="ejnGgsnGtpuIndex" resourceLabel="UPIC: ${ggsnGtpuAddr} (${ggsnGtpuStatus})">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-      <parameter key="sibling-column-name" value="ggsnGtpuAddr" />
+      <parameter key="sibling-column-name" value="ggsnGtpuAddr"/>
     </storageStrategy>
   </resourceType>
 
-      <group name="ejn-ggsn" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.1" instance="0" alias="ggsnPdpCreateAtmpt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.2" instance="0" alias="ggsnPdpDeleteAtmpt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.3" instance="0" alias="ggsnPdpSlfDltAtmpt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.4.1" instance="0" alias="ggsnPdpActivates" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.4.2" instance="0" alias="ggsnPdpDeactivates" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.2" instance="0" alias="ggsnPdpsTotalActive" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.1" instance="0" alias="ggsnUplnkPkts" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.2" instance="0" alias="ggsnUplnkBytes" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.3" instance="0" alias="ggsnUplnkDrp" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.4" instance="0" alias="ggsnUplnkDrpByt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.1" instance="0" alias="ggsnDnlnkPkts" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.2" instance="0" alias="ggsnDnlnkBytes" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.3" instance="0" alias="ggsnDnlnkDrp" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.4" instance="0" alias="ggsnDnlnkDrpByt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.20" instance="0" alias="ggsnSubscriberNo" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.22" instance="0" alias="ggsnNbrOfTftFltrs" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.25" instance="0" alias="ggsnControlLoad" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.26" instance="0" alias="ggsnPayloadLoad" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.32" instance="0" alias="ggsnL2tpActTnls" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.33" instance="0" alias="ggsnL2tpActSess" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.36" instance="0" alias="ggsnChgCdrsSucc" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.37" instance="0" alias="ggsnChgCdrsFail" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.43" instance="0" alias="ggsnPdpsTClassConv" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.44" instance="0" alias="ggsnPdpsTClassStrm" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.45" instance="0" alias="ggsnPdpsTClassIntr" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.46" instance="0" alias="ggsnPdpsTClassBack" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.47" instance="0" alias="ggsnRadAuthFail" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.48" instance="0" alias="ggsnRadAcctFail" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.50" instance="0" alias="ggsn3gdtActContxt" type="gauge" />
+      <group ifType="ignore" name="ejn-ggsn">
+        <mibObj alias="ggsnPdpCreateAtmpt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.1" type="counter"/>
+        <mibObj alias="ggsnPdpDeleteAtmpt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.2" type="counter"/>
+        <mibObj alias="ggsnPdpSlfDltAtmpt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.3.3" type="counter"/>
+        <mibObj alias="ggsnPdpActivates" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.4.1" type="counter"/>
+        <mibObj alias="ggsnPdpDeactivates" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.4.2" type="counter"/>
+        <mibObj alias="ggsnPdpsTotalActive" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.2" type="counter"/>
+        <mibObj alias="ggsnUplnkPkts" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.1" type="counter"/>
+        <mibObj alias="ggsnUplnkBytes" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.2" type="counter"/>
+        <mibObj alias="ggsnUplnkDrp" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.3" type="counter"/>
+        <mibObj alias="ggsnUplnkDrpByt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.11.4" type="counter"/>
+        <mibObj alias="ggsnDnlnkPkts" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.1" type="counter"/>
+        <mibObj alias="ggsnDnlnkBytes" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.2" type="counter"/>
+        <mibObj alias="ggsnDnlnkDrp" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.3" type="counter"/>
+        <mibObj alias="ggsnDnlnkDrpByt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.12.4" type="counter"/>
+        <mibObj alias="ggsnSubscriberNo" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.20" type="gauge"/>
+        <mibObj alias="ggsnNbrOfTftFltrs" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.22" type="gauge"/>
+        <mibObj alias="ggsnControlLoad" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.25" type="gauge"/>
+        <mibObj alias="ggsnPayloadLoad" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.26" type="gauge"/>
+        <mibObj alias="ggsnL2tpActTnls" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.32" type="gauge"/>
+        <mibObj alias="ggsnL2tpActSess" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.33" type="gauge"/>
+        <mibObj alias="ggsnChgCdrsSucc" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.36" type="counter"/>
+        <mibObj alias="ggsnChgCdrsFail" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.37" type="counter"/>
+        <mibObj alias="ggsnPdpsTClassConv" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.43" type="gauge"/>
+        <mibObj alias="ggsnPdpsTClassStrm" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.44" type="gauge"/>
+        <mibObj alias="ggsnPdpsTClassIntr" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.45" type="gauge"/>
+        <mibObj alias="ggsnPdpsTClassBack" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.46" type="gauge"/>
+        <mibObj alias="ggsnRadAuthFail" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.47" type="counter"/>
+        <mibObj alias="ggsnRadAcctFail" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.48" type="counter"/>
+        <mibObj alias="ggsn3gdtActContxt" instance="0" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.3.50" type="gauge"/>
       </group>
 
-      <group name="ejn-ggsn-apn" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.2" instance="ejnGgsnApnIndex" alias="ApnName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.3" instance="ejnGgsnApnIndex" alias="ApnActivePdpContext" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.13" instance="ejnGgsnApnIndex" alias="ApnUplinkBytes" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.16" instance="ejnGgsnApnIndex" alias="ApnDownlinkBytes" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.58" instance="ejnGgsnApnIndex" alias="ApnRadAcctFail" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.59" instance="ejnGgsnApnIndex" alias="ApnRadAuthFail" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.63" instance="ejnGgsnApnIndex" alias="ApnFreePoolIps" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.64" instance="ejnGgsnApnIndex" alias="ApnQuarPoolIps" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.3" instance="ejnGgsnApnIndex" alias="ApnFbcCcasStrtReq" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.4" instance="ejnGgsnApnIndex" alias="ApnFbcCcasStrtFail" type="counter" />
+      <group ifType="all" name="ejn-ggsn-apn">
+        <mibObj alias="ApnName" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.2" type="string"/>
+        <mibObj alias="ApnActivePdpContext" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.3" type="gauge"/>
+        <mibObj alias="ApnUplinkBytes" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.13" type="counter"/>
+        <mibObj alias="ApnDownlinkBytes" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.16" type="counter"/>
+        <mibObj alias="ApnRadAcctFail" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.58" type="counter"/>
+        <mibObj alias="ApnRadAuthFail" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.59" type="counter"/>
+        <mibObj alias="ApnFreePoolIps" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.63" type="integer"/>
+        <mibObj alias="ApnQuarPoolIps" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.1.5.1.64" type="integer"/>
+        <mibObj alias="ApnFbcCcasStrtReq" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.3" type="counter"/>
+        <mibObj alias="ApnFbcCcasStrtFail" instance="ejnGgsnApnIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.7.1.11.1.4" type="counter"/>
       </group>
 
-      <group name="ejn-ggsn-gtpc" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.1" instance="ejnGgsnGtpcIndex" alias="ggsnGtpc" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.3" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcAddr" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.4" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcPdpMax" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.5" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcRole" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.6" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcStatus" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.7" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcCtlPktDrop" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.8" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcPdp" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.9" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcMem" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.10" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcMemUsed" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.11" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcCpu" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.14" instance="ejnGgsnGtpcIndex" alias="ggsnGtpcCtrlLoad" type="gauge" />
+      <group ifType="all" name="ejn-ggsn-gtpc">
+        <mibObj alias="ggsnGtpc" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.1" type="integer"/>
+        <mibObj alias="ggsnGtpcAddr" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.3" type="string"/>
+        <mibObj alias="ggsnGtpcPdpMax" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.4" type="integer"/>
+        <mibObj alias="ggsnGtpcRole" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.5" type="integer"/>
+        <mibObj alias="ggsnGtpcStatus" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.6" type="string"/>
+        <mibObj alias="ggsnGtpcCtlPktDrop" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.7" type="counter"/>
+        <mibObj alias="ggsnGtpcPdp" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.8" type="gauge"/>
+        <mibObj alias="ggsnGtpcMem" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.9" type="integer"/>
+        <mibObj alias="ggsnGtpcMemUsed" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.10" type="integer"/>
+        <mibObj alias="ggsnGtpcCpu" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.11" type="gauge"/>
+        <mibObj alias="ggsnGtpcCtrlLoad" instance="ejnGgsnGtpcIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.2.1.1.14" type="gauge"/>
       </group>
 
-      <group name="ejn-ggsn-gtpu" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.1" instance="ejnGgsnGtpuIndex" alias="ggsnGtpu" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.3" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuAddr" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.4" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuPdpMax" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.5" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuRole" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.6" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuStatus" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.7" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuUplnkDrp" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.8" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuDnlnkDrp" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.9" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuPdp" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.10" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuMem" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.11" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuMemUsed" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.12" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuCpu" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.13" instance="ejnGgsnGtpuIndex" alias="ggsnGtpuPloadLoad" type="gauge" />
+      <group ifType="all" name="ejn-ggsn-gtpu">
+        <mibObj alias="ggsnGtpu" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.1" type="integer"/>
+        <mibObj alias="ggsnGtpuAddr" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.3" type="string"/>
+        <mibObj alias="ggsnGtpuPdpMax" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.4" type="integer"/>
+        <mibObj alias="ggsnGtpuRole" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.5" type="integer"/>
+        <mibObj alias="ggsnGtpuStatus" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.6" type="string"/>
+        <mibObj alias="ggsnGtpuUplnkDrp" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.7" type="counter"/>
+        <mibObj alias="ggsnGtpuDnlnkDrp" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.8" type="counter"/>
+        <mibObj alias="ggsnGtpuPdp" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.9" type="gauge"/>
+        <mibObj alias="ggsnGtpuMem" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.10" type="integer"/>
+        <mibObj alias="ggsnGtpuMemUsed" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.11" type="integer"/>
+        <mibObj alias="ggsnGtpuCpu" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.12" type="gauge"/>
+        <mibObj alias="ggsnGtpuPloadLoad" instance="ejnGgsnGtpuIndex" oid=".1.3.6.1.4.1.10923.1.1.1.1.6.1.1.13" type="gauge"/>
       </group>
 
 

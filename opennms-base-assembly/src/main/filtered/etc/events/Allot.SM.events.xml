@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ALLOT-SMP-SNMP-MIB -->
 <event>
 	<mask>
@@ -69,7 +69,7 @@
 	%parm[#5]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alSMPProvisionErrTrap trap received 
 			alIniatingProcess=%parm[#1]% 
 			alProvisioningType=%parm[#2]% 
@@ -132,7 +132,7 @@
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alSMPMultiFailTrap trap received 
 			alIniatingProcess=%parm[#1]% 
 			alFailCause=%parm[#2]%</p>
@@ -188,7 +188,7 @@
 	</p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alSmpHighAvailabilityTrap trap received 
 			alFailCause=%parm[#1]% 
 			alHighAvailabilityStatus=%parm[#2]%</p>
@@ -247,7 +247,7 @@
 	%parm[#4]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			alSMPSystemTrap trap received 
 			alIniatingProcess=%parm[#1]% 
 			alSysSubject=%parm[#2]% 

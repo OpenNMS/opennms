@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: VMWARE-OBSOLETE-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: VMWARE-OBSOLETE-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -31,7 +30,7 @@ or a powered off state.</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmPoweredOn trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]%</p>
@@ -68,7 +67,7 @@ or a powered off state.</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmPoweredOff trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]%</p>
@@ -105,7 +104,7 @@ or a powered off state.</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmHBLost trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]%</p>
@@ -142,7 +141,7 @@ or a powered off state.</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmHBDetected trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]%</p>
@@ -179,7 +178,7 @@ or a powered off state.</p><table>
 	%parm[#2]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vmSuspended trap received 
 			vmwVmID=%parm[#1]% 
 			vmwVmConfigFilePath=%parm[#2]%</p>
@@ -232,7 +231,7 @@ or a powered off state.</p><table>
 	%parm[#6]%;</td><td><p></p></td></tr></table>
 ]]>
 	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+		<logmsg dest="logndisplay"><![CDATA[<p>
 			vpxdTrap trap received 
 			vpxdTrapType=%parm[#1]% 
 			vpxdHostName=%parm[#2]% 
@@ -243,5 +242,4 @@ or a powered off state.</p><table>
 ]]>		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: VMWARE-OBSOLETE-MIB -->
+</events><!-- End of auto generated data from MIB: VMWARE-OBSOLETE-MIB -->

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of mib2events auto-generated data for MIB: Brcm-BASPTrap-MIB -->
   <event>
     <mask>
@@ -66,5 +66,4 @@ event has occured&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="adapterAddedOrRemoved" varbindvalue="4"/>
     </varbindsdecode>
   </event>
-</events>
-<!-- End of mib2events auto-generated data for MIB: Brcm-BASPTrap-MIB -->
+</events><!-- End of mib2events auto-generated data for MIB: Brcm-BASPTrap-MIB -->

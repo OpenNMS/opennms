@@ -1,24 +1,23 @@
-<?xml version="1.0"?>
-<datacollection-group name="Equallogic">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="Equallogic">
 
     <!-- Equallogic Instances -->
-    <resourceType name="EqVol" label="Equallogic Volume ID" resourceLabel="${EqVolName}">
+    <resourceType label="Equallogic Volume ID" name="EqVol" resourceLabel="${EqVolName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- "Equallogic"-->
-      <group name="equallogic-volumes" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.14" instance="EqVol" alias="EqVolName"     type="string" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.3" instance="EqVol" alias="EqVolTx"       type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.4" instance="EqVol" alias="EqVolRx"       type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.6" instance="EqVol" alias="EqVolReLat"    type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.7" instance="EqVol" alias="EqVolWrLat"    type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.8" instance="EqVol" alias="EqVolReOp"     type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.9" instance="EqVol" alias="EqVolWrOp"     type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.8"  instance="EqVol" alias="EqVolSize"     type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.27" instance="EqVol" alias="EqVolThnResPc" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.7.1.13" instance="EqVol" alias="EqVolAlloc"    type="integer" />
+      <group ifType="all" name="equallogic-volumes">
+        <mibObj alias="EqVolName" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.1.1.14" type="string"/>
+        <mibObj alias="EqVolTx" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.3" type="counter"/>
+        <mibObj alias="EqVolRx" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.4" type="counter"/>
+        <mibObj alias="EqVolReLat" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.6" type="counter"/>
+        <mibObj alias="EqVolWrLat" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.7" type="counter"/>
+        <mibObj alias="EqVolReOp" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.8" type="counter"/>
+        <mibObj alias="EqVolWrOp" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.34.1.9" type="counter"/>
+        <mibObj alias="EqVolSize" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.1.1.8" type="integer"/>
+        <mibObj alias="EqVolThnResPc" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.1.1.27" type="integer"/>
+        <mibObj alias="EqVolAlloc" instance="EqVol" oid=".1.3.6.1.4.1.12740.5.1.7.7.1.13" type="integer"/>
       </group>
 
       <systemDef name="Equallogic SANs">

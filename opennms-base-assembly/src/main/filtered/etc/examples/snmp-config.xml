@@ -1,14 +1,11 @@
-<?xml version="1.0"?>
-<snmp-config port="161" retry="3" timeout="800"
-             read-community="public" 
-	         version="v1">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><snmp-config port="161" read-community="public" retry="3" timeout="800" version="v1">
 
     <!-- Sample for configuring an SNMP Proxy:
          Note: the the port is associated with
          the proxy-host, if configured, otherwise with the entity's address
          if proxy-host is not set, as always.
      -->
-    <definition version="v2c" proxy-host="192.168.0.3" port="1161" >
+    <definition port="1161" proxy-host="192.168.0.3" version="v2c">
       <specific>10.0.0.3</specific>
     </definition>
     
@@ -25,7 +22,7 @@
 	  - Note: setting priv attributes without auth attributes is not allowed
 	-->
   
-	<definition version="v3" security-name="opennmsUser" auth-passphrase="0p3nNMSv3" auth-protocol="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES">
+	<definition auth-passphrase="0p3nNMSv3" auth-protocol="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES" security-name="opennmsUser" version="v3">
 		<specific>192.168.0.102</specific>
 	</definition>
 	
@@ -34,7 +31,7 @@
 	  - An '*' is supported only for matching the entire octet
 	-->
 
-	<definition version="v2c" read-community="abc" >
+	<definition read-community="abc" version="v2c">
 		<ip-match>77.5-12,15.1-255.255</ip-match>
 		<ip-match>10.*.*.*</ip-match>
 	</definition>
@@ -53,4 +50,3 @@
 
 
 </snmp-config>
-

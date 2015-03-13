@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!--
 Cisco SNMP V2 Cisco AS5300 PRI Status Events for OpenNMS
 Created 09-01-2004
@@ -44,7 +44,7 @@ mikew@isphone.net
 		l2Active(3)Layer 2 Up
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Cisco Event: demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 
 			Line Status Down
@@ -90,7 +90,7 @@ mikew@isphone.net
 		l2Active(3)Layer 2 Up
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 
 			Layer 1 UP
@@ -136,7 +136,7 @@ mikew@isphone.net
 		l2Active(3)Layer 2 Up
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Cisco Event: demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 
 			Layer 2 UP-PRI Up

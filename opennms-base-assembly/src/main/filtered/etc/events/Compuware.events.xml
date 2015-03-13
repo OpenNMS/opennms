@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: SERVERVANTAGE-TRAP-MIB -->
   <event>
     <mask>
@@ -60,5 +60,4 @@
 	</logmsg>
     <severity>Indeterminate</severity>
   </event>
-</events>
-<!-- End of auto generated data from MIB: SERVERVANTAGE-TRAP-MIB -->
+</events><!-- End of auto generated data from MIB: SERVERVANTAGE-TRAP-MIB -->

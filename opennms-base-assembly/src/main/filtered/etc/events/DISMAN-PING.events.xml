@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DISMAN-PING-MIB -->
 <event>
 	<mask>
@@ -91,7 +91,7 @@ before this notification can be generated.&lt;/p&gt;&lt;table&gt;
 	pingResultsLastGoodProbe&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pingProbeFailed trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -198,7 +198,7 @@ consider the test as failed.&lt;/p&gt;&lt;table&gt;
 	pingResultsLastGoodProbe&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pingTestFailed trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 
@@ -302,7 +302,7 @@ testCompletion(4).&lt;/p&gt;&lt;table&gt;
 	pingResultsLastGoodProbe&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pingTestCompleted trap received 
 			pingCtlTargetAddressType=%parm[#1]% 
 			pingCtlTargetAddress=%parm[#2]% 

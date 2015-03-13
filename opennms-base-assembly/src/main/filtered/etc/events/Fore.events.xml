@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Fore Events -->
 <!-- Start of auto generated data from MIB: Fore-Switch-MIB -->
 <event>
@@ -28,7 +28,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Link Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Link Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -59,7 +59,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Link Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Link Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -90,7 +90,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Host Link Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Host Link Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -121,7 +121,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Host Link Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Host Link Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -153,7 +153,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Network Module Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Network Module Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -185,7 +185,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Network Module Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Network Module Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -216,7 +216,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Power Supply Input Voltage Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Power Supply Input Voltage Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -245,7 +245,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Power Supply Input Voltage Restored.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Power Supply Input Voltage Restored.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -275,7 +275,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Power Supply Output Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Power Supply Output Down.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -304,7 +304,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Power Supply Output Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Power Supply Output Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -332,7 +332,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Fan Bank Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Fan Bank Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -360,7 +360,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Fan Bank Restored.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Fan Bank Restored.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -392,7 +392,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Link Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Link Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -422,7 +422,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Link Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Link Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -454,7 +454,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Links SPANS Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Links SPANS Down.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -486,7 +486,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Link SPANS Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Link SPANS Up.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -517,7 +517,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Device Over Temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Device Over Temperature.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -548,7 +548,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Device Temperature now Normal.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Device Temperature now Normal.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -577,7 +577,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Fabric Over Temperature.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Fabric Over Temperature.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -606,7 +606,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Fabric Temperature Now Normal.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Fabric Temperature Now Normal.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -645,7 +645,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Sonet Loss of Service.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Sonet Loss of Service.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -679,7 +679,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Sonet Loss of Service Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Sonet Loss of Service Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -716,7 +716,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET Errored C2 Path Label Byte.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET Errored C2 Path Label Byte.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -751,7 +751,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET Errored C2 Path Label Byte Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET Errored C2 Path Label Byte Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -786,7 +786,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET Line Level Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET Line Level Alarm.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -820,7 +820,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET Line Level Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET Line Level Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -854,7 +854,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -888,7 +888,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -922,7 +922,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -956,7 +956,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -989,7 +989,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Frame Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Frame Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1023,7 +1023,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Frame Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Frame Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1057,7 +1057,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1091,7 +1091,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1125,7 +1125,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1159,7 +1159,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1193,7 +1193,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1227,7 +1227,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Loss of Frame Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1261,7 +1261,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1295,7 +1295,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1329,7 +1329,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1363,7 +1363,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1397,7 +1397,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1431,7 +1431,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1465,7 +1465,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOF Alarm on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOF Alarm on DS1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1499,7 +1499,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;LOF Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;LOF Alarm on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1533,7 +1533,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: FERF Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: FERF Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1567,7 +1567,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: FERF Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: FERF Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1601,7 +1601,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1635,7 +1635,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1669,7 +1669,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: OOF Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: OOF Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1703,7 +1703,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: OOF Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: OOF Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1739,7 +1739,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LCD Alarm on E3.&lt;/p&gt;</logmsg>
+<logmsg dest="logndisplay">&lt;p&gt;Fore Event: LCD Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1775,7 +1775,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LCD Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LCD Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1809,7 +1809,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1843,7 +1843,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1877,7 +1877,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1911,7 +1911,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -1945,7 +1945,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOF Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOF Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1979,7 +1979,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOF Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOF Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2013,7 +2013,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2047,7 +2047,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP Yellow Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP Yellow Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2081,7 +2081,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP LOF Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP LOF Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2115,7 +2115,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP LOF Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP LOF Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2149,7 +2149,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2183,7 +2183,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2217,7 +2217,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on E1.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2251,7 +2251,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2285,7 +2285,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2319,7 +2319,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2353,7 +2353,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2387,7 +2387,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2421,7 +2421,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP LOF Alarm on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP LOF Alarm on E3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2455,7 +2455,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PLCP LOF Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PLCP LOF Alarm on E3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2489,7 +2489,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2523,7 +2523,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Yellow Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Yellow Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2557,7 +2557,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2591,7 +2591,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2625,7 +2625,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2659,7 +2659,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2693,7 +2693,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOF Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOF Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2727,7 +2727,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOF Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOF Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2761,7 +2761,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on DS3.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2795,7 +2795,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2832,7 +2832,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LOF Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LOF Alarm.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -2869,7 +2869,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LOF Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LOF Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2905,7 +2905,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LRDI Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LRDI Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2941,7 +2941,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LRDI Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LRDI Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -2977,7 +2977,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET PAIS Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET PAIS Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3013,7 +3013,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET PAIS Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET PAIS Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3049,7 +3049,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LOP Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LOP Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3085,7 +3085,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LOP Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LOP Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3121,7 +3121,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET UNEQ Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET UNEQ Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3157,7 +3157,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET UNEQ Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET UNEQ Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3193,7 +3193,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET PRDI Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET PRDI Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3229,7 +3229,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET PRDI Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET PRDI Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3265,7 +3265,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LCD Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LCD Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3301,7 +3301,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET LCD Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET LCD Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3337,7 +3337,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET BIP Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET BIP Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3373,7 +3373,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SONET BIP Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SONET BIP Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3407,7 +3407,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Idle Maintenance Signal on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Idle Maintenance Signal on DS3.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3441,7 +3441,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Idle Maintenance Signal on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Idle Maintenance Signal on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3477,7 +3477,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS3.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3513,7 +3513,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3549,7 +3549,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: P-bit Parity Errors on DS3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: P-bit Parity Errors on DS3.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3585,7 +3585,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: P-bit Parity Errors on DS3 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: P-bit Parity Errors on DS3 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3619,7 +3619,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: P-bit PRBS Pattern on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: P-bit PRBS Pattern on DS1.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
  
@@ -3653,7 +3653,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: P-bit PRBS Pattern on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: P-bit PRBS Pattern on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3689,7 +3689,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS1.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3725,7 +3725,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3761,7 +3761,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: CRC-6 Errors on DS1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: CRC-6 Errors on DS1.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3797,7 +3797,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: CRC-6 Errors on DS1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: CRC-6 Errors on DS1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3831,7 +3831,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Trail Trace Message Change on E3.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Trail Trace Message Change on E3.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3867,7 +3867,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on E1.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on E1.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3903,7 +3903,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation on E1 Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation on E1 Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -3937,7 +3937,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: RLOC Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: RLOC Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -3971,7 +3971,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: RLOC Event Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: RLOC Event Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4005,7 +4005,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: HBER Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: HBER Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4039,7 +4039,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: HBER Event Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: HBER Event Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4073,7 +4073,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PAIS Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PAIS Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4107,7 +4107,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PAIS Event Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PAIS Event Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4143,7 +4143,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4179,7 +4179,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Loss of Cell Deliniation Event Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Loss of Cell Deliniation Event Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4213,7 +4213,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Transmit Loss of Clock Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Transmit Loss of Clock Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4247,7 +4247,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Transmit Loss of Clock Event Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Transmit Loss of Clock Event Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4281,7 +4281,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4315,7 +4315,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: LOS Alarm Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: LOS Alarm Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4349,7 +4349,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Output Queue Congested.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Output Queue Congested.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4382,7 +4382,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Output Queue Cell Loss.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Output Queue Cell Loss.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -4415,7 +4415,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Extended Mode Violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Extended Mode Violation.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4446,7 +4446,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Nonextended Mode Warning.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Nonextended Mode Warning.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4474,7 +4474,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Callrecord Memory Overflow.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Callrecord Memory Overflow.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4509,7 +4509,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Call Record Transfer to Primary Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Call Record Transfer to Primary Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4544,7 +4544,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Call Record Transfer to Secondary Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Call Record Transfer to Secondary Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4575,7 +4575,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Call Record Memory Allocation Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Call Record Memory Allocation Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4607,7 +4607,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Call Record Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Call Record Failure.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4637,7 +4637,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Automatic CDB Syncronization Disabled.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Automatic CDB Syncronization Disabled.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4671,7 +4671,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Backup SCP now in Control.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Backup SCP now in Control.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4707,7 +4707,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SCP Hotswap.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SCP Hotswap.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4741,7 +4741,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on Virtual Path.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on Virtual Path.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4775,7 +4775,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: AIS Alarm on Virtual Path Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: AIS Alarm on Virtual Path Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4809,7 +4809,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: RDI Alarm on Virtual Path.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: RDI Alarm on Virtual Path.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -4843,7 +4843,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: RDI Alarm on Virtual Path Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: RDI Alarm on Virtual Path Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -4876,7 +4876,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Series D Netowrk Module Inserted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Series D Netowrk Module Inserted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4906,7 +4906,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Unsupported Network Module Inserted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Unsupported Network Module Inserted.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -4940,7 +4940,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Dual SCP Redundancy Established.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Dual SCP Redundancy Established.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -4971,7 +4971,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  ipFilterStatsIfName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: IP Filter Violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: IP Filter Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5013,7 +5013,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: q2391 UNI Setup Rejected.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: q2391 UNI Setup Rejected.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5054,7 +5054,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: q2391 UNI Setup Rejected: Does Not Match Template.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: q2391 UNI Setup Rejected: Does Not Match Template.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5087,7 +5087,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: q2391 UNI Creation Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: q2391 UNI Creation Failure.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5116,7 +5116,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Power Supply Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Power Supply Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5145,7 +5145,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Power Supply Failure Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Power Supply Failure Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -5174,7 +5174,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Power Supply +5V Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Power Supply +5V Failure.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5203,7 +5203,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Power Supply +5V Failure Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Power Supply +5V Failure Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -5233,7 +5233,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: User Logged onto Switch.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: User Logged onto Switch.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5263,7 +5263,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Log On Attempt Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Log On Attempt Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5304,7 +5304,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: TDB Guardband Memory Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: TDB Guardband Memory Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5345,7 +5345,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: TDB Inconsistant State.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: TDB Inconsistant State.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5379,7 +5379,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Output Queue Exceeded Length.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Output Queue Exceeded Length.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -5412,7 +5412,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Output Queue Overflow.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Output Queue Overflow.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5445,7 +5445,7 @@
  &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  boardIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Excessive Level 3 Lookup Errors.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Excessive Level 3 Lookup Errors.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -5473,7 +5473,7 @@
  &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  boardIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Inconsistant HDCOMP Lookup.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Inconsistant HDCOMP Lookup.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -5505,7 +5505,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  spvcSrcInVCI&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVC Rerouted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVC Rerouted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5536,7 +5536,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: UNI Signalling Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: UNI Signalling Down.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5568,7 +5568,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: UNI Signalling Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: UNI Signalling Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5598,7 +5598,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Fabric Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Fabric Down.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5628,7 +5628,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Fabric Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Fabric Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5663,7 +5663,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: q2931 Call Clearing.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: q2931 Call Clearing.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5708,7 +5708,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvcSrcLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVC Call Cleared or Deleted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVC Call Cleared or Deleted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5749,7 +5749,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvcSrcRouteCost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVC Call Established.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVC Call Established.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5792,7 +5792,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvcSrcLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVC Call Connection Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVC Call Connection Failed.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5835,7 +5835,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvpcSrcLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVP Call Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVP Call Cleared.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5874,7 +5874,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvpcSrcRouteCost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVP Call Established.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVP Call Established.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5915,7 +5915,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniSpvpcSrcLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVP Call Connection Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVP Call Connection Failed.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -5945,7 +5945,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Port Card Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Port Card Down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -5975,7 +5975,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: ATM Switch Port Card Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: ATM Switch Port Card Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6007,7 +6007,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Service Category Output Queue Congested.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Service Category Output Queue Congested.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -6038,7 +6038,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: Service Category Output Queue Cell Loss.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: Service Category Output Queue Cell Loss.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -6076,7 +6076,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PNNI Overload.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PNNI Overload.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -6114,7 +6114,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PNNI Overload Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PNNI Overload Cleared.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -6144,7 +6144,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniPmpSpvccSrcRootVCI&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PMP ReRoute Initiated..&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PMP ReRoute Initiated..&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6178,7 +6178,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniPmpSpvccSrcPartyRouteCost&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PMP SPVC Call Established.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PMP SPVC Call Established.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6220,7 +6220,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniPmpSpvccSrcPartyLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PMP SPVC Call Cleared.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PMP SPVC Call Cleared.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6261,7 +6261,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  pnniPmpSpvccSrcPartyLastLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: PMP SPVC Call Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: PMP SPVC Call Failure.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6294,7 +6294,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SPVC Automatic Switch Over.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SPVC Automatic Switch Over.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -6327,7 +6327,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SVx/SPVx State Transfer Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SVx/SPVx State Transfer Failed.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 
@@ -6359,7 +6359,7 @@
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SVx/SPVx State Transfer Restarted.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SVx/SPVx State Transfer Restarted.&lt;/p&gt;</logmsg>
  <severity>Cleared</severity>
 </event>
 
@@ -6393,7 +6393,7 @@
  &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  trapLogIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Fore Event: SVx/SPVx State Dropped Call.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Fore Event: SVx/SPVx State Dropped Call.&lt;/p&gt;</logmsg>
  <severity>Major</severity>
 </event>
 <!-- End of auto generated data from MIB: Fore-Switch-MIB -->
@@ -6416,7 +6416,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

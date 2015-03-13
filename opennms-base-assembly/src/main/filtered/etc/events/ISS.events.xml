@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ISS-MIB -->
 <event>
 	<mask>
@@ -96,7 +96,7 @@ for.  The details of the event are contained in the trap.&lt;/p&gt;&lt;table&gt;
 	eventEntryUserActionList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#16]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ISS: eventinfo trap received: 
 			eventEntryUserActionList=%parm[#16]%&lt;/p&gt;
 		</logmsg>
@@ -147,7 +147,7 @@ Only configured types of log data which will be sent as a trap.&lt;/p&gt;&lt;tab
 	logEntryData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ISS: logdatatrap trap received: 
 			logEntryDescription=%parm[#5]% 
 		</logmsg>
@@ -219,7 +219,7 @@ for.  The details of the event are contained in the trap.&lt;/p&gt;&lt;table&gt;
 	eventEntryEventSpecificInfo25&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ISS: highpriorityevent trap received: 
 			eventEntryEventSpecificInfo25=%parm[#11]%&lt;/p&gt;
 		</logmsg>
@@ -291,7 +291,7 @@ for.  The details of the event are contained in the trap.&lt;/p&gt;&lt;table&gt;
 	eventEntryEventSpecificInfo25&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ISS: mediumpriorityevent trap received: 
 			eventEntryEventSpecificInfo25=%parm[#11]%&lt;/p&gt;
 		</logmsg>
@@ -363,7 +363,7 @@ for.  The details of the event are contained in the trap.&lt;/p&gt;&lt;table&gt;
 	eventEntryEventSpecificInfo25&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ISS: lowpriorityevent trap received:
 			eventEntryEventSpecificInfo25=%parm[#11]%&lt;/p&gt;
 		</logmsg>

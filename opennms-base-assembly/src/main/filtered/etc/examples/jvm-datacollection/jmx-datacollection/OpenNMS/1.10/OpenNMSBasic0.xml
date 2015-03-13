@@ -1,15 +1,15 @@
-<mbeans>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><mbeans>
   <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
-    <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
-    <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
-    <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
-    <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
-    <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
-    <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
-    <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
-    <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
-    <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
-    <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
-    <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
+    <attrib alias="ONMSQueCreates" name="CreatesCompleted" type="counter"/>
+    <attrib alias="ONMSQueItemDeque" name="DequeuedItems" type="counter"/>
+    <attrib alias="ONMSQueDequeOps" name="DequeuedOperations" type="counter"/>
+    <attrib alias="ONMSQueEnqueOps" name="EnqueuedOperations" type="counter"/>
+    <attrib alias="ONMSQueErrors" name="Errors" type="counter"/>
+    <attrib alias="ONMSQuePromo" name="PromotionCount" type="counter"/>
+    <attrib alias="ONMSQueSigOpsCompl" name="SignificantOpsCompleted" type="counter"/>
+    <attrib alias="ONMSQueSigOpsDeque" name="SignificantOpsDequeued" type="counter"/>
+    <attrib alias="ONMSQueSigOpsEnque" name="SignificantOpsEnqueued" type="counter"/>
+    <attrib alias="ONMSQueOpsPend" name="TotalOperationsPending" type="gauge"/>
+    <attrib alias="ONMSQueUpdates" name="UpdatesCompleted" type="counter"/>
   </mbean>
 </mbeans>

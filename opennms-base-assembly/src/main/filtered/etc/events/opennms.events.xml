@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<events>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events>
   <event>
     <uei>MATCH-ANY-UEI</uei>
     <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
@@ -110,7 +109,7 @@
       %interface%.&lt;/p&gt;
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/capsd/updateServer</uei>
@@ -259,7 +258,7 @@
         &lt;p&gt;This event indicates the model-importer process has completed successfully from resource: %parm[importResource]%&lt;/p&gt;
       </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="2" clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" auto-clean="true"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" reduction-key="%uei%:%parm[importResource]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/importer/importFailed</uei>
@@ -272,7 +271,7 @@
         &lt;p&gt;This event indicates the model-importer process has failed from resource: %parm[importResource]% with reason: %parm[failureMessage]%&lt;/p&gt;
       </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%parm[importResource]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%parm[importResource]%"/>
   </event>
   <!-- New Importer Service Events -->
   <event>
@@ -432,7 +431,7 @@
       applied. Reason: %parm[reason]%.&lt;/p&gt;
     </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[daemonName]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/reloadDaemonConfigSuccessful</uei>
@@ -447,7 +446,7 @@
       applied.&lt;/p&gt;
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <!--  Going to slowly get rid of these random daemon reload events for the generic
   reloadDaemonConfig event -->
@@ -605,7 +604,7 @@
       %service% data collection on interface %interface% failed with '%parm[reason]%'.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/dataCollectionSucceeded</uei>
@@ -619,7 +618,7 @@
       failed and has been restored.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" auto-clean="true"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/deleteService</uei>
@@ -693,7 +692,7 @@
       Interface %interface% is down.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceOperDown</uei>
@@ -707,7 +706,7 @@
     <logmsg dest="logndisplay">Operational status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
@@ -721,7 +720,7 @@
     <logmsg dest="logndisplay">Administration status Down on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
@@ -790,7 +789,7 @@
       Interface %interface% is up.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceOperUp</uei>
@@ -804,7 +803,7 @@
     <logmsg dest="logndisplay">Operational status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
@@ -818,7 +817,7 @@
     <logmsg dest="logndisplay">Administration status Up on interface ifname:%parm[snmpifname]% ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeAdded</uei>
@@ -894,7 +893,7 @@
       Node %parm[nodelabel]% is down. %parm[eventReason]%
     </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/pathOutage</uei>
@@ -911,7 +910,7 @@
                         %parm[criticalPathIp]% %parm[criticalPathServiceName]%
                 </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
@@ -955,7 +954,7 @@
     <logmsg dest="logndisplay">Data Link Failed between %parm[endPoint1]% and %parm[endPoint2]%
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/linkd/dataLinkRestored</uei>
@@ -969,7 +968,7 @@
     <logmsg dest="logndisplay">Data Link Restored between %parm[endPoint1]% and %parm[endPoint2]%
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/linkd/dataLinkUnmanaged</uei>
@@ -984,7 +983,7 @@
     <logmsg dest="logndisplay">Data Link Unmanaged between %parm[endPoint1]% and %parm[endPoint2]%
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/internal/linkd/dataLinkFailed:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%" reduction-key="%uei%:%dpname%:%parm[endPoint1]%:%parm[endPoint2]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/poller/suspendPollingService</uei>
@@ -1060,7 +1059,7 @@
       %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
@@ -1079,7 +1078,7 @@
       cleared. Service is restored.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/nodeUp</uei>
@@ -1095,7 +1094,7 @@
       Node %parm[nodelabel]% is up.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>
@@ -1194,7 +1193,7 @@
       %interface%, parms: %parm[all]%
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
@@ -1218,7 +1217,7 @@
       %interface%, parms: %parm[all]%
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
@@ -1243,7 +1242,7 @@
                         %interface%, parms: %parm[all]%
                 </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/threshold/highThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
@@ -1267,7 +1266,7 @@
                         %interface%, parms: %parm[all]%
                 </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" alarm-type="2" clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/threshold/lowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[ds]%:%parm[threshold]%:%parm[trigger]%:%parm[rearm]%:%parm[label]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/nodes/thresholdingFailed</uei>
@@ -1381,7 +1380,7 @@
       in location %parm[location]% with reason code: %parm[eventReason]%.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
@@ -1399,7 +1398,7 @@
       in location %parm[location]% has cleared.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
@@ -1464,7 +1463,7 @@
       The remote poller %parm[locationMonitorId]% in location %parm[location]% has disconnected.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%parm[locationMonitorId]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
@@ -1477,7 +1476,7 @@
       The disconnected remote poller %parm[locationMonitorId]% in location %parm[location]% has reconnected.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%parm[locationMonitorId]%" alarm-type="2" clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/remote/locationMonitorDisconnected:%parm[locationMonitorId]%" reduction-key="%uei%:%parm[locationMonitorId]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
@@ -1514,7 +1513,7 @@
       A wide spread outage of the service: %service% has been correlated from multiple remote pollers.
     </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
@@ -1527,7 +1526,7 @@
       A wide spread outage of the service: %service% has been resolved.
     </logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/correlation/remote/wideSpreadOutage:%dpname%:%nodeid%:%interface%:%service%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/correlation/serviceFlapping</uei>
@@ -1539,7 +1538,7 @@
       The service: %service% has been correlated to indicate a flapping state.
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/schedOutagesChanged</uei>
@@ -1671,7 +1670,7 @@
       &lt;p&gt;&lt;a href="%parm[alert.url]%" &gt; Hyperic Alert: %parm[action.longReason]% &lt;/a&gt;&lt;/p&gt;
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/syslogdConfigChange</uei>
@@ -1753,7 +1752,7 @@
       &lt;p&gt; %host%:%parm[verb]%:%parm[autoblock]% &lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%host%:%parm[aid]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
@@ -1766,7 +1765,7 @@
       &lt;p&gt; %host%:%parm[host]%:%parm[reason]% &lt;/p&gt;
     </logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%host%:%parm[reason]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/ackd/acknowledge</uei>
@@ -1842,7 +1841,7 @@
       &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
      </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/reportd/reportDeliveryFailed</uei>
@@ -1855,7 +1854,7 @@
       &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
      </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false"/>
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%"/>
   </event>
   <event>
     <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>

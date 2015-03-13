@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: PCUBE-SE-MIB -->
 <event>
 	<mask>
@@ -32,12 +32,12 @@ object in this MIB has changed to 'operational(3)'.&lt;/p&gt;&lt;table&gt;
 		failure(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			operationalStatusOperationalTrap trap received 
 			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%"/>
+<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -71,12 +71,12 @@ in this MIB has changed to 'warning(4)'.&lt;/p&gt;&lt;table&gt;
 		failure(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			operationalStatusWarningTrap trap received 
 			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -110,12 +110,12 @@ this MIB has changed to 'failure(5)'.&lt;/p&gt;&lt;table&gt;
 		failure(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			operationalStatusFailureTrap trap received 
 			sysOperationalStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -139,11 +139,11 @@ this MIB has changed to 'failure(5)'.&lt;/p&gt;&lt;table&gt;
 is about to reset itself either per user's request or 
 due to a fatal event.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			systemResetTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -176,12 +176,12 @@ MIB has changed to the 'on(3)' state
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisTempAlarmOnTrap trap received 
 			pchassisTempAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -214,12 +214,12 @@ MIB has changed to the 'off(2)' state
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisTempAlarmOffTrap trap received 
 			pchassisTempAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap:%dpname%:%nodeid%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -252,12 +252,12 @@ MIB has changed to the 'on(3)' state
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisVoltageAlarmOnTrap trap received 
 			pchassisVoltageAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -289,12 +289,12 @@ MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisFansAlarmOnTrap trap received 
 			pchassisFansAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -326,12 +326,12 @@ in this MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisPowerSupplyAlarmOnTrap trap received 
 			pchassisPowerSupplyAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -367,7 +367,7 @@ object in this MIB has changed to the 'active(2)' state.&lt;/p&gt;&lt;table&gt;
 		standby(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrActiveConnectionTrap trap received 
 			rdrFormatterDestIPAddr=%parm[#1]% 
 			rdrFormatterDestStatus=%parm[#2]%&lt;/p&gt;
@@ -397,7 +397,7 @@ agent entity has detected  there is no active
 connection between the RDR-formatter and any 
 Data Collector.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrNoActiveConnectionTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -436,13 +436,13 @@ object in this MIB has changed to 'up(2)'.&lt;/p&gt;&lt;table&gt;
 		down(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrConnectionUpTrap trap received 
 			rdrFormatterDestIPAddr=%parm[#1]% 
 			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -478,13 +478,13 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 		down(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrConnectionDownTrap trap received 
 			rdrFormatterDestIPAddr=%parm[#1]% 
 			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+   <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -506,7 +506,7 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Replaced by the more generic sessionStartedTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			telnetSessionStartedTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -531,7 +531,7 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Replaced by the more generic sessionEndedTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			telnetSessionEndedTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
@@ -556,7 +556,7 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Replaced by the more generic sessionDeniedAccessTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			telnetSessionDeniedAccessTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -581,7 +581,7 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Replaced by the more generic sessionBadLoginTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			telnetSessionBadLoginTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -608,7 +608,7 @@ object in this MIB has changed to 'down(3)'.&lt;/p&gt;&lt;table&gt;
 entity has detected the User log file is full.
 In such case the agent entity rolls to the next file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loggerUserLogIsFullTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -635,7 +635,7 @@ In such case the agent entity rolls to the next file.&lt;/p&gt;&lt;table&gt;&lt;
 SNTP agent did not receive time update for 
 a long period, this may cause a time drift.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sntpClockDriftWarnTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -672,12 +672,12 @@ has changed to 'bypass(2)'.&lt;/p&gt;&lt;table&gt;
 		sniffing(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkModeBypassTrap trap received 
 			linkOperMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-   <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   <alarm-data alarm-type="3" auto-clean="false" reduction-key="linkMode:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -711,12 +711,12 @@ in this MIB has changed to 'forwarding(3)'.&lt;/p&gt;&lt;table&gt;
 		sniffing(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkModeForwardingTrap trap received 
 			linkOperMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" auto-clean="true" clear-key="linkMode:%dpname%:%nodeid%"/>
+   <alarm-data alarm-type="2" auto-clean="true" clear-key="linkMode:%dpname%:%nodeid%" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -750,12 +750,12 @@ in this MIB has changed to 'cutoff(4)'.&lt;/p&gt;&lt;table&gt;
 		sniffing(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkModeCutoffTrap trap received 
 			linkOperMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-   <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   <alarm-data alarm-type="3" auto-clean="false" reduction-key="linkMode:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -788,7 +788,7 @@ is the type of attack-filter, which was activated.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleAttackFilterActivatedTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pcubeSeEventGenericString1=%parm[#2]%&lt;/p&gt;
@@ -834,7 +834,7 @@ for deactivating the filter.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleAttackFilterDeactivatedTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pcubeSeEventGenericString1=%parm[#2]% 
@@ -877,7 +877,7 @@ is the relevant parameter.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleEmAgentGenericTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pcubeSeEventGenericString1=%parm[#2]% 
@@ -917,12 +917,12 @@ object in this MIB has changed to 'sniffing(5)'.&lt;/p&gt;&lt;table&gt;
 		sniffing(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			linkModeSniffingTrap trap received 
 			linkOperMode=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-   <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   <alarm-data alarm-type="3" auto-clean="false" reduction-key="linkMode:%dpname%:%nodeid%"/>
 </event>
 <event>
 	<mask>
@@ -958,7 +958,7 @@ and is now ready to handle fail-over if needed.&lt;/p&gt;&lt;table&gt;
 		standby(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleRedundancyReadyTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
@@ -993,7 +993,7 @@ module and the redundant entity.&lt;/p&gt;&lt;table&gt;
 	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleRedundantConfigurationMismatchTrap trap received 
 			pmoduleIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1032,7 +1032,7 @@ has lost the ability to perform the fail-over procedure.&lt;/p&gt;&lt;table&gt;
 		standby(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleLostRedundancyTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
@@ -1065,12 +1065,12 @@ manager is broken.&lt;/p&gt;&lt;table&gt;
 	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleSmConnectionDownTrap trap received 
 			pmoduleIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+    <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1098,12 +1098,12 @@ is up and working.&lt;/p&gt;&lt;table&gt;
 	pmoduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleSmConnectionUpTrap trap received 
 			pmoduleIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%"/>
+    <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1138,13 +1138,13 @@ that the moduleOperStatus has changed its value.&lt;/p&gt;&lt;table&gt;
 		standby(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			moduleOperStatusChangeTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pmoduleOperStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1187,14 +1187,14 @@ down was released.&lt;/p&gt;&lt;table&gt;
 		otherDown(5)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			portOperStatusChangeTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pportIndex=%parm[#2]% 
 			pportOperStatus=%parm[#3]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>	
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>	
 </event>
 <event>
 	<mask>
@@ -1226,7 +1226,7 @@ MIB has changed to the 'on(3)' state.&lt;/p&gt;&lt;table&gt;
 		on(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chassisLineFeedAlarmOnTrap trap received 
 			pchassisLineFeedAlarm=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1260,7 +1260,7 @@ this MIB is counting the amount of discarded reports.&lt;/p&gt;&lt;table&gt;
 	rdrFormatterCategoryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrFormatterCategoryDiscardingReportsTrap trap received 
 			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1294,7 +1294,7 @@ MIB is counting the amount of discarded reports.&lt;/p&gt;&lt;table&gt;
 	rdrFormatterCategoryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rdrFormatterCategoryStoppedDiscardingReportsTrap trap received 
 			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1327,7 +1327,7 @@ type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionStartedTrap trap received 
 			pcubeSeEventGenericString1=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1360,7 +1360,7 @@ type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionEndedTrap trap received 
 			pcubeSeEventGenericString1=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1389,7 +1389,7 @@ entity has refused a session from unauthorized source.
 The pcubeSeEventGenericString1 is the session type 
 (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionDeniedAccessTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1417,7 +1417,7 @@ entity has detected attempt to login with a wrong
 password. The pcubeSeEventGenericString1 
 is the session type (telnet/SSH) and client IP address.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sessionBadLoginTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1454,13 +1454,13 @@ describing the problem.&lt;/p&gt;&lt;table&gt;
 	pcubeSeEventGenericString1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			illegalSubscriberMappingTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			pcubeSeEventGenericString1=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>	
+    <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>	
 </event>
 <event>
 	<mask>
@@ -1484,7 +1484,7 @@ describing the problem.&lt;/p&gt;&lt;table&gt;
 the line-attack log file is full. In such case the 
 agent entity rolls to the next file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loggerLineAttackLogFullTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -1530,7 +1530,7 @@ that the vas server operational status has changed.&lt;/p&gt;&lt;table&gt;
 		down(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vasServerOpertionalStatusChangeTrap trap received 
 			pmoduleIndex=%parm[#1]% 
 			vasServerIndex=%parm[#2]% 
@@ -1571,7 +1571,7 @@ pull requests made on this sub.&lt;/p&gt;&lt;table&gt;
 	pullRequestNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pullRequestRetryFailedTrap trap received 
 			pcubeSeEventGenericString1=%parm[#1]% 
 			pullRequestNumber=%parm[#2]%&lt;/p&gt;
@@ -1603,7 +1603,7 @@ exceeds the allowed threshold.&lt;/p&gt;&lt;table&gt;
 	mplsVpnCurrentHWMappings&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsVpnTotalHWMappingsThresholdExceededTrap trap received 
 			mplsVpnCurrentHWMappings=%parm[#1]%&lt;/p&gt;
 		</logmsg>

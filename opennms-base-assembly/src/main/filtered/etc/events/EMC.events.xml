@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: EMC-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: EMC-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -26,7 +25,7 @@ Not Ready conditions.&lt;/p&gt;&lt;table&gt;
 	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			emcDeviceStatusTrap trap received 
 			symmEventDescr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -66,7 +65,7 @@ an example of which is:
 	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			emcSymmetrixStatusTrap trap received 
 			symmEventDescr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -100,7 +99,7 @@ startup, and apply to all Symmetrixes attached.&lt;/p&gt;&lt;table&gt;
 	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			emcRatiosOutofRangeTrap trap received 
 			symmEventDescr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -132,7 +131,7 @@ in the configuration of previously attached Symmetrixes.&lt;/p&gt;&lt;table&gt;
 	discoveryChangeTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			discoveryTableChange trap received 
 			discoveryChangeTime=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -163,11 +162,10 @@ event occurs in the agent, or for a specific Symmetrix.&lt;/p&gt;&lt;table&gt;
 	symmEventDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			emcSymmetrixEventTrap trap received 
 			symmEventDescr=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: EMC-MIB -->
+</events><!-- End of auto generated data from MIB: EMC-MIB -->

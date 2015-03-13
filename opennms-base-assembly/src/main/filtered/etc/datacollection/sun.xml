@@ -1,36 +1,35 @@
-<?xml version="1.0"?>
-<datacollection-group name="SUN Microsystems">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="SUN Microsystems">
 
       <!-- Sun MIBs -->
-      <group name="sun" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.1" instance="0" alias="sunAvailableSwap"   type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.2" instance="0" alias="sunReservedSwap"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.3" instance="0" alias="sunAllocatedSwap"   type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.4" instance="0" alias="sunUsedSwap"        type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.1" instance="0" alias="sunProcsInRunQueue" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.2" instance="0" alias="sunProcsBlocked"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.3" instance="0" alias="sunProcsInSwap"     type="integer" />
+      <group ifType="ignore" name="sun">
+        <mibObj alias="sunAvailableSwap" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.1" type="integer"/>
+        <mibObj alias="sunReservedSwap" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.2" type="integer"/>
+        <mibObj alias="sunAllocatedSwap" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.3" type="integer"/>
+        <mibObj alias="sunUsedSwap" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.4" type="integer"/>
+        <mibObj alias="sunProcsInRunQueue" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.1" type="integer"/>
+        <mibObj alias="sunProcsBlocked" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.2" type="integer"/>
+        <mibObj alias="sunProcsInSwap" instance="0" oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.3" type="integer"/>
       </group>
 
-      <group name="sunHostPerf" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.1"  instance="0" alias="rsUserProcessTime"   type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.2"  instance="0" alias="rsNiceModeTime"      type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.3"  instance="0" alias="rsSystemProcessTime" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.4"  instance="0" alias="rsIdleModeTime"      type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.5"  instance="0" alias="rsDiskXfer1"         type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.6"  instance="0" alias="rsDiskXfer2"         type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.7"  instance="0" alias="rsDiskXfer3"         type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.8"  instance="0" alias="rsDiskXfer4"         type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.9"  instance="0" alias="rsVPagesIn"          type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.10" instance="0" alias="rsVPagesOut"         type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.11" instance="0" alias="rsVSwapIn"           type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.12" instance="0" alias="rsVSwapOut"          type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.13" instance="0" alias="rsVIntr"             type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.14" instance="0" alias="rsIfInPackets"       type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.15" instance="0" alias="rsIfOutPackets"      type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.16" instance="0" alias="rsIfInErrors"        type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.17" instance="0" alias="rsIfOutErrors"       type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.42.3.13.18" instance="0" alias="rsIfCollisions"      type="counter" />
+      <group ifType="ignore" name="sunHostPerf">
+        <mibObj alias="rsUserProcessTime" instance="0" oid=".1.3.6.1.4.1.42.3.13.1" type="counter"/>
+        <mibObj alias="rsNiceModeTime" instance="0" oid=".1.3.6.1.4.1.42.3.13.2" type="counter"/>
+        <mibObj alias="rsSystemProcessTime" instance="0" oid=".1.3.6.1.4.1.42.3.13.3" type="counter"/>
+        <mibObj alias="rsIdleModeTime" instance="0" oid=".1.3.6.1.4.1.42.3.13.4" type="counter"/>
+        <mibObj alias="rsDiskXfer1" instance="0" oid=".1.3.6.1.4.1.42.3.13.5" type="counter"/>
+        <mibObj alias="rsDiskXfer2" instance="0" oid=".1.3.6.1.4.1.42.3.13.6" type="counter"/>
+        <mibObj alias="rsDiskXfer3" instance="0" oid=".1.3.6.1.4.1.42.3.13.7" type="counter"/>
+        <mibObj alias="rsDiskXfer4" instance="0" oid=".1.3.6.1.4.1.42.3.13.8" type="counter"/>
+        <mibObj alias="rsVPagesIn" instance="0" oid=".1.3.6.1.4.1.42.3.13.9" type="counter"/>
+        <mibObj alias="rsVPagesOut" instance="0" oid=".1.3.6.1.4.1.42.3.13.10" type="counter"/>
+        <mibObj alias="rsVSwapIn" instance="0" oid=".1.3.6.1.4.1.42.3.13.11" type="counter"/>
+        <mibObj alias="rsVSwapOut" instance="0" oid=".1.3.6.1.4.1.42.3.13.12" type="counter"/>
+        <mibObj alias="rsVIntr" instance="0" oid=".1.3.6.1.4.1.42.3.13.13" type="counter"/>
+        <mibObj alias="rsIfInPackets" instance="0" oid=".1.3.6.1.4.1.42.3.13.14" type="counter"/>
+        <mibObj alias="rsIfOutPackets" instance="0" oid=".1.3.6.1.4.1.42.3.13.15" type="counter"/>
+        <mibObj alias="rsIfInErrors" instance="0" oid=".1.3.6.1.4.1.42.3.13.16" type="counter"/>
+        <mibObj alias="rsIfOutErrors" instance="0" oid=".1.3.6.1.4.1.42.3.13.17" type="counter"/>
+        <mibObj alias="rsIfCollisions" instance="0" oid=".1.3.6.1.4.1.42.3.13.18" type="counter"/>
       </group>
 
       <systemDef name="Sun">

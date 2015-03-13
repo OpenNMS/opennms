@@ -1,24 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ackd-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
-  alarm-sync="true" 
-  ack-expression="~(?i)^ack$" 
-  clear-expression="~(?i)^(resolve|clear)$"
-  escalate-expression="~(?i)^esc$" 
-  notifyid-match-expression="~(?i).*Re:.*Notice #([0-9]+).*" 
-  alarmid-match-expression="~(?i).*alarmid:([0-9]+).*" 
-  unack-expression="~(?i)^unack$" >
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ackd-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/ackd-configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ack-expression="~(?i)^ack$" alarm-sync="true" alarmid-match-expression="~(?i).*alarmid:([0-9]+).*" clear-expression="~(?i)^(resolve|clear)$" escalate-expression="~(?i)^esc$" notifyid-match-expression="~(?i).*Re:.*Notice #([0-9]+).*" unack-expression="~(?i)^unack$" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/ackd-configuration">
   
   <readers>
     <reader enabled="false" reader-name="JavaMailReader">
       <reader-schedule interval="60" unit="s"/>
-      <parameter key="readmail-config" value="localhost" />
+      <parameter key="readmail-config" value="localhost"/>
     </reader>
     <reader enabled="false" reader-name="HypericReader">
       <reader-schedule interval="180" unit="s"/>
       <!-- This parameter associates Hyperic platform IDs with URLs that provide alert status lists -->
-      <parameter key="source:HQ" value="http://127.0.0.1:7080/hqu/opennms/alertStatus/list.hqu" />
+      <parameter key="source:HQ" value="http://127.0.0.1:7080/hqu/opennms/alertStatus/list.hqu"/>
     </reader>
   </readers>
 

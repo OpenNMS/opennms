@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- This file contains event definitions for traps originating from RIM BlackBerry Enterprise Server -->
 <event>
 	<mask>
@@ -27,7 +27,7 @@
 		enabled(-4263520)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besSRPConnectEvent trap received 
 			besSRPConnectState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -54,7 +54,7 @@
 &lt;p&gt;Event related to detection of hung threads 
 in Exchange BES.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besHungThreadEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -82,7 +82,7 @@ if there is only one) gets more than one error connecting
 to a particular mail server, and those errors are not 
 Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besMailServerDownEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
@@ -107,7 +107,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;MDS to BES connection state has changed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besMDStoBESConnectionEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -132,7 +132,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;MDS has started or stopped.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besMDSStartStopEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -157,7 +157,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;MDS to database connection state has changed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besMDStoDBConnectionEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -183,7 +183,7 @@ Access Control related.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;Critical event has happened. These are the events normally
 logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Blackberry Event: besCriticalEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>

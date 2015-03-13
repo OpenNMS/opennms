@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: NETGEAR-SWITCHING-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: NETGEAR-SWITCHING-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -20,7 +19,7 @@
 	<descr>
 &lt;p&gt;trapMgrMultipleUsersLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: multipleUsersTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -45,7 +44,7 @@
 	<descr>
 &lt;p&gt;trapMgrBCastStormStartLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: broadcastStormStartTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
@@ -70,7 +69,7 @@
 	<descr>
 &lt;p&gt;trapMgrBCastStormEndLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: broadcastStormEndTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
@@ -95,7 +94,7 @@
 	<descr>
 &lt;p&gt;trapMgrLinkFailureLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: linkFailureTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -124,7 +123,7 @@
 	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: vlanRequestFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -154,7 +153,7 @@
 	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: vlanDeleteLastTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -184,7 +183,7 @@
 	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: vlanDefaultCfgFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -214,7 +213,7 @@
 	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: vlanRestoreFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -240,7 +239,7 @@
 	<descr>
 &lt;p&gt;trapMgrFanFailureLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: fanFailureTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -269,7 +268,7 @@
 	agentStpMstId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: stpInstanceNewRootTrap trap received 
 			agentStpMstId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -299,7 +298,7 @@
 	agentStpMstId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: stpInstanceTopologyChangeTrap trap received 
 			agentStpMstId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -325,7 +324,7 @@
 	<descr>
 &lt;p&gt;powerSupplyStatusChangeTrap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: powerSupplyStatusChangeTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
@@ -350,7 +349,7 @@
 	<descr>
 &lt;p&gt;failedUserLoginTrap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Netgear Event: failedUserLoginTrap trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>

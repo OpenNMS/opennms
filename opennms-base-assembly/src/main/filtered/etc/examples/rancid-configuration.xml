@@ -1,18 +1,17 @@
-<?xml version="1.0"?>
-<rancid-configuration delay="3600" retries="1">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rancid-configuration delay="3600" retries="1">
   
 <!-- Configuration example that uses policy-manage -->
 <policies>
 <policy-manage name="example1">
   <package name="example1">
     <filter>IPADDR != '0.0.0.0'</filter>
-    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="1.1.1.1" end="254.254.254.254"/>
   </package>
   <schedule name="global" type="weekly">
-	<time day="sunday" begins="12:30:00" ends="12:45:00"/>
-	<time day="sunday" begins="13:30:00" ends="14:45:00"/>
-	<time day="monday" begins="13:30:00" ends="14:45:00"/>
-	<time day="tuesday" begins="13:00:00" ends="14:45:00"/>
+	<time begins="12:30:00" day="sunday" ends="12:45:00"/>
+	<time begins="13:30:00" day="sunday" ends="14:45:00"/>
+	<time begins="13:30:00" day="monday" ends="14:45:00"/>
+	<time begins="13:00:00" day="tuesday" ends="14:45:00"/>
   </schedule>
  </policy-manage>
 </policies>  

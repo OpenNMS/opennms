@@ -1,13 +1,12 @@
-<?xml version="1.0"?>
-<datacollection-group name="XMP">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="XMP">
 
-     <resourceType name="xmpFilesys" label="Cartographer Filesystem" resourceLabel="${mountpoint}">
+     <resourceType label="Cartographer Filesystem" name="xmpFilesys" resourceLabel="${mountpoint}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
      </resourceType>
 
      <!-- Resource Type for XMP processes -->
-     <resourceType name="procStats" label="Cartographer Process Stats" resourceLabel="${index}" >
+     <resourceType label="Cartographer Process Stats" name="procStats" resourceLabel="${index}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
      </resourceType>

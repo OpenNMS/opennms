@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- End of IETF Standard MIB: BGP4-MIB -->
 <!-- Start of IETF Standard MIB: BRIDGE-MIB -->
 <event>
@@ -27,9 +27,9 @@
  optional.&lt;/p&gt;&lt;table&gt;
  &lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Bridge MIB: New Spanning Tree Root.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Bridge MIB: New Spanning Tree Root.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/> 
+ <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/> 
 </event>
 
 <event>
@@ -58,9 +58,9 @@
  optional.&lt;/p&gt;&lt;table&gt;
  &lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Bridge MIB: Topology Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Bridge MIB: Topology Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/> 
+ <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%"/> 
 </event>
 <!-- End of IETF Standard MIB: BRIDGE-MIB -->
 <!-- Start of IETF Standard MIB: DIAL-CONTROL-MIB -->
@@ -122,9 +122,9 @@
  originate(1) answer(2) callback(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Dial Control Event: Peer Call Information.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Dial Control Event: Peer Call Information.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
 <event>
@@ -174,9 +174,9 @@
  originate(1) answer(2) callback(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Dial Control Event: Peer Call Setup Notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Dial Control Event: Peer Call Setup Notification.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of IETF Standard MIB: DIAL-CONTROL-MIB -->
 <!-- Start of IETF Standard MIB: DLSW-MIB -->
@@ -207,9 +207,9 @@
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Rejected by Partner: %parm[#2]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Transport Connection Rejected by Partner: %parm[#2]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/> 
+ <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/> 
 </event>
 
 <event>
@@ -238,9 +238,9 @@
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Protocol Violation.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Protocol Violation.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/> 
+ <alarm-data alarm-type="3" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/> 
 </event>
 
 <event>
@@ -269,9 +269,9 @@
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Transport Connection Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
-<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" />
+<alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 
 <event>
@@ -300,9 +300,9 @@
  dlswTConnOperRemoteTAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Transport Connection Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Transport Connection Down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>  
+ <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>  
 </event>
 
 <event>
@@ -335,9 +335,9 @@
  dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Up.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Circuit Connection Up.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapcircuitDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
+ <alarm-data alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapcircuitDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 
 <event>
@@ -370,9 +370,9 @@
  dlswCircuitS2Sap&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DLSW Event: Circuit Connection Down.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DLSW Event: Circuit Connection Down.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
+ <alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
 </event>
 <!-- End of IETF Standard MIB: DLSW-MIB -->
 <!-- Start of IETF Standard MIB: DOCS-CABLE-DEVICE-TRAP-MIB -->
@@ -430,7 +430,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Unknown TLV.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Unknown TLV.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -476,7 +476,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Service Request Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Service Request Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -522,7 +522,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Service Response Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Service Response Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -568,7 +568,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Service Acknowledgement Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Service Acknowledgement Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -614,7 +614,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: BPI Initialization Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: BPI Initialization Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -659,7 +659,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: BPKM Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: BPKM Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -705,7 +705,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Security Association Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Security Association Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -754,7 +754,7 @@
  docsDevServerDhcp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: DHCP Server %parm[#8]% has failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: DHCP Server %parm[#8]% has failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -806,7 +806,7 @@
  docsDevSwServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Software Upgrade Initiated. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Software Upgrade Initiated. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -858,7 +858,7 @@
  docsDevSwServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Software Upgrade Failed. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Software Upgrade Failed. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -910,7 +910,7 @@
  docsDevSwServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Software Upgrade Succeeded. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Software Upgrade Succeeded. File: %parm[#8]% from %parm[#9]%.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -957,7 +957,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Software Upgrade File Failed Verification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Software Upgrade File Failed Verification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1007,7 +1007,7 @@
  docsDevServerTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Time of Day Server %parm[#8]% Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Time of Day Server %parm[#8]% Failed.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1054,7 +1054,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Channel Change Request Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Channel Change Request Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1102,7 +1102,7 @@
  docsIfCmCmtsAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Channel Change Response Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Channel Change Response Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1150,7 +1150,7 @@
  &lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Dynamic Channel Change Acknowledgement Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Dynamic Channel Change Acknowledgement Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1210,7 +1210,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Registraton Request Failure During CM Initialization.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Registraton Request Failure During CM Initialization.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1256,7 +1256,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Registraton Respnse Failure During CM Initialization.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Registraton Respnse Failure During CM Initialization.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1303,7 +1303,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: Registraton Acknowledgement Failure During CM Initialization.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: Registraton Acknowledgement Failure During CM Initialization.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -1350,7 +1350,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Request Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Request Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1397,7 +1397,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Response Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Response Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1444,7 +1444,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Acknowledgement Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Service Acknowledgement Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1491,7 +1491,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected BPI Initialization Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected BPI Initialization Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1537,7 +1537,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected BPKM Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected BPKM Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1583,7 +1583,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Security Association Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Security Association Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1631,7 +1631,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Request Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Request Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1678,7 +1678,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Response Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Response Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -1725,7 +1725,7 @@
  ifPhysAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Acknowledgement Failed.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DOCSIS Event: CMTS Detected Dynamic Channel Change Acknowledgement Failed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: DOCS-CABLE-DEVICE-TRAP-MIB -->
@@ -1759,7 +1759,7 @@
  dsx3LineStatusLastChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;DS3 Event: Line Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;DS3 Event: Line Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: DS3-MIB -->
@@ -1806,9 +1806,9 @@
  loss.&lt;/p&gt;&lt;table&gt;
  &lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;ENTITY Configuration Change Notification.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;ENTITY Configuration Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 <!-- End of IETF Standard MIB: ENTITY-MIB -->
 <!-- Start of ATM MIB: IMA-MIB -->
@@ -1847,7 +1847,7 @@
  imaAlarmGroupTimingSynch(14)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;ATM Event: IMA Failure Alarm.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;ATM Event: IMA Failure Alarm.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of ATM MIB: IMA-MIB -->
@@ -1919,7 +1919,7 @@
  unknown(1) originate(2) answer(3) callback(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;ISDN Call Information Event.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;ISDN Call Information Event.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: ISDN-MIB -->
@@ -1958,7 +1958,7 @@
  ptopoConnTabAgeouts&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;PTOPO Event: Physical Topology Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;PTOPO Event: Physical Topology Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: PTOPO-MIB -->
@@ -1994,9 +1994,9 @@
  invalid(1) active(2) inactive(3)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;RFC1315 Event: Frame Relay DLCI Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;RFC1315 Event: Frame Relay DLCI Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%"/>
 </event>
 <!-- End of IETF Standard MIB: RFC1315-MIB -->
 <!-- Start of IETF Standard MIB: SNA-SDLC-MIB -->
@@ -2037,9 +2037,9 @@
  undefined(1) physical(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: Port Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SNA-SDLC Event: Port Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 
 <event>
@@ -2091,9 +2091,9 @@
  sdlcLSOperLastFailREPLYTOs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
 </event>
 
 <event>
@@ -2141,7 +2141,7 @@
  sdlcLSOperLastFailREPLYTOs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;SNA-SDLC Event: SDLC Link Station Status Change.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: SNA-SDLC-MIB -->
@@ -2188,7 +2188,7 @@
  none(0) responses(1) timingMark(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;TN3270 Event: Average Response Time Exceeds Threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;TN3270 Event: Average Response Time Exceeds Threshold.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -2231,7 +2231,7 @@
  none(0) responses(1) timingMark(2)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;TN3270 Event: Average Response Time Now Below Threshold.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;TN3270 Event: Average Response Time Now Below Threshold.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2269,7 +2269,7 @@
  other(1) terminal(2) printer(3) terminalOrPrinter(4)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;TN3270 Event: Response Time Data Collection Enabled.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;TN3270 Event: Response Time Data Collection Enabled.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -2333,7 +2333,7 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  none(0) responses(1) timingMark(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;TN3270 Event: Response Time Data Collection Ended.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;TN3270 Event: Response Time Data Collection Ended.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 <!-- End of IETF Standard MIB: TN3270E-RT-MIB -->
@@ -2361,9 +2361,9 @@
  vrrpOperMasterIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;VRRP Event: New Master.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;VRRP Event: New Master.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+ <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%"/>
 </event>
 
 <event>
@@ -2396,7 +2396,7 @@
  invalidAuthType(1) authTypeMismatch(2) authFailure(3)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;VRRP Event: Authentication Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;VRRP Event: Authentication Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of IETF Standard MIB: VRRP-MIB -->

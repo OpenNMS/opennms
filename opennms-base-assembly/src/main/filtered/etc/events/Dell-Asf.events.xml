@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of mib2events auto-generated data for MIB: DELL-ASF-MIB -->
 <event>
 	<mask>
@@ -2000,5 +2000,4 @@
 	</logmsg>
 	<severity>Cleared</severity>
 </event>
-</events>
-<!-- End of mib2events auto-generated data for MIB: DELL-ASF-MIB -->
+</events><!-- End of mib2events auto-generated data for MIB: DELL-ASF-MIB -->

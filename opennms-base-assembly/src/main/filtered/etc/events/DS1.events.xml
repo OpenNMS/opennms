@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DS1-MIB -->
 <event>
 	<mask>
@@ -33,7 +33,7 @@ the ds1 are sent.&lt;/p&gt;&lt;table&gt;
 	dsx1LineStatusLastChange&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dsx1LineStatusChange trap received 
 			dsx1LineStatus=%parm[#1]% 
 			dsx1LineStatusLastChange=%parm[#2]%&lt;/p&gt;

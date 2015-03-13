@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: POLYCOM-VIDEO-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: POLYCOM-VIDEO-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Viewstation Traps -->
 <event>
 	<mask>
@@ -29,7 +28,7 @@
 	polycomVSAuthClientAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loginOK trap received 
 			polycomVSAuthLocation=%parm[#1]% 
 			polycomVSAuthClientAddress=%parm[#2]%&lt;/p&gt;
@@ -64,7 +63,7 @@
 	polycomVSAuthClientAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			loginFail trap received 
 			polycomVSAuthLocation=%parm[#1]% 
 			polycomVSAuthClientAddress=%parm[#2]%&lt;/p&gt;
@@ -91,7 +90,7 @@
 	<descr>
 &lt;p&gt;Sent when the remote has a low battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lowBattery trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -120,7 +119,7 @@
 	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			callUp trap received 
 			polycomVSPhoneNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -150,7 +149,7 @@
 	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			callDown trap received 
 			polycomVSPhoneNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -185,7 +184,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSPhoneNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			callFail trap received 
 			polycomVSReason=%parm[#1]% 
 			polycomVSPhoneNumber=%parm[#2]%&lt;/p&gt;
@@ -216,7 +215,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSPlead&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			userAssist trap received 
 			polycomVSPlead=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -242,7 +241,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when a visual concert pod is connected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			visualConcertUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -267,7 +266,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when a visual concert pod is disconnected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			visualConcertOff trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -296,7 +295,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSMicData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			micChange trap received 
 			polycomVSMicData=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -326,7 +325,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSAutoAnswerSetting&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			autoAnswerChange trap received 
 			polycomVSAutoAnswerSetting=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -356,7 +355,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSTimeServerAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			timeServerUp trap received 
 			polycomVSTimeServerAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -386,7 +385,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSTimeServerAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			timeServerDown trap received 
 			polycomVSTimeServerAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -416,7 +415,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSTimeServerSetting&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			timeServerOn trap received 
 			polycomVSTimeServerSetting=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -442,7 +441,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when the time server is disabled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			timeServerOff trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -471,7 +470,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gdsUp trap received 
 			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -501,7 +500,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gdsDown trap received 
 			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -531,7 +530,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSGDSAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gdsOff trap received 
 			polycomVSGDSAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -561,7 +560,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSGatekeeperAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gatekeeperReg trap received 
 			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -591,7 +590,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSGatekeeperAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gatekeeperDown trap received 
 			polycomVSGatekeeperAddress=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -617,7 +616,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when a gatekeeper is disabled.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			gatekeeperOff trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -650,7 +649,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSCurrentIPAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ipAddressChange trap received 
 			polycomVSPreviousIPAddress=%parm[#1]% 
 			polycomVSCurrentIPAddress=%parm[#2]%&lt;/p&gt;
@@ -685,7 +684,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSCurrentNicType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			interfaceTypeChange trap received 
 			polycomVSPreviousNicType=%parm[#1]% 
 			polycomVSCurrentNicType=%parm[#2]%&lt;/p&gt;
@@ -716,7 +715,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lineEnabled trap received 
 			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -746,7 +745,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lineDisabled trap received 
 			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -776,7 +775,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lineUp trap received 
 			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -806,7 +805,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSNicLineNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lineDown trap received 
 			polycomVSNicLineNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -836,7 +835,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSV35PortsEnabled&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			v35PortsEnabled trap received 
 			polycomVSV35PortsEnabled=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -870,7 +869,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSCurrentNicLineCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lineCountChange trap received 
 			polycomVSPreviousNicLineCount=%parm[#1]% 
 			polycomVSCurrentNicLineCount=%parm[#2]%&lt;/p&gt;
@@ -897,7 +896,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when the main camera is working correctly.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mainCameraUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -922,7 +921,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;Sent when the main camera is not working correctly.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mainCameraDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -951,7 +950,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSUPnPStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			upnpChange trap received 
 			polycomVSUPnPStatus=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -981,7 +980,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSPercentPacketLoss&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			percentPacketLossExcessive trap received 
 			polycomVSPercentPacketLoss=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1011,7 +1010,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSJitter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			jitterExcessive trap received 
 			polycomVSJitter=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -1041,7 +1040,7 @@ of the reason.&lt;/p&gt;&lt;table&gt;
 	polycomVSLatency&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			latencyExcessive trap received 
 			polycomVSLatency=%parm[#1]%&lt;/p&gt;
 		</logmsg>

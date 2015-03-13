@@ -1,3 +1,3 @@
-<monitoring-locations-configuration xmlns="http://xmlns.opennms.org/xsd/config/monitoring-locations">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><monitoring-locations-configuration xmlns="http://xmlns.opennms.org/xsd/config/monitoring-locations">
    <locations/>
 </monitoring-locations-configuration>

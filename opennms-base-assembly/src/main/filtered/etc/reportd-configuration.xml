@@ -1,10 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<reportd-configuration 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/reportd-configuration"
-  storage-location="${install.share.dir}/reports/"
-  persist-reports="yes"
-> 
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><reportd-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" persist-reports="yes" storage-location="${install.share.dir}/reports/" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/reportd-configuration"> 
   <!--  
     http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
         Field Name     Allowed Values      Allowed Special Characters

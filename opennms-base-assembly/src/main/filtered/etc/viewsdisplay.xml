@@ -1,6 +1,4 @@
-<?xml version="1.0"?>
-
-<viewinfo>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><viewinfo>
 	<view>
 		<view-name>WebConsoleView</view-name>
 		<section>
@@ -19,4 +17,3 @@
 		</section>            
 	</view>
 </viewinfo>
-

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: EMPIRE -->
 <event>
 	<mask>
@@ -70,7 +70,7 @@ is: 'monCurrVal monOperator monValue'.&lt;/p&gt;&lt;table&gt;
 	monFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: monitorTrap trap received 
 			monDescr=%parm[#1]% 
 			monOID=%parm[#2]% 
@@ -82,7 +82,7 @@ is: 'monCurrVal monOperator monValue'.&lt;/p&gt;&lt;table&gt;
 			monFlags=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%"/>
 </event>
 <event>
 	<mask>
@@ -163,7 +163,7 @@ all properly configured managers.&lt;/p&gt;&lt;table&gt;
 	monFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: monitorEntryNotReadyTrap trap received 
 			monDescr=%parm[#1]% 
 			monOID=%parm[#2]% 
@@ -175,7 +175,7 @@ all properly configured managers.&lt;/p&gt;&lt;table&gt;
 			monFlags=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%"/>
 </event>
 <event>
 	<mask>
@@ -233,7 +233,7 @@ logging daemons.&lt;/p&gt;&lt;table&gt;
 	logMonitorFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: logMonMatchTrap trap received 
 			logMonitorLogFile=%parm[#1]% 
 			logMonitorRegularExpression=%parm[#2]% 
@@ -300,7 +300,7 @@ becomes 'active(1)'.&lt;/p&gt;&lt;table&gt;
 	logMonitorFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: logMonNotReadyTrap trap received 
 			logMonitorLogFile=%parm[#1]% 
 			logMonitorRegularExpression=%parm[#2]% 
@@ -311,7 +311,7 @@ becomes 'active(1)'.&lt;/p&gt;&lt;table&gt;
 			logMonitorFlags=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -385,7 +385,7 @@ ntEventMonMatch events.&lt;/p&gt;&lt;table&gt;
 	ntEventMonFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: ntEventMonMatchTrap trap received 
 			ntEventMonLog=%parm[#1]% 
 			ntEventMonTypeLastMatch=%parm[#2]% 
@@ -397,7 +397,7 @@ ntEventMonMatch events.&lt;/p&gt;&lt;table&gt;
 			ntEventMonFlags=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%"/>
 </event>
 <event>
 	<mask>
@@ -468,7 +468,7 @@ becomes 'active(1)'.&lt;/p&gt;&lt;table&gt;
 	ntEventMonFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: ntEventMonNotReadyTrap trap received 
 			ntEventMonLog=%parm[#1]% 
 			ntEventMonTypeFilter=%parm[#2]% 
@@ -479,7 +479,7 @@ becomes 'active(1)'.&lt;/p&gt;&lt;table&gt;
 			ntEventMonFlags=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#6]%"/>
 </event>
 <event>
 	<mask>
@@ -558,7 +558,7 @@ from True to false.&lt;/p&gt;&lt;table&gt;
 	monFlags&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: monitorClearTrap trap received 
 			monDescr=%parm[#1]% 
 			monOID=%parm[#2]% 
@@ -570,10 +570,7 @@ from True to false.&lt;/p&gt;&lt;table&gt;
 			monFlags=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%" 
-                alarm-type="2" 
-                auto-clean="false" 
-                clear-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#7]%"/>
 </event>
 <event>
 	<mask>
@@ -662,7 +659,7 @@ of pmonFlags does not preclude sending Traps.&lt;/p&gt;&lt;table&gt;
 	pmonCurrentPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: processStopTrap trap received 
 			pmonIndex=%parm[#1]% 
 			pmonDescr=%parm[#2]% 
@@ -675,7 +672,7 @@ of pmonFlags does not preclude sending Traps.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -764,7 +761,7 @@ specifies  that processStart Traps should be pay.&lt;/p&gt;&lt;table&gt;
 	pmonCurrentPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: processStartTrap trap received 
 			pmonIndex=%parm[#1]% 
 			pmonDescr=%parm[#2]% 
@@ -777,10 +774,7 @@ specifies  that processStart Traps should be pay.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" 
-                alarm-type="2" 
-                auto-clean="false" 
-                clear-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -871,7 +865,7 @@ not preclude the sending of Traps.&lt;/p&gt;&lt;table&gt;
 	pmonCurrentPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: processThresholdTrap trap received 
 			pmonIndex=%parm[#1]% 
 			pmonDescr=%parm[#2]% 
@@ -884,7 +878,7 @@ not preclude the sending of Traps.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -974,7 +968,7 @@ to False, this Trap is sent.&lt;/p&gt;&lt;table&gt;
 	pmonCurrentPID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: processClearTrap trap received 
 			pmonIndex=%parm[#1]% 
 			pmonDescr=%parm[#2]% 
@@ -987,10 +981,7 @@ to False, this Trap is sent.&lt;/p&gt;&lt;table&gt;
 			pmonCurrentPID=%parm[#9]%&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" 
-                alarm-type="2" 
-                auto-clean="false" 
-                clear-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1023,12 +1014,12 @@ the license information for that product or module.&lt;/p&gt;&lt;table&gt;
 	sysedgeLicenseString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: licenseTrap trap received 
 			sysedgeLicenseString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -1065,7 +1056,7 @@ be useless on multi-homed systems.&lt;/p&gt;&lt;table&gt;
 	sysedgeAddressList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: addrChangeTrap trap received 
 			nodename=%parm[#1]% 
 			sysedgeAddressList=%parm[#2]%&lt;/p&gt;
@@ -1132,7 +1123,7 @@ be useless on multi-homed systems.&lt;/p&gt;&lt;table&gt;
 	pgmonStatusList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			SystemEdge Event: procGroupChangeTrap trap received 
 			pgmonIndex=%parm[#1]% 
 			pgmonDescr=%parm[#2]% 
@@ -1144,7 +1135,7 @@ be useless on multi-homed systems.&lt;/p&gt;&lt;table&gt;
 			pgmonStatusList=%parm[#8]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: EMPIRE -->
 </events>

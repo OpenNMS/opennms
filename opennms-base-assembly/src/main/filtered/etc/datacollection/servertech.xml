@@ -1,54 +1,53 @@
-<?xml version="1.0"?>
-<datacollection-group name="ServerTech">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="ServerTech">
 
-    <resourceType name="stSentry3Tower" label="ServerTech Sentry Tower (3rd Gen)" resourceLabel="${towerName} - ID ${towerID}, Model ${towerModelNumber}">
+    <resourceType label="ServerTech Sentry Tower (3rd Gen)" name="stSentry3Tower" resourceLabel="${towerName} - ID ${towerID}, Model ${towerModelNumber}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="stSentry3Infeed" label="ServerTech Sentry Input Feed (3rd Gen)" resourceLabel="${infeedName}">
+    <resourceType label="ServerTech Sentry Input Feed (3rd Gen)" name="stSentry3Infeed" resourceLabel="${infeedName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="stSentry3EnvMon" label="ServerTech Sentry Environmental Monitor (3rd Gen)" resourceLabel="${envMonName}">
+    <resourceType label="ServerTech Sentry Environmental Monitor (3rd Gen)" name="stSentry3EnvMon" resourceLabel="${envMonName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-      <group name="servertech-sentry3-system" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.1718.3.1.1" instance="0" alias="stSentry3SystemVer"  type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.1.3" instance="0" alias="stSentry3SystemLoc"  type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.1.4" instance="0" alias="stSentry3NumTowers"  type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.1.5" instance="0" alias="stSentry3EnvMons"    type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.1.6" instance="0" alias="stSentry3TotalPower" type="gauge" />
+      <group ifType="ignore" name="servertech-sentry3-system">
+        <mibObj alias="stSentry3SystemVer" instance="0" oid=".1.3.6.1.4.1.1718.3.1.1" type="string"/>
+        <mibObj alias="stSentry3SystemLoc" instance="0" oid=".1.3.6.1.4.1.1718.3.1.3" type="string"/>
+        <mibObj alias="stSentry3NumTowers" instance="0" oid=".1.3.6.1.4.1.1718.3.1.4" type="gauge"/>
+        <mibObj alias="stSentry3EnvMons" instance="0" oid=".1.3.6.1.4.1.1718.3.1.5" type="gauge"/>
+        <mibObj alias="stSentry3TotalPower" instance="0" oid=".1.3.6.1.4.1.1718.3.1.6" type="gauge"/>
       </group>
 
-      <group name="servertech-sentry3-tower" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.1.1.2"  instance="stSentry3Tower" alias="towerID"             type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.1.1.3"  instance="stSentry3Tower" alias="towerName"           type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.1.1.4"  instance="stSentry3Tower" alias="towerStatus"         type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.1.1.5"  instance="stSentry3Tower" alias="towerInfeedCount"    type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.1.1.7"  instance="stSentry3Tower" alias="towerModelNumber"    type="string" />
+      <group ifType="all" name="servertech-sentry3-tower">
+        <mibObj alias="towerID" instance="stSentry3Tower" oid=".1.3.6.1.4.1.1718.3.2.1.1.2" type="string"/>
+        <mibObj alias="towerName" instance="stSentry3Tower" oid=".1.3.6.1.4.1.1718.3.2.1.1.3" type="string"/>
+        <mibObj alias="towerStatus" instance="stSentry3Tower" oid=".1.3.6.1.4.1.1718.3.2.1.1.4" type="gauge"/>
+        <mibObj alias="towerInfeedCount" instance="stSentry3Tower" oid=".1.3.6.1.4.1.1718.3.2.1.1.5" type="gauge"/>
+        <mibObj alias="towerModelNumber" instance="stSentry3Tower" oid=".1.3.6.1.4.1.1718.3.2.1.1.7" type="string"/>
       </group>
 
-      <group name="servertech-sentry3-infeed" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.3"  instance="stSentry3Infeed" alias="infeedName"          type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.6"  instance="stSentry3Infeed" alias="infeedLoadStatus"    type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.7"  instance="stSentry3Infeed" alias="infeedLoadValue"     type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.8"  instance="stSentry3Infeed" alias="infeedLoadHighThrsh" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.9"  instance="stSentry3Infeed" alias="infeedOutletCount"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.10" instance="stSentry3Infeed" alias="infeedCapacity"      type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.11" instance="stSentry3Infeed" alias="infeedVoltage"       type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.2.1.12" instance="stSentry3Infeed" alias="infeedPower"         type="gauge" />
+      <group ifType="all" name="servertech-sentry3-infeed">
+        <mibObj alias="infeedName" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.3" type="string"/>
+        <mibObj alias="infeedLoadStatus" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.6" type="gauge"/>
+        <mibObj alias="infeedLoadValue" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.7" type="gauge"/>
+        <mibObj alias="infeedLoadHighThrsh" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.8" type="gauge"/>
+        <mibObj alias="infeedOutletCount" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.9" type="gauge"/>
+        <mibObj alias="infeedCapacity" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.10" type="gauge"/>
+        <mibObj alias="infeedVoltage" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.11" type="gauge"/>
+        <mibObj alias="infeedPower" instance="stSentry3Infeed" oid=".1.3.6.1.4.1.1718.3.2.2.1.12" type="gauge"/>
       </group>
 
-      <group name="servertech-sentry3-envmon" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.2"  instance="stSentry3EnvMon" alias="envMonID"           type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.3"  instance="stSentry3EnvMon" alias="envMonName"         type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.6"  instance="stSentry3EnvMon" alias="envMonTemp"         type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.10" instance="stSentry3EnvMon" alias="envMonHumid"        type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.13" instance="stSentry3EnvMon" alias="envMonTempScale"    type="gauge" />
+      <group ifType="all" name="servertech-sentry3-envmon">
+        <mibObj alias="envMonID" instance="stSentry3EnvMon" oid=".1.3.6.1.4.1.1718.3.2.5.1.2" type="string"/>
+        <mibObj alias="envMonName" instance="stSentry3EnvMon" oid=".1.3.6.1.4.1.1718.3.2.5.1.3" type="string"/>
+        <mibObj alias="envMonTemp" instance="stSentry3EnvMon" oid=".1.3.6.1.4.1.1718.3.2.5.1.6" type="gauge"/>
+        <mibObj alias="envMonHumid" instance="stSentry3EnvMon" oid=".1.3.6.1.4.1.1718.3.2.5.1.10" type="gauge"/>
+        <mibObj alias="envMonTempScale" instance="stSentry3EnvMon" oid=".1.3.6.1.4.1.1718.3.2.5.1.13" type="gauge"/>
       </group>
 
       <systemDef name="ServerTech Sentry (3rd Gen)">

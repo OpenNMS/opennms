@@ -1,6 +1,4 @@
-<!-- Start of ADIC traps -->
-<!-- Start of auto generated data from MIB: ADICLIBMIB-v2 -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of ADIC traps --><!-- Start of auto generated data from MIB: ADICLIBMIB-v2 --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
  <mask>
   <maskelement>
@@ -25,7 +23,7 @@
   unknown(1) ok(2) degraded(3) failure(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;
   &lt;b&gt;prevGlobalStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
   unknown(1) ok(2) degraded(3) failure(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
   &lt;p&gt;ADIC StatusChange trap received displayName=%parm[#1]% globalStatus=%parm[#2]% prevGlobalStatus=%parm[#3]%&lt;/p&gt;
  </logmsg>
  <severity>Normal</severity>
@@ -54,7 +52,7 @@
 &lt;td&gt;&lt;b&gt;moverDoorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;
 &lt;td&gt;&lt;p;&gt;unknown(1) open(2) closed(3) locked(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
 &lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
   &lt;p&gt;ADIC DoorStateChange trap received displayName=%parm[#1]% moverDoorState=%parm[#2]%&lt;/p&gt;
 </logmsg>
  <severity>Normal</severity>
@@ -78,7 +76,7 @@
  <uei>http://uei.opennms.org/vendor/ADIC/traps/mailboxStateChange</uei>
  <event-label>ADICLIBMIB-v2 defined trap event: mailboxStateChange</event-label>
  <descr>&lt;p&gt;The %param[#1]% mailbox state has changed to %param[#2]%.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;displayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;moverMailboxState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;unknown(1) open(2) closed(3) locked(4)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
   &lt;p&gt;ADIC MailboxStateChange trap received displayName=%parm[#1]% moverMailboxState=%parm[#2]%&lt;/p&gt;
 </logmsg>
  <severity>Normal</severity>
@@ -102,7 +100,7 @@
  <uei>http://uei.opennms.org/vendor/ADIC/traps/startup</uei>
  <event-label>ADICLIBMIB-v2 defined trap event: startup</event-label>
  <descr>&lt;p&gt;The %param[#1]% device has started.  The shutdown state was %param[#2]%.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;displayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;startupState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
  &lt;p&gt;ADIC Startup trap received displayName=%parm[#1]% startupState=%parm[#2]%&lt;/p&gt;
 </logmsg>
  <severity>Warning</severity>
@@ -126,7 +124,7 @@
  <uei>http://uei.opennms.org/vendor/ADIC/traps/shutdown</uei>
  <event-label>ADICLIBMIB-v2 defined trap event: shutdown</event-label>
  <descr>&lt;p&gt;The %param[#1]% device has shut down.  The shutdown state is %param[#2]%.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;displayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;shutdownState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
  &lt;p&gt;ADIC Shutdown trap received displayName=%parm[#1]% shutdownState=%parm[#2]%&lt;/p&gt;
 </logmsg>
  <severity>Warning</severity>
@@ -150,7 +148,7 @@
  <uei>http://uei.opennms.org/vendor/ADIC/traps/error</uei>
  <event-label>ADICLIBMIB-v2 defined trap event: error</event-label>
  <descr>&lt;p&gt;The %param[#1]% device had an error.  Error code is %param[#2]%.  Error data is %param[#3]%.&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;displayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;errorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;errorModifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
 &lt;p&gt;ADIC error trap received displayName=%parm[#1]% errorCode=%parm[#2]% errorModifier=%parm[#3]%&lt;/p&gt;
 </logmsg>
  <severity>Minor</severity>
@@ -174,7 +172,7 @@
  <uei>http://uei.opennms.org/vendor/ADIC/traps/sac</uei>
  <event-label>ADICLIBMIB-v2 defined trap event: sac</event-label>
  <descr>&lt;p&gt;The %param[#1]% device generated a SAC code of %param[#2]% (%param[#3]%).&lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;displayName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serviceActionCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serviceActionCodeHex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
-<logmsg dest='logndisplay'>
+<logmsg dest="logndisplay">
 &lt;p&gt;ADIC SAC trap received displayName=%parm[#1]% ServiceActionCode=%parm[#2]% serviceActionCodeHex=%parm[#3]%&lt;/p&gt;
 </logmsg>
  <severity>Major</severity>
@@ -198,7 +196,7 @@
   enterprise specific event (trap) is received from an ADIC device for which no 
   format has been configured (i.e. no event definition exists).&lt;/p&gt;
   </descr>
-  <logmsg dest='logndisplay'>
+  <logmsg dest="logndisplay">
   ADIC Received unformatted enterprise event (enterprise:%id% generic:%generic% 
   specific:%specific%). %parm[##]% 
   args: %parm[all]% 

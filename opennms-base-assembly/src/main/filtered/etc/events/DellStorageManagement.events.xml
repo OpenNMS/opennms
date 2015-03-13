@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of mib2events auto-generated data for MIB: StorageManagement-MIB -->
     <event>
 	<mask>
@@ -5320,5 +5320,4 @@
 	    <decode varbinddecodedstring="nonRecoverable" varbindvalue="6"/>
 	</varbindsdecode>
     </event>
-</events>
-<!-- End of mib2events auto-generated data for MIB: StorageManagement-MIB -->
+</events><!-- End of mib2events auto-generated data for MIB: StorageManagement-MIB -->

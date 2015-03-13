@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: MPLS-VPN-MIB -->
 <event>
 	<mask>
@@ -24,11 +24,11 @@ a. The ifOperStatus of an interface associated with a VRF
 b. When an interface with ifOperStatus = up(1) is 
    associated with a VRF.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsVrfIfUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -54,11 +54,11 @@ a. The ifOperStatus of an interface associated with a VRF
 b. When an interface with ifOperStatus = up(1) state is 
    disassociated with a VRF.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsVrfIfDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -82,11 +82,11 @@ b. When an interface with ifOperStatus = up(1) state is
 contained by the specified VRF exceeds the value indicated by
 mplsVrfMidRouteThreshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsNumVrfRouteMidThreshExceeded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -111,11 +111,11 @@ contained by the specified VRF reaches or attempts to exceed
 the maximum allowed value as indicated by
 mplsVrfMaxRouteThreshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsNumVrfRouteMaxThreshExceeded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <event>
 	<mask>
@@ -143,11 +143,11 @@ included in the varbind here because the value of
 mplsVpnVrfSecIllegalLabelViolations should be one greater than 
 the threshold at the time this notification is issued.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsNumVrfSecIllegalLabelThreshExceeded trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
 </event>
 <!-- End of auto generated data from MIB: MPLS-VPN-MIB -->
 <!-- Start of auto generated data from MIB: MPLS-L3VPN-STD-MIB -->
@@ -199,13 +199,13 @@ c. Multiple interfaces are associated with this VRF, and the
 		down(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnVrfUp trap received 
 			mplsL3VpnIfConfRowStatus=%parm[#1]% 
 			mplsL3VpnVrfOperStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" alarm-type="2" clear-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%"/>
 </event>
 <event>
 	<mask>
@@ -256,13 +256,13 @@ c. The last interface with ifOperStatus equal to up(1)
 		down(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnVrfDown trap received 
 			mplsL3VpnIfConfRowStatus=%parm[#1]% 
 			mplsL3VpnVrfOperStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%"/>
 </event>
 <event>
 	<mask>
@@ -298,13 +298,13 @@ mplsL3VpnVrfConfMidRteThresh.&lt;/p&gt;&lt;table&gt;
 	mplsL3VpnVrfConfMidRteThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnVrfRouteMidThreshExceeded trap received 
 			mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
 			mplsL3VpnVrfConfMidRteThresh=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#2]%"/>
 </event>
 <event>
 	<mask>
@@ -355,13 +355,13 @@ value.&lt;/p&gt;&lt;table&gt;
 	mplsL3VpnVrfConfHighRteThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnVrfNumVrfRouteMaxThreshExceeded trap received 
 			mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
 			mplsL3VpnVrfConfHighRteThresh=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#2]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#2]%"/>
 </event>
 <event>
 	<mask>
@@ -394,12 +394,12 @@ the threshold at the time this notification is issued.&lt;/p&gt;&lt;table&gt;
 	mplsL3VpnVrfSecIllegalLblVltns&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnNumVrfSecIllglLblThrshExcd trap received 
 			mplsL3VpnVrfSecIllegalLblVltns=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1]%"/>
 </event>
 <event>
 	<mask>
@@ -455,13 +455,13 @@ whenever the maximum threshold has been cleared.&lt;/p&gt;&lt;table&gt;
 	mplsL3VpnVrfConfHighRteThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsL3VpnNumVrfRouteMaxThreshCleared trap received 
 			mplsL3VpnVrfPerfCurrNumRoutes=%parm[#1]% 
 			mplsL3VpnVrfConfHighRteThresh=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfNumVrfRouteMaxThreshExceeded:%dpname%:%nodeid%:%interface%:%parm[name-#2]%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" reduction-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfNumVrfRouteMaxThreshExceeded:%dpname%:%nodeid%:%interface%:%parm[name-#2]%"/>
 </event>
 <!-- End of auto generated data from MIB: MPLS-L3VPN-STD-MIB -->
 <!-- Start of auto generated data from MIB: MPLS-LSR-STD-MIB -->
@@ -527,13 +527,13 @@ mplsXCOperStatus objects MUST be the identical.&lt;/p&gt;&lt;table&gt;
 		lowerLayerDown(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsXCUp trap received 
 			mplsXCOperStatus=%parm[#1]% 
 			mplsXCOperStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" alarm-type="2" clear-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%"/>
 </event>
 <event>
 	<mask>
@@ -597,13 +597,13 @@ mplsXCOperStatus objects MUST be identical.&lt;/p&gt;&lt;table&gt;
 		lowerLayerDown(7)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mplsXCDown trap received 
 			mplsXCOperStatus=%parm[#1]% 
 			mplsXCOperStatus=%parm[#2]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%"/>
 </event>
 <!-- End of auto generated data from MIB: MPLS-LSR-STD-MIB -->
 <!-- Start of auto generated data from MIB: MPLS-TE-STD-MIB -->

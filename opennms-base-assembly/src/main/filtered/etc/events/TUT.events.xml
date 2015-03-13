@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: TUT-T2-MIB -->
 <event>
 	<mask>
@@ -20,7 +20,7 @@
 	<descr>
 &lt;p&gt;A temperature alarm has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			tutTemperatureAlarm trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -45,7 +45,7 @@
 	<descr>
 &lt;p&gt;A temperature alarm has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			tutTemperatureAlarmClear trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -74,7 +74,7 @@
 	tutSystemFanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			tutFanAlarm trap received 
 			tutSystemFanId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -104,7 +104,7 @@
 	tutSystemFanId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			tutFanAlarmClear trap received 
 			tutSystemFanId=%parm[#1]%&lt;/p&gt;
 		</logmsg>

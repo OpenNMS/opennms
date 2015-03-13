@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- event definitions for traps from Clarinet IRDA switch mib -->
 <event>
 	<mask>
@@ -24,7 +24,7 @@
 	swSerialNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarinet Event: heartBeat trap received 
 			swSerialNumber=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -58,7 +58,7 @@
 	fatalMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Clarinet Event: fatal trap received 
 			swSerialNumber=%parm[#1]% 
 			fatalMessage=%parm[#2]%&lt;/p&gt;

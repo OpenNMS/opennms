@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: BLACKBERRYSERVERMIB-SMIV2 -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: BLACKBERRYSERVERMIB-SMIV2 --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -24,11 +23,11 @@
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besSRPConnectEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent:%nodeid%:%dpname%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -57,11 +56,11 @@ indicating that the SRP connection is down.
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besSRPDisconnectEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="true" />
+	<alarm-data alarm-type="1" auto-clean="true" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -88,7 +87,7 @@ in Exchange BES.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besHungThreadEvent trap received&lt;/p&gt;
 	&lt;p&gt;
 	Trap Varbinds (parameters):&lt;br/&gt;
@@ -96,7 +95,7 @@ in Exchange BES.&lt;/p&gt;
 	&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -125,11 +124,11 @@ Access Control related.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailServerDownEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -161,11 +160,11 @@ back up.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailServerUpEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -191,11 +190,11 @@ back up.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoBESConnectionEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -224,11 +223,11 @@ as indicating that the connection is back up.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoBESConnectionUpEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -254,11 +253,11 @@ as indicating that the connection is back up.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDSStartEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMDSStopEvent:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMDSStopEvent:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -286,11 +285,11 @@ it as indicating that the MDS has started.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDSStopEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -316,11 +315,11 @@ it as indicating that the MDS has started.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoDBConnectionEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -349,11 +348,11 @@ disconnected from the DB.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoDBDisconnectionEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -380,11 +379,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besCriticalEvent trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 
 <!-- Traps described below here are a bit saner and do not require interpolation -->
@@ -413,11 +412,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besSRPConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -443,11 +442,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besSRPConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -473,11 +472,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailServerUp trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDown:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDown:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -503,11 +502,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailServerDown trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -533,11 +532,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoBESConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -563,11 +562,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMDStoBESConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -593,11 +592,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mdsStarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/mdsStopped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/mdsStopped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -623,11 +622,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mdsStopped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -653,11 +652,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mdsDBConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -683,11 +682,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mdsDBConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -713,11 +712,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailAgentStarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/besMailAgentStopped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/besMailAgentStopped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -743,11 +742,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besMailAgentStopped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -773,11 +772,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			besFailedUsers trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -803,11 +802,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispSRPConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -833,11 +832,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispSRPConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -863,11 +862,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispStarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/dispStopped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/dispStopped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -893,11 +892,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispStopped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -923,11 +922,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispDBConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -953,11 +952,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dispDBConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -983,11 +982,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			routSRPConnectionEstablished trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -1013,11 +1012,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			routSRPConnectionDropped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -1043,11 +1042,11 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			routStarted trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" clear-key="uei.opennms.org/vendor/RIM/BES/routStopped:%nodeid%:%dpname%" alarm-type="2" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/RIM/BES/routStopped:%nodeid%:%dpname%" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
 <event>
 	<mask>
@@ -1073,11 +1072,10 @@ logged with 1xxxx and 5xxxx event IDs.&lt;/p&gt;
 	%parm[all]%
 	&lt;/p&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			routStopped trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%"/>
 </event>
-</events>
-<!-- End of auto generated data from MIB: BLACKBERRYSERVERMIB-SMIV2 -->
+</events><!-- End of auto generated data from MIB: BLACKBERRYSERVERMIB-SMIV2 -->

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DMTF-DMI-MIB -->
 <event>
 	<mask>
@@ -73,7 +73,7 @@ SNMP OID mapping is not defined).&lt;/p&gt;&lt;table&gt;
 	dmiEventSubSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiEventIndication trap received 
 			dmiEventClassString=%parm[#1]% 
 			dmiEventType=%parm[#2]% 
@@ -116,7 +116,7 @@ Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiCompName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiComponentAddedIndication trap received 
 			dmiCompId=%parm[#1]% 
 			dmiCompName=%parm[#2]%&lt;/p&gt;
@@ -148,7 +148,7 @@ the DMI Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiCompId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiComponentDeletedIndication trap received 
 			dmiCompId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -183,7 +183,7 @@ component in the DMI Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiLanguage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiLanguageAddedIndication trap received 
 			dmiCompId=%parm[#1]% 
 			dmiLanguage=%parm[#2]%&lt;/p&gt;
@@ -219,7 +219,7 @@ from a component in the DMI Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiLanguage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiLanguageDeletedIndication trap received 
 			dmiCompId=%parm[#1]% 
 			dmiLanguage=%parm[#2]%&lt;/p&gt;
@@ -259,7 +259,7 @@ DMI Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiGroupClassString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiGroupAddedIndication trap received 
 			dmiCompId=%parm[#1]% 
 			dmiGroupId=%parm[#2]% 
@@ -296,7 +296,7 @@ component in the DMI Service Layer.&lt;/p&gt;&lt;table&gt;
 	dmiGroupId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmiGroupDeletedIndication trap received 
 			dmiCompId=%parm[#1]% 
 			dmiGroupId=%parm[#2]%&lt;/p&gt;
@@ -371,7 +371,7 @@ portable computer is running low.&lt;/p&gt;&lt;table&gt;
 		subsystem2(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPortableBatteryLowCombinedBatterysCharge trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -449,7 +449,7 @@ portable computer is critcally low.&lt;/p&gt;&lt;table&gt;
 		subsystem2(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPortableBatteryCriticalCombinedBatterysCharge trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -527,7 +527,7 @@ defective and requires maintenance.&lt;/p&gt;&lt;table&gt;
 		subsystem2(4)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPortableBatteryMaintenanceRequired trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -602,7 +602,7 @@ defective and requires maintenance.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfProcessorFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -675,7 +675,7 @@ defective and requires maintenance.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfProcessorSystemUp trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -749,7 +749,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfProcessorInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -822,7 +822,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfProcessorConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -897,7 +897,7 @@ severity indicated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardProcessorFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -971,7 +971,7 @@ according to the event severity indicated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardPhysicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1045,7 +1045,7 @@ has failed.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardMemoryError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1119,7 +1119,7 @@ started-up successfully.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardSystemUp trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1193,7 +1193,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1266,7 +1266,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMotherboardConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1339,7 +1339,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfLogicalMemoryError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1412,7 +1412,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfLogicalMemoryInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1485,7 +1485,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfSystemCacheMemoryError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1559,7 +1559,7 @@ during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfSystemCacheInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1634,7 +1634,7 @@ event severity indicated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPowerSupplyStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1708,7 +1708,7 @@ on the system has changed.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPowerSupplyPowerControlRequest trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1787,7 +1787,7 @@ of the system.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfCoolingDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1868,7 +1868,7 @@ of the system if left unattended.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfCoolingDeviceTemperatureFault trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -1943,7 +1943,7 @@ the event severity.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfDisksStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2017,7 +2017,7 @@ to initialize properly on startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfDisksInitializationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2090,7 +2090,7 @@ to initialize properly on startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfDisksConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2164,7 +2164,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfDiskControllerInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2237,7 +2237,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfDiskControllerConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2310,7 +2310,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalMemoryArrayError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2384,7 +2384,7 @@ to initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalMemoryArrayInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2458,7 +2458,7 @@ to initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMassStoreLogicalDrivesPhysicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2532,7 +2532,7 @@ logical disk drive has been activated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMassStoreLogicalDrivesHotSpareActivated trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2605,7 +2605,7 @@ logical disk drive has been activated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMassStoreLogicalDrivesLogicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2679,7 +2679,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMassStoreLogicalDrivesInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2752,7 +2752,7 @@ initialize properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfMassStoreLogicalDrivesConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2827,7 +2827,7 @@ reset condition.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfSystemResetSystemUp trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2900,7 +2900,7 @@ reset condition.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfSystemHardwareSecuritySettingsChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -2975,7 +2975,7 @@ accessed without proper authorization.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfSystemHardwareSecurityContainerSecurityBreach trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3049,7 +3049,7 @@ to the event severity indicated.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfUPSBatteryStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3123,7 +3123,7 @@ now running on UPS Battery.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfUPSBatteryUtilityPowerLostSystemOnBattery trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3197,7 +3197,7 @@ The UPS battery is no longer in use.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfUPSBatteryUtilityPowerUpSystemOffBattery trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3273,7 +3273,7 @@ component.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfVoltageProbePowerSupplyStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3348,7 +3348,7 @@ or a system component.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfTemperatureProbeCoolingDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3424,7 +3424,7 @@ the system.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfElectricalCurrentProbePowerSupplyStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3498,7 +3498,7 @@ status due to loss of (or regained) electrical power.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfElectricalCurrentProbeCoolingDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3572,7 +3572,7 @@ physical container in the system have been modified.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerSecuritySettingsChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3646,7 +3646,7 @@ chassis or physical container has changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerPowerSupplyStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3720,7 +3720,7 @@ chassis or physical container has changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerCoolingDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3793,7 +3793,7 @@ chassis or physical container has changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerPhysicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3866,7 +3866,7 @@ chassis or physical container has changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerLogicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -3940,7 +3940,7 @@ been opened without poper authorization.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerSecurityBreach trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4014,7 +4014,7 @@ system is not properly configured.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfPhysicalContainerConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4087,7 +4087,7 @@ system is not properly configured.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyPowerSupplyStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4161,7 +4161,7 @@ has changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyCoolingDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4235,7 +4235,7 @@ changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyPhysicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4309,7 +4309,7 @@ changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyLogicalDeviceStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4382,7 +4382,7 @@ changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencySystemUp trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4455,7 +4455,7 @@ changed status.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyBatteryStatusChange trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4529,7 +4529,7 @@ been opened without poper authorization.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyContainerSecurityBreach trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4603,7 +4603,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyInitializationFailure trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 
@@ -4676,7 +4676,7 @@ properly during system startup.&lt;/p&gt;&lt;table&gt;
 		unknown(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dmtfStructureDependencyConfigurationError trap received 
 			dmiEventDateTime=%parm[#1]% 
 			dmiCompId=%parm[#2]% 

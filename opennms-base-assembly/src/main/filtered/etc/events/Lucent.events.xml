@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: AGG-TRAP-MIB -->
 <event>
 	<mask>
@@ -30,7 +30,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	unknownDeviceTrapContents&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			unParsedEvent trap received 
 			unknownDeviceTrapContents=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -88,7 +88,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxProducerConnect trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -149,7 +149,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxProducerUnReadable trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -210,7 +210,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxProducerDisconnect trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -277,7 +277,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	minutes&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxProducerUnReachable trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -334,7 +334,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	reason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			logFileChanged trap received 
 			oldFile=%parm[#1]% 
 			newFile=%parm[#2]% 
@@ -394,7 +394,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	matePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxFTMateConnect trap received 
 			snName=%parm[#1]% 
 			myHost=%parm[#2]% 
@@ -457,7 +457,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	matePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			styxFTMateDisconnect trap received 
 			snName=%parm[#1]% 
 			myHost=%parm[#2]% 
@@ -493,7 +493,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	cdrClient&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRBufferOverflow trap received 
 			cdrClient=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -525,7 +525,7 @@ OBJECTS DEFINITION:
 	cdrCallState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRInconsistentState trap received 
 			cdrCallState=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -557,7 +557,7 @@ VARIABLES DEFINITION:
 	cdrClient&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRNewClient trap received 
 			cdrClient=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -589,7 +589,7 @@ VARIABLES DEFINITION:
 	cdrClient&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRClientDisconnected trap received 
 			cdrClient=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -621,7 +621,7 @@ VARIABLES DEFINITION:
 	cdrClient&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRClientBufferOverflow trap received 
 			cdrClient=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -658,7 +658,7 @@ VARIABLES DEFINITION:
 	fCAppInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRFCAppInfoTimeOut trap received 
 			fCAppID=%parm[#1]% 
 			fCAppInstance=%parm[#2]%&lt;/p&gt;
@@ -717,7 +717,7 @@ VARIABLES DEFINITION:
 	callId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRLDCDetected trap received 
 			severity=%parm[#1]% 
 			originationNumber=%parm[#2]% 
@@ -780,7 +780,7 @@ VARIABLES DEFINITION:
 	callId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRLDCContinued trap received 
 			severity=%parm[#1]% 
 			originationNumber=%parm[#2]% 
@@ -823,7 +823,7 @@ VARIABLES DEFINITION:
 	fileSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRDiskFull trap received 
 			fullPercent=%parm[#1]% 
 			fileSystem=%parm[#2]%&lt;/p&gt;
@@ -874,7 +874,7 @@ VARIABLES DEFINITION:
 	errorNo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cDRClientAlarm trap received 
 			subType=%parm[#1]% 
 			severity=%parm[#2]% 
@@ -948,7 +948,7 @@ first time.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardUpTrap trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelDeviceCardSlotIndex=%parm[#2]% 
@@ -1018,7 +1018,7 @@ for some reason is no longer recognized by the matrix.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardDownTrap trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelDeviceCardSlotIndex=%parm[#2]% 
@@ -1089,7 +1089,7 @@ indicate the slot of the new active card.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardActiveTrap trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelDeviceCardSlotIndex=%parm[#2]% 
@@ -1136,7 +1136,7 @@ the trap.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelFaultLoggedTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1196,7 +1196,7 @@ the trap.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRingUpTrap trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1235,7 +1235,7 @@ the trap.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRingDownTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1276,7 +1276,7 @@ until the alarm is cleared.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSystemBusyTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1315,7 +1315,7 @@ until the alarm is cleared.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSystemBusyWarningTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1354,7 +1354,7 @@ until the alarm is cleared.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSystemBusyClearedTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1396,7 +1396,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelClockModeChangeTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1458,7 +1458,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelDSPResourceBlockTrap trap received 
 			excelSysLastAlarmDSPLastBlocked=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1498,7 +1498,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelDSPFuncNotCfgTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1537,7 +1537,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelDSPMgmtInconsistentTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1576,7 +1576,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelDldTimeoutTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1616,7 +1616,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRANUnAvailableTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1655,7 +1655,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelResourceUtilThreshTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -1698,7 +1698,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardNotSuppTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1742,7 +1742,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardDldCorruptTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1786,7 +1786,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardNotRecTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1830,7 +1830,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardCfgResetTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1874,7 +1874,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardConnMapFailTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1918,7 +1918,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardNoSWTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -1962,7 +1962,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardNoALawTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2006,7 +2006,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardRevNotSuppTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2057,7 +2057,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelEthernetErrTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2101,7 +2101,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelNoFanTrayTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2145,7 +2145,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelExnetACommFailTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2189,7 +2189,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelExnetBCommFailTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2233,7 +2233,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelExnetAFiberFailTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2277,7 +2277,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelExnetBFiberFailTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2321,7 +2321,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelEXSAPITrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2365,7 +2365,7 @@ This can be prevented by increasing the polling interval.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelEXSConfTSTrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2410,7 +2410,7 @@ card represented by excelExnetConnectIndex resides on has changed.&lt;/p&gt;&lt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelEXSSCbusMasterChangedTrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2455,7 +2455,7 @@ excelExnetConnectIndex resides has failed.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelEXSSCbusFailureTrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2495,7 +2495,7 @@ excelExnetConnectIndex resides has failed.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSS7NetCongestionTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -2534,7 +2534,7 @@ excelExnetConnectIndex resides has failed.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSS7RemISUPUnavailTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -2584,7 +2584,7 @@ available clock source.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelClockSourceLostTrap trap received 
 			excelSysLastAlarmRefClockSrc=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2633,7 +2633,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelClockSourceLostClearedTrap trap received 
 			excelSysLastAlarmRefClockSrc=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2677,7 +2677,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelNoSupportDSPFuncTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2721,7 +2721,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPartialMessageReceivedTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2765,7 +2765,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelUnackedMsgTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2809,7 +2809,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelNodeIDAlreadyExistsTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2853,7 +2853,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelInvalidMsgLenTrap trap received 
 			excelDeviceCardSlotIndex=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -2893,7 +2893,7 @@ automatically by the switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLogSpanIDExistsTrap trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -2933,7 +2933,7 @@ system.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelNodeUpTrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -2973,7 +2973,7 @@ switch.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelNodeDownTrap trap received 
 			excelNodePhysicalID=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3005,7 +3005,7 @@ connects with the master agent.&lt;/p&gt;&lt;table&gt;
 	excelNodeIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSubagentConnect trap received 
 			excelNodeIdentifier=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3040,7 +3040,7 @@ connects to the switch interface process.&lt;/p&gt;&lt;table&gt;
 	excelNodeIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSwitchConnect trap received 
 			excelCurrentNode=%parm[#1]% 
 			excelNodeIdentifier=%parm[#2]%&lt;/p&gt;
@@ -3072,7 +3072,7 @@ connectivity with the switch interface process&lt;/p&gt;&lt;table&gt;
 	excelNodeIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSwitchLossConnectivity trap received 
 			excelNodeIdentifier=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3115,7 +3115,7 @@ Alarm for more then some customer configured time.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSpanCarrierGroupAlarm trap received 
 			excelLogicalSpanId=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -3160,7 +3160,7 @@ number of slips occurring&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSpanExcessiveSlips trap received 
 			excelLogicalSpanId=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -3200,7 +3200,7 @@ number of slips occurring&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSpanJ1Failure trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3228,7 +3228,7 @@ number of slips occurring&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This trap will occur when the line card exceeds it's final 
 traffic threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLineCardBusy trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3254,7 +3254,7 @@ traffic threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;This trap will occur when the line card reaches it's initial 
 traffic threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLineCardApproachBusy trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3280,7 +3280,7 @@ traffic threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;This trap will occur when memory usage on the line card 
 exceeds the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLowMemory trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3345,7 +3345,7 @@ exceeds the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelCardStatusChange trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -3375,7 +3375,7 @@ exceeds the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;This trap will occur when memory usage on the line card 
 returns below the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLowMemoryCleared trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3412,7 +3412,7 @@ returns below the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelGenericEvent trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3439,7 +3439,7 @@ returns below the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSubrateSwitchOver trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3464,7 +3464,7 @@ returns below the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;The D-channel has gone from being In Service to Out Of Service&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSwitchOverInterrupt trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3490,7 +3490,7 @@ returns below the defined threshold level&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The controller switchover was successful.  The new D channel is 
 now the controller&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSwitchOverSuccess trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3516,7 +3516,7 @@ now the controller&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 &lt;p&gt;The controller switchover failed.  The existing D channel is 
 still controlling the D channel&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSwitchOverFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3541,7 +3541,7 @@ still controlling the D channel&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Information Alarm when the state of the D channel changes&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelBackupDiagnostics trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3572,7 +3572,7 @@ NOT to be master or fails to drive the clock, the backup
 master will take over and drive the clock. This alarm is sent 
 when the EXNET Connect detects this.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSCbusMasterChange trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3599,7 +3599,7 @@ when the EXNET Connect detects this.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 remote SS7 card that is controlling CIC's that are located on 
 that node&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelSCBusFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3624,7 +3624,7 @@ that node&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	<descr>
 &lt;p&gt;Default error message for unexpected errors.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelGeneralSoftwareError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3662,7 +3662,7 @@ corresponding rear slot&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRearSlotController trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3702,7 +3702,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelFrontSlotController trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3729,7 +3729,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	<descr>
 &lt;p&gt;&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelConnectNotification trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3758,7 +3758,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	excelNodePhysicalID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRouteTableUpdated trap received 
 			excelNodePhysicalID=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3788,7 +3788,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	excelNodePhysicalID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelResourceGroupTableUpdated trap received 
 			excelNodePhysicalID=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3818,7 +3818,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	excelNodePhysicalID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelOldRouteTableDeleted trap received 
 			excelNodePhysicalID=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3848,7 +3848,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	excelNodePhysicalID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelRouteTableForcefullyDeleted trap received 
 			excelNodePhysicalID=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3878,7 +3878,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 	excelNodePhysicalID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelResourceGroupTableForceDelete trap received 
 			excelNodePhysicalID=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -3905,7 +3905,7 @@ corresponding front slot&lt;/p&gt;&lt;table&gt;
 &lt;p&gt;This event will occur when a problem occurs during the flash or 
 RAM loading&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelLoadProblem trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -3943,7 +3943,7 @@ processing&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelTFTPFailure trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -3989,7 +3989,7 @@ The possible event ID's are :
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventL3PCIC trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4032,7 +4032,7 @@ C	Link Out-of-service, L5_OOS3&lt;/p&gt;&lt;table&gt;
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventL3PLINK trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4071,7 +4071,7 @@ C	Link Out-of-service, L5_OOS3&lt;/p&gt;&lt;table&gt;
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCPC trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4109,7 +4109,7 @@ The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventSPRC trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4147,7 +4147,7 @@ possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventBLS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4180,7 +4180,7 @@ component ID 23.  The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventBLR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4213,7 +4213,7 @@ possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCRS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4246,7 +4246,7 @@ The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCRR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4279,7 +4279,7 @@ The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventUCIC trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4313,7 +4313,7 @@ The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCGRS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4346,7 +4346,7 @@ The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCGRR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4384,7 +4384,7 @@ Id 29.  The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventGBUS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4417,7 +4417,7 @@ component Id 30.  The possible eventID's are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventGBUR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4451,7 +4451,7 @@ are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventHGBR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4488,7 +4488,7 @@ are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventMTP3Hmdt trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4524,7 +4524,7 @@ are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventMTP3Lsac trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4562,7 +4562,7 @@ are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventMTP3Tlac trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4596,7 +4596,7 @@ are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventMTP3Tsfc trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4630,7 +4630,7 @@ be received are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventISUPHlb trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4665,7 +4665,7 @@ be received are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCRCR trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4702,7 +4702,7 @@ received are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventMGBS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4739,7 +4739,7 @@ eventID's  are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventHGBS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4771,7 +4771,7 @@ eventID's  are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCQS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4803,7 +4803,7 @@ eventID's  are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCVS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4838,7 +4838,7 @@ eventID's  are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCRCS trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4873,7 +4873,7 @@ eventID's  are:
 	excelPPLComponentId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelPPLEventCRO trap received 
 			excelPPLComponentId=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -4912,7 +4912,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelDchannelFailure trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -4951,7 +4951,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelVoIPModuleOOS trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -4990,7 +4990,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelVoipModuleDead trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -5029,7 +5029,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelVoipModuleDspDead trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -5068,7 +5068,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelVoipModuleReset trap received 
 			excelSysLastAlarmNode=%parm[#1]% 
 			excelSysLastAlarmSeverity=%parm[#2]%&lt;/p&gt;
@@ -5135,7 +5135,7 @@ communicating on the D-channel.&lt;/p&gt;&lt;table&gt;
 		major(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			excelMatrixSwitchover trap received 
 			excelSysLastAlarmStatus=%parm[#1]% 
 			excelSysLastAlarmNode=%parm[#2]% 
@@ -5175,7 +5175,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	fCServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcSwitchRegnError trap received 
 			fCServer=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5210,7 +5210,7 @@ VARIABLE DEFINITIONS:
 	fCServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fCSwitchRegnSucc trap received 
 			fCServer=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5245,7 +5245,7 @@ VARIABLE DEFINITIONS:
 	fCServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAddLLCNodeError trap received 
 			fCServer=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5280,7 +5280,7 @@ VARIABLE DEFINITIONS:
 	fCServer&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAddLLCNodeSucc trap received 
 			fCServer=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5319,7 +5319,7 @@ VARIBLE DEFINITIONS:
 	fCApp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppStartSucc trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]%&lt;/p&gt;
@@ -5358,7 +5358,7 @@ VARIBLE DEFINITIONS:
 	fCApp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppEndSucc trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]%&lt;/p&gt;
@@ -5397,7 +5397,7 @@ VARIBLE DEFINITIONS:
 	fCApp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppStartError trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]%&lt;/p&gt;
@@ -5441,7 +5441,7 @@ VARIBLE DEFINITIONS:
 	fCDescText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppInfoError trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]% 
@@ -5487,7 +5487,7 @@ VARIBLE DEFINITIONS:
 	fCDescText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppMajorError trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]% 
@@ -5532,7 +5532,7 @@ VARIBLE DEFINITIONS:
 	fCDescText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcAppCritError trap received 
 			fCServer=%parm[#1]% 
 			fCApp=%parm[#2]% 
@@ -5567,7 +5567,7 @@ VARIBLE DEFINITIONS:
 	fCDescText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fcUnparsedEvent trap received 
 			fCDescText=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -5648,7 +5648,7 @@ CRITICAL for failed registration.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			h323CSConnectionStatus trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -5717,7 +5717,7 @@ Severity: INFO/MINOR depending on the preset value.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			h323GatewayUtilization trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -5780,7 +5780,7 @@ INFO (unknownError - any other errors).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			h323DSError trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -5853,7 +5853,7 @@ Severity: MINOR depending on the preset value.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			h323UnreachableGateway trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -5913,7 +5913,7 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			h323CommandFailed trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -5986,7 +5986,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	runStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssProcessUnstartable trap received 
 			deviceType=%parm[#1]% 
 			domain=%parm[#2]% 
@@ -6061,7 +6061,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	runStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssProcessCreated trap received 
 			deviceType=%parm[#1]% 
 			domain=%parm[#2]% 
@@ -6134,7 +6134,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	runStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssProcessDied trap received 
 			deviceType=%parm[#1]% 
 			domain=%parm[#2]% 
@@ -6210,7 +6210,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	runStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssProcessKilled trap received 
 			deviceType=%parm[#1]% 
 			domain=%parm[#2]% 
@@ -6286,7 +6286,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	runStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssProcessStateChange trap received 
 			deviceType=%parm[#1]% 
 			domain=%parm[#2]% 
@@ -6328,7 +6328,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	unknownDeviceTrapContents&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssInternalError trap received 
 			unknownDeviceTrapContents=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -6386,7 +6386,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssElementSuccessfulConnection trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6447,7 +6447,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssElementFileUnReadable trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6508,7 +6508,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	file&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssElementDisconnect trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6575,7 +6575,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	minutes&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssElementUnReachable trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6632,7 +6632,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	reason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			logFileChanged trap received 
 			oldFile=%parm[#1]% 
 			newFile=%parm[#2]% 
@@ -6692,7 +6692,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	matePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssFTMateConnect trap received 
 			snName=%parm[#1]% 
 			myHost=%parm[#2]% 
@@ -6755,7 +6755,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	matePort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			lssFTMateDisconnect trap received 
 			snName=%parm[#1]% 
 			myHost=%parm[#2]% 
@@ -6810,7 +6810,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerUnreachable trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6864,7 +6864,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerConnected trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6918,7 +6918,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerRegistered trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -6972,7 +6972,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerDisconnected trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -7026,7 +7026,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerCannotRegister trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -7080,7 +7080,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	sbProducerPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sbProducerCannotDisconnect trap received 
 			pepName=%parm[#1]% 
 			devName=%parm[#2]% 
@@ -7164,7 +7164,7 @@ CRITICAL for failed registration.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psaxCSConnectionStatus trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -7233,7 +7233,7 @@ Severity: INFO/MINOR depending on the preset value.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psaxGatewayUtilization trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -7296,7 +7296,7 @@ INFO (unknownError - any other errors).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psaxDSError trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -7369,7 +7369,7 @@ Severity: MINOR depending on the preset value.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psaxUnreachableGateway trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -7429,7 +7429,7 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			psaxCommandFailed trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -7472,7 +7472,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	percentage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuUtilWarning trap received 
 			host=%parm[#1]% 
 			percentage=%parm[#2]%&lt;/p&gt;
@@ -7511,7 +7511,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	percentage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuUtilAlarm trap received 
 			host=%parm[#1]% 
 			percentage=%parm[#2]%&lt;/p&gt;
@@ -7556,7 +7556,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuUtilInform trap received 
 			host=%parm[#1]% 
 			percentage=%parm[#2]% 
@@ -7596,7 +7596,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	load&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuLoadWarning trap received 
 			host=%parm[#1]% 
 			load=%parm[#2]%&lt;/p&gt;
@@ -7635,7 +7635,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	load&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuLoadAlarm trap received 
 			host=%parm[#1]% 
 			load=%parm[#2]%&lt;/p&gt;
@@ -7680,7 +7680,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			cpuLoadInform trap received 
 			host=%parm[#1]% 
 			load=%parm[#2]% 
@@ -7720,7 +7720,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	percentage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			diskUsageWarning trap received 
 			disk=%parm[#1]% 
 			percentage=%parm[#2]%&lt;/p&gt;
@@ -7759,7 +7759,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	percentage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			diskUsageAlarm trap received 
 			disk=%parm[#1]% 
 			percentage=%parm[#2]%&lt;/p&gt;
@@ -7804,7 +7804,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;
 	status&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			diskUsageInform trap received 
 			disk=%parm[#1]% 
 			percentage=%parm[#2]% 
@@ -7851,7 +7851,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	maxSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			fileSizeEvent trap received 
 			file=%parm[#1]% 
 			curSize=%parm[#2]% 
@@ -7895,7 +7895,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	processID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			unixProcessDied trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -7944,7 +7944,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	cpuUsage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			procCpuAlarm trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -7994,7 +7994,7 @@ Severity: MAJOR&lt;/p&gt;&lt;table&gt;
 	cpuUsage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			procCpuWarn trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -8044,7 +8044,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;
 	memUsage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			procMemAlarm trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -8089,7 +8089,7 @@ The variables are:
 	processID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			procCpuInform trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -8132,7 +8132,7 @@ The variables are:
 	processID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			procMemInform trap received 
 			host=%parm[#1]% 
 			processName=%parm[#2]% 
@@ -8215,7 +8215,7 @@ CRITICAL for failed registration.&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipCSConnectionStatus trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -8277,7 +8277,7 @@ INFO (unknownError - any other errors).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipDSError trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -8334,7 +8334,7 @@ Severity: MINOR (or may be command sensitive).&lt;/p&gt;&lt;table&gt;
 	comment&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			sipCommandFailed trap received 
 			timeOccurred=%parm[#1]% 
 			code=%parm[#2]% 
@@ -8368,7 +8368,7 @@ SPINS and SMBI cannot be made.
        VARIABLE DEFINITIONS: NONE
 Severity: CRITICAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsSmbiSocketConnError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8396,7 +8396,7 @@ SPINS and SMBI is successful.
        VARIABLE DEFINITIONS: NONE
 Severity: INFO&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsSmbiSocketConnOpen trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8424,7 +8424,7 @@ SPINS and SMBI is closed.
        VARIABLE DEFINITIONS: NONE
 Severity: CRITICAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsSbiSocketConnLost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8452,7 +8452,7 @@ and LNP services has failed.
 VARIABLE DEFINITIONS: NONE
 Severity: CRITICAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsSwitchRegnError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8480,7 +8480,7 @@ and LNP services is successful.
 VARIABLE DEFINITIONS: NONE
 Severity: INFO&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsSwitchRegnSucc trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8508,7 +8508,7 @@ Severity: INFO&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 VARIABLE DEFINITIONS: NONE
 Severity: CRITICAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsAddLLCNodeError trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8536,7 +8536,7 @@ Severity: CRITICAL&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 VARIABLE DEFINITIONS: NONE
 Severity: INFO&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			spinsAddLLCNodeSucc trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -8587,7 +8587,7 @@ alarmActiveResourceType and alarmACtiveResourceId.&lt;/p&gt;&lt;table&gt;
 	alarmActiveResourceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alarmRaise trap received 
 			alarmModelIndex=%parm[#1]% 
 			alarmModelState=%parm[#2]% 
@@ -8636,7 +8636,7 @@ alarmActiveResourceType and alarmACtiveResourceId.&lt;/p&gt;&lt;table&gt;
 	alarmActiveResourceId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			alarmCleared trap received 
 			alarmModelIndex=%parm[#1]% 
 			alarmActiveResourceType=%parm[#2]% 

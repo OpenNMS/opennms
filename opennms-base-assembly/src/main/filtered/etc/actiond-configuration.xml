@@ -1,6 +1,2 @@
-<?xml version="1.0"?>
-<actiond-configuration
-	max-outstanding-actions="10"
-	max-process-time="120000">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><actiond-configuration max-outstanding-actions="10" max-process-time="120000">
 </actiond-configuration>
-

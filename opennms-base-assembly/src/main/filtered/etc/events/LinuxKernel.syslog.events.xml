@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 
         <!-- Begin syslog event definitions for Linux kernel -->
         <event>
@@ -19,11 +19,11 @@
                         PID: %parm[processid]%
                         &lt;/p&gt;
                 </descr>
-                <logmsg dest='logndisplay'>
+                <logmsg dest="logndisplay">
                         &lt;p&gt;Linux OOM killer killed process %parm[killedProcName]% (PID %parm[killedProcID]%) &lt;/p&gt;
                 </logmsg>
                 <severity>Major</severity>
-                <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[killedProcName]%" alarm-type="3" auto-clean="false" />
+                <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[killedProcName]%"/>
         </event>
         <!-- End syslog event definitions for Linux kernel -->
 

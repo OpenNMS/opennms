@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<events>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events>
     <event>
         <mask>
             <maskelement>
@@ -22,14 +21,14 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#1]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="emergency"/>
-            <decode varbindvalue="1" varbinddecodedstring="alert"/>
-            <decode varbindvalue="2" varbinddecodedstring="critical"/>
-            <decode varbindvalue="3" varbinddecodedstring="error"/>
-            <decode varbindvalue="4" varbinddecodedstring="warning"/>
-            <decode varbindvalue="5" varbinddecodedstring="notice"/>
-            <decode varbindvalue="6" varbinddecodedstring="info"/>
-            <decode varbindvalue="7" varbinddecodedstring="debug"/>
+            <decode varbinddecodedstring="emergency" varbindvalue="0"/>
+            <decode varbinddecodedstring="alert" varbindvalue="1"/>
+            <decode varbinddecodedstring="critical" varbindvalue="2"/>
+            <decode varbinddecodedstring="error" varbindvalue="3"/>
+            <decode varbinddecodedstring="warning" varbindvalue="4"/>
+            <decode varbinddecodedstring="notice" varbindvalue="5"/>
+            <decode varbinddecodedstring="info" varbindvalue="6"/>
+            <decode varbinddecodedstring="debug" varbindvalue="7"/>
         </varbindsdecode>
     </event>
 </events>

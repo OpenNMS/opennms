@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: RADLAN-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: RADLAN-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -35,7 +34,7 @@ interface number.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rxOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -76,7 +75,7 @@ The bound variable rndErrorDesc provides the interface number.&lt;/p&gt;&lt;tabl
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			txOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -117,7 +116,7 @@ Table is used for IP routing algorithm (RIP).&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			routeTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -160,7 +159,7 @@ using the variable rndAction.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			resetRequired trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -203,7 +202,7 @@ text and severity respectively.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			endTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -245,7 +244,7 @@ provides the actual  message text  and severity  respectively.&lt;/p&gt;&lt;tabl
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			abortTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -287,7 +286,7 @@ question&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			startTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -327,7 +326,7 @@ question&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			faultBackUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -367,7 +366,7 @@ question&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			mainLinkUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -409,7 +408,7 @@ provides the actual  message text and severity respectively.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ipxRipTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -451,7 +450,7 @@ provides the actual  message text and severity respectively.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ipxSapTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -494,7 +493,7 @@ interface Number.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			facsAccessVoilation trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -535,7 +534,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== info )&lt;/p&gt;&lt;table&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			autoConfigurationCompleted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -577,7 +576,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;tabl
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			forwardingTabOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -619,7 +618,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;tabl
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			framRelaySwitchConnectionUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -661,7 +660,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;tabl
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			framRelaySwitchConnectionDown trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -702,7 +701,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			errorsDuringInit trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -742,7 +741,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanDynPortAdded trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -782,7 +781,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanDynPortRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -822,7 +821,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsSDclientsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -863,7 +862,7 @@ and is thought to be inactive.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsSDinactiveServer trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -903,7 +902,7 @@ and is thought to be inactive.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsIpZhrConnectionsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -944,7 +943,7 @@ no available IP virtual address to allocate to it.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsIpZhrReqStaticConnNotAccepted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -986,7 +985,7 @@ it will not be further allocated to new connections.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsIpZhrVirtualIpAsSource trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1029,7 +1028,7 @@ specific source IP.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsIpZhrNotAllocVirtualIp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1072,7 +1071,7 @@ configuration to an NMS.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsSnmpSetRequestInSpecialCfgState trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1122,7 +1121,7 @@ if any responses were received:
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsPingCompletion trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1164,7 +1163,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			pppSecurityViolation trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1204,7 +1203,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			frDLCIStatudChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1244,7 +1243,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			papFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1284,7 +1283,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			chapFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1325,7 +1324,7 @@ up after failure a trap of this type is issued.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsWSDRedundancySwitch trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1367,7 +1366,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rsDhcpAllocationFailure trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1407,7 +1406,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIpFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1447,7 +1446,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIpFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1487,7 +1486,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIpxFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1527,7 +1526,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIpxFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1567,7 +1566,7 @@ available IP addresses.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIpmFftOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1608,7 +1607,7 @@ changed&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlPhysicalDescriptionChanged trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1657,7 +1656,7 @@ transitions from the Learning state to the Forwarding state.&lt;/p&gt;&lt;table&
 	rldot1dStpTrapVrblVID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rldot1dStpPortStateForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]% 
@@ -1708,7 +1707,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 	rldot1dStpTrapVrblVID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rldot1dStpPortStateNotForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]% 
@@ -1750,7 +1749,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlPolicyDropPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1790,7 +1789,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlPolicyForwardPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1830,7 +1829,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIgmpProxyTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1870,7 +1869,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlIgmpV1MsgReceived trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1910,7 +1909,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlVrrpEntriesDeleted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1950,7 +1949,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlHotSwapTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -1990,7 +1989,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlTrunkPortAddedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2030,7 +2029,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlTrunkPortRemovedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2071,7 +2070,7 @@ a trunk because of device limitations or diffrent swIfType.&lt;/p&gt;&lt;table&g
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlTrunkPortNotCapableTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2112,7 +2111,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlLockPortTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2152,7 +2151,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanDynVlanAdded trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2192,7 +2191,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanDynVlanRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2232,7 +2231,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanDynamicToStatic trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2272,7 +2271,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			vlanStaticToDynamic trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2312,7 +2311,7 @@ a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			dstrSysLog trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2358,7 +2357,7 @@ The error text will specify the fan index, fan description and the exact fan sta
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlEnvMonFanStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2404,7 +2403,7 @@ The error text will specify the power supply index, power supply description and
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlEnvMonPowerSupplyStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2446,7 +2445,7 @@ The error text will specify the power supply index, power supply description and
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlStackStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2487,7 +2486,7 @@ device specific safe temperature threshold.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlEnvMonTemperatureRisingAlarm trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2528,7 +2527,7 @@ a copy operation successfully.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlCopyFinished trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2568,7 +2567,7 @@ a copy operation successfully.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlCopyFailed trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2609,7 +2608,7 @@ failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlBrgMacAddFailedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2649,7 +2648,7 @@ failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rldot1xPortStatusAuthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2689,7 +2688,7 @@ failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rldot1xPortStatusUnauthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2729,7 +2728,7 @@ failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			swIfTablePortLock trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2769,7 +2768,7 @@ failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			swIfTablePortUnLock trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
@@ -2810,7 +2809,7 @@ number of consecutives unsuccessful login attempts.&lt;/p&gt;&lt;table&gt;
 		fatal-error(3)
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rlAAAUserLocked trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p&gt;

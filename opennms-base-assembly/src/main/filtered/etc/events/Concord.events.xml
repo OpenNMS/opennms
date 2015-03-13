@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: DiagnosticsMonitor -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: DiagnosticsMonitor --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <event>
     <mask>
       <maskelement>
@@ -19,7 +18,7 @@
     <event-label>DiagnosticsMonitor defined trap event: netHealthInfo</event-label>
     <descr>
 &lt;p&gt;An event (not an error) has occurred in eHealth.
-This trap is an informational message from the eHealth &#xd;
+This trap is an informational message from the eHealth &#13;
 Diagnostic Monitor. No action is required.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -66,7 +65,7 @@ Diagnostic Monitor. No action is required.&lt;/p&gt;&lt;table&gt;
 	nhElementId=%parm[#8]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#8]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#8]%:%parm[#3]:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -87,8 +86,8 @@ Diagnostic Monitor. No action is required.&lt;/p&gt;&lt;table&gt;
     <event-label>DiagnosticsMonitor defined trap event: netHealthWarning</event-label>
     <descr>
 &lt;p&gt;An error has occurred in eHealth.
-Polling will continue, please investigate as &#xd;
-soon as possible. This trap is sent from the eHealth &#xd;
+Polling will continue, please investigate as &#13;
+soon as possible. This trap is sent from the eHealth &#13;
 Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -125,7 +124,7 @@ Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	nhdServerName=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -146,8 +145,8 @@ Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
     <event-label>DiagnosticsMonitor defined trap event: netHealthReset</event-label>
     <descr>
 &lt;p&gt;A system critical error has occurred in eHealth.
-Polling may not occur. Restart the eHealth servers as&#xd;
-soon as possible. This trap is sent from the eHealth &#xd;
+Polling may not occur. Restart the eHealth servers as&#13;
+soon as possible. This trap is sent from the eHealth &#13;
 Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -184,7 +183,7 @@ Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	nhdServerName=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -205,8 +204,8 @@ Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
     <event-label>DiagnosticsMonitor defined trap event: netHealthUrgent</event-label>
     <descr>
 &lt;p&gt;A system critical error has occurred in eHealth.
-Polling may not occur. System administrator intervention &#xd;
-is required. This trap is sent from the eHealth &#xd;
+Polling may not occur. System administrator intervention &#13;
+is required. This trap is sent from the eHealth &#13;
 Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -243,7 +242,7 @@ Diagnostic Monitor.&lt;/p&gt;&lt;table&gt;
 	nhdServerName=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Major</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -330,7 +329,7 @@ exceptions for an element.&lt;/p&gt;&lt;table&gt;
 	nhdServerIPv6=%parm[#12]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#5]%:%parm[#8]%:%parm[#3]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#5]%:%parm[#8]%:%parm[#3]%"/>
   </event>
   <event>
     <mask>
@@ -351,7 +350,7 @@ exceptions for an element.&lt;/p&gt;&lt;table&gt;
     <event-label>DiagnosticsMonitor defined trap event: nhLiveException</event-label>
     <descr>
 &lt;p&gt;A eHealth exception has occurred. This trap
-sends generic information about an exception when it first becomes&#xd;
+sends generic information about an exception when it first becomes&#13;
 active. Deprecated in eHealth 5.6 Release.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -617,7 +616,7 @@ sends detailed information about an alarm.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="major" varbindvalue="4"/>
       <decode varbinddecodedstring="critical" varbindvalue="5"/>
     </varbindsdecode>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#22]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#22]%"/>
   </event>
   <event>
     <mask>
@@ -913,7 +912,7 @@ the corresponding alarm no longer exist.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="major" varbindvalue="4"/>
       <decode varbinddecodedstring="critical" varbindvalue="5"/>
     </varbindsdecode>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" alarm-type="2" auto-clean="false" />
+    <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%"/>
   </event>
   <event>
     <mask>
@@ -1044,9 +1043,9 @@ Deprecated in eHealth 5.6 Release.&lt;/p&gt;&lt;table&gt;
     <event-label>DiagnosticsMonitor defined trap event: nhLiveResetExceptions</event-label>
     <descr>
 &lt;p&gt;The LiveExceptions server has restarted. All LiveExceptions alarms
-and exceptions sent before this time will NOT be cleared automatically. All trap &#xd;
-    destinations should reset any pre-existing eHealth exceptions &#xd;
-    and alarms by setting them to a clear state or unhighlighting&#xd;
+and exceptions sent before this time will NOT be cleared automatically. All trap &#13;
+    destinations should reset any pre-existing eHealth exceptions &#13;
+    and alarms by setting them to a clear state or unhighlighting&#13;
     any icons.&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -1083,7 +1082,7 @@ and exceptions sent before this time will NOT be cleared automatically. All trap
 	nhServerIPv6=%parm[#6]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%"/>
   </event>
   <event>
     <mask>
@@ -1369,5 +1368,4 @@ belong to this PathSetAggregate element is at the critical level.&lt;/p&gt;&lt;t
 	</logmsg>
     <severity>Indeterminate</severity>
   </event>
-</events>
-<!-- End of auto generated data from MIB: DiagnosticsMonitor -->
+</events><!-- End of auto generated data from MIB: DiagnosticsMonitor -->

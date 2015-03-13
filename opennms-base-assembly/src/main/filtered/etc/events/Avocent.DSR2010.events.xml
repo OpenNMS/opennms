@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: DSR2010-TRAP-MIB -->
 <event>
 	<mask>
@@ -31,7 +31,7 @@ following string
 	avctDSR2010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010RebootStartedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -71,7 +71,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010VideoSessionStartedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
@@ -112,7 +112,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010VideoSessionStoppedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
@@ -161,7 +161,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010VideoSessionTerminatedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectTargetUserName=%parm[#2]% 
@@ -196,7 +196,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010LocalPortViewingStartedTrap trap received 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -229,7 +229,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010LocalPortViewingStoppedTrap trap received 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -269,7 +269,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010LocalPortViewingTerminatedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
@@ -324,7 +324,7 @@ is contained in avctDSR2010TrapObjectImageCurrentVersion.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectImageCurrentVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010ImageUpgradeStarted trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectImageType=%parm[#2]% 
@@ -365,7 +365,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010DSRIQAddedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
@@ -404,7 +404,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectSessionIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010DSRIQRemovedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]%&lt;/p&gt;
@@ -455,7 +455,7 @@ avctDSR2010TrapObjectFirmwareCondition object.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010SubsystemUpgradeStartedTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 
@@ -502,7 +502,7 @@ avctDSR2010TrapObjectSessionIdentifier.&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectFirmwareCondition&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010SubsystemRestartTrap trap received 
 			avctDSR2010TrapObjectDSRIQId=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 
@@ -558,7 +558,7 @@ avctDSR2010TrapObjectCurrentScreenResolution&lt;/p&gt;&lt;table&gt;
 	avctDSR2010TrapObjectCurrentScreenResolution&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			avctDSR2010ScreenResolutionChangedTrap trap received 
 			avctDSR2010TrapObjectUserName=%parm[#1]% 
 			avctDSR2010TrapObjectSessionIdentifier=%parm[#2]% 

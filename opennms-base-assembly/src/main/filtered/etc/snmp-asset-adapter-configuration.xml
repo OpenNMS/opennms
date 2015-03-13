@@ -1,36 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<snmp-asset-adapter-configuration>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><snmp-asset-adapter-configuration>
   <package name="PJs">
     <sysoid>.1.3</sysoid>
     <!-- IP address filtering not supported yet -->
     <!-- <include-range begin="0.0.0.0" end="255.255.255.254" /> -->
-    <assetField name="comment" formatString="OS Type: ${osType}&#x0A;OS Version: ${osVersion}&#x0A;System Type: ${systemType}&#x0A;Processor Type: ${processorType}&#x0A;Processor Speed: ${processorSpeed}&#x0A;Physical Memory: ${physicalMemory}&#x0A;Hard Drive Type: ${hardDriveType}&#x0A;Tape Drive Type: ${tapeDriveType}&#x0A;Optical Drive Type: ${opticalDriveType}&#x0A;Equinox Type: ${equinoxType}&#x0A;Modem 1 Type: ${modemType1}&#x0A;Modem 2 Type: ${modemType2}&#x0A;Modem Error Count: ${modemErrorCount}&#x0A;Database Dump Log: ${databaseDumpLog}&#x0A;Monetra Version: ${monetraVersion}&#x0A;Monetra Store ID: ${monetraStoreId}&#x0A;Oven Status: ${ovenStatus}&#x0A;RAID Status: ${raidStatus}&#x0A;Monetra Unsettled Batch Timestamp: ${monetraUnsettledBatchTimestamp}&#x0A;Monetra Key Timestamp: ${monetraKeyTimestamp}&#x0A;Unsettled Batch: ${unsettledBatch}&#x0A;Secondary Password Algorithm Version: ${secondaryPasswordAlgorithmVersion}&#x0A;Profit Database Version: ${profitDatabaseVersion}&#x0A;Java Version: ${javaVersion}&#x0A;Profit API Version: ${profitApiVersion}">
+    <assetField formatString="OS Type: ${osType}&#10;OS Version: ${osVersion}&#10;System Type: ${systemType}&#10;Processor Type: ${processorType}&#10;Processor Speed: ${processorSpeed}&#10;Physical Memory: ${physicalMemory}&#10;Hard Drive Type: ${hardDriveType}&#10;Tape Drive Type: ${tapeDriveType}&#10;Optical Drive Type: ${opticalDriveType}&#10;Equinox Type: ${equinoxType}&#10;Modem 1 Type: ${modemType1}&#10;Modem 2 Type: ${modemType2}&#10;Modem Error Count: ${modemErrorCount}&#10;Database Dump Log: ${databaseDumpLog}&#10;Monetra Version: ${monetraVersion}&#10;Monetra Store ID: ${monetraStoreId}&#10;Oven Status: ${ovenStatus}&#10;RAID Status: ${raidStatus}&#10;Monetra Unsettled Batch Timestamp: ${monetraUnsettledBatchTimestamp}&#10;Monetra Key Timestamp: ${monetraKeyTimestamp}&#10;Unsettled Batch: ${unsettledBatch}&#10;Secondary Password Algorithm Version: ${secondaryPasswordAlgorithmVersion}&#10;Profit Database Version: ${profitDatabaseVersion}&#10;Java Version: ${javaVersion}&#10;Profit API Version: ${profitApiVersion}" name="comment">
       <mibObjs>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.1" alias="osType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.2" alias="osVersion"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.3" alias="systemType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.4" alias="processorType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.5" alias="processorSpeed"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.6" alias="physicalMemory"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.7" alias="hardDriveType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.8" alias="tapeDriveType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.9" alias="opticalDriveType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.10" alias="equinoxType"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.11" alias="modemType1"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.12" alias="modemType2"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.13" alias="modemErrorCount"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.14" alias="databaseDumpLog"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.15" alias="monetraVersion"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.16" alias="monetraStoreId"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.17" alias="ovenStatus"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.18" alias="raidStatus"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.19" alias="monetraUnsettledBatchTimestamp"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.20" alias="monetraKeyTimestamp"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.21" alias="unsettledBatch"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.22" alias="secondaryPasswordAlgorithmVersion"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.23" alias="profitDatabaseVersion"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.24" alias="javaVersion"/>
-        <mibObj oid=".1.3.6.1.4.1.33347.255.25" alias="profitApiVersion"/>
+        <mibObj alias="osType" oid=".1.3.6.1.4.1.33347.255.1"/>
+        <mibObj alias="osVersion" oid=".1.3.6.1.4.1.33347.255.2"/>
+        <mibObj alias="systemType" oid=".1.3.6.1.4.1.33347.255.3"/>
+        <mibObj alias="processorType" oid=".1.3.6.1.4.1.33347.255.4"/>
+        <mibObj alias="processorSpeed" oid=".1.3.6.1.4.1.33347.255.5"/>
+        <mibObj alias="physicalMemory" oid=".1.3.6.1.4.1.33347.255.6"/>
+        <mibObj alias="hardDriveType" oid=".1.3.6.1.4.1.33347.255.7"/>
+        <mibObj alias="tapeDriveType" oid=".1.3.6.1.4.1.33347.255.8"/>
+        <mibObj alias="opticalDriveType" oid=".1.3.6.1.4.1.33347.255.9"/>
+        <mibObj alias="equinoxType" oid=".1.3.6.1.4.1.33347.255.10"/>
+        <mibObj alias="modemType1" oid=".1.3.6.1.4.1.33347.255.11"/>
+        <mibObj alias="modemType2" oid=".1.3.6.1.4.1.33347.255.12"/>
+        <mibObj alias="modemErrorCount" oid=".1.3.6.1.4.1.33347.255.13"/>
+        <mibObj alias="databaseDumpLog" oid=".1.3.6.1.4.1.33347.255.14"/>
+        <mibObj alias="monetraVersion" oid=".1.3.6.1.4.1.33347.255.15"/>
+        <mibObj alias="monetraStoreId" oid=".1.3.6.1.4.1.33347.255.16"/>
+        <mibObj alias="ovenStatus" oid=".1.3.6.1.4.1.33347.255.17"/>
+        <mibObj alias="raidStatus" oid=".1.3.6.1.4.1.33347.255.18"/>
+        <mibObj alias="monetraUnsettledBatchTimestamp" oid=".1.3.6.1.4.1.33347.255.19"/>
+        <mibObj alias="monetraKeyTimestamp" oid=".1.3.6.1.4.1.33347.255.20"/>
+        <mibObj alias="unsettledBatch" oid=".1.3.6.1.4.1.33347.255.21"/>
+        <mibObj alias="secondaryPasswordAlgorithmVersion" oid=".1.3.6.1.4.1.33347.255.22"/>
+        <mibObj alias="profitDatabaseVersion" oid=".1.3.6.1.4.1.33347.255.23"/>
+        <mibObj alias="javaVersion" oid=".1.3.6.1.4.1.33347.255.24"/>
+        <mibObj alias="profitApiVersion" oid=".1.3.6.1.4.1.33347.255.25"/>
       </mibObjs>
     </assetField>
   </package>

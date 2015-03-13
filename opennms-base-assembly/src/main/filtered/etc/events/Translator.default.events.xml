@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
   <!-- Default events that are now passed through the Translator for enrichment-->
   <event>
     <uei>uei.opennms.org/translator/traps/SNMP_Link_Down</uei>
@@ -10,9 +10,9 @@
         &lt;p&gt;IfName: %parm[ifName]% &lt;/p&gt;
         &lt;p&gt;IfAlias: %parm[ifAlias]% &lt;/p&gt;
       </descr>
-      <logmsg dest='logndisplay'>Agent Interface Down (linkDown Trap) on interface index:%parm[#1]%; ifDescr: %parm[ifDescr]%; ifName:%parm[ifName]%; ifAlias:%parm[ifAlias]%</logmsg>
+      <logmsg dest="logndisplay">Agent Interface Down (linkDown Trap) on interface index:%parm[#1]%; ifDescr: %parm[ifDescr]%; ifName:%parm[ifName]%; ifAlias:%parm[ifAlias]%</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" />
+      <alarm-data alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
   </event>
 
   <event>
@@ -25,9 +25,9 @@
         &lt;p&gt;IfName: %parm[ifName]% &lt;/p&gt;
         &lt;p&gt;IfAlias: %parm[ifAlias]% &lt;/p&gt;
       </descr>
-      <logmsg dest='logndisplay'>Agent Interface Up (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[ifDescr]%; ifName:%parm[ifName]%; IfAlias:%parm[ifAlias]%</logmsg>
+      <logmsg dest="logndisplay">Agent Interface Up (linkUp Trap) on interface index:%parm[#1]%; ifDescr:%parm[ifDescr]%; ifName:%parm[ifName]%; IfAlias:%parm[ifAlias]%</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" />
+      <alarm-data alarm-type="2" clear-key="uei.opennms.org/translator/traps/SNMP_Link_Down:%dpname%:%nodeid%:%parm[#1]%" reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%"/>
   </event>
 
   <event>
@@ -38,13 +38,13 @@
 
       &lt;p&gt;Alert reason: %parm[action.shortReason]% &lt;/p&gt;
       &lt;p&gt;Alert reason: %parm[action.longReason]% &lt;/p&gt;
-      &lt;p&gt;&lt;a href=&quot;%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;a href="%parm[resource.url]%" &gt; %parm[resource.name]% &lt;/a&gt;&lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;&lt;a href=&quot;%parm[alert.url]%" &gt; Hyperic Alert: %parm[action.longReason]% &lt;/a&gt;&lt;/p&gt;
+    <logmsg dest="logndisplay">
+      &lt;p&gt;&lt;a href="%parm[alert.url]%" &gt; Hyperic Alert: %parm[action.longReason]% &lt;/a&gt;&lt;/p&gt;
     </logmsg>
     <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="1" auto-clean="false" />
+    <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%"/>
   </event>
   
   <event>
@@ -56,10 +56,10 @@
       &lt;p&gt;Source: %parm[configSource]% &lt;/p&gt;
       &lt;p&gt;User: %parm[configUser]% &lt;/p&gt;
     </descr>
-    <logmsg dest='logndisplay'>
+    <logmsg dest="logndisplay">
       &lt;p&gt;%parm[configUser]%" changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a&gt;&lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false" />
+    <alarm-data alarm-type="3" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%"/>
   </event>
 </events>

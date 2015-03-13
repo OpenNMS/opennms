@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: AVTC-COMMON-MIB -->
 <event>
 	<mask>
@@ -36,7 +36,7 @@
 	rfSvrTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rfSvrCriticalTrap trap received 
 			rfSvrTrapComputer=%parm[#1]% 
 			rfSvrTrapSource=%parm[#2]% 
@@ -81,7 +81,7 @@
 	rfSvrTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rfSvrErrorTrap trap received 
 			rfSvrTrapComputer=%parm[#1]% 
 			rfSvrTrapSource=%parm[#2]% 
@@ -126,7 +126,7 @@
 	rfSvrTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rfSvrWarningTrap trap received 
 			rfSvrTrapComputer=%parm[#1]% 
 			rfSvrTrapSource=%parm[#2]% 
@@ -171,7 +171,7 @@
 	rfSvrTrapMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			rfSvrInformationalTrap trap received 
 			rfSvrTrapComputer=%parm[#1]% 
 			rfSvrTrapSource=%parm[#2]% 

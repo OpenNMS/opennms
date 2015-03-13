@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: ADONIS-DNS-MIB -->
 <event>
 	<mask>
@@ -24,7 +24,7 @@
 	dnsDaemonRunning&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapDNSDaemon trap received 
 			dnsDaemonRunning=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -54,7 +54,7 @@
 	haServiceNodeType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapHAServiceFailOver trap received 
 			haServiceNodeType=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -84,7 +84,7 @@
 	commandServerDaemonRunning&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapCommandServerDaemon trap received 
 			commandServerDaemonRunning=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -114,7 +114,7 @@
 	dhcpDaemonRunning&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			trapDHCPDaemon trap received 
 			dhcpDaemonRunning=%parm[#1]%&lt;/p&gt;
 		</logmsg>

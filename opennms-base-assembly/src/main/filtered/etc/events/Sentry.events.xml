@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: Sentry3-MIB -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: Sentry3-MIB --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -55,14 +54,14 @@ outlets on the tower.&lt;/p&gt;&lt;table&gt;
 		overTemp(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: towerStatus is now normal trap received 
 			systemLocation=%parm[#1]% 
 			towerID=%parm[#2]% 
 			towerName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/towerStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/towerStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -119,14 +118,14 @@ outlets on the tower.&lt;/p&gt;&lt;table&gt;
 		overTemp(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: towerStatus comm failure trap received 
 			systemLocation=%parm[#1]% 
 			towerID=%parm[#2]% 
 			towerName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -183,14 +182,14 @@ outlets on the tower.&lt;/p&gt;&lt;table&gt;
 		overTemp(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: towerStatus fan failure trap received 
 			systemLocation=%parm[#1]% 
 			towerID=%parm[#2]% 
 			towerName=%parm[#3]% 
 		</logmsg>
 	<severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -247,14 +246,14 @@ outlets on the tower.&lt;/p&gt;&lt;table&gt;
 		overTemp(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: towerStatus over temperature trap received 
 			systemLocation=%parm[#1]% 
 			towerID=%parm[#2]% 
 			towerName=%parm[#3]% 
 		</logmsg>
 	<severity>Major</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -307,7 +306,7 @@ outlets on the tower.&lt;/p&gt;&lt;table&gt;
 		overTemp(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: towerStatusEvent trap received 
 			systemLocation=%parm[#1]% 
 			towerID=%parm[#2]% 
@@ -375,14 +374,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status off (normal)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -443,14 +442,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status on (normal)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -511,14 +510,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status offWait (error)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -579,14 +578,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status onWait (error)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -647,14 +646,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status offError (error)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -715,14 +714,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status onError (error)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -783,14 +782,14 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: Input Feed Status noComm (error)
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -847,7 +846,7 @@ load traps are suppressed for outlets on the input feed.&lt;/p&gt;&lt;table&gt;
 		noComm(6)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedStatusEvent trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -919,7 +918,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -929,7 +928,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -995,7 +994,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent notOn trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1005,7 +1004,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1071,7 +1070,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1081,7 +1080,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1147,7 +1146,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent low load trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1157,7 +1156,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1223,7 +1222,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent high load trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1233,7 +1232,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1299,7 +1298,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent over load trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1309,7 +1308,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1375,7 +1374,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent read error trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1385,7 +1384,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1451,7 +1450,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1461,7 +1460,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 			infeedLoadHighThresh=%parm[#6]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1523,7 +1522,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	infeedLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: infeedLoadEvent trap received 
 			systemLocation=%parm[#1]% 
 			infeedID=%parm[#2]% 
@@ -1594,7 +1593,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent off trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1602,7 +1601,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1664,7 +1663,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent on trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1672,7 +1671,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1734,7 +1733,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent offWait trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1742,7 +1741,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1804,7 +1803,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent onWait trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1812,7 +1811,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1874,7 +1873,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent offError trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1882,7 +1881,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -1944,7 +1943,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent onError trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -1952,7 +1951,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2014,7 +2013,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -2022,7 +2021,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2084,7 +2083,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -2092,7 +2091,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2154,7 +2153,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent offFuse trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -2162,7 +2161,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2224,7 +2223,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent onFuse trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -2232,7 +2231,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 			outletStatus=%parm[#4]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2290,7 +2289,7 @@ are suppressed for the outlet.&lt;/p&gt;&lt;table&gt;
 		onFuse(9)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletStatusEvent trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -2367,14 +2366,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2444,14 +2443,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent notOn trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2521,14 +2520,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2598,14 +2597,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent low load trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2675,14 +2674,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent high load trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2752,14 +2751,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent over load trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2829,14 +2828,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent read error trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2906,14 +2905,14 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -2979,7 +2978,7 @@ stops being repeated.&lt;/p&gt;&lt;table&gt;
 	outletLoadHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletLoadEvent trap received 
 			systemLocation=%parm[#1]% 
 			outletID=%parm[#2]% 
@@ -3064,7 +3063,7 @@ when the outletStatus changes from any 'on' state ('on',
 		eventShutdown(17)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: outletChangeEvent trap received 
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
@@ -3125,14 +3124,14 @@ monitor.&lt;/p&gt;&lt;table&gt;
 		noComm(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonStatusEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3188,14 +3187,14 @@ monitor.&lt;/p&gt;&lt;table&gt;
 		noComm(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonStatusEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3247,7 +3246,7 @@ monitor.&lt;/p&gt;&lt;table&gt;
 		noComm(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonStatusEvent trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
@@ -3306,14 +3305,14 @@ envMonWaterSensorStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonWaterSensorEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonWaterSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonWaterSensorEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonWaterSensorEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3365,14 +3364,14 @@ envMonWaterSensorStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonWaterSensorEvent error trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonWaterSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3424,14 +3423,14 @@ envMonWaterSensorStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonWaterSensorEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonWaterSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3479,7 +3478,7 @@ envMonWaterSensorStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonWaterSensorEvent trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
@@ -3554,14 +3553,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonADCEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/envMonADCEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3629,14 +3628,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3704,14 +3703,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent countLow trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3779,14 +3778,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent countHigh trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3854,14 +3853,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent readError trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -3929,14 +3928,14 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4000,7 +3999,7 @@ repeated.&lt;/p&gt;&lt;table&gt;
 	envMonADCHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: envMonADCEvent trap received 
 			systemLocation=%parm[#1]% 
 			envMonID=%parm[#2]% 
@@ -4067,14 +4066,14 @@ temperature/humudity sensor.&lt;/p&gt;&lt;table&gt;
 		noComm(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorStatusEvent found trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4131,14 +4130,14 @@ temperature/humudity sensor.&lt;/p&gt;&lt;table&gt;
 		noComm(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorStatusEvent not found trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4195,14 +4194,14 @@ temperature/humudity sensor.&lt;/p&gt;&lt;table&gt;
 		noComm(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorStatusEvent lost trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4259,14 +4258,14 @@ temperature/humudity sensor.&lt;/p&gt;&lt;table&gt;
 		noComm(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorStatusEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4319,7 +4318,7 @@ temperature/humudity sensor.&lt;/p&gt;&lt;table&gt;
 		noComm(3)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorStatusEvent trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
@@ -4403,14 +4402,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4487,14 +4486,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent notFound trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4571,14 +4570,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4655,14 +4654,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent low temp trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4739,14 +4738,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent high temp trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4823,14 +4822,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent readError trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4907,14 +4906,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent lost trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -4991,14 +4990,14 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5071,7 +5070,7 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		fahrenheit(1)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorTempEvent trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
@@ -5152,14 +5151,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5229,14 +5228,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent notFound trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5306,14 +5305,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent reading trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5383,14 +5382,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent humidLow trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5460,14 +5459,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent humidHigh trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5537,14 +5536,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent readError trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5614,14 +5613,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent lost trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5691,14 +5690,14 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5764,7 +5763,7 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt
 	tempHumidSensorHumidHighThresh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: tempHumidSensorHumidEvent trap received 
 			systemLocation=%parm[#1]% 
 			tempHumidSensorID=%parm[#2]% 
@@ -5826,14 +5825,14 @@ contactClosureStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: contactClosureEvent normal trap received 
 			systemLocation=%parm[#1]% 
 			contactClosureID=%parm[#2]% 
 			contactClosureName=%parm[#3]% 
 		</logmsg>
 	<severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/ServerTech/traps/contactClosureEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
+        <alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendor/ServerTech/traps/contactClosureEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5885,14 +5884,14 @@ contactClosureStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: contactClosureEvent alarm trap received 
 			systemLocation=%parm[#1]% 
 			contactClosureID=%parm[#2]% 
 			contactClosureName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5944,14 +5943,14 @@ contactClosureStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: contactClosureEvent noComm trap received 
 			systemLocation=%parm[#1]% 
 			contactClosureID=%parm[#2]% 
 			contactClosureName=%parm[#3]% 
 		</logmsg>
 	<severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%"/>
 </event>
 <event>
 	<mask>
@@ -5999,7 +5998,7 @@ contactClosureStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		noComm(2)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			Sentry Event: contactClosureEvent trap received 
 			systemLocation=%parm[#1]% 
 			contactClosureID=%parm[#2]% 
@@ -6008,5 +6007,4 @@ contactClosureStatus, and then stops being repeated.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: Sentry3-MIB -->
+</events><!-- End of auto generated data from MIB: Sentry3-MIB -->

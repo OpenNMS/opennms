@@ -1,5 +1,4 @@
-<!-- Start of auto generated data from MIB: EMC-CELERRA -->
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Start of auto generated data from MIB: EMC-CELERRA --><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <event>
 	<mask>
 		<maskelement>
@@ -26,7 +25,7 @@ serverity and a text description of the event.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celReboot trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -59,7 +58,7 @@ missing.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celMasterCtlFault trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -90,7 +89,7 @@ failure.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celHWFailure trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -121,7 +120,7 @@ reason code.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celSlotStale trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -152,7 +151,7 @@ slot.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celSlotPanicked trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -183,7 +182,7 @@ failure.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celIntfFailure trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
@@ -213,11 +212,10 @@ failure.&lt;/p&gt;&lt;table&gt;
 	celEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			celAAF trap received 
 			celEvent=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
 </event>
-</events>
-<!-- End of auto generated data from MIB: EMC-CELERRA -->
+</events><!-- End of auto generated data from MIB: EMC-CELERRA -->

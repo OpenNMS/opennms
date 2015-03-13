@@ -1,122 +1,119 @@
-<?xml version="1.0"?>
-<datacollection-group name="F5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><datacollection-group name="F5">
      
-    <resourceType name="ltmPoolStatName" label="F5 LTM Pool Stats (F5 BigIP MIB)"
-                  resourceLabel="${ltmPoolStatName}">
+    <resourceType label="F5 LTM Pool Stats (F5 BigIP MIB)" name="ltmPoolStatName" resourceLabel="${ltmPoolStatName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="ltmVSStatName" label="F5 LTM Virtual Server Stats (F5 BigIP MIB)"
-                  resourceLabel="${ltmVSStatName}">
+    <resourceType label="F5 LTM Virtual Server Stats (F5 BigIP MIB)" name="ltmVSStatName" resourceLabel="${ltmVSStatName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="f5ifName" label="F5 Interface Name (F5 BigIP MIB)" resourceLabel="${f5ifName}">
+    <resourceType label="F5 Interface Name (F5 BigIP MIB)" name="f5ifName" resourceLabel="${f5ifName}">
        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="f5CpuN" label="F5 Multi-CPU" resourceLabel="F5 Multi-CPU: Host ${string(subIndex(0, n))} / CPU ${subIndex(n,1)}">
+    <resourceType label="F5 Multi-CPU" name="f5CpuN" resourceLabel="F5 Multi-CPU: Host ${string(subIndex(0, n))} / CPU ${subIndex(n,1)}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="f5CpuGlobal" label="F5 Global CPU Usage" resourceLabel="F5 Global CPU Usage: ${index}">
+    <resourceType label="F5 Global CPU Usage" name="f5CpuGlobal" resourceLabel="F5 Global CPU Usage: ${index}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="gtmWideipStatEntry" label="F5 GTM Wide IP" resourceLabel="F5 Wide IP: ${gtmWideipStatName}">
+    <resourceType label="F5 GTM Wide IP" name="gtmWideipStatEntry" resourceLabel="F5 Wide IP: ${gtmWideipStatName}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="f5trunkStat" label="F5 Trunk" resourceLabel="F5 Trunk: ${sysTrunkStatName}">
+    <resourceType label="F5 Trunk" name="f5trunkStat" resourceLabel="F5 Trunk: ${sysTrunkStatName}">
         <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!--  F5 MIBs -->
-      <group name="bigip-ltmpool-stat" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.1" instance="ltmPoolStatName" alias="ltmPoolStatName"   type="string" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.2" instance="ltmPoolStatName" alias="lPSServerPktsIn"   type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.3" instance="ltmPoolStatName" alias="lPSServerBytesIn"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.4" instance="ltmPoolStatName" alias="lPSServerPktsOut"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.5" instance="ltmPoolStatName" alias="lPSServerBytesOut" type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.8" instance="ltmPoolStatName" alias="lPSServerCurConns" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.7" instance="ltmPoolStatName" alias="lPSServerTotConns" type="Counter" />
+      <group ifType="all" name="bigip-ltmpool-stat">
+        <mibObj alias="ltmPoolStatName" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.1" type="string"/>
+        <mibObj alias="lPSServerPktsIn" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.2" type="Counter"/>
+        <mibObj alias="lPSServerBytesIn" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.3" type="Counter"/>
+        <mibObj alias="lPSServerPktsOut" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.4" type="Counter"/>
+        <mibObj alias="lPSServerBytesOut" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.5" type="Counter"/>
+        <mibObj alias="lPSServerCurConns" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.8" type="integer"/>
+        <mibObj alias="lPSServerTotConns" instance="ltmPoolStatName" oid=".1.3.6.1.4.1.3375.2.2.5.2.3.1.7" type="Counter"/>
       </group>
 
-      <group name="bigip-ltmvs-stat" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.1"  instance="ltmVSStatName" alias="ltmVSStatName" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.6"  instance="ltmVSStatName" alias="vsPktsIn"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.7"  instance="ltmVSStatName" alias="vsBytesIn"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.8"  instance="ltmVSStatName" alias="vsPktsOut"     type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.9"  instance="ltmVSStatName" alias="vsBytesOut"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.11" instance="ltmVSStatName" alias="vsTotConns"    type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.12" instance="ltmVSStatName" alias="vsCurConns"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.5"  instance="ltmVSStatName" alias="vsNoNodeErrs"  type="integer" />
+      <group ifType="all" name="bigip-ltmvs-stat">
+        <mibObj alias="ltmVSStatName" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.1" type="string"/>
+        <mibObj alias="vsPktsIn" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.6" type="Counter"/>
+        <mibObj alias="vsBytesIn" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.7" type="Counter"/>
+        <mibObj alias="vsPktsOut" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.8" type="Counter"/>
+        <mibObj alias="vsBytesOut" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.9" type="Counter"/>
+        <mibObj alias="vsTotConns" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.11" type="Counter"/>
+        <mibObj alias="vsCurConns" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.12" type="integer"/>
+        <mibObj alias="vsNoNodeErrs" instance="ltmVSStatName" oid=".1.3.6.1.4.1.3375.2.2.10.2.3.1.5" type="integer"/>
       </group>
 
-      <group name="bigip-if-stat" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.1" instance="f5ifName" alias="f5ifName"     type="string" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.3" instance="f5ifName" alias="f5ifBytesIn"  type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.5" instance="f5ifName" alias="f5ifBytesOut" type="Counter" />
+      <group ifType="all" name="bigip-if-stat">
+        <mibObj alias="f5ifName" instance="f5ifName" oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.1" type="string"/>
+        <mibObj alias="f5ifBytesIn" instance="f5ifName" oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.3" type="Counter"/>
+        <mibObj alias="f5ifBytesOut" instance="f5ifName" oid=".1.3.6.1.4.1.3375.2.1.2.4.4.3.1.5" type="Counter"/>
       </group>
 
-      <group name="bigip-trunk-stat" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.1"  instance="f5trunkStat" alias="sysTrunkStatName"    type="string" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.2"  instance="f5trunkStat" alias="sysTrunkStatPktsIn"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.3"  instance="f5trunkStat" alias="sysTrunkStatByteIn"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.4"  instance="f5trunkStat" alias="sysTrunkStatPktsOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.5"  instance="f5trunkStat" alias="sysTrunkStatByteOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.6"  instance="f5trunkStat" alias="sysTrunkStatMcstIn"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.7"  instance="f5trunkStat" alias="sysTrunkStatMcstOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.8"  instance="f5trunkStat" alias="sysTrunkStatErrsIn"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.9"  instance="f5trunkStat" alias="sysTrunkStatErrsOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.10" instance="f5trunkStat" alias="sysTrunkStatDropIn"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.11" instance="f5trunkStat" alias="sysTrunkStatDropOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.12" instance="f5trunkStat" alias="sysTrunkStatCollisn" type="counter" />
+      <group ifType="all" name="bigip-trunk-stat">
+        <mibObj alias="sysTrunkStatName" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.1" type="string"/>
+        <mibObj alias="sysTrunkStatPktsIn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.2" type="counter"/>
+        <mibObj alias="sysTrunkStatByteIn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.3" type="counter"/>
+        <mibObj alias="sysTrunkStatPktsOut" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.4" type="counter"/>
+        <mibObj alias="sysTrunkStatByteOut" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.5" type="counter"/>
+        <mibObj alias="sysTrunkStatMcstIn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.6" type="counter"/>
+        <mibObj alias="sysTrunkStatMcstOut" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.7" type="counter"/>
+        <mibObj alias="sysTrunkStatErrsIn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.8" type="counter"/>
+        <mibObj alias="sysTrunkStatErrsOut" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.9" type="counter"/>
+        <mibObj alias="sysTrunkStatDropIn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.10" type="counter"/>
+        <mibObj alias="sysTrunkStatDropOut" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.11" type="counter"/>
+        <mibObj alias="sysTrunkStatCollisn" instance="f5trunkStat" oid=".1.3.6.1.4.1.3375.2.1.2.12.2.3.1.12" type="counter"/>
       </group>
 
-      <group name="bigip-sys-stat" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.1.44" instance="0" alias="f5MemoryTotal"  type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.1.45" instance="0" alias="f5MemoryUsed"   type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.1.8"  instance="0" alias="f5CCurConns"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.1.15" instance="0" alias="f5SCurConns"    type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.9.2"  instance="0" alias="f5CsslCurConns" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.10.2" instance="0" alias="f5SsslCurConns" type="integer" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.9.6"  instance="0" alias="TotNConns"      type="Counter" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.9.9"  instance="0" alias="TotCConns"      type="Counter" />
+      <group ifType="ignore" name="bigip-sys-stat">
+        <mibObj alias="f5MemoryTotal" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.1.44" type="integer"/>
+        <mibObj alias="f5MemoryUsed" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.1.45" type="integer"/>
+        <mibObj alias="f5CCurConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.1.8" type="integer"/>
+        <mibObj alias="f5SCurConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.1.15" type="integer"/>
+        <mibObj alias="f5CsslCurConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.9.2" type="integer"/>
+        <mibObj alias="f5SsslCurConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.10.2" type="integer"/>
+        <mibObj alias="TotNConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.9.6" type="Counter"/>
+        <mibObj alias="TotCConns" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.9.9" type="Counter"/>
       </group>
 
-      <group name="bigip-sys-cpu" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.19" instance="f5CpuN" alias="f5Cpu5s" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.27" instance="f5CpuN" alias="f5Cpu1m" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.35" instance="f5CpuN" alias="f5Cpu5m" type="gauge" />
+      <group ifType="all" name="bigip-sys-cpu">
+        <mibObj alias="f5Cpu5s" instance="f5CpuN" oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.19" type="gauge"/>
+        <mibObj alias="f5Cpu1m" instance="f5CpuN" oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.27" type="gauge"/>
+        <mibObj alias="f5Cpu5m" instance="f5CpuN" oid=".1.3.6.1.4.1.3375.2.1.7.5.2.1.35" type="gauge"/>
       </group>
 
-      <group name="bigip-sys-global-cpu" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.20.21" instance="0" alias="global5s" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.20.29" instance="0" alias="global1m" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3375.2.1.1.2.20.37" instance="0" alias="global5m" type="gauge" />
+      <group ifType="ignore" name="bigip-sys-global-cpu">
+        <mibObj alias="global5s" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.20.21" type="gauge"/>
+        <mibObj alias="global1m" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.20.29" type="gauge"/>
+        <mibObj alias="global5m" instance="0" oid=".1.3.6.1.4.1.3375.2.1.1.2.20.37" type="gauge"/>
       </group>
 
-      <group name="bigip-gtm-wideip-stats" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.1" instance="gtmWideipStatEntry" alias="gtmWideipStatName" type="string"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.2" instance="gtmWideipStatEntry" alias="gtmWideipStatReques" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.3" instance="gtmWideipStatEntry" alias="gtmWideipStatResolu" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.4" instance="gtmWideipStatEntry" alias="gtmWideipStatPersis" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.9" instance="gtmWideipStatEntry" alias="gtmWidStatRetuToDns" type="counter64"/>
+      <group ifType="all" name="bigip-gtm-wideip-stats">
+        <mibObj alias="gtmWideipStatName" instance="gtmWideipStatEntry" oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.1" type="string"/>
+        <mibObj alias="gtmWideipStatReques" instance="gtmWideipStatEntry" oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.2" type="counter64"/>
+        <mibObj alias="gtmWideipStatResolu" instance="gtmWideipStatEntry" oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.3" type="counter64"/>
+        <mibObj alias="gtmWideipStatPersis" instance="gtmWideipStatEntry" oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.4" type="counter64"/>
+        <mibObj alias="gtmWidStatRetuToDns" instance="gtmWideipStatEntry" oid=".1.3.6.1.4.1.3375.2.3.12.2.3.1.9" type="counter64"/>
       </group>
 
-      <group name="bigip-gtm-wideip-global-stats" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.1.2.1.2" instance="0" alias="gtmStatRequests" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.1.2.1.3" instance="0" alias="gtmStatResolutions" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.1.2.1.4" instance="0" alias="gtmStatPersisted" type="counter64"/>
-        <mibObj oid=".1.3.6.1.4.1.3375.2.3.1.2.1.10" instance="0" alias="gtmStatReturnToDns" type="counter64"/>
+      <group ifType="ignore" name="bigip-gtm-wideip-global-stats">
+        <mibObj alias="gtmStatRequests" instance="0" oid=".1.3.6.1.4.1.3375.2.3.1.2.1.2" type="counter64"/>
+        <mibObj alias="gtmStatResolutions" instance="0" oid=".1.3.6.1.4.1.3375.2.3.1.2.1.3" type="counter64"/>
+        <mibObj alias="gtmStatPersisted" instance="0" oid=".1.3.6.1.4.1.3375.2.3.1.2.1.4" type="counter64"/>
+        <mibObj alias="gtmStatReturnToDns" instance="0" oid=".1.3.6.1.4.1.3375.2.3.1.2.1.10" type="counter64"/>
       </group>
       
       <systemDef name="F5 BigIP LTM Load Balancers">

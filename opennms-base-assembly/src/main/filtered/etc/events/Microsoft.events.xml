@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of Microsoft Traps -->
 <!-- Start of Microsoft MIB: LanMgr-Alerts-II-MIB -->
 <event>
@@ -21,7 +21,7 @@
  <descr>&lt;p&gt;A Lan Manager Bytes Available Alert.&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Bytes Available Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Bytes Available Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -49,7 +49,7 @@
  numNetIOErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Network I/O Errors Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Network I/O Errors Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -75,7 +75,7 @@
  serverErrorsData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Server Errors Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Server Errors Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -101,7 +101,7 @@
  numPWViolations&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Password Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Password Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -127,7 +127,7 @@
  accessViolationsAlert&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Access Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Access Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -151,7 +151,7 @@
  <descr>&lt;p&gt;A Lan Manager Alert signifying that the audit log is full..&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Audit Log Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Audit Log Alert.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -175,7 +175,7 @@
  <descr>&lt;p&gt;A Lan Manager Alert signifying that the audit log is 80% full..&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Audit Log 80% Full Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Audit Log 80% Full Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -199,7 +199,7 @@
  <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is at a warning state..&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Warning.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Power Supply Warning.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -223,7 +223,7 @@
  <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is at a shutdown state..&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Shutdown Warning.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Power Supply Shutdown Warning.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
 </event>
 
@@ -247,7 +247,7 @@
  <descr>&lt;p&gt;A Lan Manager Alert signifying that the power supply is now normal..&lt;/p&gt;&lt;table&gt;
  &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Power Supply Normal.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Power Supply Normal.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
 </event>
 
@@ -273,7 +273,7 @@
  primaryDCName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Logon Primary DC Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Logon Primary DC Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -299,7 +299,7 @@
  replMasterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Replication Master Failure.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Replication Master Failure.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -325,7 +325,7 @@
  diskDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Disk Hot Fix Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Disk Hot Fix Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 
@@ -351,7 +351,7 @@
  diskDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Microsoft Event: Lan Manager Disk Hardware Error Alert.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Microsoft Event: Lan Manager Disk Hardware Error Alert.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Microsoft MIB: LanMgr-Alerts-II-MIB -->
@@ -374,7 +374,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
@@ -400,7 +400,7 @@
  format has been configured (i.e. no event definition
  exists).&lt;/p&gt;
  </descr>
- <logmsg dest='logndisplay'>
+ <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%

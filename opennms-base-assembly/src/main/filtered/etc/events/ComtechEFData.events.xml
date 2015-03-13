@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: CDM-625 -->
   <event>
     <mask>
@@ -368,5 +368,4 @@
       <decode varbinddecodedstring="online" varbindvalue="1"/>
     </varbindsdecode>
   </event>
-</events>
-<!-- End of auto generated data from MIB: CDM-625 -->
+</events><!-- End of auto generated data from MIB: CDM-625 -->

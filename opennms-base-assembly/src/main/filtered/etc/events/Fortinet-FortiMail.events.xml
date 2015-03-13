@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
     <event>
         <mask>
             <maskelement>
@@ -259,8 +258,8 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#4]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="false"/>
-            <decode varbindvalue="1" varbinddecodedstring="true"/>
+            <decode varbinddecodedstring="false" varbindvalue="0"/>
+            <decode varbinddecodedstring="true" varbindvalue="1"/>
         </varbindsdecode>
     </event>
     <event>
@@ -308,14 +307,14 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="systemHalt"/>
-            <decode varbindvalue="2" varbinddecodedstring="systemReboot"/>
-            <decode varbindvalue="3" varbinddecodedstring="systemReload"/>
-            <decode varbindvalue="4" varbinddecodedstring="systemUpgrade"/>
-            <decode varbindvalue="5" varbinddecodedstring="guiUpgrade"/>
-            <decode varbindvalue="6" varbinddecodedstring="logdiskFormat"/>
-            <decode varbindvalue="7" varbinddecodedstring="maildiskFormat"/>
-            <decode varbindvalue="8" varbinddecodedstring="avDBUpdate"/>
+            <decode varbinddecodedstring="systemHalt" varbindvalue="1"/>
+            <decode varbinddecodedstring="systemReboot" varbindvalue="2"/>
+            <decode varbinddecodedstring="systemReload" varbindvalue="3"/>
+            <decode varbinddecodedstring="systemUpgrade" varbindvalue="4"/>
+            <decode varbinddecodedstring="guiUpgrade" varbindvalue="5"/>
+            <decode varbinddecodedstring="logdiskFormat" varbindvalue="6"/>
+            <decode varbinddecodedstring="maildiskFormat" varbindvalue="7"/>
+            <decode varbinddecodedstring="avDBUpdate" varbindvalue="8"/>
         </varbindsdecode>
     </event>
     <event>
@@ -367,13 +366,13 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="degradedArray"/>
-            <decode varbindvalue="2" varbinddecodedstring="sparesMissing"/>
-            <decode varbindvalue="3" varbinddecodedstring="rebuildStarted"/>
-            <decode varbindvalue="4" varbinddecodedstring="rebuildFinished"/>
-            <decode varbindvalue="5" varbinddecodedstring="fail"/>
-            <decode varbindvalue="6" varbinddecodedstring="failSpare"/>
-            <decode varbindvalue="7" varbinddecodedstring="spareActive"/>
+            <decode varbinddecodedstring="degradedArray" varbindvalue="1"/>
+            <decode varbinddecodedstring="sparesMissing" varbindvalue="2"/>
+            <decode varbinddecodedstring="rebuildStarted" varbindvalue="3"/>
+            <decode varbinddecodedstring="rebuildFinished" varbindvalue="4"/>
+            <decode varbinddecodedstring="fail" varbindvalue="5"/>
+            <decode varbinddecodedstring="failSpare" varbindvalue="6"/>
+            <decode varbinddecodedstring="spareActive" varbindvalue="7"/>
         </varbindsdecode>
     </event>
     <event>
@@ -426,9 +425,9 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="1" varbinddecodedstring="masterUnitSwitch"/>
-            <decode varbindvalue="2" varbinddecodedstring="slaveUnitSwitch"/>
-            <decode varbindvalue="3" varbinddecodedstring="unitShutdown"/>
+            <decode varbinddecodedstring="masterUnitSwitch" varbindvalue="1"/>
+            <decode varbinddecodedstring="slaveUnitSwitch" varbindvalue="2"/>
+            <decode varbinddecodedstring="unitShutdown" varbindvalue="3"/>
         </varbindsdecode>
     </event>
     <event>
@@ -470,8 +469,8 @@
         <severity>Indeterminate</severity>
         <varbindsdecode>
             <parmid>parm[#2]</parmid>
-            <decode varbindvalue="0" varbinddecodedstring="false"/>
-            <decode varbindvalue="1" varbinddecodedstring="true"/>
+            <decode varbinddecodedstring="false" varbindvalue="0"/>
+            <decode varbinddecodedstring="true" varbindvalue="1"/>
         </varbindsdecode>
     </event>
     <event>

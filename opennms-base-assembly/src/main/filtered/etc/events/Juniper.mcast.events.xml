@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: Juniper-MROUTER-MIB -->
 <event>
 	<mask>
@@ -26,12 +26,12 @@ OIFs are blocked due to exceded admission limit on the port.&lt;/p&gt;&lt;table&
 	juniMRouteIfLocIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			juniMRoutePortBwExceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -60,12 +60,12 @@ value on the port.&lt;/p&gt;&lt;table&gt;
 	juniMRouteIfLocIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			juniMRoutePortBwReceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -93,12 +93,12 @@ OIFs are blocked due to exceded admission limit on the port.&lt;/p&gt;&lt;table&
 	juniMRouteIfLocIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			juniMRoutePortPriorityBwExceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
+	<alarm-data alarm-type="1" auto-clean="false" reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%"/>
 </event>
 <event>
 	<mask>
@@ -127,12 +127,12 @@ value on the port.&lt;/p&gt;&lt;table&gt;
 	juniMRouteIfLocIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			juniMRoutePortPriorityBwReceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
-	<alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false" />
+	<alarm-data alarm-type="2" auto-clean="false" clear-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%"/>
 </event>
 <!-- End of auto generated data from MIB: Juniper-MROUTER-MIB -->
 </events>

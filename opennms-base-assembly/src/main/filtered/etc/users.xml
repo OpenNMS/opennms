@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><userinfo xmlns="http://xmlns.opennms.org/xsd/users">
     <header>
         <rev>.9</rev>
         <created>Thursday, November 3, 2011 9:28:08 PM GMT</created>

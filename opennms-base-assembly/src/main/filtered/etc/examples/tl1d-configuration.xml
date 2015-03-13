@@ -1,77 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tl1d-configuration 
-    xmlns:this="http://xmlns.opennms.org/xsd/config/tl1d-configuration" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/tl1d-configuration">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><tl1d-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/tl1d-configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/tl1d-configuration">
     
-  <tl1-element host="127.0.0.1" 
-               port="15001" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15002" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15003" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15004" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15005" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15006" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15007" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" 
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15008" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15009" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
-  <tl1-element host="127.0.0.1" 
-               port="15010" 
-               password="opennms" 
-               reconnect-delay="30000" 
-               tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl"
-               tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" 
-               userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15001" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15002" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15003" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15004" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15005" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15006" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15007" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15008" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15009" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
+  <tl1-element host="127.0.0.1" password="opennms" port="15010" reconnect-delay="30000" tl1-client-api="org.opennms.netmgt.tl1d.Tl1ClientImpl" tl1-message-parser="org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor" userid="opennms"/>
 </tl1d-configuration>

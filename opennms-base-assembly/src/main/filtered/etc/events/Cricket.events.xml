@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- event definitions for traps from cricket systems monitoring tool (http://cricket.sourceforge.net/) -->
 <event>
  <mask>
@@ -30,7 +30,7 @@
  Instance Number&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cricket Threshold alert at %parm[#3]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Cricket Threshold alert at %parm[#3]%.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
  <operinstruct>
   &lt;p&gt;check &lt;a href="http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%"&gt;cricket&lt;/a&gt; for current values&lt;/p&gt;
@@ -66,7 +66,7 @@
  Instance Number&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cricket Threshold cleared at %parm[#3]%.&lt;/p&gt;</logmsg>
+ <logmsg dest="logndisplay">&lt;p&gt;Cricket Threshold cleared at %parm[#3]%.&lt;/p&gt;</logmsg>
  <severity>Minor</severity>
  <operinstruct>
   &lt;p&gt;check &lt;a href="http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%"&gt;cricket&lt;/a&gt; for current values&lt;/p&gt;

@@ -1,4 +1,4 @@
-<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><events xmlns="http://xmlns.opennms.org/xsd/eventconf">
 <!-- Start of auto generated data from MIB: OVERTURE-FAULTS-MIB -->
 <event>
 	<mask>
@@ -245,7 +245,7 @@ ovnFaultChannel: the channel of the fault. Only applicaple for
 		chan28(28)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ovnFaultActive trap received 
 			ovnFaultTrapSeverity=%parm[#1]% 
 			ovnFaultTrapSlot=%parm[#2]% 
@@ -505,7 +505,7 @@ ovnFaultChannel: the channel of the fault. Only applicaple for
 		chan28(28)
 	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+		<logmsg dest="logndisplay">&lt;p&gt;
 			ovnFaultCleared trap received 
 			ovnFaultTrapSeverity=%parm[#1]% 
 			ovnFaultTrapSlot=%parm[#2]% 
