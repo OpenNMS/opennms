@@ -29,6 +29,12 @@
 package org.opennms.web.services;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
@@ -47,13 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-public class GroupService implements InitializingBean {
+public class GroupService implements InitializingBean, org.opennms.web.svclayer.api.GroupService {
 
     private final Logger Log = LoggerFactory.getLogger(getClass());
     
@@ -74,23 +74,28 @@ public class GroupService implements InitializingBean {
         System.out.println("init...");
     }
 
+    @Override
     public boolean existsGroup(String groupName) {
         return m_groupDao.hasGroup(groupName);
     }
 
+    @Override
     public Group getGroup(String groupName) {
         return m_groupDao.getGroup(groupName);
     }
 
+    @Override
     public List<Group> getGroups() {
         Collection<Group> groups = m_groupDao.getGroups().values();
         return groups == null ? new ArrayList<Group>() : new ArrayList<Group>(groups);
     }
 
+    @Override
     public List<OnmsCategory> getAuthorizedCategories(String groupName) {
         return new ArrayList<OnmsCategory>(m_categoryDao.getCategoriesWithAuthorizedGroup(groupName));
     }
 
+    @Override
     public List<String> getAuthorizedCategoriesAsString(String groupName) {
         List<OnmsCategory> categories = getAuthorizedCategories(groupName);
         List<String> categoryNames = new ArrayList<String>(categories.size());
@@ -100,24 +105,29 @@ public class GroupService implements InitializingBean {
         return categoryNames;
     }
 
+    @Override
     public void saveGroup(OnmsGroup group) {
         saveGroup(onmsGroupMapper.map(group));
     }
 
+    @Override
     public void saveGroup(Group group) {
         m_groupDao.saveGroup(group.getName(), group);
     }
 
+    @Override
     public void saveGroup(Group group, List<String> authorizedCategories) {
         setAuthorizedCategories(group.getName(), authorizedCategories);
         m_groupDao.saveGroup(group.getName(), group);
     }
 
+    @Override
     public void deleteGroup(String groupName) {
         m_groupDao.deleteGroup(groupName);
         setAuthorizedCategories(groupName, Collections.<String>emptyList());
     }
 
+    @Override
     public void renameGroup(String oldName, String newName) {
         m_groupDao.renameGroup(oldName, newName);
         List<String> categories = getAuthorizedCategoriesAsString(oldName);
@@ -125,6 +135,7 @@ public class GroupService implements InitializingBean {
         setAuthorizedCategories(newName, categories);
     }
 
+    @Override
     public boolean addCategory(String groupName, String categoryName) {
         if (m_categoryDao.findByName(categoryName) == null) return false; // category does not exist
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
@@ -136,6 +147,7 @@ public class GroupService implements InitializingBean {
         return false; // can't be added, already added
     }   
 
+    @Override
     public boolean removeCategory(String groupName, String categoryName) {
         List<String> categoryNames = getAuthorizedCategoriesAsString(groupName);
         if (categoryNames.contains(categoryName)) {
@@ -146,15 +158,18 @@ public class GroupService implements InitializingBean {
         return false; // categoryName does not exist, removing not possible
     }
 
+    @Override
     public OnmsGroup getOnmsGroup(String groupName) {
         return onmsGroupMapper.map(getGroup(groupName));
     }
 
+    @Override
     public OnmsGroupList getOnmsGroupList() {
         return onmsGroupListMapper.map(
                 onmsGroupMapper.map(getGroups()));
     }
 
+    @Override
     public OnmsUserList getUsersOfGroup(String groupName) {
         Group group = getGroup(groupName);
         OnmsUserList userCollection = new OnmsUserList();
@@ -176,7 +191,8 @@ public class GroupService implements InitializingBean {
         }
         return userCollection;
     }
-    
+
+    @Override
     public OnmsUser getUserForGroup(String groupName, String userName) {
         Group group = getGroup(groupName);
         if (group != null && group.getUserCollection().contains(userName)) {
@@ -192,7 +208,8 @@ public class GroupService implements InitializingBean {
         }
         return null; // group or user name does not exist
     }
-    
+
+    @Override
     public boolean addUser(String groupName, String userName) {
         Group group = getGroup(groupName);
         if (group != null && hasUser(userName)) {
@@ -206,7 +223,7 @@ public class GroupService implements InitializingBean {
         }
         return false; // group or user does not exist.
     }
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);

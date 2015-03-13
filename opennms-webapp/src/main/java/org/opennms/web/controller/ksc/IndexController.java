@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.svclayer.KscReportService;
 import org.opennms.web.svclayer.ResourceService;
+import org.opennms.web.svclayer.api.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -103,7 +103,7 @@ public class IndexController extends AbstractController implements InitializingB
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -112,7 +112,7 @@ public class IndexController extends AbstractController implements InitializingB
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;

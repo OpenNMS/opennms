@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImp
         while (en.hasMoreElements()) {
             final String parmName = en.nextElement();
             final String[] parmValue = m_httpServletRequest.getParameterValues(parmName);
-            result.put(parmName, parmValue);
+            result.put(parmName, Arrays.asList(parmValue));
         }
 
         return result;

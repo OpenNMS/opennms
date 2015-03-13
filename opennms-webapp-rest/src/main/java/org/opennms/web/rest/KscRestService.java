@@ -29,12 +29,12 @@
  */
 package org.opennms.web.rest;
 
-import com.sun.jersey.spi.resource.PerRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.Entity;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -57,17 +57,20 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
-import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.api.KscReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 @PerRequest

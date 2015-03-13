@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.api;
 
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.opennms.web.api.ISO8601DateEditor;
 
 import junit.framework.TestCase;
 

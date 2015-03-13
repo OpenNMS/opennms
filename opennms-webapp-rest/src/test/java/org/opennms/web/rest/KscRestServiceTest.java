@@ -49,7 +49,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.google.gwt.thirdparty.guava.common.io.Files;
+import com.google.common.io.Files;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration

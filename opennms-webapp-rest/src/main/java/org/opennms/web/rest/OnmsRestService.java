@@ -47,13 +47,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
 import org.opennms.netmgt.model.StatusTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
-import org.opennms.web.rest.support.InetAddressTypeEditor;
+import org.opennms.web.api.ISO8601DateEditor;
+import org.opennms.web.api.RestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -261,39 +263,6 @@ public class OnmsRestService {
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
 
-
-    /**
-     * Convert a column name with underscores to the corresponding property name using "camel case".  A name
-     * like "customer_number" would match a "customerNumber" property name.
-     *
-     * @param name the column name to be converted
-     * @return the name using "camel case"
-     */
-    public static String convertNameToPropertyName(String name) {
-        StringBuffer result = new StringBuffer();
-        boolean nextIsUpper = false;
-        if (name != null && name.length() > 0) {
-            if (name.length() > 1 && (name.substring(1, 2).equals("_") || (name.substring(1, 2).equals("-")))) {
-                result.append(name.substring(0, 1).toUpperCase());
-            } else {
-                result.append(name.substring(0, 1).toLowerCase());
-            }
-            for (int i = 1; i < name.length(); i++) {
-                String s = name.substring(i, i + 1);
-                if (s.equals("_") || s.equals("-")) {
-                    nextIsUpper = true;
-                } else {
-                    if (nextIsUpper) {
-                        result.append(s.toUpperCase());
-                        nextIsUpper = false;
-                    } else {
-                        result.append(s.toLowerCase());
-                    }
-                }
-            }
-        }
-        return result.toString();
-    }
 
     protected static URI getRedirectUri(final UriInfo m_uriInfo, final Object... pathComponents) {
         if (pathComponents != null && pathComponents.length == 0) {

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.svclayer.support;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,15 +59,19 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServ
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredServiceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNodeCollection;
+import org.opennms.web.api.RestUtils;
+import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
 
-public class RequisitionAccessService {
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+public class DefaultRequisitionAccessService implements RequisitionAccessService {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(RequisitionAccessService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultRequisitionAccessService.class);
 
 
     @Autowired
@@ -467,7 +471,7 @@ public class RequisitionAccessService {
     // should only be called inside a submitted job on the executor thread -
     // Used for operations that access
     // requisitions for multiple foreignSources
-    void flushAll() {
+    public void flushAll() {
         for (final RequisitionAccessor accessor : m_accessors.values()) {
             accessor.flush();
         }
@@ -504,6 +508,7 @@ public class RequisitionAccessService {
     }
 
     // GLOBAL
+    @Override
     public int getDeployedCount() {
         return submitAndWait(new Callable<Integer>() {
             @Override public Integer call() throws Exception {
@@ -514,6 +519,7 @@ public class RequisitionAccessService {
     }
 
     // GLOBAL
+    @Override
     public RequisitionCollection getDeployedRequisitions() {
         return submitAndWait(new Callable<RequisitionCollection>() {
             @Override public RequisitionCollection call() throws Exception {
@@ -524,6 +530,7 @@ public class RequisitionAccessService {
     }
 
     // GLOBAL
+    @Override
     public RequisitionCollection getRequisitions() {
         return submitAndWait(new Callable<RequisitionCollection>() {
             @Override public RequisitionCollection call() throws Exception {
@@ -546,6 +553,7 @@ public class RequisitionAccessService {
     }
 
     // GLOBAL
+    @Override
     public int getPendingCount() {
         return submitAndWait(new Callable<Integer>() {
             @Override public Integer call() throws Exception {
@@ -555,6 +563,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public Requisition getRequisition(final String foreignSource) {
         return submitAndWait(new Callable<Requisition>() {
             @Override public Requisition call() throws Exception {
@@ -563,6 +572,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionNodeCollection getNodes(final String foreignSource) {
         return submitAndWait(new Callable<RequisitionNodeCollection>() {
             @Override public RequisitionNodeCollection call() throws Exception {
@@ -571,6 +581,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionNode getNode(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionNode>() {
             @Override public RequisitionNode call() throws Exception {
@@ -580,6 +591,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionInterfaceCollection getInterfacesForNode(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionInterfaceCollection>() {
             @Override public RequisitionInterfaceCollection call() throws Exception {
@@ -588,6 +600,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionInterface getInterfaceForNode(final String foreignSource, final String foreignId, final String ipAddress) {
         return submitAndWait(new Callable<RequisitionInterface>() {
             @Override public RequisitionInterface call() throws Exception {
@@ -596,6 +609,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionMonitoredServiceCollection getServicesForInterface(final String foreignSource, final String foreignId, final String ipAddress) {
         return submitAndWait(new Callable<RequisitionMonitoredServiceCollection>() {
             @Override public RequisitionMonitoredServiceCollection call() throws Exception {
@@ -604,6 +618,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionMonitoredService getServiceForInterface(final String foreignSource, final String foreignId, final String ipAddress, final String service) {
         return submitAndWait(new Callable<RequisitionMonitoredService>() {
             @Override public RequisitionMonitoredService call() throws Exception {
@@ -612,6 +627,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionCategoryCollection getCategories(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionCategoryCollection>() {
             @Override public RequisitionCategoryCollection call() throws Exception {
@@ -620,6 +636,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionCategory getCategory(final String foreignSource, final String foreignId, final String category) {
         return submitAndWait(new Callable<RequisitionCategory>() {
             @Override public RequisitionCategory call() throws Exception {
@@ -628,6 +645,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionAssetCollection getAssetParameters(final String foreignSource, final String foreignId) {
         return submitAndWait(new Callable<RequisitionAssetCollection>() {
             @Override public RequisitionAssetCollection call() throws Exception {
@@ -636,6 +654,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public RequisitionAsset getAssetParameter(final String foreignSource, final String foreignId, final String parameter) {
         return submitAndWait(new Callable<RequisitionAsset>() {
             @Override public RequisitionAsset call() throws Exception {
@@ -644,6 +663,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceRequisition(final Requisition requisition) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -652,6 +672,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceNode(final String foreignSource, final RequisitionNode node) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -660,6 +681,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceInterface(final String foreignSource, final String foreignId, final RequisitionInterface iface) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -668,6 +690,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceService(final String foreignSource, final String foreignId, final String ipAddress, final RequisitionMonitoredService service) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -676,6 +699,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceNodeCategory(final String foreignSource, final String foreignId, final RequisitionCategory category) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -684,6 +708,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void addOrReplaceNodeAssetParameter(final String foreignSource, final String foreignId, final RequisitionAsset asset) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -692,6 +717,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void importRequisition(final String foreignSource, final String rescanExisting) {
         final URL activeUrl = createSnapshot(foreignSource);
 
@@ -719,6 +745,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void updateRequisition(final String foreignSource, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -727,6 +754,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void updateNode(final String foreignSource, final String foreignId, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -735,6 +763,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void updateInterface(final String foreignSource, final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -743,6 +772,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deletePendingRequisition(final String foreignSource) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -751,6 +781,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteDeployedRequisition(final String foreignSource) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -759,6 +790,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteNode(final String foreignSource, final String foreignId) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -767,6 +799,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteInterface(final String foreignSource, final String foreignId, final String ipAddress) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -775,6 +808,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteInterfaceService(final String foreignSource, final String foreignId, final String ipAddress, final String service) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -783,6 +817,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteCategory(final String foreignSource, final String foreignId, final String category) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
@@ -791,6 +826,7 @@ public class RequisitionAccessService {
         });
     }
 
+    @Override
     public void deleteAssetParameter(final String foreignSource, final String foreignId, final String parameter) {
         submitWriteOp(new Runnable() {
             @Override public void run() {

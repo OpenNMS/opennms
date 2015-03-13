@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.api;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Date;

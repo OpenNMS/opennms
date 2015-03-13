@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.support;
+package org.opennms.netmgt.model;
 
 import java.beans.PropertyEditorSupport;
 import java.net.InetAddress;

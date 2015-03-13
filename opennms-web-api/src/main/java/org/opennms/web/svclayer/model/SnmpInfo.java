@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.snmpinfo;
+package org.opennms.web.svclayer.model;
 
 import java.net.UnknownHostException;
 
