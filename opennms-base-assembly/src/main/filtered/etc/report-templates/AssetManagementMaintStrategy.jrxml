@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T16:35:57 -->
+<!-- 2015-03-13T16:06:34 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="assetMgmtStrategic" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="74d8d5da-3ed5-4f83-9373-3eea8d213ca5">
 	<property name="ireport.zoom" value="1.2100000000000002"/>
 	<property name="ireport.x" value="0"/>
@@ -211,10 +211,12 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="723" splitType="Stretch">
+		<band height="665" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<stackedBarChart>
 				<chart evaluationTime="Report">
-					<reportElement x="0" y="245" width="555" height="215" uuid="9a22a6f5-b372-4e71-8c10-91f64a3f14eb"/>
+					<reportElement x="0" y="208" width="555" height="215" uuid="9a22a6f5-b372-4e71-8c10-91f64a3f14eb"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["Age and maintenance contracts"]]></titleExpression>
@@ -277,7 +279,7 @@ ORDER BY
 			</stackedBarChart>
 			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement x="0" y="478" width="555" height="215" uuid="a5365fb3-8d02-44cc-ab2c-ad9fa9313baf"/>
+					<reportElement x="0" y="441" width="555" height="215" uuid="a5365fb3-8d02-44cc-ab2c-ad9fa9313baf"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["12 month forecast"]]></titleExpression>
@@ -338,7 +340,7 @@ ORDER BY
 			</stackedBarChart>
 			<pie3DChart>
 				<chart isShowLegend="true">
-					<reportElement x="0" y="47" width="269" height="165" uuid="8134332d-e84f-4d78-8569-f2b5c9c57567"/>
+					<reportElement x="0" y="10" width="269" height="165" uuid="8134332d-e84f-4d78-8569-f2b5c9c57567"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["Maintenance contracts"]]></titleExpression>
@@ -378,19 +380,16 @@ ORDER BY
 				</pie3DPlot>
 			</pie3DChart>
 			<rectangle radius="5">
-				<reportElement x="291" y="47" width="264" height="165" backcolor="#DFDFDF" uuid="15320872-8f86-431b-b7cc-0e99e1b5fc48"/>
+				<reportElement x="291" y="10" width="264" height="165" backcolor="#DFDFDF" uuid="15320872-8f86-431b-b7cc-0e99e1b5fc48"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement style="Body" x="296" y="52" width="254" height="155" uuid="4ea0635f-2002-41c4-8893-c571f7f345f9"/>
+				<reportElement style="Body" x="296" y="15" width="254" height="155" uuid="4ea0635f-2002-41c4-8893-c571f7f345f9"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[This report shows an overview about maintenance contracts. The report shows contracts over all active nodes and if they have a running contract, expired or no contract. With age and maintenance contract you can see how old your devices are and if the devices have a maintenance contract. Additionally you can see how many devices in a age class have contracts, expired or no contracts. The last diagramm gives an forecast of how many maintenance contracts will expire in the next 12 month.]]></text>
 			</staticText>
-			<line>
-				<reportElement x="0" y="722" width="555" height="1" uuid="869bafc1-eebd-4769-9629-f04aa1d0ea59"/>
-			</line>
 			<line>
 				<reportElement x="0" y="0" width="555" height="1" uuid="55929da6-5fb2-4f8e-8fa6-27b16e9fd258"/>
 			</line>
@@ -400,16 +399,29 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="22" splitType="Stretch">
+		<band height="30" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement key="" style="Paging-Footer" x="436" y="2" width="80" height="20" uuid="730772d7-6692-445d-a07d-3c3344e72445"/>
+				<reportElement key="" style="Paging-Footer" x="436" y="5" width="80" height="20" uuid="730772d7-6692-445d-a07d-3c3344e72445">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement style="Paging-Footer" x="516" y="2" width="40" height="20" uuid="60a805f6-d2fd-45fd-a1bf-b0ee858ff484"/>
+				<reportElement style="Paging-Footer" x="516" y="5" width="40" height="20" uuid="60a805f6-d2fd-45fd-a1bf-b0ee858ff484">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="869bafc1-eebd-4769-9629-f04aa1d0ea59">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+			</line>
 		</band>
 	</pageFooter>
 	<summary>
