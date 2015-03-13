@@ -44,6 +44,20 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class TestNetworkBuilder {
+    //NMSDRAGONWAVE
+    public final static String DW_ROOT= "DW";
+    public static final String DW_IP = "10.103.1.1";
+    public static final String DW_NAME = "dw";
+    public static final String DW_SNMP_RESOURCE = "classpath:linkd/nms7777dw/"+DW_NAME+"-walk.txt";
+    public static final String DW_SYSOID = ".1.3.6.1.4.1.7262.2.4";
+
+    public static final Map<InetAddress,Integer> DW_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String> DW_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> DW_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
     //NMS4943
     public static final String DLINK1_IP = "10.1.1.2";
     public static final String DLINK1_NAME = "dlink1";
