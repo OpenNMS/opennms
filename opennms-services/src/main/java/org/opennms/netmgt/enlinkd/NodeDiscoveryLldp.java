@@ -102,7 +102,11 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.clas
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
         	public void processLldpRemRow(final LldpRemRow row) {
-        		m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
+        	    // Fix for DragonWave, we avoid to store if target has the same chassis id then the source
+        	    if (lldpLocalGroup.getLldpLocChassisid().equals(row.getLldpRemChassisId())
+	                && lldpLocalGroup.getLldpLocChassisidSubType().intValue() == row.getLldpRemChassisidSubtype().intValue())
+        	        return;
+        	    m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
         	}
         };
 
