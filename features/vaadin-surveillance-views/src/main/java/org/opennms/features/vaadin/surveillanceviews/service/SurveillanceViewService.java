@@ -108,7 +108,7 @@ public interface SurveillanceViewService {
      * @param colCategories the column categories
      * @return the list of {@link org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService.NodeRtc}
      */
-    List<NodeRtc> getNoteRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
+    List<NodeRtc> getNodeRtcsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
 
     /**
      * Returns a map of OpenNMS resource type/resource mappings for a given node id.

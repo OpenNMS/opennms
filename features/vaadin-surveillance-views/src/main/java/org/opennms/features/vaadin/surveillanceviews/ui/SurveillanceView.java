@@ -201,7 +201,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
      *
      * @param selectedView            the view to be used
      * @param surveillanceViewService the surveillance view service
-     * @param dashboard               should the dashboar dbe displayed?
+     * @param dashboard               should the dashboard be displayed?
      * @param enabled                 should links be enabled?
      */
     public SurveillanceView(View selectedView, SurveillanceViewService surveillanceViewService, boolean dashboard, boolean enabled) {

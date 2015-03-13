@@ -66,7 +66,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
     private SurveillanceViewService m_surveillanceViewService;
 
     /**
-     * Construcotr for creating this component.
+     * Constructor for creating this component.
      *
      * @param surveillanceViewService the surveillance view service to be used
      */
@@ -157,9 +157,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
         m_table.setSizeFull();
         m_table.sort(new Object[]{"name"}, new boolean[]{true});
 
-        m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator()
-
-                {
+        m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         Button button = new Button("Edit");
                         button.setDescription("Edit this Surveillance View configuration");
@@ -191,28 +189,22 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
 
         );
 
-        m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator()
-
-                {
-                    public Object generateCell(Table source, final Object itemId, Object columnId) {
-                        Button button = new Button("Remove");
-                        button.setDescription("Delete this Surveillance View configuration");
-                        button.setStyleName("small");
-                        button.addClickListener(new Button.ClickListener() {
-                            public void buttonClick(Button.ClickEvent clickEvent) {
-                                SurveillanceViewProvider.getInstance().removeView((View) itemId);
-                                m_beanItemContainer.removeItem(itemId);
-                            }
-                        });
-                        return button;
+        m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                Button button = new Button("Remove");
+                button.setDescription("Delete this Surveillance View configuration");
+                button.setStyleName("small");
+                button.addClickListener(new Button.ClickListener() {
+                    public void buttonClick(Button.ClickEvent clickEvent) {
+                        SurveillanceViewProvider.getInstance().removeView((View) itemId);
+                        m_beanItemContainer.removeItem(itemId);
                     }
-                }
+                });
+                return button;
+            }
+        });
 
-        );
-
-        m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator()
-
-                {
+        m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator() {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         Button button = new Button("Preview");
                         button.setDescription("Preview this Surveillance View configuration");
@@ -226,9 +218,7 @@ public class SurveillanceViewsConfigList extends VerticalLayout {
 
         );
 
-        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator()
-
-                {
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
                     public Object generateCell(Table source, final Object itemId, Object columnId) {
                         CheckBox checkBox = new CheckBox();
                         checkBox.setImmediate(true);

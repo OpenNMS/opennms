@@ -374,7 +374,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * {@inheritDoc}
      */
     @Override
-    public List<NodeRtc> getNoteRtcsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+    public List<NodeRtc> getNodeRtcsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         return m_transactionOperations.execute(new TransactionCallback<List<NodeRtc>>() {
             @Override
             public List<NodeRtc> doInTransaction(TransactionStatus transactionStatus) {
