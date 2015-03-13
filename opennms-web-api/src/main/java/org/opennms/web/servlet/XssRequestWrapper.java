@@ -128,7 +128,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         return super.getRequest().getCharacterEncoding();
     }
 
-    private  Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
+    private static Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
     {       
         Map<String, String[]> res = new HashMap<String, String[]>();
         if (raw==null) {
