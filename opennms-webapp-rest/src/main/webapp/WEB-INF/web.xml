@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="opennms-rest" version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
+  <jsp-config>
+    <jsp-property-group>
+      <url-pattern>*.jsp</url-pattern>
+      <page-encoding>UTF-8</page-encoding>
+    </jsp-property-group>
+  </jsp-config>
+
+  <display-name>opennms-rest</display-name>
+
+  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      classpath:/META-INF/opennms/applicationContext-commonConfigs.xml
+      classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
+      classpath*:/META-INF/opennms/component-service.xml
+
+      /WEB-INF/spring-security.d/*.xml
+      /WEB-INF/applicationContext-spring-security.xml
+      /WEB-INF/applicationContext-jersey.xml
+      /WEB-INF/applicationContext-spring-webflow.xml
+      <!-- WARMERGE: insert contextConfigLocation -->
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>daoContext</param-value>
+  </context-param>
+
+  <!-- WARMERGE: insert context-param -->  
+
+  <filter>
+    <!-- This filter has to come before other filters. -->
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <!--  note the name of this filter is important and is used in the app contexts -->
+    <filter-name>springSecurityFilterChain</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter>
+    <description>Allows "cross-site scripting" for the REST services.</description>
+    <filter-name>CORS Filter</filter-name>
+    <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+    <!-- See https://github.com/eBay/cors-filter for a full list of parameters -->
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,PUT,POST,HEAD,OPTIONS,DELETE</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+  </filter>
+
+  <!-- WARMERGE: insert filter -->
+
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>springSecurityFilterChain</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- WARMERGE: insert filter-mapping -->
+
+  <!--
+    This listener handles setting OpenNMS-specific context properties 
+    and starts and stops the RTC subscription timer.
+  -->
+  <listener>
+    <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
+  </listener>
+
+  <!-- Bootstrap listener to start up and shut down Spring's root WebApplicationContext. -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- WARMERGE: insert listener -->
+
+  <!-- ==================================================================== -->
+  <!-- The default servlet.                                                 -->
+  <!-- This servlet, normally mapped to /, provides the handling for static -->
+  <!-- content, OPTIONS and TRACE methods for the context.                  -->
+  <!-- The following initParameters are supported:                          -->
+  <!--  
+    *  acceptRanges      If true, range requests and responses are
+    *                    supported
+    *
+    *  dirAllowed        If true, directory listings are returned if no
+    *                    welcome file is found. Else 403 Forbidden.
+    *
+    *  welcomeServlets   If true, attempt to dispatch to welcome files
+    *                    that are servlets, but only after no matching static
+    *                    resources could be found. If false, then a welcome
+    *                    file must exist on disk. If "exact", then exact
+    *                    servlet matches are supported without an existing file.
+    *                    Default is true.
+    *
+    *                    This must be false if you want directory listings,
+    *                    but have index.jsp in your welcome file list.
+    *
+    *  redirectWelcome   If true, welcome files are redirected rather than
+    *                    forwarded to.
+    *
+    *  gzip              If set to true, then static content will be served as
+    *                    gzip content encoded if a matching resource is
+    *                    found ending with ".gz"
+    *
+    *  resourceBase      Set to replace the context resource base
+    *
+    *  resourceCache     If set, this is a context attribute name, which the servlet 
+    *                    will use to look for a shared ResourceCache instance. 
+    *                        
+    *  relativeResourceBase
+    *                    Set with a pathname relative to the base of the
+    *                    servlet context root. Useful for only serving static content out
+    *                    of only specific subdirectories.
+    *
+    *  aliases           If True, aliases of resources are allowed (eg. symbolic
+    *                    links and caps variations). May bypass security constraints.
+    *
+    *  maxCacheSize      The maximum total size of the cache or 0 for no cache.
+    *  maxCachedFileSize The maximum size of a file to cache
+    *  maxCachedFiles    The maximum number of files to cache
+    *
+    *  useFileMappedBuffer
+    *                    If set to true, it will use mapped file buffer to serve static content
+    *                    when using NIO connector. Setting this value to false means that
+    *                    a direct buffer will be used instead of a mapped file buffer.
+    *                    By default, this is set to true.
+    *
+    *  cacheControl      If set, all static content will have this value set as the cache-control
+    *                    header.
+  -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>aliases</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>acceptRanges</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>false</param-value> <!-- NMS-3475 -->
+    </init-param>
+    <init-param>
+      <param-name>welcomeServlets</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirectWelcome</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCacheSize</param-name>
+      <param-value>256000000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFileSize</param-name>
+      <param-value>200000000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>maxCachedFiles</param-name>
+      <param-value>2048</param-value>
+    </init-param>
+    <init-param>
+      <param-name>gzip</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>useFileMappedBuffer</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>resourceCache</param-name>
+      <param-value>resourceCache</param-value>
+    </init-param>
+    <!--
+    <init-param>
+      <param-name>cacheControl</param-name>
+      <param-value>max-age=3600,public</param-value>
+    </init-param>
+    -->
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <!--  RESTful Web Services -->
+  <servlet>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Servlet mappings for REST Services -->
+  <servlet-mapping>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>dispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>*.htm</url-pattern>
+  </servlet-mapping>
+
+  <!--
+    Although this will be matched by the above *.htm url-pattern,
+    this servlet-mapping needs to be here because wildcard url-pattern
+    elements don't seem to work as a welcome-page entry. 
+  -->
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/frontPage.htm</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/graph/graph.png</url-pattern>
+  </servlet-mapping>
+
+  <!-- WARMERGE: insert servlet -->  
+  <!-- WARMERGE: insert servlet-mapping -->  
+
+  <!--
+    the welcome-file elements need to point at a file that exists or
+    a non-wildcard url-pattern in a servlet-mapping element.
+  -->
+  <welcome-file-list>
+    <welcome-file>frontPage.jsp</welcome-file>
+  </welcome-file-list>
+
+</web-app>
