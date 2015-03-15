@@ -212,6 +212,7 @@ public class LldpRemTableTracker extends TableTracker {
             LOG.info( "getLldpLink: row local port num: {}",  getLldpRemLocalPortNum());
 
             LldpLink lldpLink = lldpLocPort.get(getLldpRemLocalPortNum());
+            // Check if lldpLink is null.....and do what?
 
             LOG.info( "getLldpLink: row local port id: {}", lldpLink.getLldpPortId());
             LOG.info( "getLldpLink: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));

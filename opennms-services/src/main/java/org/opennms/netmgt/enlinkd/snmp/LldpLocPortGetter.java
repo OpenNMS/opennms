@@ -59,6 +59,7 @@ public class LldpLocPortGetter extends TableTracker {
 					SnmpObjId.get(LLDP_LOC_DESCR,instance)};
 		
 		SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
+		// Log error condition...rreally must be null if the port was not found?
 		if (val == null || val.length != 3 || val[0] == null || val[1] == null || !val[0].isNumeric())
 			return null;
 		LldpLink lldplink = new LldpLink();
