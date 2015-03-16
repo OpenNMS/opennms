@@ -148,6 +148,12 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         return graphResults;
     }
 
+    @Override
+    public PrefabGraph[] getAllPrefabGraphs(String resourceId) {
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        return m_graphDao.getPrefabGraphsForResource(resource);
+    }
+
     /**
      * <p>parseResourceId</p>
      *

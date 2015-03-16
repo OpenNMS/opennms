@@ -310,11 +310,18 @@ var imgs = e.find('img');
 for (var i=0; i < imgs.length; i++) {
   var img = $(imgs[i]);
   var container = img.closest('div');
-  var w = Math.round(container.width() * 0.75);
-  var h = Math.round(w * 0.25);
+  var w = Math.round(container.width() * 0.8);
+  var h = Math.round(w * 0.3);
   var imgsrc = img.data('imgsrc');
-  if (!(imgsrc.indexOf("width=") > -1 || imgsrc.indexOf("height=") > -1)) {
-    imgsrc += "&width=" + w + "&height=" + h;
+  if (imgsrc.indexOf("width=") > -1) {
+    imgsrc = imgsrc.replace(/width=\d+/, "width=" + w);
+  } else {
+    imgsrc += "&width=" + w;
+  }
+  if (imgsrc.indexOf("height=") > -1) {
+    imgsrc = imgsrc.replace(/height=\d+/, "height=" + h);
+  } else {
+    imgsrc += "&height=" + h;
   }
   img.attr('src', imgsrc);
 }

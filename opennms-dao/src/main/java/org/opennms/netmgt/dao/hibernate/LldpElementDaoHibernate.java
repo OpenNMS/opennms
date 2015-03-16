@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 
 import java.util.List;
 

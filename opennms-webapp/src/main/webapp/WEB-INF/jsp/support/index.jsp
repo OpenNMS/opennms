@@ -185,8 +185,8 @@ session="true"
   <div class="panel-body">
     <ul class="list-unstyled">
       <li><a href="support/about.jsp">About the OpenNMS Web Console</a></li>
-      <li><a href="http://www.opennms.org/documentation/ReleaseNotesStable.html#whats-new">Release Notes</a></li>
-      <li><a href="http://www.opennms.org/wiki/">Online Documentation</a></li>
+      <li><a href="http://meridian.opennms.com/releasenotes/">Release Notes</a></li>
+      <li><a href="http://meridian.opennms.com/docs/">Online Documentation</a></li>
     </ul>
   </div>
   </div>
