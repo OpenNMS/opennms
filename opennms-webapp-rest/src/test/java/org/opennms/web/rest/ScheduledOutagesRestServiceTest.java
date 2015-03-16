@@ -63,19 +63,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
-        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
-        "classpath:/applicationContext-jersey-test.xml",
-        "classpath:/META-INF/opennms/applicationContext-reporting.xml",
-        "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
@@ -150,7 +145,7 @@ public class ScheduledOutagesRestServiceTest extends AbstractSpringJerseyRestTes
                 + "<service name=\"ICMP\" interval=\"300000\"/>"
                 + "<downtime begin=\"0\" end=\"30000\"/>"
                 + "</package>"
-                + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.poller.monitors.IcmpMonitor\"/>"
+                + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>"
                 + "</poller-configuration>");
         PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig), "localserver", false));
 
