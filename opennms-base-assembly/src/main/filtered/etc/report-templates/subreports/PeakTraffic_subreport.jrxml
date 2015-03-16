@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrafficSubReport" pageWidth="628" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="628" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-09T17:04:31 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrafficSubReport" pageWidth="555" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="571815ec-7aa8-49bd-9b52-ee6a4a9ab2ac">
 	<property name="ireport.zoom" value="1.610510000000001"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -87,41 +98,59 @@
 	<summary>
 		<band height="24" splitType="Stretch">
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="513" y="4" width="115" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Peak}]]></textFieldExpression>
+				<reportElement style="Detail" x="451" y="4" width="105" height="20" uuid="9c7e371b-ca66-4bca-aaa7-52a864a8d55c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifOutOctets_Peak}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="146" y="4" width="123" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Average}]]></textFieldExpression>
+				<reportElement style="Detail" x="113" y="4" width="123" height="20" uuid="4269bf48-156f-4447-bed0-83f3c048cb8f">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifInOctets_Average}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="369" y="4" width="144" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Average}]]></textFieldExpression>
+				<reportElement style="Detail" x="329" y="4" width="120" height="20" uuid="d15a4671-5e26-4d42-af3a-e7e39da81b11">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifOutOctets_Average}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Detail" x="3" y="4" width="143" height="20"/>
+				<reportElement style="Detail" x="3" y="4" width="110" height="20" uuid="5ca6f441-c070-481f-8d2f-8e4a0dd763f8">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{interface}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="269" y="4" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Peak}]]></textFieldExpression>
+				<reportElement style="Detail" x="225" y="4" width="100" height="20" uuid="8fce92a7-fd0d-458a-92a9-1642d08d61cf">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifInOctets_Peak}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
 	<noData>
 		<band height="30">
 			<textField>
-				<reportElement style="Detail" x="3" y="0" width="143" height="20"/>
+				<reportElement style="Detail" x="3" y="0" width="110" height="20" uuid="0d4d8fc4-6714-45b3-ac89-aedfdc16fe3e">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{interface}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="146" y="0" width="482" height="20"/>
+				<reportElement x="113" y="0" width="442" height="20" uuid="1ecaa655-9b5d-4439-b9a9-571191129c62"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
