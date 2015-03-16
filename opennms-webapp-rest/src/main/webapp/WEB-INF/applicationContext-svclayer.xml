@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xmlns:tx="http://www.springframework.org/schema/tx" 
-xmlns:context="http://www.springframework.org/schema/context"
-xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
+
   <tx:annotation-driven/>
   <context:annotation-config/>
+
+<!-- 
   <bean name="filterService" class="org.opennms.web.services.FilterFavoriteService"/>
+  -->
   <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
+  <!--
   <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>
   <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository">
   </bean>
-  <!-- Surveillance View beans -->
+  <!- - Surveillance View beans - ->
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="surveillanceConfigDao" ref="surveillanceViewConfigDao"/>
   </bean>
-  <!-- Site Status beans -->
+  <!- - Site Status beans - ->
   <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
   <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
   </bean>
-  <!-- Outage Service beans -->
+  <!- - Outage Service beans - ->
   <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
     <property name="dao" ref="outageDao"/>
   </bean>
-  <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
+  <!- - Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table - ->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
@@ -56,13 +62,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="foreignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!-- Category Service Status beans -->
+  <!- - Category Service Status beans - ->
   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
     <property name="outageDao" ref="outageDao"/>
     <property name="viewDisplayDao" ref="viewDisplayDao"/>
   </bean>
-  <!-- Distributed Status Service Status beans -->
+  <!- - Distributed Status Service Status beans - ->
   <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
@@ -74,6 +80,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
   </bean>
+  -->
   <!--  Graphing beans -->
   <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
     <property name="prefabConfigs">
@@ -91,10 +98,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao"/>
-  
+  <!-- 
   
 
-  <!-- Admin applications bean -->
+  <!- - Admin applications bean - ->
   <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
     <property name="applicationDao" ref="applicationDao"/>
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
@@ -104,7 +111,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--  Manual Provisioning -->
+  <!- -  Manual Provisioning - ->
   <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
     <property name="importFileDirectory" value="${importer.requisition.dir}"/>
   </bean>
@@ -115,12 +122,14 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="categoryDao" ref="categoryDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
   </bean>
+  -->
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
+  <!--
   <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
@@ -142,6 +151,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="resourceDao" ref="resourceDao"/>
     <property name="rrdDao" ref="rrdDao"/>
   </bean>
+  -->
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
       <value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value>
@@ -155,11 +165,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
-  <!-- Availability Report Beans -->
+  <!--
+  <!- - Availability Report Beans - ->
   <bean id="categoryConfigService" class="org.opennms.web.svclayer.support.DefaultCategoryConfigService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
   </bean>
-  <!-- Database Report Beans -->
+  <!- - Database Report Beans - ->
   <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
     <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
   </bean>
@@ -180,15 +191,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     </property>
     <property name="quartzProperties">
       <props>
-        <!-- Configure Main Scheduler Properties -->
+        <!- - Configure Main Scheduler Properties - ->
         <prop key="org.quartz.scheduler.instanceId">ReportScheduler</prop>
-        <!-- Configure ThreadPool -->
+        <!- - Configure ThreadPool - ->
         <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
         <prop key="org.quartz.threadPool.threadCount">1</prop>
-        <!-- Configure JobStore -->
+        <!- - Configure JobStore - ->
         <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreCMT</prop>
         <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
-        <!-- Configure Plugins -->
+        <!- - Configure Plugins - ->
         <prop key="org.quartz.plugin.shutdownHook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
         <prop key="org.quartz.plugin.shutdownHook.cleanShutdown">true</prop>
         <prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
@@ -201,7 +212,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     </property>
     <property name="durability" value="true"/>
   </bean>
-  <!-- Validators for Database Report web flow -->
+  <!- - Validators for Database Report web flow - ->
   <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
     <property name="reportSchedulerService" ref="reportSchedulerService"/>
   </bean>
@@ -210,7 +221,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
-  <!-- Node List page -->
+  <!- - Node List page - ->
   <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
@@ -224,11 +235,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="statisticsReportDao" ref="statisticsReportDao"/>
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
-  <!--Rancid Integration and Inventory -->
+  <!- -Rancid Integration and Inventory - ->
   <bean id="inventoryService" class="org.opennms.web.svclayer.inventory.InventoryService">
     <property name="rwsConfig" ref="rwsConfig"/>
     <property name="nodeDao" ref="nodeDao"/>
   </bean>
+  -->
   <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
   <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>

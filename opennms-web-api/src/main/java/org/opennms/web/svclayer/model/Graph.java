@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.graph;
+package org.opennms.web.svclayer.model;
 
 import java.util.Collection;
 import java.util.Date;
@@ -115,7 +115,7 @@ public class Graph implements Comparable<Graph> {
     /**
      * <p>compareTo</p>
      *
-     * @param other a {@link org.opennms.web.graph.Graph} object.
+     * @param other a {@link org.opennms.web.svclayer.model.Graph} object.
      * @return a int.
      */
     @Override

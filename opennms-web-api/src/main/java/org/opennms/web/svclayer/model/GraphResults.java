@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.graph;
+package org.opennms.web.svclayer.model;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -132,7 +132,7 @@ public class GraphResults {
     /**
      * <p>getStartCalendar</p>
      *
-     * @return a {@link org.opennms.web.graph.GraphResults.BeanFriendlyCalendar} object.
+     * @return a {@link org.opennms.web.svclayer.model.GraphResults.BeanFriendlyCalendar} object.
      */
     public BeanFriendlyCalendar getStartCalendar() {
         return new BeanFriendlyCalendar(m_start);
@@ -159,7 +159,7 @@ public class GraphResults {
     /**
      * <p>getEndCalendar</p>
      *
-     * @return a {@link org.opennms.web.graph.GraphResults.BeanFriendlyCalendar} object.
+     * @return a {@link org.opennms.web.svclayer.model.GraphResults.BeanFriendlyCalendar} object.
      */
     public BeanFriendlyCalendar getEndCalendar() {
         return new BeanFriendlyCalendar(m_end);
@@ -241,7 +241,7 @@ public class GraphResults {
     /**
      * <p>addGraphResultSet</p>
      *
-     * @param resultSet a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
+     * @param resultSet a {@link org.opennms.web.svclayer.model.GraphResults.GraphResultSet} object.
      */
     public void addGraphResultSet(GraphResultSet resultSet) {
         resultSet.setIndex(m_resourceIndex++);

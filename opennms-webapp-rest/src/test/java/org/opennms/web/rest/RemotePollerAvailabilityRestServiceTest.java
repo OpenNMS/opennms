@@ -67,6 +67,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
+        "classpath:/org/opennms/web/rest/applicationContext-test.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -74,16 +75,13 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
         "classpath:/applicationContext-jersey-test.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
-
-        "classpath:/org/opennms/web/rest/applicationContext-test.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
+        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

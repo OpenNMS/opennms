@@ -9,6 +9,11 @@
 
 	<context:annotation-config />
 
+	<!--
+		DEPRECATED: We should use the applicationContext-mockDao.xml instead or 
+		eliminate the need for this one-off change
+	-->
+
 	<bean id="linkdConfig" class="org.opennms.netmgt.config.mock.MockLinkdConfig" />
 
 </beans>

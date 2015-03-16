@@ -29,7 +29,13 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -42,11 +48,11 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.web.graph.Graph;
-import org.opennms.web.graph.GraphResults;
-import org.opennms.web.graph.RelativeTimePeriod;
-import org.opennms.web.graph.GraphResults.GraphResultSet;
-import org.opennms.web.svclayer.GraphResultsService;
+import org.opennms.web.svclayer.api.GraphResultsService;
+import org.opennms.web.svclayer.model.Graph;
+import org.opennms.web.svclayer.model.GraphResults;
+import org.opennms.web.svclayer.model.GraphResults.GraphResultSet;
+import org.opennms.web.svclayer.model.RelativeTimePeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -180,8 +186,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
      * @param resourceId a {@link java.lang.String} object.
      * @param resource a {@link org.opennms.netmgt.model.OnmsResource} object.
      * @param reports an array of {@link java.lang.String} objects.
-     * @param graphResults a {@link org.opennms.web.graph.GraphResults} object.
-     * @return a {@link org.opennms.web.graph.GraphResults.GraphResultSet}
+     * @param graphResults a {@link org.opennms.web.svclayer.model.GraphResults} object.
+     * @return a {@link org.opennms.web.svclayer.model.GraphResults.GraphResultSet}
      * object.
      */
     private GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) throws IllegalArgumentException {

@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.web.api.Authentication;
-import org.opennms.web.svclayer.ResourceService;
 import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -85,7 +85,7 @@ public class IndexController extends AbstractController implements InitializingB
     /**
      * <p>getResourceService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @return a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public ResourceService getResourceService() {
         return m_resourceService;
@@ -94,7 +94,7 @@ public class IndexController extends AbstractController implements InitializingB
     /**
      * <p>setResourceService</p>
      *
-     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @param resourceService a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;

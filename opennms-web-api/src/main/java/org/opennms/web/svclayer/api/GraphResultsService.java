@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.api;
 
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.web.graph.GraphResults;
+import org.opennms.web.svclayer.model.GraphResults;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

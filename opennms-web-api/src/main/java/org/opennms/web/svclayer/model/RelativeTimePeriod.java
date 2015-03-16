@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.graph;
+package org.opennms.web.svclayer.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -155,7 +155,7 @@ public class RelativeTimePeriod {
     /**
      * <p>getDefaultPeriods</p>
      *
-     * @return an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     * @return an array of {@link org.opennms.web.svclayer.model.RelativeTimePeriod} objects.
      */
     public static RelativeTimePeriod[] getDefaultPeriods() {
         return s_defaultPeriods;
@@ -165,7 +165,7 @@ public class RelativeTimePeriod {
      * <p>getPeriodByIdOrDefault</p>
      *
      * @param id a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @return a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      */
     public static RelativeTimePeriod getPeriodByIdOrDefault(String id) {
         return getPeriodByIdOrDefault(s_defaultPeriods, id,
@@ -174,10 +174,10 @@ public class RelativeTimePeriod {
     /**
      * <p>getPeriodByIdOrDefault</p>
      *
-     * @param periods an array of {@link org.opennms.web.graph.RelativeTimePeriod} objects.
+     * @param periods an array of {@link org.opennms.web.svclayer.model.RelativeTimePeriod} objects.
      * @param id a {@link java.lang.String} object.
-     * @param defaultPeriod a {@link org.opennms.web.graph.RelativeTimePeriod} object.
-     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @param defaultPeriod a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
+     * @return a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      */
     public static RelativeTimePeriod
         getPeriodByIdOrDefault(RelativeTimePeriod[] periods, String id,

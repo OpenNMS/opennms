@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.services;
+package org.opennms.web.svclayer.support;
 
 
 import java.io.IOException;
@@ -48,12 +48,13 @@ import org.opennms.netmgt.model.OnmsGroup;
 import org.opennms.netmgt.model.OnmsGroupList;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.opennms.web.svclayer.api.GroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GroupService implements InitializingBean, org.opennms.web.svclayer.api.GroupService {
+public class DefaultGroupService implements InitializingBean, GroupService {
 
     private final Logger Log = LoggerFactory.getLogger(getClass());
     
@@ -70,7 +71,7 @@ public class GroupService implements InitializingBean, org.opennms.web.svclayer.
     @Autowired
     private UserManager m_userDao;
 
-    public GroupService() {
+    public DefaultGroupService() {
         System.out.println("init...");
     }
 

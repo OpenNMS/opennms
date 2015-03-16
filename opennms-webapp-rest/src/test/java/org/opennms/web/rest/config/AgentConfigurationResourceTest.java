@@ -74,7 +74,7 @@ public class AgentConfigurationResourceTest {
         m_monitoredServiceDao = new TestMonitoredServiceDao();
         m_snmpConfigDao = new TestSnmpConfigDao();
         m_configResource = new AgentConfigurationResource();
-        m_configResource.setCollectdConfigurationResource(new JaxbResourceConfiguration<CollectdConfiguration>(CollectdConfiguration.class, new ClassPathResource("/config-rest/collectd-configuration.xml")));
+        m_configResource.setCollectdConfigurationResource(new JaxbResourceConfiguration<CollectdConfiguration>(CollectdConfiguration.class, new ClassPathResource("/collectd-configuration.xml")));
         m_configResource.setFilterDao(m_filterDao);
         m_configResource.setMonitoredServiceDao(m_monitoredServiceDao);
         m_configResource.setAgentConfigFactory(m_snmpConfigDao);

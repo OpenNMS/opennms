@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.xmlgraphics.util.ClasspathResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +50,7 @@ import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ClassPathResource;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class DataCollectionConfigResourceTest {
@@ -138,7 +139,7 @@ public class DataCollectionConfigResourceTest {
         m_configResource = new DataCollectionConfigResource();
 
         final TestDataCollectionConfigDao testDao = new TestDataCollectionConfigDao();
-        testDao.setConfigResource(new FileSystemResource("target/test-classes/config-rest/dc.xml"));
+        testDao.setConfigResource(new ClassPathResource("dc.xml"));
         testDao.afterPropertiesSet();
         m_configResource.setDataCollectionConfigDao(testDao);
 

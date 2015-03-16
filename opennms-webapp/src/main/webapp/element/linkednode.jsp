@@ -52,7 +52,7 @@
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.api.Authentication,
-		org.opennms.web.svclayer.ResourceService
+		org.opennms.web.svclayer.api.ResourceService
 	"
 %>
 
