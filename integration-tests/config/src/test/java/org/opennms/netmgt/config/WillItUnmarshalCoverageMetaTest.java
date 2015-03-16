@@ -176,7 +176,7 @@ public class WillItUnmarshalCoverageMetaTest {
             
             // Get the file for the resource used by the test instance and add
             // it to the set of covered files
-            COVERED_FILES.add(test.createResource().getFile());
+            COVERED_FILES.add(test.getResource().getFile());
         }
     }
     

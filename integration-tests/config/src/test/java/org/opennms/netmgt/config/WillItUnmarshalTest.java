@@ -34,12 +34,18 @@ import static org.junit.Assert.fail;
 import static org.opennms.core.test.ConfigurationTestUtils.getDaemonEtcDirectory;
 
 import java.io.File;
+import java.io.Writer;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.StringReader;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.util.LocalConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -337,8 +343,7 @@ public class WillItUnmarshalTest {
         return FILES;
     }
 
-    private final Source source;
-    private final String file;
+    private final Resource resource;
     private final Class<?> clazz;
     private final Impl impl;
     private final boolean lenient;
@@ -350,12 +355,19 @@ public class WillItUnmarshalTest {
             final Impl impl,
             final boolean lenient,
             final String exception) {
-        this.source = source;
-        this.file = file;
+        this.resource = this.createResource(source, file);
         this.clazz = clazz;
         this.impl = impl;
         this.lenient = lenient;
         this.exception = exception;
+
+    }
+
+    /**
+     * Returns the resource assigned to this test.
+     **/
+    public Resource getResource() {
+        return this.resource;
     }
 
     @Before
@@ -363,23 +375,25 @@ public class WillItUnmarshalTest {
         // Reload castor properties every time
         LocalConfiguration.getInstance().getProperties().clear();
         LocalConfiguration.getInstance().getProperties().load(ConfigurationTestUtils.getInputStreamForResource(this, "/castor.properties"));
-    }
 
-    @Test
-    public void testUnmarshalling() {
         // Be conservative about what we ship, so don't be lenient
         if (this.lenient == false) {
             LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
         }
+    }
 
-        final Resource resource = this.createResource();
-
+    @Test
+    public void testResource() {
         // Assert that resource is valied
-        assertNotNull("Resource must not be null", resource);
+        assertNotNull("Resource must not be null", this.resource);
+    }
 
+    @Test
+    public void testUnmarshalling() {
         // Unmarshall the config file
-        Object result = null;
         try {
+            Object result = null;
+
             switch (impl) {
             case CASTOR:
                 result = CastorUtils.unmarshal(this.clazz, resource);
@@ -390,7 +404,7 @@ public class WillItUnmarshalTest {
                 break;
 
             default:
-                fail("Implementation unknown: " + this.impl);
+                throw new RuntimeException("Unknown marshaller implementation: " + this.impl);
             }
 
             // Assert that unmarshalling returned a valid result
@@ -411,16 +425,55 @@ public class WillItUnmarshalTest {
         }
     }
 
+    @Test
+    public void testRemarshallFormatting() throws Exception {
+        // Skip fast if unmarshalling is expected to throw an exception
+        if (this.exception != null) {
+            return;
+        }
+
+        // Read the actual file
+        final String actual = FileUtils.readFileToString(this.resource.getFile(), "UTF-8");
+
+        // Unmarshall the config file and marshel the resulting object
+        final Writer writer = new StringWriter();
+
+        switch (impl) {
+        case CASTOR:
+            CastorUtils.marshalWithTranslatedExceptions(
+                    CastorUtils.unmarshal(this.clazz, resource),
+                    writer);
+            break;
+
+        case JAXB:
+            JaxbUtils.marshal(JaxbUtils.unmarshal(this.clazz, resource),
+                              writer);
+            break;
+
+        default:
+            throw new RuntimeException("Unknown marshaller implementation: " + this.impl);
+        }
+
+        // Split the remarshalled file in lines
+        final String expected = writer.toString();
+
+        // Remove comments from actual
+        actual = actual.replaceAll("\\n *(?s)<!--.*?-->", "");
+
+        // Compare the output
+        assertEquals(expected, actual);
+    }
+
     /**
      * Create a resource for the config file to unmarshall using the configured
      * source.
      * 
      * @return the Resource 
      */
-    public final Resource createResource() {
+    public Resource createResource(final Source source, final String file) {
         // Create a resource for the config file to unmarshall using the
         // configured source
-        switch (this.source) {
+        switch (source) {
         case CONFIG:
             return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile(file));
 
@@ -428,13 +481,13 @@ public class WillItUnmarshalTest {
             return new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("examples/" + file));
 
         case SPRING:
-            return ConfigurationTestUtils.getSpringResourceForResource(this, this.file);
+            return ConfigurationTestUtils.getSpringResourceForResource(this, file);
 
         case ABSOLUTE:
-            return new FileSystemResource(this.file);
+            return new FileSystemResource(file);
 
         default:
-            throw new RuntimeException("Source unknown: " + this.source);
+            throw new RuntimeException("Source unknown: " + source);
         }
     }
 }
