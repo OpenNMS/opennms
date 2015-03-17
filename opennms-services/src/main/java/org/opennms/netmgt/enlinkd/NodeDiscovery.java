@@ -352,6 +352,14 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     	return m_node.getNodeId();
     }
     
+    public String getSysoid() {
+        return m_node.getSysoid();
+    }
+
+    public String getSysname() {
+        return m_node.getSysname();
+    }
+
     public abstract String getName();
 
 	@Override

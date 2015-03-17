@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,31 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.element;
+package org.opennms.netmgt.nb;
 
-import java.util.Comparator;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsNode;
 
 /**
- * <p>InterfaceIpAddressComparator class.</p>
- *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-public class InterfaceIpAddressComparator implements Comparator<Interface> {
-    /**
-     * <p>compare</p>
-     *
-     * @param i1 a {@link org.opennms.web.element.Interface} object.
-     * @param i2 a {@link org.opennms.web.element.Interface} object.
-     * @return a int.
-     */
-    @Override
-    public int compare(Interface i1, Interface i2) {
-        return i1.getIpAddress().compareTo(i2.getIpAddress());
-    }
 
-//  public boolean equals(Interface i1, Interface i2) {
-//      return i1.getIpAddress().equals(i2.getIpAddress());
-//  }
+public class Nms7777DWNetworkBuilder extends TestNetworkBuilder {
+
+
+    static {
+    try {
+    DW_IP_IF_MAP.put(InetAddressUtils.addr("10.103.1.1"), 1);
+    DW_IF_IFNAME_MAP.put(1, "dw-1/1/1");
+    DW_IF_IFDESCR_MAP.put(1, "dragon-wave-1/1/1");
+    DW_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+    DW_IF_MAC_MAP.put(1, "00d1590e43e9");
+
+    } catch (Exception e) {
+        
+    }
+    }
+    
+    public OnmsNode getDragonWaveRouter() {
+        return getNode(DW_NAME,DW_SYSOID,DW_IP,DW_IP_IF_MAP,DW_IF_IFNAME_MAP,DW_IF_MAC_MAP,DW_IF_IFDESCR_MAP,DW_IF_IFALIAS_MAP);
+    }    
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.ospf;
+package org.opennms.netmgt.dao.mock;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public interface OspfElementFactoryInterface {
+import org.opennms.netmgt.dao.api.FilterFavoriteDao;
+import org.opennms.netmgt.model.OnmsFilterFavorite;
+import org.opennms.netmgt.model.OnmsFilterFavorite.Page;
 
-	OspfElementNode getOspfElement(int nodeId);
-	
-	List<OspfLinkNode> getOspfLinks(int nodeId);
-	
+public class MockFilterFavoriteDao extends AbstractMockDao<OnmsFilterFavorite, Integer> implements FilterFavoriteDao {
+
+	private AtomicInteger m_id = new AtomicInteger(0);
+
+	@Override
+	protected void generateId(final OnmsFilterFavorite outage) {
+		outage.setId(m_id.incrementAndGet());
+	}
+
+	@Override
+	protected Integer getId(final OnmsFilterFavorite outage) {
+		return outage.getId();
+	}
+
+	@Override
+	public OnmsFilterFavorite findBy(String userName, String filterName) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
+
+	@Override
+	public List<OnmsFilterFavorite> findBy(String userName, Page page) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
+
+	@Override
+	public boolean existsFilter(String userName, String filterName, Page page) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
 }

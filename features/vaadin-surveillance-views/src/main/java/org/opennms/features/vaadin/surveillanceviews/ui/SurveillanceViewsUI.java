@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -120,6 +121,13 @@ public class SurveillanceViewsUI extends UI {
         rootLayout.addComponent(new SurveillanceView(view, m_surveillanceViewService, dashboard, !isDashboardRole));
 
         setContent(rootLayout);
+
+        Page.getCurrent().getJavaScript().execute("function receiveMessage(event){\n" +
+                "if(event.origin !== window.location.origin){ return; }\n" +
+                "\n" +
+                "event.source.postMessage( (document.getElementById('surveillance-window').offsetHeight + 17) + 'px', window.location.origin )\n" +
+                "}\n" +
+                "window.addEventListener(\"message\", receiveMessage, false);");
     }
 
     /**

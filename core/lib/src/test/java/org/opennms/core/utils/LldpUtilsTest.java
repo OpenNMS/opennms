@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,34 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.servlet;
+package org.opennms.core.utils;
 
-import javax.servlet.ServletContextEvent;
-import org.springframework.web.util.Log4jWebConfigurer;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-/**
- * <p>Log4jConfigListener class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class Log4jConfigListener implements javax.servlet.ServletContextListener {
-
-    /** {@inheritDoc} */
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
-            Log4jWebConfigurer.initLogging(event.getServletContext());
-        }
+public class LldpUtilsTest {
+    
+    @Test
+    /* 
+     * From NMS-7148: 01:ac:14:14:8b
+     * 01 is IP version 4 end the address is 172.20.20.139
+     */
+    public void testNMS7184() throws Exception {
+        String ianafamilyaddress = "01:ac:14:14:8b";
+        assertEquals(1, LldpUtils.IanaFamilyAddressStringToType(ianafamilyaddress).intValue());
+        assertEquals("172.20.20.139",LldpUtils.decodeNetworkAddress(ianafamilyaddress));
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
-            Log4jWebConfigurer.shutdownLogging(event.getServletContext());
-        }
-    }
-
+    
 }

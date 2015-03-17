@@ -181,7 +181,7 @@ public class EventsDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
         
         //-- validation code for: _eventList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        fieldValidator.setMinOccurs(0);
         { //-- local scope
         }
         desc.setValidator(fieldValidator);

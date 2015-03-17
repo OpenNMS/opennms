@@ -295,6 +295,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
          * create the layout
          */
         upperLayout = new VerticalLayout();
+        upperLayout.setId("surveillance-window");
         upperLayout.setSpacing(false);
 
         /**

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,41 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.element;
+package org.opennms.netmgt.dao.mock;
 
-/**
- * <p>Converter class.</p>
- *
- * @author antonio
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- * @version $Id: $
- * @since 1.8.1
- */
-public abstract class Converter {
- 
- /**
-  * <p>highToLow</p>
-  *
-  * @param value a double.
-  * @param multiplicator a int.
-  * @return a double.
-  */
- public static double highToLow(double value, int multiplicator){
-	return value*multiplicator;
- }
- 
- /**
-  * <p>lowToHigh</p>
-  *
-  * @param value a double.
-  * @param divisor a int.
-  * @return a double.
-  */
- public static  double lowToHigh(double value, int divisor){
-	
-	return value/divisor;
-  }
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.opennms.netmgt.dao.api.ReportCatalogDao;
+import org.opennms.netmgt.model.ReportCatalogEntry;
+
+public class MockReportCatalogDao extends AbstractMockDao<ReportCatalogEntry, Integer> implements ReportCatalogDao {
+
+	private AtomicInteger m_id = new AtomicInteger(0);
+
+	@Override
+	protected void generateId(final ReportCatalogEntry outage) {
+		outage.setId(m_id.incrementAndGet());
+	}
+
+	@Override
+	protected Integer getId(final ReportCatalogEntry outage) {
+		return outage.getId();
+	}
 }

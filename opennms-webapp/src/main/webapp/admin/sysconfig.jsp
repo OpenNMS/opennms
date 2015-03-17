@@ -79,10 +79,6 @@
           <td><%=Vault.getProperty("org.opennms.rrd.storeByForeignSource")%></td>
         </tr>
         <tr>
-          <th>Web-Application Logfiles:</th>
-          <td><%=Vault.getProperty("opennms.webapplogs.dir")%></td>
-        </tr>
-        <tr>
           <th>Reports directory:</th>
           <td><%=Vault.getProperty("opennms.report.dir")%></td>
         </tr>
