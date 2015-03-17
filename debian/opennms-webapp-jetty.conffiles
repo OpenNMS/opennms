@@ -1,4 +1,5 @@
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-common.xml
+/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-jersey.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-remote-poller.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-webflow.xml
@@ -12,5 +13,3 @@
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-spring-security.xml
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/applicationContext-svclayer.xml
 /usr/share/opennms/jetty-webapps/opennms-remoting/WEB-INF/web.xml
-#/usr/share/opennms/jetty-webapps/opennms-rest/WEB-INF/applicationContext-jersey.xml
-#/usr/share/opennms/jetty-webapps/opennms-rest/WEB-INF/web.xml
