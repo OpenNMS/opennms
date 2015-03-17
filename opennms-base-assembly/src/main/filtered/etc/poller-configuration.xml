@@ -193,10 +193,12 @@
     <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
+      <parameter key="ignoreStandBy" value="false"/>
     </service>
     <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
+      <parameter key="ignoreStandBy" value="false"/>
     </service>
 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
