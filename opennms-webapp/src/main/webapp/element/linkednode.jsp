@@ -336,7 +336,7 @@
             	(ifindex <%=linkInterface.getIfindex()%>)
                 
                 <% if (linkInterface.getInterface().getSnmpIfAlias() != null && !linkInterface.getInterface().getSnmpIfAlias().equals("")) { %>
-                    ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>"
+                    (ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>)
                 <% } else { %> 
                  	&nbsp;
     			<% } %> 
