@@ -33,10 +33,6 @@
   </listener>
 
   <listener>
-    <listener-class>org.opennms.web.servlet.DependencyCheckingContextListener</listener-class>
-  </listener>
-
-  <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
