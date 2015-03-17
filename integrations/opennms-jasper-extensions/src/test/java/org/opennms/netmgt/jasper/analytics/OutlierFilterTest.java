@@ -96,7 +96,7 @@ public class OutlierFilterTest {
             double delta = 0.0001;
             if (i == 42) {
                 // Use a larger delta on the same index as the outlier
-                delta = 4;
+                delta = 6;
             }
             assertEquals(8 * Math.sin(i), table.get(i, "Y"), delta);
         }
