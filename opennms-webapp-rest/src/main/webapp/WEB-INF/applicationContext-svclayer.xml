@@ -14,73 +14,17 @@
   <tx:annotation-driven/>
   <context:annotation-config/>
 
-<!-- 
-  <bean name="filterService" class="org.opennms.web.services.FilterFavoriteService"/>
-  -->
-  <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
   <!--
-  <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
-  <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
-  <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
-  <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>
-  <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository">
-  </bean>
-  <!- - Surveillance View beans - ->
-  <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="surveillanceConfigDao" ref="surveillanceViewConfigDao"/>
-  </bean>
-  <!- - Site Status beans - ->
-  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
-  <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
-  </bean>
-  <!- - Outage Service beans - ->
-  <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
-    <property name="dao" ref="outageDao"/>
-  </bean>
-  <!- - Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table - ->
-  <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
-  <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
-  <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
-  <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean id="demandPollService" class="org.opennms.web.svclayer.support.DefaultDemandPollService">
-    <property name="demandPollDao" ref="demandPollDao"/>
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="pollerAPI" ref="pollerApi"/>
-  </bean>
-  <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
-    <property name="alarmDao" ref="alarmDao"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
-    <property name="foreignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <!- - Category Service Status beans - ->
-  <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
-    <property name="categoryConfigDao" ref="categoryConfigDao"/>
-    <property name="outageDao" ref="outageDao"/>
-    <property name="viewDisplayDao" ref="viewDisplayDao"/>
-  </bean>
-  <!- - Distributed Status Service Status beans - ->
-  <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
-    <property name="applicationDao" ref="applicationDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-    <property name="graphDao" ref="graphDao"/>
-    <property name="layoutApplicationsVertically" value="${distributed.layoutApplicationsVertically}"/>
-  </bean>
-  <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
-    <property name="locationMonitorDao" ref="locationMonitorDao"/>
-  </bean>
+    These are the webapp svclayer beans that are required to run the REST interfaces. We should
+    consider moving this context into its own project at some point so that it can be cleanly shared
+    by all webapps.
+
+    This file is not used in the final webapp: it is excluded from the warmerge plugin in webapp-full.
+    Therefore, the applicationContext-svclayer.xml from opennms-webapp is used to define these services
+    instead.
   -->
+
+  <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
   <!--  Graphing beans -->
   <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
     <property name="prefabConfigs">
@@ -96,62 +40,16 @@
       </map>
     </property>
   </bean>
-  
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao"/>
-  <!-- 
-  
 
-  <!- - Admin applications bean - ->
-  <bean id="adminApplicationService" class="org.opennms.web.svclayer.support.DefaultAdminApplicationService">
-    <property name="applicationDao" ref="applicationDao"/>
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-  </bean>
-  <bean id="adminCategoryService" class="org.opennms.web.svclayer.support.DefaultAdminCategoryService">
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <!- -  Manual Provisioning - ->
-  <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="${importer.requisition.dir}"/>
-  </bean>
-  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-  </bean>
-  -->
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao"/>
+
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--
-  <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
-  <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
-    <property name="resourceDao" ref="resourceDao"/>
-    <property name="graphDao" ref="graphDao"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="rrdDao" ref="rrdDao"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
-    <property name="resourceDao" ref="resourceDao"/>
-    <property name="graphDao" ref="graphDao"/>
-    <property name="rrdDao" ref="rrdDao"/>
-  </bean>
-  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.support.DefaultRrdSummaryService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="filterDao" ref="filterDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-    <property name="rrdDao" ref="rrdDao"/>
-  </bean>
-  -->
+
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
       <value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value>
@@ -165,82 +63,7 @@
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
-  <!--
-  <!- - Availability Report Beans - ->
-  <bean id="categoryConfigService" class="org.opennms.web.svclayer.support.DefaultCategoryConfigService">
-    <property name="categoryConfigDao" ref="categoryConfigDao"/>
-  </bean>
-  <!- - Database Report Beans - ->
-  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
-    <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
-  </bean>
-  <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
-    <property name="scheduler" ref="schedulerFactory"/>
-    <property name="jobDetail" ref="batchReportJobDetail"/>
-    <property name="triggerGroup" value="reporting"/>
-    <property name="reportWrapperService" ref="reportWrapperService"/>
-  </bean>
-  <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-    <property name="schedulerName" value="databaseReport"/>
-    <property name="dataSource" ref="dataSource"/>
-    <property name="applicationContextSchedulerContextKey">
-      <value>applicationContext</value>
-    </property>
-    <property name="waitForJobsToCompleteOnShutdown">
-      <value>true</value>
-    </property>
-    <property name="quartzProperties">
-      <props>
-        <!- - Configure Main Scheduler Properties - ->
-        <prop key="org.quartz.scheduler.instanceId">ReportScheduler</prop>
-        <!- - Configure ThreadPool - ->
-        <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
-        <prop key="org.quartz.threadPool.threadCount">1</prop>
-        <!- - Configure JobStore - ->
-        <prop key="org.quartz.jobStore.class">org.quartz.impl.jdbcjobstore.JobStoreCMT</prop>
-        <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
-        <!- - Configure Plugins - ->
-        <prop key="org.quartz.plugin.shutdownHook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
-        <prop key="org.quartz.plugin.shutdownHook.cleanShutdown">true</prop>
-        <prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
-      </props>
-    </property>
-  </bean>
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
-    <property name="jobClass">
-      <value>org.opennms.reporting.core.BatchReportJob</value>
-    </property>
-    <property name="durability" value="true"/>
-  </bean>
-  <!- - Validators for Database Report web flow - ->
-  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
-    <property name="reportSchedulerService" ref="reportSchedulerService"/>
-  </bean>
-  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator"/>
-  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator"/>
-  <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
-    <property name="graphResultsService" ref="graphResultsService"/>
-  </bean>
-  <!- - Node List page - ->
-  <bean id="nodeListService" class="org.opennms.web.svclayer.support.DefaultNodeListService">
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
-  </bean>
-  <bean id="rtcService" class="org.opennms.web.svclayer.support.DefaultRtcService">
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="outageDao" ref="outageDao"/>
-  </bean>
-  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">
-    <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
-  <!- -Rancid Integration and Inventory - ->
-  <bean id="inventoryService" class="org.opennms.web.svclayer.inventory.InventoryService">
-    <property name="rwsConfig" ref="rwsConfig"/>
-    <property name="nodeDao" ref="nodeDao"/>
-  </bean>
-  -->
+
   <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
   <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>

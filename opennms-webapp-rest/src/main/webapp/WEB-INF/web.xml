@@ -71,16 +71,6 @@
   </filter-mapping>
   <!-- WARMERGE: end filter-mapping -->
 
-  <!--
-    This listener handles setting OpenNMS-specific context properties 
-    and starts and stops the RTC subscription timer.
-  -->
-  <!--
-  <listener>
-    <listener-class>org.opennms.web.servlet.InitializerServletContextListener</listener-class>
-  </listener>
-  -->
-
   <!-- Bootstrap listener to start up and shut down Spring's root WebApplicationContext. -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -118,9 +108,5 @@
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
   <!-- WARMERGE: end servlet-mapping -->
-
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
 
 </web-app>
