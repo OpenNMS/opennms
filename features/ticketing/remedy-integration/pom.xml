@@ -29,7 +29,36 @@
 					</packageSpace>
 					<testCases>false</testCases>
 					<serverSide>false</serverSide>
-                    <!--subPackageByFileName>true</subPackageByFileName-->
+					<!--subPackageByFileName>true</subPackageByFileName -->
+				</configuration>
+			</plugin>
+			<!-- Mark all wsdl2java-generated classes with @SuppressWarnings -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.4.1</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>
+						<include>target/generated-sources/axistools/wsdl2java/org/opennms/integration/remedy/ticketservice/*.java</include>
+					</includes>
+					<regex>true</regex>
+					<regexFlags>
+						<regexFlag>MULTILINE</regexFlag>
+					</regexFlags>
+					<replacements>
+						<replacement>
+							<token>^public class</token>
+							<value>@SuppressWarnings("all") public class</value>
+						</replacement>
+					</replacements>
 				</configuration>
 			</plugin>
 		</plugins>

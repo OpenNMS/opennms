@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,35 +25,39 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.model;
 
-package org.opennms.web.servlet;
-
-import javax.servlet.ServletContextEvent;
-import org.springframework.web.util.Log4jWebConfigurer;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * <p>Log4jConfigListener class.</p>
+ * This class represents the category element of the surveillance view configuration xml.
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author Christian Pape
  */
-public class Log4jConfigListener implements javax.servlet.ServletContextListener {
+@XmlRootElement
+public class Category {
+    /**
+     * the field for storing thew category name
+     */
+    private java.lang.String m_name;
 
-    /** {@inheritDoc} */
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
-            Log4jWebConfigurer.initLogging(event.getServletContext());
-        }
+    /**
+     * Returns the name of this category.
+     *
+     * @return the name of this category
+     */
+    @XmlAttribute(name = "name", required = true)
+    public String getName() {
+        return m_name;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        if (! event.getServletContext().getServerInfo().toLowerCase().contains("jetty")) {
-            Log4jWebConfigurer.shutdownLogging(event.getServletContext());
-        }
+    /**
+     * Sets the name of the category.
+     *
+     * @param name the name to be used
+     */
+    public void setName(String name) {
+        this.m_name = name;
     }
-
 }

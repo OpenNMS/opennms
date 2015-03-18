@@ -144,7 +144,7 @@ public class ChooseUeisController extends AbstractController {
     }
 
     public boolean isDisappearingEvent(Event e) {
-        if ("donotpersist".equalsIgnoreCase(e.getLogmsg().getDest())) {
+        if (e.getLogmsg() != null && "donotpersist".equalsIgnoreCase(e.getLogmsg().getDest())) {
             return true;
         }
         if (e.getAlarmData() != null && e.getAlarmData().getAutoClean() == true) {

@@ -42,13 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Initializes our internal servlet systems at servlet container startup, and
- * destroys any pool resources at servlet container shutdown.
- *
  * This listener is specified in the web.xml to listen to
  * <code>ServletContext</code> lifecyle events. On startup it calls
- * ServletInitializer.init and initializes the UserFactory, GroupFactory. On
- * shutdown it calls ServletInitializer.destroy.
+ * {@link ServletInitializer#init(javax.servlet.ServletContext)} to set 
+ * up OpenNMS-specific properties and starts an RTC subscription timer. On
+ * shutdown it stops the RTC timer.
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */

@@ -66,8 +66,10 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
-        clickMenuItem("Status", "Surveillance", "surveillanceView.htm?viewName=default");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='Surveillance View: default']")));
+        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Reports", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
@@ -82,7 +84,9 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        findElementByXpath("//h3[text()='Surveillance View: default']");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,45 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.ospf;
+package org.opennms.netmgt.dao.mock;
 
-public class OspfElementNode {
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-	private String m_ospfRouterId;
-	private Integer m_ospfVersionNumber;
-	private String m_ospfAdminStat;
-	private String m_ospfCreateTime;
-	private String m_ospfLastPollTime;
+import org.opennms.netmgt.dao.api.FilterFavoriteDao;
+import org.opennms.netmgt.model.OnmsFilterFavorite;
+import org.opennms.netmgt.model.OnmsFilterFavorite.Page;
 
-	public String getOspfRouterId() {
-		return m_ospfRouterId;
-	}
-	public void setOspfRouterId(String ospfRouterId) {
-		m_ospfRouterId = ospfRouterId;
-	}
-	public Integer getOspfVersionNumber() {
-		return m_ospfVersionNumber;
-	}
-	public void setOspfVersionNumber(Integer ospfVersionNumber) {
-		m_ospfVersionNumber = ospfVersionNumber;
-	}
-	public String getOspfAdminStat() {
-		return m_ospfAdminStat;
-	}
-	public void setOspfAdminStat(String ospfAdminStat) {
-		m_ospfAdminStat = ospfAdminStat;
-	}
-	public String getOspfCreateTime() {
-		return m_ospfCreateTime;
-	}
-	public void setOspfCreateTime(String ospfCreateTime) {
-		m_ospfCreateTime = ospfCreateTime;
-	}
-	public String getOspfLastPollTime() {
-		return m_ospfLastPollTime;
-	}
-	public void setOspfLastPollTime(String ospfLastPollTime) {
-		m_ospfLastPollTime = ospfLastPollTime;
+public class MockFilterFavoriteDao extends AbstractMockDao<OnmsFilterFavorite, Integer> implements FilterFavoriteDao {
+
+	private AtomicInteger m_id = new AtomicInteger(0);
+
+	@Override
+	protected void generateId(final OnmsFilterFavorite outage) {
+		outage.setId(m_id.incrementAndGet());
 	}
 
+	@Override
+	protected Integer getId(final OnmsFilterFavorite outage) {
+		return outage.getId();
+	}
+
+	@Override
+	public OnmsFilterFavorite findBy(String userName, String filterName) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
+
+	@Override
+	public List<OnmsFilterFavorite> findBy(String userName, Page page) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
+
+	@Override
+	public boolean existsFilter(String userName, String filterName, Page page) {
+		throw new UnsupportedOperationException("Not yet implemented!");
+	}
 }

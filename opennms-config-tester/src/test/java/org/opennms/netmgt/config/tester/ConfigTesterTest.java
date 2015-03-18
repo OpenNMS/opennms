@@ -88,7 +88,6 @@ public class ConfigTesterTest {
     @Test
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
-        assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
     }
 
     @Test

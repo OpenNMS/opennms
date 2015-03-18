@@ -56,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
         "classpath:/org/opennms/web/rest/applicationContext-test.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
@@ -67,7 +68,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/applicationContext-jersey-test.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
