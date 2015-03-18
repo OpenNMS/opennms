@@ -153,6 +153,64 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         public Date getLastEventTime() {
             return lastEventTime;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Alarm alarm = (Alarm) o;
+
+            if (counter != alarm.counter) {
+                return false;
+            }
+            if (id != alarm.id) {
+                return false;
+            }
+            if (nodeId != alarm.nodeId) {
+                return false;
+            }
+            if (firstEventTime != null ? !firstEventTime.equals(alarm.firstEventTime) : alarm.firstEventTime != null) {
+                return false;
+            }
+            if (lastEventTime != null ? !lastEventTime.equals(alarm.lastEventTime) : alarm.lastEventTime != null) {
+                return false;
+            }
+            if (logMsg != null ? !logMsg.equals(alarm.logMsg) : alarm.logMsg != null) {
+                return false;
+            }
+            if (nodeLabel != null ? !nodeLabel.equals(alarm.nodeLabel) : alarm.nodeLabel != null) {
+                return false;
+            }
+            if (severity != null ? !severity.equals(alarm.severity) : alarm.severity != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            int result = id;
+            result = 31 * result + nodeId;
+            result = 31 * result + (severity != null ? severity.hashCode() : 0);
+            result = 31 * result + (nodeLabel != null ? nodeLabel.hashCode() : 0);
+            result = 31 * result + (logMsg != null ? logMsg.hashCode() : 0);
+            result = 31 * result + counter;
+            result = 31 * result + (firstEventTime != null ? firstEventTime.hashCode() : 0);
+            result = 31 * result + (lastEventTime != null ? lastEventTime.hashCode() : 0);
+            return result;
+        }
     }
 
     /**

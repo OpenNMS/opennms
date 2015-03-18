@@ -121,4 +121,42 @@ public class ColumnDef implements Def {
         }
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ColumnDef columnDef = (ColumnDef) o;
+
+        if (m_categories != null ? !m_categories.equals(columnDef.m_categories) : columnDef.m_categories != null) {
+            return false;
+        }
+        if (m_label != null ? !m_label.equals(columnDef.m_label) : columnDef.m_label != null) {
+            return false;
+        }
+        if (m_reportCategory != null ? !m_reportCategory.equals(columnDef.m_reportCategory) : columnDef.m_reportCategory != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = m_label != null ? m_label.hashCode() : 0;
+        result = 31 * result + (m_reportCategory != null ? m_reportCategory.hashCode() : 0);
+        result = 31 * result + (m_categories != null ? m_categories.hashCode() : 0);
+        return result;
+    }
 }
