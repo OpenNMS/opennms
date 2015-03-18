@@ -279,6 +279,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         if (module == null) {
             return null;
         }
+        final String color = System.getProperty("org.opennms.snmp.mib-compiler.default-graph-template.color", "#00ccff");
         List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
@@ -295,17 +296,18 @@ public class JsmiMibParser implements MibParser, Serializable {
                 int order = 1;
                 if (typeName != null && !typeName.toLowerCase().contains("string")) {
                     String name = groupName + '.' + v.getId();
+                    String title = getMibName() + "::" + groupName + "::" + v.getId();
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
                     StringBuffer sb = new StringBuffer();
-                    sb.append("--title=\"").append(v.getId()).append("\" \\\n");
+                    sb.append("--title=\"").append(title).append("\" \\\n");
                     sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
-                    sb.append(" LINE1:var#0000ff:\"").append(v.getId()).append("\" \\\n");
+                    sb.append(" LINE1:var").append(color).append(":\"").append(v.getId()).append("\" \\\n");
                     sb.append(" GPRINT:var:AVERAGE:\"Avg\\\\: %8.2lf %s\" \\\n");
                     sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
                     sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\\\n\"");
                     sb.append("\n\n");
-                    PrefabGraph graph = new PrefabGraph(name, descr, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
+                    PrefabGraph graph = new PrefabGraph(name, title, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
                     graphs.add(graph);
                 }
             }
