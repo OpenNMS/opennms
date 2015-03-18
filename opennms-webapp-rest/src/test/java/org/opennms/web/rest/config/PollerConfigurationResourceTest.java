@@ -59,7 +59,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
 
-        "classpath:/applicationContext-collectd-rest-test.xml"
+        "classpath:/applicationContext-rest-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

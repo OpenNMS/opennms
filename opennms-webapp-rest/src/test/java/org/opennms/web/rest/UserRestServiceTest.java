@@ -67,6 +67,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
 
+        // Use this to prevent us from overwriting users.xml and groups.xml
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml"
 })
 @JUnitConfigurationEnvironment
