@@ -43,8 +43,8 @@
             <div class="modal-body">
                 <div class="${param.prefix}-deps-failed">
                     <p>One or more dependencies required for forecasting were not found or configured incorrectly.</p>
-                    <p>Make sure the <b>R</b> and <b>R-zoo</b> packages are installed. You can verify this by running:</p>
-                    <pre>Rscript -e 'library(zoo)'</pre>
+                    <p>Please ensure that the <b>R</b> package is installed correctly. You can verify this by running:</p>
+                    <pre>Rscript -e '"ok"'</pre>
                 </div>
                 <form class="form-horizontal ${param.prefix}-deps-ok">
                     <label for="${param.prefix}-template">Choose a template:</label>
