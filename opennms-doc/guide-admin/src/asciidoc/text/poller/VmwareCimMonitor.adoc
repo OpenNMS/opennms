@@ -43,6 +43,7 @@ The monitor error reason contains a list of all sensors which not returned statu
 | Parameter | Description                                                    | Required | Default value
 | `retry`   | Number of retries before the service is marked as down.        | optional | `0`
 | `timeout` | Time in milliseconds to wait collecting the _CIM_ sensor data. | optional | `3000`
+| `ignoreStandBy` | Treat power state _standBy_ as _up_.                     | optional | `false` 
 |===
 
 ==== Examples
