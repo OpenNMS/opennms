@@ -107,6 +107,7 @@
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
+            <feature>vaadin-surveillance-views</feature>
           </features>
         </configuration>
       </plugin>
