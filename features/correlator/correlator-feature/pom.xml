@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Correlator :: Feature</name>
     <properties>
-        <droolsVersion>6.2.0.CR4</droolsVersion>
+        <droolsVersion>6.2.0.Final</droolsVersion>
     </properties>
     <build>
         <plugins>

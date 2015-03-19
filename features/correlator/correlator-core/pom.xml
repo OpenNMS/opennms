@@ -12,7 +12,7 @@
     <properties>
         <bundle.symbolicName>org.opennms.features.correlator.core</bundle.symbolicName>
         <bundle.namespace>org.opennms.features.correlator</bundle.namespace>
-        <droolsVersion>6.2.0.CR4</droolsVersion>
+        <droolsVersion>6.2.0.Final</droolsVersion>
     </properties>
     <name>OpenNMS :: Features :: Correlator :: Core</name>
     
