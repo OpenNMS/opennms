@@ -6,10 +6,10 @@
 # chkconfig:   345 99 01
 # description: Starts and stops the ${install.package.description} remote poller
 # processname: java
-# pidfile:     /var/run/${install.package.name}-remote-poller.pid
+# pidfile:     /var/run/opennms-remote-poller.pid
 #
 ### BEGIN INIT INFO
-# Provides:          ${install.package.name}-remote-poller
+# Provides:          opennms-remote-poller
 # Required-Start:    $network $time
 # Required-Stop:     $network
 # Should-Start:      $local_fs
@@ -22,12 +22,12 @@
 #                    and notification management. Remote poller service.
 ### END INIT INFO
 
-NAME="${install.package.name}-remote-poller"
+NAME="opennms-remote-poller"
 DESC="${install.package.description} Remote Poller"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PIDFILE="/var/run/$NAME.pid"
 OPENNMS_HOME="${install.dir}"
-JVM_ARGS="-Dpoller.logfile=/var/log/${install.package.name}-remote-poller.log"
+JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
 EXTRA_ARGS=""
 URI="http://localhost:8980/opennms-remoting"
 LOCATION="Default"
