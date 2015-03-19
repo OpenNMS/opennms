@@ -10,8 +10,8 @@ User=root
 Type=forking
 PIDFile=${install.pid.file}
 
-ExecStart=${install.init.dir}/${install.package.name} -Q start
-ExecStop=${install.init.dir}/${install.package.name} stop
+ExecStart=${install.init.dir}/opennms -Q start
+ExecStop=${install.init.dir}/opennms stop
 
 
 [Install]

@@ -243,7 +243,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             if (walker.timedOut()) {
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
             }  else if (walker.failed()) {
-                LOG.error("Aborting agent scan for {} : {}", agentConfig, walker.getErrorThrowable());
+                LOG.error("Aborting entities scan for " + agentConfig, walker.getErrorThrowable());
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
             }
         } catch (final InterruptedException e) {

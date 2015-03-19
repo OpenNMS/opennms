@@ -16,7 +16,7 @@
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE" />
     <!-- set/unset maintenance mode on services -->
-    <intercept-url pattern="/rest/nodes/**/ipinterface/**/services/**" method="PUT" access="ROLE_MOBILE" />
+    <intercept-url pattern="/rest/nodes/**" method="PUT" access="ROLE_MOBILE" />
     <!-- set/unset maintenance mode on nodes -->
     <intercept-url pattern="/rest/ifservices" method="PUT" access="ROLE_MOBILE" />
 
