@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,42 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
-package org.opennms.web.element;
+import org.opennms.osgi.OnmsVaadinUIFactory;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
 /**
- * <p>Converter class.</p>
+ * A factory class responsible for constructing this application.
  *
- * @author antonio
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- * @version $Id: $
- * @since 1.8.1
+ * @author Christian Pape
  */
-public abstract class Converter {
- 
- /**
-  * <p>highToLow</p>
-  *
-  * @param value a double.
-  * @param multiplicator a int.
-  * @return a double.
-  */
- public static double highToLow(double value, int multiplicator){
-	return value*multiplicator;
- }
- 
- /**
-  * <p>lowToHigh</p>
-  *
-  * @param value a double.
-  * @param divisor a int.
-  * @return a double.
-  */
- public static  double lowToHigh(double value, int divisor){
-	
-	return value/divisor;
-  }
-
+public class SurveillanceViewsConfigUIFactory extends OnmsVaadinUIFactory {
+    /**
+     * Constructor for this factory.
+     *
+     * @param container the blueprint container
+     * @param beanName  the bean
+     */
+    public SurveillanceViewsConfigUIFactory(BlueprintContainer container, String beanName) {
+        super(SurveillanceViewsConfigUI.class, container, beanName);
+    }
 }

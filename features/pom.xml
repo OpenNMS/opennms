@@ -84,6 +84,9 @@
     <module>vaadin-dashboard</module>
     <module>vaadin-dashlets</module>
 
+    <!-- OpenNMS Vaadin Surveillance Views -->
+    <module>vaadin-surveillance-views</module>
+
     <!-- Other projects -->
     <module>geocoder</module>
     <module>instrumentationLogReader</module>
@@ -91,6 +94,5 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
-
   </modules>
 </project>

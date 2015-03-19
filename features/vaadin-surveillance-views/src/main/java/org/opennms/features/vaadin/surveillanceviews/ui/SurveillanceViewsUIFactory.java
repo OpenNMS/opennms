@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,32 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.features.vaadin.surveillanceviews.ui;
 
-package org.opennms.web.element;
-
-import java.util.Comparator;
+import org.opennms.osgi.OnmsVaadinUIFactory;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
 /**
- * <p>InterfaceIpAddressComparator class.</p>
+ * A factory class responsible for constructing this application.
  *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
+ * @author Christian Pape
  */
-public class InterfaceIpAddressComparator implements Comparator<Interface> {
+public class SurveillanceViewsUIFactory extends OnmsVaadinUIFactory {
     /**
-     * <p>compare</p>
-     *
-     * @param i1 a {@link org.opennms.web.element.Interface} object.
-     * @param i2 a {@link org.opennms.web.element.Interface} object.
-     * @return a int.
+     * Constructor for this factory.
+     * @param container the blueprint container
+     * @param beanName the bean
      */
-    @Override
-    public int compare(Interface i1, Interface i2) {
-        return i1.getIpAddress().compareTo(i2.getIpAddress());
+    public SurveillanceViewsUIFactory(BlueprintContainer container, String beanName) {
+        super(SurveillanceViewsUI.class, container, beanName);
     }
 
-//  public boolean equals(Interface i1, Interface i2) {
-//      return i1.getIpAddress().equals(i2.getIpAddress());
-//  }
 }

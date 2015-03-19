@@ -235,7 +235,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
@@ -265,7 +265,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
@@ -296,6 +296,10 @@ public class WillItUnmarshalTest {
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
                                                    new String[] { "xml" },
                                                    true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    Events.class,
+                    Impl.JAXB);
             addFile(Source.ABSOLUTE,
                     file.getPath(),
                     Events.class,

@@ -28,19 +28,33 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
-
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
 
 public class BridgeLinkStatusProviderTest {
 
@@ -223,7 +237,7 @@ public class BridgeLinkStatusProviderTest {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setNode(m_node2);
         alarm.setIfIndex(548);
-        alarm.setUei("uei.opennms.org/internal/topology/linkDown");
+        alarm.setUei(EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
 
         return Arrays.asList(alarm);
     }
@@ -232,7 +246,7 @@ public class BridgeLinkStatusProviderTest {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setNode(m_node1);
         alarm.setIfIndex(48);
-        alarm.setUei("uei.opennms.org/internal/topology/linkDown");
+        alarm.setUei(EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
 
         return Arrays.asList(alarm);
     }

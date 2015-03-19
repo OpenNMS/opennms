@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,59 +31,34 @@ package org.opennms.netmgt.provision.detector.simple.response;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-/**
- * <p>HttpStatusResponse class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class HttpStatusResponse extends LineOrientedResponse {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(HttpStatusResponse.class);
-    
-    private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)");
+    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9]) ([a-zA-Z ]+)");
 
-    /**
-     * <p>Constructor for HttpStatusResponse.</p>
-     *
-     * @param response a {@link java.lang.String} object.
-     */
     public HttpStatusResponse(final String response) {
         super(response);
-        
     }
 
     /**
-     * <p>validateResponse</p>
+     * <p>validateResponse: Validate the HTTP response from {@link #getResponse()}.</p>
      *
-     * @param pattern a {@link java.lang.String} object.
-     * @param url a {@link java.lang.String} object.
-     * @param isCheckCode a boolean.
-     * @param maxRetCode a int.
+     * @param pattern Unused.
+     * @param url Unused.
+     * @param isCheckCode Whether to check the response code against maxRetCode for validity.
+     * @param maxRetCode The maximum return code to accept.
      * @return a boolean.
-     * @throws java.lang.Exception if any.
      */
     public boolean validateResponse(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode) throws Exception {
-        String[] codeArray = Integer.toString(maxRetCode).split("");
-        if(codeArray.length < 3) {
-            throw new IllegalArgumentException("Maximum HTTP return code is too short, must be at least 3 digits");
-        }
-        
-        final Pattern p;
-        
-        if (isCheckCode) {
-            p = Pattern.compile(String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)", codeArray[1], codeArray[3]));
+        final Matcher m = HTTP_RESPONSE_REGEX.matcher(getResponse().trim());
+        if (m.matches()) {
+            if (isCheckCode) {
+                final int returnCode = Integer.valueOf(m.group(2)).intValue();
+                return (returnCode <= maxRetCode);
+            } else {
+                return true;
+            }
         } else {
-            p = DEFAULT_REGEX;
+            return false;
         }
-
-        final Matcher m = p.matcher(getResponse().trim());
-        LOG.info("HTTP status regex: {}\n", p.pattern());
-        return m.matches();
     }
 
 }

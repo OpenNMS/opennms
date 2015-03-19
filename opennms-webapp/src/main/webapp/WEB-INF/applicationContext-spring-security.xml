@@ -16,7 +16,7 @@
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE" />
     <!-- set/unset maintenance mode on services -->
-    <intercept-url pattern="/rest/nodes/**/ipinterface/**/services/**" method="PUT" access="ROLE_MOBILE" />
+    <intercept-url pattern="/rest/nodes/**" method="PUT" access="ROLE_MOBILE" />
     <!-- set/unset maintenance mode on nodes -->
     <intercept-url pattern="/rest/ifservices" method="PUT" access="ROLE_MOBILE" />
 
@@ -78,6 +78,8 @@
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/osgi/vaadin-surveillance-views/**" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/osgi/VAADIN/**" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/gwt.js" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/surveillanceservice.gwt" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/graph/graph.png" access="ROLE_USER,ROLE_DASHBOARD" />
