@@ -572,13 +572,9 @@ rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%
 chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
 
 install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/%{name}-remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{name}-remote-poller
+install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
+install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
-
-if [ '%{name}' != 'opennms' ]; then
-	ln -sf "%{name}" $RPM_BUILD_ROOT%{instprefix}/bin/opennms
-fi
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
@@ -587,8 +583,8 @@ cd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
-	grep -v '%{_initrddir}/%{name}-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
 	grep -v '3gpp' | \
@@ -611,8 +607,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
-	grep -v '%{_initrddir}/%{name}-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'ncs.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
@@ -725,8 +721,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/%{name}-%{version}
 
 %files remote-poller
-%attr(755,root,root) %{_initrddir}/%{name}-remote-poller
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-remote-poller
+%attr(755,root,root) %{_initrddir}/opennms-remote-poller
+%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
 
@@ -896,7 +892,7 @@ for prefix in lib lib64; do
 		SYSTEMDDIR="/usr/$prefix/systemd/system"
 		printf -- "- installing service into $SYSTEMDDIR... "
 		install -d -m 755 "$SYSTEMDDIR"
-		install -m 655 "%{instprefix}/etc/%{name}.service" "$SYSTEMDDIR"/
+		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
 		echo "done"
 	fi
 done
@@ -952,7 +948,7 @@ fi
 rm -f $RPM_INSTALL_PREFIX0/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/%{name}
+		ln -sf $RPM_INSTALL_PREFIX0/bin/opennms $dir/init.d/opennms
 		break
 	fi
 done
