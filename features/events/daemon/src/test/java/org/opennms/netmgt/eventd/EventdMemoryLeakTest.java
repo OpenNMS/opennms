@@ -34,23 +34,22 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.events.EventBuilder;
 
 
 /**
- * MemoryLeakTest
+ * EventdMemoryLeakTest
  *
  * @author brozow
  */
-public class MemoryLeakTest {
+public class EventdMemoryLeakTest {
     
     private static final long MINS = 8*60*60*1000L;
 
     @Test
     @Ignore
     public void testMemory() throws Exception {
-        EventProxy proxy = new TcpEventProxy(new InetSocketAddress("127.0.0.1", OpenNMSTestCase.PROXY_PORT));
+        EventProxy proxy = new TcpEventProxy(new InetSocketAddress("127.0.0.1", 5837));
         double eventRate = 20.0 / 1000.0;
         
         long start = System.currentTimeMillis();
