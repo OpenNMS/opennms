@@ -404,16 +404,34 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             //This reset container is set in here for the demo, don't commit
 
             resetContainer();
-
-            getLldpLinks();
-            getOspfLinks();
-            getIsIsLinks();
-            getBridgeLinks();
-            getCdpLinks();
-
-
         } catch (Exception e){
-            LOG.debug(e.getStackTrace().toString());
+            LOG.error("Exception reset Container: "+e.getMessage(),e);
+        }
+
+        try{
+            getLldpLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
+        }
+        try{
+            getOspfLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
+        }
+        try{
+            getIsIsLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
+        }
+        try{
+            getBridgeLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
+        }
+        try{
+            getCdpLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
         }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
@@ -511,27 +529,25 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            LOG.debug("loadtopology: parsing source link: " + sourceLink);
+            LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: already parsed: source link: " + sourceLink);
+                LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", sourceLink.getId());
                 continue;
             }
             parsed.add(sourceLink.getId());
             OnmsNode sourceNode = sourceLink.getNode();
             LldpElement sourceElement = sourceNode.getLldpElement();
-            LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
             Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
             if (source == null) {
-                LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
                 source = getVertex(sourceNode);
                 addVertices(source);
             }
 
             LldpLink targetLink = null;
             for (LldpLink link : allLinks) {
-                LOG.debug("loadtopology: try target link: " + sourceLink);
+                LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", link.getId(), link);
                 if (parsed.contains(link.getId())) {
-                    LOG.debug("loadtopology: already parsed: target link: " + sourceLink);
+                    LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", link.getId());
                     continue;
                 }
                 LldpElement element = link.getNode().getLldpElement();
@@ -545,7 +561,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 if (bool1 && bool2 && bool3) {
                     targetLink=link;
                     parsed.add(targetLink.getId());
-                    LOG.debug("loadtopology: found target link: " + targetLink);
+                    LOG.debug("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     break;
                 }
             }
@@ -555,19 +571,18 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
                 if (nodes.size() == 1) {
                     targetLink = reverseLldpLink(nodes.get(0), sourceLink.getNode().getLldpElement(), sourceLink); 
-                    LOG.debug("loadtopology: found target link using sysname: " + targetLink);
+                    LOG.debug("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
                 }
             }
             
             if (targetLink == null) {
-                LOG.debug("loadtopology: cannot found target for link: " + sourceLink);
+                LOG.debug("loadtopology: cannot found target node for link: '{}'", sourceLink);
                 continue;
             }
                 
             OnmsNode targetNode = targetLink.getNode();
             Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
             if (target == null) {
-                LOG.debug("loadtopology: adding target node as vertex: " + targetNode.getLabel());
                 target = getVertex(targetNode);
                 addVertices(target);
             }
@@ -586,6 +601,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         List<CdpTopologyLink> cdpLinks = m_cdpLinkDao.findLinksForTopology();
 
         for (CdpTopologyLink link : cdpLinks) {
+            LOG.debug("loadtopology: adding cdp link: '{}'", link );
             String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
             CdpLinkDetail linkDetail = new CdpLinkDetail(id,
                     getVertex(m_nodeDao.get(link.getSrcNodeId())),
@@ -604,6 +620,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
 
         for (Object[] linkObj : isislinks) {
+            LOG.debug("loadtopology: adding isis link: '{}'", linkObj );
             Integer link1Id = (Integer) linkObj[1];
             Integer link1Nodeid = (Integer) linkObj[2];
             Integer link1IfIndex = (Integer) linkObj[3];
@@ -964,20 +981,21 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLink reverseLldpLink(OnmsNode sourcenode, LldpElement element, LldpLink link) {
         LldpLink reverseLink = new LldpLink();
+        reverseLink.setId(-link.getId());
         reverseLink.setNode(sourcenode);
         
         reverseLink.setLldpLocalPortNum(0);
         reverseLink.setLldpPortId(link.getLldpRemPortId());
         reverseLink.setLldpPortIdSubType(link.getLldpRemPortIdSubType());
+        reverseLink.setLldpPortDescr(link.getLldpRemPortDescr());
         if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
             try {
-                Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
-                reverseLink.setLldpPortIfindex(remIfIndex);
+                reverseLink.setLldpPortIfindex(Integer.getInteger(link.getLldpRemPortId()));
             } catch (Exception e) {
+                LOG.debug("reverseLldpLink: cannot create ifindex from  LldpRemPortId '{}'", link.getLldpRemPortId());
             }
         }
 
-        reverseLink.setLldpPortDescr(link.getLldpRemPortDescr());
         reverseLink.setLldpRemChassisId(element.getLldpChassisId());
         reverseLink.setLldpRemChassisIdSubType(element.getLldpChassisIdSubType());
         reverseLink.setLldpRemSysname(element.getLldpSysname());
