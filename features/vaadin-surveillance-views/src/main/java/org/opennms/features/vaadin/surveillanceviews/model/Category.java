@@ -60,4 +60,33 @@ public class Category {
     public void setName(String name) {
         this.m_name = name;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Category category = (Category) o;
+
+        if (m_name != null ? !m_name.equals(category.m_name) : category.m_name != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return m_name != null ? m_name.hashCode() : 0;
+    }
 }

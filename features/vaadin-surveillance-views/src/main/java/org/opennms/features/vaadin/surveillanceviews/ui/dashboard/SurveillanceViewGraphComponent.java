@@ -125,17 +125,17 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_nodeSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                OnmsNode onmsNode = (OnmsNode) m_nodeSelect.getValue();
+                Integer onmsNodeId = (Integer) m_nodeSelect.getValue();
 
                 m_resourceSelect.removeAllItems();
 
-                if (onmsNode != null) {
-                    Map<OnmsResourceType, List<OnmsResource>> map = getSurveillanceViewService().getResourceTypeMapForNodeId(onmsNode.getId());
+                if (onmsNodeId != null) {
+                    Map<OnmsResourceType, List<OnmsResource>> map = getSurveillanceViewService().getResourceTypeMapForNodeId(onmsNodeId);
 
                     for (OnmsResourceType onmsResourceType : map.keySet()) {
                         for (OnmsResource onmsResource : map.get(onmsResourceType)) {
-                            m_resourceSelect.addItem(onmsResource);
-                            m_resourceSelect.setItemCaption(onmsResource, onmsResourceType.getLabel() + ": " + onmsResource.getLabel());
+                            m_resourceSelect.addItem(onmsResource.getId());
+                            m_resourceSelect.setItemCaption(onmsResource.getId(), onmsResourceType.getLabel() + ": " + onmsResource.getLabel());
                         }
                     }
 
@@ -157,12 +157,12 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
         m_resourceSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
-                OnmsResource onmsResource = (OnmsResource) m_resourceSelect.getValue();
+                String onmsResourceId = (String) m_resourceSelect.getValue();
 
                 m_graphSelect.removeAllItems();
 
-                if (onmsResource != null) {
-                    Map<String, String> map = getSurveillanceViewService().getGraphResultsForResourceId(onmsResource.getId());
+                if (onmsResourceId != null) {
+                    Map<String, String> map = getSurveillanceViewService().getGraphResultsForResourceId(onmsResourceId);
 
                     for (String string : map.keySet()) {
                         m_graphSelect.addItem(map.get(string));
@@ -313,7 +313,7 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
     @Override
     public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         if (m_future != null && !m_future.isDone()) {
-            m_future.cancel(true);
+            return;
         }
 
         m_nodeSelect.setEnabled(false);
@@ -341,11 +341,11 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                             /**
                              * save the current selection
                              */
-                            OnmsNode selectedNode = (OnmsNode) m_nodeSelect.getValue();
-                            OnmsResource selectedResource = (OnmsResource) m_resourceSelect.getValue();
+                            Integer selectedNodeId = (Integer) m_nodeSelect.getValue();
+                            String selectedResourceId = (String) m_resourceSelect.getValue();
                             String selectedGraph = (String) m_graphSelect.getValue();
 
-                            LOG.debug("Saved selection={} / {} / {}", selectedNode == null ? "null" : selectedNode.getLabel(), selectedResource == null ? "null" : selectedResource.getLabel(), selectedGraph);
+                            LOG.debug("Saved selection={} / {} / {}", selectedNodeId == null ? "null" : selectedNodeId, selectedResourceId == null ? "null" : selectedResourceId, selectedGraph);
 
                             /**
                              * remove all entries in the node selection box
@@ -357,8 +357,8 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                              */
                             if (nodes != null && !nodes.isEmpty()) {
                                 for (OnmsNode node : nodes) {
-                                    m_nodeSelect.addItem(node);
-                                    m_nodeSelect.setItemCaption(node, "Node: " + node.getLabel());
+                                    m_nodeSelect.addItem(node.getId());
+                                    m_nodeSelect.setItemCaption(node.getId(), "Node: " + node.getLabel());
                                 }
                             }
 
@@ -369,14 +369,14 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                             /**
                              * try to select the same node/resource/graph combination as before
                              */
-                            if (selectedNode != null) {
-                                for (OnmsNode onmsNode : (Collection<OnmsNode>) m_nodeSelect.getItemIds()) {
-                                    if (onmsNode.getId().equals(selectedNode.getId())) {
-                                        m_nodeSelect.select(onmsNode);
-                                        if (selectedResource != null) {
-                                            for (OnmsResource onmsResource : (Collection<OnmsResource>) m_resourceSelect.getItemIds()) {
-                                                if (onmsResource.getId().equals(selectedResource.getId())) {
-                                                    m_resourceSelect.select(onmsResource);
+                            if (selectedNodeId != null) {
+                                for (Integer onmsNodeId : (Collection<Integer>) m_nodeSelect.getItemIds()) {
+                                    if (onmsNodeId.equals(selectedNodeId)) {
+                                        m_nodeSelect.select(onmsNodeId);
+                                        if (selectedResourceId != null) {
+                                            for (String onmsResourceId : (Collection<String>) m_resourceSelect.getItemIds()) {
+                                                if (onmsResourceId.equals(selectedResourceId)) {
+                                                    m_resourceSelect.select(onmsResourceId);
                                                     if (selectedGraph != null) {
                                                         m_graphSelect.select(selectedGraph);
                                                     }
