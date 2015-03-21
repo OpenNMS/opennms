@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,12 +43,14 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <P>
@@ -74,39 +75,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NodeLabelDaoImpl implements NodeLabel{
-	
-	@Autowired
-	private NodeDao nodeDao;
-	
-	@Autowired
-	private IpInterfaceDao ipInterfaceDao;
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NodeLabelDaoImpl.class);
-	
-   
-    /**
-     * Maximum length for node label
-     */
-    public static final int MAX_NODE_LABEL_LENGTH = 256;
 
-    /**
-     * Primary interface selection method MIN. Using this selection method the
-     * interface with the smallest numeric IP address is considered the primary
-     * interface.
-     */
-    private static final String SELECT_METHOD_MIN = "min";
+    @Autowired
+    private NodeDao nodeDao;
 
-    /**
-     * Primary interface selection method MAX. Using this selection method the
-     * interface with the greatest numeric IP address is considered the primary
-     * interface.
-     */
-    private static final String SELECT_METHOD_MAX = "max";
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
 
-    /**
-     * Default primary interface select method.
-     */
-    private static final String DEFAULT_SELECT_METHOD = SELECT_METHOD_MIN;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeLabelDaoImpl.class);
 
     /**
      * Node label
@@ -118,16 +94,6 @@ public class NodeLabelDaoImpl implements NodeLabel{
      */
     private final NodeLabelSource m_nodeLabelSource;
 
-    /**
-     * The property string in the properties file which specifies the method to
-     * use for determining which interface is primary on a multi-interface box.
-     */
-    public static final String PROP_PRIMARY_INTERFACE_SELECT_METHOD = "org.opennms.bluebird.dp.primaryInterfaceSelectMethod";
-
-    public static NodeLabel getInstance() {
-    	return new NodeLabelDaoImpl();
-    }
-    
     /**
      * Default constructor
      */
@@ -186,24 +152,6 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * NodeLabel object is returned initialized with the retrieved values.
      *
      * @param nodeID
-     *            Unique identifier of the node to be updated.
-     * @return Object containing label and source values.
-     * @throws java.sql.SQLException if any.
-     * 
-     * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
-     */
-    @Override
-    public NodeLabel retrieveLabel(final int nodeID) throws SQLException {
-    	return retrieveLabel(nodeID, null);
-        
-    }
-
-    /**
-     * This method queries the 'node' table for the value of the 'nodelabel' and
-     * 'nodelabelsource' fields for the node with the provided nodeID. A
-     * NodeLabel object is returned initialized with the retrieved values.
-     *
-     * @param nodeID
      *            Unique ID of node whose label info is to be retrieved
      * @param dbConnection
      *            SQL database connection
@@ -213,32 +161,13 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
     @Override
-    public NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
-    	OnmsNode node = nodeDao.get(nodeID);
-    	
+    public NodeLabel retrieveLabel(final int nodeID) throws SQLException {
+        OnmsNode node = nodeDao.get(nodeID);
+
         String nodeLabel = node.getLabel();
         NodeLabelSource nodeLabelSource = node.getLabelSource();
-        
-        return (new NodeLabelJDBCImpl(nodeLabel, nodeLabelSource));
-        
-        
-    }
 
-    /**
-     * This method updates the 'nodelabel' and 'nodelabelsource' fields of the
-     * 'node' table for the specified nodeID.
-     * 
-     * @param nodeID
-     *            Unique identifier of the node to be updated.
-     * @param nodeLabel
-     *            Object containing label and source values.
-     * @throws java.sql.SQLException if any.
-     * 
-     * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
-     */
-    @Override
-    public void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException {
-        assignLabel(nodeID, nodeLabel, null);
+        return new NodeLabelDaoImpl(nodeLabel, nodeLabelSource);
     }
 
     /**
@@ -258,46 +187,32 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
+    @Transactional
     @Override
-    public void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
-        if (nodeLabel == null) {
-            nodeLabel = computeLabel(nodeID, dbConnection);
-        }
+    public void assignLabel(final int nodeID, NodeLabel nodeLabel) throws SQLException {
 
         OnmsNode node = nodeDao.get(nodeID);
 
-        // Node Label
-        LOG.debug("NodeLabel.assignLabel: Node label: {} source: {}", nodeLabel.getLabel(), nodeLabel.getSource());
+        if (node == null) {
+            LOG.warn("NodeLabel.assignLabel: Attemped to set node label on null node with ID {}", nodeID);
+            return;
+        }
+
+        LOG.debug("NodeLabel.assignLabel: Node: {}, label: {}, source: {}", nodeID, nodeLabel.getLabel(), nodeLabel.getSource());
 
         if (nodeLabel.getLabel() != null) {
-        	// nodeLabel may not exceed MAX_NODELABEL_LEN.if it does truncate it
-        	String label = nodeLabel.getLabel();
-        	if (label.length() > MAX_NODE_LABEL_LENGTH) {
-        		label = label.substring(0, MAX_NODE_LABEL_LENGTH);
-        	}
-        	node.setLabel(label);
-        	//        stmt.setString(column++, label);
+            // nodeLabel may not exceed MAX_NODELABEL_LEN. if it does, truncate it.
+            String label = nodeLabel.getLabel();
+            if (label.length() > MAX_NODE_LABEL_LENGTH) {
+                label = label.substring(0, MAX_NODE_LABEL_LENGTH);
+            }
+            node.setLabel(label);
         } else {
-        	node.setLabel(null);
+            node.setLabel(null);
         }
+
         node.setLabelSource(nodeLabel.getSource());
         nodeDao.update(node);
-    }
-
-    /**
-     * This method determines what label should be associated with a particular
-     * node.
-     *
-     * @param nodeID
-     *            Unique identifier of the node to be updated.
-     * @return NodeLabel Object containing label and source values
-     * @throws java.sql.SQLException if any.
-     * 
-     * @deprecated Update this to use modern DAO methods instead of raw SQL
-     */
-    @Override
-    public NodeLabel computeLabel(final int nodeID) throws SQLException {
-        return computeLabel(nodeID, null);
     }
 
     /**
@@ -326,40 +241,38 @@ public class NodeLabelDaoImpl implements NodeLabel{
      * @return NodeLabel Object containing label and source values or null if
      *         node does not have a primary interface.
      * @throws java.sql.SQLException if any.
-     * 
-     * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
     @Override
-    public NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
-        // Issue SQL query to retrieve NetBIOS name associated with the node
-        String netbiosName = null;
-        
+    public NodeLabel computeLabel(final int nodeID) throws SQLException {
         OnmsNode node = nodeDao.get(nodeID);
+        if (node == null) {
+            return null;
+        }
         
-        netbiosName = node.getNetBiosName();
+        // Retrieve NetBIOS name associated with the node
+        String netbiosName = node.getNetBiosName();
         
         if (netbiosName != null) {
-        	// Truncate sysName if it exceeds max node label length
+            // Truncate sysName if it exceeds max node label length
             if (netbiosName.length() > MAX_NODE_LABEL_LENGTH) {
                 netbiosName = netbiosName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
-            return new NodeLabelJDBCImpl(netbiosName, NodeLabelSource.NETBIOS);
+            LOG.debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: {}", netbiosName);
+            return new NodeLabelDaoImpl(netbiosName, NodeLabelSource.NETBIOS);
         }
-        
-        LOG.debug("NodeLabel.computeLabel: returning NetBIOS name as nodeLabel: {}", netbiosName);
-                    
+
         // OK, if we get this far the node has no NetBIOS name associated with it so,
         // retrieve the primary interface select method property which indicates
         // the method to use for determining which interface on a multi-interface
         // system is to be deemed the primary interface. The primary interface
         // will then determine what the node's label is.
-        String method = System.getProperty(NodeLabelJDBCImpl.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
+        String method = System.getProperty(PROP_PRIMARY_INTERFACE_SELECT_METHOD);
         if (method == null) {
             method = DEFAULT_SELECT_METHOD;
         }
 
         if (!method.equals(SELECT_METHOD_MIN) && !method.equals(SELECT_METHOD_MAX)) {
-		LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
+            LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
             method = DEFAULT_SELECT_METHOD;
         }
 
@@ -368,23 +281,25 @@ public class NodeLabelDaoImpl implements NodeLabel{
 
         final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsIpInterface.class)
         .setAliases(Arrays.asList(new Alias[] {
-            new Alias("ipInterfaces","ipInterfaces", JoinType.LEFT_JOIN)
+            new Alias("node","node", JoinType.LEFT_JOIN)
         }))
-        .addRestriction(new EqRestriction("ipInterfaces.nodeId", nodeID))
-        .addRestriction(new EqRestriction("ipInterfaces.isManaged", "M"));
+        .addRestriction(new EqRestriction("node.id", nodeID))
+        .addRestriction(new EqRestriction("isManaged", "M"));
         
         List<OnmsIpInterface> ints = ipInterfaceDao.findMatching(criteria);
-        
-        for (OnmsIpInterface one: ints) {
-        	InetAddress inetAddr = one.getIpAddress();
-        	ipv4AddrList.add(inetAddr);
-        	String hostName = one.getIpHostName();
-        	if (hostName == null || hostName.equals(inetAddr.toString()))
+
+        for (OnmsIpInterface iface : ints) {
+            InetAddress inetAddr = iface.getIpAddress();
+            ipv4AddrList.add(inetAddr);
+            String hostName = iface.getIpHostName();
+
+            if (hostName == null || hostName.equals(inetAddr.toString())) {
                 ipHostNameList.add("");
-            else
+            } else {
                 ipHostNameList.add(hostName);
+            }
         }
-        
+
         InetAddress primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
 
         // Make sure we found a primary address!!!
@@ -392,29 +307,30 @@ public class NodeLabelDaoImpl implements NodeLabel{
         // managed interfaces. So lets go after all the non-managed interfaces
         // and select the primary interface from them.
         if (primaryAddr == null) {
-        	LOG.debug("NodeLabel.computeLabel: unable to find a primary address for node {}, returning null", nodeID);
+            LOG.debug("NodeLabel.computeLabel: unable to find a primary address for node {}, returning null", nodeID);
 
             ipv4AddrList.clear();
             ipHostNameList.clear();
-            
+
             final org.opennms.core.criteria.Criteria crit = new org.opennms.core.criteria.Criteria(OnmsIpInterface.class)
             .setAliases(Arrays.asList(new Alias[] {
-                new Alias("ipInterfaces","ipInterfaces", JoinType.LEFT_JOIN)
+                new Alias("node","node", JoinType.LEFT_JOIN)
             }))
-            .addRestriction(new EqRestriction("ipInterfaces.nodeId", nodeID))
-            .addRestriction(new NeRestriction("ipInterfaces.isManaged", "M"));
-            
+            .addRestriction(new EqRestriction("node.id", nodeID))
+            .addRestriction(new NeRestriction("isManaged", "M"));
+
             List<OnmsIpInterface> sec = ipInterfaceDao.findMatching(crit);
-            
-            for (OnmsIpInterface two : sec) {
-            	InetAddress inetAddr = two.getIpAddress();
-            	ipv4AddrList.add(inetAddr);
-            	String hostName = two.getIpHostName();
-            	if (hostName == null || hostName.equals(inetAddr.toString()))
+
+            for (OnmsIpInterface iface : sec) {
+                InetAddress inetAddr = iface.getIpAddress();
+                ipv4AddrList.add(inetAddr);
+                String hostName = iface.getIpHostName();
+
+                if (hostName == null || hostName.equals(inetAddr.toString())) {
                     ipHostNameList.add("");
-                else
+                } else {
                     ipHostNameList.add(hostName);
-            	
+                }
             }
 
             primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
@@ -422,7 +338,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
 
         if (primaryAddr == null) {
             LOG.warn("Could not find primary interface for node {}, cannot compute nodelabel", nodeID);
-            return new NodeLabelJDBCImpl("Unknown", NodeLabelSource.UNKNOWN);
+            return new NodeLabelDaoImpl("Unknown", NodeLabelSource.UNKNOWN);
         }
 
         // We now know the IP address of the primary interface so
@@ -437,7 +353,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
                 primaryHostName = primaryHostName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
 
-            return new NodeLabelJDBCImpl(primaryHostName, NodeLabelSource.HOSTNAME);
+            return new NodeLabelDaoImpl(primaryHostName, NodeLabelSource.HOSTNAME);
         }
 
         // If we get this far either the primary interface does not have
@@ -445,10 +361,7 @@ public class NodeLabelDaoImpl implements NodeLabel{
         // so we need to use the node's sysName if available...
 
         // retrieve sysName for the node
-        String primarySysName = null;
-        
-        OnmsNode sysNode = nodeDao.get(nodeID);
-        primarySysName = sysNode.getSysName();
+        String primarySysName = node.getSysName();
 
         if (primarySysName != null && primarySysName.length() > 0) {
             // Truncate sysName if it exceeds max node label length
@@ -456,12 +369,12 @@ public class NodeLabelDaoImpl implements NodeLabel{
                 primarySysName = primarySysName.substring(0, MAX_NODE_LABEL_LENGTH);
             }
 
-            return new NodeLabelJDBCImpl(primarySysName, NodeLabelSource.SYSNAME);
+            return new NodeLabelDaoImpl(primarySysName, NodeLabelSource.SYSNAME);
         }
 
         // If we get this far the node has no sysName either so we need to
         // use the ipAddress as the nodeLabel
-        return new NodeLabelJDBCImpl(InetAddressUtils.str(primaryAddr), NodeLabelSource.ADDRESS);
+        return new NodeLabelDaoImpl(InetAddressUtils.str(primaryAddr), NodeLabelSource.ADDRESS);
     }
 
     /**

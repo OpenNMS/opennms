@@ -26,30 +26,53 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.dao.api;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 
 public interface NodeLabel {
 
+	/**
+	 * The property string in the properties file which specifies the method to
+	 * use for determining which interface is primary on a multi-interface box.
+	 */
+	public static final String PROP_PRIMARY_INTERFACE_SELECT_METHOD = "org.opennms.bluebird.dp.primaryInterfaceSelectMethod";
+
+	/**
+	 * Maximum length for node label
+	 */
+	public static final int MAX_NODE_LABEL_LENGTH = 256;
+
+	/**
+	 * Primary interface selection method MIN. Using this selection method the
+	 * interface with the smallest numeric IP address is considered the primary
+	 * interface.
+	 */
+	public static final String SELECT_METHOD_MIN = "min";
+
+	/**
+	 * Primary interface selection method MAX. Using this selection method the
+	 * interface with the greatest numeric IP address is considered the primary
+	 * interface.
+	 */
+	public static final String SELECT_METHOD_MAX = "max";
+
+	/**
+	 * Default primary interface select method.
+	 */
+	public static final String DEFAULT_SELECT_METHOD = SELECT_METHOD_MIN;
+
 	String getLabel();
-	
+
 	NodeLabelSource getSource();
-	
+
 	NodeLabel retrieveLabel(final int nodeID) throws SQLException;
-	
-	NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException;
-	
+
 	void assignLabel(final int nodeID, final NodeLabel nodeLabel) throws SQLException;
-	
-	void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException;
-	
+
 	NodeLabel computeLabel(final int nodeID) throws SQLException;
-	
-	NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException;
-	
+
 	String toString();
 }
