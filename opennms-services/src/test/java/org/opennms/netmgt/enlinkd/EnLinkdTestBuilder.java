@@ -39,6 +39,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 
+import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
@@ -73,6 +74,9 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
 
     @Autowired
     protected NodeDao m_nodeDao;
+    
+    @Autowired
+    protected CdpLinkDao m_cdpLinkDao;
     
     @Autowired
     protected LldpLinkDao m_lldpLinkDao;

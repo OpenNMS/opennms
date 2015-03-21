@@ -41,12 +41,12 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 public class Nms4930Test extends LinkdTestBuilder {
 
