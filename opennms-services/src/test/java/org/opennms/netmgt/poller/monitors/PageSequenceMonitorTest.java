@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
@@ -69,7 +71,9 @@ public class PageSequenceMonitorTest {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+        final Properties props = new Properties();
+        props.put(MockLogger.LOG_KEY_PREFIX + "org.apache.http.client.protocol.ResponseProcessCookies", "ERROR");
+        MockLogAppender.setupLogging(props);
 
         m_monitor = new PageSequenceMonitor();
         m_monitor.initialize(Collections.<String, Object>emptyMap());
