@@ -28,24 +28,24 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.AUSTIN_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELAWARE_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PENROSE_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.PHOENIX_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RIOVISTA_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SANJOSE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.AUSTIN_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.AUSTIN_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.AUSTIN_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELAWARE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELAWARE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELAWARE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PENROSE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PENROSE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PENROSE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PHOENIX_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PHOENIX_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.PHOENIX_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RIOVISTA_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RIOVISTA_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RIOVISTA_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SANJOSE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SANJOSE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SANJOSE_SNMP_RESOURCE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
