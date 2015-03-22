@@ -30,7 +30,7 @@
 --%>
 
 <%@page import="com.google.common.base.Strings"%>
-<%@page import="org.opennms.web.snmpinfo.SnmpInfo"%>
+<%@page import="org.opennms.web.svclayer.model.SnmpInfo"%>
 <%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
 <%@page language="java" contentType="text/html" session="true"%>
 

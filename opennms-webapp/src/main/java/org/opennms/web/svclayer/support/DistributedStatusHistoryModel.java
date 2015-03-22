@@ -36,7 +36,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.web.svclayer.model.RelativeTimePeriod;
 
 /**
  * <p>DistributedStatusHistoryModel class.</p>
@@ -72,7 +72,7 @@ public class DistributedStatusHistoryModel {
      * @param chosenApplication a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @param chosenApplicationMemberServices a {@link java.util.Collection} object.
      * @param chosenMonitor a {@link org.opennms.netmgt.model.OnmsLocationMonitor} object.
-     * @param chosenPeriod a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @param chosenPeriod a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      * @param errors a {@link java.util.List} object.
      */
     public DistributedStatusHistoryModel(
@@ -156,7 +156,7 @@ public class DistributedStatusHistoryModel {
     /**
      * <p>getChosenPeriod</p>
      *
-     * @return a {@link org.opennms.web.graph.RelativeTimePeriod} object.
+     * @return a {@link org.opennms.web.svclayer.model.RelativeTimePeriod} object.
      */
     public RelativeTimePeriod getChosenPeriod() {
         return m_chosenPeriod;
