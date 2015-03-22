@@ -20,6 +20,13 @@
                     <skipAssembly>false</skipAssembly>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDocumentName>index.adoc</sourceDocumentName>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
