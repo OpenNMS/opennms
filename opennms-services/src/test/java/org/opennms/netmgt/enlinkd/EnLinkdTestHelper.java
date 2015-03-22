@@ -60,22 +60,24 @@ public abstract class EnLinkdTestHelper {
 		for (LldpElement element: lldpelements)
 			printLldpElement(element);
 	}
-        protected static void printCdpElement(final CdpElement cdpElement) {
+
+    protected static void printCdpElement(final CdpElement cdpElement) {
         System.err.println("----------cdp element --------");
         System.err.println("Nodeid: " + cdpElement.getNode().getId());
         System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
         System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
-        }
+    }
 
-        protected static void printCdpLink(CdpLink link) {
+    protected static void printCdpLink(CdpLink link) {
         System.err.println("----------cdp link --------");
         System.err.println("Create time: " + link.getCdpLinkCreateTime());
         System.err.println("Last Poll time: " + link.getCdpLinkLastPollTime());
         System.err.println("----------Source Node--------");
         System.err.println("Nodeid: " + link.getNode().getId());
         System.err.println("----------Source Port--------");
-        System.err.println("cdp ifindex: " + link.getCdpCacheIfIndex());
-        System.err.println("cdp interface name: " + link.getCdpInterfaceName());
+        System.err.println("cdpcacheifindex: " + link.getCdpCacheIfIndex());
+        System.err.println("cdpcachedeviceindex: " + link.getCdpCacheDeviceIndex());
+        System.err.println("cdpinterfacename: " + link.getCdpInterfaceName());
         System.err.println("----------Rem Node--------");
         System.err.println("cdpcacheaddresstype: " + CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()));
         System.err.println("cdpcacheaddress: " + link.getCdpCacheAddress());
