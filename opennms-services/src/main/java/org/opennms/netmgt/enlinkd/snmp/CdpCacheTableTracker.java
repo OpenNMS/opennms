@@ -132,9 +132,13 @@ public class CdpCacheTableTracker extends TableTracker {
     	 */
     	
     	public Integer getCdpCacheIfIndex() {
-			return getInstance().getSubIdAt(getInstance().length()-2);
+    	    return getInstance().getSubIdAt(getInstance().length()-2);
     	}
-	
+
+        public Integer getCdpCacheDeviceIndex() {
+            return getInstance().getLastSubId();
+        }
+
 		/**
 		 * <p>getCdpCacheAddressType</p>
 		 *
@@ -190,11 +194,12 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 
 		public CdpLink getLink(CdpInterfacePortNameGetter cdpInterfacePortNameGetter) {
-            LOG.info("processCdpCacheRow: row count: {}", getColumnCount());
-            LOG.info("processCdpCacheRow: row cdpCacheIfindex: {}",  getCdpCacheIfIndex());
+            LOG.info("processCdpCacheRow: row index: cdpCacheIfindex: {} cdpCacheDeviceIndex: {}",  
+                     getCdpCacheIfIndex(), getCdpCacheDeviceIndex());
             CdpLink link = new CdpLink();
             
             link.setCdpCacheIfIndex(getCdpCacheIfIndex());
+            link.setCdpCacheDeviceIndex(getCdpCacheDeviceIndex());
             link.setCdpCacheAddressType(CiscoNetworkProtocolType.get(getCdpCacheAddressType()));
             if (CiscoNetworkProtocolType.ip == link.getCdpCacheAddressType())
             	link.setCdpCacheAddress(str(getCdpCacheIpv4Address()));
