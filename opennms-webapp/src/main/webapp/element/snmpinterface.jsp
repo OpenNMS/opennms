@@ -36,6 +36,7 @@
     org.opennms.core.utils.SIUtils,
     org.opennms.netmgt.model.OnmsNode,
     org.opennms.netmgt.model.OnmsResource,
+    org.opennms.netmgt.utils.IfLabel,
     org.opennms.web.api.Authentication,
     org.opennms.web.element.*,
     org.opennms.web.svclayer.ResourceService,
@@ -120,7 +121,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     if (ifIndex != -1) {
       ifLabel = IfLabelJdbcImpl.getInstance().getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
     } else {
-      ifLabel = "no_ifLabel";
+      ifLabel = IfLabel.NO_IFLABEL;
     }
     List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
     for (OnmsResource resource : resources) {

@@ -33,6 +33,8 @@ import java.util.Map;
 
 public interface IfLabel {
 
+    public static String NO_IFLABEL = "no_ifLabel";
+
     /**
      * Return a map of useful SNMP information for the interface specified by
      * the nodeId and ifLabel. Essentially a "decoding" algorithm for the
@@ -48,15 +50,6 @@ public interface IfLabel {
      *             if error occurs accessing the database.
      */
     Map<String, String> getInterfaceInfoFromIfLabel(int nodeId, String ifLabel);
-
-    /**
-     * Get the interface labels for each interface on a given node.
-     *
-     * @param nodeId a int.
-     * @return an array of {@link java.lang.String} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    String[] getIfLabels(int nodeId) throws SQLException;
 
     /**
      * <p>getIfLabel</p>

@@ -105,6 +105,7 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.FileAnticipator;
@@ -1212,7 +1213,7 @@ public class ThresholdingVisitorTest {
             triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
         assertTrue(triggerEvents.size() == 1);
 
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, IfLabel.NO_IFLABEL, "127.0.0.1[http]", "http", IfLabel.NO_IFLABEL, null, m_anticipator, m_anticipatedEvents);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
