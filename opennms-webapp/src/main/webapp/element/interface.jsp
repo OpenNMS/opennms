@@ -40,7 +40,7 @@
             org.opennms.netmgt.model.OnmsResource,
             org.opennms.web.api.Authentication,
             org.opennms.web.element.*,
-            org.opennms.web.svclayer.ResourceService,
+            org.opennms.web.svclayer.api.ResourceService,
             org.opennms.netmgt.utils.IfLabel,
             org.springframework.web.context.WebApplicationContext,
             org.springframework.web.context.support.WebApplicationContextUtils"

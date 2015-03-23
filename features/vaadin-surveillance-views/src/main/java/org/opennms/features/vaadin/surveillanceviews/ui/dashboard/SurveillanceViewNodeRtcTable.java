@@ -194,7 +194,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
     @Override
     public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         if (m_future != null && !m_future.isDone()) {
-            m_future.cancel(true);
+            return;
         }
 
         m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<SurveillanceViewService.NodeRtc>>() {

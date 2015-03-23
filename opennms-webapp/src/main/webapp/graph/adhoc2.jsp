@@ -38,7 +38,7 @@
         org.opennms.web.servlet.MissingParameterException,
         org.opennms.web.api.Util,
         org.opennms.netmgt.model.OnmsResource,
-        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.svclayer.api.ResourceService,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils,
         org.opennms.web.servlet.XssRequestWrapper"

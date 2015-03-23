@@ -104,12 +104,42 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
           <webResources>
             <resource>
               <filtering>true</filtering>
               <directory>${basedir}/src/main/web-filtered</directory>
             </resource>
           </webResources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <supportedProjectTypes>
+            <supportedProjectType>bundle</supportedProjectType>
+            <supportedProjectType>jar</supportedProjectType>
+            <supportedProjectType>war</supportedProjectType>
+          </supportedProjectTypes>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Web-ContextPath>/opennms</Web-ContextPath>
+          </instructions>
         </configuration>
       </plugin>
       <plugin>
@@ -711,14 +741,6 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>${freemarkerVersion}</version>
-    </dependency>
-
-    <!-- CORS support -->
-    <dependency>
-      <groupId>org.ebaysf.web</groupId>
-      <artifactId>cors-filter</artifactId>
-      <version>1.0.1</version>
-      <scope>compile</scope>
     </dependency>
 
     <!-- test dependencies -->

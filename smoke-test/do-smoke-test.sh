@@ -102,15 +102,15 @@ reset_database() {
 reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
-	do_log "$PACKAGE_NAME stop"
-	/sbin/service "$PACKAGE_NAME" stop
+	do_log "opennms stop"
+	/sbin/service "opennms" stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
 
 	do_log "removing existing RPMs"
-	rpm -qa --queryformat='%{name}\n' | grep -E "^(opennms|${PACKAGE_NAME})" | grep -v -E '^opennms-repo-' | xargs yum -y remove
+	rpm -qa --queryformat='%{name}\n' | grep -E "^(opennms|${PACKAGE_NAME}|meridian)" | grep -v -E '^opennms-repo-' | xargs yum -y remove
 
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
@@ -162,13 +162,13 @@ start_opennms() {
 	do_log "find \*.rpmorig -o -name \*.rpmnew"
 	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
 
-	do_log "$PACKAGE_NAME start"
-	/sbin/service "$PACKAGE_NAME" restart
+	do_log "opennms restart"
+	/sbin/service "opennms" restart
 	RETVAL=$?
 
 	if [ $? -gt 0 ]; then
 		if [ -x /usr/bin/systemctl ]; then
-			/usr/bin/systemctl status "$PACKAGE_NAME".service
+			/usr/bin/systemctl status "opennms".service
 		fi
 		die "OpenNMS failed to start."
 	fi
@@ -213,8 +213,8 @@ run_tests() {
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
-	do_log "$PACKAGE_NAME kill"
-	/etc/init.d/"$PACKAGE_NAME" kill
+	do_log "opennms kill"
+	/etc/init.d/"opennms" kill
 
 	#do_log "yum clean all"
 	#yum clean all || :

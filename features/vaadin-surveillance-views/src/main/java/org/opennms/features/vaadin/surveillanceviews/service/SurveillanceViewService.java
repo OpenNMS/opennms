@@ -261,9 +261,57 @@ public interface SurveillanceViewService {
             return m_serviceCount;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return m_node.getLabel() + ": " + m_downServiceCount + " of " + m_serviceCount + ": " + getAvailabilityAsString();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            NodeRtc nodeRtc = (NodeRtc) o;
+
+            if (Double.compare(nodeRtc.m_availability, m_availability) != 0) {
+                return false;
+            }
+            if (m_downServiceCount != nodeRtc.m_downServiceCount) {
+                return false;
+            }
+            if (m_serviceCount != nodeRtc.m_serviceCount) {
+                return false;
+            }
+            if (m_node != null ? !m_node.equals(nodeRtc.m_node) : nodeRtc.m_node != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            int result;
+            long temp;
+            result = m_node != null ? m_node.hashCode() : 0;
+            result = 31 * result + m_serviceCount;
+            result = 31 * result + m_downServiceCount;
+            temp = Double.doubleToLongBits(m_availability);
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            return result;
         }
     }
 }

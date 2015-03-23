@@ -32,11 +32,11 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.opennms.netmgt.model.InetAddressTypeEditor;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
-import org.opennms.web.rest.support.InetAddressTypeEditor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.Assert;
