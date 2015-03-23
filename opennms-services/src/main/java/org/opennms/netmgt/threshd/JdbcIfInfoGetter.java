@@ -31,7 +31,7 @@ package org.opennms.netmgt.threshd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.netmgt.utils.IfLabelJdbcImpl;
 
 /**
  * <p>JdbcIfInfoGetter class.</p>
@@ -51,14 +51,14 @@ public class JdbcIfInfoGetter implements IfInfoGetter {
     @Override
     public Map<String, String> getIfInfoForNodeAndLabel(int nodeId, String ifLabel) {
         Map<String, String> ifInfo = new HashMap<String, String>();
-        ifInfo = IfLabel.getInterfaceInfoFromIfLabel(nodeId, ifLabel);
+        ifInfo = IfLabelJdbcImpl.getInstance().getInterfaceInfoFromIfLabel(nodeId, ifLabel);
         return ifInfo;
     }
 
     /** {@inheritDoc} */
     @Override
     public String getIfLabel(int nodeId, String ipAddress) {
-        return IfLabel.getIfLabel(nodeId, ipAddress);
+        return IfLabelJdbcImpl.getInstance().getIfLabel(nodeId, ipAddress);
     }
 
 }

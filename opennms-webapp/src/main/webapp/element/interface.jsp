@@ -41,7 +41,7 @@
             org.opennms.web.api.Authentication,
             org.opennms.web.element.*,
             org.opennms.web.svclayer.ResourceService,
-            org.opennms.netmgt.utils.IfLabel,
+            org.opennms.netmgt.utils.IfLabelJdbcImpl,
             org.springframework.web.context.WebApplicationContext,
             org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -177,9 +177,9 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <%
     String ifLabel;
     if (ifIndex != -1) {
-      ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
+      ifLabel = IfLabelJdbcImpl.getInstance().getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
     } else {
-      ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
+      ifLabel = IfLabelJdbcImpl.getInstance().getIfLabel(nodeId, ipAddr);
     }
     List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
     for (OnmsResource resource : resources) {

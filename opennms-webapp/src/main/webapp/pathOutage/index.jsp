@@ -33,8 +33,7 @@
 	import="
 		java.util.List,
 		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.poller.PathOutageManagerDaoImpl
-	"
+		org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">

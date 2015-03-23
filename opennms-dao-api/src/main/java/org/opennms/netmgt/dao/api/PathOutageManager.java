@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.netmgt.dao.api;
 
 import java.sql.Connection;
 import java.sql.SQLException;

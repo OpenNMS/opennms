@@ -307,6 +307,10 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
 
+  <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
+
   <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

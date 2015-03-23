@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller;
+package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,12 +41,13 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.config.api.OpennmsServerConfig;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -79,8 +80,11 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 	@Autowired
 	private IpInterfaceDao ipInterfaceDao;
 
+    @Autowired
+    private OpennmsServerConfig serverConfig;
+
     public static PathOutageManager getInstance() {
-        return BeanUtils.getBean("pollerdContext", "pathOutageManager", PathOutageManager.class);
+        return BeanUtils.getBean("daoContext", "pathOutageManager", PathOutageManager.class);
     }
 
     /**
@@ -124,7 +128,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 
         if (out == null) {
             return new String[] {
-                OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp(),
+                serverConfig.getDefaultCriticalPathIp(),
                 "ICMP"
             };
         }
@@ -133,7 +137,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 
         if (cpath[0] == null || "".equals(cpath[0].trim())) {
             // If no critical path was located in the table, then use the default critical path
-            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+            cpath[0] = serverConfig.getDefaultCriticalPathIp();
             cpath[1] = "ICMP";
         } else if (cpath[1] == null || "".equals(cpath[1].trim())) {
             // If there was no service name in the table, then use the default of ICMP
