@@ -3,7 +3,7 @@
 
   <!-- Ericsson Juniper Networks GGSN Resource Types -->
   <resourceType name="ejnGgsnApnIndex" label="GPRS Access Point Name" resourceLabel="GPRS APN: ${ApnName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
       <parameter key="sibling-column-name" value="ApnName" />
       <parameter key="replace-all" value="s/^-//" />
@@ -13,14 +13,14 @@
   </resourceType>
 
   <resourceType name="ejnGgsnGtpcIndex" label="GGSN Control PICs" resourceLabel="CPIC: ${ggsnGtpcAddr} (${ggsnGtpcStatus})">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
       <parameter key="sibling-column-name" value="ggsnGtpcAddr" />
     </storageStrategy>
   </resourceType>
 
   <resourceType name="ejnGgsnGtpuIndex" label="GGSN User PICs" resourceLabel="UPIC: ${ggsnGtpuAddr} (${ggsnGtpuStatus})">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
       <parameter key="sibling-column-name" value="ggsnGtpuAddr" />
     </storageStrategy>

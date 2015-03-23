@@ -52,8 +52,8 @@ import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.outages.Outage;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -65,6 +65,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @ContextConfiguration(locations={
         "classpath:/org/opennms/web/rest/applicationContext-test.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
@@ -76,7 +77,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/applicationContext-jersey-test.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })

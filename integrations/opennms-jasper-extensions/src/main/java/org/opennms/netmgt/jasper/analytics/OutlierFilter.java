@@ -71,5 +71,44 @@ public class OutlierFilter implements Filter {
         for (int i = 0; i < numRowsInTable; i++) {
             dsAsTable.put(i, columnToFilter, outputTable.get(i, columnToFilter));
         }
+
+        // Perform linear interpolation on missing values
+        linearInterpolation(dsAsTable);
+    }
+
+    public void linearInterpolation(RowSortedTable<Integer, String, Double> dsAsTable) {
+        final String columnToFilter = m_config.getInputColumn();
+        final Map<Integer, Double> column = dsAsTable.column(columnToFilter);
+        final Map<Integer, Double> interpolatedValues = Maps.newHashMap();
+
+        Integer x0 = null;
+        for (Map.Entry<Integer, Double> entry : column.entrySet()) {
+            int x = entry.getKey();
+            double y = entry.getValue();
+
+            if (!Double.isNaN(y)) {
+                // If there was a gap in values
+                if (x0 != null && x0 != x-1) {
+                    double y0 = column.get(x0);
+
+                    // Calculate the slope (m) and intercept (b) for the line
+                    // passing between the current point, and the last known value
+                    double m = (y0 - y) / (x0 - x);
+                    double b = y0 - m * x0;
+
+                    // Interpolate the missing values
+                    for (int xnot = x0 + 1; xnot < x; xnot++) {
+                        double ynot = m * xnot + b;
+                        interpolatedValues.put(xnot, ynot);
+                    }
+                }
+
+                // Update the index of the last known value
+                x0 = x;
+            }
+        }
+
+        // Update the column values
+        column.putAll(interpolatedValues);
     }
 }

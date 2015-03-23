@@ -7,7 +7,7 @@
 # pidfile:     ${install.pid.file}
 #
 ### BEGIN INIT INFO
-# Provides:          ${install.package.name}
+# Provides:          opennms
 # Required-Start:    $local_fs $network
 # Should-Start:      $time $named ypbind ${install.postgresql.service}
 # Required-Stop:     $local_fs $network
@@ -52,12 +52,12 @@ INITDIR="${install.init.dir}"
 # Where to redirect "start" output.
 REDIRECT="$LOG_DIRECTORY/output.log"
 
-# Number of times to do "${install.package.name} status" after starting OpenNMS to see
+# Number of times to do "opennms status" after starting OpenNMS to see
 # if it comes up completely.  Set to "0" to disable.  Between each
 # attempt we sleep for STATUS_WAIT seconds.  
 START_TIMEOUT=10
 
-# Number of seconds to wait between each "${install.package.name} status" check when
+# Number of seconds to wait between each "opennms status" check when
 # START_TIMEOUT > 0.
 STATUS_WAIT=5
 
@@ -179,7 +179,7 @@ checkXmlFiles(){
 			echo "Validation failed on $FAILCOUNT XML files.  Exiting." >&2
 			case $COMMAND in
 				status)
-					# when calling `${install.package.name} status` return 3 for "stopped"
+					# when calling `opennms status` return 3 for "stopped"
 					return 3	# From LSB: 3 - program is stopped
 					;;
 				*)
@@ -243,7 +243,7 @@ ${install.package.description} will not start.
 END
 			case $COMMAND in
 				status)
-					# when calling `${install.package.name} status` return 3 for "stopped"
+					# when calling `opennms status` return 3 for "stopped"
 					return 3	# From LSB: 3 - program is stopped
 					;;
 				*)
@@ -301,12 +301,12 @@ doStart(){
 
 	$JAVA_CMD -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
 	if [ $? -ne 0 ]; then
-		echo "${install.package.description} was unable to connect to the '${install.package.name}' database configured in opennms-datasources.xml." >&2
+		echo "${install.package.description} was unable to connect to the 'opennms' database configured in opennms-datasources.xml." >&2
 		return 1
 	fi
 
 	##########################################################################
-	# Run ${install.package.name} with the "-t" option to enable the Java Platform Debugging
+	# Run opennms with the "-t" option to enable the Java Platform Debugging
 	# Architecture. This will open a server socket on port 8001 that can be
 	# connected to by a remote java debugger. A good choice is JSwat which can 
 	# be found at http://www.bluemarsh.com
@@ -422,7 +422,7 @@ doCheck() {
 	fi
 
 	echo "${install.package.description} is not running... Restarting" >&2
-	$OPENNMS_HOME/bin/${install.package.name} start
+	$OPENNMS_HOME/bin/opennms start
 
 	exit 0
 }
@@ -598,7 +598,7 @@ NOEXECUTE=""
 VERBOSE=0
 BACKGROUND=1
 
-NAME="${install.package.name}"
+NAME="opennms"
 
 while getopts c:fntvpoQ c; do
 	case $c in
@@ -680,7 +680,7 @@ END
 
 	case $COMMAND in
 		status)
-			# when calling `${install.package.name} status` return 3 for "stopped"
+			# when calling `opennms status` return 3 for "stopped"
 			exit 3	# From LSB: 3 - program is stopped
 			;;
 		*)
@@ -765,8 +765,8 @@ case "$COMMAND" in
 	restart)
 		## Stop the service and regardless of whether it was
 		## running or not, start it again.
-		$OPENNMS_HOME/bin/${install.package.name} stop
-		$OPENNMS_HOME/bin/${install.package.name} start
+		$OPENNMS_HOME/bin/opennms stop
+		$OPENNMS_HOME/bin/opennms start
 		ret=$?
 
 		if [ -f /etc/SuSE-release ]; then

@@ -72,6 +72,9 @@
             <!-- correlator -->
             <repository>mvn:org.opennms.features.correlator/correlator-feature/${project.version}/xml/features</repository>
 
+            <!-- Vaadin Surveillance Views Feature-->
+            <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
@@ -108,6 +111,7 @@
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>correlator-feature</feature>
+            <feature>vaadin-surveillance-views</feature>
           </features>
         </configuration>
       </plugin>
@@ -264,5 +268,12 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features</groupId>
+          <artifactId>vaadin-surveillance-views</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 </project>

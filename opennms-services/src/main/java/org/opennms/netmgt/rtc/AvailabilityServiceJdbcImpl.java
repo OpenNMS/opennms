@@ -39,7 +39,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.slf4j.Logger;

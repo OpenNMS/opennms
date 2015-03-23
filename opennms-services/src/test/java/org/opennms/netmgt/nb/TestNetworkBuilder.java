@@ -44,6 +44,125 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class TestNetworkBuilder {
+    //NMS0123
+    public final static String ITPN0111_ROOT= "ITPN0111";
+    public static final String ITPN0111_IP = "1.1.1.1";
+    public static final String ITPN0111_NAME = "itpn0111";
+    public static final String ITPN0111_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0111_NAME+".txt";
+    public static final String ITPN0111_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0111_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0111_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0111_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0111_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0111_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0111_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0112_ROOT= "ITPN0112";
+    public static final String ITPN0112_IP = "2.2.2.2";
+    public static final String ITPN0112_NAME = "itpn0112";
+    public static final String ITPN0112_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0112_NAME+".txt";
+    public static final String ITPN0112_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0112_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0112_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0112_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0112_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0112_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0112_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0113_ROOT= "ITPN0113";
+    public static final String ITPN0113_IP = "3.3.3.3";
+    public static final String ITPN0113_NAME = "itpn0113";
+    public static final String ITPN0113_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0113_NAME+".txt";
+    public static final String ITPN0113_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0113_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0113_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0113_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0113_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0113_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0113_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0114_ROOT= "ITPN0114";
+    public static final String ITPN0114_IP = "5.5.5.5";
+    public static final String ITPN0114_NAME = "itpn0114";
+    public static final String ITPN0114_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0114_NAME+".txt";
+    public static final String ITPN0114_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0114_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0114_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0114_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0114_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0114_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0114_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0121_ROOT= "ITPN0121";
+    public static final String ITPN0121_IP = "6.6.6.6";
+    public static final String ITPN0121_NAME = "itpn0121";
+    public static final String ITPN0121_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0121_NAME+".txt";
+    public static final String ITPN0121_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0121_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0121_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0121_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0121_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0121_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0121_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0123_ROOT= "ITPN0123";
+    public static final String ITPN0123_IP = "8.8.8.8";
+    public static final String ITPN0123_NAME = "itpn0123";
+    public static final String ITPN0123_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0123_NAME+".txt";
+    public static final String ITPN0123_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0123_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0123_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0123_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0123_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0123_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0123_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0201_ROOT= "ITPN0201";
+    public static final String ITPN0201_IP = "4.4.4.4";
+    public static final String ITPN0201_NAME = "itpn0201";
+    public static final String ITPN0201_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0201_NAME+".txt";
+    public static final String ITPN0201_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0201_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0201_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0201_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0201_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0201_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0201_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    public final static String ITPN0202_ROOT= "ITPN0202";
+    public static final String ITPN0202_IP = "9.9.9.9";
+    public static final String ITPN0202_NAME = "itpn0202";
+    public static final String ITPN0202_SNMP_RESOURCE = "classpath:linkd/nms0123/"+ITPN0202_NAME+".txt";
+    public static final String ITPN0202_SYSOID = ".1.3.6.1.4.1.2636.1.1.1.2.31";
+
+    public static final Map<InetAddress,Integer> ITPN0202_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      ITPN0202_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0202_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0202_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      ITPN0202_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> ITPN0202_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+
+    //NMSDRAGONWAVE
+    public final static String DW_ROOT= "DW";
+    public static final String DW_IP = "10.103.1.1";
+    public static final String DW_NAME = "dw";
+    public static final String DW_SNMP_RESOURCE = "classpath:linkd/nms7777dw/"+DW_NAME+"-walk.txt";
+    public static final String DW_SYSOID = ".1.3.6.1.4.1.7262.2.4";
+
+    public static final Map<InetAddress,Integer> DW_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String> DW_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String> DW_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> DW_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();
+
     //NMS4943
     public static final String DLINK1_IP = "10.1.1.2";
     public static final String DLINK1_NAME = "dlink1";

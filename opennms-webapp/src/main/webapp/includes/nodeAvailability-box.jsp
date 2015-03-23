@@ -184,8 +184,7 @@
                   availValue = ElementUtil.getServiceStatusString(service);
                 }
 
-                String timelineUrl = "/opennms/rest/timeline/image/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
-                String timelineId  = String.valueOf(nodeId) + "-" + ipAddr + "-" + service.getServiceName();
+                String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
               %>
                        
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -206,7 +205,7 @@
                     <%
                          if (service.isManaged()) {
                     %>
-                    <img src="#" data-imgsrc="<%=timelineUrl%>" usemap="#<%=timelineId%>"><map name="<%=timelineId%>"></map>
+                    <span data-src="<%=timelineUrl%>"></span>
                     <%
                         } else {
                     %>
@@ -219,21 +218,23 @@
                 </tr>
             <% } %>
           <% } else { %>
-            <%-- interface is not managed --%>
-            <% if("0.0.0.0".equals(ipAddr)) {
-            }
-            else { %>
-            <tr>
-              <td>
+      <%-- interface is not managed --%>
+      <% if("0.0.0.0".equals(ipAddr)) {
+      }
+      else { %>
+      <tr>
+          <td class="severity-Cleared nobright" colspan=2>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
-              </td>
-              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
-            </tr>
-            <% } %>
-          <% } %>
-        <% } %>
-<% } %>
-</table>   
+          </td>
+          <!--<td class="severity-Cleared nobright"></td>-->
+          <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+          <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+      </tr>
+      <% } %>
+      <% } %>
+      <% } %>
+      <% } %>
+  </table>
 
 </div>
 

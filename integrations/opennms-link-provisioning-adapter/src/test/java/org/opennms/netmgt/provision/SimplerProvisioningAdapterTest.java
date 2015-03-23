@@ -56,8 +56,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -70,7 +70,7 @@ public class SimplerProvisioningAdapterTest implements InitializingBean {
     CountDownLatch updateLatch = new CountDownLatch(1);
     CountDownLatch configChangeLatch = new CountDownLatch(1);
 
-    // From applicationContext-dao.xml
+    // From applicationContext-mockDao.xml
     @Autowired
     private TransactionTemplate m_txTemplate;
 

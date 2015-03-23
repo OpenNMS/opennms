@@ -71,9 +71,13 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
+    <module>correlator</module>	
+  
+    <!-- OpenNMS Vaadin Dashboard -->
     <module>vaadin-dashboard</module>
     <module>vaadin-dashlets</module>
 
-    <module>correlator</module>	
+    <!-- OpenNMS Vaadin Surveillance Views -->
+    <module>vaadin-surveillance-views</module>
   </modules>
 </project>

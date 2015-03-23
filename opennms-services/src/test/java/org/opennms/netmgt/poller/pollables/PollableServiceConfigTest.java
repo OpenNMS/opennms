@@ -42,8 +42,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.scheduler.Timer;
 

@@ -109,9 +109,15 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, Date time) {
+    public Integer openOutagePendingLostEventId(int nodeId, String ipAddr,
+            String svcName, Date lostTime) {
         // TODO Auto-generated method stub
+        return null;
+    }
 
+    @Override
+    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -170,4 +176,5 @@ public class MockQueryManager implements QueryManager {
 		// TODO Auto-generated method stub
 		
 	}
+
 }

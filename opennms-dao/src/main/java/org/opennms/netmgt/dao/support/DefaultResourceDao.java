@@ -51,8 +51,8 @@ import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.StorageStrategy;
-import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.CollectdConfigFactory;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -136,7 +136,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>getDataCollectionConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @return a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public DataCollectionConfigDao getDataCollectionConfigDao() {
         return m_dataCollectionConfigDao;
@@ -145,7 +145,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     /**
      * <p>setDataCollectionConfig</p>
      *
-     * @param dataCollectionConfigDao a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @param dataCollectionConfigDao a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public void setDataCollectionConfigDao(DataCollectionConfigDao dataCollectionConfigDao) {
         m_dataCollectionConfigDao = dataCollectionConfigDao;

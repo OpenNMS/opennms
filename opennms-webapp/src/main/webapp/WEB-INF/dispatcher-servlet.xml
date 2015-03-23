@@ -347,6 +347,11 @@
         <property name="entries">
             <list>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                    <property name="name" value="Legacy Dashboard"/>
+                    <property name="url" value="legacy-dashboard.jsp"/>
+                    <property name="locationMatch" value="legacy-dashboard"/>
+                </bean>
+                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Dashboard"/>
                     <property name="url" value="dashboard.jsp"/>
                     <property name="locationMatch" value="dashboard"/>
@@ -424,10 +429,15 @@
                                 <property name="locationMatch" value="outage"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.SurveillanceViewNavBarEntry">
-                                <property name="name" value="Surveillance"/>
+                                <property name="name" value="Legacy Surveillance"/>
                                 <property name="url" value=""/>
                                 <property name="locationMatch" value="surveillance"/>
                                 <property name="surveillanceViewConfigDao" ref="surveillanceViewConfigDao"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Surveillance"/>
+                                <property name="url" value="surveillance-view.jsp"/>
+                                <property name="locationMatch" value="surveillance-view"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                                 <property name="name" value="Distributed Status"/>
