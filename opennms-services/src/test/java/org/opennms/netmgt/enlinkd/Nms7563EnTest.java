@@ -38,6 +38,8 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_CDP_GLOBAL_DEVICE_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_LLDP_CHASSID_ID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_LLDP_SYSNAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_IF_IFDESCR_MAP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO01_IF_IFNAME_MAP;
 
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH02_NAME;
@@ -61,6 +63,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
@@ -191,6 +194,14 @@ public class Nms7563EnTest extends EnLinkdTestBuilder {
         
     }
 
+    /*
+     * The SNMP walk reported by the HP ProcurceSwitch for CDP
+     * seems to be wrong, there is a double reported link
+     * that with the Cisco2900.
+     * In any case we decide to save the data as it is walked 
+     * and put all the necessarly login to manage
+     * links in other classes.
+     */
     @Test
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=SWITCH02_IP, port=161, resource=SWITCH02_SNMP_RESOURCE)
@@ -225,8 +236,41 @@ public class Nms7563EnTest extends EnLinkdTestBuilder {
         }
 
         assertEquals(3, m_cdpLinkDao.countAll());
-        for (CdpLink link: m_cdpLinkDao.findAll())
-            printCdpLink(link);                
+        for (CdpLink link: m_cdpLinkDao.findAll()) {
+            printCdpLink(link);
+            if (link.getCdpCacheIfIndex().intValue() == 7 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                assertNull(link.getCdpInterfaceName());
+                assertEquals(CiscoNetworkProtocolType.ip, link.getCdpCacheAddressType());
+                // here the ip address is associated to wlan0 but the mac is associated to eth0
+                // clearly the link is with eth0.
+                assertEquals("192.168.87.16", link.getCdpCacheAddress());
+                assertEquals(HOMESERVER_CDP_GLOBAL_DEVICE_ID, link.getCdpCacheDeviceId());
+                assertEquals("Debian GNU/Linux 7 (wheezy) Linux 3.2.0-4-amd64 #1 SMP Debian 3.2.65-1+deb7u2 x86_64",link.getCdpCacheVersion());
+                assertEquals("Debian GNU/Linux 7 (wheezy) Linux 3.2.0-4-amd64 #1 SMP Debian 3.2.65-1+deb7u2 x86_64",link.getCdpCacheDevicePlatform());
+                assertEquals(HOMESERVER_IF_MAC_MAP.get(2), link.getCdpCacheDevicePort());
+            } else if (link.getCdpCacheIfIndex().intValue() == 24 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
+                // This is a link to cisco01 port fastethernet0/8
+                assertNull(link.getCdpInterfaceName());
+                assertEquals(CiscoNetworkProtocolType.ip, link.getCdpCacheAddressType());
+                assertEquals("192.168.88.240", link.getCdpCacheAddress());
+                assertEquals(CISCO01_CDP_GLOBAL_DEVICE_ID, link.getCdpCacheDeviceId());
+                assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(2)SE4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyrighcisco WS-C2960-8TC-L",link.getCdpCacheVersion());
+                assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(2)SE4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyrighcisco WS-C2960-8TC-L",link.getCdpCacheDevicePlatform());
+                assertEquals(CISCO01_IF_IFDESCR_MAP.get(10008), link.getCdpCacheDevicePort());
+            } else if (link.getCdpCacheIfIndex().intValue() == 24 && link.getCdpCacheDeviceIndex().intValue() == 2 ) {
+                // This is a link to cisco01 port fastethernet0/8 with different data also
+                // the cdpcacheversion is always different from the cdpcacheplatform.
+                assertNull(link.getCdpInterfaceName());
+                assertEquals(CiscoNetworkProtocolType.ip, link.getCdpCacheAddressType());
+                assertEquals("192.168.88.240", link.getCdpCacheAddress());
+                assertEquals(CISCO01_LLDP_CHASSID_ID, link.getCdpCacheDeviceId());
+                assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(2)SE4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2013 by Cisco Systems, Inc.  Compiled Wed 26-Jun-13 02:49 by prod_rel_team",link.getCdpCacheVersion());
+                assertEquals("Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(2)SE4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2013 by Cisco Systems, Inc.  Compiled Wed 26-Jun-13 02:49 by prod_rel_team",link.getCdpCacheDevicePlatform());
+                assertEquals(CISCO01_IF_IFNAME_MAP.get(10008), link.getCdpCacheDevicePort());                
+            } else {
+                assertTrue(false);
+            }
+        }
     }
 
 }

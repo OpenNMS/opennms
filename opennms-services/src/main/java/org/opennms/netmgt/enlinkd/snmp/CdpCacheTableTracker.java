@@ -177,7 +177,9 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getCdpCacheDeviceId() {
+		    if (getValue(CDP_CACHE_DEVICE_ID).isDisplayable())
 			return getValue(CDP_CACHE_DEVICE_ID).toDisplayString();
+		    return getValue(CDP_CACHE_DEVICE_ID).toHexString();
 		}
 		
 		/**
@@ -186,7 +188,9 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getCdpCacheDevicePort() {
+		    if (getValue(CDP_CACHE_DEVICE_PORT).isDisplayable())
 			return 	getValue(CDP_CACHE_DEVICE_PORT).toDisplayString();
+		    return getValue(CDP_CACHE_DEVICE_PORT).toHexString();
 		}
 				
 		public String getCdpCachePlatform() {

@@ -2335,7 +2335,7 @@ create table cdpLink (
       nodeid          integer not null,
       cdpCacheIfIndex integer not null,
       cdpCacheDeviceIndex integer not null,
-      cdpInterfaceName text not null,
+      cdpInterfaceName text,
       cdpCacheAddressType integer not null,
       cdpCacheAddress text not null,
       cdpCacheVersion text not null,
