@@ -44,6 +44,22 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class NmsNetworkBuilder {
+    //NMS6802
+    public final static String CISCOISIS_ROOT= "CISCOISIS";
+    public static final String CISCOISIS_IP = "10.100.68.2";
+    public static final String CISCOISIS_NAME = "cisco-ios-xr";
+    public static final String CISCOISIS_SYSNAME = "cisco-ios-xr";
+    public static final String CISCOISIS_SNMP_RESOURCE = "classpath:linkd/nms6802/"+CISCOISIS_NAME+"-walk.txt";
+    public static final String CISCOISIS_SYSOID = ".1.3.6.1.4.1.9.1.2090";
+    public static final String CISCOISIS_ISIS_SYS_ID = "093176090107";
+    
+    public static final Map<InetAddress,Integer> CISCOISIS_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFNAME_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFDESCR_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      CISCOISIS_IF_MAC_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,String>      CISCOISIS_IF_IFALIAS_MAP = new HashMap<Integer, String>();
+    public static final Map<Integer,InetAddress> CISCOISIS_IF_NETMASK_MAP = new HashMap<Integer, InetAddress>();    
+    
     //NMS7563
     public final static String HOMESERVER_ROOT= "HOMESERVER";
     public static final String HOMESERVER_IP = "192.168.88.1";
