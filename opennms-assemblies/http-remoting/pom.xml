@@ -207,6 +207,18 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.spring-web</artifactId>
     </dependency>
+    <!--
+      Make sure that jetty-jsp is marked as 'provided' so that we don't
+      include the JARs for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to render .jsps.
+
+      @see http://issues.opennms.org/browse/NMS-7565
+    -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jsp</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
