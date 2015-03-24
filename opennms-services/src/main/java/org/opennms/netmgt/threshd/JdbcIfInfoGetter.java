@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,9 +39,6 @@ import org.opennms.netmgt.utils.IfLabelJdbcImpl;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @version $Id: $
  */
 public class JdbcIfInfoGetter implements IfInfoGetter {
 
@@ -57,7 +55,7 @@ public class JdbcIfInfoGetter implements IfInfoGetter {
 
     /** {@inheritDoc} */
     @Override
-    public String getIfLabel(int nodeId, String ipAddress) {
+    public String getIfLabel(int nodeId, InetAddress ipAddress) {
         return IfLabelJdbcImpl.getInstance().getIfLabel(nodeId, ipAddress);
     }
 

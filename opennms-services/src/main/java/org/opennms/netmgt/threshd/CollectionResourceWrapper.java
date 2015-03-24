@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -162,7 +164,7 @@ public class CollectionResourceWrapper {
             } else if (resource instanceof LatencyCollectionResource) {
                 JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
                 String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
+                m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), addr(ipAddress));
                 if (m_iflabel != null) { // See Bug 3488
                     m_ifInfo.putAll(ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel));
                 } else {

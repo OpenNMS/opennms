@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.utils;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -159,13 +161,11 @@ public class IfLabelJdbcImpl extends AbstractIfLabel implements IfLabel {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getIfLabel(final int nodeId, final String ipAddr) {
+    public String getIfLabel(final int nodeId, final InetAddress ipAddr) {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String inetAddr = org.opennms.core.utils.InetAddressUtils.normalize(ipAddr);
-        
         class LabelHolder {
             private String m_label;
 
@@ -187,7 +187,7 @@ public class IfLabelJdbcImpl extends AbstractIfLabel implements IfLabel {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid = "+nodeId+
-        		"   AND ipinterface.ipaddr = '"+inetAddr+"'";
+        		"   AND ipinterface.ipaddr = '"+str(ipAddr)+"'";
         
         Querier q = new Querier(DataSourceFactory.getInstance(), query, new RowProcessor() {
             @Override
@@ -218,15 +218,13 @@ public class IfLabelJdbcImpl extends AbstractIfLabel implements IfLabel {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getIfLabelfromIfIndex(final int nodeId, final String ipAddr, final int ifIndex) {
+    public String getIfLabelfromIfIndex(final int nodeId, final InetAddress ipAddr, final int ifIndex) {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String inetAddr = org.opennms.core.utils.InetAddressUtils.normalize(ipAddr);
-
         if (ifIndex == -1) {
-        	return getIfLabel(nodeId, inetAddr);
+        	return getIfLabel(nodeId, ipAddr);
         }
         
         class LabelHolder {
@@ -250,7 +248,7 @@ public class IfLabelJdbcImpl extends AbstractIfLabel implements IfLabel {
         		"   AND ipinterface.nodeid=snmpinterface.nodeid " +
         		"   AND ifindex=snmpifindex " +
         		"   AND ipinterface.nodeid= "+nodeId+
-        		"   AND ipinterface.ipaddr= '"+inetAddr+"'"+
+        		"   AND ipinterface.ipaddr= '"+str(ipAddr)+"'"+
         		"   AND ipinterface.ifindex= "+ifIndex;
         
         

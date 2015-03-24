@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.utils;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public interface IfLabel {
      * @param ipAddr a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    String getIfLabel(final int nodeId, final String ipAddr);
+    String getIfLabel(final int nodeId, final InetAddress ipAddr);
 
     /**
      * <p>getIfLabelfromIfIndex</p>
@@ -68,7 +69,7 @@ public interface IfLabel {
      * @param ifIndex a int.
      * @return a {@link java.lang.String} object.
      */
-    String getIfLabelfromIfIndex(final int nodeId, final String ipAddr, final int ifIndex);
+    String getIfLabelfromIfIndex(final int nodeId, final InetAddress ipAddr, final int ifIndex);
 
     /**
      * Return the ifLabel as a string for the given node and ifIndex. Intended for

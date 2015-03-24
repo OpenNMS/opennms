@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
@@ -35,9 +36,6 @@ import java.util.Map;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @version $Id: $
  */
 public interface IfInfoGetter {
 
@@ -57,6 +55,6 @@ public interface IfInfoGetter {
      * @param ipAddress a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getIfLabel(int nodeId, String ipAddress);
+    public abstract String getIfLabel(int nodeId, InetAddress ipAddress);
 
 }
