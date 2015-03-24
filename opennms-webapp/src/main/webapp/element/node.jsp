@@ -54,7 +54,7 @@
         org.opennms.web.asset.AssetModel,
         org.opennms.web.element.*,
         org.opennms.web.navigate.*,
-        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.svclayer.api.ResourceService,
         org.springframework.util.StringUtils,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils"
