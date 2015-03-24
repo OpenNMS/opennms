@@ -784,6 +784,7 @@ create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServivceId_idx on outages(ifServiceId);
+create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
 
 --########################################################################
 --#
@@ -2333,9 +2334,10 @@ create table cdpLink (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       cdpCacheIfIndex integer not null,
-      cdpInterfaceName text not null,
+      cdpCacheDeviceIndex integer not null,
+      cdpInterfaceName text,
       cdpCacheAddressType integer not null,
-      cdpCacheAddress varchar(64) not null,
+      cdpCacheAddress text not null,
       cdpCacheVersion text not null,
       cdpCacheDeviceId text not null,
       cdpCacheDevicePort text not null,

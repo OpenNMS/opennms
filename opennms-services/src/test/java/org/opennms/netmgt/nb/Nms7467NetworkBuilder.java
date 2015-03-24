@@ -90,7 +90,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * 
  */
 
-public class Nms7467NetworkBuilder extends TestNetworkBuilder {
+public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
  
     /* 
      * nodelabel:ip:mac:ifindex:ifdescr
