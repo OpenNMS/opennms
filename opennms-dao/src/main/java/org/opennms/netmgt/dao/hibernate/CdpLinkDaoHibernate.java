@@ -58,16 +58,20 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
 
     /** {@inheritDoc} */
     @Override
-    public CdpLink get(OnmsNode node, Integer cdpCacheifIndex) {
-        return findUnique("from CdpLink as cdpLink where cdpLink.node = ? and cdpLink.cdpCacheIfIndex = ?", node, cdpCacheifIndex);
+    public CdpLink get(OnmsNode node, Integer cdpCacheifIndex, Integer cdpCacheDeviceIndex) {
+        Assert.notNull(node, "node cannot be null");
+        Assert.notNull(cdpCacheifIndex, "cdpCacheifIndex cannot be null");
+        Assert.notNull(cdpCacheDeviceIndex, "cdpCacheDeviceIndex cannot be null");
+        return findUnique("from CdpLink as cdpLink where cdpLink.node = ? and cdpLink.cdpCacheIfIndex = ? and cdpCacheDeviceIndex = ?", node, cdpCacheifIndex, cdpCacheDeviceIndex);
     }
 
     /** {@inheritDoc} */
     @Override
-    public CdpLink get(Integer nodeId, Integer cdpCacheifIndex) {
+    public CdpLink get(Integer nodeId, Integer cdpCacheifIndex, Integer cdpCacheDeviceIndex) {
         Assert.notNull(nodeId, "nodeId cannot be null");
         Assert.notNull(cdpCacheifIndex, "cdpCacheifIndex cannot be null");
-        return findUnique("from CdpLink as cdpLink where cdpLink.node.id = ? and cdpLink.cdpCacheIfIndex = ?", nodeId, cdpCacheifIndex);
+        Assert.notNull(cdpCacheDeviceIndex, "cdpCacheDeviceIndex cannot be null");
+        return findUnique("from CdpLink as cdpLink where cdpLink.node.id = ? and cdpLink.cdpCacheIfIndex = ? and cdpCacheDeviceIndex = ?", nodeId, cdpCacheifIndex, cdpCacheDeviceIndex);
     }
     
     /** {@inheritDoc} */
