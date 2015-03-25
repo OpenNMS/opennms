@@ -132,6 +132,7 @@
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
+    <module>opennms-webapp-rest</module>
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
   </modules>

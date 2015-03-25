@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <tx:annotation-driven/>
+  <context:annotation-config/>
+
+  <!--
+    These are the webapp svclayer beans that are required to run the REST interfaces. We should
+    consider moving this context into its own project at some point so that it can be cleanly shared
+    by all webapps.
+
+    This file is not used in the final webapp: it is excluded from the warmerge plugin in webapp-full.
+    Therefore, the applicationContext-svclayer.xml from opennms-webapp is used to define these services
+    instead.
+  -->
+
+  <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
+  <!--  Graphing beans -->
+  <bean id="graphDao" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
+    <property name="prefabConfigs">
+      <map>
+        <entry key="performance" value="file:${opennms.home}/etc/snmp-graph.properties"/>
+        <entry key="response" value="file:${opennms.home}/etc/response-graph.properties"/>
+      </map>
+    </property>
+    <property name="adhocConfigs">
+      <map>
+        <entry key="performance" value="file:${opennms.home}/etc/snmp-adhoc-graph.properties"/>
+        <entry key="response" value="file:${opennms.home}/etc/response-adhoc-graph.properties"/>
+      </map>
+    </property>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.GraphDao" ref="graphDao"/>
+
+  <!-- Graphing -->
+  <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
+    <property name="resourceDao" ref="resourceDao"/>
+    <property name="graphDao" ref="graphDao"/>
+    <property name="eventProxy" ref="eventProxy"/>
+  </bean>
+
+  <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value>
+    </property>
+  </bean>
+  <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
+  <bean id="kscReportService" class="org.opennms.web.svclayer.support.DefaultKscReportService">
+    <property name="resourceService" ref="resourceService"/>
+    <property name="kscReportFactory" ref="kscReportFactory"/>
+  </bean>
+  <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
+    <property name="groupManager" ref="groupManager"/>
+  </bean>
+
+  <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
+  <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>
+  </bean>
+  <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
+  </bean>
+  <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml"/>
+  </bean>
+  <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
+    <constructor-arg value="file:${opennms.home}/etc/report-templates"/>
+  </bean>
+  <!-- DAO for XML configuration -->
+  <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
+    <constructor-arg ref="legacyLocalReportsConfigResource"/>
+  </bean>
+  <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
+    <constructor-arg ref="legacyLocalJasperReportsConfigResource"/>
+    <constructor-arg ref="jrTemplateResource"/>
+  </bean>
+  <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
+    <constructor-arg ref="defaultRemoteRepositoryConfigResource"/>
+  </bean>
+  <!-- Repository implementation for local community reports and OpenNMS CONNECT reporting -->
+  <bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
+    <constructor-arg name="localReportsDao" ref="legacyLocalReportsDao"/>
+    <constructor-arg name="localJasperReportsDao" ref="legacyLocalJasperReportsDao"/>
+  </bean>
+  <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
+    <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
+    <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
+  </bean>
+  <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
+</beans>

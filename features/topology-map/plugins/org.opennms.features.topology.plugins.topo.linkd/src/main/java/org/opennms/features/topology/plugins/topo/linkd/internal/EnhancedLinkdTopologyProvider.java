@@ -33,6 +33,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
@@ -367,6 +369,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     };
 
     private LldpLinkDao m_lldpLinkDao;
+    private LldpElementDao m_lldpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
@@ -401,16 +404,34 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             //This reset container is set in here for the demo, don't commit
 
             resetContainer();
-
-            getLldpLinks();
-            getOspfLinks();
-            getIsIsLinks();
-            getBridgeLinks();
-            getCdpLinks();
-
-
         } catch (Exception e){
-            LOG.debug(e.getStackTrace().toString());
+            LOG.error("Exception reset Container: "+e.getMessage(),e);
+        }
+
+        try{
+            getLldpLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
+        }
+        try{
+            getOspfLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
+        }
+        try{
+            getIsIsLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
+        }
+        try{
+            getBridgeLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
+        }
+        try{
+            getCdpLinks();
+        } catch (Exception e){
+            LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
         }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
@@ -482,7 +503,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             for (OspfLink targetLink : allLinks) {
                 boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
                 if(ipAddrCheck) {
-                    String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
+//                    String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
                     AbstractVertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
                     source.setIpAddress(sourceLink.getOspfIpAddr().getHostAddress());
 
@@ -506,41 +527,67 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private void getLldpLinks() {
         List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
+        Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            LOG.debug("loadtopology: parsing link: " + sourceLink);
+            LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
+            if (parsed.contains(sourceLink.getId())) {
+                LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", sourceLink.getId());
+                continue;
+            }
+            parsed.add(sourceLink.getId());
             OnmsNode sourceNode = sourceLink.getNode();
             LldpElement sourceElement = sourceNode.getLldpElement();
-            LOG.debug("loadtopology: found source node: " + sourceNode.getLabel());
             Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
             if (source == null) {
-                LOG.debug("loadtopology: adding source node as vertex: " + sourceNode.getLabel());
                 source = getVertex(sourceNode);
                 addVertices(source);
             }
 
-            for (LldpLink targetLink : allLinks) {
-                OnmsNode targetNode = targetLink.getNode();
-                LldpElement targetLldpElement = targetNode.getLldpElement();
-
+            LldpLink targetLink = null;
+            for (LldpLink link : allLinks) {
+                LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", link.getId(), link);
+                if (parsed.contains(link.getId())) {
+                    LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", link.getId());
+                    continue;
+                }
+                LldpElement element = link.getNode().getLldpElement();
                 //Compare the remote data to the targetNode element data
-                boolean bool1 = sourceLink.getLldpRemPortId().equals(targetLink.getLldpPortId()) && targetLink.getLldpRemPortId().equals(sourceLink.getLldpPortId());
-                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(targetLink.getLldpPortDescr()) && targetLink.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
-                boolean bool3 = sourceLink.getLldpRemChassisId().equals(targetLldpElement.getLldpChassisId()) && targetLink.getLldpRemChassisId().equals(sourceElement.getLldpChassisId());
-                boolean bool4 = sourceLink.getLldpRemSysname().equals(targetLldpElement.getLldpSysname()) && targetLink.getLldpRemSysname().equals(sourceElement.getLldpSysname());
-                boolean bool5 = sourceLink.getLldpRemPortIdSubType() == targetLink.getLldpPortIdSubType() && targetLink.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
+                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceElement.getLldpChassisId())) 
+                    continue;
+                boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
+                boolean bool2 = sourceLink.getLldpRemPortDescr().equals(link.getLldpPortDescr()) && link.getLldpRemPortDescr().equals(sourceLink.getLldpPortDescr());
+                boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
-                if (bool1 && bool2 && bool3 && bool4 && bool5) {
-                    Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
-                    if (target == null) {
-                        target = getVertex(targetNode);
-                    }
-
-                    LldpLinkDetail linkDetail = new LldpLinkDetail(
-                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
-                            source, sourceLink, target, targetLink);
-                    combinedLinkDetails.add(linkDetail);
+                if (bool1 && bool2 && bool3) {
+                    targetLink=link;
+                    parsed.add(targetLink.getId());
+                    LOG.debug("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    break;
                 }
             }
+            
+            if (targetLink == null) {
+                final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class).addRestriction(new EqRestriction("sysName", sourceLink.getLldpRemSysname()));
+                List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+                if (nodes.size() == 1) {
+                    targetLink = reverseLldpLink(nodes.get(0), sourceLink.getNode().getLldpElement(), sourceLink); 
+                    LOG.debug("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
+                }
+            }
+            
+            if (targetLink == null) {
+                LOG.debug("loadtopology: cannot found target node for link: '{}'", sourceLink);
+                continue;
+            }
+                
+            OnmsNode targetNode = targetLink.getNode();
+            Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
+            if (target == null) {
+                target = getVertex(targetNode);
+                addVertices(target);
+            }
+            combinedLinkDetails.add(new LldpLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                                                       source, sourceLink, target, targetLink));
 
         }
 
@@ -554,6 +601,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         List<CdpTopologyLink> cdpLinks = m_cdpLinkDao.findLinksForTopology();
 
         for (CdpTopologyLink link : cdpLinks) {
+            LOG.debug("loadtopology: adding cdp link: '{}'", link );
             String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
             CdpLinkDetail linkDetail = new CdpLinkDetail(id,
                     getVertex(m_nodeDao.get(link.getSrcNodeId())),
@@ -572,6 +620,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
 
         for (Object[] linkObj : isislinks) {
+            LOG.debug("loadtopology: adding isis link: '{}'", linkObj );
             Integer link1Id = (Integer) linkObj[1];
             Integer link1Nodeid = (Integer) linkObj[2];
             Integer link1IfIndex = (Integer) linkObj[3];
@@ -770,6 +819,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         return m_lldpLinkDao;
     }
 
+    public void setLldpElementDao(LldpElementDao lldpElementDao) {
+        m_lldpElementDao = lldpElementDao;
+    }
+
+    public LldpElementDao getLldpElementDao() {
+        return m_lldpElementDao;
+    }
+
     public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
         m_ospfLinkDao = ospfLinkDao;
     }
@@ -922,5 +979,35 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    private LldpLink reverseLldpLink(OnmsNode sourcenode, LldpElement element, LldpLink link) {
+        LldpLink reverseLink = new LldpLink();
+        reverseLink.setId(-link.getId());
+        reverseLink.setNode(sourcenode);
+        
+        reverseLink.setLldpLocalPortNum(0);
+        reverseLink.setLldpPortId(link.getLldpRemPortId());
+        reverseLink.setLldpPortIdSubType(link.getLldpRemPortIdSubType());
+        reverseLink.setLldpPortDescr(link.getLldpRemPortDescr());
+        if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
+            try {
+                reverseLink.setLldpPortIfindex(Integer.getInteger(link.getLldpRemPortId()));
+            } catch (Exception e) {
+                LOG.debug("reverseLldpLink: cannot create ifindex from  LldpRemPortId '{}'", link.getLldpRemPortId());
+            }
+        }
+
+        reverseLink.setLldpRemChassisId(element.getLldpChassisId());
+        reverseLink.setLldpRemChassisIdSubType(element.getLldpChassisIdSubType());
+        reverseLink.setLldpRemSysname(element.getLldpSysname());
+        
+        reverseLink.setLldpRemPortId(link.getLldpPortId());
+        reverseLink.setLldpRemPortIdSubType(link.getLldpPortIdSubType());
+        reverseLink.setLldpRemPortDescr(link.getLldpPortDescr());
+        
+        reverseLink.setLldpLinkCreateTime(link.getLldpLinkCreateTime());
+        reverseLink.setLldpLinkLastPollTime(link.getLldpLinkLastPollTime());
+        
+        return reverseLink;
+    }
 
 }

@@ -89,7 +89,7 @@ import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.nb.TestNetworkBuilder;
+import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -104,7 +104,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
+public class EnLinkdSnmpTest extends NmsNetworkBuilder implements InitializingBean {
     
 	private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpTest.class);
     

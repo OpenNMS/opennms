@@ -1,7 +1,4 @@
-.1.3.6.1.2.1.1.1.0 = STRING: Cisco IOS Software, 2800 Software (C2800NM-ADVENTERPRISEK9-M), Version 12.4(24)T1, RELEASE SOFTWARE (fc3)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2009 by Cisco Systems, Inc.
-Compiled Fri 19-Jun-09 15:13 by prod_rel_team
+.1.3.6.1.2.1.1.1.0 = STRING: Cisco IOS Software, 2800 Software (C2800NM-ADVENTERPRISEK9-M), Version 12.4(24)T1, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Fri 19-Jun-09 15:13 by prod_rel_team
 .1.3.6.1.2.1.1.2.0 = OID: .1.3.6.1.4.1.9.1.576
 .1.3.6.1.2.1.1.3.0 = Timeticks: (926468) 2:34:24.68
 .1.3.6.1.2.1.1.4.0 = STRING: Christian Pape <Christian.Pape@informatik.hs-fulda.de>
@@ -2753,7 +2750,7 @@ B9 60 00 24 FF FF FF FC 80 00 00 14 00 00 00 00
 .1.3.6.1.2.1.37.1.5.1.9.0 = INTEGER: 1
 .1.3.6.1.2.1.44.1.1.1.0 = Hex-STRING: 00 
 .1.3.6.1.2.1.44.1.1.2.0 = INTEGER: 2
-.1.3.6.1.2.1.44.1.1.3.0 = STRING: "À"
+.1.3.6.1.2.1.44.1.1.3.0 = STRING: "ï¿½"
 .1.3.6.1.2.1.47.1.1.1.1.2.1 = STRING: "2811 chassis"
 .1.3.6.1.2.1.47.1.1.1.1.2.2 = STRING: "C2811 Chassis Slot"
 .1.3.6.1.2.1.47.1.1.1.1.2.3 = STRING: "c2811 Motherboard with 2FE and integrated VPN"
@@ -6963,14 +6960,8 @@ Compiled Fri 19-Jun-09 15:13 by prod_rel_team"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.3.13.1 = INTEGER: 1
 .1.3.6.1.4.1.9.9.23.1.2.1.1.4.7.2 = Hex-STRING: C0 A8 64 F6
 .1.3.6.1.4.1.9.9.23.1.2.1.1.4.13.1 = Hex-STRING: C0 A8 64 FA
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.7.2 = STRING: "Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2011 by Cisco Systems, Inc.
-Compiled Thu 05-May-11 02:19 by prod_rel_team"
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.13.1 = STRING: "Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2012 by Cisco Systems, Inc.
-Compiled Tue 20-Mar-12 18:57 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.7.2 = STRING: "Cisco IOS Software, C3560 Software (C3560-IPSERVICESK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:19 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.13.1 = STRING: "Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.1(4)M4, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2012 by Cisco Systems, Inc. Compiled Tue 20-Mar-12 18:57 by prod_rel_team"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.6.7.2 = STRING: "Switch1"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.6.13.1 = STRING: "Router2"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.7.7.2 = STRING: "GigabitEthernet0/1"
@@ -16596,13 +16587,13 @@ Compiled Fri 19-Jun-09 15:13 by prod_+"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.7.17 = INTEGER: 1
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.1 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.4 = Hex-STRING: 00 00 00 00 
-.1.3.6.1.4.1.9.9.269.1.1.1.1.8.7 = STRING: "À¨dõ"
+.1.3.6.1.4.1.9.9.269.1.1.1.1.8.7 = STRING: "ï¿½ï¿½dï¿½"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.8 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.9 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.10 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.11 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.12 = Hex-STRING: 00 00 00 00 
-.1.3.6.1.4.1.9.9.269.1.1.1.1.8.13 = STRING: "À¨dù"
+.1.3.6.1.4.1.9.9.269.1.1.1.1.8.13 = STRING: "ï¿½ï¿½dï¿½"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.14 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.15 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.8.16 = Hex-STRING: 00 00 00 00 
@@ -16622,13 +16613,13 @@ Compiled Fri 19-Jun-09 15:13 by prod_+"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.9.17 = INTEGER: 1
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.1 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.4 = Hex-STRING: 00 00 00 00 
-.1.3.6.1.4.1.9.9.269.1.1.1.1.10.7 = STRING: "ÿÿÿü"
+.1.3.6.1.4.1.9.9.269.1.1.1.1.10.7 = STRING: "ï¿½ï¿½ï¿½ï¿½"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.8 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.9 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.10 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.11 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.12 = Hex-STRING: 00 00 00 00 
-.1.3.6.1.4.1.9.9.269.1.1.1.1.10.13 = STRING: "ÿÿÿü"
+.1.3.6.1.4.1.9.9.269.1.1.1.1.10.13 = STRING: "ï¿½ï¿½ï¿½ï¿½"
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.14 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.15 = Hex-STRING: 00 00 00 00 
 .1.3.6.1.4.1.9.9.269.1.1.1.1.10.16 = Hex-STRING: 00 00 00 00 
