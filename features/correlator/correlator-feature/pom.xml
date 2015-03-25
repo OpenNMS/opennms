@@ -44,7 +44,6 @@
         <dependency>
             <groupId>org.opennms.features.correlator</groupId>
             <artifactId>correlator-core</artifactId>
-            <version>16.0.0-SNAPSHOT</version>    
         </dependency>
         
         <!-- Testing -->
