@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 import java.sql.SQLException;

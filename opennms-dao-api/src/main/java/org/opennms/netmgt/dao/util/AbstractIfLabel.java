@@ -26,9 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.dao.util;
 
 import org.opennms.core.utils.AlphaNumeric;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

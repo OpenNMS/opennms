@@ -36,7 +36,7 @@
     org.opennms.core.utils.SIUtils,
     org.opennms.netmgt.model.OnmsNode,
     org.opennms.netmgt.model.OnmsResource,
-    org.opennms.netmgt.utils.IfLabel,
+    org.opennms.netmgt.dao.api.IfLabel,
     org.opennms.web.api.Authentication,
     org.opennms.web.element.*,
     org.opennms.web.svclayer.api.ResourceService,

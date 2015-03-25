@@ -42,6 +42,8 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
+import org.opennms.netmgt.dao.api.IfLabel;
+import org.opennms.netmgt.dao.util.AbstractIfLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

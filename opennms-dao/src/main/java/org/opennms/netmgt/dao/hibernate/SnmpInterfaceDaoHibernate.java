@@ -67,7 +67,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(description, "description may not be null");
 
-        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (snmpIf.ifDescr ILIKE ? OR snmpIf.ifName ILIKE ?)", 
+        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) LIKE LOWER(?) OR LOWER(snmpIf.ifName) LIKE LOWER(?))", 
             nodeId, 
             description,
             description
