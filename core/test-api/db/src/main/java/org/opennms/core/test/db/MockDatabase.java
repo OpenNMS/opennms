@@ -134,8 +134,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
     public void writeSnmpInterface(MockInterface iface) {
         LOG.info("Inserting into snmpInterface {} {} {}", Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
-        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
-        update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
+        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfAlias(), iface.getIfIndex() };
+        update("insert into snmpInterface (nodeID, snmpifAlias, snmpifDescr, snmpIfIndex) values (?, ?, ?, ?);", values);
     }
 
     public void writeService(MockService svc) {

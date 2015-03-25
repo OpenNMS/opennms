@@ -49,7 +49,7 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
 
 	private String m_ifAlias;
     private final InetAddress m_inetAddr;
-    private final int m_ifIndex;
+    private int m_ifIndex;
     
 
     /**
@@ -300,6 +300,13 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
     public int getIfIndex() {
         return m_ifIndex;
     }
-    
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex
+     */
+    public void setIfIndex(int ifIndex) {
+        m_ifIndex = ifIndex;
+    }
 }

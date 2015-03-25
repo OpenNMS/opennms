@@ -248,7 +248,6 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         network.addService("SNMP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
         DataSourceFactory.setInstance(db);
         
         m_mocks.replayAll();
