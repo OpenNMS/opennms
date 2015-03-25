@@ -1,143 +1,136 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.140.625</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>65</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/BEA/traps/serverstart</uei>
- <event-label>BEA Weblogic Server Startup Event</event-label>
- <descr>&lt;p&gt;The following Weblogic Server has started: %parm[#2]%
- at the following time: %parm[#1]% </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Server Startup. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.140.625</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>70</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/BEA/traps/servershutdown</uei>
- <event-label>BEA Weblogic Server Shutdown Event</event-label>
- <descr>&lt;p&gt;The following Weblogic Server has shutdown: %parm[#2]%
- at the following time: %parm[#1]% </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Server Shutdown. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.140.625</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>80</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/BEA/traps/attributechange</uei>
- <event-label>BEA Weblogic Attribute Change Received Event</event-label>
- <descr>&lt;p&gt;An attribute has changed:
- &lt;br&gt;Time: %parm[#1]%
- &lt;br&gt;Server: %parm[#2]%
- &lt;br&gt;ChangeType: %parm[#3]%
- &lt;br&gt;New Value: %parm[#4]%
- &lt;br&gt;Old Value: %parm[#5]%
- &lt;br&gt;Mbean Type: %parm[#6]%
- &lt;br&gt;MBean Name: %parm[#7]%
- &lt;br&gt;Attribute Name: %parm[#8]%
- &lt;br&gt;Attribute Type: %parm[#9]%
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: Attribute Change on %parm[#2]%: &lt;br&gt; %parm[#7]%.%parm[#8]% changed to %parm[#4]% &lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.140.625</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>75</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/BEA/traps/monitortrap</uei>
- <event-label>BEA Weblogic Monitor Trap Received Event</event-label>
- <descr>&lt;p&gt;A Weblogic Monitor Trap has been triggered:
- &lt;br&gt;Time: %parm[#1]%
- &lt;br&gt;Server: %parm[#2]%
- &lt;br&gt;Monitor Type: %parm[#3]%
- &lt;br&gt;Monitor Threshold: %parm[#4]%
- &lt;br&gt;Monitor Value: %parm[#5]%
- &lt;br&gt;MBean Type: %parm[#6]%
- &lt;br&gt;MBean Name: %parm[#7]%
- &lt;br&gt;Attribute Name: %parm[#8]%
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: A %parm[#3]% Monitor Trap has been triggered on %parm[#2]%.&lt;br&gt;MBean Type: %parm[#6]% Attribute Name: %parm[#8]%&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.140.625</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>60</mevalue>
-  </maskelement>
- </mask>
- <uei>http://uei.opennms.org/vendor/BEA/traps/logfilter</uei>
- <event-label>BEA Weblogic Log Filter Trap Received Event</event-label>
- <descr>&lt;p&gt;A Weblogic Log Filter has been triggered:
- &lt;br&gt;Time: %parm[#1]%
- &lt;br&gt;Server: %parm[#2]%
- &lt;br&gt;Machine Name: %parm[#3]%
- &lt;br&gt;Thread ID: %parm[#4]%
- &lt;br&gt;Transaction ID: %parm[#5]%
- &lt;br&gt;User ID: %parm[#6]%
- &lt;br&gt;SubSystem: %parm[#7]%
- &lt;br&gt;Message ID: %parm[#8]%
- &lt;br&gt;Severity: %parm[#9]%
- &lt;br&gt;Log Message: %parm[#10]%
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;BEA Event: A Log Filter Trap has been triggered.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.140.625</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>65</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/BEA/traps/serverstart</uei>
+      <event-label>BEA Weblogic Server Startup Event</event-label>
+      <descr>&lt;p>The following Weblogic Server has started: %parm[#2]%
+ at the following time: %parm[#1]%</descr>
+      <logmsg dest="logndisplay">&lt;p>BEA Event: Server Startup. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.140.625</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>70</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/BEA/traps/servershutdown</uei>
+      <event-label>BEA Weblogic Server Shutdown Event</event-label>
+      <descr>&lt;p>The following Weblogic Server has shutdown: %parm[#2]%
+ at the following time: %parm[#1]%</descr>
+      <logmsg dest="logndisplay">&lt;p>BEA Event: Server Shutdown. Server: %parm[#2]% Time: %parm[#1]%.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.140.625</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>80</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/BEA/traps/attributechange</uei>
+      <event-label>BEA Weblogic Attribute Change Received Event</event-label>
+      <descr>&lt;p>An attribute has changed:
+ &lt;br>Time: %parm[#1]%
+ &lt;br>Server: %parm[#2]%
+ &lt;br>ChangeType: %parm[#3]%
+ &lt;br>New Value: %parm[#4]%
+ &lt;br>Old Value: %parm[#5]%
+ &lt;br>Mbean Type: %parm[#6]%
+ &lt;br>MBean Name: %parm[#7]%
+ &lt;br>Attribute Name: %parm[#8]%
+ &lt;br>Attribute Type: %parm[#9]%</descr>
+      <logmsg dest="logndisplay">&lt;p>BEA Event: Attribute Change on %parm[#2]%: &lt;br> %parm[#7]%.%parm[#8]% changed to %parm[#4]% &lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.140.625</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>75</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/BEA/traps/monitortrap</uei>
+      <event-label>BEA Weblogic Monitor Trap Received Event</event-label>
+      <descr>&lt;p>A Weblogic Monitor Trap has been triggered:
+ &lt;br>Time: %parm[#1]%
+ &lt;br>Server: %parm[#2]%
+ &lt;br>Monitor Type: %parm[#3]%
+ &lt;br>Monitor Threshold: %parm[#4]%
+ &lt;br>Monitor Value: %parm[#5]%
+ &lt;br>MBean Type: %parm[#6]%
+ &lt;br>MBean Name: %parm[#7]%
+ &lt;br>Attribute Name: %parm[#8]%</descr>
+      <logmsg dest="logndisplay">&lt;p>BEA Event: A %parm[#3]% Monitor Trap has been triggered on %parm[#2]%.&lt;br>MBean Type: %parm[#6]% Attribute Name: %parm[#8]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.140.625</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>60</mevalue>
+         </maskelement>
+      </mask>
+      <uei>http://uei.opennms.org/vendor/BEA/traps/logfilter</uei>
+      <event-label>BEA Weblogic Log Filter Trap Received Event</event-label>
+      <descr>&lt;p>A Weblogic Log Filter has been triggered:
+ &lt;br>Time: %parm[#1]%
+ &lt;br>Server: %parm[#2]%
+ &lt;br>Machine Name: %parm[#3]%
+ &lt;br>Thread ID: %parm[#4]%
+ &lt;br>Transaction ID: %parm[#5]%
+ &lt;br>User ID: %parm[#6]%
+ &lt;br>SubSystem: %parm[#7]%
+ &lt;br>Message ID: %parm[#8]%
+ &lt;br>Severity: %parm[#9]%
+ &lt;br>Log Message: %parm[#10]%</descr>
+      <logmsg dest="logndisplay">&lt;p>BEA Event: A Log Filter Trap has been triggered.&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
 </events>

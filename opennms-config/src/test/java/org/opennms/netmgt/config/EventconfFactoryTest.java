@@ -85,7 +85,7 @@ public class EventconfFactoryTest {
     private static final Logger LOG = LoggerFactory.getLogger(EventconfFactoryTest.class);
 
     private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
-    private static final String knownLabel1="OpenNMS-defined capsd event: snmpConflictsWithDb";
+    private static final String knownLabel1="OpenNMS-defined internal event: Capsd snmpConflictsWithDb";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     private static final String knownSubfileLabel1="BRIDGE-MIB defined trap event: newRoot";
     private static final String unknownUEI1="uei.opennms.org/foo/thisShouldBeAnUnknownUEI";
