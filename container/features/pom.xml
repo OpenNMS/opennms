@@ -75,6 +75,9 @@
             <!-- Vaadin Surveillance Views Feature-->
             <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
 
+            <!-- Vaadin Surveillance Views Feature-->
+            <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
