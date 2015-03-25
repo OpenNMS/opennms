@@ -31,7 +31,7 @@ package org.opennms.netmgt.nb;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms101NetworkBuilder extends TestNetworkBuilder {
+public class Nms101NetworkBuilder extends NmsNetworkBuilder {
     static {
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.8.1"), 8);
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.190.1"), 9);

@@ -34,6 +34,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdpInterfacePortNameGetter extends TableTracker {
 
@@ -42,22 +44,23 @@ public class CdpInterfacePortNameGetter extends TableTracker {
 	/**
 	 * The SnmpPeer object used to communicate via SNMP with the remote host.
 	 */
-	private SnmpAgentConfig m_agentConfig;
+    private SnmpAgentConfig m_agentConfig;
+    private static final Logger LOG = LoggerFactory.getLogger(CdpInterfacePortNameGetter.class);
 
-	public CdpInterfacePortNameGetter(SnmpAgentConfig peer) {
-		m_agentConfig = peer;
-	}
+    public CdpInterfacePortNameGetter(SnmpAgentConfig peer) {
+        m_agentConfig = peer;
+    }
 
-	public CdpLink get(CdpLink link) {
-		SnmpObjId instance = SnmpObjId.get(new int[] {link.getCdpCacheIfIndex()});
-		SnmpObjId[] oids = new SnmpObjId[]
-				{SnmpObjId.get(CDP_INTERFACE_NAME, instance)};
-		
-		SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
-		if (val == null || val.length != 1 || val[0] == null)
-			return link;
-		link.setCdpInterfaceName(val[0].toDisplayString());
-		return link;
-	}
+    public CdpLink get(CdpLink link) {
+        SnmpObjId instance = SnmpObjId.get(new int[] {link.getCdpCacheIfIndex()});
+        SnmpObjId[] oids = new SnmpObjId[]{SnmpObjId.get(CDP_INTERFACE_NAME, instance)};
+
+        SnmpValue[] val = SnmpUtils.get(m_agentConfig, oids);
+        LOG.info("get: oid '{}' found value '{}'", oids[0], val);
+        if (val == null || val.length != 1 || val[0] == null) 
+            return link;
+        link.setCdpInterfaceName(val[0].toDisplayString());
+        return link;
+    }
 
 }
