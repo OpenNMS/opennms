@@ -595,10 +595,6 @@
       <artifactId>oro</artifactId>
     </dependency>
     <dependency>
-      <groupId>poi</groupId>
-      <artifactId>poi</artifactId>
-    </dependency>
-    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>
