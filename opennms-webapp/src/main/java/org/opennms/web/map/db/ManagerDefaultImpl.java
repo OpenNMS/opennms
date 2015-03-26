@@ -41,10 +41,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsSeverity;

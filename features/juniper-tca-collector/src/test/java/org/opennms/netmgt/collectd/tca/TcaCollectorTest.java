@@ -65,7 +65,7 @@ import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -85,6 +85,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/junit-component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -144,7 +145,8 @@ public class TcaCollectorTest implements InitializingBean {
 
 		FileUtils.deleteDirectory(new File(TEST_SNMP_DIR));
 
-		RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+		// These tests rely on JRobin to verify the values
+		RrdUtils.setStrategy(new JRobinRrdStrategy());
 
 		OnmsIpInterface iface = null;
 		OnmsNode testNode = null;
@@ -257,7 +259,7 @@ public class TcaCollectorTest implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + ".jrb");
+		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + RrdUtils.getExtension());
 
 		// According with the Fixed Step
 		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());

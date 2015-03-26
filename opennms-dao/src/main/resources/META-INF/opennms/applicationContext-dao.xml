@@ -464,6 +464,7 @@
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
+    <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />
     <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
     <property name="rrdDirectory" value="${rrd.base.dir}" />

@@ -35,6 +35,12 @@
       <artifactId>org.opennms.features.ticketing.api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- avoid including this in the RPM because it is also in core -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>

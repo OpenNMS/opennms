@@ -37,7 +37,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,14 +73,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
@@ -92,10 +91,7 @@ public class SyslogdTest implements InitializingBean {
 
     private Syslogd m_syslogd;
 
-    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
-            Executors.newFixedThreadPool(3),
-            Executors.newFixedThreadPool(3)
-    });
+    private final ExecutorService m_executorService = Executors.newFixedThreadPool(3);
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -171,7 +167,7 @@ public class SyslogdTest implements InitializingBean {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);

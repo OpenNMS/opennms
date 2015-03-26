@@ -50,8 +50,8 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdFileConstants;
-import org.opennms.web.graph.Graph;
 import org.opennms.web.svclayer.RrdGraphService;
+import org.opennms.web.svclayer.model.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -298,7 +298,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     /**
      * <p>createPrefabCommand</p>
      *
-     * @param graph a {@link org.opennms.web.graph.Graph} object.
+     * @param graph a {@link org.opennms.web.svclayer.model.Graph} object.
      * @param commandPrefix a {@link java.lang.String} object.
      * @param workDir a {@link java.io.File} object.
      * @param reportName a {@link java.lang.String} object.

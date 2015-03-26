@@ -5,7 +5,6 @@
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:util="http://www.springframework.org/schema/util"
   xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
@@ -22,13 +21,9 @@
 		<property name="pollerConfig">
 			<ref bean="pollerConfig"/>
 		</property>
-		<property name="capsdConfig">
-			<ref bean="capsdConfig"/>
-		</property>
 		<property name="eventManager">
 			<ref bean="eventIpcManager"/>
 		</property>
-
 	</bean>
 	
 	<bean id="exporter" class="org.opennms.spring.xmlrpc.XmlRpcServiceExporter">

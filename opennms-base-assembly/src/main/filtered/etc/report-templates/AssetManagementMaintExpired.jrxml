@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AssetMgmtMaintExpired" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isTitleNewPage="true" isSummaryNewPage="true">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-13T16:08:30 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AssetMgmtMaintExpired" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isTitleNewPage="true" isSummaryNewPage="true" uuid="539f5caa-9cf8-4652-a813-b9b5dfda5726">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="33"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter 1"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="expire_warning_MARK" mode="Transparent" hAlign="Center" vAlign="Middle" rotation="Left" markup="styled">
 		<conditionalStyle>
@@ -22,7 +34,7 @@
 			<style forecolor="#CC3300"/>
 		</conditionalStyle>
 	</style>
-	<subDataset name="summaryByNode">
+	<subDataset name="summaryByNode" uuid="f453a7a0-8025-4d1a-8a9e-1a73fd442cd7">
 		<parameter name="DS_DISPLAY_EXPIRED" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["true"]]></defaultValueExpression>
 		</parameter>
@@ -95,11 +107,11 @@ ORDER BY
 	</parameter>
 	<parameter name="WARNING_THRESHOLD_DAYS" class="java.lang.Integer">
 		<parameterDescription><![CDATA[Warning threshold for contract expiration]]></parameterDescription>
-		<defaultValueExpression><![CDATA[30]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[20]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DISPLAY_EXPIRED" class="java.lang.String">
 		<parameterDescription><![CDATA[Show expired mainenance contracts (true/false)]]></parameterDescription>
-		<defaultValueExpression><![CDATA["false"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["true"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
@@ -109,7 +121,7 @@ ORDER BY
 		<parameterDescription><![CDATA[Format for expire date. Default: "YYYY-MM-DD"]]></parameterDescription>
 		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT
 	n.nodelabel,
 	a.maintcontract,
@@ -165,22 +177,21 @@ ORDER BY
 		<groupHeader>
 			<band height="24">
 				<rectangle radius="5">
-					<reportElement x="0" y="0" width="555" height="21" backcolor="#CCCCCC"/>
+					<reportElement x="0" y="0" width="555" height="21" backcolor="#CCCCCC" uuid="155df1ec-6001-4154-9241-d87b1f0c170d"/>
 					<graphicElement>
 						<pen lineWidth="0.0" lineStyle="Dashed"/>
 					</graphicElement>
 				</rectangle>
 				<textField>
-					<reportElement style="Header" x="0" y="0" width="553" height="21"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{manufacturer}]]></textFieldExpression>
+					<reportElement style="Header" x="0" y="0" width="553" height="21" uuid="01aa4799-c10d-4536-a274-66459531dd14"/>
+					<textFieldExpression><![CDATA[$F{manufacturer}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
 			<band height="3">
 				<break type="Column">
-					<reportElement x="0" y="2" width="100" height="1"/>
+					<reportElement x="0" y="2" width="100" height="1" uuid="bdd02482-26e1-4b88-9f25-d7bdf68e8575"/>
 				</break>
 			</band>
 		</groupFooter>
@@ -190,9 +201,8 @@ ORDER BY
 		<groupHeader>
 			<band height="25" splitType="Prevent">
 				<textField>
-					<reportElement style="Sub-header" x="0" y="0" width="555" height="22"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{maintcontract}]]></textFieldExpression>
+					<reportElement style="Sub-header" x="0" y="0" width="555" height="22" uuid="d5f6c1eb-ba32-4a86-9b9c-702e4a67cf20"/>
+					<textFieldExpression><![CDATA[$F{maintcontract}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -204,21 +214,20 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="190" splitType="Stretch">
+		<band height="228" splitType="Stretch">
 			<textField>
-				<reportElement style="Body" x="0" y="53" width="555" height="37"/>
+				<reportElement style="Body" x="0" y="85" width="555" height="37" uuid="7987cea7-5cb4-4f6a-8d55-035211abc025"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["This operational report shows all maintenance contracts expiring in " + $P{WARNING_THRESHOLD_DAYS} + " days." + ("true".equals($P{DISPLAY_EXPIRED}) ? " Devices with expired maintenance contracts will be marked." : "")]]></textFieldExpression>
+				<textFieldExpression><![CDATA["This operational report shows all maintenance contracts expiring in " + $P{WARNING_THRESHOLD_DAYS} + " days." + ("true".equals($P{DISPLAY_EXPIRED}) ? " Devices with expired maintenance contracts will be marked." : "")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Section" x="0" y="113" width="555" height="20"/>
-				<textElement/>
+				<reportElement style="Section" x="0" y="145" width="555" height="20" uuid="e7dbab8c-05be-4b78-bb46-3cc32ede5d17"/>
 				<text><![CDATA[Maintenance contract overview by node and ordered by expire date.]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement key="table 1" style="Body" x="0" y="133" width="555" height="43"/>
+				<reportElement key="table 1" style="Body" x="0" y="165" width="555" height="43" uuid="c574fb05-e1a2-423f-b4e9-8d22380b19fc"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="summaryByNode">
+					<datasetRun subDataset="summaryByNode" uuid="80ba5d18-1618-4f07-82c5-7288bfe24d63">
 						<datasetParameter name="DS_DISPLAY_EXPIRED">
 							<datasetParameterExpression><![CDATA[$P{DISPLAY_EXPIRED}]]></datasetParameterExpression>
 						</datasetParameter>
@@ -230,105 +239,98 @@ ORDER BY
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="162">
+					<jr:column width="162" uuid="83d98b4b-5fef-4794-b82b-169e1463fafb">
 						<jr:tableFooter height="21" rowSpan="1"/>
 						<jr:groupFooter groupName="warning">
 							<jr:cell height="19" rowSpan="1"/>
 						</jr:groupFooter>
 						<jr:columnHeader style="Table-Header" height="26" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="162" height="20" forecolor="#002142"/>
-								<textElement/>
+								<reportElement mode="Transparent" x="0" y="0" width="162" height="20" forecolor="#002142" uuid="b8704e7c-6497-4266-8c08-ebdf33640ffa"/>
 								<text><![CDATA[Node label]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter height="3" rowSpan="1"/>
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="160" height="17"/>
-								<textElement/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+								<reportElement x="0" y="0" width="160" height="17" uuid="c6c0d9b3-a1b6-45c2-b1d6-ebc1de2ba1c3"/>
+								<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="104">
+					<jr:column width="104" uuid="87b1053c-2642-40e7-a8e9-c0eeec39fe3f">
 						<jr:tableFooter height="21" rowSpan="1"/>
 						<jr:groupFooter groupName="warning">
 							<jr:cell height="19" rowSpan="1"/>
 						</jr:groupFooter>
 						<jr:columnHeader style="Table-Header" height="26" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="104" height="20" forecolor="#002142"/>
-								<textElement/>
+								<reportElement mode="Transparent" x="0" y="0" width="104" height="20" forecolor="#002142" uuid="882ee768-6de2-4b30-989b-eb73f04d0aec"/>
 								<text><![CDATA[Manufacturer]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter height="3" rowSpan="1"/>
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="104" height="17"/>
-								<textElement/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$F{manufacturer}]]></textFieldExpression>
+								<reportElement x="0" y="0" width="104" height="17" uuid="6161ad20-5afb-4a27-9469-1008ee90a269"/>
+								<textFieldExpression><![CDATA[$F{manufacturer}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="147">
+					<jr:column width="147" uuid="236afad6-7203-4b21-803d-88d350fdb0b2">
 						<jr:tableFooter style="Table-Header" height="21" rowSpan="1">
 							<staticText>
-								<reportElement style="Table-Summary" x="0" y="0" width="147" height="20"/>
-								<textElement/>
+								<reportElement style="Table-Summary" x="0" y="0" width="147" height="20" uuid="83bdfc73-83df-4013-9eec-ad8648b82e64"/>
 								<text><![CDATA[Total maintenance contracts]]></text>
 							</staticText>
 						</jr:tableFooter>
 						<jr:groupFooter groupName="warning">
 							<jr:cell height="19" rowSpan="1">
 								<textField>
-									<reportElement style="Table-Summary" x="0" y="0" width="147" height="19"/>
+									<reportElement style="Table-Summary" x="0" y="0" width="147" height="19" uuid="cd322962-98bb-42d4-ab34-96ef7f024bf6"/>
 									<textElement>
 										<font isItalic="true"/>
 									</textElement>
-									<textFieldExpression class="java.lang.String"><![CDATA["Total maintenance " + $F{maintcontractstatus}]]></textFieldExpression>
+									<textFieldExpression><![CDATA["Total maintenance " + $F{maintcontractstatus}]]></textFieldExpression>
 								</textField>
 							</jr:cell>
 						</jr:groupFooter>
 						<jr:columnHeader style="Table-Header" height="26" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="147" height="20" forecolor="#002142"/>
-								<textElement/>
+								<reportElement mode="Transparent" x="0" y="0" width="147" height="20" forecolor="#002142" uuid="351ec6be-f250-4c33-b822-9e184150e982"/>
 								<text><![CDATA[Maintenance contract]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:columnFooter height="3" rowSpan="1"/>
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="147" height="17"/>
-								<textElement/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$F{maintcontract}]]></textFieldExpression>
+								<reportElement x="0" y="0" width="147" height="17" uuid="d109d5be-bd5b-4302-b0cc-153c56ec5424"/>
+								<textFieldExpression><![CDATA[$F{maintcontract}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="85">
+					<jr:column width="85" uuid="d5cc06d4-a428-4788-ac41-6d49a2de1d28">
 						<jr:tableFooter style="Table-Header" height="21" rowSpan="1">
 							<textField>
-								<reportElement style="Table-Summary" x="0" y="0" width="85" height="21"/>
+								<reportElement style="Table-Summary" x="0" y="0" width="85" height="21" uuid="0b47897d-e06b-45fd-9758-cb41e4bfc2ce"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{total_SUM}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$V{total_SUM}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:groupFooter groupName="warning">
 							<jr:cell height="19" rowSpan="1">
 								<textField>
-									<reportElement style="Table-Summary" x="0" y="0" width="85" height="19"/>
+									<reportElement style="Table-Summary" x="0" y="0" width="85" height="19" uuid="dd88c95c-2bf7-47fc-8c28-a5deaf68b415"/>
 									<textElement textAlignment="Center">
 										<font isItalic="true"/>
 									</textElement>
-									<textFieldExpression class="java.lang.Integer"><![CDATA[$V{expired_SUM}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$V{expired_SUM}]]></textFieldExpression>
 								</textField>
 							</jr:cell>
 						</jr:groupFooter>
 						<jr:columnHeader style="Table-Header" height="26" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="85" height="20" forecolor="#002142"/>
+								<reportElement mode="Transparent" x="0" y="0" width="85" height="20" forecolor="#002142" uuid="326a12f7-6023-4361-a352-5172f83c8570"/>
 								<textElement textAlignment="Center"/>
 								<text><![CDATA[Expire date]]></text>
 							</staticText>
@@ -336,20 +338,20 @@ ORDER BY
 						<jr:columnFooter height="3" rowSpan="1"/>
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField pattern="dd/MM/yyyy">
-								<reportElement x="0" y="0" width="85" height="17"/>
+								<reportElement x="0" y="0" width="85" height="17" uuid="b38503ad-dcec-4568-a481-97f2a7176d97"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression class="java.util.Date"><![CDATA[$F{expire}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{expire}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="63">
+					<jr:column width="63" uuid="d6489969-4788-4460-8835-6f7f7d4c460f">
 						<jr:tableFooter height="21" rowSpan="1"/>
 						<jr:groupFooter groupName="warning">
 							<jr:cell height="19" rowSpan="1"/>
 						</jr:groupFooter>
 						<jr:columnHeader style="Table-Header" height="26" rowSpan="1">
 							<staticText>
-								<reportElement mode="Transparent" x="0" y="0" width="63" height="20" forecolor="#002142"/>
+								<reportElement mode="Transparent" x="0" y="0" width="63" height="20" forecolor="#002142" uuid="05683bd6-a85e-49e5-8621-fe57126e88ed"/>
 								<textElement textAlignment="Center"/>
 								<text><![CDATA[Status]]></text>
 							</staticText>
@@ -357,51 +359,78 @@ ORDER BY
 						<jr:columnFooter height="3" rowSpan="1"/>
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="63" height="17"/>
+								<reportElement x="0" y="0" width="63" height="17" uuid="b5f7f2ec-056b-4a5c-85c4-a10313ae4b5b"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression class="java.lang.String"><![CDATA[$F{maintcontractstatus}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{maintcontractstatus}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>
 			</componentElement>
 			<image>
-				<reportElement x="392" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="361" y="0" width="194" height="50" uuid="8f58a829-ae67-470d-b367-2168523c7460">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="29" width="390" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mmZ">
+				<reportElement key="" style="Creation-Date" x="0" y="60" width="355" height="20" uuid="34090c61-5e62-43f2-93a1-f1cc44a5ed47">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="52" width="555" height="1"/>
+				<reportElement x="0" y="80" width="555" height="1" uuid="0d8264a5-0408-4d3a-a379-9e4ddc166566"/>
 			</line>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="392" height="29"/>
-				<textElement/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="c81ea1ce-21cc-4838-b05a-fe6a76b42515">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<text><![CDATA[Asset Management Report]]></text>
 			</staticText>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="60" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="52" width="555" height="1"/>
+				<reportElement x="0" y="79" width="555" height="1" uuid="87ad7ad4-1335-4f9c-9342-21f5dbefb6c5">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 			</line>
 			<image>
-				<reportElement x="392" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="360" y="0" width="194" height="50" uuid="42de1087-4d52-409a-95d6-dd4c94652ff2">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="392" height="29"/>
-				<textElement/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="e3dde7f1-21bf-425c-a8dd-40cd9f1e1cab">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<text><![CDATA[Asset Management Report]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="29" width="392" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mmZ">
+				<reportElement style="Creation-Date" x="0" y="59" width="355" height="20" uuid="80339146-5d3c-437f-a7c8-cefec1c2ed20">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -411,91 +440,75 @@ ORDER BY
 	<detail>
 		<band height="114" splitType="Prevent">
 			<textField>
-				<reportElement style="Body" x="122" y="3" width="427" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+				<reportElement style="Body" x="122" y="3" width="427" height="20" uuid="a63b0cb0-d03d-49db-88d5-0eb9a9c938b9"/>
+				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="21" y="3" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="21" y="3" width="101" height="20" uuid="e0595e7d-a560-4bd0-b0cd-0bcc5230d274"/>
 				<text><![CDATA[Node label:]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Body" x="122" y="23" width="167" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{modelnumber}]]></textFieldExpression>
+				<reportElement style="Body" x="122" y="23" width="167" height="20" uuid="76ce97b8-74ed-4c09-b990-e9b472bdc6f5"/>
+				<textFieldExpression><![CDATA[$F{modelnumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="21" y="23" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="21" y="23" width="101" height="20" uuid="8c5fe7a7-4765-40b8-b08b-378911c9c443"/>
 				<text><![CDATA[Model number:]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Body" x="393" y="43" width="156" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{operatingsystem}]]></textFieldExpression>
+				<reportElement style="Body" x="393" y="43" width="156" height="20" uuid="38128d46-199d-427d-b336-1762f1628d6d"/>
+				<textFieldExpression><![CDATA[$F{operatingsystem}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="292" y="43" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="292" y="43" width="101" height="20" uuid="1c38a337-98e6-4a78-b8bb-74e0b930a59e"/>
 				<text><![CDATA[Operating system:]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Body" x="393" y="23" width="156" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{serialnumber}]]></textFieldExpression>
+				<reportElement style="Body" x="393" y="23" width="156" height="20" uuid="f9e16fcd-aa50-4778-9a8f-9904e0aabf60"/>
+				<textFieldExpression><![CDATA[$F{serialnumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="292" y="23" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="292" y="23" width="101" height="20" uuid="516a8994-e79c-44b2-a6ec-91dc1203861c"/>
 				<text><![CDATA[Serial number:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement style="Body" x="393" y="63" width="156" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{dateinstalled}]]></textFieldExpression>
+				<reportElement style="Body" x="393" y="63" width="156" height="20" uuid="0cc8c486-ffc2-4e52-baf1-b6fdeadf7b5e"/>
+				<textFieldExpression><![CDATA[$F{dateinstalled}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="292" y="63" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="292" y="63" width="101" height="20" uuid="0bb5aa5b-21c4-4314-99b0-d7795c55ea4b"/>
 				<text><![CDATA[Date installed:]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Body" x="393" y="83" width="156" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{vendorphone}]]></textFieldExpression>
+				<reportElement style="Body" x="393" y="83" width="156" height="20" uuid="94318e58-b833-43c5-82a7-a60e28f603b8"/>
+				<textFieldExpression><![CDATA[$F{vendorphone}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="292" y="83" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="292" y="83" width="101" height="20" uuid="8a4a7b0d-69fa-41bd-93ae-2399d2be7b95"/>
 				<text><![CDATA[Vendor phone:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="106" width="555" height="1" forecolor="#CCCCCC"/>
+				<reportElement x="0" y="106" width="555" height="1" forecolor="#CCCCCC" uuid="b449cbf4-6bf5-43ff-932a-b84e41041332"/>
 			</line>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement style="Body" x="122" y="43" width="167" height="20"/>
+				<reportElement style="Body" x="122" y="43" width="167" height="20" uuid="483f49d6-e2b0-4395-bb41-b25cb6538bc3"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$F{maintcontractexpires}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{maintcontractexpires}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Body" x="21" y="43" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="21" y="43" width="101" height="20" uuid="8355eac1-6b0f-46e6-95e1-b2d2872cadfb"/>
 				<text><![CDATA[Contract expires:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Body" x="21" y="63" width="101" height="20"/>
-				<textElement/>
+				<reportElement style="Body" x="21" y="63" width="101" height="20" uuid="900740f7-0fd0-44a2-b212-9ab5cd1fbe1d"/>
 				<text><![CDATA[Contract days left:]]></text>
 			</staticText>
 			<textField pattern="">
-				<reportElement style="negativ_days" x="122" y="63" width="167" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{maintcontractleft}.getDays()]]></textFieldExpression>
+				<reportElement style="negativ_days" x="122" y="63" width="167" height="20" uuid="b5c226ea-9c4f-41f4-b8ae-990a308c7bdc"/>
+				<textFieldExpression><![CDATA[$F{maintcontractleft}.getDays()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="expire_warning_MARK" mode="Opaque" x="0" y="1" width="15" height="106" forecolor="#FFFFFF"/>
-				<textElement/>
+				<reportElement style="expire_warning_MARK" mode="Opaque" x="0" y="1" width="15" height="106" forecolor="#FFFFFF" uuid="5d7c1b0f-1834-451f-9104-24f6ff2ebe7d"/>
 				<text><![CDATA[E X P I R E D]]></text>
 			</staticText>
 		</band>
@@ -506,17 +519,16 @@ ORDER BY
 	<pageFooter>
 		<band height="23" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="2" width="555" height="1"/>
+				<reportElement x="0" y="2" width="555" height="1" uuid="d7f2ade7-e71c-42cb-b947-1148d9a3b8c0"/>
 			</line>
 			<textField>
-				<reportElement style="Body" x="435" y="3" width="80" height="20"/>
+				<reportElement style="Body" x="435" y="3" width="80" height="20" uuid="ffc35eca-5bf4-4d2e-b4d8-4893e8084c73"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement style="Body" x="515" y="3" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement style="Body" x="515" y="3" width="40" height="20" uuid="eec914f1-8c3f-45df-b163-b578139c491e"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
@@ -524,28 +536,37 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</summary>
 	<noData>
-		<band height="150">
+		<band height="157">
 			<line>
-				<reportElement x="0" y="52" width="555" height="1"/>
+				<reportElement x="0" y="80" width="555" height="1" uuid="a0925653-a046-4806-bd72-96ce417c0860">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 			</line>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="392" height="29"/>
-				<textElement/>
+				<reportElement style="Title" x="0" y="0" width="355" height="29" uuid="4367adfb-aeee-4f29-a1ac-04e2d4405fac">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<text><![CDATA[Asset Management Report]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="29" width="392" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy-MM-dd&apos;T&apos;HH:mmZ">
+				<reportElement style="Creation-Date" x="0" y="59" width="355" height="20" uuid="bb5ae581-149f-47e9-b215-cf69f4912f78">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="392" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="361" y="0" width="194" height="49" uuid="d27309bf-f338-4673-bcd6-fe5e1f78afad">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement x="0" y="76" width="554" height="72"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA["There is no data for this report. \n\n" +
+				<reportElement x="0" y="85" width="554" height="72" uuid="c2197940-6078-48b1-88c2-b25991c0e5c6"/>
+				<textFieldExpression><![CDATA["There is no data for this report. \n\n" +
 "You can modify the value for WARNING_THRESHOLD_DAYS (current value is " + $P{WARNING_THRESHOLD_DAYS} + ").\n\n" +
 "You can also set the value for DISPLAY_EXPIRED to true (current value is " + $P{DISPLAY_EXPIRED} + ")"]]></textFieldExpression>
 			</textField>

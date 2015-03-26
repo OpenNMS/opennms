@@ -37,8 +37,7 @@
 		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.api.Util,
-        org.opennms.netmgt.filter.FilterDaoFactory,
-		org.opennms.netmgt.filter.FilterParseException,
+        org.opennms.netmgt.filter.FilterDaoFactory,org.opennms.netmgt.filter.api.FilterParseException,
 		org.opennms.netmgt.config.notifications.*
 	"
 %>

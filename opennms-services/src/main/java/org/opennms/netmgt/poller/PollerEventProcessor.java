@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;

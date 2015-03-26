@@ -29,16 +29,49 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true"  %>
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+        %>
 
-<meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
-<link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
-<table class="dashboard" cellspacing="5" width="100%">
-  <tbody>
-    <tr>
-      <td class="dashletCell"id="surveillanceView"></td>
-    </tr>
-  </tbody>
-</table>
+<%
+    String viewName = "";
 
+    if (request.getParameterMap().containsKey("viewName")) {
+        viewName = "&viewName=" + request.getParameter("viewName");
+    }
+%>
+
+<script type="text/javascript">
+
+  var isInitialized = false;
+  var checkInterval = setInterval(checkIframe, 1000);
+
+  function checkIframe(){
+
+      var iframe = document.getElementById("surveillance-iframe");
+
+      iframe.contentWindow.postMessage("test", window.location.origin);
+      if(isInitialized){
+          clearInterval(checkInterval);
+      }
+  }
+
+  function receiveMessage(event){
+    isInitialized = true;
+    if(event.origin !== window.location.origin)
+      return;
+
+    var elem = document.getElementById("surveillance-view");
+    elem.style.height = event.data;
+
+  }
+
+  window.addEventListener("message", receiveMessage, false);
+
+</script>
+
+<div id="surveillance-view">
+
+<iframe id="surveillance-iframe" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+</div>

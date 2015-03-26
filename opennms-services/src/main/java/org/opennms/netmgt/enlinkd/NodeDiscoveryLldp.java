@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.Date;
 
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
@@ -49,15 +50,22 @@ import org.slf4j.LoggerFactory;
  * allows the collection to occur in a thread if necessary.
  */
 public final class NodeDiscoveryLldp extends NodeDiscovery {
-private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.class);
-	/**
-	 * Constructs a new SNMP collector for Lldp Node Discovery. 
-	 * The collection does not occur until the
+    private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.class);
+
+    private final static String DW_SYSOID=".1.3.6.1.4.1.7262.2.4";
+    private static final String DW_NULL_CHASSIS_ID="cf";
+    private static final String DW_NULL_SYSOID_ID="NuDesign";
+
+    /**
+     * Constructs a new SNMP collector for Lldp Node Discovery. 
+     * The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-	 * @param EnhancedLinkd linkd
-	 * @param LinkableNode node
-	 */
+     * @param EnhancedLinkd linkd
+     * 
+     * @param LinkableNode node
+     * 
+     */
     public NodeDiscoveryLldp(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
     	super(linkd, node);
     }
@@ -97,12 +105,25 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryLldp.clas
         
         m_linkd.getQueryManager().store(getNodeId(), lldpLocalGroup.getLldpElement());
 
+        if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
+            if (lldpLocalGroup.getLldpLocChassisid().toHexString().equals(DW_NULL_CHASSIS_ID) &&
+                    lldpLocalGroup.getLldpLocChassisidSubType() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
+                LOG.info( "lldp not active for Dragon Wave Device identifier : {}", lldpLocalGroup.getLldpElement());
+                return;
+            }
+    
+            if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID) ) {
+                LOG.info( "lldp not active for Dragon Wave Device identifier : {}", lldpLocalGroup.getLldpElement());
+                return;
+            }
+        }
+
         final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(getPeer());
         trackerName = "lldpRemTable";
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
         	public void processLldpRemRow(final LldpRemRow row) {
-        		m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
+        	    m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
         	}
         };
 

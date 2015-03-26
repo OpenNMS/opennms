@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH2_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH2_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

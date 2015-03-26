@@ -38,7 +38,6 @@ import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -47,6 +46,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 public class PollerServiceTest extends TestCase {

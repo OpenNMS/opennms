@@ -307,14 +307,20 @@ public class HttpClientWrapper implements Closeable {
         LOG.debug("execute: " + this.toString() + "; method: " + method.toString());
         // override some headers with our versions
         final HttpRequestWrapper requestWrapper = HttpRequestWrapper.wrap(method);
-        if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
+        if (!isEmpty(m_userAgent)) {
             requestWrapper.setHeader(HTTP.USER_AGENT, m_userAgent);
         }
-        if (m_virtualHost != null && !m_virtualHost.trim().isEmpty()) {
+        if (!isEmpty(m_virtualHost)) {
             requestWrapper.setHeader(HTTP.TARGET_HOST, m_virtualHost);
         }
+
         if (m_version != null) {
-            requestWrapper.setProtocolVersion(m_version);
+            if (HttpVersion.HTTP_1_1.equals(m_version) && isEmpty(m_virtualHost)) {
+                // NMS-7506, set HTTP version to 1.0 if virtual host is not set (since 1.1 requires a virtual host)
+                requestWrapper.setProtocolVersion(HttpVersion.HTTP_1_0);
+            } else {
+                requestWrapper.setProtocolVersion(m_version);
+            }
         }
 
         return getClient().execute(requestWrapper);
@@ -366,7 +372,7 @@ public class HttpClientWrapper implements Closeable {
             if (m_useSystemProxySettings) {
                 httpClientBuilder.setRoutePlanner(new SystemDefaultRoutePlanner(ProxySelector.getDefault()));
             }
-            if (m_cookieSpec != null && !m_cookieSpec.trim().isEmpty()) {
+            if (!isEmpty(m_cookieSpec)) {
                 requestConfigBuilder.setCookieSpec(m_cookieSpec);
             }
             if (m_cookieStore != null) {
@@ -484,5 +490,9 @@ public class HttpClientWrapper implements Closeable {
                 + ", virtualHost=" + m_virtualHost
                 + ", version=" + m_version
                 + "]";
+    }
+
+    private static boolean isEmpty(final String value) {
+        return (value == null || value.trim().isEmpty());
     }
 }

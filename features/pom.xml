@@ -51,6 +51,9 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
+    <!-- REST -->
+    <module>rest-measurements-api</module>
+
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>
@@ -68,7 +71,11 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
-      <module>vaadin-dashboard</module>
-      <module>vaadin-dashlets</module>
+    <!-- OpenNMS Vaadin Dashboard -->
+    <module>vaadin-dashboard</module>
+    <module>vaadin-dashlets</module>
+
+    <!-- OpenNMS Vaadin Surveillance Views -->
+    <module>vaadin-surveillance-views</module>
   </modules>
 </project>

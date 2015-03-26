@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms1055NetworkBuilder extends TestNetworkBuilder {
+public class Nms1055NetworkBuilder extends NmsNetworkBuilder {
 
     static {
         PENROSE_IP_IF_MAP.put(InetAddressUtils.addr("10.0.0.4"), 18);

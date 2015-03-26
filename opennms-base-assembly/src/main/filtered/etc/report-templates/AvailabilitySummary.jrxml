@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-09T16:39:34 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ad05cabd-8ccb-4f0b-9ce0-02605dd9e3a5">
 	<property name="ireport.zoom" value="1.024520183047607"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -52,11 +63,11 @@
 			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Table Dataset 1"/>
-  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
-    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
-  </parameter>
+	<subDataset name="Table Dataset 1" uuid="30eb0e3d-6d6f-4d81-a3ab-75065b1696b9"/>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
@@ -267,147 +278,147 @@ ORDER BY
 		<groupFooter>
 			<band height="539">
 				<textField>
-					<reportElement style="Section" mode="Opaque" x="0" y="0" width="515" height="20"/>
+					<reportElement style="Section" mode="Opaque" x="0" y="5" width="554" height="20" uuid="bb5aae3a-91be-4a4c-b0c3-c35af6e0cef1"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="16"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Summary for category: "+$F{categoryname}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Summary for category: "+$F{categoryname}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Header" x="0" y="50" width="68" height="19"/>
+					<reportElement style="Table_Header" x="22" y="55" width="68" height="19" uuid="3aa1fe7f-cb72-4327-bb98-8bed367185db"/>
 					<textElement textAlignment="Left">
 						<font size="9" isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Average"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Average"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Header" x="0" y="71" width="68" height="17"/>
+					<reportElement style="Table_Header" x="22" y="76" width="68" height="17" uuid="3749a987-bec9-4c18-9325-4ae86374259f"/>
 					<textElement textAlignment="Left">
 						<font size="9" isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Maximum"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Maximum"]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement style="Table_Header" x="0" y="91" width="68" height="18"/>
+					<reportElement style="Table_Header" x="22" y="96" width="68" height="18" uuid="56f736f6-bed4-4727-ae89-1d003d28400c"/>
 					<textElement textAlignment="Left">
 						<font size="9" isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA["Minimum"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Minimum"]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="68" y="50" width="75" height="19"/>
+					<reportElement style="Table_Detail" x="90" y="55" width="75" height="19" uuid="d116f626-0c85-48f6-a4a5-1f0ff864aaf1"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_AVG}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_CNT_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="154" y="50" width="89" height="19"/>
+					<reportElement style="Table_Detail" x="176" y="55" width="89" height="19" uuid="9d1de322-527e-46db-81b9-b0ad45f1a96d"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_AVG}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_MTTR_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="253" y="49" width="74" height="19"/>
+					<reportElement style="Table_Detail" x="275" y="54" width="74" height="19" uuid="727950ad-44a3-443b-836f-0c43f828cd3d"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_AVG}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="336" y="48" width="72" height="20"/>
+					<reportElement style="Table_Detail" x="358" y="53" width="72" height="20" uuid="80626f87-184c-4b0c-a128-6811e4b28083"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_AVG}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="421" y="49" width="94" height="20"/>
+					<reportElement style="Table_Detail" x="443" y="54" width="94" height="20" uuid="67a48f84-aa28-413b-91ca-b67a5dcdfc93"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_AVG}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_AVG}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="68" y="71" width="75" height="17"/>
+					<reportElement style="Table_Detail" x="90" y="76" width="75" height="17" uuid="ec9ba1f2-8104-47a1-88fd-642263996200"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MAX}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_CNT_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="154" y="71" width="89" height="17"/>
+					<reportElement style="Table_Detail" x="176" y="76" width="89" height="17" uuid="6d4ed51a-a008-48ac-9c30-80edb52a075e"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MAX}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="253" y="71" width="74" height="17"/>
+					<reportElement style="Table_Detail" x="275" y="76" width="74" height="17" uuid="b58e40d7-1475-4820-bff6-51a5c4a050b6"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MAX}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="336" y="68" width="72" height="20"/>
+					<reportElement style="Table_Detail" x="358" y="73" width="72" height="20" uuid="f0dce60c-d112-4dab-9713-fca1dd12717d"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MAX}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="421" y="69" width="94" height="20"/>
+					<reportElement style="Table_Detail" x="443" y="74" width="94" height="20" uuid="132bd0a6-b100-4654-bbcc-5a8132c3c542"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MAX}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MAX}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="68" y="91" width="75" height="18"/>
+					<reportElement style="Table_Detail" x="90" y="96" width="75" height="18" uuid="7d0ce81f-3822-46c2-9a2c-06562420563e"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_CNT_MIN}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="154" y="91" width="89" height="18"/>
+					<reportElement style="Table_Detail" x="176" y="96" width="89" height="18" uuid="d2fc3921-999e-4c8b-a277-6dbb7fc91a10"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MIN}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
-					<reportElement style="Table_Detail" x="253" y="90" width="74" height="20"/>
+					<reportElement style="Table_Detail" x="275" y="95" width="74" height="20" uuid="3f939805-e15e-4ed6-baed-ae3ff4faf443"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MIN}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="Table_Header" x="154" y="28" width="89" height="19"/>
+					<reportElement style="Table_Header" x="176" y="33" width="89" height="19" uuid="2dc82ba2-36ab-4c9b-b37e-ff46deda1119"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[MTTR (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="253" y="29" width="74" height="19"/>
+					<reportElement style="Table_Header" x="275" y="34" width="74" height="19" uuid="bffb92a1-f070-42de-8b98-51d4a7a8e64d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Outage (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="336" y="28" width="72" height="20"/>
+					<reportElement style="Table_Header" x="358" y="33" width="72" height="20" uuid="09feb9c4-bed6-40b4-bf90-4a94424df1ac"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Outage (%)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table_Header" x="421" y="29" width="94" height="20"/>
+					<reportElement style="Table_Header" x="443" y="34" width="94" height="20" uuid="5e75fbd0-2881-47ee-a433-a04dc3268c73"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
@@ -415,7 +426,7 @@ ORDER BY
 				</staticText>
 				<pie3DChart>
 					<chart isShowLegend="true">
-						<reportElement x="143" y="121" width="227" height="169"/>
+						<reportElement x="163" y="126" width="227" height="169" uuid="9ccb3941-01f4-4f25-816c-6a7a3d7909b2"/>
 						<chartTitle>
 							<titleExpression><![CDATA["% Available Time to Outage Time"]]></titleExpression>
 						</chartTitle>
@@ -439,7 +450,7 @@ ORDER BY
 					</pie3DPlot>
 				</pie3DChart>
 				<subreport>
-					<reportElement x="0" y="301" width="515" height="212"/>
+					<reportElement x="0" y="300" width="553" height="212" uuid="78dfca67-64b5-47c1-99c7-80331e054ad6"/>
 					<subreportParameter name="DS_SURVEILLANCE_CAT">
 						<subreportParameterExpression><![CDATA[$P{DS_SURVEILLANCE_CATEGORY}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -453,36 +464,36 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{TIME_RANGE} - 1]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "AvailabilitySummaryChart_subreport.jasper"]]></subreportExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "AvailabilitySummaryChart_subreport.jasper"]]></subreportExpression>
 				</subreport>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="336" y="89" width="72" height="20"/>
+					<reportElement style="Table_Detail" x="358" y="94" width="72" height="20" uuid="3b933052-f412-47db-a383-2587fb1e6b03"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MIN}]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.000">
-					<reportElement style="Table_Detail" x="421" y="90" width="94" height="20"/>
+					<reportElement style="Table_Detail" x="443" y="95" width="94" height="20" uuid="ae799905-782f-4623-9d5f-68b7bcecc90b"/>
 					<textElement textAlignment="Right">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MIN}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MIN}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="Table_Header" x="68" y="28" width="75" height="19"/>
+					<reportElement style="Table_Header" x="90" y="33" width="75" height="19" uuid="c224b2b7-5e12-4716-88ef-561cef92a23d"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font size="9" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Outage Count]]></text>
 				</staticText>
 				<break>
-					<reportElement x="0" y="527" width="100" height="1"/>
+					<reportElement x="0" y="527" width="100" height="1" uuid="7e6d0132-d4ad-4a0a-a081-1401ea2e6bd6"/>
 				</break>
 			</band>
 			<band height="68">
 				<subreport>
-					<reportElement x="0" y="0" width="514" height="61"/>
+					<reportElement x="0" y="0" width="553" height="61" uuid="a4506049-029c-4584-8875-1215887859ce"/>
 					<subreportParameter name="ONMS_REPORT_DIR">
 						<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -502,56 +513,67 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{END_TIME}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Top25PercentDown_subreport.jasper"]]></subreportExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "Top25PercentDown_subreport.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
 		</groupFooter>
 	</group>
 	<pageHeader>
-		<band height="76">
-			<image>
-				<reportElement x="351" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
-			</image>
+		<band height="80" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="350" height="29"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="29" uuid="3b85c4b6-fab0-46ce-ae1a-7e3c07ec12e5">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Availability Summary Report ]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="69" width="515" height="1"/>
+				<reportElement x="0" y="77" width="554" height="2" uuid="65e1c299-e60b-462c-9497-c9984c3effb1"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="49" width="350" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy/MM/dd HH:mm:ss">
+				<reportElement style="Body" x="0" y="57" width="355" height="20" uuid="d1c123b1-eeee-4427-b9d5-e1c90fe4ffbd">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="29" width="351" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+				<reportElement style="Sub-sub-header" x="0" y="29" width="355" height="20" uuid="3cfcf802-6a07-43d4-b037-fcd91d53fd75">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="361" y="0" width="194" height="49" uuid="8af0602d-e97e-449c-938d-cda5d562e17e">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
 		</band>
 	</pageHeader>
 	<pageFooter>
 		<band height="25">
 			<textField evaluationTime="Report">
-				<reportElement x="475" y="1" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement x="475" y="1" width="40" height="20" uuid="b19a0c02-eda1-461d-92d2-e64e6d34d602"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="395" y="1" width="80" height="20"/>
+				<reportElement x="395" y="1" width="80" height="20" uuid="669b9910-1571-43c4-bd8c-4c464f390552"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="0" width="514" height="1"/>
+				<reportElement x="0" y="0" width="514" height="1" uuid="3f986824-d412-46ac-aed4-9b5879c2178a"/>
 			</line>
 		</band>
 	</pageFooter>
@@ -559,38 +581,52 @@ ORDER BY
 		<band height="60"/>
 	</lastPageFooter>
 	<noData>
-		<band height="143">
+		<band height="201">
 			<staticText>
-				<reportElement x="0" y="84" width="516" height="59"/>
-				<textElement/>
+				<reportElement x="0" y="90" width="516" height="59" uuid="272331c4-337f-45a6-be67-89f5b05ae4a0"/>
 				<text><![CDATA[There is no data for this report.]]></text>
 			</staticText>
 			<image>
-				<reportElement x="351" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="359" y="0" width="194" height="50" uuid="561e1a72-1e7a-486d-8e15-44fa4cc44d6a">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="350" height="29"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="29" uuid="ea602062-cabb-460e-b0ed-3f9c578ec271">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Availability Summary Report ]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="69" width="515" height="1"/>
+				<reportElement x="0" y="80" width="515" height="1" uuid="3bd1a44d-b82b-416d-a465-828cc29c0323">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="49" width="350" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<reportElement style="Body" x="0" y="58" width="355" height="20" uuid="8d2a13d1-19af-4eef-b710-5c9ac8ea76e8">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="29" width="351" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+				<reportElement style="Sub-sub-header" x="0" y="29" width="355" height="20" uuid="ef841a73-8677-4791-8fcc-82d5a31df12c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 		</band>
 	</noData>
