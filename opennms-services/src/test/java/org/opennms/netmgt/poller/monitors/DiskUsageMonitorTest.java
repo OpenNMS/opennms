@@ -45,8 +45,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -66,11 +64,9 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(port = DiskUsageMonitorTest.TEST_SNMP_PORT, host = DiskUsageMonitorTest.TEST_IP_ADDRESS, resource = "classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
+@JUnitSnmpAgent(host = DiskUsageMonitorTest.TEST_IP_ADDRESS, resource = "classpath:org/opennms/netmgt/snmp/snmpTestData1.properties")
 public class DiskUsageMonitorTest implements InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiskUsageMonitorTest.class);
-    static final int TEST_SNMP_PORT = 9161;
     static final String TEST_IP_ADDRESS = "127.0.0.1";
 
     @Rule
@@ -199,10 +195,6 @@ public class DiskUsageMonitorTest implements InitializingBean {
     private MonitoredService createMonitor() throws UnknownHostException {
         MonitoredService svc = new MockMonitoredService(1, "test-server", InetAddressUtils.getInetAddress(TEST_IP_ADDRESS), "DUM-TEST");
         return svc;
-    }
-
-    private void log(String message) {
-        LOG.debug(message);
     }
 
 }
