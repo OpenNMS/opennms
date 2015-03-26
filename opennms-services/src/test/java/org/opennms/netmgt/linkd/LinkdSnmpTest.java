@@ -76,7 +76,7 @@ import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.topology.OspfNbrInterface;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
-import org.opennms.netmgt.nb.TestNetworkBuilder;
+import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpStore;
@@ -91,7 +91,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class LinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
+public class LinkdSnmpTest extends NmsNetworkBuilder implements InitializingBean {
         
 	@Override
     public void afterPropertiesSet() throws Exception {

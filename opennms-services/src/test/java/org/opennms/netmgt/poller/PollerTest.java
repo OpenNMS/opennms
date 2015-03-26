@@ -241,6 +241,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_poller = new Poller();
         m_poller.setDataSource(m_db);
         m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
+        m_poller.setOutageDao(m_outageDao);
         m_poller.setTransactionTemplate(m_transactionTemplate);
         m_poller.setEventIpcManager(m_eventMgr);
         m_poller.setNetwork(network);
@@ -1511,6 +1512,94 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
                 notMonitoredSvc.getAddress(),
                 notMonitoredSvc.getSvcName());
         assertEquals("N", notMonitored.getStatus());
+    }
+
+    @Test
+    public void restoresServiceStateOnRestart() {
+        MockNode node = m_network.getNode(2);
+        MockService criticalService = m_network.getService(2, "192.168.1.3", "ICMP");
+
+        // Bring the critical service down
+        anticipateDown(node);
+        criticalService.bringDown();
+
+        // Start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+
+        // Stop the poller
+        stopDaemons();
+
+        // Bring the critical service up and expect a nodeUp
+        // The service should restore the proper state and know that the outage
+        // was triggered by a node down
+        anticipateUp(node);
+        criticalService.bringUp();
+
+        // (Re)start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+    }
+
+    /**
+     * Test for NMS-7585
+     */
+    @Test
+    public void closesOpenOutagesWithNoSvcLostEventIdOnRestart() {
+        MockNode node = m_network.getNode(2);
+        MockService criticalService = m_network.getService(2, "192.168.1.3", "ICMP");
+
+        // Bring the critical service down
+        anticipateDown(node);
+        criticalService.bringDown();
+
+        // Start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+
+        // Stop the poller
+        stopDaemons();
+
+        // Remove the reference to the lost service event from all of the outages,
+        // and let's pretend that they weren't even there in the first place
+        Set<Integer> outageIds = new HashSet<Integer>();
+        for (OnmsOutage outage : m_outageDao.findAll()) {
+            outage.setServiceLostEvent(null);
+            m_outageDao.update(outage);
+            outageIds.add(outage.getId());
+        }
+        m_outageDao.flush();
+
+        // We should get another node down
+        m_anticipator.anticipateEvent(node.createDownEvent());
+
+        // (Re)start the poller
+        startDaemons();
+
+        // Verify
+        m_anticipator.waitForAnticipated(10000);
+
+        // Wait for the outages to be populated (this happen after
+        // the down event is sent)
+        sleep(1000);
+
+        for (OnmsOutage outage : m_outageDao.findAll()) {
+            if (outageIds.contains(outage.getId())) {
+                // Outages in our list should be closed with
+                // no svcRegainedEvent
+                assertNotNull(outage.getIfRegainedService());
+                assertNull(outage.getServiceRegainedEvent());
+            } else {
+                // Other outages should be open
+                assertNull(outage.getIfRegainedService());
+            }
+        }
     }
 
     //

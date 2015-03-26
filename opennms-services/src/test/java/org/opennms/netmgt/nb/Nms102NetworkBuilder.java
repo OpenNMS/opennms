@@ -31,7 +31,7 @@ package org.opennms.netmgt.nb;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms102NetworkBuilder extends TestNetworkBuilder {
+public class Nms102NetworkBuilder extends NmsNetworkBuilder {
     static {
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("192.168.0.1"), 2);
         MIKROTIK_IP_IF_MAP.put(InetAddressUtils.addr("10.129.16.165"), 1);
