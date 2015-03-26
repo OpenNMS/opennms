@@ -55,17 +55,30 @@
       <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
 
+    <feature name="guava" description="Google :: Guava" version="17.0">
+      <bundle dependency="true">mvn:com.google.guava/guava/17.0</bundle>
+    </feature>
+
     <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
     <feature name="hibernate36" description="Hibernate :: Hibernate ORM" version="3.6.10.Final">
       <bundle dependency="true">wrap:mvn:antlr/antlr/2.7.7</bundle>
       <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
       <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle>
       <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
+      <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
     </feature>
 
-    <feature name="jaxb" description="Apache ServiceMix :: JAXB" version="2.2.0">
+    <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
+    <feature name="jaxb" description="EclipseLink :: MOXy" version="${eclipselinkVersion}">
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
+
+      <!-- Old bundle configuration necessary to run with JDK 6 -->
+      <!--
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
       <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
       <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
@@ -75,10 +88,15 @@
       <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
       <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
       <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
+      -->
     </feature>
 
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="org.json" description="org.json" version="20140107">
+      <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
@@ -228,6 +246,7 @@
     </feature>
 
     <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
+      <feature>guava</feature>
       <feature>opennms-collection-api</feature>
       <feature>opennms-dao-api</feature>
 
@@ -298,6 +317,7 @@
     </feature>
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
+      <feature>org.json</feature>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>

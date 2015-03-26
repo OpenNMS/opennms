@@ -15,6 +15,7 @@
     <fastInfosetVersion>1.2.2</fastInfosetVersion>
   </properties>
   <dependencies>
+    <!--
     <dependency>
     	<groupId>org.apache.servicemix.specs</groupId>
     	<artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
@@ -25,9 +26,10 @@
     	<artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
     	<version>2.2.6_1</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
-      <artifactId>eclipselink</artifactId>
+      <artifactId>org.eclipse.persistence.moxy</artifactId>
       <version>${eclipselinkVersion}</version>
     </dependency>
   </dependencies>
