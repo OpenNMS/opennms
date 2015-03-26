@@ -56,7 +56,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
 import org.opennms.netmgt.provision.adapters.link.config.dao.DefaultLinkAdapterConfigurationDao;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkPattern;
@@ -119,7 +118,6 @@ public class LinkAdapterConfigurationTest implements InitializingBean {
 
         m_marshaller = m_context.createMarshaller();
         m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        m_marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper("http://xmlns.opennms.org/xsd/config/map-link-adapter"));
         
         m_unmarshaller = m_context.createUnmarshaller();
         m_unmarshaller.setSchema(null);
