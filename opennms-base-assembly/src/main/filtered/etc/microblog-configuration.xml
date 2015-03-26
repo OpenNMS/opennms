@@ -11,7 +11,9 @@
   Future uses for the profiles in this configuration file include an
   AckReader for Ackd and perhaps a MicroblogTransportMonitor for Pollerd.
  -->
-<microblog-configuration default-microblog-profile-name="twitter">
+<microblog-configuration xmlns="http://xmlns.opennms.org/xsd/config/microblog-configuration"
+    default-microblog-profile-name="twitter">
+
 	<microblog-profile
 		name="identica"
 		service-url="https://identi.ca/api/"
