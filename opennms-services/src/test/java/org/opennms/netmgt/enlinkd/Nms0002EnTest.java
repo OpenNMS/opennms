@@ -28,27 +28,27 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Rluck001_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.Sluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Rluck001_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue081_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue121_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue142_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SDeEssnBrue165_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE;
 
 import java.util.List;
 

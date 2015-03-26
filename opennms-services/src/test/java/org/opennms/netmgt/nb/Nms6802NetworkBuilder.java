@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,28 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.nb;
 
-import java.util.Date;
-import java.util.List;
-
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
+
+/**
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ */
+
+public class Nms6802NetworkBuilder extends NmsNetworkBuilder {
 
 
-public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
+    static {
+    try {
+    CISCOISIS_IP_IF_MAP.put(InetAddressUtils.addr("10.100.68.2"), 1);
+    CISCOISIS_IF_IFNAME_MAP.put(1, "eth0/1");
+    CISCOISIS_IF_IFDESCR_MAP.put(1, "ethernet0/1");
+    CISCOISIS_IF_NETMASK_MAP.put(1, InetAddressUtils.addr("255.255.255.0"));
+    CISCOISIS_IF_MAC_MAP.put(1, "00d1590e4310");
 
-    CdpLink get(OnmsNode node, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
-
-    CdpLink get(Integer nodeId, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
+    } catch (Exception e) {
+        
+    }
+    }
     
-    List<CdpLink> findByNodeId(Integer nodeId);
-
-    public List<CdpTopologyLink> findLinksForTopology();
-
-    public List<CdpTopologyLink> findLinksForTopologyByIds(Integer... ids);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
+    public OnmsNode getCiscoIosXrRouter() {
+        return getNode(CISCOISIS_NAME,CISCOISIS_SYSOID,CISCOISIS_IP,CISCOISIS_IP_IF_MAP,CISCOISIS_IF_IFNAME_MAP,CISCOISIS_IF_MAC_MAP,CISCOISIS_IF_IFDESCR_MAP,CISCOISIS_IF_IFALIAS_MAP);
+    }    
 }
