@@ -40,7 +40,7 @@
     org.opennms.web.api.Authentication,
     org.opennms.web.element.*,
     org.opennms.web.svclayer.api.ResourceService,
-    org.opennms.netmgt.utils.IfLabelJdbcImpl,
+    org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl,
     org.springframework.web.context.WebApplicationContext,
     org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -119,7 +119,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <%
     String ifLabel;
     if (ifIndex != -1) {
-      ifLabel = IfLabelJdbcImpl.getInstance().getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
+      ifLabel = IfLabelDaoImpl.getInstance().getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
     } else {
       ifLabel = IfLabel.NO_IFLABEL;
     }
