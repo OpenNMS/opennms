@@ -201,13 +201,13 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 return PollStatus.unavailable();
             }
 
-            boolean foundDisk = false;
+            boolean matchedAtLeastOneDisk = false;
             
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                foundDisk = true;
                 LOG.debug("poll: SNMPwalk poll succeeded, addr={} oid={} instance={} value={}", hostAddress, hrStorageDescrSnmpObject, e.getKey(), e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
+                    matchedAtLeastOneDisk = true;
                   LOG.debug("DiskUsageMonitor.poll: found disk=", diskName);
                 	
                 	SnmpObjId hrStorageSizeSnmpObject = SnmpObjId.get(hrStorageSize + "." + e.getKey().toString());
@@ -223,18 +223,15 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
                 	if (calculatedPercentage < percentFree) {
                 	
                 		return PollStatus.unavailable(diskName + " usage high (" + (100 - (int)calculatedPercentage)  + "%)");
-                		
-                	}
-                	else {
-                		return status;
+
                 	}
                 }
             }
 
-            if (foundDisk) {
+            if (matchedAtLeastOneDisk) {
                 return status;
             }
-            // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
+            // if we get here.. it means we did not find any matching disks...  which means we should not be monitoring it.
             LOG.debug("DiskUsageMonitor: no disks found");
             return PollStatus.unavailable("could not find " + diskName + "in table");
             
@@ -272,7 +269,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             LOG.debug("Attempting endsWith match: candidate '{}', target '{}'", candidate, target);
             matches = Pattern.compile(target).matcher(candidate).find();
         }
-        LOG.debug("isMatch: Match is positive");
+        LOG.debug("isMatch: Match is {}", matches);
         return matches;
     }
 }
