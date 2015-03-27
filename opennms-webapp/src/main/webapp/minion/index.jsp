@@ -34,7 +34,7 @@
 
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Minion Control Panel" />
 	<jsp:param name="headTitle" value="Minion Control Panel" />
 	<jsp:param name="breadcrumb" value="Minion" />
@@ -44,4 +44,4 @@
 
 <ng-include src="base + '/main.html'"></ng-include>
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
