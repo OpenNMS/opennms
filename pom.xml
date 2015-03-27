@@ -1114,6 +1114,8 @@
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
@@ -2616,7 +2618,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.6</version>
+        <version>${commonsConfigurationVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -2632,7 +2634,7 @@
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
-        <version>2.1</version>
+        <version>${commonsDigesterVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>

@@ -138,6 +138,17 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- Add WEB-INF/classes to the bundle classpath. All embedded JAR files will be appended to this list as well. -->
+            <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
+            <!-- Directory that will hold embedded dependency JAR files -->
+            <Embed-Directory>WEB-INF/lib</Embed-Directory>
+            <!--
+              Embed everything with 'compile' or 'runtime' scope. Dependencies with 'provided' scope will be loaded out of OSGi 
+              or from the shared classpath of /opt/opennms/lib.
+            -->
+            <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+            <!-- Embed transitive dependencies -->
+            <Embed-Transitive>true</Embed-Transitive>
             <Web-ContextPath>/opennms</Web-ContextPath>
           </instructions>
         </configuration>
@@ -611,7 +622,6 @@
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>ognl</groupId>
@@ -686,7 +696,6 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
 
     <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->

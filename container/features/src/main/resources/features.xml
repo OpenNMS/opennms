@@ -35,16 +35,40 @@
       <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
     </feature>
 
+    <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
+      <bundle>mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
+    </feature>
+
     <feature name="commons-codec" description="Apache :: commons-codec" version="${commonsCodecVersion}">
       <bundle>mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+    </feature>
+
+    <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
+      <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
     </feature>
 
     <feature name="commons-collections" description="Apache :: commons-collections" version="${commonsCollectionsVersion}">
       <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
 
+    <feature name="commons-configuration" description="Apache :: commons-configuration" version="${commonsConfigurationVersion}">
+      <feature>commons-beanutils</feature>
+      <feature>commons-codec</feature>
+      <feature>commons-digester</feature>
+
+      <bundle>mvn:commons-jxpath/commons-jxpath/1.3</bundle>
+      <bundle>wrap:mvn:jdom/jdom/1.0</bundle>
+      <bundle>wrap:mvn:org.apache.ant/ant/1.8.2</bundle>
+
+      <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
+    </feature>
+
     <feature name="commons-io" description="Apache :: commons-io" version="${commonsIoVersion}">
       <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
+    </feature>
+
+    <feature name="commons-jexl" description="Apache :: commons-jexl" version="2.1.1">
+      <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
     </feature>
 
     <feature name="commons-lang" description="Apache :: commons-lang" version="${commonsLangVersion}">
@@ -105,6 +129,14 @@
 
     <feature name="slf4j-api" description="slf4j :: API" version="${slf4jVersion}">
       <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
+    </feature>
+
+    <feature name="spring-webflow" description="Spring :: Webflow" version="${springWebFlowVersion}">
+      <bundle>wrap:mvn:opensymphony/ognl/2.6.11</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-binding/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
     </feature>
 
     <!-- OpenNMS features -->
@@ -324,4 +356,16 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
+      <feature>war</feature>
+      <feature>commons-beanutils</feature>
+      <feature>commons-configuration</feature>
+      <feature>commons-jexl</feature>
+      <feature>spring-webflow</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-dao</feature>
+
+      <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
+    </feature>
 </features>
