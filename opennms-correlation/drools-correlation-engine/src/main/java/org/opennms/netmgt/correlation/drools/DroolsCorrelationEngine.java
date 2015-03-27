@@ -67,9 +67,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private WorkingMemory m_workingMemory;
     private List<String> m_interestingEvents;
     private List<Resource> m_rules;
-    private Map<String, Object> m_globals = new HashMap<String, Object>();
+    private Map<String, Object> m_globals = new HashMap<>();
     private String m_name;
     private String m_assertBehaviour;
+    private String m_eventProcessingMode;
     
     /** {@inheritDoc} */
     @Override
@@ -141,7 +142,13 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
         RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
         ruleBaseConfig.setAssertBehaviour(behaviour);
-        ruleBaseConfig.setEventProcessingMode(EventProcessingOption.STREAM);
+        
+        EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
+        if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
+            eventProcessingOption = EventProcessingOption.STREAM;
+        }
+        ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
+        
         final RuleBase ruleBase = RuleBaseFactory.newRuleBase( ruleBaseConfig );
 
         if (builder.hasErrors()) {
@@ -192,7 +199,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @return a {@link java.util.List} object.
      */
     public List<Object> getMemoryObjects() {
-    	final List<Object> objects = new LinkedList<Object>();
+    	final List<Object> objects = new LinkedList<>();
         for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); ) {
         	objects.add(it.next());
         }
@@ -232,7 +239,15 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         m_workingMemory.setGlobal(name, value);
     }
 
-	public void setAssertBehaviour(String assertBehaviour) {
-		m_assertBehaviour = assertBehaviour;
-	}
+    public void setAssertBehaviour(String assertBehaviour) {
+            m_assertBehaviour = assertBehaviour;
+    }
+
+    public String getEventProcessingMode() {
+        return m_eventProcessingMode;
+    }
+
+    public void setEventProcessingMode(String eventProcessingMode) {
+        this.m_eventProcessingMode = eventProcessingMode;
+    }
 }

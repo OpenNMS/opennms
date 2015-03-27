@@ -3,7 +3,7 @@
 	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ../../../main/castor/drools-engine.xsd ">
-  <rule-set name="droolsFusion">
+  <rule-set name="droolsFusion" event-processing-mode="stream">
     <rule-file>DroolsFusion.drl</rule-file>
     <event>uei.opennms.org/nodes/nodeLostService</event>
   </rule-set>  

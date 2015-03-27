@@ -43,30 +43,19 @@ public class FusionRulesTest extends CorrelationRulesTestCase {
     @Test
     public void testDroolsFusion() throws Exception {
         
-        anticipate(createNodeDownEvent(1));
-        
-        NodeService nodeService = m_mocks.createMock(NodeService.class);
-        
-        expect(nodeService.getParentNode(1L)).andReturn(null).atLeastOnce();
-        
-        m_mocks.replayAll();
+//        anticipate(createNodeDownEvent(1));
         
         DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
         
         engine.correlate(createNodeLostServiceEvent(1, "SSH"));
 
-        m_anticipatedMemorySize = 2;
+        m_anticipatedMemorySize = 5;
         
-        m_mocks.verifyAll();
         verify(engine);
-        
-//        anticipate(createRootCauseResolvedEvent(1, 1));
-        
     }
     
     private Event createRootCauseResolvedEvent(int symptom, int cause) {
         return new EventBuilder(createNodeEvent("rootCauseResolved", cause)).getEvent();
-
     }
 
     public Event createNodeDownEvent(int nodeid) {
