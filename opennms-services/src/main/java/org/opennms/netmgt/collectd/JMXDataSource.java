@@ -27,17 +27,11 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.collectd;
-import java.io.File;
-import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.MibObject;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates an RRDTool data source. Data source information
@@ -54,7 +48,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 public class JMXDataSource implements Cloneable {
     private static final Logger LOG = LoggerFactory.getLogger(JMXDataSource.class);
-	private static final int MAX_DS_NAME_LENGTH = 19;
+
 	/** Constant <code>RRD_ERROR="RRD_ERROR"</code> */
 	public static final String RRD_ERROR = "RRD_ERROR";
 
@@ -209,11 +203,12 @@ public class JMXDataSource implements Cloneable {
 
                 // Truncate MIB object name/alias if it exceeds the 19 char max for
                 // RRD data source names.
-                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
-                        char[] temp = this.getName().toCharArray();
-                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
-                }
+                this.setName(org.opennms.netmgt.jmx.JmxUtils.trimAttributeName(this.getName()));
+//                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
+//                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
+//                        char[] temp = this.getName().toCharArray();
+//                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
+//                }
 
                 // Map MIB object data type to RRD data type
                 this.setType(JMXDataSource.mapType(obj.getType()));
@@ -405,44 +400,5 @@ public class JMXDataSource implements Cloneable {
         buffer.append("\n   max:       ").append(m_max);
 
         return buffer.toString();
-    }
-       
-	/**
-	 * <p>performUpdate</p>
-	 *
-	 * @param owner a {@link java.lang.String} object.
-	 * @param repository a {@link java.io.File} object.
-	 * @param value a {@link org.opennms.netmgt.snmp.SnmpValue} object.
-	 * @return a boolean.
-	 */
-	public boolean performUpdate(
-		String owner,
-		File repository,
-                SnmpValue value) {
-        
-            String val = getStorableValue(value);
-        
-            String collectionName = m_collectionName;
-	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
-	        List<String> rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-		boolean result=false;
-		try {
-		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
-	
-			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), getName(), val);
-		} catch (RrdException e) {
-			result=true;
-		}
-		return result;
-	}
-
-    /**
-     * <p>getStorableValue</p>
-     *
-     * @param snmpVal a {@link org.opennms.netmgt.snmp.SnmpValue} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getStorableValue(SnmpValue snmpVal) {
-        return (snmpVal == null ? null : Long.toString(snmpVal.toLong()));
     }
 }

@@ -28,22 +28,22 @@
 
 package org.opennms.web.rest;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-
+import com.sun.jersey.api.core.ResourceContext;
+import com.sun.jersey.spi.resource.PerRequest;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.config.AgentConfigurationResource;
 import org.opennms.web.rest.config.CollectionConfigurationResource;
 import org.opennms.web.rest.config.DataCollectionConfigResource;
+import org.opennms.web.rest.config.JmxDataCollectionConfigResource;
 import org.opennms.web.rest.config.PollerConfigurationResource;
 import org.opennms.web.rest.config.SnmpConfigurationResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * ReST service for (JAXB) ConfigurationResource files.
@@ -54,7 +54,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
-    @Context 
+    @Context
     private UriInfo m_uriInfo;
 
     @Context
@@ -72,7 +72,7 @@ public class ConfigRestService extends OnmsRestService {
     public CollectionConfigurationResource getCollectionConfigurationResource() throws ConfigurationResourceException {
         return m_context.getResource(CollectionConfigurationResource.class);
     }
-    
+
     @Path("datacollection")
     public DataCollectionConfigResource getDatacollectionConfigurationResource() throws ConfigurationResourceException {
         return m_context.getResource(DataCollectionConfigResource.class);
@@ -86,5 +86,10 @@ public class ConfigRestService extends OnmsRestService {
     @Path("snmp")
     public SnmpConfigurationResource getSnmpConfigurationResource() throws ConfigurationResourceException {
         return m_context.getResource(SnmpConfigurationResource.class);
+    }
+
+    @Path("jmx")
+    public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource() throws ConfigurationResourceException {
+        return m_context.getResource(JmxDataCollectionConfigResource.class);
     }
 }

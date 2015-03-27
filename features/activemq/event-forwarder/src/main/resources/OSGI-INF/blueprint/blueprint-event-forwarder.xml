@@ -1,0 +1,86 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.activemq.eventforwarder" update-strategy="none">
+    <cm:default-properties>
+      <cm:property name="brokerUri" value="tcp://127.0.0.1:61716"/>
+      <cm:property name="location" value="remote" />
+      <cm:property name="username" value="admin"/>
+      <cm:property name="password" value="admin"/>
+      <cm:property name="refreshInterval" value="300000"/> <!-- milliseconds -->
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <!-- TODO: Fetch EventIpcManager using service registry? -->
+  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
+
+  <bean id="eventListener" class="org.opennms.features.activemq.eventforwarder.ForwardingEventListener" init-method="init">
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+  <bean id="foreignSourceForeignIdHeaderProcessor" class="org.opennms.features.activemq.eventforwarder.ForeignSourceForeignIdHeaderProcessor">
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+
+  <!-- Camel marshalling processor -->
+  <bean id="marshaller" class="org.opennms.features.activemq.eventforwarder.JaxbUtilsMarshalProcessor"/>
+
+  <!-- Event listener that connects the EventIpcManager to this Camel context -->
+  <bean id="eventForwarder" class="org.opennms.features.activemq.eventforwarder.internal.DefaultEventForwarder">
+    <argument value="seda:forwardEvent"/>
+  </bean>
+
+  <camelContext id="activeMqEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+    <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
+
+    <!--
+    <route id="triggerStartEventForwarder">
+      <from uri="timer://runOnce?repeatCount=1" />
+      <log loggingLevel="INFO" message="blueprint-event-forwarder.xml: Triggering Startup" />
+      <to uri="direct:start" />
+    </route>
+    -->
+
+    <route id="forwardEvent">
+      <from uri="seda:forwardEvent"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <!-- Add headers for foreignsource/foreignid -->
+      <bean ref="foreignSourceForeignIdHeaderProcessor"/>
+      <setHeader headerName="location">
+        <constant>{{location}}</constant>        
+      </setHeader>
+      <!-- Marshal Event to XML -->
+      <bean ref="marshaller"/>
+      <log message="blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
+      <!-- Send to ActiveMQ -->
+      <to uri="activemq:forwardEvents?disableReplyTo=true" />
+    </route>
+  </camelContext>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <!-- Connect to the opennms-activemq-dispatcher broker -->
+    <property name="brokerURL" value="${brokerUri}" />
+  </bean>
+
+</blueprint>

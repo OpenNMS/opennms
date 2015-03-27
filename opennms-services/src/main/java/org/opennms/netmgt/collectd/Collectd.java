@@ -570,6 +570,12 @@ public class Collectd extends AbstractServiceDaemon implements
                 continue;
             }
 
+            // Ensure that the package is not a remote package
+            if (wpkg.isRemote()) {
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, package {} is a remote package.", iface, svcName, wpkg.getName());
+                continue;
+            }
+
             // Is the interface in the package?
             if (!m_collectdConfigFactory.interfaceInPackage(iface, wpkg)) {
                 LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());

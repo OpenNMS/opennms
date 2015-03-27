@@ -360,6 +360,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
                 return;
             }
         }
+
         throw new AssertionError("role " + role + " was not found in " + authorities);
     }
 }

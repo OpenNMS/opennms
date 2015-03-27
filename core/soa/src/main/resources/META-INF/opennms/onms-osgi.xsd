@@ -2,9 +2,14 @@
 <xsd:schema xmlns="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     targetNamespace="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     elementFormDefault="qualified"
-    attributeFormDefault="unqualified">
+    attributeFormDefault="unqualified"
+    
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    ">
 
    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 

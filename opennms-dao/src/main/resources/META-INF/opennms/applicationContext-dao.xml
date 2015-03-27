@@ -261,6 +261,18 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" ref="monitoredServiceDao" />
 
+  <bean id="minionDao" class="org.opennms.netmgt.dao.hibernate.MinionDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionDao" ref="minionDao" />
+
+  <bean id="minionPropertyDao" class="org.opennms.netmgt.dao.hibernate.MinionPropertyDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionPropertyDao" ref="minionPropertyDao" />
+
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -434,7 +446,15 @@
   <bean id="jasperReportConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
     <property name="configResource" ref="jasperReportConfigResourceLocation" />
   </bean>
-  
+
+  <bean id="jmxDataCollectionConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/jmx-datacollection-config.xml" />
+  </bean>
+
+  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao">
+    <property name="configResource" ref="jmxDataCollectionConfigResourceLocation" />
+  </bean>
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.JasperReportConfigDao" ref="jasperReportConfigDao" />
 
   <bean id="filterDaoFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
