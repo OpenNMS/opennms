@@ -478,7 +478,7 @@ a.list-group-item.active:focus {
   > li {
     > a,
     > span {
-      color: $color_green_leaf_approx;
+      color: $color_meridian_blue;
       /* background-color: $pagination-bg; */
       border: 1px solid $table-border-color;
     }
@@ -487,7 +487,7 @@ a.list-group-item.active:focus {
   > li > span {
     &:hover,
     &:focus {
-      color: $color_green_leaf_approx;
+      color: $color_meridian_blue;
       /* background-color: $pagination-hover-bg; */
       border-color: $table-border-color;
     }
@@ -498,7 +498,7 @@ a.list-group-item.active:focus {
     &:hover,
     &:focus {
       /* color: $pagination-active-color; */
-      background-color: $color_green_leaf_approx;
+      background-color: $color_meridian_blue;
       border-color: $color_green_leaf_approx;
     }
   }
