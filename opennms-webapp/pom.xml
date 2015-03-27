@@ -150,6 +150,35 @@
             <!-- Embed transitive dependencies -->
             <Embed-Transitive>true</Embed-Transitive>
             <Web-ContextPath>/opennms</Web-ContextPath>
+            <!-- Mark some packages that dependency JARs rely on as optional -->
+            <Import-Package>
+              <!-- These are optional dependencies of jdom -->
+              oracle.xml*;optional=true,
+              org.jaxen*;optional=true,
+              <!-- Optional dependencies on old JAXP implementations -->
+              com.sun.org.apache*;optional=true,
+              <!-- Optional dependency on Avalon logging maybe -->
+              org.apache.log*;optional=true,
+              <!-- Optional dependency on Tomcat taglibs -->
+              org.apache.taglibs*;optional=true,
+              <!-- These are probably optional dependencies of BSF -->
+              org.mozilla.javascript;optional=true,
+              org.python.core;optional=true,
+              org.python.util;optional=true,
+              <!-- Exclude FOP 0.20.0 package -->
+              !org.apache.fop.messaging,
+              <!-- Exclude GWT packages, they are not needed at runtime and we are embedding gwt-servlet.jar -->
+              !com.google*,
+              <!-- Exclude sitemesh, not sure where the hell it is coming from -->
+              !com.opensymphony.module.sitemesh.filter,
+              <!-- Exclude JUnit, not sure where the hell it is coming from -->
+              !junit*,
+              <!-- Exclude Gilead, it is an optional GWT dependency -->
+              !net.sf.gilead*,
+              <!-- This is a spurious code generation dependency -->
+              !org.zeroturnaround.javarebel,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -456,7 +485,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -689,6 +717,10 @@
       <artifactId>oro</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+
+    <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
+    <!-- these should all be <scope>compile</scope> -->
+
     <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
@@ -696,15 +728,22 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
-    <!-- indirect 3rd-party dependencies that belong in WEB-INF/lib -->
-    <!-- these should all be <scope>compile</scope> -->
-
+    <!-- Use an OSGi-compatible jdom bundle -->
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
+      <version>1.1_4</version>
+    </dependency>
     <dependency>
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
-      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -721,7 +760,6 @@
     <dependency>
       <groupId>org.jmesa</groupId>
       <artifactId>jmesa</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     -->
     <dependency>
