@@ -211,6 +211,8 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
                         cancel.addClickListener(new Button.ClickListener() {
                             @Override
                             public void buttonClick(Button.ClickEvent event) {
+                                // NMS-7560: Toggle the tab in order to allow us to click it again
+                                m_tabSheet.togglePlusTab();
                                 window.close();
                             }
                         });
