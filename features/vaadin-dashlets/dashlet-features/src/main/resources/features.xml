@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<features>
+<features 
+  name="dashlet-features"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+>
 
   <feature name="dashlet-alarms" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Alarms">
     <feature>opennms-core</feature>

@@ -162,6 +162,68 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
         public String getSeverity() {
             return severity;
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Notification that = (Notification) o;
+
+            if (id != that.id) {
+                return false;
+            }
+            if (nodeId != that.nodeId) {
+                return false;
+            }
+            if (answeredBy != null ? !answeredBy.equals(that.answeredBy) : that.answeredBy != null) {
+                return false;
+            }
+            if (nodeLabel != null ? !nodeLabel.equals(that.nodeLabel) : that.nodeLabel != null) {
+                return false;
+            }
+            if (pageTime != null ? !pageTime.equals(that.pageTime) : that.pageTime != null) {
+                return false;
+            }
+            if (respondTime != null ? !respondTime.equals(that.respondTime) : that.respondTime != null) {
+                return false;
+            }
+            if (serviceType != null ? !serviceType.equals(that.serviceType) : that.serviceType != null) {
+                return false;
+            }
+            if (severity != null ? !severity.equals(that.severity) : that.severity != null) {
+                return false;
+            }
+            if (textMsg != null ? !textMsg.equals(that.textMsg) : that.textMsg != null) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            int result = id;
+            result = 31 * result + nodeId;
+            result = 31 * result + (nodeLabel != null ? nodeLabel.hashCode() : 0);
+            result = 31 * result + (respondTime != null ? respondTime.hashCode() : 0);
+            result = 31 * result + (pageTime != null ? pageTime.hashCode() : 0);
+            result = 31 * result + (answeredBy != null ? answeredBy.hashCode() : 0);
+            result = 31 * result + (textMsg != null ? textMsg.hashCode() : 0);
+            result = 31 * result + (serviceType != null ? serviceType.hashCode() : 0);
+            result = 31 * result + (severity != null ? severity.hashCode() : 0);
+            return result;
+        }
     }
 
     /**
@@ -307,7 +369,7 @@ public class SurveillanceViewNotificationTable extends SurveillanceViewDetailTab
     @Override
     public void refreshDetails(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         if (m_future != null && !m_future.isDone()) {
-            m_future.cancel(true);
+            return;
         }
 
         m_future = getSurveillanceViewService().getExecutorService().submit(new Callable<List<Notification>>() {

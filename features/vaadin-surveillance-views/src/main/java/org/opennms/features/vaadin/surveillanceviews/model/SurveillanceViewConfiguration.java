@@ -98,4 +98,38 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
         }
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SurveillanceViewConfiguration that = (SurveillanceViewConfiguration) o;
+
+        if (m_defaultView != null ? !m_defaultView.equals(that.m_defaultView) : that.m_defaultView != null) {
+            return false;
+        }
+        if (m_views != null ? !m_views.equals(that.m_views) : that.m_views != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = m_defaultView != null ? m_defaultView.hashCode() : 0;
+        result = 31 * result + (m_views != null ? m_views.hashCode() : 0);
+        return result;
+    }
 }

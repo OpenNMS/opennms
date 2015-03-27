@@ -103,7 +103,7 @@ public interface EventWriter extends EventProcessor {
     public static final int EVENT_CORRELATION_FIELD_SIZE = 1024;
 
     /** Constant <code>EVENT_OPERINSTRUCT_FIELD_SIZE=1024</code> */
-    public static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
+//    public static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
 
     /** Constant <code>EVENT_AUTOACTION_FIELD_SIZE=256</code> */
     public static final int EVENT_AUTOACTION_FIELD_SIZE = 256;

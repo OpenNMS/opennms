@@ -1,4 +1,10 @@
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-${project.version}">    
+<?xml version="1.0" encoding="UTF-8"?>
+<features 
+  name="opennms-${project.version}"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+>
     <!-- camel features -->
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
 
@@ -130,22 +136,6 @@
       <feature version="[4.0,4.1)">spring-jdbc</feature>
       <feature version="[4.0,4.1)">spring-orm</feature>
       <feature version="[4.0,4.1)">spring-tx</feature>
-
-      <!-- 
-        We can't use the Karaf spring-security feature because it pulls in the "war" feature
-        which conflicts with our bridge implementation of the "http" feature when loaded
-        in the OpenNMS Karaf container.
-      -->
-      <!--
-      <feature version="[3.1,3.2)">spring-security</feature>
-      -->
-
-      <!-- Hack in a replacement for spring-security -->
-      <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[4.0,4.1)">spring-web</feature>
-      <feature>commons-codec</feature>
-      <bundle dependency="true">mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-      <bundle dependency="true">mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
 
       <feature>castor</feature>
       <feature>commons-io</feature>

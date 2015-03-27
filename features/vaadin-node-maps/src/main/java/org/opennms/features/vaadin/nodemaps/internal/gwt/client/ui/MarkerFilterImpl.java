@@ -160,12 +160,14 @@ public class MarkerFilterImpl implements MarkerFilter, AlarmSeverityUpdatedEvent
             final String value = searchIn.get(lowerSearchProperty);
             if (value == null) return false;
             for (final String searchEntry : searchFor) {
+                final String lowerSearch = searchEntry.toLowerCase();
+                final String lowerValue = value.toLowerCase();
                 if (matchType == MatchType.EXACT || matchType == MatchType.IN) {
-                    if (value.toLowerCase().equals(searchEntry)) {
+                    if (lowerValue.equals(lowerSearch)) {
                         return true;
                     }
                 } else if (matchType == MatchType.SUBSTRING) {
-                    if (value.toLowerCase().contains(searchEntry)) {
+                    if (lowerValue.contains(lowerSearch)) {
                         return true;
                     }
                 }

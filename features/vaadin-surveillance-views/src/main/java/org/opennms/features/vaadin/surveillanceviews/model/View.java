@@ -147,4 +147,46 @@ public class View {
         }
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        View view = (View) o;
+
+        if (m_columns != null ? !m_columns.equals(view.m_columns) : view.m_columns != null) {
+            return false;
+        }
+        if (m_name != null ? !m_name.equals(view.m_name) : view.m_name != null) {
+            return false;
+        }
+        if (m_refreshSeconds != null ? !m_refreshSeconds.equals(view.m_refreshSeconds) : view.m_refreshSeconds != null) {
+            return false;
+        }
+        if (m_rows != null ? !m_rows.equals(view.m_rows) : view.m_rows != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        int result = m_rows != null ? m_rows.hashCode() : 0;
+        result = 31 * result + (m_columns != null ? m_columns.hashCode() : 0);
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_refreshSeconds != null ? m_refreshSeconds.hashCode() : 0);
+        return result;
+    }
 }

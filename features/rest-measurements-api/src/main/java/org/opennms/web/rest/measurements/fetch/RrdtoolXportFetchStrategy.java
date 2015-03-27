@@ -111,15 +111,17 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             cmdLine.addArgument("" + maxrows);
         }
 
+        int k = 0;
         for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
             final Source source = entry.getKey();
             final String rrdFile = entry.getValue();
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
-                    source.getLabel(), rrdFile, source.getAttribute(),
+                    k, rrdFile, source.getAttribute(),
                     source.getAggregation()));
-            cmdLine.addArgument(String.format("XPORT:%s:%s", source.getLabel(),
+            cmdLine.addArgument(String.format("XPORT:%s:%s", k,
                     source.getLabel()));
+            k++;
         }
 
         // Use commons-exec to execute rrdtool

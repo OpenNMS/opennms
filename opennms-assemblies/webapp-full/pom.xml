@@ -31,6 +31,16 @@
               <artifactId>opennms-webapp</artifactId>
             </overlay>
             <overlay>
+              <groupId>org.opennms</groupId>
+              <artifactId>opennms-webapp-rest</artifactId>
+              <excludes>
+                <exclude>META-INF/MANIFEST.MF</exclude>
+                <exclude>WEB-INF/web.xml</exclude>
+                <!-- We can exclude the svclayer context because all of its services are also defined in the main webapp -->
+                <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
+              </excludes>
+            </overlay>
+            <overlay>
               <groupId>org.opennms.features</groupId>
               <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
               <excludes>
@@ -110,6 +120,13 @@
       <type>war</type>
       <scope>runtime</scope>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-webapp-rest</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

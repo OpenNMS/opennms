@@ -31,12 +31,12 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.bridge;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK1_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DLINK2_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK1_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DLINK2_SNMP_RESOURCE;
 
 import java.util.List;
 
