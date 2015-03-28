@@ -163,6 +163,11 @@
       -->
     </feature>
 
+    <feature name="jfreechart" description="JFree :: JFreeChart" version="1.0.13">
+      <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
+      <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
+    </feature>
+
     <feature name="jersey-client" description="Jersey :: Client" version="1.18.1">
       <feature>commons-codec</feature>
 
@@ -343,6 +348,8 @@
       <feature>guava</feature>
       <feature>opennms-collection-api</feature>
       <feature>opennms-dao-api</feature>
+      <!-- Parent Spring context -->
+      <feature>opennms-core-daemon</feature>
 
       <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
@@ -465,6 +472,7 @@
       <feature>commons-jexl</feature>
       <feature>fop</feature>
       <feature>hibernate-validator41</feature>
+      <feature>jfreechart</feature>
       <feature>jrobin</feature>
       <feature>json-lib</feature>
       <feature>spring-webflow</feature>
@@ -482,9 +490,6 @@
       <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>
       <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}</bundle> -->
 
-      <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
-      <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
-
       <feature>commons-cli</feature>
       <feature>commons-exec</feature>
       <feature>commons-net</feature>
@@ -501,6 +506,7 @@
       <feature>spring-security32</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
 
-      <!-- <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle> -->
+      <!-- The main webapp WAR file -->
+      <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
     </feature>
 </features>

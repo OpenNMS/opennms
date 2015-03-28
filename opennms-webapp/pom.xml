@@ -138,7 +138,15 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!-- Add WEB-INF/classes to the bundle classpath. All embedded JAR files will be appended to this list as well. -->
+
+            <!-- Specify the servlet path for the WAR -->
+            <Webapp-Context>opennms</Webapp-Context> <!-- Deprecated -->
+            <Web-ContextPath>opennms</Web-ContextPath>
+
+            <!--
+              Add the webapp JAR itself and WEB-INF/classes to the bundle classpath. 
+              All embedded JAR files will be appended to this list as well.
+            -->
             <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
             <!-- Directory that will hold embedded dependency JAR files -->
             <Embed-Directory>WEB-INF/lib</Embed-Directory>
@@ -147,26 +155,39 @@
               or from the shared classpath of /opt/opennms/lib.
             -->
             <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-            <!-- Embed transitive dependencies -->
+            <!-- Embed transitive dependencies in WEB-INF/lib -->
             <Embed-Transitive>true</Embed-Transitive>
-            <Web-ContextPath>/opennms</Web-ContextPath>
-            <!-- Mark some packages that dependency JARs rely on as optional -->
+
             <Import-Package>
-              <!-- These are optional dependencies of jdom -->
+              <!-- 
+                These are required classes that are not autodetected by bnd from:
+                  - web.xml
+                  - Spring
+              -->
+              org.springframework.context.support;version="[4.0,5)",
+              org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
+              org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              org.springframework.web.filter;version="[4.0,5)",
+              org.eclipse.jetty.servlet,
+
+              <!-- Mark some packages that dependency JARs rely on as optional -->
+              <!-- Optional dependencies of jdom -->
               oracle.xml*;resolution:=optional,
               org.jaxen*;resolution:=optional,
               <!-- Optional dependencies on old JAXP implementations -->
               com.sun.org.apache*;resolution:=optional,
-              <!-- Optional dependency on Avalon logging maybe -->
-              org.apache.log*;resolution:=optional,
               <!-- Optional dependency on Tomcat taglibs -->
               org.apache.taglibs*;resolution:=optional,
               <!-- These are probably optional dependencies of BSF -->
               org.mozilla.javascript;resolution:=optional,
               org.python.core;resolution:=optional,
               org.python.util;resolution:=optional,
+
+              <!-- Exclude some deprecated packages that get detected by bnd -->
               <!-- Exclude FOP 0.20.0 package -->
               !org.apache.fop.messaging,
+              <!-- Deprecated dependency on Apache Avalon LogKit -->
+              !org.apache.log,
               <!-- Exclude GWT packages, they are not needed at runtime and we are embedding gwt-servlet.jar -->
               !com.google*,
               <!-- Exclude sitemesh, not sure where the hell it is coming from -->
@@ -179,6 +200,12 @@
               !org.zeroturnaround.javarebel,
               *
             </Import-Package>
+            <!-- 
+              TODO: Exclude all packages from export to get the webapp to load.
+              This needs to be changed to allow the webapp to function. We need to resolve
+              package conflicts between opennms-webapp and other projects.
+            -->
+            <Export-Package>!*</Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -710,7 +737,6 @@
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>oro</groupId>

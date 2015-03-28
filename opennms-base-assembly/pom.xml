@@ -583,10 +583,6 @@
       <artifactId>batik-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.tuckey</groupId>
-      <artifactId>urlrewritefilter</artifactId>
-    </dependency>
-    <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
