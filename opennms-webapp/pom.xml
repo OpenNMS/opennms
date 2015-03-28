@@ -153,18 +153,18 @@
             <!-- Mark some packages that dependency JARs rely on as optional -->
             <Import-Package>
               <!-- These are optional dependencies of jdom -->
-              oracle.xml*;optional=true,
-              org.jaxen*;optional=true,
+              oracle.xml*;resolution:=optional,
+              org.jaxen*;resolution:=optional,
               <!-- Optional dependencies on old JAXP implementations -->
-              com.sun.org.apache*;optional=true,
+              com.sun.org.apache*;resolution:=optional,
               <!-- Optional dependency on Avalon logging maybe -->
-              org.apache.log*;optional=true,
+              org.apache.log*;resolution:=optional,
               <!-- Optional dependency on Tomcat taglibs -->
-              org.apache.taglibs*;optional=true,
+              org.apache.taglibs*;resolution:=optional,
               <!-- These are probably optional dependencies of BSF -->
-              org.mozilla.javascript;optional=true,
-              org.python.core;optional=true,
-              org.python.util;optional=true,
+              org.mozilla.javascript;resolution:=optional,
+              org.python.core;resolution:=optional,
+              org.python.util;resolution:=optional,
               <!-- Exclude FOP 0.20.0 package -->
               !org.apache.fop.messaging,
               <!-- Exclude GWT packages, they are not needed at runtime and we are embedding gwt-servlet.jar -->
