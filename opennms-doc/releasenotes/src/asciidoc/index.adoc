@@ -16,9 +16,7 @@
 == OpenNMS Development Team
 [options="header"]
 |===
-| Name and mail contact
 | Tarus Balog <tarus@opennms.org>
-| Matt Brozowski <brozow@opennms.org>
 | David Hustace <david@opennms.org>
 | Benjamin Reed <ranger@opennms.org>
 |===

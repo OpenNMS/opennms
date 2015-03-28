@@ -208,20 +208,21 @@ public class CdpLink implements Serializable {
         	return m_type;
         }
         
-	}
+    }
 
     private Integer m_id;	
-	private OnmsNode m_node;
+    private OnmsNode m_node;
 	
-	private Integer m_cdpCacheIfIndex;
-	private String m_cdpInterfaceName;
+    private Integer m_cdpCacheIfIndex;
+    private Integer m_cdpCacheDeviceIndex;
+    private String m_cdpInterfaceName;
     
-	private CiscoNetworkProtocolType m_cdpCacheAddressType;
-	private String m_cdpCacheAddress;
-	private String m_cdpCacheVersion;
-	private String m_cdpCacheDeviceId;
-	private String m_cdpCacheDevicePort;
-	private String m_cdpCacheDevicePlatform;
+    private CiscoNetworkProtocolType m_cdpCacheAddressType;
+    private String m_cdpCacheAddress;
+    private String m_cdpCacheVersion;
+    private String m_cdpCacheDeviceId;
+    private String m_cdpCacheDevicePort;
+    private String m_cdpCacheDevicePlatform;
     private Date m_cdpLinkCreateTime = new Date();
     private Date m_cdpLinkLastPollTime;
 	
@@ -233,158 +234,161 @@ public class CdpLink implements Serializable {
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
     public Integer getId() {
-		return m_id;
-	}
+        return m_id;
+    }
 
 
-	public void setId(Integer id) {
-		m_id = id;
-	}
+    public void setId(Integer id) {
+        m_id = id;
+    }
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
-	public OnmsNode getNode() {
-		return m_node;
-	}
+    public OnmsNode getNode() {
+        return m_node;
+    }
 
 
-	public void setNode(OnmsNode node) {
-		m_node = node;
-	}
-
-
+    public void setNode(OnmsNode node) {
+        m_node = node;
+    }
 
     @Column(name="cdpCacheIfIndex", nullable = false)
-	public Integer getCdpCacheIfIndex() {
-		return m_cdpCacheIfIndex;
-	}
+    public Integer getCdpCacheIfIndex() {
+        return m_cdpCacheIfIndex;
+    }
 
-	public void setCdpCacheIfIndex(Integer cdpCacheIfIndex) {
-		m_cdpCacheIfIndex = cdpCacheIfIndex;
-	}
+    public void setCdpCacheIfIndex(Integer cdpCacheIfIndex) {
+        m_cdpCacheIfIndex = cdpCacheIfIndex;
+    }
+    
+    @Column(name="cdpCacheDeviceIndex", nullable = false)
+    public Integer getCdpCacheDeviceIndex() {
+        return m_cdpCacheDeviceIndex;
+    }
 
-	@Column(name="cdpInterfaceName" , length=96, nullable = false)
-	public String getCdpInterfaceName() {
-		return m_cdpInterfaceName;
-	}
+    public void setCdpCacheDeviceIndex(Integer cdpCacheDeviceIndex) {
+        m_cdpCacheDeviceIndex = cdpCacheDeviceIndex;
+    }
 
-	public void setCdpInterfaceName(String cdpInterfaceName) {
-		m_cdpInterfaceName = cdpInterfaceName;
-	}
+    @Column(name="cdpInterfaceName" , length=96, nullable = true)
+    public String getCdpInterfaceName() {
+        return m_cdpInterfaceName;
+    }
+
+    public void setCdpInterfaceName(String cdpInterfaceName) {
+        m_cdpInterfaceName = cdpInterfaceName;
+    }
 
     @Column(name="cdpCacheAddressType", nullable = false)
     @Type(type="org.opennms.netmgt.model.CiscoNetworkProtocolTypeUserType")
-	public CiscoNetworkProtocolType getCdpCacheAddressType() {
-		return m_cdpCacheAddressType;
-	}
+    public CiscoNetworkProtocolType getCdpCacheAddressType() {
+        return m_cdpCacheAddressType;
+    }
 
-	public void setCdpCacheAddressType(
-			CiscoNetworkProtocolType cdpCacheAddressType) {
-		m_cdpCacheAddressType = cdpCacheAddressType;
-	}
+    public void setCdpCacheAddressType(
+            CiscoNetworkProtocolType cdpCacheAddressType) {
+        m_cdpCacheAddressType = cdpCacheAddressType;
+    }
 
-	@Column(name="cdpCacheAddress" , length=64, nullable = false)
-	public String getCdpCacheAddress() {
-		return m_cdpCacheAddress;
-	}
+    @Column(name="cdpCacheAddress" , length=64, nullable = false)
+    public String getCdpCacheAddress() {
+        return m_cdpCacheAddress;
+    }
 
-	public void setCdpCacheAddress(String cdpCacheAddress) {
-		m_cdpCacheAddress = cdpCacheAddress;
-	}
+    public void setCdpCacheAddress(String cdpCacheAddress) {
+        m_cdpCacheAddress = cdpCacheAddress;
+    }
 
-	@Column(name="cdpCacheVersion" , length=256, nullable = false)
-	public String getCdpCacheVersion() {
-		return m_cdpCacheVersion;
-	}
+    @Column(name="cdpCacheVersion" , length=256, nullable = false)
+    public String getCdpCacheVersion() {
+	return m_cdpCacheVersion;
+    }
 
-	public void setCdpCacheVersion(String cdpCacheVersion) {
-		m_cdpCacheVersion = cdpCacheVersion;
-	}
+    public void setCdpCacheVersion(String cdpCacheVersion) {
+        m_cdpCacheVersion = cdpCacheVersion;
+    }
 
-	@Column(name="cdpCacheDeviceId" , length=64, nullable = false)
-	public String getCdpCacheDeviceId() {
-		return m_cdpCacheDeviceId;
-	}
+    @Column(name="cdpCacheDeviceId" , length=64, nullable = false)
+    public String getCdpCacheDeviceId() {
+        return m_cdpCacheDeviceId;
+    }
 
-	public void setCdpCacheDeviceId(String cdpCacheDeviceId) {
-		m_cdpCacheDeviceId = cdpCacheDeviceId;
-	}
+    public void setCdpCacheDeviceId(String cdpCacheDeviceId) {
+        m_cdpCacheDeviceId = cdpCacheDeviceId;
+    }
 
-	@Column(name="cdpCacheDevicePort" , length=96, nullable = false)
-	public String getCdpCacheDevicePort() {
-		return m_cdpCacheDevicePort;
-	}
+    @Column(name="cdpCacheDevicePort" , length=96, nullable = false)
+    public String getCdpCacheDevicePort() {
+        return m_cdpCacheDevicePort;
+    }
 
-	public void setCdpCacheDevicePort(String cdpCacheDevicePort) {
-		m_cdpCacheDevicePort = cdpCacheDevicePort;
-	}
+    public void setCdpCacheDevicePort(String cdpCacheDevicePort) {
+        m_cdpCacheDevicePort = cdpCacheDevicePort;
+    }
 
-	@Column(name="cdpCacheDevicePlatform" , length=96, nullable = false)
-	public String getCdpCacheDevicePlatform() {
-		return m_cdpCacheDevicePlatform;
-	}
+    @Column(name="cdpCacheDevicePlatform" , length=96, nullable = false)
+    public String getCdpCacheDevicePlatform() {
+	return m_cdpCacheDevicePlatform;
+    }
 
-	public void setCdpCacheDevicePlatform(String cdpCacheDevicePlatform) {
-		m_cdpCacheDevicePlatform = cdpCacheDevicePlatform;
-	}
+    public void setCdpCacheDevicePlatform(String cdpCacheDevicePlatform) {
+	m_cdpCacheDevicePlatform = cdpCacheDevicePlatform;
+    }
 	
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="cdpLinkCreateTime", nullable=false)
-	public Date getCdpLinkCreateTime() {
-		return m_cdpLinkCreateTime;
-	}
+    public Date getCdpLinkCreateTime() {
+        return m_cdpLinkCreateTime;
+    }
 
-
-	public void setCdpLinkCreateTime(Date cdpLinkCreateTime) {
-		m_cdpLinkCreateTime = cdpLinkCreateTime;
-	}
-
+    public void setCdpLinkCreateTime(Date cdpLinkCreateTime) {
+        m_cdpLinkCreateTime = cdpLinkCreateTime;
+    }
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="cdpLinkLastPollTime", nullable=false)
-	public Date getCdpLinkLastPollTime() {
-		return m_cdpLinkLastPollTime;
-	}
+    public Date getCdpLinkLastPollTime() {
+        return m_cdpLinkLastPollTime;
+    }
 
+    public void setCdpLinkLastPollTime(Date cdpLinkLastPollTime) {
+	m_cdpLinkLastPollTime = cdpLinkLastPollTime;
+    }
 
-	public void setCdpLinkLastPollTime(Date cdpLinkLastPollTime) {
-		m_cdpLinkLastPollTime = cdpLinkLastPollTime;
-	}
-
-
-	public void merge(CdpLink link) {
-		if (link == null)
-			return;
-		setCdpInterfaceName(link.getCdpInterfaceName());
-		setCdpCacheAddressType(link.getCdpCacheAddressType());
-		setCdpCacheAddress(link.getCdpCacheAddress());
-		setCdpCacheVersion(link.getCdpCacheVersion());
-		setCdpCacheDeviceId(link.getCdpCacheDeviceId());
-		setCdpCacheDevicePort(link.getCdpCacheDevicePort());
-		setCdpCacheDevicePlatform(link.getCdpCacheDevicePlatform());
-		setCdpLinkLastPollTime(link.getCdpLinkCreateTime());
-	}
+    public void merge(CdpLink link) {
+        if (link == null) return;
+        setCdpInterfaceName(link.getCdpInterfaceName());
+        setCdpCacheAddressType(link.getCdpCacheAddressType());
+        setCdpCacheAddress(link.getCdpCacheAddress());
+        setCdpCacheVersion(link.getCdpCacheVersion());
+        setCdpCacheDeviceId(link.getCdpCacheDeviceId());
+        setCdpCacheDevicePort(link.getCdpCacheDevicePort());
+        setCdpCacheDevicePlatform(link.getCdpCacheDevicePlatform());
+        setCdpLinkLastPollTime(link.getCdpLinkCreateTime());
+    }
 	
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("cdpCacheIfIndex", m_cdpCacheIfIndex)
-			.append("cdpInterfaceName", m_cdpInterfaceName)
-			.append("cdpCacheAddressType", CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()))
-			.append("cdpCacheAddress", m_cdpCacheAddress)
-			.append("cdpCacheVersion", m_cdpCacheVersion)
-			.append("cdpCachedeviceId", m_cdpCacheDeviceId)
-			.append("cdpCachedevicePort", m_cdpCacheDevicePort)
-			.append("cdpCachedevicePlatform", m_cdpCacheDevicePlatform)
-			.append("createTime", m_cdpLinkCreateTime)
-			.append("lastPollTime", m_cdpLinkLastPollTime)
-			.toString();
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String toString() {
+        return new ToStringBuilder(this)
+        .append("NodeId", m_node.getId())
+        .append("cdpCacheIfIndex", m_cdpCacheIfIndex)
+        .append("cdpCacheDeviceIndex", m_cdpCacheDeviceIndex)
+        .append("cdpInterfaceName", m_cdpInterfaceName)
+        .append("cdpCacheAddressType", CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()))
+        .append("cdpCacheAddress", m_cdpCacheAddress)
+        .append("cdpCacheVersion", m_cdpCacheVersion)
+        .append("cdpCachedeviceId", m_cdpCacheDeviceId)
+        .append("cdpCachedevicePort", m_cdpCacheDevicePort)
+        .append("cdpCachedevicePlatform", m_cdpCacheDevicePlatform)
+        .append("createTime", m_cdpLinkCreateTime)
+        .append("lastPollTime", m_cdpLinkLastPollTime)
+        .toString();
 	}
 
 
