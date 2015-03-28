@@ -64,8 +64,8 @@
       <bundle>mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
     </feature>
 
-    <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
-      <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
+    <feature name="commons-cli" description="Apache :: commons-cli" version="1.2">
+      <bundle>mvn:commons-cli/commons-cli/1.2</bundle>
     </feature>
 
     <feature name="commons-collections" description="Apache :: commons-collections" version="${commonsCollectionsVersion}">
@@ -88,6 +88,14 @@
       <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
     </feature>
 
+    <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
+      <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
+    </feature>
+
+    <feature name="commons-exec" description="Apache :: commons-exec" version="1.2">
+      <bundle>mvn:org.apache.commons/commons-exec/1.2</bundle>
+    </feature>
+
     <feature name="commons-io" description="Apache :: commons-io" version="${commonsIoVersion}">
       <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
     </feature>
@@ -98,6 +106,10 @@
 
     <feature name="commons-lang" description="Apache :: commons-lang" version="${commonsLangVersion}">
       <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
+    </feature>
+
+    <feature name="commons-net" description="Apache :: commons-net" version="3.3">
+      <bundle>mvn:commons-net/commons-net/3.3</bundle>
     </feature>
 
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
@@ -461,9 +473,12 @@
       <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
       <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
 
-      <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
-
+      <feature>commons-cli</feature>
+      <feature>commons-exec</feature>
+      <feature>commons-net</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.system-report/${project.version}</bundle>
       <!-- <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle> -->
+      <!-- <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle> -->
       <!-- <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle> -->
     </feature>
 </features>
