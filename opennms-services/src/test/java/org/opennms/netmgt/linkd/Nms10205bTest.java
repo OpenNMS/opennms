@@ -30,6 +30,9 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.iproute;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.lldp;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.ospf;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;

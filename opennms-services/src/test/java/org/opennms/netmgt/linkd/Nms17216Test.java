@@ -31,6 +31,8 @@ package org.opennms.netmgt.linkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.cdp;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.lldp;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_SNMP_RESOURCE;
