@@ -48,14 +48,15 @@ import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.rest.MultivaluedMapImpl;
-import org.opennms.web.rest.RequisitionAccessService;
 import org.opennms.web.servlet.MissingParameterException;
+import org.opennms.web.svclayer.api.RequisitionAccessService;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * Changes the label of a node, throws an event signaling that change, and then

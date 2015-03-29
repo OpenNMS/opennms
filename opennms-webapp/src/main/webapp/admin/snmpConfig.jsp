@@ -30,7 +30,7 @@
 --%>
 
 <%@page import="com.google.common.base.Strings"%>
-<%@page import="org.opennms.web.snmpinfo.SnmpInfo"%>
+<%@page import="org.opennms.web.svclayer.model.SnmpInfo"%>
 <%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
 <%@page language="java" contentType="text/html" session="true"%>
 
@@ -153,7 +153,12 @@
 	 * On Version change only the specificy section is shown.
 	 */
 	function onVersionChange() {
-        var activeClass = 'snmp-' + getVersion("version");
+	    var version = getVersion("version");
+
+	    $("select[name='version'] option[value!='" + version + "']").removeAttr('selected');
+        $("select[name='version'] option[value='" + version + "']").attr('selected', true);
+
+        var activeClass = 'snmp-' + version;
 
 		// hide all not selected elements and show selected Element
 		$("div[class*='snmp-']").each(function() {
@@ -163,6 +168,7 @@
 		    $(this).addClass("hidden");
 		  }
 		});
+		return true;
 	}
 
 	function cancel() {
@@ -183,11 +189,10 @@
 		// ensure that there is a default :)
 		if (Strings.isNullOrEmpty(selectedOption)) selectedOption = defaultOption;
 
-		final String optionTemplate = "<option %s>%s</option>";
+		final String optionTemplate = "<option value=\"%s\" %s>%s</option>";
 		String optionsString = "";
 		for (String eachOption : options) {
-			optionsString += String.format(optionTemplate, eachOption.equals(selectedOption) ? "selected" : "",
-					eachOption);
+			optionsString += String.format(optionTemplate, eachOption, eachOption.equals(selectedOption) ? "selected" : "", eachOption);
 			optionsString += "\n";
 		}
 		return optionsString.trim();

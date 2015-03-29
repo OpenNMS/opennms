@@ -52,7 +52,7 @@
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.api.Authentication,
-		org.opennms.web.svclayer.ResourceService
+		org.opennms.web.svclayer.api.ResourceService
 	"
 %>
 
@@ -336,7 +336,7 @@
             	(ifindex <%=linkInterface.getIfindex()%>)
                 
                 <% if (linkInterface.getInterface().getSnmpIfAlias() != null && !linkInterface.getInterface().getSnmpIfAlias().equals("")) { %>
-                    ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>"
+                    (ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>)
                 <% } else { %> 
                  	&nbsp;
     			<% } %> 

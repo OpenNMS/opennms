@@ -74,7 +74,16 @@
     <bean id="eventDao" class="org.opennms.netmgt.dao.mock.MockEventDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventCountDao" ref="eventDao" />
-    
+
+    <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.mock.MockFilterFavoriteDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
+
+    <bean id="hwEntityDao" class="org.opennms.netmgt.dao.mock.MockHwEntityDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityDao" ref="hwEntityDao" />
+
+    <bean id="hwEntityAttributeTypeDao" class="org.opennms.netmgt.dao.mock.MockHwEntityAttributeTypeDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao" ref="hwEntityAttributeTypeDao" />
+
     <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.mock.MockIpInterfaceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IpInterfaceDao" ref="ipInterfaceDao" />
 
@@ -83,6 +92,9 @@
 
     <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.mock.MockJavaMailConfigurationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
+
+    <bean id="linkStateDao" class="org.opennms.netmgt.dao.mock.MockLinkStateDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.LinkStateDao" ref="linkStateDao" />
 
     <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.mock.MockLocationMonitorDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />
@@ -104,6 +116,12 @@
 
     <bean id="outageDao" class="org.opennms.netmgt.dao.mock.MockOutageDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
+
+    <bean id="pathOutageDao" class="org.opennms.netmgt.dao.mock.MockPathOutageDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
+
+    <bean id="reportCatalogDao" class="org.opennms.netmgt.dao.mock.MockReportCatalogDao"/>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ReportCatalogDao" ref="reportCatalogDao" />
 
     <bean id="resourceDao" class="org.opennms.netmgt.dao.mock.MockResourceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao"/>

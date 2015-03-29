@@ -68,11 +68,11 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/web/springframework/security/AuthenticationIntegrationTest-context.xml"
 })
 @JUnitConfigurationEnvironment
@@ -104,7 +104,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameAdmin() {
-        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
+        SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "admin", user.getUsername());
         assertEquals("Full name", "Administrator", user.getFullName());
@@ -127,7 +127,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameRtc() {
-        OnmsUser user = m_springSecurityDao.getByUsername("rtc");
+        SpringSecurityUser user = m_springSecurityDao.getByUsername("rtc");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "rtc", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -148,7 +148,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
         m_userManager.save(newUser);
 
-        final OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
+        final SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "tempuser", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -169,7 +169,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
         m_userManager.save(newUser);
 
-        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
+        SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "dashboard", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -206,7 +206,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
-            OnmsUser user;
+            SpringSecurityUser user;
             Collection<? extends GrantedAuthority> authorities;
 
             user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
@@ -277,7 +277,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
-            OnmsUser user;
+            SpringSecurityUser user;
             Collection<? extends GrantedAuthority> authorities;
 
             user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");

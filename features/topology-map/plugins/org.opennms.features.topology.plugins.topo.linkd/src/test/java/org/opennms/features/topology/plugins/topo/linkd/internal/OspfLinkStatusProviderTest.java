@@ -28,19 +28,31 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
-import org.opennms.netmgt.model.*;
-
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OspfLink;
 
 public class OspfLinkStatusProviderTest {
 
@@ -186,7 +198,7 @@ public class OspfLinkStatusProviderTest {
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(m_node1);
         alarm1.setIfIndex(10101);
-        alarm1.setUei("uei.opennms.org/internal/topology/linkDown");
+        alarm1.setUei(EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI);
         alarms.add(alarm1);
 
         return alarms;

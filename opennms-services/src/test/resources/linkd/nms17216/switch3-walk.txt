@@ -1,10 +1,7 @@
 .1.0.8802.1.1.2.1.3.1.0 = INTEGER: 4
 .1.0.8802.1.1.2.1.3.2.0 = Hex-STRING: F4 EA 67 EB DC 00 
 .1.0.8802.1.1.2.1.3.3.0 = STRING: "Switch3"
-.1.0.8802.1.1.2.1.3.4.0 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
+.1.0.8802.1.1.2.1.3.4.0 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
 .1.0.8802.1.1.2.1.3.5.0 = Hex-STRING: 20 00 
 .1.0.8802.1.1.2.1.3.6.0 = Hex-STRING: 20 00 
 .1.0.8802.1.1.2.1.3.7.1.2.1 = INTEGER: 5
@@ -106,14 +103,8 @@ Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
 .1.0.8802.1.1.2.1.4.1.1.8.0.20.2 = STRING: "GigabitEthernet0/20"
 .1.0.8802.1.1.2.1.4.1.1.9.0.19.1 = STRING: "Switch2"
 .1.0.8802.1.1.2.1.4.1.1.9.0.20.2 = STRING: "Switch2"
-.1.0.8802.1.1.2.1.4.1.1.10.0.19.1 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2011 by Cisco Systems, Inc.
-Compiled Thu 05-May-11 02:53 by prod_rel_team"
-.1.0.8802.1.1.2.1.4.1.1.10.0.20.2 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2011 by Cisco Systems, Inc.
-Compiled Thu 05-May-11 02:53 by prod_rel_team"
+.1.0.8802.1.1.2.1.4.1.1.10.0.19.1 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team"
+.1.0.8802.1.1.2.1.4.1.1.10.0.20.2 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team"
 .1.0.8802.1.1.2.1.4.1.1.11.0.19.1 = Hex-STRING: 20 00 
 .1.0.8802.1.1.2.1.4.1.1.11.0.20.2 = Hex-STRING: 20 00 
 .1.0.8802.1.1.2.1.4.1.1.12.0.19.1 = Hex-STRING: 20 00 
@@ -124,10 +115,7 @@ Compiled Thu 05-May-11 02:53 by prod_rel_team"
 .1.0.8802.1.1.2.1.4.2.1.4.0.20.2.1.4.172.16.10.2 = INTEGER: 0
 .1.0.8802.1.1.2.1.4.2.1.5.0.19.1.1.4.172.16.10.2 = OID: .0.0
 .1.0.8802.1.1.2.1.4.2.1.5.0.20.2.1.4.172.16.10.2 = OID: .0.0
-.1.3.6.1.2.1.1.1.0 = STRING: Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Tue 28-Sep-10 13:44 by prod_rel_team
+.1.3.6.1.2.1.1.1.0 = STRING: Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team
 .1.3.6.1.2.1.1.2.0 = OID: .1.3.6.1.4.1.9.1.716
 .1.3.6.1.2.1.1.3.0 = Timeticks: (921205) 2:33:32.05
 .1.3.6.1.2.1.1.4.0 = STRING: Christian Pape <Christian.Pape@informatik.hs-fulda.de>
@@ -12346,22 +12334,10 @@ Compiled Wed 07-Jan-09 19:29 by gereddy
 .1.3.6.1.4.1.9.9.23.1.2.1.1.4.10020.4 = Hex-STRING: AC 10 0A 02 
 .1.3.6.1.4.1.9.9.23.1.2.1.1.4.10023.1 = Hex-STRING: AC 10 0A 04 
 .1.3.6.1.4.1.9.9.23.1.2.1.1.4.10024.2 = Hex-STRING: AC 10 0A 04 
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10019.3 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2011 by Cisco Systems, Inc.
-Compiled Thu 05-May-11 02:53 by prod_rel_team"
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10020.4 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2011 by Cisco Systems, Inc.
-Compiled Thu 05-May-11 02:53 by prod_rel_team"
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10023.1 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
-.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10024.2 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2010 by Cisco Systems, Inc.
-Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10019.3 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10020.4 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(58)SE1, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2011 by Cisco Systems, Inc. Compiled Thu 05-May-11 02:53 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10023.1 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
+.1.3.6.1.4.1.9.9.23.1.2.1.1.5.10024.2 = STRING: "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2010 by Cisco Systems, Inc. Compiled Tue 28-Sep-10 13:44 by prod_rel_team"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.6.10019.3 = STRING: "Switch2"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.6.10020.4 = STRING: "Switch2"
 .1.3.6.1.4.1.9.9.23.1.2.1.1.6.10023.1 = STRING: "Switch5"

@@ -28,26 +28,26 @@
 
 package org.opennms.netmgt.linkd;
 
-import static org.opennms.netmgt.nb.TestNetworkBuilder.ACCESSPOINT_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.ACCESSPOINT_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_MAC;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.ACCESSPOINT_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.ACCESSPOINT_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_MAC;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DARWIN_10_8_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DARWIN_10_8_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DARWIN_10_8_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_SNMP_RESOURCE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,0 +1,33 @@
+
+==== Users
+
+Since users are not currently stored in the database, the ReST interface for them is not as full-fledged as that of nodes, etc.
+
+IMPORTANT: You cannot use hibernate criteria for filtering.
+You may need to touch the `$OPENNMS_HOME/etc/users.xml` file on the filesystem for any addition or modification actions to take effect (see link:http://jira.opennms.org/browse/NMS-6469[NMS-6469] for details).
+
+===== GETs (Reading Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter           | Description
+| `/users`            | Get a list of users.
+| `/users/{username}` | Get a specific user, by username.
+|===
+
+===== POSTs (Adding Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter | Description
+| `/users`  | Add a user. If supplying a password it is assumed to be hashed or encrypted already, at least as of 1.12.5.
+              To indicate that the supplied password uses the salted encryption algorithm rather than the older _MD5_ based algorithm, you need to pass an element named `passwordSalt` with text `true` after the password element (or key/value pairs if using _JSON_).
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter           | Description
+| `/users/{username}` | Update an existing user's full-name, user-comments, password, passwordSalt and duty-schedule values.
+|===

@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms003NetworkBuilder extends TestNetworkBuilder {
+public class Nms003NetworkBuilder extends NmsNetworkBuilder {
     static {
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("172.16.40.1"), 40);
         SWITCH1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.246"), 10101);

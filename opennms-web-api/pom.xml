@@ -39,6 +39,14 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jfreechart-dependencies</artifactId>
       <type>pom</type>
@@ -73,6 +81,10 @@
       <artifactId>org.opennms.core.test-api.db</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
@@ -80,6 +92,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

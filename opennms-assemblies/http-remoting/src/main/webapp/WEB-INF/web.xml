@@ -7,12 +7,6 @@
 
   <display-name>opennms-remoting</display-name>
 
-  <!--  This is used by the Spring Log4jConfigListener <listener> below -->
-  <context-param>
-    <param-name>log4jConfigLocation</param-name>
-    <param-value>/WEB-INF/log4j.properties</param-value>
-  </context-param>
-
   <!--  This is used by the Spring ContextLoaderListener <listener> below -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
