@@ -1,7 +1,5 @@
 
-=== CORS Support
-
-==== Why do I need CORS support?
+=== Why do I need CORS support?
 
 By default, many browsers implement a _same origin policy_ which prevents making requests to a resource, on an origin that's different from the source origin.
 
@@ -14,7 +12,7 @@ For further details, see:
 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS[Mozilla's HTTP access control (CORS)]
 * http://www.w3.org/TR/cors/[W3C's CORS Spec]
 
-==== How can I enable CORS support?
+=== How can I enable CORS support?
 
 CORS support for the REST interface (or any other part of the Web UI) can be enabled as follows:
 
@@ -34,7 +32,7 @@ The result should look like:
 
 . Restart OpenNMS
 
-==== How can I configure CORS support?
+=== How can I configure CORS support?
 
 CORS support is provided by the *org.ebaysf.web.cors.CORSFilter* servlet filter.
 
@@ -45,4 +43,3 @@ By default, the allowed origins parameter is set to '*'.
 The complete list of parameters supported are available from:
 
 * https://github.com/ebay/cors-filter
-
