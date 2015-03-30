@@ -10,31 +10,40 @@
   <packaging>pom</packaging>
   <name>OpenNMS Features</name>
   <modules>
+
+    <!-- ActiveMQ broker and JMS features -->
+    <module>activemq</module>
+
+    <!-- OpenNMS Provisioning API and implementations -->
+    <module>provisioning</module>
+
+    <!-- OpenNMS Polling API -->
+    <module>poller</module>
+
     <!-- Events -->
     <module>events</module>
 
+    <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
-    <module>instrumentationLogReader</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
-    <module>ncs</module>
-    <module>poller</module>
-    <module>provisioning</module>
+
+    <!-- OpenNMS Reporting API and implementations -->
     <module>reporting</module>
+
+    <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
     <module>remote-poller-jnlp</module>
     <module>remote-poller-gwt</module>
-    <module>request-tracker</module>
-    <module>springframework-security</module>
-    <module>system-report</module>
+
+    <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
-    <module>geocoder</module>
-    <module>name-cutter</module>
+    <module>request-tracker</module>
 
-   <!-- OpenNMS OSGI Core -->
-   <module>opennms-osgi-core</module>
+    <!-- OpenNMS OSGI Core -->
+    <module>opennms-osgi-core</module>
 
-    <!-- Jmx config generator -->
+    <!-- JMX config generator -->
     <module>jmx-config-generator</module>
     <module>jmx-config-generator-webui</module>   
  
@@ -65,17 +74,25 @@
     <module>gwt-snmpselect-list</module>
     <module>gwt-tableresources</module>
 
-    <!-- Notifications -->
+    <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
-    <!-- OpenNMS Vaadin Dashboard -->
+    <!-- Dashboard and dashlet UI elements -->
     <module>vaadin-dashboard</module>
     <module>vaadin-dashlets</module>
 
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>
+
+    <!-- Other projects -->
+    <module>geocoder</module>
+    <module>instrumentationLogReader</module>
+    <module>name-cutter</module>
+    <module>ncs</module>
+    <module>springframework-security</module>
+    <module>system-report</module>
   </modules>
 </project>

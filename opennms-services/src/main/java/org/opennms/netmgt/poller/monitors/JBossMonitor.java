@@ -28,13 +28,9 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
-import java.util.Map;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.JBossConnectionFactory;
-
-/*
+/**
  * The class is responsible for getting the connection to the JBoss server.  The
  * super class (JMXMonitor) performs the checking to see if the service exists and 
  * how long it took to make the connection.
@@ -42,21 +38,10 @@ import org.opennms.protocols.jmx.connectors.JBossConnectionFactory;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-/**
- * <p>JBossMonitor class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class JBossMonitor extends JMXMonitor {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.monitors.JMXMonitor#getMBeanServer(java.util.Map)
-     */
-    /** {@inheritDoc} */
     @Override
-    public ConnectionWrapper getMBeanServerConnection(Map<String,Object> parameterMap, InetAddress address) {
-        return  JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
+    protected String getConnectionName() {
+        return JmxConnectors.JBOSS;
     }
-
 }

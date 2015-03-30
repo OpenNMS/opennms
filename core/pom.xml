@@ -33,6 +33,7 @@
     <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
+    <module>jmx</module>
     <module>lib</module>
     <module>logging-api</module>
     <module>runtime</module>

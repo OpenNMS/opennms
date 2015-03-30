@@ -184,12 +184,13 @@ public abstract class SnmpWalker implements Closeable {
         m_signal.await();
     }
     
-    public void waitFor(long timeout) throws InterruptedException {
-        if (m_signal.await(timeout, TimeUnit.MILLISECONDS)) {
-            // Everything completed on time
-        } else {
-            handleTimeout("Timeout of " + timeout + " expired while waiting for " + getClass().getSimpleName() + " to finish");
-        }
+    public boolean waitFor(long timeout) throws InterruptedException {
+        return m_signal.await(timeout, TimeUnit.MILLISECONDS);
+        /*
+         * NOTE: It is wrong to call handleTimeout here (which someone added). A timeout waiting for an agent respond
+         * is NOT the same as deciding you want to wait a while to see if the walker has finished and then do something
+         * else and then come back and potentially wait for another few millis.
+         */ 
     }
     
     // processErrors returns true if we need to retry the request and false otherwise
