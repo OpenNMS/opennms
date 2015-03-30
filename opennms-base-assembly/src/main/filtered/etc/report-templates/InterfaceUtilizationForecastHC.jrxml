@@ -230,12 +230,12 @@
 	<parameter name="ifResourceId" class="java.lang.String">
 		<parameterDescription><![CDATA[Resource ID for the interface]]></parameterDescription>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<queryString language="resourceQuery">
 		<![CDATA[--rrddir $P{rrdDir}/snmp --nodeid $P{nodeId} --resourcetype $P{ifResourceId} --dsname ifHCInOctets,ifHCOutOctets --string ifSpeed]]>
