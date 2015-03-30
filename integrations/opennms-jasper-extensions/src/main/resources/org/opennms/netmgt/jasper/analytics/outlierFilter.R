@@ -1,5 +1,3 @@
-library(zoo)
-
 # Options
 inputFile <- 'stdin'
 
