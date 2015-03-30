@@ -147,7 +147,7 @@
               Add the webapp JAR itself and WEB-INF/classes to the bundle classpath. 
               All embedded JAR files will be appended to this list as well.
             -->
-            <Bundle-ClassPath>.,WEB-INF/classes</Bundle-ClassPath>
+            <Bundle-ClassPath>.,WEB-INF/classes,WEB-INF/lib/opennms-webapp-${project.version}.jar</Bundle-ClassPath>
             <!-- Directory that will hold embedded dependency JAR files -->
             <Embed-Directory>WEB-INF/lib</Embed-Directory>
             <!--
@@ -164,11 +164,66 @@
                   - web.xml
                   - Spring
               -->
+              org.eclipse.jetty.servlet,
+              org.opennms.core.soa.config,
+              org.springframework.beans.factory.config;version="[4.0,5)",
+              org.springframework.context.config;version="[4.0,5)",
               org.springframework.context.support;version="[4.0,5)",
               org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
               org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              <!-- Spring Security namespace handler -->
+              org.springframework.security.config;version="[3.2,4)",
+              org.springframework.security.web.authentication;version="[3.2,4)",
+              org.springframework.transaction.config;version="[4.0,5)",
+              org.springframework.web.context;version="[4.0,5)",
               org.springframework.web.filter;version="[4.0,5)",
-              org.eclipse.jetty.servlet,
+
+              <!-- Spring Web Flow -->
+              <!-- There are no versions here because the webflow JAR is a wrapped dep :/ -->
+              org.springframework.webflow.expression,
+              org.springframework.webflow.expression.el,
+              org.springframework.webflow.expression.spel,
+              org.springframework.webflow.scope,
+              org.springframework.webflow.security,
+              org.springframework.webflow.engine,
+              org.springframework.webflow.engine.builder,
+              org.springframework.webflow.engine.builder.model,
+              org.springframework.webflow.engine.builder.support,
+              org.springframework.webflow.engine.impl,
+              org.springframework.webflow.engine.model,
+              org.springframework.webflow.engine.model.registry,
+              org.springframework.webflow.engine.model.builder,
+              org.springframework.webflow.engine.model.builder.xml,
+              org.springframework.webflow.engine.support,
+              org.springframework.webflow.conversation,
+              org.springframework.webflow.conversation.impl,
+              org.springframework.webflow.mvc,
+              org.springframework.webflow.mvc.portlet,
+              org.springframework.webflow.mvc.builder,
+              org.springframework.webflow.mvc.view,
+              org.springframework.webflow.mvc.servlet,
+              org.springframework.webflow.persistence,
+              org.springframework.webflow.context,
+              org.springframework.webflow.context.web,
+              org.springframework.webflow.context.portlet,
+              org.springframework.webflow.context.servlet,
+              org.springframework.webflow.validation,
+              org.springframework.webflow.action,
+              org.springframework.webflow.execution,
+              org.springframework.webflow.execution.factory,
+              org.springframework.webflow.execution.repository,
+              org.springframework.webflow.execution.repository.snapshot,
+              org.springframework.webflow.execution.repository.impl,
+              org.springframework.webflow.execution.repository.support,
+              org.springframework.webflow.test,
+              org.springframework.webflow.test.execution,
+              org.springframework.webflow.config,
+              org.springframework.webflow.executor,
+              org.springframework.webflow.core,
+              org.springframework.webflow.core.collection,
+              org.springframework.webflow.upgrade,
+              org.springframework.webflow.definition,
+              org.springframework.webflow.definition.registry,
 
               <!-- Mark some packages that dependency JARs rely on as optional -->
               <!-- Optional dependencies of jdom -->
@@ -205,7 +260,25 @@
               This needs to be changed to allow the webapp to function. We need to resolve
               package conflicts between opennms-webapp and other projects.
             -->
-            <Export-Package>!*</Export-Package>
+            <Export-Package>
+              <!--
+              org.opennms.web.account.selfService,
+              org.opennms.web.admin.discovery,
+              org.opennms.web.admin.nodeManagement,
+              org.opennms.web.admin.notification,
+              org.opennms.web.admin.roles,
+              org.opennms.web.admin.users,
+              org.opennms.web.alarm,
+              org.opennms.web.asset,
+              org.opennms.web.category,
+              org.opennms.web.element,
+              org.opennms.web.event,
+              org.opennms.web.graph,
+              org.opennms.web.mail,
+              org.opennms.web.nodelabel
+              -->
+              !*
+            </Export-Package>
           </instructions>
         </configuration>
       </plugin>

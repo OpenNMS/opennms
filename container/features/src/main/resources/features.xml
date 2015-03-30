@@ -131,7 +131,7 @@
       <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle>
       <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
       <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
-      <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Export-Package=org.hibernate*;version="3.6.10"</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
     </feature>
 
@@ -205,13 +205,15 @@
       <feature>commons-codec</feature>
 
       <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
       <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
     </feature>
 
-    <feature name="spring-webflow" description="Spring :: Webflow" version="${springWebFlowVersion}">
+    <feature name="spring-webflow" description="Spring :: Web Flow" version="${springWebFlowVersion}">
       <bundle>wrap:mvn:opensymphony/ognl/2.6.11</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-binding/${springWebFlowVersion}</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
