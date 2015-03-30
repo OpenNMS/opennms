@@ -80,6 +80,8 @@
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
 
+  <!-- NOTE, this filter is not mapped to anything by default.  To enable CORS for ReST,
+       uncomment the "CORS Filter" <filter-mapping> section later in this file. -->
   <filter>
     <description>Allows "cross-site scripting" for the REST services.</description>
     <filter-name>CORS Filter</filter-name>
@@ -179,10 +181,12 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <!--
   <filter-mapping>
     <filter-name>CORS Filter</filter-name>
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
+  -->
 
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
