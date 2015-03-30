@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.support;
+package org.opennms.web.svclayer.model;
 
 public class ReportRepositoryDescription {
     

@@ -26,16 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.controller;
 
 /**
- * <p>SiteStatusViewError class.</p>
+ * <p>SurveillanceViewError class.</p>
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @version $Id: $
  * @since 1.8.1
  */
-public class SiteStatusViewError {
+public class SurveillanceViewError {
 	
 	private String m_shortDescr;
 	private String m_longDescr;

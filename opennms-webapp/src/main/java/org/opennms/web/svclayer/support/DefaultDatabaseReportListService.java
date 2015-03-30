@@ -32,6 +32,8 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
 import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.web.svclayer.model.DatabaseReportDescription;
+import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 
 import java.util.ArrayList;
 import java.util.List;

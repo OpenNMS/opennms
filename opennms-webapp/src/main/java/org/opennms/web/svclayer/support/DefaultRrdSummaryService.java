@@ -47,7 +47,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.svclayer.RrdSummaryService;
-import org.opennms.web.svclayer.SummarySpecification;
+import org.opennms.web.svclayer.model.SummarySpecification;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 

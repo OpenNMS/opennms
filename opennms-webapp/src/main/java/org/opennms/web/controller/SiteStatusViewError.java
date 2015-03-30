@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.controller.statisticsReports;
-
-import org.opennms.netmgt.model.OnmsResource;
+package org.opennms.web.controller;
 
 /**
- * <p>PrettyOnmsResource class.</p>
+ * <p>SiteStatusViewError class.</p>
  *
- * @author jeffg
- * This class extends OnmsResource and overrides the toString() method, providing
- * a more human-readable description of the resource.
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @version $Id: $
  * @since 1.8.1
  */
-public class PrettyOnmsResource extends OnmsResource {
-    /**
-     * <p>Constructor for PrettyOnmsResource.</p>
-     *
-     * @param rs a {@link org.opennms.netmgt.model.OnmsResource} object.
-     */
-    public PrettyOnmsResource(OnmsResource rs) {
-        super(rs.getName(), rs.getLabel(), rs.getResourceType(), rs.getAttributes(), rs.getChildResources());
-    }
-    
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String toString() {
-        return this.getResourceType().getLabel() + ": " + this.getLabel();
-    }
+public class SiteStatusViewError {
+	
+	private String m_shortDescr;
+	private String m_longDescr;
+
+	/**
+	 * <p>getShortDescr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
+	public String getShortDescr() {
+		return m_shortDescr;
+	}
+
+	/**
+	 * <p>setShortDescr</p>
+	 *
+	 * @param shortDescr a {@link java.lang.String} object.
+	 */
+	public void setShortDescr(String shortDescr) {
+		m_shortDescr = shortDescr;
+	}
+	
+	/**
+	 * <p>getLongDescr</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
+	public String getLongDescr() {
+		return m_longDescr;
+	}
+
+	/**
+	 * <p>setLongDescr</p>
+	 *
+	 * @param longDescr a {@link java.lang.String} object.
+	 */
+	public void setLongDescr(String longDescr) {
+		m_longDescr = longDescr;
+	}
+	
 }

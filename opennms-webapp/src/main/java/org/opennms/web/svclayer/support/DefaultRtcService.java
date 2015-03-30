@@ -43,6 +43,8 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.RtcService;
+import org.opennms.web.svclayer.model.RtcNode;
+import org.opennms.web.svclayer.model.RtcNodeModel;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -62,7 +64,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     /**
      * <p>getNodeList</p>
      *
-     * @return a {@link org.opennms.web.svclayer.support.RtcNodeModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.RtcNodeModel} object.
      */
     @Override
     public RtcNodeModel getNodeList() {

@@ -38,8 +38,8 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.command.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.DistributedPollerService;
-import org.opennms.web.svclayer.LocationMonitorListModel;
-import org.opennms.web.svclayer.LocationMonitorListModel.LocationMonitorModel;
+import org.opennms.web.svclayer.model.LocationMonitorListModel;
+import org.opennms.web.svclayer.model.LocationMonitorListModel.LocationMonitorModel;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
@@ -61,7 +61,7 @@ public class DefaultDistributedPollerService implements
     /**
      * <p>getLocationMonitorList</p>
      *
-     * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.LocationMonitorListModel} object.
      */
     @Override
     public LocationMonitorListModel getLocationMonitorList() {

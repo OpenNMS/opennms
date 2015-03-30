@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.support;
+package org.opennms.web.svclayer.model;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,17 +36,12 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.web.svclayer.model.RelativeTimePeriod;
 
 /**
  * <p>DistributedStatusHistoryModel class.</p>
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DistributedStatusHistoryModel {
     private List<OnmsMonitoringLocationDefinition> m_locations;

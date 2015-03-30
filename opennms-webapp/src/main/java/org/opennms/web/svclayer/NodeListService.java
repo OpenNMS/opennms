@@ -29,7 +29,7 @@
 package org.opennms.web.svclayer;
 
 import org.opennms.web.command.NodeListCommand;
-import org.opennms.web.svclayer.support.NodeListModel;
+import org.opennms.web.svclayer.model.NodeListModel;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -46,7 +46,7 @@ public interface NodeListService {
      * <p>createNodeList</p>
      *
      * @param command a {@link org.opennms.web.command.NodeListCommand} object.
-     * @return a {@link org.opennms.web.svclayer.support.NodeListModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
      */
     public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels);
 
@@ -54,7 +54,7 @@ public interface NodeListService {
      * <p>createNodeList</p>
      *
      * @param command a {@link org.opennms.web.command.NodeListCommand} object.
-     * @return a {@link org.opennms.web.svclayer.support.NodeListModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
      */
     public NodeListModel createNodeList(NodeListCommand command);
 }

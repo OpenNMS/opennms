@@ -26,54 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.core.spring.web;
+
+import org.springframework.binding.convert.converters.StringToDate;
+import org.springframework.binding.convert.service.DefaultConversionService;
 
 /**
- * <p>SurveillanceViewError class.</p>
+ * <p>ApplicationConversionService class.</p>
  *
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
+ * @deprecated This class is only used in commented-out segments of the webflow context.
  */
-public class SurveillanceViewError {
-	
-	private String m_shortDescr;
-	private String m_longDescr;
+public class ApplicationConversionService extends DefaultConversionService {
 
-	/**
-	 * <p>getShortDescr</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getShortDescr() {
-		return m_shortDescr;
-	}
+    /** {@inheritDoc} */
+    @Override
+    protected void addDefaultConverters() {
+    super.addDefaultConverters();
+    StringToDate dateConverter = new StringToDate();
+    dateConverter.setPattern("MM-dd-yyyy");
+    addConverter("shortDate", dateConverter);
+    }
 
-	/**
-	 * <p>setShortDescr</p>
-	 *
-	 * @param shortDescr a {@link java.lang.String} object.
-	 */
-	public void setShortDescr(String shortDescr) {
-		m_shortDescr = shortDescr;
-	}
-	
-	/**
-	 * <p>getLongDescr</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	public String getLongDescr() {
-		return m_longDescr;
-	}
-
-	/**
-	 * <p>setLongDescr</p>
-	 *
-	 * @param longDescr a {@link java.lang.String} object.
-	 */
-	public void setLongDescr(String longDescr) {
-		m_longDescr = longDescr;
-	}
-	
 }

@@ -46,10 +46,10 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.api.Util;
 import org.opennms.netmgt.model.SurveillanceStatus;
-import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.ProgressMonitor;
-import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.opennms.web.svclayer.model.AggregateStatus;
+import org.opennms.web.svclayer.model.ProgressMonitor;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -237,7 +237,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * <p>createSurveillanceTable</p>
      *
-     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public SimpleWebTable createSurveillanceTable() {
         return createSurveillanceTable("default", new ProgressMonitor());

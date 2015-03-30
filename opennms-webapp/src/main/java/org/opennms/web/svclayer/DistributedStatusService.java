@@ -31,7 +31,8 @@ package org.opennms.web.svclayer;
 import java.util.Date;
 
 import org.opennms.web.command.DistributedStatusDetailsCommand;
-import org.opennms.web.svclayer.support.DistributedStatusHistoryModel;
+import org.opennms.web.svclayer.model.DistributedStatusHistoryModel;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
@@ -49,7 +50,7 @@ public interface DistributedStatusService {
      *
      * @param command a {@link org.opennms.web.command.DistributedStatusDetailsCommand} object.
      * @param errors a {@link org.springframework.validation.Errors} object.
-     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public SimpleWebTable createStatusTable(DistributedStatusDetailsCommand command, Errors errors); 
     
@@ -58,7 +59,7 @@ public interface DistributedStatusService {
      *
      * @param startDate a java$util$Date object.
      * @param endDate a java$util$Date object.
-     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public SimpleWebTable createFacilityStatusTable(Date startDate, Date endDate);
 
@@ -70,7 +71,7 @@ public interface DistributedStatusService {
      * @param applicationName a {@link java.lang.String} object.
      * @param timeSpan a {@link java.lang.String} object.
      * @param previousLocation a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.svclayer.support.DistributedStatusHistoryModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.DistributedStatusHistoryModel} object.
      */
     public DistributedStatusHistoryModel createHistoryModel(String locationName,
             String monitorId, String applicationName, String timeSpan,

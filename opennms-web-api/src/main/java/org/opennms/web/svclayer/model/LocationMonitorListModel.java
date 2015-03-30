@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +83,7 @@ public class LocationMonitorListModel {
     /**
      * <p>addLocationMonitor</p>
      *
-     * @param locationMonitor a {@link org.opennms.web.svclayer.LocationMonitorListModel.LocationMonitorModel} object.
+     * @param locationMonitor a {@link org.opennms.web.svclayer.model.LocationMonitorListModel.LocationMonitorModel} object.
      */
     public void addLocationMonitor(LocationMonitorModel locationMonitor) {
         if (m_locationMonitors == null) {

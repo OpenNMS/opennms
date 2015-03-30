@@ -29,6 +29,7 @@
 package org.opennms.web.svclayer;
 
 import org.opennms.netmgt.config.attrsummary.Summary;
+import org.opennms.web.svclayer.model.SummarySpecification;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -44,7 +45,7 @@ public interface RrdSummaryService {
 	/**
 	 * <p>getSummary</p>
 	 *
-	 * @param specification a {@link org.opennms.web.svclayer.SummarySpecification} object.
+	 * @param specification a {@link org.opennms.web.svclayer.model.SummarySpecification} object.
 	 * @return a {@link org.opennms.netmgt.config.attrsummary.Summary} object.
 	 */
 	Summary getSummary(SummarySpecification specification);

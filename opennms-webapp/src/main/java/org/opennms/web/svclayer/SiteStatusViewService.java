@@ -32,6 +32,7 @@ import java.util.Collection;
 
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -42,10 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 @Transactional(readOnly=true)
 public interface SiteStatusViewService {
@@ -93,7 +90,7 @@ public interface SiteStatusViewService {
      * @param statusViewName a {@link java.lang.String} object.
      * @param statusSite a {@link java.lang.String} object.
      * @param rowLabel a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.svclayer.AggregateStatus} object.
+     * @return a {@link org.opennms.web.svclayer.model.AggregateStatus} object.
      */
     AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel);
 

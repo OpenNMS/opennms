@@ -30,6 +30,8 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
+import org.opennms.web.svclayer.model.ProgressMonitor;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -42,20 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
  */
 @Transactional(readOnly=true)
 public interface SurveillanceService {
@@ -64,8 +52,8 @@ public interface SurveillanceService {
      * <p>createSurveillanceTable</p>
      *
      * @param surveillanceViewName a {@link java.lang.String} object.
-     * @param progressMonitor a {@link org.opennms.web.svclayer.ProgressMonitor} object.
-     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @param progressMonitor a {@link org.opennms.web.svclayer.model.ProgressMonitor} object.
+     * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
     

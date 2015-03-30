@@ -29,6 +29,7 @@
 package org.opennms.web.svclayer;
 
 import org.opennms.web.command.LocationMonitorIdCommand;
+import org.opennms.web.svclayer.model.LocationMonitorListModel;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
@@ -44,7 +45,7 @@ public interface DistributedPollerService {
     /**
      * <p>getLocationMonitorList</p>
      *
-     * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.LocationMonitorListModel} object.
      */
     public LocationMonitorListModel getLocationMonitorList();
 
@@ -53,7 +54,7 @@ public interface DistributedPollerService {
      *
      * @param command a {@link org.opennms.web.command.LocationMonitorIdCommand} object.
      * @param errors a {@link org.springframework.validation.BindingResult} object.
-     * @return a {@link org.opennms.web.svclayer.LocationMonitorListModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.LocationMonitorListModel} object.
      */
     public LocationMonitorListModel getLocationMonitorDetails(LocationMonitorIdCommand command, BindingResult errors);
 

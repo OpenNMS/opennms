@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,6 @@ import org.springframework.validation.Errors;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SimpleWebTable {
 
@@ -174,7 +170,7 @@ public class SimpleWebTable {
 	 *
 	 * @param headerContent a {@link java.lang.Object} object.
 	 * @param headerStyle a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable.Cell} object.
 	 */
 	public Cell addColumn(Object headerContent, String headerStyle) {
 		Cell headerCell = new Cell(headerContent, headerStyle);
@@ -187,7 +183,7 @@ public class SimpleWebTable {
 	 * <p>addColumn</p>
 	 *
 	 * @param headerContent a {@link java.lang.Object} object.
-	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable.Cell} object.
 	 */
 	public Cell addColumn(Object headerContent) {
 		return addColumn(headerContent, "");
@@ -208,7 +204,7 @@ public class SimpleWebTable {
 	 * @param cellContent a {@link java.lang.Object} object.
 	 * @param cellStyle a {@link java.lang.String} object.
 	 * @param link a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable.Cell} object.
 	 */
 	public Cell addCell(Object cellContent, String cellStyle, String link) {
 		if (m_currentRow == null) {
@@ -225,7 +221,7 @@ public class SimpleWebTable {
 	 *
 	 * @param cellContent a {@link java.lang.Object} object.
 	 * @param cellStyle a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable.Cell} object.
 	 */
 	public Cell addCell(Object cellContent, String cellStyle) {
 		return addCell(cellContent, cellStyle, null);
@@ -236,7 +232,7 @@ public class SimpleWebTable {
 	 * <p>addCell</p>
 	 *
 	 * @param cellContent a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.web.svclayer.SimpleWebTable.Cell} object.
+	 * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable.Cell} object.
 	 */
 	public Cell addCell(String cellContent) {
 		return addCell(cellContent, "", null);

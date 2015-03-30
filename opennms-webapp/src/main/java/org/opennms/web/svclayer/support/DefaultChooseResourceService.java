@@ -39,6 +39,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
+import org.opennms.web.svclayer.model.ChooseResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.web.command.StatisticsReportCommand;
-import org.opennms.web.svclayer.support.StatisticsReportModel;
+import org.opennms.web.svclayer.model.StatisticsReportModel;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
@@ -57,7 +57,7 @@ public interface StatisticsReportService {
      *
      * @param command a {@link org.opennms.web.command.StatisticsReportCommand} object.
      * @param errors a {@link org.springframework.validation.BindingResult} object.
-     * @return a {@link org.opennms.web.svclayer.support.StatisticsReportModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.StatisticsReportModel} object.
      */
     public StatisticsReportModel getReport(StatisticsReportCommand command, BindingResult errors);
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.support;
+package org.opennms.web.svclayer.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,6 @@ import java.util.TreeSet;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
-import org.opennms.web.controller.statisticsReports.PrettyOnmsResource;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 
@@ -43,10 +42,36 @@ import org.springframework.validation.BindingResult;
  * Model object for web statistics reports.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class StatisticsReportModel {
+
+    /**
+     * This class extends OnmsResource and overrides the toString() method, providing
+     * a more human-readable description of the resource.
+     * 
+     * @author jeffg
+     */
+    public static class PrettyOnmsResource extends OnmsResource {
+        /**
+         * <p>Constructor for PrettyOnmsResource.</p>
+         *
+         * @param rs a {@link org.opennms.netmgt.model.OnmsResource} object.
+         */
+        public PrettyOnmsResource(OnmsResource rs) {
+            super(rs.getName(), rs.getLabel(), rs.getResourceType(), rs.getAttributes(), rs.getChildResources());
+        }
+
+        /**
+         * <p>toString</p>
+         *
+         * @return a {@link java.lang.String} object.
+         */
+        @Override
+        public String toString() {
+            return this.getResourceType().getLabel() + ": " + this.getLabel();
+        }
+    }
+
     public static class Datum implements Comparable<Datum> {
         private Double m_value;
         private OnmsResource m_resource;
@@ -61,7 +86,7 @@ public class StatisticsReportModel {
         }
         
         public OnmsResource getPrettyResource() {
-        	return new PrettyOnmsResource(m_resource);
+            return new PrettyOnmsResource(m_resource);
         }
     
         public void setResource(OnmsResource resource) {
@@ -152,7 +177,7 @@ public class StatisticsReportModel {
     /**
      * <p>addData</p>
      *
-     * @param datum a {@link org.opennms.web.svclayer.support.StatisticsReportModel.Datum} object.
+     * @param datum a {@link org.opennms.web.svclayer.model.StatisticsReportModel.Datum} object.
      */
     public void addData(Datum datum) {
         m_data.add(datum);

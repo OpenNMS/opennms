@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.support;
+package org.opennms.web.svclayer.model;
 
 import java.text.DecimalFormat;
 

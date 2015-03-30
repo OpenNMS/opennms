@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.model;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,14 +45,6 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SurveillanceTable {
     
@@ -90,7 +82,7 @@ public class SurveillanceTable {
     /**
      * <p>setWebTable</p>
      *
-     * @param webTable a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @param webTable a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public void setWebTable(SimpleWebTable webTable) {
     	m_webTable = webTable;
@@ -99,7 +91,7 @@ public class SurveillanceTable {
     /**
      * <p>getWebTable</p>
      *
-     * @return a {@link org.opennms.web.svclayer.SimpleWebTable} object.
+     * @return a {@link org.opennms.web.svclayer.model.SimpleWebTable} object.
      */
     public SimpleWebTable getWebTable() {
     	return m_webTable;
@@ -110,7 +102,7 @@ public class SurveillanceTable {
      *
      * @param row a int.
      * @param col a int.
-     * @param status a {@link org.opennms.web.svclayer.AggregateStatus} object.
+     * @param status a {@link org.opennms.web.svclayer.model.AggregateStatus} object.
      */
     public void setStatus(int row, int col, AggregateStatus status) {
         m_statusTable[row][col] = status;
@@ -121,7 +113,7 @@ public class SurveillanceTable {
      *
      * @param row a int.
      * @param col a int.
-     * @return a {@link org.opennms.web.svclayer.AggregateStatus} object.
+     * @return a {@link org.opennms.web.svclayer.model.AggregateStatus} object.
      */
     public AggregateStatus getStatus(int row, int col) {
         return m_statusTable[row][col];
@@ -149,7 +141,7 @@ public class SurveillanceTable {
      * <p>getStatusRow</p>
      *
      * @param row a int.
-     * @return an array of {@link org.opennms.web.svclayer.AggregateStatus} objects.
+     * @return an array of {@link org.opennms.web.svclayer.model.AggregateStatus} objects.
      */
     public AggregateStatus[] getStatusRow(int row) {
         return m_statusTable[row];
@@ -191,7 +183,7 @@ public class SurveillanceTable {
      * This method returns on ordered list of Aggregate Status columns
      * based on the array argument.
      *
-     * @param row an array of {@link org.opennms.web.svclayer.AggregateStatus} objects.
+     * @param row an array of {@link org.opennms.web.svclayer.model.AggregateStatus} objects.
      * @return List<AggregateStatus> orderedRow
      */
     public List<AggregateStatus> getColumnOrderedRow(AggregateStatus[] row) {
@@ -313,7 +305,7 @@ public class SurveillanceTable {
     /**
      * <p>getStatusTable</p>
      *
-     * @return an array of {@link org.opennms.web.svclayer.AggregateStatus} objects.
+     * @return an array of {@link org.opennms.web.svclayer.model.AggregateStatus} objects.
      */
     public AggregateStatus[][] getStatusTable() {
         return m_statusTable;
@@ -384,7 +376,7 @@ public class SurveillanceTable {
     /**
      * <p>setStatusTable</p>
      *
-     * @param statusTable an array of {@link org.opennms.web.svclayer.AggregateStatus} objects.
+     * @param statusTable an array of {@link org.opennms.web.svclayer.model.AggregateStatus} objects.
      */
     public void setStatusTable(AggregateStatus[][] statusTable) {
         m_statusTable = statusTable;

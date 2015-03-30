@@ -28,7 +28,7 @@
 
 package org.opennms.web.svclayer;
 
-import org.opennms.web.svclayer.support.ChooseResourceModel;
+import org.opennms.web.svclayer.model.ChooseResourceModel;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -45,7 +45,7 @@ public interface ChooseResourceService {
      *
      * @param resourceId a {@link java.lang.String} object.
      * @param endUrl a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.svclayer.support.ChooseResourceModel} object.
+     * @return a {@link org.opennms.web.svclayer.model.ChooseResourceModel} object.
      */
     public ChooseResourceModel findChildResources(String resourceId, String endUrl);
 }

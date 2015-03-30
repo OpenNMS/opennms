@@ -30,8 +30,8 @@ package org.opennms.web.svclayer;
 
 import java.util.List;
 
-import org.opennms.web.svclayer.support.DatabaseReportDescription;
-import org.opennms.web.svclayer.support.ReportRepositoryDescription;
+import org.opennms.web.svclayer.model.DatabaseReportDescription;
+import org.opennms.web.svclayer.model.ReportRepositoryDescription;
 
 /**
  * <p>DatabaseReportListService interface.</p>
