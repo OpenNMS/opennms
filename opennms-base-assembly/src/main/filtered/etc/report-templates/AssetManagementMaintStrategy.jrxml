@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="assetMgmtStrategic" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-13T16:06:34 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="assetMgmtStrategic" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="74d8d5da-3ed5-4f83-9373-3eea8d213ca5">
 	<property name="ireport.zoom" value="1.2100000000000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<subDataset name="summaryNodeAge">
+	<subDataset name="summaryNodeAge" uuid="2c371de7-9fb3-4d97-91a9-1dc79e3a2ed4">
 		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
 			<parameterDescription><![CDATA[]]></parameterDescription>
 			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
@@ -62,7 +64,7 @@ ORDER BY
 		<field name="contractstatus" class="java.lang.String"/>
 		<field name="sum" class="java.math.BigDecimal"/>
 	</subDataset>
-	<subDataset name="maintContractExpiresPerMonth">
+	<subDataset name="maintContractExpiresPerMonth" uuid="1a49220c-0c3a-4f07-8ef5-d68eefcbc449">
 		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 		</parameter>
@@ -101,7 +103,7 @@ ORDER BY
 			<groupExpression><![CDATA[$F{yearmonth}]]></groupExpression>
 		</group>
 	</subDataset>
-	<subDataset name="maintcontractSummary">
+	<subDataset name="maintcontractSummary" uuid="414333b8-7cab-45fb-9351-af50c168d405">
 		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 		</parameter>
@@ -149,10 +151,10 @@ ORDER BY
 		<field name="contractstatus" class="java.lang.String"/>
 		<field name="tally" class="java.lang.Long"/>
 	</subDataset>
-  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
-    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
-  </parameter>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="DATE_FORMAT" class="java.lang.String">
 		<parameterDescription><![CDATA[Your date format in maintenance contracts. Default is "YYYY-MM-DD"]]></parameterDescription>
 		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
@@ -169,37 +171,52 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band splitType="Stretch"/>
+		<band splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
 	</title>
 	<pageHeader>
-		<band height="57" splitType="Stretch">
+		<band height="80" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<image>
-				<reportElement x="391" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="361" y="0" width="194" height="50" uuid="7acbce7d-9a63-4d3e-95b1-8811ef0784df">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="452" height="29"/>
-				<textElement/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="0cfd9ccd-e81b-4281-94f0-d1fddb5facc6">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<text><![CDATA[Maintenance contracts Report]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="29" width="391" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<reportElement style="Creation-Date" x="0" y="60" width="355" height="20" uuid="f6a7a65b-648d-48f1-8144-fe9cf36ab77b">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="49" width="555" height="1"/>
-			</line>
 		</band>
 	</pageHeader>
 	<columnHeader>
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="723" splitType="Stretch">
+		<band height="665" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<stackedBarChart>
 				<chart evaluationTime="Report">
-					<reportElement x="0" y="245" width="555" height="215"/>
+					<reportElement x="0" y="208" width="555" height="215" uuid="9a22a6f5-b372-4e71-8c10-91f64a3f14eb"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["Age and maintenance contracts"]]></titleExpression>
@@ -212,7 +229,7 @@ ORDER BY
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="summaryNodeAge">
+						<datasetRun subDataset="summaryNodeAge" uuid="6e1e64d6-9a4a-4d9e-ab9c-3ef268a52c40">
 							<datasetParameter name="DS_DATE_FORMAT">
 								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
 							</datasetParameter>
@@ -262,7 +279,7 @@ ORDER BY
 			</stackedBarChart>
 			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement x="0" y="478" width="555" height="215"/>
+					<reportElement x="0" y="441" width="555" height="215" uuid="a5365fb3-8d02-44cc-ab2c-ad9fa9313baf"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["12 month forecast"]]></titleExpression>
@@ -275,7 +292,7 @@ ORDER BY
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="maintContractExpiresPerMonth">
+						<datasetRun subDataset="maintContractExpiresPerMonth" uuid="5ad99034-2a03-42bf-bd34-26951376331c">
 							<datasetParameter name="DS_DATE_FORMAT">
 								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
 							</datasetParameter>
@@ -323,7 +340,7 @@ ORDER BY
 			</stackedBarChart>
 			<pie3DChart>
 				<chart isShowLegend="true">
-					<reportElement x="0" y="47" width="269" height="165"/>
+					<reportElement x="0" y="10" width="269" height="165" uuid="8134332d-e84f-4d78-8569-f2b5c9c57567"/>
 					<chartTitle>
 						<font size="12" isBold="true"/>
 						<titleExpression><![CDATA["Maintenance contracts"]]></titleExpression>
@@ -338,7 +355,7 @@ ORDER BY
 				</chart>
 				<pieDataset maxCount="3" minPercentage="3.0">
 					<dataset>
-						<datasetRun subDataset="maintcontractSummary">
+						<datasetRun subDataset="maintcontractSummary" uuid="6d87b127-fc3e-48a3-bb44-597ab280ae13">
 							<datasetParameter name="DS_DATE_FORMAT">
 								<datasetParameterExpression><![CDATA[$P{DATE_FORMAT}]]></datasetParameterExpression>
 							</datasetParameter>
@@ -363,18 +380,18 @@ ORDER BY
 				</pie3DPlot>
 			</pie3DChart>
 			<rectangle radius="5">
-				<reportElement x="291" y="47" width="264" height="165" backcolor="#DFDFDF"/>
+				<reportElement x="291" y="10" width="264" height="165" backcolor="#DFDFDF" uuid="15320872-8f86-431b-b7cc-0e99e1b5fc48"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement style="Body" x="296" y="52" width="254" height="155"/>
+				<reportElement style="Body" x="296" y="15" width="254" height="155" uuid="4ea0635f-2002-41c4-8893-c571f7f345f9"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[This report shows an overview about maintenance contracts. The report shows contracts over all active nodes and if they have a running contract, expired or no contract. With age and maintenance contract you can see how old your devices are and if the devices have a maintenance contract. Additionally you can see how many devices in a age class have contracts, expired or no contracts. The last diagramm gives an forecast of how many maintenance contracts will expire in the next 12 month.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="722" width="555" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1" uuid="55929da6-5fb2-4f8e-8fa6-27b16e9fd258"/>
 			</line>
 		</band>
 	</detail>
@@ -382,17 +399,29 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="22" splitType="Stretch">
+		<band height="30" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement x="436" y="2" width="80" height="20"/>
+				<reportElement key="" style="Paging-Footer" x="436" y="5" width="80" height="20" uuid="730772d7-6692-445d-a07d-3c3344e72445">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="516" y="2" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement style="Paging-Footer" x="516" y="5" width="40" height="20" uuid="60a805f6-d2fd-45fd-a1bf-b0ee858ff484">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="869bafc1-eebd-4769-9629-f04aa1d0ea59">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+			</line>
 		</band>
 	</pageFooter>
 	<summary>

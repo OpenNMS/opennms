@@ -42,32 +42,34 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Search", null, "element/index.jsp");
         findElementByXpath("//h3[text()='Search for Nodes']");
 
-        clickMenuItem("Info", "Events", "event/index");
-        findElementByXpath("//h3[text()='Event Queries']");
-
-        clickMenuItem("Info", "Alarms", "alarm/index.htm");
-        findElementByXpath("//h3[text()='Alarm Queries']");
-
-        clickMenuItem("Info", "Notifications", "notification/index.jsp");
-        findElementByXpath("//h3[text()='Notification queries']");
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
+        findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
 
         clickMenuItem("Info", "Assets", "asset/index.jsp");
         findElementByXpath("//h3[text()='Search Asset Information']");
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
+        clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
+        findElementByXpath("//h3[text()='All Path Outages']");
+
+        clickMenuItem("Status", "Events", "event/index");
+        findElementByXpath("//h3[text()='Event Queries']");
+
+        clickMenuItem("Status", "Alarms", "alarm/index.htm");
+        findElementByXpath("//h3[text()='Alarm Queries']");
+
+        clickMenuItem("Status", "Notifications", "notification/index.jsp");
+        findElementByXpath("//h3[text()='Notification queries']");
 
         clickMenuItem("Status", "Outages", "outage/index.jsp");
         findElementByXpath("//h3[text()='Outage Menu']");
 
-        clickMenuItem("Status", "Path Outages", "pathOutage/index.jsp");
-        findElementByXpath("//h3[text()='All Path Outages']");
-
         clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
-        clickMenuItem("Status", "Surveillance", "surveillanceView.htm?viewName=default");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[text()='Surveillance View: default']")));
+        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Reports", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
@@ -82,7 +84,9 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        findElementByXpath("//h3[text()='Surveillance View: default']");
+        m_driver.switchTo().frame("surveillance-view-ui");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        frontPage();
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");

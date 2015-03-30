@@ -16,9 +16,7 @@
 == OpenNMS Development Team
 [options="header"]
 |===
-| Name and mail contact
 | Tarus Balog <tarus@opennms.org>
-| Matt Brozowski <brozow@opennms.org>
 | David Hustace <david@opennms.org>
 | Benjamin Reed <ranger@opennms.org>
 |===
@@ -33,6 +31,7 @@ include::common/preface.adoc[]
 [releasenotes-changelog]
 == Changelog
 :numbered!:
+include::releasenotes/changelog-15.adoc[]
 include::releasenotes/changelog-14.adoc[]
 include::releasenotes/changelog-1.13.adoc[]
 include::releasenotes/changelog-1.12.adoc[]

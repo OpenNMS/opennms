@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.events</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>16.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.events</groupId>
@@ -23,6 +23,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               org.opennms.netmgt.events.api.*;version="${project.version}",
+              org.opennms.netmgt.events.api.support.*;version="${project.version}",
               org.opennms.netmgt.xml.event.*;version="${project.version}"
             </Export-Package>
           </instructions>

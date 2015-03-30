@@ -90,7 +90,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" class="form-control" size="1">
+			<select name="deviceTypeName" class="form-control">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -106,7 +106,7 @@
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" size="1" class="form-control" onChange="switchStatus()">
+			<select name="statusName" class="form-control" onChange="switchStatus()">
 			<option value="${model.status}">${model.status}</option>
 			<c:choose> 
   				<c:when test="${model.status == 'up'}" >
@@ -143,7 +143,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" class="form-control" size="1">
+			<select name="deviceTypeName" class="form-control">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -159,7 +159,7 @@
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" class="form-control" size="1">
+			<select name="statusName" class="form-control">
 			<option value="up">up</option>
 			<option value="down">down</option>
 			</select>
@@ -241,7 +241,7 @@
 			 <tr>
 				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
 				 <td>
-					  <select name="loginM" class="form-control" size="1">
+					  <select name="loginM" class="form-control">
 					  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
 					  <option value="ssh">ssh</option>
 					  <option value="telnet">telnet</option>
@@ -251,7 +251,7 @@
 			 <tr>
 			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
 			 	<td>
-				  <select name="autoE" class="form-control" size="1">
+				  <select name="autoE" class="form-control">
 				  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
 				  <option value="1">1</option>
 				  <option value="0">0</option>

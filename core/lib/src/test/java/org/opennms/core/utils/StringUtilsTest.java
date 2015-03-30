@@ -52,6 +52,26 @@ public class StringUtilsTest {
         testCreateCmdArray(m_expected, "\"The\" \"quick\" \"fox\"");
     }
 
+    /**
+     * The behavior with \t \n and \r characters inside a quoted
+     * segment is odd.
+     */
+    @Test
+    public void testQuotesContainingWhitespace() {
+        String arg = "The quick \"brown \t\n\r \" fox";
+        String[] actual = StringUtils.createCommandArray(arg);
+        assertArrayEquals(new String[]{ "The", "quick", "brown ", " ", "fox" }, actual);
+    }
+
+    @Test
+    public void testCommandArrayWithSpecialChars() {
+        String arg = "The quick fox !@#$%^&*()-+[]{}|;:<>?,./";
+        String[] actual = StringUtils.createCommandArray(arg);
+        assertArrayEquals(new String[]{
+                "The", "quick", "fox", "!@#$%^&*()-+[]{}|;:<>?,./"
+                }, actual);
+    }
+
     @Test
     public void testWindowsPaths() {
     	if (File.separatorChar != '\\') return;
@@ -69,7 +89,7 @@ public class StringUtilsTest {
     }
     
     private void testCreateCmdArray(String[] expected, String arg) {
-        String[] actual = StringUtils.createCommandArray(arg, '@');
+        String[] actual = StringUtils.createCommandArray(arg);
         assertArrayEquals(expected, actual);
     }
     

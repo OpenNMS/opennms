@@ -63,7 +63,7 @@ public class NameEditForm extends Form implements ModelChangeListener<Item>, Vie
 		this.parameter = parameter;
 		setFormFieldFactory(new FormFieldFactory() {
 			@Override
-			public Field createField(Item item, Object propertyId, Component uiContext) {
+			public Field<?> createField(Item item, Object propertyId, Component uiContext) {
 				if (propertyId.toString().equals(MetaMBeanItem.SELECTED)) {
 					CheckBox c = new CheckBox(MetaMBeanItem.SELECTED);
 					return c;

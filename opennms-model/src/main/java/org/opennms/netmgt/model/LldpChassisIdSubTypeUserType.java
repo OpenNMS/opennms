@@ -36,7 +36,7 @@ import java.util.Properties;
 import org.hibernate.HibernateException;
 import org.hibernate.type.EnumType;
 import org.hibernate.type.IntegerType;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 
 public class LldpChassisIdSubTypeUserType extends EnumType {
 

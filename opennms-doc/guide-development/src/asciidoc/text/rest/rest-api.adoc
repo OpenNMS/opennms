@@ -1,0 +1,65 @@
+
+A RESTful interface is a web service conforming to the REST architectural style as described in the book link:http://oreilly.com/catalog/9780596529260[RESTful Web Services].
+This page is describes the RESTful interface for OpenNMS.
+
+=== ReST URL
+
+The base URL for Rest Calls is: http://opennmsserver:8980/opennms/rest/
+
+For instance, http://localhost:8980/opennms/rest/alarms/ will give you the current alarms in the system.
+
+=== Authentication
+
+Use HTTP Basic authentication to provide a valid username and password.
+By default you will not receive a challenge, so you must configure your ReST client library to send basic authentication proactively.
+
+=== Data format
+
+Jersey allows ReST calls to be made using either XML or JSON.
+By default a request to the API is returned in XML.
+To get JSON encoded responses one has to send the following header with the request: `Accept: application/json`.
+
+=== Standard Parameters
+
+The following are standard params which are available on most resources (noted below)
+
+.ReST standard parameter for resources
+[options="header", cols="1,10"]
+|===
+| Parameter   | Description
+| `limit`     | integer, limiting the number of results. This is particularly handy on events and notifications, where an accidental call with no limit could result in many thousands of results being returned, killing either the client or the server. If set to 0, then no limit applied
+| `offset`    | integer, being the numeric offset into the result set from which results should start being returned. E.g., if there are 100 result entries, offset is 15, and limit is 10, then entries 15-24 will be returned. Used for pagination
+2+| *Filtering*: All properties of the entity being accessed can be specified as parameters in either the _URL_ (for _GET_) or the form value (for _PUT_ and _POST_). If so, the value will be used to add a filter to the result. By default, the operation is equality, unless the `comparator` parameter is sent, in which case it applies to *all* comparisons in the filter. Multiple properties will result in an `AND` operation between the filter elements. Available comparators are:
+| `eq`        | Checks for equality
+| `ne`        | Checks for non-equality
+| `ilike`     | Case-insensitive wildcarding (`%` is the wildcard)
+| `like`      | Case-sensitive wildcarding (`%` is the wildcard)
+| `gt`        | Greater than
+| `lt`        | Less than
+| `ge`        | Greater than or equal
+| `le`        | Less than or equal
+|===
+
+If the value `null` is passed for a given property, then the obvious operation will occur (comparator will be ignored for that property).
+`notnull` is handled similarly.
+
+* _Ordering_: If the parameter `orderBy` is specified, results will be ordered by the named property.
+Default is ascending, unless the `order` parameter is set to `desc` (any other value will default to ascending)
+
+* _Raw where clause_:  If there is a `query` parameter, it will be used as a raw where clause (_SQL_, not _HQL_), and added to any other filters created by other parameters
+
+=== Standard filter examples
+
+Take `/events` as an example.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                           | Description
+| `/events?eventUei=uei.opennms.org/internal/rtc/subscribe`                          | would return the first 10 events with the rtc subscribe UEI, (10 being the default limit for events)
+| `/events?eventUei=uei.opennms.org/internal/rtc/subscribe&limit=0`                  | would return *all* the rtc subscribe events (potentially quite a few)
+| `/events?id=100&comparator=gt`                                                     | would return the first 10 events with an id greater than 100
+| `/events?eventAckTime=notnull`                                                     | would return the first 10 events that have a non-null Ack time (i.e. those that have been acknowledged)
+| `/events?eventAckTime=notnull&id=100&comparator=gt&limit=20`                       | would return the first 20 events that have a non-null Ack time and an id greater than 100.  Note that the notnull value causes the comparator to be ignored for eventAckTime
+| `/events?eventAckTime=2008-07-28T04:41:30.530+12:00&id=100&comparator=gt&limit=20` | would return the first 20 events that have were acknowledged after 28th July 2008 at 4:41am (+12:00), and an id greater than 100.  Note that the same comparator applies to both property comparisons.
+| `/events?orderBy=id&order=desc`                                                    | would return the 10 latest events inserted (probably, unless you've been messing with the id's)
+|===

@@ -39,7 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -839,7 +839,7 @@ public class RuleSet implements Serializable {
         engine.setAssertBehaviour(getAssertBehaviour());
         engine.setEventProcessingMode(getEventProcessingMode());
         engine.setEventIpcManager(eventIpcManager);
-        engine.setScheduler(new Timer(getName() + "-Timer"));
+        engine.setScheduler(new ScheduledThreadPoolExecutor(1));
         engine.setInterestingEvents(getInterestingEvents());
         engine.setRulesResources(getRuleResources(configContext));
         engine.setGlobals(getGlobals(configContext));

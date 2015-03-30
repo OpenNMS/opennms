@@ -33,7 +33,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -192,7 +192,7 @@ public class JMXDataSource implements Cloneable {
        /**
         * <p>Constructor for JMXDataSource.</p>
         *
-        * @param obj a {@link org.opennms.netmgt.config.MibObject} object.
+        * @param obj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
         * @param collectionName a {@link java.lang.String} object.
         */
        public JMXDataSource(MibObject obj, String collectionName) {

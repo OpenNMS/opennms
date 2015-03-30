@@ -44,12 +44,12 @@ public class StorageStrategyTest extends XmlTestNoCastor<StorageStrategy> {
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
         final StorageStrategy strategy = new StorageStrategy();
-        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        strategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         strategy.addParameter(new Parameter("foo", "bar"));
 
         return Arrays.asList(new Object[][] { {
                 strategy,
-                "<storageStrategy class=\"org.opennms.netmgt.dao.support.IndexStorageStrategy\"><parameter key=\"foo\" value=\"bar\" /></storageStrategy>",
+                "<storageStrategy class=\"org.opennms.netmgt.collection.support.IndexStorageStrategy\"><parameter key=\"foo\" value=\"bar\" /></storageStrategy>",
                 "target/classes/xsds/datacollection-config.xsd" } });
     }
 

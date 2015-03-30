@@ -1,5 +1,5 @@
 
-=== OmsaStorageMonitor
+==== OmsaStorageMonitor
 
 With OmsaStorageMonitor you are able to monitor your http://de.community.dell.com/techcenter/systems-management/w/wiki/438.dell-openmanage-server-administrator-omsa.aspx[Dell OpenManaged] servers RAID array status.
 The following OIDS from the http://support.dell.com/support/systemsinfo/document.aspx?~file=/software/svradmin/2.2/en/snmp/snmpc22.htm[STORAGEMANAGEMENT-MIB] are supported by this monitor:
@@ -51,7 +51,7 @@ The disk array state is resolved to a human readable value by the following stat
 | `35`    | _Initializing_
 |===
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -59,7 +59,7 @@ The disk array state is resolved to a human readable value by the following stat
 | Remote Enabled | `false`
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 Monitor specific parameters for the OmsaStorageMonitor
 [options="header, autowidth"]
@@ -74,7 +74,8 @@ Monitor specific parameters for the OmsaStorageMonitor
 |===
 
 
-==== Examples
+===== Examples
+
 Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
 
 The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and can look like this:

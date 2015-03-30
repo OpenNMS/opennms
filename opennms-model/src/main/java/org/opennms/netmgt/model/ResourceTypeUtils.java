@@ -44,6 +44,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
 /**
@@ -320,5 +321,31 @@ public abstract class ResourceTypeUtils {
     public static File getRelativeNodeSourceDirectory(String nodeSource) {
         String[] ident = nodeSource.split(":");
         return new File(FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
+    }
+
+    /**
+     * Convenience method for retrieving the OnmsNode entity from
+     * an abstract resource.
+     *
+     * @throws ObjectRetrievalFailureException on failure
+     */
+    public static OnmsNode getNodeFromResource(OnmsResource resource) {
+        // Null check
+        if (resource == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource must be non-null.");
+        }
+
+        // Grab the entity
+        final OnmsEntity entity = resource.getEntity();
+        if (entity == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource entity must be non-null: " + resource);
+        }
+
+        // Type check
+        if (!(entity instanceof OnmsNode)) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, "Resource entity must be an instance of OnmsNode: " + resource);
+        }
+
+        return (OnmsNode)entity;
     }
 }

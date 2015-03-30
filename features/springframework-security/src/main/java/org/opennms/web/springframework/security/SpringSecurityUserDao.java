@@ -28,7 +28,6 @@
 
 package org.opennms.web.springframework.security;
 
-import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.web.api.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,5 +44,5 @@ public interface SpringSecurityUserDao {
 	 * @param username a {@link java.lang.String} object.
 	 * @return a {@link org.opennms.netmgt.model.OnmsUser} object.
 	 */
-	public OnmsUser getByUsername(String username);
+	public SpringSecurityUser getByUsername(String username);
 }

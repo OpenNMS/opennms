@@ -57,7 +57,7 @@ public class CriteriaBuilderHelper {
     /**
      * the map of parsers
      */
-    private Map<Class<?>, CriteriaParser> m_parsers = new HashMap<Class<?>, CriteriaParser>();
+    private Map<Class<?>, CriteriaParser<?>> m_parsers = new HashMap<Class<?>, CriteriaParser<?>>();
 
     /**
      * Constructor used to instantiate new objects.
@@ -185,7 +185,7 @@ public class CriteriaBuilderHelper {
      * @return a new instance representing the value
      */
     public Object parseCriteriaValue(Class<?> clazz, String value) {
-        CriteriaParser criteriaParser = m_parsers.get(clazz);
+        CriteriaParser<?> criteriaParser = m_parsers.get(clazz);
 
         if (criteriaParser == null) {
             LoggerFactory.getLogger(CriteriaBuilderHelper.class).error("No parser for class " + clazz.getSimpleName() + " found");
@@ -211,7 +211,7 @@ public class CriteriaBuilderHelper {
      * @param clazz          the class to be used
      * @param criteriaParser the {@link CriteriaParser} to handle data for the class
      */
-    public void setCriteriaParser(Class<?> clazz, CriteriaParser criteriaParser) {
+    public void setCriteriaParser(Class<?> clazz, CriteriaParser<?> criteriaParser) {
         m_parsers.put(clazz, criteriaParser);
     }
 

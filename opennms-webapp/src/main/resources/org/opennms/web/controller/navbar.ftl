@@ -9,13 +9,34 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/logo-bootstrap.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/logo-bootstrap.png'" />
+        <img id="logo" src="${baseHref}images/horizon.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/horizon_logo_small.png'" />
       </a>
     </div>
 
-    <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-      ${currentDate?string["MMM d, y HH:mm z"]}
-    </div>
+    <#if request.remoteUser?has_content >
+      <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
+        ${currentDate?string["MMM d, y HH:mm z"]}
+        <span class="fa-stack" style="text-shadow:none">
+        <#if noticeStatus = 'Unknown'>
+            <!-- Gray circle with bell inside -->
+            <i class="fa fa-circle fa-stack-2x text-muted"></i>
+            <i class="fa fa-circle-thin fa-stack-2x"></i>
+            <i class="fa fa-bell fa-stack-1x"></i>
+        </#if>
+        <#if noticeStatus = 'Off'>
+            <!-- Bell with red slash over it -->
+            <i class="fa fa-bell fa-stack-1x"></i>
+            <i class="fa fa-ban fa-stack-2x text-danger"></i>
+        </#if>
+        <#if noticeStatus = 'On'>
+            <!-- Green circle with bell inside -->
+            <i class="fa fa-circle fa-stack-2x text-success"></i>
+            <i class="fa fa-circle-thin fa-stack-2x"></i>
+            <i class="fa fa-bell fa-stack-1x"></i>
+        </#if>
+        </span>
+      </div>
+    </#if>
 
     <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right">
@@ -49,7 +70,7 @@
 		        </li>
 		      <#else>
 		        <#if item.url?has_content >
-		          <a name="nav-${item.name}-top" href="${item.url}">${item.name}</a>
+		          <li><a name="nav-${item.name}-top" href="${item.url}">${item.name}</a></li>
 		        <#else>
 		          <a name="nav-${item.name}-top" href="#">${item.name}</a>
 		        </#if>
@@ -70,6 +91,8 @@
               <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification${noticeStatus}">${noticeStatus}</b></a></li>
               <#if isAdmin >
                 <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
+              </#if>
+              <#if isAdmin || isProvision >
                 <li><a name="nav-admin-quick-add" href="${baseHref}admin/node/add.htm" style="white-space: nowrap">Quick-Add Node</a></li>
               </#if>
               <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>

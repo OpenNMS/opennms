@@ -1,0 +1,125 @@
+==== Getting Graph data
+
+While graphs aren't technically available via _ReST_, you can parse some _ReST_ variables to get enough data to pull a graph.
+This isn't ideal because it requires multiple fetches, but depending on your use case, this may be adequate for you.
+
+I'm in-lining some sample _PHP_ code which should do this (not tested at all, cut & paste from old code I have that does not use the _ReST- interface, and/or coded straight into the browser so YMMV).
+If you go to your NMS and click the resource graphs, then right click the graph you want and hit _View Image_ you will get the full _URL_ that would need to be passed to pull that graph as a standalone image.
+
+From that just take the _URL_ and plug in the values you pulled from _ReST_ to get a graph for whatever node you wanted.
+
+[source, php]
+----
+function fetchit($thing, $user = "user", $pass = "pass") {
+    $url = "http://localhost:8980/opennms";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url . $thing);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+    curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    return $data;
+}
+
+// this assumes you already have found the nodeId via a previous REST call or some other means.  Provided more as an example than what you might want.
+function getNodeInterfaces($nodeId) {
+    $data = fetchit("/rest/nodes/$nodeId/snmpinterfaces");
+     return simplexml_load_string($data);
+}
+
+function fetchGraphs($nodeId) {
+     $ints = getNodeInterfaces($nodeId);
+     $chars = array('/','.',':','-',' ');
+     $endtime = time();
+     $starttime = (string)(time() - ($days * 24 * 60 * 60)) ;
+
+     // use bcmath or a better version of PHP if  you don't want this hypocrisy here.
+     $endtime = $endtime . '000';
+     $starttime = $starttime . '000';
+
+     for($i=0; $i<count($ints->snmpInterfaces); $i++) {
+         $ifname = $ints->snmpInterfaces[$i]->snmpInterface->ifName;
+         $mac = $ints->snmpInterfaces[$i]->snmpInterface->physAddr;
+         $if = str_replace($chars, "_", $ifname);
+         if ( strlen(trim($mac)) < 12 ) { $mac_and_if = $if; } else { $mac_and_if = $if .'-'. $mac; };
+
+         $image = fetchit("$url/graph/graph.png?resource=node[$nodeId].interfaceSnmp[$mac_and_if]&report=report=mib2.HCbits&start=$starttime&end=$endtime");
+         // you can poop this to a file now, or set header('Content-type: image/png'); then print "$image";
+     }
+}
+----
+
+==== provision.pl examples and notes
+
+One way to test out the new _ReST_ interface is to use `provision.pl`.
+If you run it you'll get a summary of the output, but it's not totally obvious how it all works.
+
+Here is an example of adding a new node using the _ReST_ interface:
+
+[source, bash]
+----
+# add a new foreign source called ubr
+/usr/share/opennms/bin/provision.pl requisition add ubr
+/usr/share/opennms/bin/provision.pl node add ubr 10341111 clownbox
+/usr/share/opennms/bin/provision.pl node set ubr 10341111 city clownville
+/usr/share/opennms/bin/provision.pl node set ubr 10341111 building clown-town-hall
+/usr/share/opennms/bin/provision.pl node set ubr 10341111 parent-foreign-id 1122114
+/usr/share/opennms/bin/provision.pl interface add ubr 10341111 10.1.3.4
+
+# this is like a commit.  No changes will take effect until you import a foreign source
+/usr/share/opennms/bin/provision.pl requisition import ubr
+----
+
+You will probably need to specify the username/password of an admin.  To do this add:
+
+    --username=admin --password=clownnms
+
+to the command line.
+
+==== Debian (Lenny) Notes
+
+For Lenny, you'll need to pull a package out of backports to make everything work right.
+Read http://backports.org/dokuwiki/doku.php?id=instructions for instructions on adding it to `sources.list`.
+
+[source, bash]
+----
+# install liburi-perl from backports
+sudo apt-get -t lenny-backports install liburi-perl
+----
+
+==== Windows Powershell ReST
+
+Example of using _Windows Powershell_ to fill some asset fields with _ReST_.
+
+[source, powershell]
+----
+# Installdate of Windows
+$wmi = Get-WmiObject -Class Win32_OperatingSystem
+$dateInstalled = $wmi.ConvertToDateTime($wmi.InstallDate)
+
+# Serialnumber and manufacturer of server
+Get-WmiObject win32_bios | select SerialNumber
+$wmi = Get-WmiObject -Class win32_bios
+$manufacturer = $wmi.Manufacturer
+
+# Text file with a description of the server for the comments field
+$comment = Get-Content "C:\Program Files\BGInfo\Info_Description.txt" | Out-String
+
+$user ="admin"
+$pass= "admin"
+
+$secpasswd = ConvertTo-SecureString $user -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential ($pass, $secpasswd)
+
+$nodeid = Invoke-RestMethod -Uri http://opennms.domain.nl:8980/opennms/rest/nodes?label=servername.domain.nl -Credential $cred
+$nodeid = $nodeid.nodes.node.id
+
+$uri="http://opennms.domain.nl:8980/opennms/rest/nodes/$nodeid/assetRecord"
+
+Invoke-RestMethod -Uri "http://opennms.massxess.nl:8980/opennms/rest/nodes/$nodeid/assetRecord/?building=133" -Credential $cred -Method PUT
+Invoke-RestMethod -Uri "$uri/?manufacturer=$manufacturer" -Credential $cred -Method PUT
+Invoke-RestMethod -Uri "$uri/?dateInstalled=$dateInstalled" -Credential $cred -Method PUT
+Invoke-RestMethod -Uri "$uri/?comment=$comment" -Credential $cred -Method PUT
+----

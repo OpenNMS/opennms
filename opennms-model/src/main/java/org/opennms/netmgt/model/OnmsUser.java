@@ -29,25 +29,18 @@
 package org.opennms.netmgt.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsUser implements UserDetails {
-    private static final long serialVersionUID = 6700015836178430161L;
+public class OnmsUser {
 
     @XmlElement(name="user-id", required=true)
     private String m_username;
@@ -67,9 +60,6 @@ public class OnmsUser implements UserDetails {
     @XmlElement(name="passwordSalt", required=false)
     private Boolean m_passwordSalted;
 
-    @XmlTransient
-    private Collection<? extends GrantedAuthority> m_authorities;
-
     @XmlElement(name="duty-schedule", required=false)
     private List<String> m_dutySchedule = new ArrayList<String>();
 
@@ -87,7 +77,6 @@ public class OnmsUser implements UserDetails {
         m_comments = comments;
     }
 
-    @Override
     public String getPassword() {
         return m_password;
     }
@@ -112,7 +101,6 @@ public class OnmsUser implements UserDetails {
         m_fullName = fullName;
     }
 
-    @Override
     public String getUsername() {
         return m_username;
     }
@@ -138,42 +126,6 @@ public class OnmsUser implements UserDetails {
         .toString();
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return m_authorities;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        m_authorities = authorities;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public void addAuthority(final GrantedAuthority authority) {
-        final Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-        if (m_authorities != null) authorities.addAll(m_authorities);
-        authorities.add(authority);
-        m_authorities = authorities;
-    }
-
     public String getEmail() {
         return m_email;
     }
@@ -186,7 +138,6 @@ public class OnmsUser implements UserDetails {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_authorities == null) ? 0 : m_authorities.hashCode());
         result = prime * result + ((m_comments == null) ? 0 : m_comments.hashCode());
         result = prime * result + ((m_dutySchedule == null) ? 0 : m_dutySchedule.hashCode());
         result = prime * result + ((m_email == null) ? 0 : m_email.hashCode());
@@ -209,13 +160,6 @@ public class OnmsUser implements UserDetails {
             return false;
         }
         final OnmsUser other = (OnmsUser) obj;
-        if (m_authorities == null) {
-            if (other.m_authorities != null) {
-                return false;
-            }
-        } else if (!m_authorities.equals(other.m_authorities)) {
-            return false;
-        }
         if (m_comments == null) {
             if (other.m_comments != null) {
                 return false;

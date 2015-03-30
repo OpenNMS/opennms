@@ -88,8 +88,9 @@
 
     long timelineEnd = new Date().getTime() / 1000;
     long timelineStart = timelineEnd - 3600 * 24;
-    int timelineWidth = 250;
-    String emptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
+
+    String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
+    String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" ;
 
     Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
 %>
@@ -147,11 +148,11 @@
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
-                <td class="severity-Cleared nobright"><img src="<%=emptyUrl%>"></td>
+                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
               <%
                   } else {
               %>
-                <td class="severity-Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+                <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
               <%
                   }
               %>
@@ -165,7 +166,7 @@
                 String warnClass = "Indeterminate";
 
                 if (service.isManaged()) {
-                  double svcValue = m_model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+                  double svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
                   availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, svcValue);
                   availValue = CategoryUtil.formatValue(svcValue) + "%";
 
@@ -183,8 +184,7 @@
                   availValue = ElementUtil.getServiceStatusString(service);
                 }
 
-                String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
-
+                String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/";
               %>
                        
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -205,11 +205,11 @@
                     <%
                          if (service.isManaged()) {
                     %>
-                    <script src="<%=timelineUrl%>"></script>
+                    <span data-src="<%=timelineUrl%>"></span>
                     <%
                         } else {
                     %>
-                    <img src="<%=emptyUrl%>">
+                    <img src="#" data-imgsrc="<%=timelineEmptyUrl%>">
                     <%
                         }
                     %>
@@ -218,21 +218,24 @@
                 </tr>
             <% } %>
           <% } else { %>
-            <%-- interface is not managed --%>
-            <% if("0.0.0.0".equals(ipAddr)) {
-            }
-            else { %>
-            <tr>
-              <td>
+      <%-- interface is not managed --%>
+      <% if("0.0.0.0".equals(ipAddr)) {
+      }
+      else { %>
+      <tr>
+          <td class="severity-Cleared nobright" colspan=2>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
-              </td>
-              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
-            </tr>
-            <% } %>
-          <% } %>
-        <% } %>
-<% } %>
-</table>   
+          </td>
+          <!--<td class="severity-Cleared nobright"></td>-->
+          <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+          <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+      </tr>
+      <% } %>
+      <% } %>
+      <% } %>
+      <% } %>
+  </table>
 
 </div>
 
+<script type="text/javascript" src="js/timeline-resize.js"></script>

@@ -77,18 +77,18 @@
     <!-- Form for editing node fields -->
     <tree:nodeForm>
 
-      <tree:field label="Node" property="nodeLabel" size="48" />
-      <tree:field label="ForeignId" property="foreignId" />
+      <tree:field label="Node Label" property="nodeLabel" size="48" />
+      <tree:field label="Foreign ID" property="foreignId" />
       <tree:field label="Site" property="building" />
       <tree:action label="[Add Interface]" action="addInterface" />
       <tree:action label="[Add Node Category]" action="addCategory" />
       <tree:action label="[Add Node Asset]" action="addAssetField" />
       <br/>
-      <label>Parent Relationship (Path Outage):</label>
-      <br/>
-      <tree:field label="ForeignSource" property="parentForeignSource" />
-      <tree:field label="ForeignId" property="parentForeignId" />
-      <tree:field label="NodeLabel" property="parentNodeLabel" />
+      <label>Critical Path Node:</label>
+      <tree:field label="Foreign Source" property="parentForeignSource" />
+      <tree:field label="Foreign ID" property="parentForeignId" />
+      &nbsp;or&nbsp;
+      <tree:field label="Node Label" property="parentNodeLabel" />
 
     </tree:nodeForm> 
     
@@ -143,9 +143,9 @@
     <!--  Tree of assets for a node -->
     <tree:tree root="${node}" childProperty="asset" var="asset" varStatus="assetIter">
     
-      <!--  Form for editing a category -->
+      <!--  Form for editing an asset -->
       <tree:nodeForm>
-      	<tree:select label="asset" property="name" items="${assetFields}"/>
+      	<tree:select label="Asset" property="name" items="${assetFields}"/>
         <tree:field label="" property="value" />
       </tree:nodeForm>
       

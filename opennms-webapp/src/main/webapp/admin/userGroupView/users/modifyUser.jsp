@@ -434,6 +434,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
       </div>
       <table class="table table-condensed table-striped table-bordered">
         <thead>
+          <tr>
           <th>&nbsp;</th>
           <th>Delete</th>
           <th>Mo</th>
@@ -445,6 +446,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
           <th>Su</th>
           <th>Begin Time</th>
           <th>End Time</th>
+          </tr>
         </thead>
         <%
         int i = 0;
@@ -484,7 +486,7 @@ Collection<String> dutySchedules = user.getDutyScheduleCollection();
        <div class="form-group top-buffer">
          <div class="col-sm-12">
            <button id="addSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="addDutySchedules()">Add This Many Schedules</button>
-           <select name="numSchedules" class="btn btn-default" value="3" size="1">
+           <select name="numSchedules" class="btn btn-default" value="3">
                  <option value="1">1</option>
                  <option value="2">2</option>
                  <option value="3">3</option>

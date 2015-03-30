@@ -93,13 +93,13 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=true,tempDbClass=MockDatabase.class)
@@ -243,23 +243,23 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         while(countAlarms() < 1) {
             Thread.sleep(20);
         }
-        assertEquals("count of nodeDown events", 1, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
+        assertEquals("count of nodeDown events", 1, (int)m_jdbcTemplate.queryForObject("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'", Integer.class));
         assertEquals("alarm count", 1, countAlarms());
-        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
+        assertEquals("counter in the alarm", 1, (int)m_jdbcTemplate.queryForObject("select counter from alarms where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'", Integer.class));
         // Fetch the initial severity of the alarm
-        int currentSeverity = m_jdbcTemplate.queryForInt("select severity from alarms");
+        int currentSeverity = m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class);
         assertEquals(OnmsSeverity.MAJOR.getId(), currentSeverity);
 
         // Create another node down event
         bringNodeDownCreatingEvent(1);
-        while( m_jdbcTemplate.queryForInt("select counter from alarms") < 2) {
+        while( m_jdbcTemplate.queryForObject("select counter from alarms", Integer.class) < 2) {
             Thread.sleep(20);
         }
-        assertEquals("count of nodeDown events", 2, m_jdbcTemplate.queryForInt("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'"));
+        assertEquals("count of nodeDown events", 2, (int)m_jdbcTemplate.queryForObject("select count(*) from events where eventuei = '" + EventConstants.NODE_DOWN_EVENT_UEI + "'", Integer.class));
         // Make sure there's still one alarm...
         assertEquals("alarm count", 1, countAlarms());
         // ... with a counter value of 2
-        assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
+        assertEquals("counter in the alarm", 2, (int)m_jdbcTemplate.queryForObject("select counter from alarms", Integer.class));
 
         // Sleep long enough for the escalation automation to run, then check that it was escalated
         while(verifyAlarmEscalated() < (currentSeverity + 1)) {
@@ -425,17 +425,17 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
 
         assertEquals(1, countAlarms());
         assertEquals(major, getSingleResultSeverity());
-        assertEquals("counter in the alarm", 1, m_jdbcTemplate.queryForInt("select counter from alarms"));
+        assertEquals("counter in the alarm", 1, (int)m_jdbcTemplate.queryForObject("select counter from alarms", Integer.class));
 
         bringNodeDownCreatingEvent(1);
 
-        while(m_jdbcTemplate.queryForInt("select counter from alarms") < 2) {
+        while(m_jdbcTemplate.queryForObject("select counter from alarms", Integer.class) < 2) {
             Thread.sleep(100);
         }
 
         assertEquals(1, countAlarms());
         assertEquals(major, getSingleResultSeverity());
-        assertEquals("counter in the alarm", 2, m_jdbcTemplate.queryForInt("select counter from alarms"));
+        assertEquals("counter in the alarm", 2, (int)m_jdbcTemplate.queryForObject("select counter from alarms", Integer.class));
 
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
         assertTrue(ap.runAutomation());
@@ -497,25 +497,25 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         // create node up event with severity 3
         bringNodeUpCreatingEvent(1);
 
-        while (m_jdbcTemplate.queryForLong("select count(*) from alarms") != 3) {
+        while (m_jdbcTemplate.queryForObject("select count(*) from alarms", Long.class) != 3) {
             Thread.sleep(100);
         }
 
         // should have three alarms, one for each event
-        assertEquals("should have one alarm for each event", 3, m_jdbcTemplate.queryForLong("select count(*) from alarms"));
+        assertEquals("should have one alarm for each event", 3L, (long)m_jdbcTemplate.queryForObject("select count(*) from alarms", Long.class));
 
         AutomationProcessor ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
         ap.run();
 
-        while(m_jdbcTemplate.queryForLong("select count(*) from alarms where severity = 2") < 1) {
+        while(m_jdbcTemplate.queryForObject("select count(*) from alarms where severity = 2", Long.class) < 1) {
             Thread.sleep(100);
         }
 
         // the automation should have cleared the nodeDown for node 1 so it should now have severity CLEARED == 2
-        assertEquals("alarms with severity == 2", 1, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity = 2"));
+        assertEquals("alarms with severity == 2", 1L, (long)m_jdbcTemplate.queryForObject("select count(*) from alarms where severity = 2", Long.class));
 
         // There should still be a nodeUp alarm and an uncleared nodeDown alarm
-        assertEquals("alarms with severity > 2", 2, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity > 2"));
+        assertEquals("alarms with severity > 2", 2L, (long)m_jdbcTemplate.queryForObject("select count(*) from alarms where severity > 2", Long.class));
 
         // run this automation again and make sure nothing happens since we've already processed the clear
         ap = new AutomationProcessor(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
@@ -524,10 +524,10 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
         Thread.sleep(1000);
 
         // same as above
-        assertEquals("alarms with severity == 2", 1, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity = 2"));
+        assertEquals("alarms with severity == 2", 1L, (long)m_jdbcTemplate.queryForObject("select count(*) from alarms where severity = 2", Long.class));
 
         // save as above
-        assertEquals("alarms with severity > 2", 2, m_jdbcTemplate.queryForLong("select count(*) from alarms where severity > 2"));
+        assertEquals("alarms with severity > 2", 2L, (long)m_jdbcTemplate.queryForObject("select count(*) from alarms where severity > 2", Long.class));
     }
 
     /**
@@ -589,7 +589,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
     }
     
     private int countAlarms() {
-        return (int) m_jdbcTemplate.queryForLong("select count(*) from alarms");
+        return (int)m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class);
     }
 
     /**
@@ -597,7 +597,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @return
      */
     private int verifyAlarmEscalated() {
-        return m_jdbcTemplate.queryForInt("select severity from alarms");
+        return m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class);
     }
 
     /**
@@ -605,7 +605,7 @@ public class VacuumdTest implements TemporaryDatabaseAware<MockDatabase>, Initia
      * @return
      */
     private int getSingleResultSeverity() {
-        return m_jdbcTemplate.queryForInt("select severity from alarms");
+        return m_jdbcTemplate.queryForObject("select severity from alarms", Integer.class);
     }
     
     private void bringNodeDownCreatingEvent(int nodeid) {

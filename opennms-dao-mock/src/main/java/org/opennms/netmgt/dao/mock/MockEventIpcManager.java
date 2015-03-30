@@ -170,6 +170,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
+    public static interface SendNowHook {
+        public void beforeBroadcast(Event event);
+
+        public void afterBroadcast(Event event);
+
+        void finishProcessingEvents();
+    }
+
     private EventAnticipator m_anticipator;
     
     private EventWriter m_eventWriter = new EventWriter() {
@@ -190,6 +198,10 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     private ScheduledExecutorService m_scheduler = null;
 
 	private EventExpander m_expander = null;
+
+	private SendNowHook m_sendNowHook;
+
+	private int m_numSchedulerThreads = 1;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -270,7 +282,23 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public boolean isSynchronous() {
         return m_synchronous;
     }
-    
+
+    public void setSendNowHook(SendNowHook hook) {
+        m_sendNowHook = hook;
+    }
+
+    public SendNowHook getSendNowHook() {
+        return m_sendNowHook;
+    }
+
+    public void setNumSchedulerThreads(int numThreads) {
+        m_numSchedulerThreads = numThreads;
+    }
+
+    public int getNumSchedulerTheads() {
+        return m_numSchedulerThreads;
+    }
+
     @Override
     public synchronized void sendNow(final Event event) {
         // Expand the event parms
@@ -286,6 +314,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             @Override
             public void run() {
                 try {
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.beforeBroadcast(event);
+                    }
+
                     m_eventWriter.writeEvent(event);
                     broadcastNow(event);
                     m_anticipator.eventProcessed(event);
@@ -294,6 +327,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                         m_pendingEvents--;
                         LOG.debug("Finished processing event ({} remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
+                    }
+
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.afterBroadcast(event);
                     }
                 }
             }
@@ -305,11 +343,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             getScheduler().schedule(r, m_eventDelay, TimeUnit.MILLISECONDS);
         }
     }
-    
+
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
-            m_scheduler = Executors.newSingleThreadScheduledExecutor(
-                new LogPreservingThreadFactory(getClass().getSimpleName(), 1)
+            m_scheduler = Executors.newScheduledThreadPool(getNumSchedulerTheads(),
+                new LogPreservingThreadFactory(getClass().getSimpleName(), getNumSchedulerTheads())
             );
         }
         return m_scheduler;
@@ -326,6 +364,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      * 
      */
     public synchronized void finishProcessingEvents() {
+        // Allow the hook to unblock any pending events
+        if (m_sendNowHook != null) {
+            m_sendNowHook.finishProcessingEvents();
+        }
+
         while (m_pendingEvents > 0) {
         	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {

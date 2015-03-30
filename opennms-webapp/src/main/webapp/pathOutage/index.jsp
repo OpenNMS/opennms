@@ -69,7 +69,7 @@
 			</tr>
 		</thead>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
 		<tr>
 			<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 			<td>(Interface not in database)</td>
@@ -79,7 +79,7 @@
 			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
 			<td><%= pth[1] %></td>
-			<td class="<%= pthData[3] %>"><%= pth[2] %></td>
+			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
 			<td><a
 				href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
 		</tr>

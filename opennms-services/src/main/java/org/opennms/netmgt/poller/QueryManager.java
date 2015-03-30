@@ -49,29 +49,29 @@ public interface QueryManager {
     String getNodeLabel(int nodeId) throws SQLException;
 
     /**
-     * <p>openOutage</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param date a {@link java.util.Date} object.
-     * @param outageIdSQL a {@link java.lang.String} object.
+     * Creates a new outage for the given service without setting
+     * the lost event id.
      */
-    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, Date date);
+    Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
 
     /**
-     * <p>resolveOutage</p>
-     * 
-     * @deprecated Fetch outages by primary key instead of the nodeid/ipAddr/service tuple.
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
+     * Set or updates the lost event id on the specified outage.
      */
-    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, Date time);
+    void updateOpenOutageWithEventId(int outageId, int lostEventId);
+
+    /**
+     * Marks the outage for the given service as resolved
+     * with the given time and returns the id of this outage.
+     *
+     * If no outages are currently open, then no action is take
+     * and the function returns null.
+     */
+    Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime);
+
+    /**
+     * Set or updates the regained event id on the specified outage.
+     */
+    void updateResolvedOutageWithEventId(int outageId, int regainedEventId);
 
     /**
      * <p>reparentOutages</p>

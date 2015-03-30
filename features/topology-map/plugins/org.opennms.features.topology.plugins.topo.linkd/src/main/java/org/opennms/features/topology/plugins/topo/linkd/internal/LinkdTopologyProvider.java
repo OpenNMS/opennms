@@ -33,7 +33,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.bind.JAXBException;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -45,7 +44,6 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -139,26 +137,12 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
             AbstractEdge edge = connectVertices(link.getDataLinkInterfaceId(), source, target, getEdgeNamespace());
             edge.setTooltipText(getEdgeTooltipText(link, source, target));
         }
-        
+
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
         if (isAddNodeWithoutLink()) {
-
-            List<OnmsNode> allNodes;
-            allNodes = getAllNodesNoACL();
-
-            for (OnmsNode onmsnode: allNodes) {
-                String nodeId = onmsnode.getNodeId();
-                if (getVertex(getVertexNamespace(), nodeId) == null) {
-                    LOG.debug("loadtopology: adding link-less node: " + onmsnode.getLabel());
-                    addVertices(getVertex(onmsnode));
-                }
-            }
-
-
-
-
+            addNodesWithoutLinks();
         }
-        
+
         File configFile = new File(getConfigurationFile());
         if (configFile.exists() && configFile.canRead()) {
             LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());

@@ -98,8 +98,6 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
     <jsp:include page="/includes/search-constraints-box.jsp" />
     <br/>
 
@@ -142,7 +140,7 @@
             <% if(outages[i].getNodeId() != 0 ) { %>
               <% OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(outages[i].getNodeId()); %>
               <% if(node.getForeignSource() != null) { %>
-              <%=node.getForeignSource()%></a>
+              <%=node.getForeignSource()%>
               <% Filter foreignSourceFilter = new ForeignSourceFilter(node.getForeignSource(), getServletContext()); %>
               <% if( !parms.filters.contains(foreignSourceFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this foreign source"><%=ZOOM_IN_ICON%></a>

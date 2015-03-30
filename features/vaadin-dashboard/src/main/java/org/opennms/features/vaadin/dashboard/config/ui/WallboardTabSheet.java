@@ -62,17 +62,24 @@ public abstract class WallboardTabSheet extends TabSheet {
         m_plusTab.setDescription("Add a new Ops Board configuration");
         addTab(m_plusTab).setClosable(false);
         addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
-
             public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
                 Component selectedTab = getSelectedTab();
-                if (selectedTab.getCaption() != null && selectedTab.getCaption().equals("+")) {
-                    setSelectedTab((m_lastTab != null ? m_lastTab : getComponentIterator().next()));
+                if ("+".equals(selectedTab.getCaption())) {
+                    setSelectedTab((m_lastTab != null ? m_lastTab : iterator().next()));
                     addNewTabComponent();
                 } else {
                     m_lastTab = selectedTab;
                 }
             }
         });
+    }
+
+    /**
+     * This is used a workaround for NMS-7560.
+     */
+    protected void togglePlusTab() {
+        removeComponent(m_plusTab);
+        super.addTab(m_plusTab, m_plusTab.getCaption(), null);
     }
 
     /**

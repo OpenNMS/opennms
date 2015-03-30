@@ -153,6 +153,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 if (action.equals("add")) {
                     int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
                     Escalate newEscalate = new Escalate();
+                    newEscalate.setDelay("0s");
                     path.addEscalate(index, newEscalate);
 
                     Map<String, String> requestParams = new HashMap<String, String>();

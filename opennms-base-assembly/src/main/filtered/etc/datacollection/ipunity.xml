@@ -3,26 +3,26 @@
 
     <resourceType name="applIndex" label="Network Services Application"
                   resourceLabel="${applDescription} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="asAppIndex" label="IP Unity Applications"
                   resourceLabel="${asAppName} (index ${index})">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ipuMGCPMsgStatsEntry" label="IP Unity MGCP Message Stats"
                   resourceLabel="MGC.MsgType: ${index} (1=crcx 2=mdcx 3=dlcx 4=rqnt 5=ntfy 6=auep 7=aucx 8=rsip 9=epcf 10=other)">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="umOrgIndex" label="Unified Messaging Organization"
                   resourceLabel="${umOrgName}">
-       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="ipunity-as-call-scalars" ifType="ignore" >

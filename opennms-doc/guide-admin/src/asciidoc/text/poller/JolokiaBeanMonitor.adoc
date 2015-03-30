@@ -1,5 +1,5 @@
 
-=== JolokiaBeanMonitor
+==== JolokiaBeanMonitor
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
 If it is required to execute a method via _JMX_ or poll an attribute via _JMX_, the _JolokiaBeanMonitor_ can be used.
@@ -10,7 +10,7 @@ If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as _down_.
 Banner matching supports regular expression and substring match.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -18,7 +18,7 @@ Banner matching supports regular expression and substring match.
 | Remote Enabled  | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the JolokiaBeanMonitor
 [options="header, autowidth"]
@@ -46,7 +46,8 @@ Banner matching supports regular expression and substring match.
 | `${port}`   | Port the service it bound to.
 |===
 
-==== Examples
+===== Examples
+
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
@@ -54,7 +55,8 @@ Some example configuration how to configure the monitor in the `poller-configura
 <parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
 ----
 
-==== AttrName vs MethodName
+===== AttrName vs MethodName
+
 The JolokiaBeanMonitor has two modes of operation. It can either scrape an attribute from a bean, or execute a method and compare output to a banner. The method execute is useful when your application has it's own test methods that you would like to trigger via OpenNMS.
 
 The args to execute a test method called "superTest" that take in a string as input would look like this:
