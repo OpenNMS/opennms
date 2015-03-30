@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-16T12:47:39 -->
+<!-- 2015-03-30T15:02:50 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Forecast" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8a465670-cc4a-4270-965f-8efb86e33b71">
 	<property name="template.engine" value="tabular_template"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
@@ -289,10 +289,10 @@
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="554" splitType="Stretch">
+		<band height="572" splitType="Stretch">
 			<timeSeriesChart>
 				<chart isShowLegend="true">
-					<reportElement positionType="FixRelativeToBottom" x="-1" y="10" width="555" height="250" uuid="09b3b246-6e1c-4dd7-b670-d44155ef68ae">
+					<reportElement positionType="FixRelativeToBottom" x="-1" y="25" width="555" height="250" uuid="09b3b246-6e1c-4dd7-b670-d44155ef68ae">
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					</reportElement>
 					<chartTitle/>
@@ -384,7 +384,7 @@
 			</timeSeriesChart>
 			<timeSeriesChart>
 				<chart isShowLegend="true">
-					<reportElement positionType="FixRelativeToBottom" x="1" y="284" width="554" height="250" uuid="66ff0758-fbfd-40c0-acdd-4cbaacea3133"/>
+					<reportElement positionType="FixRelativeToBottom" x="1" y="309" width="554" height="250" uuid="66ff0758-fbfd-40c0-acdd-4cbaacea3133"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend position="Top"/>
@@ -483,7 +483,7 @@
 				<text><![CDATA[Input:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="277" width="1" height="30" uuid="689db7b2-ef86-4885-8035-b12daf8806ef"/>
+				<reportElement x="2" y="292" width="553" height="23" uuid="689db7b2-ef86-4885-8035-b12daf8806ef"/>
 				<textElement>
 					<font size="13" isBold="true"/>
 				</textElement>
