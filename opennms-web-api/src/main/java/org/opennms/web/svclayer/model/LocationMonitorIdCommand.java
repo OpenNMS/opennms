@@ -26,34 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.command;
+package org.opennms.web.svclayer.model;
 
 /**
- * Command object for listing a specific statistics report. This object deserializes query params
- * for a specific report, identified by integer ID.
+ * <p>LocationMonitorIdCommand class.</p>
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  * @since 1.8.1
  */
-public class StatisticsReportCommand {
-    private Integer m_id;
-
+public class LocationMonitorIdCommand {
+    private Integer m_monitorId;
+    
     /**
-     * <p>getId</p>
+     * <p>getMonitorId</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getId() {
-        return m_id;
+    public Integer getMonitorId() {
+        return m_monitorId;
     }
-
     /**
-     * <p>setId</p>
+     * <p>setMonitorId</p>
      *
-     * @param id a {@link java.lang.Integer} object.
+     * @param monitorId a {@link java.lang.Integer} object.
      */
-    public void setId(Integer id) {
-        m_id = id;
+    public void setMonitorId(Integer monitorId) {
+        m_monitorId = monitorId;
     }
 }

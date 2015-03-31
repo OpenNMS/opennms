@@ -35,11 +35,11 @@ import java.util.List;
 
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
-
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.SchedulerService;
+import org.opennms.web.svclayer.model.TriggerDescription;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;

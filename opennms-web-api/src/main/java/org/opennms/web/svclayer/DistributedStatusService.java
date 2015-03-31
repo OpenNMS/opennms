@@ -30,7 +30,7 @@ package org.opennms.web.svclayer;
 
 import java.util.Date;
 
-import org.opennms.web.command.DistributedStatusDetailsCommand;
+import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
 import org.opennms.web.svclayer.model.DistributedStatusHistoryModel;
 import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.transaction.annotation.Transactional;

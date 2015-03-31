@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,38 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.api;
 
-import java.util.List;
-
-import org.opennms.netmgt.model.StatisticsReport;
-import org.opennms.web.command.StatisticsReportCommand;
-import org.opennms.web.svclayer.model.StatisticsReportModel;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
 /**
- * Web service layer for statistics reports.
+ * <p>PollerService interface.</p>
  *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-@Transactional(readOnly=true)
-public interface StatisticsReportService {
-    /**
-     * <p>getStatisticsReports</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<StatisticsReport> getStatisticsReports();
+public interface PollerService {
 
-    /**
-     * <p>getReport</p>
-     *
-     * @param command a {@link org.opennms.web.command.StatisticsReportCommand} object.
-     * @param errors a {@link org.springframework.validation.BindingResult} object.
-     * @return a {@link org.opennms.web.svclayer.model.StatisticsReportModel} object.
-     */
-    public StatisticsReportModel getReport(StatisticsReportCommand command, BindingResult errors);
+	/**
+	 * <p>poll</p>
+	 *
+	 * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+	 * @param demandPollId a int.
+	 */
+	void poll(OnmsMonitoredService monSvc, int demandPollId);
+
 }

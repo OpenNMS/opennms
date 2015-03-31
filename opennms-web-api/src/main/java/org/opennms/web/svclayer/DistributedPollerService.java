@@ -28,7 +28,7 @@
 
 package org.opennms.web.svclayer;
 
-import org.opennms.web.command.LocationMonitorIdCommand;
+import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.model.LocationMonitorListModel;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;

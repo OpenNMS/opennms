@@ -26,35 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer;
-
-import org.opennms.web.command.NodeListCommand;
-import org.opennms.web.svclayer.model.NodeListModel;
-import org.springframework.transaction.annotation.Transactional;
-
+package org.opennms.web.svclayer.model;
 
 /**
- * <p>NodeListService interface.</p>
+ * Command object for listing a specific statistics report. This object deserializes query params
+ * for a specific report, identified by integer ID.
  *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
-@Transactional(readOnly = true)
-public interface NodeListService {
-    /**
-     * <p>createNodeList</p>
-     *
-     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
-     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
-     */
-    public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels);
+public class StatisticsReportCommand {
+    private Integer m_id;
 
     /**
-     * <p>createNodeList</p>
+     * <p>getId</p>
      *
-     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
-     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
+     * @return a {@link java.lang.Integer} object.
      */
-    public NodeListModel createNodeList(NodeListCommand command);
+    public Integer getId() {
+        return m_id;
+    }
+
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
+    public void setId(Integer id) {
+        m_id = id;
+    }
 }

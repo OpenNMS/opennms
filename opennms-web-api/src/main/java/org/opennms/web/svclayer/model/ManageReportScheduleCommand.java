@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.command;
+package org.opennms.web.svclayer.model;
 
 import java.util.Arrays;
 

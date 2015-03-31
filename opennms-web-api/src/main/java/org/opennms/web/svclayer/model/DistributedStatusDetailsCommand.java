@@ -26,38 +26,50 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.command;
-
-import java.util.Arrays;
+package org.opennms.web.svclayer.model;
 
 /**
- * <p>ManageDatabaseReportCommand class.</p>
+ * <p>DistributedStatusDetailsCommand class.</p>
  *
  * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class ManageDatabaseReportCommand {
+public class DistributedStatusDetailsCommand {
+    private String m_location;
+    private String m_application;
     
-    private Integer[] m_ids;
-
     /**
-     * <p>setIds</p>
+     * <p>getApplication</p>
      *
-     * @param ids an array of {@link java.lang.Integer} objects.
+     * @return a {@link java.lang.String} object.
      */
-    public void setIds(Integer[] ids) {
-    m_ids = Arrays.copyOf(ids, ids.length);
+    public String getApplication() {
+        return m_application;
     }
-
     /**
-     * <p>getIds</p>
+     * <p>setApplication</p>
      *
-     * @return an array of {@link java.lang.Integer} objects.
+     * @param application a {@link java.lang.String} object.
      */
-    public Integer[] getIds() {
-    return m_ids;
+    public void setApplication(String application) {
+        m_application = application;
+    }
+    /**
+     * <p>getLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+    /**
+     * <p>setLocation</p>
+     *
+     * @param location a {@link java.lang.String} object.
+     */
+    public void setLocation(String location) {
+        m_location = location;
     }
     
-
 }

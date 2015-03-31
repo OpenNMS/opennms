@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.services;
+package org.opennms.web.svclayer;
 
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.web.svclayer.model.NodeListCommand;
+import org.opennms.web.svclayer.model.NodeListModel;
+import org.springframework.transaction.annotation.Transactional;
+
 
 /**
- * <p>PollerService interface.</p>
+ * <p>NodeListService interface.</p>
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public interface PollerService {
+@Transactional(readOnly = true)
+public interface NodeListService {
+    /**
+     * <p>createNodeList</p>
+     *
+     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
+     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
+     */
+    public NodeListModel createNodeList(NodeListCommand command, boolean sanitizeLabels);
 
-	/**
-	 * <p>poll</p>
-	 *
-	 * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-	 * @param demandPollId a int.
-	 */
-	void poll(OnmsMonitoredService monSvc, int demandPollId);
-
+    /**
+     * <p>createNodeList</p>
+     *
+     * @param command a {@link org.opennms.web.command.NodeListCommand} object.
+     * @return a {@link org.opennms.web.svclayer.model.NodeListModel} object.
+     */
+    public NodeListModel createNodeList(NodeListCommand command);
 }

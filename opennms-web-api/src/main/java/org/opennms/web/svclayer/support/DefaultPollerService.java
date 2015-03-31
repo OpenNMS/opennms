@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.services;
+package org.opennms.web.svclayer.support;
 
 
 import org.opennms.netmgt.events.api.EventConstants;
@@ -35,6 +35,8 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.svclayer.ServiceException;
+import org.opennms.web.svclayer.api.PollerService;
 
 /**
  * <p>DefaultPollerService class.</p>

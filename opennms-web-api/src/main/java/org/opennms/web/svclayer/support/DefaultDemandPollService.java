@@ -35,8 +35,8 @@ import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.DemandPollService;
+import org.opennms.web.svclayer.api.PollerService;
 
 /**
  * <p>DefaultDemandPollService class.</p>

@@ -26,50 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.command;
+package org.opennms.web.svclayer.dao;
+
+import java.util.Collection;
+
+import org.opennms.netmgt.config.categories.Category;
 
 /**
- * <p>DistributedStatusDetailsCommand class.</p>
+ * <p>CategoryConfigDao interface.</p>
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
  */
-public class DistributedStatusDetailsCommand {
-    private String m_location;
-    private String m_application;
-    
-    /**
-     * <p>getApplication</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getApplication() {
-        return m_application;
-    }
-    /**
-     * <p>setApplication</p>
-     *
-     * @param application a {@link java.lang.String} object.
-     */
-    public void setApplication(String application) {
-        m_application = application;
-    }
-    /**
-     * <p>getLocation</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getLocation() {
-        return m_location;
-    }
-    /**
-     * <p>setLocation</p>
-     *
-     * @param location a {@link java.lang.String} object.
-     */
-    public void setLocation(String location) {
-        m_location = location;
-    }
-    
+public interface CategoryConfigDao {
+
+	/**
+	 * <p>getCategoryByLabel</p>
+	 *
+	 * @param label a {@link java.lang.String} object.
+	 * @return a {@link org.opennms.netmgt.config.categories.Category} object.
+	 */
+	public Category getCategoryByLabel(String label);
+	
+	/**
+	 * <p>findAll</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
+	public Collection<Category> findAll();
+	
 }

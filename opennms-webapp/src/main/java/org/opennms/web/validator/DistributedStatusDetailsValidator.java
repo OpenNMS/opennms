@@ -32,7 +32,7 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.web.command.DistributedStatusDetailsCommand;
+import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

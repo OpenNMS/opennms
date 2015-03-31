@@ -50,10 +50,6 @@ import org.springframework.dao.DataRetrievalFailureException;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	
@@ -75,7 +71,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	}
 
 	/** {@inheritDoc} */
-        @Override
+	@Override
 	public Category getCategoryByLabel(String label) {
 		return CategoryFactory.getInstance().getCategory(label);
 	}
@@ -85,7 +81,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
-        @Override
+	@Override
 	public Collection<Category> findAll() {
 		
 		List<Category> catList = new ArrayList<Category>();
@@ -99,16 +95,10 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 				Category[] categories = cats.getCategory();
 				int i = 0;
 				for (i = 0; i < categories.length; i++) {
-					catList.add(categories[i]);					
+					catList.add(categories[i]);
 				}
 			}
 		}
-		return catList;				
+		return catList;
 	}
-
 }
-	
-	
-	
-	
-

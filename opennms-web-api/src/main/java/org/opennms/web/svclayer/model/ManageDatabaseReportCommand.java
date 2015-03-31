@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.command;
+package org.opennms.web.svclayer.model;
+
+import java.util.Arrays;
 
 /**
- * <p>LocationMonitorIdCommand class.</p>
+ * <p>ManageDatabaseReportCommand class.</p>
  *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public class LocationMonitorIdCommand {
-    private Integer m_monitorId;
+public class ManageDatabaseReportCommand {
     
+    private Integer[] m_ids;
+
     /**
-     * <p>getMonitorId</p>
+     * <p>setIds</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @param ids an array of {@link java.lang.Integer} objects.
      */
-    public Integer getMonitorId() {
-        return m_monitorId;
+    public void setIds(Integer[] ids) {
+    m_ids = Arrays.copyOf(ids, ids.length);
     }
+
     /**
-     * <p>setMonitorId</p>
+     * <p>getIds</p>
      *
-     * @param monitorId a {@link java.lang.Integer} object.
+     * @return an array of {@link java.lang.Integer} objects.
      */
-    public void setMonitorId(Integer monitorId) {
-        m_monitorId = monitorId;
+    public Integer[] getIds() {
+    return m_ids;
     }
+    
+
 }

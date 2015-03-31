@@ -26,42 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.svclayer.dao;
+package org.opennms.web.svclayer;
 
-import java.util.Collection;
-
-import org.opennms.netmgt.config.categories.Category;
 
 /**
- * <p>CategoryConfigDao interface.</p>
+ * <p>ServiceException class.</p>
  *
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:sartin@opennms.org">Jonathan Sartin</a>
+ * @author ranger
  * @version $Id: $
  * @since 1.8.1
  */
-public interface CategoryConfigDao {
+@SuppressWarnings("serial")
+public class ServiceException extends RuntimeException {
 
 	/**
-	 * <p>getCategoryByLabel</p>
+	 * <p>Constructor for ServiceException.</p>
 	 *
-	 * @param label a {@link java.lang.String} object.
-	 * @return a {@link org.opennms.netmgt.config.categories.Category} object.
+	 * @param msg a {@link java.lang.String} object.
+	 * @param e a {@link java.lang.Exception} object.
 	 */
-	public Category getCategoryByLabel(String label);
-	
-	/**
-	 * <p>findAll</p>
-	 *
-	 * @return a {@link java.util.Collection} object.
-	 */
-	public Collection<Category> findAll();
-	
+	public ServiceException(String msg, Exception e) {
+		super(msg, e);
+	}
+
 }
