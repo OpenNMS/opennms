@@ -71,7 +71,7 @@ public class CollectionConfigurationResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getCollectdConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
-        LOG.info("getCollectConfigurationForLocation(location={})", location);
+        LOG.debug("getCollectConfigurationForLocation(location={})", location);
         final MonitoringLocationsConfiguration monitoringConfig = m_monitoringLocationsConfigResource.get();
 
         LOG.debug("monitoring config: {}", monitoringConfig);

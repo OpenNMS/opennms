@@ -189,6 +189,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jmx-dependencies</artifactId>
+      <scope>compile</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <scope>compile</scope>
       <type>pom</type>
@@ -410,7 +416,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-    
+
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -420,5 +426,6 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+
 
 </project>
