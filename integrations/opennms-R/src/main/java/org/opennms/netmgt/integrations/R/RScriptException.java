@@ -42,6 +42,6 @@ public class RScriptException extends Exception {
 
     public RScriptException(final String message, final String stdin, final String stderr, final String stdout,
             final Throwable cause) {
-        super(String.format("%s Stdin: {} Stderr: {}, Stdout: {}", message, stdin, stderr, stdout), cause);
+        super(String.format("%s Stdin: %s Stderr: %s, Stdout: %s", message, stdin, stderr, stdout), cause);
     }
 }
