@@ -126,6 +126,7 @@ import org.opennms.netmgt.poller.PollStatus;
  *
  * @author <A HREF="mailto:jay@opennms.org">Jason Aras</A>
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="mailto:dschlenk@converge-one.com</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
 
@@ -136,11 +137,27 @@ public class BSFMonitor extends AbstractServiceMonitor {
     private static final String STATUS_UNRESPONSIVE = "UNR";
     private static final String STATUS_AVAILABLE = "OK";
     private static final String STATUS_UNAVAILABLE = "NOK";
+ 
+    private BSFManager m_bsfManager;
     
-    /** {@inheritDoc} */
+    /**
+     * Initialize BSFManager
+     */
     @Override
-    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
-        BSFManager bsfManager = new BSFManager();
+    public void initialize(Map<String, Object> parameters) {
+        m_bsfManager = new BSFManager();
+    }
+
+    /**
+     * Terminate the BSFManager
+     */
+    @Override
+    public void release() {
+        LOG.debug("Terminating the BSFManager.");
+        m_bsfManager.terminate();
+    }
+    
+    private synchronized PollStatus executeScript(MonitoredService svc, Map<String, Object> map) {
         PollStatus pollStatus = PollStatus.unavailable();
         String fileName = ParameterMap.getKeyedString(map,"file-name", null);
         String lang = ParameterMap.getKeyedString(map, "lang-class", null);
@@ -154,7 +171,11 @@ public class BSFMonitor extends AbstractServiceMonitor {
             if(lang==null)
                 lang = BSFManager.getLangFromFilename(fileName);
                 
-            if(langEngine!=null && lang!=null && langExtensions.length > 0 ){
+            if(langEngine!=null && lang!=null && langExtensions.length > 0){
+                //We register the scripting engine again no matter what since  
+                //BSFManager doesn't let us know what engine is currently registered
+                //for this language and it might not be the same as what we want. 
+                LOG.debug("Registering scripting engine '{}' for '{}'", langEngine, lang);
                 BSFManager.registerScriptingEngine(lang,langEngine,langExtensions);
             }
             
@@ -164,26 +185,30 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     LinkedHashMap<String,Number> times = new LinkedHashMap<String,Number>();
                     
                     // Declare some beans that can be used inside the script
-                    bsfManager.declareBean("map", map, Map.class);
-                    bsfManager.declareBean("ip_addr",svc.getIpAddr(),String.class);
-                    bsfManager.declareBean("node_id",svc.getNodeId(),int.class );
-                    bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
-                    bsfManager.declareBean("svc_name", svc.getSvcName(), String.class);
-                    bsfManager.declareBean("bsf_monitor", this, BSFMonitor.class);
-                    bsfManager.declareBean("results", results, Map.class);
-                    bsfManager.declareBean("times", times, Map.class);
-
+                    m_bsfManager.declareBean("map", map, Map.class);
+                    m_bsfManager.declareBean("ip_addr",svc.getIpAddr(),String.class);
+                    m_bsfManager.declareBean("node_id",svc.getNodeId(),int.class );
+                    m_bsfManager.declareBean("node_label", svc.getNodeLabel(), String.class);
+                    m_bsfManager.declareBean("svc_name", svc.getSvcName(), String.class);
+                    m_bsfManager.declareBean("bsf_monitor", this, BSFMonitor.class);
+                    m_bsfManager.declareBean("results", results, Map.class);
+                    m_bsfManager.declareBean("times", times, Map.class);
+                    
                     for (final Entry<String, Object> entry : map.entrySet()) {
-                        bsfManager.declareBean(entry.getKey(),entry.getValue(),String.class);
+                        m_bsfManager.declareBean(entry.getKey(),entry.getValue(),String.class);
                     }
                     
                     pollStatus = PollStatus.unknown("The script did not update the service status");
                     
                     long startTime = System.currentTimeMillis();
                     if ("eval".equals(runType)) {
-                        results.put("status", bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString());
+                        LOG.debug("m_bsfManager's hashCode is " + 
+                                (m_bsfManager == null ? "null" : m_bsfManager.hashCode()) + 
+                                "; lang is " + lang + "; code's hashCode is " + 
+                                (code == null ? "null" : code.hashCode()));
+                        results.put("status", m_bsfManager.eval(lang, "BSFMonitor", 0, 0, code).toString());
                     } else if ("exec".equals(runType)) {
-                        bsfManager.exec(lang, "BSFMonitor", 0, 0, code);
+                        m_bsfManager.exec(lang, "BSFMonitor", 0, 0, code);
                     } else {
                         LOG.warn("Invalid run-type parameter value '{}' for service '{}'. Only 'eval' and 'exec' are supported.", runType, svc.getSvcName());
                         throw new RuntimeException("Invalid run-type '" + runType + "'");
@@ -232,10 +257,29 @@ public class BSFMonitor extends AbstractServiceMonitor {
             pollStatus = PollStatus.unavailable(e.getMessage());
             LOG.warn("BSFMonitor poll for service '{}' failed with unexpected throwable: {}", svc.getSvcName(), e.getMessage(), e);
         } finally { 
-            bsfManager.terminate();
+            try{
+                //remove the beans we've declared so the manager is ready for the next poll
+                m_bsfManager.undeclareBean("map");
+                m_bsfManager.undeclareBean("ip_addr");
+                m_bsfManager.undeclareBean("node_id");
+                m_bsfManager.undeclareBean("node_label");
+                m_bsfManager.undeclareBean("svc_name");
+                m_bsfManager.undeclareBean("bsf_monitor");
+                m_bsfManager.undeclareBean("results");
+                m_bsfManager.undeclareBean("times");
+                for (final Entry<String, Object> entry : map.entrySet()) {
+                    m_bsfManager.undeclareBean(entry.getKey());
+                }
+            }catch(BSFException e) {
+                LOG.warn("BSFMonitor poll for service '{}' unable to undeclare a bean.", svc.getSvcName(), e);
+            }
         }
-
         return pollStatus;
+    }
+    /** {@inheritDoc} */
+    @Override
+    public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
+        return executeScript(svc, map);
     }
     
     public void log(String level, String format, Object... args) {
