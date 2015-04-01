@@ -44,7 +44,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
@@ -72,7 +71,7 @@ public class PageSequenceMonitorTest {
     @Before
     public void setUp() throws Exception {
         final Properties props = new Properties();
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.apache.http.client.protocol.ResponseProcessCookies", "ERROR");
+        props.put("log4j.logger.org.apache.http.client.protocol.ResponseProcessCookies", "ERROR");
         MockLogAppender.setupLogging(props);
 
         m_monitor = new PageSequenceMonitor();
