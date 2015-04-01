@@ -51,4 +51,5 @@ public @interface JUnitTemporaryDatabase {
     Class<? extends TemporaryDatabase> tempDbClass() default TemporaryDatabasePostgreSQL.class;
     boolean reuseDatabase() default true;
     boolean dirtiesContext() default true;
+    boolean poolConnections() default true;
 }
