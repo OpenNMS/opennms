@@ -35,6 +35,7 @@ import java.util.TreeSet;
 import junit.framework.TestCase;
 
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -50,6 +51,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
     
     private ForeignSourceRepository m_activeRepository = new MockForeignSourceRepository();
     private ForeignSourceRepository m_pendingRepository = new MockForeignSourceRepository();
+    private MockServiceTypeDao m_serviceTypeDao = new MockServiceTypeDao();
 
     @Override
     protected void setUp() throws Exception {
@@ -58,6 +60,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         m_provisioningService = new DefaultManualProvisioningService();
         m_provisioningService.setDeployedForeignSourceRepository(m_activeRepository);
         m_provisioningService.setPendingForeignSourceRepository(m_pendingRepository);
+        m_provisioningService.setServiceTypeDao(m_serviceTypeDao);
     }
 
     public void testGetProvisioningGroupNames() {
@@ -155,5 +158,9 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(svc);
         assertFalse(svc.getServiceName().equals(svcName));
     }
-    
+
+    public void testGetServiceTypeNames() {
+        Collection<String> services = m_provisioningService.getServiceTypeNames("");
+        assertTrue(services.contains("ICMP"));
+    }
 }
