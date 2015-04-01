@@ -32,8 +32,13 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -43,7 +48,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
-public class DefaultManualProvisioningServiceTest extends TestCase {
+public class DefaultManualProvisioningServiceTest {
     
     private DefaultManualProvisioningService m_provisioningService;
 
@@ -53,8 +58,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
     private ForeignSourceRepository m_pendingRepository = new MockForeignSourceRepository();
     private MockServiceTypeDao m_serviceTypeDao = new MockServiceTypeDao();
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         m_testData = m_activeRepository.importResourceRequisition(ConfigurationTestUtils.getSpringResourceForResource(this, "/tec_dump.xml"));
 
         m_provisioningService = new DefaultManualProvisioningService();
@@ -63,13 +68,15 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         m_provisioningService.setServiceTypeDao(m_serviceTypeDao);
     }
 
+    @Test
     public void testGetProvisioningGroupNames() {
         Set<String> expected = new TreeSet<String>();
         expected.add("matt:");
         Collection<String> groupNames = m_provisioningService.getProvisioningGroupNames();
         assertEquals(expected, groupNames);
     }
-    
+
+    @Test
     public void testGetProvisioningGroup() {
         String name = "matt:";
         
@@ -77,7 +84,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         Requisition actual = m_provisioningService.getProvisioningGroup(name);
         assertEquals(expected, actual);
     }
-    
+
+    @Test
     public void testAddNewNodeToGroup() {
         String groupName = "matt:";
         String nodeLabel = "david";
@@ -91,7 +99,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertEquals(initialCount+1, newCount);
         assertEquals(nodeLabel, result.getNodes().get(0).getNodeLabel());
     }
-    
+
+    @Test
     public void testAddCategoryToNode() {
         String groupName = "matt:";
         String pathToNode = "node[0]";
@@ -108,7 +117,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
-    
+
+    @Test
     public void testAddInterfaceToNode() {
         String groupName = "matt:";
         String pathToNode = "node[0]";
@@ -125,7 +135,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
-    
+
+    @Test
     public void testAddServiceToInterface() {
         String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
@@ -141,7 +152,8 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertNotNull(svc);
         assertEquals(serviceName, svc.getServiceName());
     }
-    
+
+    @Test
     public void testDeletePath() {
         String groupName = "matt:";
         String pathToInterface = "node[0].interface[0]";
@@ -159,6 +171,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         assertFalse(svc.getServiceName().equals(svcName));
     }
 
+    @Test
     public void testGetServiceTypeNames() {
         Collection<String> services = m_provisioningService.getServiceTypeNames("");
         assertTrue(services.contains("ICMP"));
