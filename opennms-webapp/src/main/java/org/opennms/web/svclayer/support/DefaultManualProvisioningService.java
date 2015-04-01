@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.spring.PropertyPath;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -80,7 +81,8 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private ServiceTypeDao m_serviceTypeDao;
-    
+    private PollerConfig m_pollerConfig;
+
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -156,7 +158,16 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
-    
+
+    /**
+     * <p>setPollerConfig</p>
+     *
+     * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
+     */
+    public void setPollerConfig(final PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Requisition addCategoryToNode(final String groupName, final String pathToNode, final String categoryName) {
@@ -560,6 +571,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             for (final OnmsServiceType type : m_serviceTypeDao.findAll()) {
                 serviceNames.add(type.getName());
             }
+
+            // Include all of the service names defined in the poller configuration
+            serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+
             return serviceNames;
         } finally {
             m_readLock.unlock();

@@ -29,6 +29,8 @@
 package org.opennms.web.svclayer.support;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -37,10 +39,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -172,8 +177,22 @@ public class DefaultManualProvisioningServiceTest {
     }
 
     @Test
-    public void testGetServiceTypeNames() {
-        Collection<String> services = m_provisioningService.getServiceTypeNames("");
+    public void serviceTypeNamesIncludesServiceFromPollerConfiguration() {
+        // Map of service monitors
+        final Map<String, ServiceMonitor> serviceMonitors = new HashMap<String, ServiceMonitor>();
+        serviceMonitors.put("Shochu-Stock-Level", null);
+
+        // Build a mock config. that returns our map
+        final PollerConfig pollerConfig = EasyMock.createNiceMock(PollerConfig.class);
+        EasyMock.expect(pollerConfig.getServiceMonitors()).andReturn(serviceMonitors);
+        m_provisioningService.setPollerConfig(pollerConfig);
+
+        EasyMock.replay(pollerConfig);
+
+        final Collection<String> services = m_provisioningService.getServiceTypeNames("");
         assertTrue(services.contains("ICMP"));
+        assertTrue(services.contains("Shochu-Stock-Level"));
+
+        EasyMock.verify(pollerConfig);
     }
 }
