@@ -3,7 +3,11 @@ body {
 	font-size: small;
 }
 
-#headerinfo, #header .navbar, #header hr {
+#headerinfo, #header, .breadcrumb {
+	display: none;
+}
+
+.graph-aux-controls, .modal, #results-sidebar {
 	display: none;
 }
 
