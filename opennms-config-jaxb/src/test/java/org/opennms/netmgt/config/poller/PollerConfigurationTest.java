@@ -60,7 +60,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
     public void setUp() {
         super.setUp();
         final Properties props = new Properties();
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml", "TRACE");
+        //props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml", "TRACE");
         MockLogAppender.setupLogging(true, props);
     }
 

@@ -52,11 +52,13 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
     public void setUp() {
         super.setUp();
         final Properties props = new Properties();
+        /*
         props.put(MockLogger.LOG_KEY_PREFIX + getClass().getName(), "TRACE");
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbUtils", "TRACE");
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbClassObjectAdapter", "TRACE");
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.EmptyListAdapter", "TRACE");
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.XmlSchemaFilter", "TRACE");
+        */
         MockLogAppender.setupLogging(true, props);
     }
 

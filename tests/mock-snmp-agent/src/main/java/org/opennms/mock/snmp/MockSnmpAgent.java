@@ -228,7 +228,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         LogFactory.setLogFactory(new ConsoleLogFactory());
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
-            System.err.println("Could not parse configuration.");
+            s_log.error("Could not parse configuration.");
             System.exit(1);
         }
         String listenSpec = agentConfig.getListenAddr().getHostAddress() + "/" + agentConfig.getListenPort();

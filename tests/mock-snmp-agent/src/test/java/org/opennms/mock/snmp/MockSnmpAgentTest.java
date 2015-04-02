@@ -47,6 +47,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.responder.Sleeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.SNMP4JSettings;
@@ -76,6 +78,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 @RunWith(Parameterized.class)
 public class MockSnmpAgentTest  {
+    private static final Logger LOG = LoggerFactory.getLogger(MockSnmpAgentTest.class);
+
     @Parameters
     public static Collection<Object[]> versions() {
         return Arrays.asList(new Object[][] {
@@ -145,7 +149,7 @@ public class MockSnmpAgentTest  {
 
         m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("loadSnmpDataTest.properties"), "127.0.0.1/0");
         Thread.sleep(200);
-        System.err.println("Started MockSnmpAgent on port " + m_agent.getPort());
+        LOG.debug("Started MockSnmpAgent on port " + m_agent.getPort());
 
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
@@ -396,7 +400,7 @@ public class MockSnmpAgentTest  {
         PDU response = sendRequest(pdu, version);
 
         assertNotNull("request timed out", response);
-        System.err.println("Response is: "+response);
+        LOG.debug("Response is: "+response);
         assertTrue("unexpected report pdu: " + ((VariableBinding)response.getVariableBindings().get(0)).getOid(), response.getType() != PDU.REPORT);
 
         assertEquals("Unexpected number of varbinds returned.", m_requestedVarbinds.size(), response.getVariableBindings().size());

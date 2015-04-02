@@ -48,8 +48,10 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
     public void setUp() {
         super.setUp();
         final Properties props = new Properties();
+        /*
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbUtils", "TRACE");
         props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbClassObjectAdapter", "TRACE");
+        */
         MockLogAppender.setupLogging(true, props);
     }
 
