@@ -166,7 +166,7 @@ abstract public class XmlTest<T> {
 
     protected void validateXmlString(final String xml) throws Exception {
         if (getSchemaFile() == null) {
-            LOG.warn("skipping validation, schema file not set");
+            LOG.debug("skipping validation, schema file not set");
             return;
         }
 
@@ -289,7 +289,7 @@ abstract public class XmlTest<T> {
     public void validateJaxbXmlAgainstSchema() throws Exception {
         final String schemaFile = getSchemaFile();
         if (schemaFile == null) {
-            LOG.warn("Skipping validation.");
+            LOG.debug("Skipping validation.");
             return;
         }
         LOG.debug("Validating against XSD: {}", schemaFile);

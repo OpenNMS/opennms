@@ -30,13 +30,11 @@ package org.opennms.netmgt.config.monitoringLocations;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.custommonkey.xmlunit.Difference;
 import org.junit.Before;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +49,7 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
     @Before
     public void setUp() {
         super.setUp();
-        final Properties props = new Properties();
-        /*
-        props.put(MockLogger.LOG_KEY_PREFIX + getClass().getName(), "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbUtils", "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbClassObjectAdapter", "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.EmptyListAdapter", "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.XmlSchemaFilter", "TRACE");
-        */
-        MockLogAppender.setupLogging(true, props);
+        MockLogAppender.setupLogging();
     }
 
     @Override

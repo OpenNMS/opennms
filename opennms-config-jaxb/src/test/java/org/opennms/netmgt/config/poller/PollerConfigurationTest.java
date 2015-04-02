@@ -35,13 +35,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
@@ -59,9 +57,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
     @Override
     public void setUp() {
         super.setUp();
-        final Properties props = new Properties();
-        //props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml", "TRACE");
-        MockLogAppender.setupLogging(true, props);
+        MockLogAppender.setupLogging();
     }
 
     @Override

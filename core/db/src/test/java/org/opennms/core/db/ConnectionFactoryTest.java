@@ -44,12 +44,16 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.test.DaoTestConfigBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class ConnectionFactoryTest extends TestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryTest.class);
+
 	public void testMarshalDataSourceFromConfig() throws Exception {
 		DaoTestConfigBean bean = new DaoTestConfigBean();
 		bean.afterPropertiesSet();
@@ -109,8 +113,7 @@ public class ConnectionFactoryTest extends TestCase {
 					choice = t1;
 
 					if (t2 != null) {
-						System.err.println("  Both factories failed to close.  See stderr for second stack back trace.");
-						t2.printStackTrace(System.err);
+						LOG.warn("Both factories failed to close.", t2);
 					}
 				} else {
 					choice = t2;

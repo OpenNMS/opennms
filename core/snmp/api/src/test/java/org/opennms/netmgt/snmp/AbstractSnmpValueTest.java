@@ -34,8 +34,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AbstractSnmpValueTest {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValueTest.class);
 
 	/**
 	 * This test is designed to test the issues in bug NMS-5281.
@@ -58,13 +61,13 @@ public class AbstractSnmpValueTest {
 		// ISO-8859-1
 		strings[3] = "56697275732f4d616c776172653a2045696361725f746573745f66696c6520436f6d70757465723a2049542d30303220446f6de46e653a2050632d6974206f686e65206669726577616c6c5c2044617465693a20473a5c6569636172202d204b6f7069655c6569636172202d204b6f7069652e746172202865696361722e636f6d2920446174756d2f5568727a6569743a2030312e31312e323031332031313a34383a34382045726765626e69733a2045732077757264652065696e20566972757320656e746465636b742e2053e4756265726e206e69636874206df6676c6963682e202851756172616e74e46e652920";
 
-		for (String string : strings) {
-			System.out.println(new String(hexStringToBytes(string), "UTF-8"));
-			System.out.println(new String(hexStringToBytes(string), "ISO-8859-1"));
+		for (final String string : strings) {
+			LOG.debug(new String(hexStringToBytes(string), "UTF-8"));
+			LOG.debug(new String(hexStringToBytes(string), "ISO-8859-1"));
 		}
 
-		for (String string : strings) {
-			System.out.println(new String(hexStringToBytes(string)));
+		for (final String string : strings) {
+			LOG.debug(new String(hexStringToBytes(string)));
 			assertTrue(new String(hexStringToBytes(string), "ISO-8859-1"), AbstractSnmpValue.allBytesDisplayable(hexStringToBytes(string)));
 		}
 	}
@@ -103,8 +106,8 @@ public class AbstractSnmpValueTest {
 		for (int i = 0; i * 2 < hexString.length(); i++) {
 			try {
 				retval[i] = (byte)Integer.parseInt(hexString.substring(i * 2,  (i * 2) + 2), 16);
-			} catch (NumberFormatException e) {
-				System.out.println("Error while processing i = " + i);
+			} catch (final NumberFormatException e) {
+				LOG.warn("Error while processing i = " + i);
 				e.printStackTrace();
 			}
 		}

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,13 +39,16 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 import org.opennms.netmgt.xml.eventconf.EventOrdering.EventOrderIndex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author brozow
  *
  */
 public class EventOrderingTest {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(EventOrderingTest.class);
+
     private class Item implements Comparable<Item>{
         private int m_label;
         private EventOrderIndex m_index;
@@ -95,11 +98,11 @@ public class EventOrderingTest {
         
         Collections.shuffle(items);
         
-        System.err.println(items);
+        LOG.debug("before: {}", items);
         
         sorted.addAll(items);
         
-        System.err.println(sorted);
+        LOG.debug("after: {}", sorted);
 
         assertEquals(range(0,44), labels(sorted));
         

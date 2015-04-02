@@ -31,12 +31,14 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockLogger;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -59,7 +61,9 @@ public class DataCollectionConfigParserTest {
 
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging();
+        final Properties props = new Properties();
+        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.netmgt.config.DataCollectionConfigParser", "WARN");
+        MockLogAppender.setupLogging(props);
     }
 
     @After

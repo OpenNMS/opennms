@@ -44,12 +44,15 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
 import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class DefaultBridgeTopologyTest {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultBridgeTopologyTest.class);
 
     @Before
     public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.opennms.netmgt.model.topology", "DEBUG");
+        final Properties p = new Properties();
+        // p.setProperty("log4j.logger.org.opennms.netmgt.model.topology", "DEBUG");
         MockLogAppender.setupLogging(p);
 
     }
@@ -62,21 +65,21 @@ public class DefaultBridgeTopologyTest {
     }
 
     protected void printBridgeTopologyLink(BridgeTopologyLink path) {
-        System.err.println("");
-        System.err.println("------link-----");
-        System.err.println("macs on link: " + path.getMacs());
-        System.err.println("------bridge port-----");
+        LOG.debug("");
+        LOG.debug("------link-----");
+        LOG.debug("macs on link: " + path.getMacs());
+        LOG.debug("------bridge port-----");
         printBridgeTopologyPort(path.getBridgeTopologyPort());
         if (path.getDesignateBridgePort() != null ) {
-            System.err.println("------designated port-----");
+            LOG.debug("------designated port-----");
             printBridgeTopologyPort(path.getDesignateBridgePort());
         }
     }
 
     protected void printBridgeTopologyPort(BridgeTopologyPort port) {
-        System.err.println("nodeid: " + port.getNodeid());
-        System.err.println("bridgeport: " + port.getBridgePort());
-        System.err.println("learned macs: " + port.getMacs());
+        LOG.debug("nodeid: " + port.getNodeid());
+        LOG.debug("bridgeport: " + port.getBridgePort());
+        LOG.debug("learned macs: " + port.getMacs());
     }
 
     private Map<Integer,Set<String>> addBridgeForwardingTableEntry(Integer bridgeport, String mac, Map<Integer,Set<String>> bft) {

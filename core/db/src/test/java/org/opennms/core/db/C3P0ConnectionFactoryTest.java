@@ -32,7 +32,6 @@ import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -44,12 +43,17 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class C3P0ConnectionFactoryTest extends TestCase {
+    private static Logger LOG = LoggerFactory.getLogger(C3P0ConnectionFactoryTest.class);
+
     public void testMarshalDataSourceFromConfig() throws Exception {
         C3P0ConnectionFactory factory1 = null;
         C3P0ConnectionFactory factory2 = null;
@@ -104,8 +108,7 @@ public class C3P0ConnectionFactoryTest extends TestCase {
     				choice = t1;
     				
     				if (t2 != null) {
-    					System.err.println("  Both factories failed to close.  See stderr for second stack back trace.");
-    					t2.printStackTrace(System.err);
+    					LOG.warn("Both factories failed to close.", t2);
     				}
     			} else {
     				choice = t2;
@@ -121,9 +124,9 @@ public class C3P0ConnectionFactoryTest extends TestCase {
         InputStream stream = new ByteArrayInputStream(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, ConfigFileConstants.getFileName(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME)).getBytes());
         DataSourceConfigurationFactory factory = new DataSourceConfigurationFactory(stream);
         try {
-            factory.getJdbcDataSource("opennms").marshal(new OutputStreamWriter(System.err));
-            System.err.println();
-            return new C3P0ConnectionFactory(factory.getJdbcDataSource("opennms"));
+            final JdbcDataSource jdbcDataSource = factory.getJdbcDataSource("opennms");
+            LOG.debug("'opennms' JDBC data source: {}", jdbcDataSource);
+            return new C3P0ConnectionFactory(jdbcDataSource);
         } finally {
             IOUtils.closeQuietly(stream);
         }

@@ -32,6 +32,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class OnmsHwEntityTest.
@@ -39,6 +41,7 @@ import org.opennms.core.xml.JaxbUtils;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class OnmsHwEntityTest {
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsHwEntityTest.class);
 
     /**
      * Test equals.
@@ -171,7 +174,7 @@ public class OnmsHwEntityTest {
         n.setLabel("n1");
         r.setNode(n);
 
-        System.out.println(r);
+        LOG.debug("{}", r);
 
         return r;
     }

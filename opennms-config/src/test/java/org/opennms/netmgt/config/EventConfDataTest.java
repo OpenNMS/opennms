@@ -48,10 +48,13 @@ import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 public class EventConfDataTest {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfDataTest.class);
+
     DefaultEventConfDao eventConfDao;
 
     @Before
@@ -314,7 +317,7 @@ public class EventConfDataTest {
 
         org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(snmp);
 
-        System.out.println("Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
+        LOG.debug("Eventconf: " + (econf == null ? null : new EventConfWrapper(econf) ));
 
         if (event != null) {
             if (econf == null) {

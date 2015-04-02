@@ -31,12 +31,10 @@ package org.opennms.netmgt.config.pagesequence;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
 public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
@@ -47,12 +45,7 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
     @Before
     public void setUp() {
         super.setUp();
-        final Properties props = new Properties();
-        /*
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbUtils", "TRACE");
-        props.put(MockLogger.LOG_KEY_PREFIX + "org.opennms.core.xml.JaxbClassObjectAdapter", "TRACE");
-        */
-        MockLogAppender.setupLogging(true, props);
+        MockLogAppender.setupLogging();
     }
 
     @Override
