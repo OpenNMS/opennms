@@ -61,7 +61,7 @@ public class MockLogAppender {
 
     private static List<LoggingEvent> s_events;
     private static Level s_highestLoggedLevel = Level.TRACE;
-    private static String s_defaultLevel = "DEBUG";
+    private static String s_defaultLevel = "INFO";
     private static MockLogAppender s_instance = null;
 
     /**
