@@ -41,9 +41,11 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.opennms.core.db.C3P0ConnectionFactory;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
@@ -218,7 +220,24 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
         m_database = m_databases.remove();
 
-        DataSourceFactory.setInstance(m_database);
+        // We should pool connections to simulate the behavior of OpenNMS where we use c3p0,
+        // but we also need to be able to shut down the connection pool reliably after tests
+        // complete which c3p0 isn't great at. So make it configurable.
+        //
+        if (jtd.poolConnections()) {
+            JdbcDataSource ds = new JdbcDataSource();
+            ds.setDatabaseName(m_database.getTestDatabase());
+            ds.setUserName(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+            ds.setPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+            ds.setUrl(System.getProperty(TemporaryDatabase.URL_PROPERTY, TemporaryDatabase.DEFAULT_URL) + m_database.getTestDatabase());
+            ds.setClassName(System.getProperty(TemporaryDatabase.DRIVER_PROPERTY, TemporaryDatabase.DEFAULT_DRIVER));
+
+            C3P0ConnectionFactory pool = new C3P0ConnectionFactory(ds);
+
+            DataSourceFactory.setInstance(pool);
+        } else {
+            DataSourceFactory.setInstance(m_database);
+        }
         XADataSourceFactory.setInstance(m_database);
 
         System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));
