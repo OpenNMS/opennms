@@ -293,7 +293,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initMessageDispatcher() {
-        s_log.info("MockSnmpAgent: starting initMessageDispatcher()");
+        s_log.debug("MockSnmpAgent: starting initMessageDispatcher()");
         try {
             dispatcher = new MessageDispatcherImpl();
     
@@ -309,47 +309,47 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             dispatcher.addMessageProcessingModel(mpv3);
             initSnmpSession();
         } finally {
-            s_log.info("MockSnmpAgent: finished initMessageDispatcher()");
+            s_log.debug("MockSnmpAgent: finished initMessageDispatcher()");
         }
     }
 
     @Override
     public void initSnmpSession() {
-        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        s_log.debug("MockSnmpAgent: starting initTransportMappings()");
         try {
             super.initSnmpSession();
         } finally {
-            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+            s_log.debug("MockSnmpAgent: finished initTransportMappings()");
         }
     }
 
     @Override
     public void initConfigMIB() {
-        s_log.info("MockSnmpAgent: starting initConfigMIB()");
+        s_log.debug("MockSnmpAgent: starting initConfigMIB()");
         try {
             super.initConfigMIB();
         } finally {
-            s_log.info("MockSnmpAgent: finished initConfigMIB()");
+            s_log.debug("MockSnmpAgent: finished initConfigMIB()");
         }
     }
 
     @Override
     public void setupDefaultProxyForwarder() {
-        s_log.info("MockSnmpAgent: starting setupDefaultProxyForwarder()");
+        s_log.debug("MockSnmpAgent: starting setupDefaultProxyForwarder()");
         try {
             super.setupDefaultProxyForwarder();
         } finally {
-            s_log.info("MockSnmpAgent: finished setupDefaultProxyForwarder()");
+            s_log.debug("MockSnmpAgent: finished setupDefaultProxyForwarder()");
         }
     }
 
     @Override
     public void updateSession(Session session) {
-        s_log.info("MockSnmpAgent: starting updateSession()");
+        s_log.debug("MockSnmpAgent: starting updateSession()");
         try {
             super.updateSession(session);
         } finally {
-            s_log.info("MockSnmpAgent: finished updateSession()");
+            s_log.debug("MockSnmpAgent: finished updateSession()");
         }
     }
 
@@ -378,15 +378,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	s_log.info("MockSnmpAgent: Initializing SNMP Agent");
         try {
             init();
-	    s_log.info("MockSnmpAgent: Finished 'init' loading config");
+	    s_log.debug("MockSnmpAgent: Finished 'init' loading config");
             loadConfig(ImportModes.UPDATE_CREATE);
-	    s_log.info("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
+	    s_log.debug("MockSnmpAgent: finished 'loadConfig' adding shutdown hook");
             addShutdownHook();
-	    s_log.info("MockSnmpAgent: finished 'addShutdownHook' finishing init");
+	    s_log.debug("MockSnmpAgent: finished 'addShutdownHook' finishing init");
             finishInit();
-	    s_log.info("MockSnmpAgent: finished 'finishInit' running agent");
+	    s_log.debug("MockSnmpAgent: finished 'finishInit' running agent");
             super.run();
-	    s_log.info("MockSnmpAgent: finished running Agent - setting running to true");
+	    s_log.debug("MockSnmpAgent: finished running Agent - setting running to true");
             m_running.set(true);
         } catch (final BindException e) {
         	s_log.error(String.format("MockSnmpAgent: Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root. Exception: %s", m_address.get(), e), e);
@@ -396,7 +396,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
         boolean interrupted = false;
-	s_log.info("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
+        s_log.debug("MockSnmpAgent: Initialization Complete processing message until agent is shutdown.");
         while (m_running.get()) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
@@ -406,7 +406,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         }
 
-	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
+        s_log.debug("MockSnmpAgent: Shutdown called stopping agent.");
         for (final TransportMapping<?> transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
@@ -612,17 +612,17 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
-        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        s_log.debug("MockSnmpAgent: starting initTransportMappings()");
         try {
             final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
             transportMappings = new TransportMapping[] { mapping };
         } catch (final IOException e) {
-            s_log.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
+            s_log.debug("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
             m_failure.set(e);
             throw e;
         } finally {
-            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+            s_log.debug("MockSnmpAgent: finished initTransportMappings()");
         }
     }
     
@@ -654,11 +654,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerSnmpMIBs() {
-        s_log.info("MockSnmpAgent: starting registerSnmpMIBs()");
+        s_log.debug("MockSnmpAgent: starting registerSnmpMIBs()");
         try {
             registerManagedObjects();
         } finally {
-            s_log.info("MockSnmpAgent: finished registerSnmpMIBs()");
+            s_log.debug("MockSnmpAgent: finished registerSnmpMIBs()");
         }
     }
 
