@@ -53,7 +53,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitSnmpAgent(host=BgpSessionDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class BgpSessionDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "172.20.1.205";
+    static final String TEST_IP_ADDRESS = "192.0.2.205";
 
     @Autowired
     private BgpSessionDetector m_detector;
@@ -72,7 +72,7 @@ public class BgpSessionDetectorTest implements InitializingBean {
 
     @Test(timeout=90000)
     public void testDetectorSuccess() throws UnknownHostException{
-        m_detector.setBgpPeerIp("172.20.1.201");
+        m_detector.setBgpPeerIp("192.0.2.201");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
