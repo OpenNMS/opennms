@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -162,5 +164,31 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         m_eventMgr.sendEventToListeners(event);
 
         verifyAnticipated(finishedNotifs, 1000);
+    }
+
+    /**
+     * Test Varbindsdecode replacement on notifications.
+     * 
+     * @author Alejandro Galue <agalue@opennms.org>
+     */
+    @Test
+    public void testVarbindsdecodeNMS7598() throws Exception {
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange", "testVarbindsdecodeNMS7598");
+        bldr.setNodeid(0);
+        bldr.setInterface(addr("0.0.0.0"));
+        bldr.addParam("cHsrpGrpStandbyState", "3");
+        
+        String templateText = "Notice #%noticeid%: new state is %parm[#1]%";
+        String expectedText = "Notice #1001: new state is listen(3)";
+        Notification n = new Notification();
+        n.setName("cHsrpGrpStandbyState");
+        n.setSubject(templateText);
+        n.setNumericMessage(templateText);
+        n.setTextMessage(templateText);
+        
+        Map<String,String> params = m_eventProcessor.buildParameterMap(n, bldr.getEvent(), 1001);
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_NUM_MSG));
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_TEXT_MSG));
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_SUBJECT));
     }
 }
