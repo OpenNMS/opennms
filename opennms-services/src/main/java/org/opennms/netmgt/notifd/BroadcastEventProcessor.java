@@ -53,6 +53,7 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -64,6 +65,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.model.events.EventIpcManagerFactory;
@@ -96,6 +98,8 @@ public final class BroadcastEventProcessor implements EventListener {
     private volatile UserManager m_userManager;
     private volatile GroupManager m_groupManager;
     private volatile NotificationCommandManager m_notificationCommandManager;
+    private volatile EventUtil m_eventUtil;
+    private volatile EventConfDao m_eventConfDao;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -173,6 +177,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 m_notificationManager.update();
                 m_destinationPathManager.update();
                 m_notificationCommandManager.update();
+                m_eventConfDao.reload();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
             } catch (Throwable e) {
@@ -698,7 +703,7 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    static Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
+    protected Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
         Map<String, String> paramMap = new HashMap<String, String>();
         
         NotificationManager.addNotificationParams(paramMap, notification);
@@ -714,9 +719,10 @@ public final class BroadcastEventProcessor implements EventListener {
         String numericMessage = NotificationManager.expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
         String subjectLine = NotificationManager.expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
         
-        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
+        Map<String, Map<String, String>> decodeMap = getVarbindsDecodeMap(event.getUei());
+        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap, decodeMap);
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
         paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
@@ -729,8 +735,32 @@ public final class BroadcastEventProcessor implements EventListener {
         
     }
 
-    private static void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = AbstractEventUtil.getInstance().expandParms(value, event);
+    protected  Map<String, Map<String, String>> getVarbindsDecodeMap(String eventUei) {
+        if (m_eventConfDao == null) {
+            return null;
+        }
+        org.opennms.netmgt.xml.eventconf.Event event = m_eventConfDao.findByUei(eventUei);
+        if (event == null) {
+            return null;
+        }
+        if (event.getVarbindsdecodeCollection().isEmpty()) {
+            return null;
+        }
+        Map<String, Map<String, String>> decodeMap = new HashMap<String, Map<String, String>>();
+        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+            String paramId = vb.getParmid();
+            if (decodeMap.get(paramId) == null) {
+                decodeMap.put(paramId, new HashMap<String,String>());
+            }
+            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodeCollection()) {
+                decodeMap.get(paramId).put(d.getVarbindvalue(), d.getVarbinddecodedstring());
+            }
+        }
+        return decodeMap;
+    }
+
+    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap, Map<String, Map<String, String>> decodeMap) {
+        String result = m_eventUtil == null ? null : m_eventUtil.expandParms(value, event, decodeMap);
         paramMap.put(key, (result == null ? value : result));
     }
 
@@ -1208,4 +1238,11 @@ public final class BroadcastEventProcessor implements EventListener {
         m_noticeQueues = noticeQueues;
     }
 
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
+    }
 } // end class

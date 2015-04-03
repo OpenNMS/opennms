@@ -369,7 +369,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         int index = 0;
         for (Integer notifId : notifIds) {
-            Map<String, String> originalMap = BroadcastEventProcessor.buildParameterMap(notification[index], event, notifId.intValue());
+            Map<String, String> originalMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notification[index], event, notifId.intValue());
             
             Map<String, String> resolutionMap = new HashMap<String, String>(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));

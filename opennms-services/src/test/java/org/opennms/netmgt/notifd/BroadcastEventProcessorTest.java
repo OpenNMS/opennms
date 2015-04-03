@@ -38,16 +38,21 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.eventd.EventUtilDaoImpl;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.core.io.ClassPathResource;
 
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
@@ -57,6 +62,11 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         super.setUp();
 
         m_anticipator.setExpectedDifference(3000);
+        m_notifd.getBroadcastEventProcessor().setEventUtil(new EventUtilDaoImpl());
+        DefaultEventConfDao eventConf = new DefaultEventConfDao();
+        eventConf.setConfigResource(new ClassPathResource("org/opennms/netmgt/notifd/eventconf.xml"));
+        eventConf.afterPropertiesSet();
+        m_notifd.getBroadcastEventProcessor().setEventConfDao(eventConf);
     }
 
     @After
@@ -127,7 +137,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         notifications = m_notificationManager.getNotifForEvent(bldr.getEvent());
         assertNotNull(notifications);
         assertEquals(1, notifications.length);
-        Map<String,String> paramMap = BroadcastEventProcessor.buildParameterMap(notifications[0], bldr.getEvent(), 9999);
+        Map<String,String> paramMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notifications[0], bldr.getEvent(), 9999);
         /*
         for (Map.Entry<String,String> entry : paramMap.entrySet()) {
             System.out.println(entry.getKey() + " => " + entry.getValue());
@@ -162,5 +172,31 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         m_eventMgr.sendEventToListeners(event);
 
         verifyAnticipated(finishedNotifs, 1000);
+    }
+
+    /**
+     * Test Varbindsdecode replacement on notifications.
+     * 
+     * @author Alejandro Galue <agalue@opennms.org>
+     */
+    @Test
+    public void testVarbindsdecodeNMS7598() throws Exception {
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/vendor/Cisco/traps/cHsrpStateChange", "testVarbindsdecodeNMS7598");
+        bldr.setNodeid(0);
+        bldr.setInterface(addr("0.0.0.0"));
+        bldr.addParam("cHsrpGrpStandbyState", "3");
+        
+        String templateText = "Notice #%noticeid%: new state is %parm[#1]%";
+        String expectedText = "Notice #1001: new state is listen(3)";
+        Notification n = new Notification();
+        n.setName("cHsrpGrpStandbyState");
+        n.setSubject(templateText);
+        n.setNumericMessage(templateText);
+        n.setTextMessage(templateText);
+        
+        Map<String,String> params = m_notifd.getBroadcastEventProcessor().buildParameterMap(n, bldr.getEvent(), 1001);
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_NUM_MSG));
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_TEXT_MSG));
+        Assert.assertEquals(expectedText, params.get(NotificationManager.PARAM_SUBJECT));
     }
 }

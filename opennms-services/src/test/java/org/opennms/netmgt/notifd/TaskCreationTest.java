@@ -63,7 +63,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         MockNode node = m_network.getNode(1);
         Event nodeDownEvent = node.createDownEvent();
         
-        m_params = BroadcastEventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
+        m_params = m_eventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
         m_commands = new String[]{ "email" };
     }
 

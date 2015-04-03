@@ -29,7 +29,10 @@
 package org.opennms.netmgt.notifd.jmx;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
 
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -39,9 +42,11 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * <p>Notifd class.</p>
@@ -120,7 +125,36 @@ public class Notifd extends AbstractServiceDaemon implements NotifdMBean {
             LOG.error("start: Failed to init poll outage config factory.", t);
             throw new UndeclaredThrowableException(t);
         }
-        
+
+        try {
+            DefaultEventConfDao eventConfDao;
+            eventConfDao = new DefaultEventConfDao();
+            eventConfDao.setConfigResource(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME)));
+            eventConfDao.afterPropertiesSet();
+            getNotifd().setEventConfDao(eventConfDao);
+            getNotifd().setEventUtil(new AbstractEventUtil() { // There is no need to use the JDBC or DAO implementation because only the expandParms method will be used on BroadcastEventProcessor
+                @Override
+                public String getHardwareFieldValue(String parm, long nodeId) {
+                    return null;
+                }
+                @Override
+                public String getNodeLabel(long nodeId) throws SQLException {
+                    return null;
+                }
+                @Override
+                public String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+                    return null;
+                }
+                @Override
+                public String getAssetFieldValue(String parm, long nodeId) {
+                    return null;
+                }
+            });
+        } catch (Throwable t) {
+            LOG.error("start: Failed to init event configuration dao", t);
+            throw new UndeclaredThrowableException(t);
+        }
+
         getNotifd().setEventManager(EventIpcManagerFactory.getIpcManager());
         getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
         getNotifd().setNotificationManager(NotificationFactory.getInstance());

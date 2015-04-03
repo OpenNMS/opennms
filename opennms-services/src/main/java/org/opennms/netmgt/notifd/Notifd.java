@@ -39,9 +39,11 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.events.EventIpcManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +108,10 @@ public final class Notifd extends AbstractServiceDaemon {
     
     private volatile NodeDao m_nodeDao;
 
+    private volatile EventUtil m_eventUtil;
+
+    private volatile EventConfDao m_eventConfDao;
+
     /**
      * Constructs a new Notifd service daemon.
      */
@@ -152,6 +158,8 @@ public final class Notifd extends AbstractServiceDaemon {
         m_eventReader.setNotificationManager(getNotificationManager());
         m_eventReader.setPollOutagesConfigManager(getPollOutagesConfigManager());
         m_eventReader.setUserManager(getUserManager());
+        m_eventReader.setEventUtil(getEventUtil());
+        m_eventReader.setEventConfDao(getEventConfDao());
 
         // start the event reader
         try {
@@ -392,4 +400,20 @@ public final class Notifd extends AbstractServiceDaemon {
         return m_nodeDao;
     }
 
+    public void setEventUtil(EventUtil eventUtil) {
+        this.m_eventUtil = eventUtil;
+    }
+
+    public EventUtil getEventUtil() {
+        return m_eventUtil;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.m_eventConfDao = eventConfDao;
+    }
+
+    public EventConfDao getEventConfDao() {
+        return m_eventConfDao;
+    }
+    
 }
