@@ -30,6 +30,7 @@ The following section describe the information shown in each component.
 All other components display information based on the _Surveillance View_.
 
 [[user-guide-dashboard-surveillance-view]]
+
 ==== Surveillance View
 
 The _Surveillance View_ has multiple functions.
@@ -37,19 +38,12 @@ The _Surveillance View_ has multiple functions.
 * Allows to model the _monitoring context_ and shows service and node _Outages_ in compact matrix view.
 * Allows to limit the number of information in the _Dashboard_ by selecting rows, columns and cells.
 
-The following screenshots show all possible selections in the _Surveillance View_.
+You can select columns, rows, single cells and of course all entries in a _Surveillance View_. Please
+refer to the <<user-guide-surveillance-view, Surveillance View Section>> for details on how to configure
+_Surveillance Views_.
 
 .Information displayed from all nodes matching the surveillance view
-image::dashboard/02_unselected.png[]
-
-.Information displayed from nodes in the selected row
-image::dashboard/03_row-select.png[]
-
-.Information displayed from nodes in the selected column
-image::dashboard/04_column-select.png[]
-
-.Information displayed from nodes in the selected cell
-image::dashboard/05_cell-select.png[]
+image::dashboard/02_dashboard-surveillance-view.png[]
 
 [[user-guide-dashboard-alarms]]
 ==== Alarms
@@ -59,7 +53,7 @@ Acknowledged _Alarms_ will be removed from the responsibility of the _Operator_.
 The following information are shown in:
 
 .Information displayed in the _Alarms_ component
-image::dashboard/06_alarms-component.png[]
+image::dashboard/03_dashboard-alarms.png[]
 
 1. _Node_: Node label of the node the _Alarm_ is associated.
 2. _Log Msg_: The log message from the _Event_ which is the source for this _Alarm_. It is specified in the event configuration file in `<logmsg />`
@@ -77,7 +71,7 @@ In _OpenNMS_ it is possible to acknowledge notifications to see who is working o
 The _Dashboard_ should show outstanding notifications in the _NOC_ to provide an overview and give the possibility for intervention.
 
 .Information displayed in the _Notifications_ component
-image::dashboard/07_notifications-component.png[]
+image::dashboard/04_dashboard-notifications.png[]
 
 1. _Node_: Label of the monitored node the notification is associated with.
 2. _Service_: Name of the service the notification is associated with.
@@ -94,7 +88,7 @@ An acknowledged _Alarm_ doesn't mean necessarily the outage is solved.
 To give an overview information about ongoing _Outages_ in the network, the _Dashboard_ shows an outage list in the _Node Status_ component.
 
 .Information displayed in the _Node Status_ component
-image::dashboard/08_node-status-component.png[]
+image::dashboard/05_dashboard-outages.png[]
 
 1. _Node_: Label of the monitored node with ongoing outages.
 2. _Current Outages_: Number of services on the node with outages and total number of monitored services, e.g. with the natural meaning of _"3 of 3 services are affected"_.
@@ -108,7 +102,7 @@ The _Node Status_ component shows the last 5 ongoing _Outages_ and allows with p
 To give a quick entry point diagnose performance issues a _Resource Graph Viewer_ allows to navigate to time series data reports which are filtered in the context of the _Surveillance View_.
 
 .Show time series based performance with the _Resource Graph Viewer_
-image::dashboard/09_resource-graph-viewer.png[]
+image::dashboard/06_dashboard-resource-graphs.png[]
 
 It allows to navigate sequentially through resource graphs provided by nodes filtered by the _Surveillance View_ context and selection and shows one graph report at a time.
 
