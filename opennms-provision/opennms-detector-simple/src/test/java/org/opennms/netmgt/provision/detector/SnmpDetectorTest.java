@@ -56,7 +56,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class SnmpDetectorTest implements ApplicationContextAware {
     
-    static final String TEST_IP_ADDRESS = "172.20.1.205";
+    static final String TEST_IP_ADDRESS = "192.0.2.205";
 	private SnmpDetector m_detector;
     private ApplicationContext m_applicationContext;
     private InetAddress m_testIpAddress;

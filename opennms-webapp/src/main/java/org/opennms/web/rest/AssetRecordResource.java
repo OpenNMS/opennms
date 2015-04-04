@@ -43,6 +43,7 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -118,6 +119,9 @@ public class AssetRecordResource extends OnmsRestService {
             OnmsAssetRecord assetRecord = getAssetRecord(node);
             if (assetRecord == null) {
                 throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
+            }
+            if (assetRecord.getGeolocation() == null) {
+                assetRecord.setGeolocation(new OnmsGeolocation());
             }
             LOG.debug("updateAssetRecord: updating category {}", assetRecord);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
