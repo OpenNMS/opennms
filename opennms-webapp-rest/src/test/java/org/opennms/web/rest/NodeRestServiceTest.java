@@ -65,6 +65,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -88,6 +89,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@DirtiesContext
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
 
@@ -154,12 +156,24 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<sysContact>OpenNMS</sysContact>"));        
+        assertTrue(xml.contains("<sysContact>OpenNMS</sysContact>"));
         assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));
 
         // Testing DELETE
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testPutCoordinates() throws Exception {
+        createNode();
+        String url = "/nodes/1/assetRecord";
+        sendPut(url, "longitude=-1.2345&latitude=6.7890", 303, "/nodes/1/assetRecord");
+
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("<longitude>-1.2345"));
+        assertTrue(xml.contains("<latitude>6.789"));
     }
 
     @Test

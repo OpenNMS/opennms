@@ -128,6 +128,54 @@ public class EventUtilTest {
     }
     
     /**
+     * Test method for ignoring things that aren't params because of whitespace across lines.
+     */
+    @Test
+    public void testLineWhitespaceParms(){
+        String testString = "%uei%:"+
+                " #description#\n"+
+                "<p>The interface 172.17.12.251 generated a Syslog Message.<br>\n"+
+                " Node ID: 0<br>\n"+
+                " Host: Unknown<br>\n"+
+                " Interface: 172.17.12.251 <br>\n"+
+                " Message: 172.17.12.251: Mar 5 20:48:35.644: %SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection <br>\n"+
+                " Process: 304806 <br>\n"+
+                " PID: \n"+
+                " </p>\n"+
+                "#/description#\n"+
+                "41\n"+
+                "Unknown\n"+
+                "172.17.12.251\n"+
+                "Warning\n"+
+                "Thursday, March 5, 2015 2:48:47 PM CST\n"+
+                ".\n"+
+                "uei.opennms.org/syslogd/local7/Warning\n"+
+                "syslogmessage=\"172.17.12.251: Mar 5 20:48:35.644: %SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection\" severity=\"Warning\" timestamp=\"Mar 05 14:48:47\" process=\"304806\" service=\"local7\""
+                + ":%dpname%:%nodeid%";
+        String newString = AbstractEventUtil.getInstance().expandParms(testString, m_bgpBkTnEvent);
+        String validString = "http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition:" +
+                " #description#\n"+
+                "<p>The interface 172.17.12.251 generated a Syslog Message.<br>\n"+
+                " Node ID: 0<br>\n"+
+                " Host: Unknown<br>\n"+
+                " Interface: 172.17.12.251 <br>\n"+
+                " Message: 172.17.12.251: Mar 5 20:48:35.644: %SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection <br>\n"+
+                " Process: 304806 <br>\n"+
+                " PID: \n"+
+                " </p>\n"+
+                "#/description#\n"+
+                "41\n"+
+                "Unknown\n"+
+                "172.17.12.251\n"+
+                "Warning\n"+
+                "Thursday, March 5, 2015 2:48:47 PM CST\n"+
+                ".\n"+
+                "uei.opennms.org/syslogd/local7/Warning\n"+
+                "syslogmessage=\"172.17.12.251: Mar 5 20:48:35.644: %SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection\" severity=\"Warning\" timestamp=\"Mar 05 14:48:47\" process=\"304806\" service=\"local7\""
+                + "::1";
+        assertEquals(validString, newString);
+    }
+    /**
      * Test method for extracting parm names rather than parm values
      */
     @Test
