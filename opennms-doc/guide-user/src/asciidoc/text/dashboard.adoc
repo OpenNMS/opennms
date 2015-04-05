@@ -38,9 +38,8 @@ The _Surveillance View_ has multiple functions.
 * Allows to model the _monitoring context_ and shows service and node _Outages_ in compact matrix view.
 * Allows to limit the number of information in the _Dashboard_ by selecting rows, columns and cells.
 
-You can select columns, rows, single cells and of course all entries in a _Surveillance View_. Please
-refer to the <<user-guide-surveillance-view, Surveillance View Section>> for details on how to configure
-_Surveillance Views_.
+You can select columns, rows, single cells and of course all entries in a _Surveillance View_.
+Please refer to the <<user-guide-surveillance-view, Surveillance View Section>> for details on how to configure _Surveillance Views_.
 
 .Information displayed from all nodes matching the surveillance view
 image::dashboard/02_dashboard-surveillance-view.png[]
@@ -116,3 +115,84 @@ To give different users the possibility using their _Surveillance View_ fitting 
 
 The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[User Restriction Filter].
 If you have a group of users, which should see just a subset of nodes the _Surveillance View_ will filter nodes which are not related to the assigned user group.
+
+Dashboard is designed to focus, and therefore also restrict, a user's view to devices of their interest. To do this, a new role was added that can be assigned to a user that restricts them to viewing only the dashboard if that is intended.
+
+==== Example configuration
+
+The following example illustrates how this _Dashboard_ role can be used.
+For instance the user `drv4doe` is assigned the dashboard role.
+So, when logging in as `drv4doe`, the user is taking directly to the _Dashboard_ page and is presented with a custom _Dashboard_ based on the `drv4doe` _Surveillance View_ definition.
+
+===== Step 1: Create an user
+The following example assigns a Dashboard to the user "drv4doe" (a router and switch jockey) and restricts the user for navigation to any other link in the OpenNMS WebUI.
+
+.Creating the user `drv4doe` using the OpenNMS WebUI
+image::dashboard/07_dashboard-add-user.png[]
+
+===== Step 2: Change magic-users.properties
+Now, edit the magic-users.properties file in the `/opt/opennms/etc` directory and set `drv4doe` as a dashboard user.
+[source, java-properties]
+----
+role.dashboard.name=OpenNMS Dashboard User
+role.dashboard.users=drv4doe
+role.dashboard.notInDefaultGroup=true
+----
+
+===== Step 3: Define Surveillance View
+Edit the `$OPENNMS_HOME/etc/surveilliance-view.xml` file to add a definition for the user _drv4doe_, which you created in step 1.
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<surveillance-view-configuration
+  xmlns:this="http://www.opennms.org/xsd/config/surveillance-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd"
+  default-view="default" >
+  <views >
+    <view name="drv4doe" refresh-seconds="300" >
+      <rows>
+        <row-def label="Servers" >
+          <category name="Servers"/>
+        </row-def>
+      </rows>
+      <columns>
+        <column-def label="PROD" >
+          <category name="Production" />
+        </column-def>
+        <column-def label="TEST" >
+          <category name="Test" />
+        </column-def>
+      </columns>
+    </view>
+   <!-- default view here -->
+    <view name="default" refresh-seconds="300" >
+      <rows>
+        <row-def label="Routers" >
+          <category name="Routers"/>
+        </row-def>
+        <row-def label="Switches" >
+          <category name="Switches" />
+        </row-def>
+        <row-def label="Servers" >
+          <category name="Servers" />
+        </row-def>
+      </rows>
+      <columns>
+        <column-def label="PROD" >
+          <category name="Production" />
+        </column-def>
+        <column-def label="TEST" >
+          <category name="Test" />
+        </column-def>
+        <column-def label="DEV" >
+          <category name="Development" />
+        </column-def>
+      </columns>
+    </view>
+  </views>
+</surveillance-view-configuration>
+----
+
+This configuration and proper assignment of node categories will produce a default _Dashboard_ for all users, other than `drv4doe`.
+However, when logging in as `drv4doe`, the user is taking directly to the _Dashboard_ page and is presented with a _Dashboard_ based on the custom _Surveillance View_ definition.
