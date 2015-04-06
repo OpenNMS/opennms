@@ -199,7 +199,7 @@ public class BridgeLinkStatusProviderTest {
         /*
         519 |      1 |         48 |                48 |                  |      | 00e08155403b | 192.0.2.16   |            |              |           |           548
         652 |      1 |         48 |                48 |                  |      | 00163e62e1c8 | 192.0.2.40   |            |              |           |           548
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.2.1    |            |              |           |           551
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 198.51.100.1    |            |              |           |           551
         521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 98.101.157.50 |            |              |           |           549
         521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 192.0.2.1    | 192.0.2.1 |            2 | mrmakay   |           548
         522 |      1 |         48 |                48 |                  |      | 000bdba886f4 | 192.0.2.19   |            |              |           |           548
@@ -217,7 +217,7 @@ public class BridgeLinkStatusProviderTest {
  */
         BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, 48, 48, null, null, "00e08155403b", "192.0.2.16", null, null, null, 548);
         BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, 48, 48, null, null, "00163e62e1c8", "192.0.2.40", null, null, null, 548);
-        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.2.1", null, null, null, 551);
+        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "198.51.100.1", null, null, null, 551);
         BridgeMacTopologyLink link4 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "98.101.157.50", null, null, null, 549);
         BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "192.0.2.1", "192.0.2.1", 2, "mrmakay", 548);
 
