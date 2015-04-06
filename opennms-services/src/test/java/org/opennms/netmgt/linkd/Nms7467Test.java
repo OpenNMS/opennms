@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
@@ -68,6 +69,7 @@ import org.opennms.netmgt.model.topology.AtInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
+@Ignore
 public class Nms7467Test extends LinkdTestBuilder {
 
 	Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
@@ -213,7 +215,7 @@ public class Nms7467Test extends LinkdTestBuilder {
     }
 
     // mrmakay:192.0.2.1:13      -------- ciscoswitch:192.0.2.7:52 ---bridge
-    // mrmakay:172.20.2.1:12      -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // mrmakay:198.51.100.1:12      -------- ciscoswitch:192.0.2.7:52 ---bridge 
     // the point is that all three interface share the same mac address "001f6cd034e7"
     @Test
     @JUnitSnmpAgents(value={
