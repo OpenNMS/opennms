@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -203,6 +202,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
                 ServerSocket sock = new ServerSocket();
                 sock.setReuseAddress(true);
                 sock.bind(new InetSocketAddress(addr, port), backlog);
+                m_port = sock.getLocalPort();
                 return sock;
             }
             
@@ -214,6 +214,9 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         m_logger.info("XmlrpcAnticipator running on port number " + m_port);
     }
 
+    public int getPort() {
+        return m_port;
+    }
 
     /**
      *  Stop listening for OpenNMS events.
