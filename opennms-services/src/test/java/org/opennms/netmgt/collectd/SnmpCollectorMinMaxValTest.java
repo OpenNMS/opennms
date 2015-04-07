@@ -95,7 +95,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SnmpCollectorMinMaxValTest implements TestContextAware, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValTest.class);
-    private static final String TEST_HOST_ADDRESS = "172.20.1.205";
+    private static final String TEST_HOST_ADDRESS = "192.0.2.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
 
 

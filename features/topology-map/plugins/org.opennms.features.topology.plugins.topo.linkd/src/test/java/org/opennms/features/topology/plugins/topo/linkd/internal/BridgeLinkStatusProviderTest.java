@@ -197,32 +197,32 @@ public class BridgeLinkStatusProviderTest {
 
     private List<BridgeMacTopologyLink> createBridgeLinks(){
         /*
-        519 |      1 |         48 |                48 |                  |      | 00e08155403b | 172.20.1.16   |            |              |           |           548
-        652 |      1 |         48 |                48 |                  |      | 00163e62e1c8 | 172.20.1.40   |            |              |           |           548
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.2.1    |            |              |           |           551
+        519 |      1 |         48 |                48 |                  |      | 00e08155403b | 192.0.2.16   |            |              |           |           548
+        652 |      1 |         48 |                48 |                  |      | 00163e62e1c8 | 192.0.2.40   |            |              |           |           548
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 198.51.100.1    |            |              |           |           551
         521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 98.101.157.50 |            |              |           |           549
-        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 172.20.1.1    | 172.20.1.1 |            2 | mrmakay   |           548
-        522 |      1 |         48 |                48 |                  |      | 000bdba886f4 | 172.20.1.19   |            |              |           |           548
-        523 |      1 |         48 |                48 |                  |      | 00163e7efe74 | 172.20.1.32   |            |              |           |           548
+        521 |      1 |         48 |                48 |                  |      | a8d0e5a0a490 | 192.0.2.1    | 192.0.2.1 |            2 | mrmakay   |           548
+        522 |      1 |         48 |                48 |                  |      | 000bdba886f4 | 192.0.2.19   |            |              |           |           548
+        523 |      1 |         48 |                48 |                  |      | 00163e7efe74 | 192.0.2.32   |            |              |           |           548
         524 |      1 |         48 |                48 |                  |      | a8d0e5a0a488 |               |            |              |           |
         525 |      1 |         48 |                48 |                  |      | 782bcb446c68 |               |            |              |           |
-        604 |      1 |         48 |                48 |                  |      | 782bcb446c66 | 172.20.1.11   |            |              |           |           548
-        527 |      1 |         48 |                48 |                  |      | b8ca3aeb75a8 | 172.20.1.254  |            |              |           |           548
-        528 |      1 |         48 |                48 |                  |      | 14feb5cf15b9 | 172.20.1.23   |            |              |           |           548
+        604 |      1 |         48 |                48 |                  |      | 782bcb446c66 | 192.0.2.11   |            |              |           |           548
+        527 |      1 |         48 |                48 |                  |      | b8ca3aeb75a8 | 192.0.2.254  |            |              |           |           548
+        528 |      1 |         48 |                48 |                  |      | 14feb5cf15b9 | 192.0.2.23   |            |              |           |           548
         518 |      1 |         48 |                48 |                  |      | 14feb5cf15c1 |               |            |              |           |
-        517 |      1 |         48 |                48 |                  |      | 000d566ffea8 | 172.20.1.39   |            |              |           |           548
-        516 |      1 |         48 |                48 |                  |      | 525400eeb91d | 172.20.1.41   |            |              |           |           548
-        515 |      1 |         48 |                48 |                  |      | 00163e1d0215 | 172.20.1.24   |            |              |           |           548
-        514 |      1 |         48 |                48 |                  |      | 00163e69ab49 | 172.20.1.38   |            |              |           |           548
+        517 |      1 |         48 |                48 |                  |      | 000d566ffea8 | 192.0.2.39   |            |              |           |           548
+        516 |      1 |         48 |                48 |                  |      | 525400eeb91d | 192.0.2.41   |            |              |           |           548
+        515 |      1 |         48 |                48 |                  |      | 00163e1d0215 | 192.0.2.24   |            |              |           |           548
+        514 |      1 |         48 |                48 |                  |      | 00163e69ab49 | 192.0.2.38   |            |              |           |           548
  */
-        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, 48, 48, null, null, "00e08155403b", "172.20.1.16", null, null, null, 548);
-        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, 48, 48, null, null, "00163e62e1c8", "172.20.1.40", null, null, null, 548);
-        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.2.1", null, null, null, 551);
+        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, 48, 48, null, null, "00e08155403b", "192.0.2.16", null, null, null, 548);
+        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, 48, 48, null, null, "00163e62e1c8", "192.0.2.40", null, null, null, 548);
+        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "198.51.100.1", null, null, null, 551);
         BridgeMacTopologyLink link4 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "98.101.157.50", null, null, null, 549);
-        BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "172.20.1.1", "172.20.1.1", 2, "mrmakay", 548);
+        BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "192.0.2.1", "192.0.2.1", 2, "mrmakay", 548);
 
-        BridgeMacTopologyLink link6 = new BridgeMacTopologyLink(522, 1, 48, 48, null, null, "000bdba886f4", "172.20.1.19", null, null, null, 548);
-        BridgeMacTopologyLink link7 = new BridgeMacTopologyLink(523, 1, 48, 48, null, null, "00163e7efe74", "172.20.1.24", null, null, null, 548);
+        BridgeMacTopologyLink link6 = new BridgeMacTopologyLink(522, 1, 48, 48, null, null, "000bdba886f4", "192.0.2.19", null, null, null, 548);
+        BridgeMacTopologyLink link7 = new BridgeMacTopologyLink(523, 1, 48, 48, null, null, "00163e7efe74", "192.0.2.24", null, null, null, 548);
         BridgeMacTopologyLink link8 = new BridgeMacTopologyLink(524, 1, 48, 48, null, null, "a8d0e5a0a488", null, null, null, null, 548);
 
         return Arrays.asList(link1, link2, link3, link4, link5, link6, link7, link8);

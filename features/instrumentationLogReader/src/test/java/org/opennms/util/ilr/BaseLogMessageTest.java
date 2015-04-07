@@ -68,24 +68,24 @@ public class BaseLogMessageTest {
                     timestamp("2010-05-26 12:12:40,785"),
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.BEGIN_COLLECTION,
-                    "example1/7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:40,785 INFO [CollectdScheduler-50 Pool-fiber4] collector.collect: begin:example1/7/172.20.1.12/SNMP"
+                    "example1/7/192.0.2.12/SNMP",
+                    "2010-05-26 12:12:40,785 INFO [CollectdScheduler-50 Pool-fiber4] collector.collect: begin:example1/7/192.0.2.12/SNMP"
                 }, 
                 { 
                     true,
                     timestamp("2010-05-26 12:12:47,672"), 
                     "CollectdScheduler-50 Pool-fiber12",
                     MsgType.END_COLLECTION,
-                    "example1/83/172.20.1.15/SNMP",
-                    "2010-05-26 12:12:47,672 INFO [CollectdScheduler-50 Pool-fiber12] collector.collect: end:example1/83/172.20.1.15/SNMP"
+                    "example1/83/192.0.2.15/SNMP",
+                    "2010-05-26 12:12:47,672 INFO [CollectdScheduler-50 Pool-fiber12] collector.collect: end:example1/83/192.0.2.15/SNMP"
                 }, 
                 { 
                     true,
                     timestamp("2010-05-26 12:12:47,776"),
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.ERROR,
-                    "example1/7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:47,776 INFO [CollectdScheduler-50 Pool-fiber4] collector.collect: error: example1/7/172.20.1.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 172.20.1.12 for kenny.internal.opennms.com/172.20.1.12: SnmpCollectors for 172.20.1.12: snmpTimeoutError for: kenny.internal.opennms.com/172.20.1.12" 
+                    "example1/7/192.0.2.12/SNMP",
+                    "2010-05-26 12:12:47,776 INFO [CollectdScheduler-50 Pool-fiber4] collector.collect: error: example1/7/192.0.2.12/SNMP: org.opennms.netmgt.collectd.CollectionTimedOut: Timeout retrieving SnmpCollectors for 192.0.2.12 for kenny.internal.opennms.com/192.0.2.12: SnmpCollectors for 192.0.2.12: snmpTimeoutError for: kenny.internal.opennms.com/192.0.2.12" 
                 }, 
                 {
                     true,
@@ -100,8 +100,8 @@ public class BaseLogMessageTest {
                     timestamp("2010-05-26 12:12:48,166"),
                     "CollectdScheduler-50 Pool-fiber3",
                     MsgType.END_PERSIST,
-                    "example1/63/172.20.1.205/SNMP",
-                    "2010-05-26 12:12:48,166 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: persistDataQueueing: end: example1/63/172.20.1.205/SNMP"
+                    "example1/63/192.0.2.205/SNMP",
+                    "2010-05-26 12:12:48,166 INFO [CollectdScheduler-50 Pool-fiber3] collector.collect: persistDataQueueing: end: example1/63/192.0.2.205/SNMP"
                 },
                 {
                     false,
