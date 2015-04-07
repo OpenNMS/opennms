@@ -30,6 +30,7 @@
     <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>
+    <module>jmx</module>
     <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>

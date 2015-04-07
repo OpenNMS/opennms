@@ -71,7 +71,7 @@ public class PollerConfigurationResource {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getPollerConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
-        LOG.info("getPollerConfigurationForLocation(location={})", location);
+        LOG.debug("getPollerConfigurationForLocation(location={})", location);
         final MonitoringLocationsConfiguration monitoringConfig = m_monitoringLocationsConfigResource.get();
 
         LOG.debug("monitoring config: {}", monitoringConfig);

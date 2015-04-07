@@ -14,17 +14,22 @@
         </storageStrategy>
       </resourceType>
 
-      <group name="acmepacket" ifType="ignore">
+      <group name="acmepacket-sys" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.1" instance="0" alias="apSysCPUUtil" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.2" instance="0" alias="apSysMemoryUtil" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.3" instance="0" alias="apSysHealthScore" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.5" instance="0" alias="apSysGlobalConSess" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.6" instance="0" alias="apSysGlobalCPS" type="gauge" />
+      </group>
+
+      <group name="acmepacket-sip" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.2" instance="apSipSAStatIdx" alias="apSipSAStatSAHost" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.8" instance="apSipSAStatIdx" alias="apSipSAStatTotIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.9" instance="apSipSAStatIdx" alias="apSipSAStatTotNAIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.12" instance="apSipSAStatIdx" alias="apSipSAStatTotOut" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.13" instance="apSipSAStatIdx" alias="apSipSAStatTotNAOt" type="counter" />
+      </group>
+      <group name="acmepacket-h323" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.2" instance="apH323SAStatIdx" alias="apH323SAStatSAHost" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.8" instance="apH323SAStatIdx" alias="apH323SAStatTotIn" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.9" instance="apH323SAStatIdx" alias="apH323SAStatTotNAIn" type="counter" />
@@ -33,9 +38,11 @@
       </group>
 
       <systemDef name="Acme Packet">
-	<sysoidMask>.1.3.6.1.4.1.9148.1.1.</sysoidMask>
+        <sysoidMask>.1.3.6.1.4.1.9148.1.1.</sysoidMask>
         <collect>
-          <includeGroup>acmepacket</includeGroup>
+          <includeGroup>acmepacket-sys</includeGroup>
+          <includeGroup>acmepacket-sip</includeGroup>
+          <includeGroup>acmepacket-h323</includeGroup>
         </collect>
       </systemDef>
 

@@ -70,8 +70,8 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfaceRrdMigratorOnline.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfaceRrdMigratorOnline.class);
 
     /** The interfaces to merge. */
     private List<SnmpInterfaceUpgrade> interfacesToMerge;
@@ -126,33 +126,13 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
             throw new OnmsUpgradeException("Can't initialize datacollection-config.xml because " + e.getMessage());
         }
         interfacesToMerge = getInterfacesToMerge();
-        for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-            File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
-            for (File target : targets) {
-                if (target.exists()) {
-                    log("Backing up: %s\n", target);
-                    zipDir(new File(target.getAbsolutePath() + ZIP_EXT), target);
-                }
-            }
-        }
     }
 
     /* (non-Javadoc)
      * @see org.opennms.upgrade.api.OnmsUpgrade#postExecute()
      */
     public void postExecute() throws OnmsUpgradeException {
-        for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
-            File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
-            for (File target : targets) {
-                File zip = new File(target.getAbsolutePath() + ZIP_EXT);
-                if (zip.exists()) {
-                    log("Removing backup: %s\n", zip);
-                    if (!zip.delete()) {
-                    	LOG.warn("Could not delete file: {}", zip.getPath());
-                    }
-                }
-            }
-        }
+        // The idea is to remove the backups only if the current interface was updated. A global post-execute is not necessary.
     }
 
     /* (non-Javadoc)
@@ -160,7 +140,7 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        // The idea is to roll back only the interfaces that weren't updated. A global roll back is not necessary.
+        // The idea is to roll back only if the current interface was not updated. A global roll back is not necessary.
     }
 
     /* (non-Javadoc)
@@ -170,27 +150,76 @@ public class SnmpInterfaceRrdMigratorOnline extends AbstractOnmsUpgrade {
     public void execute() throws OnmsUpgradeException {
         for (SnmpInterfaceUpgrade intf : interfacesToMerge) {
             try {
+                createBackup(intf);
                 merge(intf.getOldInterfaceDir(), intf.getNewInterfaceDir());
+                removeBackup(intf);
             } catch (Exception e) {
                 StringWriter w = new StringWriter();
                 PrintWriter p = new PrintWriter(w);
                 e.printStackTrace(p);
                 log("Error: Can't upgrade %s because %s: %s. Rolling back changes\n", intf, e.getMessage(), w.toString());
-                File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
-                for (File target : targets) {
-                    File zip = new File(target.getAbsolutePath() + ZIP_EXT);
-                    try {
-                        FileUtils.deleteDirectory(target);
-                    } catch (IOException e1) {
-                        log("Warning: can't delete directory %s\n", target);
-                    }
-                    if(!target.mkdirs()) {
-                    	LOG.warn("Could not make directory: {}", target.getPath());
-                    }
-                    unzipFile(zip, target);
-                    if(!zip.delete()) {
-                    	LOG.warn("Could not delete file: {}", zip.getPath());
-                    }
+                restoreBackup(intf);
+            }
+        }
+    }
+
+    /**
+     * Crates a backup of the SNMP interface files.
+     *
+     * @param intf the SNMP interface
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void createBackup(SnmpInterfaceUpgrade intf) throws OnmsUpgradeException {
+        File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+        for (File target : targets) {
+            if (target.exists()) {
+                log("Backing up: %s\n", target);
+                zipDir(new File(target.getAbsolutePath() + ZIP_EXT), target);
+            }
+        }
+    }
+
+    /**
+     * Restore the backup for a specific SNMP interface
+     *
+     * @param intf the SNMP interface
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void restoreBackup(SnmpInterfaceUpgrade intf) throws OnmsUpgradeException {
+        File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+        for (File target : targets) {
+            File zip = new File(target.getAbsolutePath() + ZIP_EXT);
+            try {
+                FileUtils.deleteDirectory(target);
+            } catch (IOException e1) {
+                log("Warning: can't delete directory %s\n", target);
+            }
+            if (!target.mkdirs()) {
+                LOG.warn("Could not make directory: {}", target.getPath());
+            }
+            if (zip.exists()) {
+                unzipFile(zip, target);
+                if (!zip.delete()) {
+                    LOG.warn("Could not delete file: {}", zip.getPath());
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes the backups for a specific SNMP interface
+     *
+     * @param intf the SNMP interface
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    private void removeBackup(SnmpInterfaceUpgrade intf) {
+        File[] targets = { intf.getOldInterfaceDir(), intf.getNewInterfaceDir() };
+        for (File target : targets) {
+            File zip = new File(target.getAbsolutePath() + ZIP_EXT);
+            if (zip.exists()) {
+                log("Removing backup: %s\n", zip);
+                if (!zip.delete()) {
+                    LOG.warn("Could not delete file: {}", zip.getPath());
                 }
             }
         }

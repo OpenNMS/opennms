@@ -154,8 +154,8 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         String xml;
         
         // create an interface
-        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/172.20.1.254");
-        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"172.20.1.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/172.20.1.254");
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Monkey\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/192.0.2.254");
+        sendPost(base, "<interface xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" status=\"1\" snmp-primary=\"S\" ip-addr=\"192.0.2.254\" descr=\"Blah\"><monitored-service service-name=\"ICMP\"/></interface>", 303, "/nodes/4243/interfaces/192.0.2.254");
 
         // get list of interfaces
         xml = sendRequest(GET, base, 200);
@@ -165,14 +165,14 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         assertFalse(xml, xml.contains("Monkey"));
 
         // get individual interface
-        String url = base + "/172.20.1.204";
+        String url = base + "/192.0.2.204";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("<interface "));
         assertTrue(xml, xml.contains("VPN interface"));
-        assertFalse(xml, xml.contains("172.20.1.201"));
+        assertFalse(xml, xml.contains("192.0.2.201"));
 
         // set attributes
-        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/172.20.1.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/192.0.2.204");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("descr=\"Total Crap\""));
         assertTrue(xml, xml.contains("snmp-primary=\"P\""));
@@ -191,10 +191,10 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testNodeInterfaceServices() throws Exception {
         createRequisition();
         
-        String base = "/requisitions/test/nodes/4243/interfaces/172.20.1.204/services";
+        String base = "/requisitions/test/nodes/4243/interfaces/192.0.2.204/services";
         
         // create a service
-        sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />", 303, "/interfaces/172.20.1.204/services/MONKEY");
+        sendPost(base, "<monitored-service xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" service-name=\"MONKEY\" />", 303, "/interfaces/192.0.2.204/services/MONKEY");
 
         // get list of services
         String xml = sendRequest(GET, base, 200);
@@ -285,11 +285,11 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         String req =
             "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
                 "<node node-label=\"david\" parent-node-label=\"apknd\" foreign-id=\"4243\">" +
-                    "<interface ip-addr=\"172.20.1.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
+                    "<interface ip-addr=\"192.0.2.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"HTTP\"/>" +
                     "</interface>" +
-                    "<interface ip-addr=\"172.20.1.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
+                    "<interface ip-addr=\"192.0.2.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"SNMP\"/>" +
                     "</interface>" +
@@ -312,11 +312,11 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
             "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
                 "asdfjklasdfjioasdf" +
                 "<node node-label=\"david\" parent-node-label=\"apknd\" foreign-id=\"4243\">" +
-                    "<interface ip-addr=\"172.20.1.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
+                    "<interface ip-addr=\"192.0.2.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"HTTP\"/>" +
                     "</interface>" +
-                    "<interface ip-addr=\"172.20.1.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
+                    "<interface ip-addr=\"192.0.2.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"SNMP\"/>" +
                     "</interface>" +
@@ -371,11 +371,11 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         String req =
             "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +
                 "<node node-label=\"david\" parent-node-label=\"apknd\" foreign-id=\"4243\">" +
-                    "<interface ip-addr=\"172.20.1.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
+                    "<interface ip-addr=\"192.0.2.204\" status=\"1\" snmp-primary=\"S\" descr=\"VPN interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"HTTP\"/>" +
                     "</interface>" +
-                    "<interface ip-addr=\"172.20.1.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
+                    "<interface ip-addr=\"192.0.2.201\" status=\"1\" snmp-primary=\"P\" descr=\"Management interface\">" +
                         "<monitored-service service-name=\"ICMP\"/>" +
                         "<monitored-service service-name=\"SNMP\"/>" +
                     "</interface>" +

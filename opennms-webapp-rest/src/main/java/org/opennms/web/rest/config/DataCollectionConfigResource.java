@@ -78,7 +78,7 @@ public class DataCollectionConfigResource implements InitializingBean {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getDataCollectionConfiguration() throws ConfigurationResourceException {
-        LOG.info("getDatacollectionConfigurationForLocation()");
+        LOG.debug("getDatacollectionConfigurationForLocation()");
 
         @SuppressWarnings("unchecked")
         final AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig> dao = (AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig>)m_dataCollectionConfigDao;

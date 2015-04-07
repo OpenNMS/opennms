@@ -63,7 +63,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-test-rrd.xml"
@@ -107,7 +107,7 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
         eightAsConstant.setTransient(true);
 
         Expression octetsToBytes = new Expression();
-        octetsToBytes.setLabel("bitsIn");
+        octetsToBytes.setLabel("Bits In");
         octetsToBytes.setExpression("octetsIn * eight");
         request.setExpressions(Lists.newArrayList(eightAsConstant, octetsToBytes));
 
@@ -124,7 +124,7 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
         final int idx = 1;
         assertEquals(1414612800000L, timestamps[idx]);
         assertEquals(4455.846126, columns.get("octetsIn")[idx], 0.0001);
-        assertEquals(4455.846126 * 8, columns.get("bitsIn")[idx], 0.0001);
+        assertEquals(4455.846126 * 8, columns.get("Bits In")[idx], 0.0001);
         assertFalse("Transient values should be excluded.", columns.containsKey("eight"));
     }
 }
