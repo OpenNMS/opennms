@@ -59,8 +59,8 @@ Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires(pre):		%{name}-webui      >= %{version}-%{release}
-Requires:		%{name}-webui      >= %{version}-%{release}
+Requires(pre):		%{name}-webui       = %{version}-%{release}
+Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 8.4
