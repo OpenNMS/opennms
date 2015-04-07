@@ -106,8 +106,8 @@ public class IfIndexNullTest extends ProvisioningTestCase implements Initializin
 
     @Test
     @JUnitSnmpAgents(value={
-        @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:snmpTestData-null.properties"),
-        @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:snmpTestData-null.properties")
+        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:snmpTestData-null.properties"),
+        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:snmpTestData-null.properties")
     })
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(1, EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI);
