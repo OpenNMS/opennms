@@ -537,7 +537,7 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 
 # define needed for grep to find opennms easily
 JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
-
+JAVA_8=$JAVA_CMD -version 2>&1 | grep "1\.8" > /dev/null
 BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 
 #MANAGER_OPTIONS="-DOPENNMSLAUNCH"
@@ -560,10 +560,18 @@ else
     ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -DisThreadContextMapInheritable=true"
 fi
 
-if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
-	true # do nothing
+if [ "$JAVA_8" = "1" ]; then
+	if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
+		true # do nothing
+	else
+		ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
+	fi
 else
-	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
+	if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxMetaspaceSize > /dev/null ; then
+		true # do nothing
+	else
+		ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=256m"
+	fi
 fi
 
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -Djava.io.tmpdir > /dev/null ; then
