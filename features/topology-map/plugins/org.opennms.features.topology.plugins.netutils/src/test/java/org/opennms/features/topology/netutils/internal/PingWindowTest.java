@@ -59,7 +59,7 @@ public class PingWindowTest {
 	public void setUp() throws Exception {
 		didNotify = false;
 
-		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
+		Node testNode1 = new Node(9,"192.0.2.10","Cartman");
 
 		pingWindow = new PingWindow(testNode1, "/opennms/ExecCommand.map?command=ping");
 		pingWindow2 = new PingWindow(null, "/opennms/ExecCommand.map?command=ping");

@@ -6,7 +6,7 @@ Threads Used: 5
 
 Service                                     Avg Collect Time  # Collections         Avg Success Time      % Success           Avg Error Time       % Errors    Avg Time Between    Total Collection Time
 example1/24/216.216.217.254/SNMP                      7.144s              1                   7.144s          100.0                       0s            0.0                  0s                   7.144s
-example1/60/172.20.1.202/SNMP                         0.513s              1                   0.513s          100.0                       0s            0.0                  0s                   0.513s
+example1/60/192.0.2.202/SNMP                         0.513s              1                   0.513s          100.0                       0s            0.0                  0s                   0.513s
 example1/19/209.61.128.9/SNMP                             0s              0                       0s            NaN                       0s            NaN                  0s                       0s
-example1/86/172.20.1.25/WMI                               0s              0                       0s            NaN                       0s            NaN                  0s                       0s
-example1/58/172.20.1.201/SNMP                             0s              0                       0s            NaN                       0s            NaN                  0s                       0s
+example1/86/192.0.2.25/WMI                               0s              0                       0s            NaN                       0s            NaN                  0s                       0s
+example1/58/192.0.2.201/SNMP                             0s              0                       0s            NaN                       0s            NaN                  0s                       0s
