@@ -50,24 +50,24 @@ import org.opennms.netmgt.model.OnmsNode;
 /*
  * Here are relevant device descriptions for link detection:
  * 
- * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
+ * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
  * Run the spanning tree with bridge identifier: 00000c83d9a8
  * Type SRT
  *
  *
- * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+ * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
  * Run the spanning tree protocol
  * with bridge identifier: 0002baaacc00
  * Transparent Bridge
  * 
- * NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+ * NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
  * Run the spanning tree protocol
  * with bridge identifier: 00223ff00b7b
  * Transparent Bridge
  * 
- * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+ * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
  * 
- * DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+ * DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
  * 
  * Here are listed the links
  * in the test network laboratory
@@ -94,8 +94,8 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
  
     /* 
      * nodelabel:ip:mac:ifindex:ifdescr
-     * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
-     * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
+     * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
+     * CISCO_C870:198.51.100.1:001f6cd034e7:13:Vlan2
      * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
      * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
      * 
@@ -127,9 +127,9 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      */
 
     static {
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.1"), 12);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.1"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("198.51.100.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
 
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
@@ -178,7 +178,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
     /*
      * nodelabel:ip:mac:ifindex:ifdescr
      *      
-     * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+     * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
      * this device ha 48 Ports
      * the mac address range is: 0002baaacf00 0002baaacfff
      *  snmpifindex | snmpifname |            snmpifdescr            | snmpphysaddr 
@@ -326,7 +326,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
 
     /*
      *  nodelabel:ip:mac:ifindex:ifdescr
-     *  NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+     *  NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
      * 
      *  snmpifindex | snmpifname |       snmpifdescr       | snmpphysaddr 
      *-------------+------------+-------------------------+--------------
@@ -365,7 +365,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
     }
     
     /* 
-     * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+     * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
      * 
      *   snmpifindex | snmpifname | snmpifdescr | snmpphysaddr 
      *-------------+------------+-------------+--------------
@@ -382,7 +382,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      * 
      *                  ipaddr                 | ifindex 
      *-----------------------------------------+---------
-     * 172.20.1.14                             |       4
+     * 192.0.2.14                             |       4
      * 192.168.122.1                           |       5
      * 2001:0470:e2f1:0000:4261:86ff:fee2:8b53 |       4
      * 2001:0470:e2f1:0000:695c:e7ef:425e:63b0 |       4
@@ -403,7 +403,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
      */ 
 
     static {
-        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.14"), 4);
+        LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.14"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("192.168.122.1"), 5);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:4261:86ff:fee2:8b53"), 4);
         LINUX_UBUNTU_IP_IF_MAP.put(InetAddressUtils.addr("2001:0470:e2f1:0000:695c:e7ef:425e:63b0"), 4);
@@ -437,7 +437,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
         LINUX_UBUNTU_IF_MAC_MAP.put(11, "9227e40d2b88");
     }
 
-    /* DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+    /* DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
      * 
      *  snmpifindex | snmpifname | snmpifdescr | snmpphysaddr 
      *-------------+------------+-------------+--------------

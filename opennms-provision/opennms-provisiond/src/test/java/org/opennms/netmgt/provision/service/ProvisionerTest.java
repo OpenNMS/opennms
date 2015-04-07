@@ -403,10 +403,10 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final MockNetwork network = new MockNetwork();
         final MockNode node = network.addNode(nextNodeId, nodeLabel);
-        network.addInterface("172.20.1.204");
+        network.addInterface("192.0.2.204");
         network.addService("ICMP");
         network.addService("HTTP");
-        network.addInterface("172.20.1.201");
+        network.addInterface("192.0.2.201");
         network.addService("ICMP");
         network.addService("SNMP");
 
@@ -486,7 +486,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     }
 
     @Test(timeout=300000)
-    @JUnitSnmpAgent(host="172.20.1.201", resource="classpath:snmpTestData1.properties")
+    @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
         m_populator.resetDatabase();
 
@@ -515,9 +515,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
         // for discovering the "SNMP" service on the second interface
-        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
     })
     public void testPopulateWithSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
@@ -580,9 +580,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
         // for discovering the "SNMP" service on the second interface
-        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
     })
     public void testPopulateWithoutSnmpAndNodeScan() throws Exception {
         importFromResource("classpath:/requisition_then_scan_no_snmp_svc.xml", Boolean.TRUE.toString());
@@ -771,9 +771,9 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     // fail if we take more than five minutes
     @Test(timeout=300000)
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", port=161, resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="172.20.2.202", port=161, resource="classpath:snmpTestData4.properties"),
-        @JUnitSnmpAgent(host="172.20.2.204", port=161, resource="classpath:snmpTestData4.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.202", port=161, resource="classpath:snmpTestData4.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", port=161, resource="classpath:snmpTestData4.properties")
     })
     public void testImportAddrThenChangeAddr() throws Exception {
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
@@ -792,7 +792,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         // wait long enough for dates to roll over
         Thread.sleep(1000);
 
-        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("172.20.2.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
+        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("198.51.100.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
 
         importFromResource("classpath:/requisition_primary_addr_changed.xml", Boolean.TRUE.toString());
 
@@ -1069,8 +1069,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpTestData3.properties"),
-        @JUnitSnmpAgent(host="172.20.2.204", resource="classpath:snmpTestData3.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpTestData3.properties"),
+        @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:snmpTestData3.properties")
     })
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNode() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
@@ -1079,11 +1079,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("172.20.2.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
         runScan(scan);
         assertEquals(2, m_ipInterfaceDao.findAll().size());
         LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
-        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("172.20.2.201");
+        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("198.51.100.201");
         assertEquals(1, ifaces.size());
         final OnmsNode node = ifaces.iterator().next().getNode();
         assertEquals(2, node.getIpInterfaces().size());
@@ -1092,17 +1092,17 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // the service and interface should be deleted
         // since there is another interface, the node remains
-        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "172.20.2.201", "SNMP"));
-        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "172.20.2.201"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "198.51.100.201", "SNMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "198.51.100.201"));
         getScheduledExecutor().resume();
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "172.20.2.201", "SNMP"));
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "198.51.100.201", "SNMP"));
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
     }
 
     @Test
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.2.201", resource="classpath:snmpwalk-system.properties")
+        @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:snmpwalk-system.properties")
     })
     public void testDowntimeModelDeleteServiceEventDiscoveryEnabledDeletionDisabledDiscoveredNodeSingleInterface() throws Exception {
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
@@ -1111,11 +1111,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         System.setProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false");
         assertFalse(m_provisionService.isRequisitionedEntityDeletionEnabled());
 
-        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("172.20.2.201"), null);
+        final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
         runScan(scan);
         assertEquals(1, m_ipInterfaceDao.findAll().size());
         LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
-        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("172.20.2.201");
+        final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("198.51.100.201");
         assertEquals(1, ifaces.size());
         final OnmsNode node = ifaces.iterator().next().getNode();
         assertEquals(1, node.getIpInterfaces().size());
@@ -1123,11 +1123,11 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         // everything up to the node should be deleted, since there is only a single interface with a single service
         // since there is another interface, the node remains
-        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "172.20.2.201", "SNMP"));
-        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "172.20.2.201"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(node.getId(), "198.51.100.201", "SNMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(node.getId(), "198.51.100.201"));
         m_eventAnticipator.anticipateEvent(nodeDeleted(node.getId()));
         getScheduledExecutor().resume();
-        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "172.20.2.201", "SNMP"));
+        m_mockEventIpcManager.sendEventToListeners(deleteService(node.getId(), "198.51.100.201", "SNMP"));
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
     }

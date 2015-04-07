@@ -912,6 +912,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 		// check input string to see if it has any %xxx% substring
 		while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
+		        LOG.debug("checking input " + tempInp);
 			// copy till first %
 			ret.append(tempInp.substring(0, index1));
 			tempInp = tempInp.substring(index1);
@@ -920,18 +921,19 @@ public abstract class AbstractEventUtil implements EventUtil {
 			if (index2 != -1) {
 				// Get the value between the %s
 				String parm = tempInp.substring(1, index2);
-				// m_logger.debug("parm: " + parm + " found in value");
+				LOG.debug("parm: " + parm + " found in value");
 
 				// If there's any whitespace in between the % signs, then do not try to 
 				// expand it with a parameter value
-				if (parm.matches(".*\\s.*")) {
+				if (parm.matches(".*\\s(?s).*")) {
 					ret.append(PERCENT);
 					tempInp = tempInp.substring(1);
+		                        LOG.debug("skipping parm: " + parm + " because whitespace found in value");
 					continue;
 				}
 
 				String parmVal = getValueOfParm(parm, event);
-				// m_logger.debug("value of parm: " + parmVal);
+				LOG.debug("value of parm: " + parmVal);
 
 				if (parmVal != null) {
 					if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {

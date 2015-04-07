@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -94,6 +95,7 @@ public final class BroadcastEventProcessor implements EventListener {
     private volatile UserManager m_userManager;
     private volatile GroupManager m_groupManager;
     private volatile NotificationCommandManager m_notificationCommandManager;
+    private volatile EventConfDao m_eventConfDao;
 
     @Autowired
     private volatile EventIpcManager m_eventManager;
@@ -720,9 +722,10 @@ public final class BroadcastEventProcessor implements EventListener {
         String numericMessage = NotificationManager.expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
         String subjectLine = NotificationManager.expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
         
-        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
-        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
+        Map<String, Map<String, String>> decodeMap = getVarbindsDecodeMap(event.getUei());
+        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap, decodeMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap, decodeMap);
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
         paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
@@ -734,8 +737,32 @@ public final class BroadcastEventProcessor implements EventListener {
         return Collections.unmodifiableMap(paramMap);
     }
 
-    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
-        String result = m_eventUtil.expandParms(value, event);
+    protected  Map<String, Map<String, String>> getVarbindsDecodeMap(String eventUei) {
+        if (m_eventConfDao == null) {
+            return null;
+        }
+        org.opennms.netmgt.xml.eventconf.Event event = m_eventConfDao.findByUei(eventUei);
+        if (event == null) {
+            return null;
+        }
+        if (event.getVarbindsdecodeCollection().isEmpty()) {
+            return null;
+        }
+        Map<String, Map<String, String>> decodeMap = new HashMap<String, Map<String, String>>();
+        for (org.opennms.netmgt.xml.eventconf.Varbindsdecode vb : event.getVarbindsdecodeCollection()) {
+            String paramId = vb.getParmid();
+            if (decodeMap.get(paramId) == null) {
+                decodeMap.put(paramId, new HashMap<String,String>());
+            }
+            for (org.opennms.netmgt.xml.eventconf.Decode d : vb.getDecodeCollection()) {
+                decodeMap.get(paramId).put(d.getVarbindvalue(), d.getVarbinddecodedstring());
+            }
+        }
+        return decodeMap;
+    }
+
+    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap, Map<String, Map<String, String>> decodeMap) {
+        String result = m_eventUtil.expandParms(value, event, decodeMap);
         paramMap.put(key, (result == null ? value : result));
     }
 
@@ -1219,5 +1246,9 @@ public final class BroadcastEventProcessor implements EventListener {
 
     public EventUtil getEventUtil() {
         return m_eventUtil;
+    }
+
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        m_eventConfDao = eventConfDao;
     }
 } // end class

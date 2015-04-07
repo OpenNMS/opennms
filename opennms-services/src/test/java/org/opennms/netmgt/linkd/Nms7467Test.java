@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
@@ -68,6 +69,7 @@ import org.opennms.netmgt.model.topology.AtInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
+@Ignore
 public class Nms7467Test extends LinkdTestBuilder {
 
 	Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
@@ -79,15 +81,15 @@ public class Nms7467Test extends LinkdTestBuilder {
             @JUnitSnmpAgent(host=NETGEAR_SW_108_IP, port=161, resource=NETGEAR_SW_108_SNMP_RESOURCE),
             @JUnitSnmpAgent(host=LINUX_UBUNTU_IP, port=161, resource=LINUX_UBUNTU_SNMP_RESOURCE)
     })
-    // mrgarrison:172.20.1.5:-1    -------- ciscoswitch:172.20.1.7:47 ---cdp 
-    // workstation:172.20.1.101:-1 -------- ciscoswitch:172.20.1.7:47 ---bridge 
-    // cisco870:172.20.1.1:3       -------- ciscoswitch:172.20.1.7:52 ---cdp 
-    // cisco870:172.20.1.1:1       -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // cisco870:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // cisco870:172.20.1.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
-    // linuxubuntu:172.20.1.14:4   -------- ciscoswitch:172.20.1.7:11 ---bridge 
-    // ng108switch:172.20.1.8:8    -------- ciscoswitch:172.20.1.7:9  ---bridge 
-    // darwin108:172.20.1.28:4     -------- ng108switch:172.20.1.8:1  ---bridge 
+    // mrgarrison:192.0.2.5:-1    -------- ciscoswitch:192.0.2.7:47 ---cdp 
+    // workstation:192.0.2.101:-1 -------- ciscoswitch:192.0.2.7:47 ---bridge 
+    // cisco870:192.0.2.1:3       -------- ciscoswitch:192.0.2.7:52 ---cdp 
+    // cisco870:192.0.2.1:1       -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // cisco870:192.0.2.1:13      -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // cisco870:192.0.2.1:12      -------- ciscoswitch:192.0.2.7:52 ---bridge 
+    // linuxubuntu:192.0.2.14:4   -------- ciscoswitch:192.0.2.7:11 ---bridge 
+    // ng108switch:192.0.2.8:8    -------- ciscoswitch:192.0.2.7:9  ---bridge 
+    // darwin108:192.0.2.28:4     -------- ng108switch:192.0.2.8:1  ---bridge 
     public void testAllLink() throws Exception {
 
         Package example1 = m_linkdConfig.getPackage("example1");
@@ -212,8 +214,8 @@ public class Nms7467Test extends LinkdTestBuilder {
 
     }
 
-    // mrmakay:172.20.1.1:13      -------- ciscoswitch:172.20.1.7:52 ---bridge
-    // mrmakay:172.20.2.1:12      -------- ciscoswitch:172.20.1.7:52 ---bridge 
+    // mrmakay:192.0.2.1:13      -------- ciscoswitch:192.0.2.7:52 ---bridge
+    // mrmakay:198.51.100.1:12      -------- ciscoswitch:192.0.2.7:52 ---bridge 
     // the point is that all three interface share the same mac address "001f6cd034e7"
     @Test
     @JUnitSnmpAgents(value={
