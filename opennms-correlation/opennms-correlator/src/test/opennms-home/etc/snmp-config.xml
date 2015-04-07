@@ -4,8 +4,8 @@
              version="v1" >
              
     <definition proxy-host="127.0.0.1" port="1691">
-      <specific>172.20.1.201</specific>
-      <specific>172.20.1.204</specific>
+      <specific>192.0.2.201</specific>
+      <specific>192.0.2.204</specific>
     </definition>
              
 </snmp-config> 

@@ -59,7 +59,7 @@ import edu.bucknell.net.JDHCP.DHCPSocket;
 public class DhcpDetectorTest implements InitializingBean {
 	
     //Tested local DHCP client
-    private static String DHCP_SERVER_IP = "172.20.1.1";
+    private static String DHCP_SERVER_IP = "192.0.2.1";
     
     @Autowired
     public DhcpDetector m_detector;
