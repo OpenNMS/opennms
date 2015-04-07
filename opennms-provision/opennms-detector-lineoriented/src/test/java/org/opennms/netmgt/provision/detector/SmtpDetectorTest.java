@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -57,11 +57,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class SmtpDetectorTest implements ApplicationContextAware {
-    
+
     private SmtpDetector m_detector;
     private SimpleServer m_server;
     private ApplicationContext m_applicationContext;
-    
+
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -69,13 +69,13 @@ public class SmtpDetectorTest implements ApplicationContextAware {
         m_server = getServer();
         m_server.init();
         m_server.startServer();
-        
+
         m_detector = getDetector(SmtpDetector.class);
         m_detector.setTimeout(500);
         m_detector.init();
         m_detector.setPort(m_server.getLocalPort());
     }
-    
+
     @After
     public void tearDown() throws IOException {
         if (m_server != null) {
@@ -83,109 +83,107 @@ public class SmtpDetectorTest implements ApplicationContextAware {
             m_server = null;
         }
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongCodeExpectedMultilineRequest() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
-            
+
             @Override
             public void onInit() {
                 String[] multiLine = {"600 First line"};
-                
+
                 setBanner("220 ewhserver279.edgewebhosting.net");
                 addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
             }
         };
-        
+
         tempServer.init();
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
-        
+
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailIncompleteMultilineResponseFromServer() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
-            
+
             @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "400-Bogus second line"};
-                
+
                 setBanner("220 ewhserver279.edgewebhosting.net");
                 addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
             }
         };
-        
+
         tempServer.init();
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
-        
+
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailBogusSecondLine() throws Exception {
         SimpleServer tempServer = new SimpleServer() {
-            
+
             @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "400-Bogus second line", "250 Requested mail action completed"};
-                
+
                 setBanner("220 ewhserver279.edgewebhosting.net");
                 addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
             }
         };
-        
+
         tempServer.init();
         tempServer.startServer();
         m_detector.setPort(tempServer.getLocalPort());
         m_detector.setIdleTime(1000);
-        
+
         assertFalse(doCheck(m_detector.isServiceDetected(tempServer.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongTypeOfBanner() throws Exception {
-        
         m_server.setBanner("bogus");
-        m_detector.setPort(m_server.getLocalPort());
-        
+
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailServerStopped() throws Exception {
         m_server.stopServer();
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(1);
         assertFalse(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorSucess() throws Exception {
         assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
-    
+
     private boolean doCheck(DetectFuture future) throws InterruptedException {
         future.awaitFor();
         return future.isServiceDetected();
     }
-    
+
     private SimpleServer getServer() {
         return new SimpleServer() {
-             
+
             @Override
             public void onInit() {
                 String[] multiLine = {"250-First line", "250-Second line", "250 Requested mail action completed"};
-                
+
                 setBanner("220 ewhserver279.edgewebhosting.net");
                 addResponseHandler(matches("HELO LOCALHOST"), multilineLineRequest(multiLine));
                 addResponseHandler(matches("QUIT"), shutdownServer("221 Service closing transmission channel"));
@@ -200,7 +198,7 @@ public class SmtpDetectorTest implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
-    
+
     private SmtpDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);
