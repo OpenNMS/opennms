@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
@@ -57,11 +60,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN100;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE_VLAN950;
-
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;

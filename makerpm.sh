@@ -212,6 +212,7 @@ function main()
                 --define "_tmppath $WORKDIR/tmp" \
                 --define "version $VERSION" \
                 --define "releasenumber $RELEASE" \
+                --define "jdk java-1.8.0-openjdk" \
                 --define "_name $PACKAGE_NAME" \
                 --define "_descr $PACKAGE_DESCRIPTION" \
                 $spec

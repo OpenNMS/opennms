@@ -115,7 +115,7 @@ javaCheck() {
         fi
 
     ret="`$JP -version 2>&1 | grep ' version \"' | sed 's/^.* version \"//;s/\".*$//'`"
-    if echo "$ret" | egrep '^1\.[7-9]\.' > /dev/null; then
+    if echo "$ret" | egrep '^1\.[8-9]\.' > /dev/null; then
         # Check for Sun Java
         if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
             return 0
@@ -139,7 +139,7 @@ javaCheck() {
             return 0
         fi
     else
-        tell "$JP is not Java 1.6 or newer."
+        tell "$JP is not Java 1.8 or newer."
         return 1
     fi
 }
@@ -293,7 +293,7 @@ checkConfiguredJava() {
 
     if [ $? -ne 0 ]; then
         warn "error: bad version or vendor for configured Java runtime environment"
-        warn "\"$JP -version\" does not report that is version 1.6+ and a compatible JDK."
+        warn "\"$JP -version\" does not report that is version 1.8+ and a compatible JDK."
         warn "$mantra"
 
         return 1

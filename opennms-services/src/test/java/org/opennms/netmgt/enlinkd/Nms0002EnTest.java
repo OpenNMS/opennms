@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.RDeEssnBrue_SNMP_RESOURCE;
@@ -51,10 +53,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.Sluck001_SNMP_RESOURCE;
 
 import java.util.List;
-
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;

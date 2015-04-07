@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ACCESSPOINT_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ACCESSPOINT_NAME;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_IP;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_MAC;
-import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_SNMP_RESOURCE;
@@ -48,9 +47,9 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_SNMP_RESOURCE
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_SNMP_RESOURCE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_MAC;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_NAME;
 
 import java.util.Collection;
 import java.util.List;
