@@ -72,6 +72,7 @@
       <property name="destinationPathManager" ref="destinationPathFactory" />
       <property name="notificationCommandManager" ref="notificationCommandFactory" />
       <property name="pollOutagesConfigManager" ref="pollOutagesConfigFactory" />
+      <property name="eventConfDao" ref="eventConfDao" />
     </bean>
 
     <bean name="daemon" class="org.opennms.netmgt.notifd.Notifd" />

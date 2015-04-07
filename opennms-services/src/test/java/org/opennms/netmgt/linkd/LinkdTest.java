@@ -360,7 +360,7 @@ public class LinkdTest extends LinkdTestBuilder {
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
         * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
-        * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
+        * CISCO_C870:198.51.100.1:001f6cd034e7:13:Vlan2
         * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
         */
@@ -374,7 +374,7 @@ public class LinkdTest extends LinkdTestBuilder {
         for (final AtInterface at :ats) {
             if( at.getIpAddress().getHostAddress().equals("192.0.2.1"))
                 assertEquals(12, at.getIfIndex().intValue());
-            else if( at.getIpAddress().getHostAddress().equals("172.20.2.1"))
+            else if( at.getIpAddress().getHostAddress().equals("198.51.100.1"))
                 assertEquals(13, at.getIfIndex().intValue());
             else if( at.getIpAddress().getHostAddress().equals("10.255.255.2"))
                 assertEquals(12, at.getIfIndex().intValue());

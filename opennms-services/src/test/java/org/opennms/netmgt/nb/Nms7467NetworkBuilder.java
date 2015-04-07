@@ -95,7 +95,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
     /* 
      * nodelabel:ip:mac:ifindex:ifdescr
      * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
-     * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
+     * CISCO_C870:198.51.100.1:001f6cd034e7:13:Vlan2
      * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
      * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
      * 
@@ -129,7 +129,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
     static {
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.1"), 12);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("10.255.255.2"), 12);
-        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("172.20.2.1"), 13);
+        CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("198.51.100.1"), 13);
         CISCO_C870_IP_IF_MAP.put(InetAddressUtils.addr("65.41.39.146"), 14);            
 
         CISCO_C870_IF_IFNAME_MAP.put(1, "Fa0");
