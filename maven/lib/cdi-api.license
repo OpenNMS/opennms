@@ -232,6 +232,7 @@ limitations under the License.
 <li><a href="http://ace.apache.org/" title="Centralized life cycle management and deployment of OSGi based and related modular software artifacts for distribution.">ACE</a></li>
 <li><a href="http://activemq.apache.org/" title="Distributed Messaging System">ActiveMQ</a></li>
 <li><a href="http://airavata.apache.org/" title="Workflow and Computational Job Management Middleware">Airavata</a></li>
+<li><a href="http://allura.apache.org/" title="Forge software for hosting software projects">Allura</a></li>
 <li><a href="http://ambari.apache.org/" title="Hadoop cluster management">Ambari</a></li>
 <li><a href="http://ant.apache.org/" title="Java-based build tool">Ant</a></li>
 <li><a href="http://any23.apache.org/" title="Anything to Triples">Any23</a></li>
@@ -250,7 +251,6 @@ limitations under the License.
 <li><a href="http://chemistry.apache.org/" title="CMIS (Content Managment Interoperability Services) Clients and Servers">Chemistry</a></li>
 <li><a href="http://chukwa.apache.org/" title="Open source data collection system for monitoring large distributed systems.">Chukwa</a></li>
 <li><a href="http://clerezza.apache.org/" title="Semantically linked data for OSGi">Clerezza</a></li>
-<li><a href="http://click.apache.org/" title="User-friendly page and component oriented web framework">Click</a></li>
 <li><a href="http://cloudstack.apache.org/" title="Infrastructure as a Service solution">CloudStack</a></li>
 <li><a href="http://cocoon.apache.org/" title="Web development framework: separation of concerns, component-based">Cocoon</a></li>
 <li><a href="http://commons.apache.org/" title="Reusable Java components">Commons</a></li>
@@ -264,6 +264,7 @@ limitations under the License.
 <li><a href="http://cxf.apache.org/" title="Service Framework">CXF</a></li>
 <li><a href="http://db.apache.org/" title="Database access">DB</a></li>
 <li><a href="http://deltacloud.apache.org/" title="RESTful cloud management interface">Deltacloud</a></li>
+<li><a href="http://deltaspike.apache.org/" title="Portable CDI extensions that provide useful features for Java application developers">DeltaSpike</a></li>
 <li><a href="http://directmemory.apache.org/" title="An off-heap cache for the Java Virtual Machine">DirectMemory</a></li>
 <li><a href="http://directory.apache.org/" title="Apache Directory Server">Directory</a></li>
 <li><a href="http://empire-db.apache.org/" title="Relational Data Persistence">Empire-db</a></li>
@@ -279,6 +280,7 @@ limitations under the License.
 <li><a href="http://hadoop.apache.org/" title="Distributed computing platform">Hadoop</a></li>
 <li><a href="http://hama.apache.org/" title="a Bulk Synchronous Parallel computing framework on top of Hadoop">Hama</a></li>
 <li><a href="http://hbase.apache.org/" title="Hadoop Database">HBase</a></li>
+<li><a href="http://helix.apache.org/" title="A cluster management framework for partitioned and replicated distributed resources">Helix</a></li>
 <li><a href="http://hive.apache.org/" title="Data warehouse infrastructure using the Hadoop Database">Hive</a></li>
 <li><a href="http://hc.apache.org/" title="Java toolset of low level HTTP components">HttpComponents</a></li>
 <li><a href="http://isis.apache.org/" title="Framework for rapidly developing domain-driven apps in Java">Isis</a></li>
@@ -291,6 +293,7 @@ limitations under the License.
 <li><a href="http://juddi.apache.org/" title="Java implementation of the Universal Description, Discovery, and Integration specification">jUDDI</a></li>
 <li><a href="http://kafka.apache.org/" title="Distributed publish-subscribe messaging system">Kafka</a></li>
 <li><a href="http://karaf.apache.org/" title="Server-side OSGi distribution">Karaf</a></li>
+<li><a href="http://knox.apache.org/" title="Simplify and normalize the deployment and implementation of secure Hadoop clusters">Knox</a></li>
 <li><a href="http://lenya.apache.org/" title="Content Management System">Lenya</a></li>
 <li><a href="http://libcloud.apache.org/" title="Unified interface to the cloud">Libcloud</a></li>
 <li><a href="http://logging.apache.org/" title="Cross-language logging services">Logging</a></li>
@@ -308,10 +311,12 @@ limitations under the License.
 <li><a href="http://nutch.apache.org/" title="Open Source Web Search Software">Nutch</a></li>
 <li><a href="http://ode.apache.org/" title="Orchestration Director Engine: Business Process Management (BPM), Process Orchestration and Workflow through service composition.">ODE</a></li>
 <li><a href="http://ofbiz.apache.org/" title="Open for Business: enterprise automation software">OFBiz</a></li>
+<li><a href="http://olingo.apache.org/" title="OASIS OData protocol libraries">Olingo</a></li>
 <li><a href="http://oltu.apache.org/" title="OAuth protocol implementation in Java">Oltu</a></li>
 <li><a href="http://onami.apache.org/" title="Development and maintenance of a set of Google Guice extensions">Onami</a></li>
 <li><a href="http://oodt.apache.org/" title="Object Oriented Data Technology (middleware metadata)">OODT</a></li>
 <li><a href="http://oozie.apache.org/" title="A workflow scheduler system to manage Apache Hadoop jobs.">Oozie</a></li>
+<li><a href="http://climate.apache.org/" title="Climate model evaluation">Open Climate Workbench</a></li>
 <li><a href="http://openjpa.apache.org/" title="OpenJPA: Object Relational Mapping for Java">OpenJPA</a></li>
 <li><a href="http://openmeetings.apache.org/" title="OpenMeetings: Web-Conferencing and real-time collaboration">OpenMeetings</a></li>
 <li><a href="http://opennlp.apache.org/" title="Machine learning based toolkit for the processing of natural language text">OpenNLP</a></li>
@@ -334,15 +339,19 @@ limitations under the License.
 <li><a href="http://sis.apache.org/" title="Spatial Information System">SIS</a></li>
 <li><a href="http://sling.apache.org/" title="Web Framework for JCR Content Repositories">Sling</a></li>
 <li><a href="http://spamassassin.apache.org/" title="Mail filter to identify spam">SpamAssassin</a></li>
+<li><a href="http://spark.apache.org/" title="Fast and general engine for large-scale data processing">Spark</a></li>
 <li><a href="http://sqoop.apache.org/" title="Bulk Data Transfer for Hadoop and Structured Datastores">Sqoop</a></li>
 <li><a href="http://stanbol.apache.org/" title="Reusable components for semantic content management">Stanbol</a></li>
 <li><a href="http://steve.apache.org/" title="Apache's Python based single transferable vote software system">STeVe</a></li>
+<li><a href="http://storm.apache.org/" title="Distributed, real-time computation system">Storm</a></li>
 <li><a href="http://struts.apache.org/" title="Model 2 framework for building Java web applications">Struts</a></li>
 <li><a href="http://subversion.apache.org/" title="Version Control">Subversion</a></li>
 <li><a href="http://synapse.apache.org/" title="Enterprise Service Bus and Mediation Framework">Synapse</a></li>
 <li><a href="http://syncope.apache.org/" title="Managing digital identities in enterprise environments">Syncope</a></li>
+<li><a href="http://tajo.apache.org/" title="Big data warehouse system on Hadoop">Tajo</a></li>
 <li><a href="http://tapestry.apache.org/" title="Component-based Java Web Application Framework">Tapestry</a></li>
 <li><a href="http://tcl.apache.org/" title="Dynamic websites using TCL">Tcl</a></li>
+<li><a href="http://tez.apache.org/" title="High-performance and scalable distributed data processing framework">Tez</a></li>
 <li><a href="http://thrift.apache.org/" title="Framework for scalable cross-language services development">Thrift</a></li>
 <li><a href="http://tika.apache.org" title="Content Analysis and Detection Toolkit">Tika</a></li>
 <li><a href="http://tiles.apache.org/" title="A templating framework for web application user interfaces">Tiles</a></li>
@@ -354,6 +363,7 @@ limitations under the License.
 <li><a href="http://uima.apache.org/" title="Framework and annotators for unstructured information analysis">UIMA</a></li>
 <li><a href="http://vcl.apache.org/" title="Virtual Computing Lab">VCL</a></li>
 <li><a href="http://velocity.apache.org/" title="A Java Templating Engine">Velocity</a></li>
+<li><a href="http://vxquery.apache.org/" title="A parallel XQuery processor">VXQuery</a></li>
 <li><a href="http://ws.apache.org/" title="Projects related to Web Services">Web Services</a></li>
 <li><a href="http://whirr.apache.org/" title="Libraries for running Cloud Services">Whirr</a></li>
 <li><a href="http://wicket.apache.org/" title="Component-based Java Web Application Framework.">Wicket</a></li>
@@ -405,7 +415,7 @@ limitations under the License.
         <ul>
           <li><a href="http://people.apache.org/" title="Apache committer homepages">People</a></li> 
           <li><a href="/memorials/" title="In memoriam of past committers">Memorials</a></li> 
-          <li><a href="http://feathercast.org/" title="Apache Podcasts">Feathercast</a></li> 
+          <li><a href="http://feathercast.apache.org/" title="Apache Podcasts">Feathercast</a></li> 
           <li><a href="http://blogs.apache.org/" title="Apache Project Blogs">Project Blogs</a></li> 
           <li><a href="http://planet.apache.org/committers/" title="Apache Committers' Blogs">PlanetApache</a></li> 
         </ul>
