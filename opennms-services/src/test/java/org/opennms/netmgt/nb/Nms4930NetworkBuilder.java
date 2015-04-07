@@ -32,7 +32,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
-public class Nms4930NetworkBuilder extends TestNetworkBuilder {
+public class Nms4930NetworkBuilder extends NmsNetworkBuilder {
 
 	NodeDao m_nodeDao;
 

@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
@@ -62,7 +63,7 @@ import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 @Entity
 @Table(name="vlan", uniqueConstraints = {@UniqueConstraint(columnNames={"nodeId", "vlanId"})})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class OnmsVlan {
+public class OnmsVlan implements Comparable<OnmsVlan> {
 
     @Embeddable
     public static class VlanStatus implements Comparable<VlanStatus>, Serializable {
@@ -579,4 +580,16 @@ public class OnmsVlan {
 	        .append("lastPollTime", m_lastPollTime)
 	        .toString();
 	}
+
+    @Override
+    public int compareTo(OnmsVlan o) {
+        return new CompareToBuilder()
+            .append(m_node, o.m_node)
+            .append(m_vlanId, o.m_vlanId)
+            .append(m_vlanName, o.m_vlanName)
+            .append(m_vlanStatus, o.m_vlanStatus)
+            .append(m_status, o.m_status)
+            .append(m_lastPollTime, o.m_lastPollTime)
+            .toComparison();
+    }
 }

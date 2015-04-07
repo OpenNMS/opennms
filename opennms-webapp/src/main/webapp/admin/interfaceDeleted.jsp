@@ -98,11 +98,11 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <% if (ifIndex == -1) { %>
-    <h3>Finished Deleting Interface <%= ipAddr %></h3>
+    <h3 class="panel-title">Finished Deleting Interface <%= ipAddr %></h3>
     <% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
-    <h3>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
+    <h3 class="panel-title">Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
     <% } else { %>
-    <h3>Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
+    <h3 class="panel-title">Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
     <% } %>
   </div>
   <div class="panel-body">

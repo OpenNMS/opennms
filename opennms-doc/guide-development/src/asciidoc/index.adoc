@@ -16,5 +16,32 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
-== REST API
+== CORS Support
 include::text/rest/CORS.adoc[]
+
+== ReST API
+include::text/rest/rest-api.adoc[]
+
+// Include section for all implemented ReST API resources
+=== Currently Implemented Interfaces
+include::text/rest/acknowledgements.adoc[]
+include::text/rest/alarm_statistics.adoc[]
+include::text/rest/alarms.adoc[]
+include::text/rest/events.adoc[]
+include::text/rest/foreign_sources.adoc[]
+include::text/rest/groups.adoc[]
+include::text/rest/ksc_reports.adoc[]
+include::text/rest/links.adoc[]
+include::text/rest/maps.adoc[]
+include::text/rest/measurements.adoc[]
+include::text/rest/nodes.adoc[]
+include::text/rest/notifications.adoc[]
+include::text/rest/outage_timeline.adoc[]
+include::text/rest/outages.adoc[]
+include::text/rest/requisitions.adoc[]
+include::text/rest/scheduled_outages.adoc[]
+include::text/rest/snmp_configuration.adoc[]
+include::text/rest/users.adoc[]
+
+=== ReST API Examples
+include::text/rest/examples.adoc[]

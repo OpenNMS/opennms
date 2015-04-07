@@ -114,6 +114,10 @@ public class SnmpInterfaceRrdMigratorOnlineTest {
         obj.execute();
         obj.postExecute();
 
+        // Verify if the backups have been removed
+        Assert.assertFalse(new File("target/home/rrd/1/eth0.zip").exists());
+        Assert.assertFalse(new File("target/home/rrd/1/eth0-005056c00008.zip").exists());
+
         // Check Merged JRB
         rrd = RrdConvertUtils.dumpJrb(new File("target/home/rrd/1/eth0-005056c00008/ifInOctets.jrb"));
         r = rrd.findRowByTimestamp(rrd.getRras().get(0), 1381500900l);

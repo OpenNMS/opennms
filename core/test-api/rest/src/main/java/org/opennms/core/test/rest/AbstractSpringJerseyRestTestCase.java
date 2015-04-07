@@ -118,13 +118,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private static ThreadLocal<String> m_username = new InheritableThreadLocal<String>();
     private static ThreadLocal<Set<String>> m_roles = new InheritableThreadLocal<Set<String>>();
     
-    static {
-        setUser("admin", new String[] { "ROLE_ADMIN" });
-    }
-
     @Before
     public void setUp() throws Throwable {
         beforeServletStart();
+
+        setUser("admin", new String[] { "ROLE_ADMIN" });
 
         DaoTestConfigBean bean = new DaoTestConfigBean();
         bean.afterPropertiesSet();
@@ -136,6 +134,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
         setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
         getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
+        getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
+        getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
 
         try {
 
@@ -256,7 +256,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     private static Collection<String> getUserRoles() {
-        return Collections.unmodifiableCollection(m_roles.get());
+        final Set<String> roles = m_roles.get();
+        return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
 
     /**

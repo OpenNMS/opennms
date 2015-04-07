@@ -24,7 +24,7 @@
           <importRepositories>true</importRepositories>
           <!-- 
             Don't import other repositories that are already inside well-organized feature hierarchies
-            outside of OpenNMS (Karaf, ActiveMQ).
+            outside of OpenNMS (Karaf, ActiveMQ, Camel).
           -->
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
@@ -33,8 +33,19 @@
           </importRepositoryExclusions>
           <repositories>
 
-            <!-- Karaf base features -->
-            <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository>
+            <!-- 
+              We rely on features from Karaf's standard repository, but don't declare that dependency in 
+              this features.xml. This will allow us to run on any version Karaf that provides features with the
+              same names, including vanilla Karaf and the org.opennms.container/karaf servlet bridge Karaf container.
+            -->
+            <!-- Karaf standard features -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor> -->
+            <!-- <descriptor>mvn:org.apache.karaf.assemblies.features/enterprise/${karafVersion}/xml/features</descriptor> -->
+
+            <!-- OpenNMS-modified Karaf base features -->
+            <!-- <repository>mvn:org.opennms.container/karaf/${project.version}/xml/features</repository> -->
+
 
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
@@ -69,6 +80,9 @@
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.vaadin-dashlets/dashlet-features/${project.version}/xml</repository>
 
+            <!-- Vaadin Surveillance Views Feature-->
+            <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
+
           </repositories>
 
           <!-- 
@@ -93,6 +107,8 @@
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
             <feature>nrtg</feature>
+            <feature>opennms-activemq-event-forwarder</feature>
+            <feature>opennms-activemq-event-receiver</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
@@ -104,6 +120,7 @@
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
+            <feature>vaadin-surveillance-views</feature>
           </features>
         </configuration>
       </plugin>
@@ -253,5 +270,12 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features</groupId>
+          <artifactId>vaadin-surveillance-views</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 </project>

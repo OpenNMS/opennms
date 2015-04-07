@@ -83,6 +83,8 @@ drop table filterfavorites cascade;
 drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
+drop table minions_properties cascade;
+drop table minions cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -784,6 +786,7 @@ create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServivceId_idx on outages(ifServiceId);
+create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
 
 --########################################################################
 --#
@@ -2271,6 +2274,49 @@ CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
+--########################################################################
+--#
+--# minions - table for tracking remote minions
+--#
+--# id           : The ID of the minion
+--# location     : The monitoring location associated with the minion
+--# status       : The status of the minion
+--# last_updated : The last time the minion reported in
+--#
+--########################################################################
+
+create table minions (
+    id           varchar(36) not null,
+    location     text not null,
+    status       text,
+    last_updated timestamp with time zone default now(),
+
+    constraint pk_minions primary key (id)
+);
+
+--########################################################################
+--#
+--# minions_properties - arbitrary properties associated with a minion
+--#
+--# id        : The unique ID of the property entry
+--# minion_id : The ID of the minion
+--# key       : The property key
+--# value     : The property value
+--#
+--########################################################################
+
+create table minions_properties (
+    id        integer default nextval('opennmsnxtid') not null,
+    minion_id varchar(36) not null,
+    key       text not null,
+    value     text,
+
+    constraint pk_minions_properties_id primary key (id),
+    constraint fk_minions_properties foreign key (minion_id) references minions (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_id, key);
+
 --# Begin enlinkd table
 drop table lldpElement cascade;
 drop table lldpLink cascade;
@@ -2289,9 +2335,9 @@ drop table bridgeStpLink cascade;
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
-      lldpChassisId varchar(255) not null,
+      lldpChassisId text not null,
       lldpChassisIdSubType integer not null,
-      lldpSysname varchar(255) not null,
+      lldpSysname text not null,
       lldpNodeCreateTime	timestamp not null,
       lldpNodeLastPollTime	timestamp not null,
       constraint pk_lldpelement_id primary key (id),
@@ -2302,16 +2348,16 @@ create table lldpLink (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       lldpLocalPortNum integer not null,
-      lldpPortId varchar(255) not null,
+      lldpPortId text not null,
       lldpPortIdSubType integer not null,
-      lldpPortDescr varchar(255) not null,
+      lldpPortDescr text not null,
       lldpPortIfindex integer,
-      lldpRemChassisId varchar(255) not null,
+      lldpRemChassisId text not null,
       lldpRemChassisIdSubType integer not null,
-      lldpRemSysname varchar(255) not null,
-      lldpRemPortId varchar(255) not null,
+      lldpRemSysname text not null,
+      lldpRemPortId text not null,
       lldpRemPortIdSubType integer not null,
-      lldpRemPortDescr varchar(255) not null,
+      lldpRemPortDescr text not null,
       lldpLinkCreateTime	timestamp not null,
       lldpLinkLastPollTime	timestamp not null,
       constraint pk_lldplink_id primary key (id),
@@ -2322,7 +2368,7 @@ create table cdpElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       cdpGlobalRun    integer not null,
-      cdpGlobalDeviceId varchar(255) not null,
+      cdpGlobalDeviceId text not null,
       cdpNodeCreateTime	timestamp not null,
       cdpNodeLastPollTime	timestamp not null,
       constraint pk_cdpelement_id primary key (id),
@@ -2333,13 +2379,14 @@ create table cdpLink (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       cdpCacheIfIndex integer not null,
-      cdpInterfaceName varchar(96) not null,
+      cdpCacheDeviceIndex integer not null,
+      cdpInterfaceName text,
       cdpCacheAddressType integer not null,
-      cdpCacheAddress varchar(64) not null,
+      cdpCacheAddress text not null,
       cdpCacheVersion text not null,
-      cdpCacheDeviceId varchar(64) not null,
-      cdpCacheDevicePort varchar(96) not null,
-      cdpCacheDevicePlatform varchar(96) not null,
+      cdpCacheDeviceId text not null,
+      cdpCacheDevicePort text not null,
+      cdpCacheDevicePlatform text not null,
       cdpLinkCreateTime	timestamp not null,
       cdpLinkLastPollTime timestamp not null,
       constraint pk_cdplink_id primary key (id),
@@ -2426,7 +2473,7 @@ create table bridgeElement (
     baseNumPorts             integer not null,
     basetype                 integer not null,
     vlan                     integer,
-    vlanname                 varchar(64),
+    vlanname                 text,
     stpProtocolSpecification integer,
     stpPriority              integer,
     stpdesignatedroot        varchar(16),
@@ -2443,7 +2490,7 @@ create table bridgeMacLink (
     nodeid              integer not null,
     bridgePort          integer not null,
     bridgePortIfIndex   integer,
-    bridgePortIfName    varchar(32),
+    bridgePortIfName    text,
     vlan                integer,
     macAddress          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
@@ -2457,12 +2504,12 @@ create table bridgeBridgeLink (
     nodeid                  integer not null,
     bridgePort              integer,
     bridgePortIfIndex       integer,
-    bridgePortIfName        varchar(32),
+    bridgePortIfName        text,
     vlan                    integer,
     designatedNodeid        integer not null,
     designatedBridgePort    integer,
     designatedBridgePortIfIndex   integer,
-    designatedBridgePortIfName    varchar(32),
+    designatedBridgePortIfName    text,
     designatedVlan          integer,
     bridgeBridgeLinkCreateTime     timestamp not null,
     bridgeBridgeLinkLastPollTime   timestamp not null,
@@ -2480,7 +2527,7 @@ create table bridgeStpLink (
     stpPortEnable        integer not null,
     stpPortPathCost      integer not null,
     stpPortIfIndex       integer,
-    stpPortIfName        varchar(32),
+    stpPortIfName        text,
     vlan                 integer,
     designatedCost       integer not null,
     designatedRoot       varchar(16) not null,

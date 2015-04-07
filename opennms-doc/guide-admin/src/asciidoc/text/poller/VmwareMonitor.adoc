@@ -1,0 +1,44 @@
+
+==== VmwareMonitor
+
+This monitor is part of the VMware integration provided in _Provisiond_ and test the power state of a virtual machine (VM) or a host system (host).
+If the power state of a VM or host is _poweredOn_ the service is _up_.
+The state _off_ the service on the VM or Host is marked as _down_.
+By default _standBy_ is also considered as _down_.
+In case of using link:http://www.vmware.com/files/pdf/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] the _standBy_ state can be changed see the `ignoreStandBy` configuration parameter.
+
+CAUTION: The information for the status of a virtual machine is collected from the responsible _VMware vCenter_ using the credentials from the _vmware-config.xml_.
+         It is also required to get specific asset fields assigned to an imported virtual machine and host system.
+         The following asset fields are required, which are populated by the _VMware_ integration in _Provisiond_: _VMware Management Server_, _VMware Managed Entity Type_ and the _foreignId_ which contains an internal _VMware vCenter Identifier_.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.VmwareMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the VmwareMonitor
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                                                        | Required | Default value
+| `retry`         | Number of retries before the service is marked as _down_.                          | optional | `0`
+| `timeout`       | Time in milliseconds to wait for the _vCenter_ to get the power state information. | optional | `3000`
+| `ignoreStandBy` | Treat power state _standBy_ as _up_.                                               | optional | `false` 
+|===
+
+===== Examples
+Some example configuration how to configure the monitor in the _poller-configuration.xml_.
+
+[source, xml]
+----
+<service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+----

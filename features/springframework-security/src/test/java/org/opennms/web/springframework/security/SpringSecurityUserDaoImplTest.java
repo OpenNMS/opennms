@@ -28,6 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
+import static org.opennms.core.test.MockLogAppender.assertLogAtLevel;
+import static org.opennms.core.test.MockLogAppender.assertNoWarningsOrGreater;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,16 +41,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.Iterator;
+
 import junit.framework.TestCase;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
-import static org.opennms.core.test.MockLogAppender.assertLogAtLevel;
-import static org.opennms.core.test.MockLogAppender.assertNoWarningsOrGreater;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.GroupManager;
@@ -64,12 +67,12 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/web/springframework/security/AuthenticationIntegrationTest-context.xml"
 })
 @JUnitConfigurationEnvironment
@@ -84,7 +87,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Autowired
     UserManager m_userManager;
-    
+
     @Autowired
     GroupManager m_groupManager;
 
@@ -101,7 +104,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameAdmin() {
-        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
+        SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("admin");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "admin", user.getUsername());
         assertEquals("Full name", "Administrator", user.getFullName());
@@ -111,9 +114,8 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 2, authorities.size());
-        Iterator<? extends GrantedAuthority> itr = authorities.iterator();
-        assertEquals("authorities 0 name", Authentication.ROLE_USER, itr.next().getAuthority());
-        assertEquals("authorities 2 name", Authentication.ROLE_ADMIN, itr.next().getAuthority());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
+        assertContainsAuthority(Authentication.ROLE_ADMIN, authorities);
         assertNoWarningsOrGreater();
     }
 
@@ -125,7 +127,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
 
     @Test
     public void testGetByUsernameRtc() {
-        OnmsUser user = m_springSecurityDao.getByUsername("rtc");
+        SpringSecurityUser user = m_springSecurityDao.getByUsername("rtc");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "rtc", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -135,7 +137,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
-        assertEquals("authorities 0 name", Authentication.ROLE_RTC, authorities.iterator().next().getAuthority());
+        assertContainsAuthority(Authentication.ROLE_RTC, authorities);
         assertNoWarningsOrGreater();
     }
 
@@ -146,7 +148,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("18126E7BD3F84B3F3E4DF094DEF5B7DE");
         m_userManager.save(newUser);
 
-        final OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
+        final SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("tempuser");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "tempuser", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -156,10 +158,10 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
-        assertEquals("authorities 0 name", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
+        assertContainsAuthority(Authentication.ROLE_USER, authorities);
         assertNoWarningsOrGreater();
     }
-    
+
     @Test
     @DirtiesContext
     public void testGetByUsernameDashboard() throws Exception {
@@ -167,7 +169,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         newUser.setPassword("DC7161BE3DBF2250C8954E560CC35060");
         m_userManager.save(newUser);
 
-        OnmsUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
+        SpringSecurityUser user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
         assertNotNull("user object should not be null", user);
         assertEquals("OnmsUser name", "dashboard", user.getUsername());
         assertEquals("Full name", null, user.getFullName());
@@ -177,10 +179,10 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
         assertEquals("authorities size", 1, authorities.size());
-        assertEquals("authorities 0 name", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
+        assertContainsAuthority(Authentication.ROLE_DASHBOARD, authorities);
         assertNoWarningsOrGreater();
     }
-    
+
     @Test
     @DirtiesContext
     public void testMagicUsersReload() throws Exception {
@@ -193,26 +195,26 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
          * handy for handling temporary directories.
          */
         FileAnticipator fa = new FileAnticipator();
-        
+
         try {
             File users = fa.tempFile("users.xml");
             File magicUsers = fa.tempFile("magic-users.properties");
-            
+
             writeTemporaryFile(users, getUsersXmlContents());
             writeTemporaryFile(magicUsers, getMagicUsersContents());
 
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
-            OnmsUser user;
+            SpringSecurityUser user;
             Collection<? extends GrantedAuthority> authorities;
-            
+
             user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
             assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
-            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
+            assertContainsAuthority(Authentication.ROLE_DASHBOARD, authorities);
 
             /*
              *  On UNIX, the resolution of the last modified time is 1 second,
@@ -229,14 +231,14 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
             assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
-            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
+            assertContainsAuthority(Authentication.ROLE_USER, authorities);
         } finally {
             fa.deleteExpected();
             fa.tearDown();
         }
         assertNoWarningsOrGreater();
     }
-    
+
     /**
      * Test for bugzilla bug #1810.  This is the case:
      * <ol>
@@ -264,26 +266,26 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
          * handy for handling temporary directories.
          */
         FileAnticipator fa = new FileAnticipator();
-        
+
         try {
             File users = fa.tempFile("users.xml");
             File magicUsers = fa.tempFile("magic-users.properties");
-            
+
             writeTemporaryFile(users, getUsersXmlContents());
             writeTemporaryFile(magicUsers, getMagicUsersContents());
 
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setUsersConfigurationFile(users.getAbsolutePath());
             ((SpringSecurityUserDaoImpl) m_springSecurityDao).setMagicUsersConfigurationFile(magicUsers.getAbsolutePath());
 
-            OnmsUser user;
+            SpringSecurityUser user;
             Collection<? extends GrantedAuthority> authorities;
-            
+
             user = ((SpringSecurityUserDao) m_springSecurityDao).getByUsername("dashboard");
             assertNotNull("dashboard user should exist and the object should not be null", user);
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
             assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
-            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_DASHBOARD, authorities.iterator().next().getAuthority());
+            assertContainsAuthority(Authentication.ROLE_DASHBOARD, authorities);
 
             /*
              *  On UNIX, the resolution of the last modified time is 1 second,
@@ -300,11 +302,11 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
             authorities = user.getAuthorities(); 
             assertNotNull("user GrantedAuthorities[] object should not be null", authorities);
             assertEquals("user GrantedAuthorities[] object should have only one entry", 1, authorities.size());
-            assertEquals("user GrantedAuthorities[0]", Authentication.ROLE_USER, authorities.iterator().next().getAuthority());
+            assertContainsAuthority(Authentication.ROLE_USER, authorities);
 
             long ourLastModifiedTime = magicUsers.lastModified();
             long daoLastModifiedTime = ((SpringSecurityUserDaoImpl) m_springSecurityDao).getMagicUsersLastModified();
-            
+
             assertEquals("last modified time of magic users file does not match what the DAO stored after reloading the file", ourLastModifiedTime, daoLastModifiedTime);
         } finally {
             fa.deleteExpected();
@@ -312,7 +314,7 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         }
         assertNoWarningsOrGreater();
     }
-    
+
     @DirtiesContext
     @Test
     public void testMissingMagicUsersProperties() {
@@ -320,31 +322,45 @@ public class SpringSecurityUserDaoImplTest extends TestCase implements Initializ
         ((SpringSecurityUserDaoImpl) m_springSecurityDao).parseMagicUsers();
         assertLogAtLevel(Level.WARN);
     }
-    
+
     private void writeTemporaryFile(File file, String content) throws IOException {
         Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
         writer.write(content);
         writer.close();
     }
-    
+
     private String getUsersXmlContents() throws IOException {
         return getFileContents(new File(USERS_XML_FILE));
     }
-    
+
     private String getMagicUsersContents() throws IOException {
         return getFileContents(new File(MAGIC_USERS_FILE));
     }
 
     private String getFileContents(File file) throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-        
-        StringBuffer contents = new StringBuffer();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            contents.append(line);
-            contents.append("\n");
+
+        try {
+            StringBuffer contents = new StringBuffer();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                contents.append(line);
+                contents.append("\n");
+            }
+    
+            return contents.toString();
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
-        
-        return contents.toString();
+    }
+
+    private void assertContainsAuthority(final String role, final Collection<? extends GrantedAuthority> authorities) {
+        for (final GrantedAuthority authority : authorities) {
+            if (role.equals(authority.getAuthority())) {
+                return;
+            }
+        }
+
+        throw new AssertionError("role " + role + " was not found in " + authorities);
     }
 }

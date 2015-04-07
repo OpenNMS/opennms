@@ -18,11 +18,12 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               org.opennms.netmgt.events.api.*;version="${project.version}",
+              org.opennms.netmgt.events.api.support.*;version="${project.version}",
               org.opennms.netmgt.xml.event.*;version="${project.version}"
             </Export-Package>
           </instructions>

@@ -268,7 +268,7 @@ public final class HibernateEventWriter implements EventWriter {
         ovent.setEventSuppressedCount(null);
 
         // eventOperInstruct
-        ovent.setEventOperInstruct(EventDatabaseConstants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+        ovent.setEventOperInstruct(EventDatabaseConstants.format(event.getOperinstruct(), 0));
 
         // eventAutoAction
         ovent.setEventAutoAction(event.getAutoactionCount() > 0 ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);

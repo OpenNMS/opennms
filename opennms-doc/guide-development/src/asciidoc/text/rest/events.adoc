@@ -1,0 +1,23 @@
+
+==== Events
+
+===== GETs (Reading Data)
+
+[options="header", cols="2,10"]
+|===
+| Resource        | Description
+| `/events`       | Get a list of events. The default for offset is 0, and the default for limit is 10. To get all results, use limit=0 as a parameter on the URL (ie, `GET /events?limit=0`).
+| `/events/count` | Get the number of events. (Returns plaintext, rather than _XML_ or _JSON_.)
+| `/events/{id}`  | Get the event specified by the given _ID_.
+|===
+
+===== PUTs (Modifying Data)
+
+_PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-Type.
+
+[options="header", cols="2,10"]
+|===
+| Resource                               | Description
+| `/events/{id}?ack=''(true;false)`      | Acknowledges (or unacknowledges) an event.
+| `/events?x=y&...&ack=''(true;false)`   | Acknowledges (or unacknowledges) the matching events.
+|===

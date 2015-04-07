@@ -1,9 +1,63 @@
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="opennms-${project.version}">    
-    <!-- camel features -->
+<?xml version="1.0" encoding="UTF-8"?>
+<features 
+  name="opennms-${project.version}"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0"
+>
+    <!-- Apache Camel features -->
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
 
-    <!--  activemq features -->
+    <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
+
+    <!-- ActiveMQ service features -->
+
+    <!-- This broker configuration will configure a broker to talk to a remote OpenNMS machine -->
+    <feature name="opennms-activemq-dispatcher-config" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker Config" version="${project.version}">
+      <configfile override="true" finalname="/etc/activemq-dispatcher.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-dispatcher</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-dispatcher.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-dispatcher</configfile>
+    </feature>
+
+    <feature name="opennms-activemq-dispatcher" description="OpenNMS :: Features :: ActiveMQ :: Dispatcher Broker" version="${project.version}">
+      <feature>opennms-activemq-dispatcher-config</feature>
+      <feature>activemq</feature>
+    </feature>
+
+    <!-- This broker configuration will configure a local ActiveMQ broker to process messages on the OpenNMS machine -->
+    <feature name="opennms-activemq-config" description="OpenNMS :: Features :: ActiveMQ :: Broker Config" version="${project.version}">
+      <configfile override="true" finalname="/etc/activemq-receiver.xml">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/xml/activemq-receiver</configfile>
+      <!-- Don't overwrite any existing properties file -->
+      <configfile finalname="/etc/org.apache.activemq.server-broker.cfg">mvn:org.opennms.features.activemq/org.opennms.features.activemq.broker/${project.version}/cfg/activemq-receiver</configfile>
+    </feature>
+
+    <feature name="opennms-activemq" description="OpenNMS :: Features :: ActiveMQ :: Broker" version="${project.version}">
+      <feature>opennms-activemq-config</feature>
+      <feature>activemq</feature>
+    </feature>
+
+    <feature name="opennms-activemq-event-forwarder" description="OpenNMS :: Features :: ActiveMQ :: Event Forwarder" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-blueprint</feature>
+      <feature>camel-http</feature>
+      <feature>activemq-camel</feature>
+      <feature>opennms-activemq-dispatcher</feature>
+      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.event-forwarder/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-activemq-event-receiver" description="OpenNMS :: Features :: ActiveMQ :: Event Receiver" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-blueprint</feature>
+      <feature>camel-http</feature>
+      <feature>activemq-camel</feature>
+      <feature>opennms-activemq</feature>
+      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.event-receiver/${project.version}</bundle>
+    </feature>
+
 
     <!-- Dependency features -->
     <feature name="atomikos" description="Atomikos :: TransactionEssentials" version="${atomikosVersion}">
@@ -83,6 +137,7 @@
       <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
     </feature>
 
+
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
@@ -131,22 +186,6 @@
       <feature version="[4.0,4.1)">spring-orm</feature>
       <feature version="[4.0,4.1)">spring-tx</feature>
 
-      <!-- 
-        We can't use the Karaf spring-security feature because it pulls in the "war" feature
-        which conflicts with our bridge implementation of the "http" feature when loaded
-        in the OpenNMS Karaf container.
-      -->
-      <!--
-      <feature version="[3.1,3.2)">spring-security</feature>
-      -->
-
-      <!-- Hack in a replacement for spring-security -->
-      <!-- spring-web is necessary for HTTP remoting -->
-      <feature version="[4.0,4.1)">spring-web</feature>
-      <feature>commons-codec</feature>
-      <bundle dependency="true">mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
-      <bundle dependency="true">mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
-
       <feature>castor</feature>
       <feature>commons-io</feature>
       <feature>commons-lang</feature>
@@ -156,6 +195,7 @@
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-rrd-api</feature>
       <feature>opennms-snmp</feature>
 
@@ -218,6 +258,13 @@
       <feature>opennms-config-api</feature>
 
       <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
+      <feature>opennms-collection-api</feature>
+      <feature>opennms-dao-api</feature>
+
+      <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
@@ -284,6 +331,7 @@
     </feature>
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
+      <bundle>wrap:mvn:org.json/json/20140107</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>

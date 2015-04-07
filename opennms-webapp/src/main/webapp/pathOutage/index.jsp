@@ -79,7 +79,7 @@
 			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
 			<td><%= pth[1] %></td>
-			<td class="<%= pthData[3] %>"><%= pth[2] %></td>
+			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
 			<td><a
 				href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
 		</tr>

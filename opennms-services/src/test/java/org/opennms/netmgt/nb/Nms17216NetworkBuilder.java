@@ -38,7 +38,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms17216NetworkBuilder extends TestNetworkBuilder {
+public class Nms17216NetworkBuilder extends NmsNetworkBuilder {
     static {
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.249"), 13);
         ROUTER1_IP_IF_MAP.put(InetAddressUtils.addr("192.168.100.245"), 7);

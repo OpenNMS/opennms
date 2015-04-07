@@ -2,20 +2,23 @@
 <!DOCTYPE jasperTemplate PUBLIC "-//JasperReports//DTD Template//EN" "http://jasperreports.sourceforge.net/dtds/jaspertemplate.dtd">
 
 <jasperTemplate>
-    <style name="Title" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="24" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Sub-sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Body" forecolor="#000000" backcolor="#FFFFFF" vAlign="Middle" markup="none" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Section" mode="Opaque" forecolor="#FFFFFF" backcolor="#009800" radius="7" hAlign="Left" vAlign="Middle" fontSize="16" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Table-Header" mode="Opaque" forecolor="#000000" backcolor="#F2F2F2" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Table-Body" forecolor="#003366" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-    <style name="Table-DefaultGrid" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
-        <box>
-            <topPen lineWidth="0.0" lineColor="#000000"/>
-            <bottomPen lineWidth="0.0" lineColor="#999999"/>
-        </box>
-    </style>
-    <style name="Table-Summary" forecolor="#000000" hAlign="Left" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Title" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="20" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Body" forecolor="#000000" backcolor="#FFFFFF" vAlign="Middle" markup="none" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Section" mode="Opaque" forecolor="#FFFFFF" backcolor="#009800" radius="7" hAlign="Left" vAlign="Middle" fontSize="16" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table-Header" mode="Opaque" forecolor="#000000" backcolor="#F2F2F2" vAlign="Middle" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table-Body" forecolor="#003366" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table-DefaultGrid" mode="Opaque" forecolor="#000000" backcolor="#FFFFFF" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<topPen lineWidth="0.0" lineColor="#000000"/>
+			<bottomPen lineWidth="0.0" lineColor="#999999"/>
+		</box>
+	</style>
+	<style name="Table-Summary" forecolor="#000000" hAlign="Left" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Creation-Date" forecolor="#000000" fontSize="10"/>
+	<style name="Paging-Footer" forecolor="#000000" fontSize="10"/>
+	<style name="Range" forecolor="#033660" fontSize="14"/>
 </jasperTemplate>

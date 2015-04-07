@@ -34,11 +34,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
@@ -450,7 +450,7 @@ public final class DiscoveryLink implements ReadyRunnable {
     private void getLinksFromCdp(Collection<LinkableNode> linkableNodes) {
         LOG.info("getLinksFromCdp: adding links using Cisco Discovery Protocol");
         int i = 0;
-        Map<String, LinkableNode> cdpNodes = new HashMap<String, LinkableNode>();
+        Map<String, LinkableNode> cdpNodes = new TreeMap<String, LinkableNode>();
         for (LinkableNode linkableNode : linkableNodes) {
             if (linkableNode.hasCdpInterfaces()) {
                 LOG.debug("getLinksFromCdp: adding to CDP node list: node with nodeid/#cdpinterfaces {}/#{}",

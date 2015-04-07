@@ -58,8 +58,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class EnhancedLinkd extends AbstractServiceDaemon {
-	private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
-
+    private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkd.class);
     /**
      * The log4j category used to log messages.
      */

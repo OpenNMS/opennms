@@ -548,7 +548,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.String} object.
      */
     @XmlElement(name="operatorInstructions")
-    @Column(name="operinstruct", length=1024)
+    @Column(name="operinstruct")
     public String getOperInstruct() {
         return this.m_operInstruct;
     }

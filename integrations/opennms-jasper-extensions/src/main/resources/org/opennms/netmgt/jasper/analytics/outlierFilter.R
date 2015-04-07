@@ -1,5 +1,3 @@
-library(zoo)
-
 # Options
 inputFile <- 'stdin'
 
@@ -18,22 +16,11 @@ replace_with_na <- function(x) {
   }
 }
 
-numNonNaValues <- sum(!is.na(data[,columnToFilter]))
+# Calculate the quantile
+Qy <- quantile(data[,columnToFilter], c(probability), na.rm = TRUE)
 
-# Only perform the replacement/interpolation if there are some at lease 2 non-NA values
-if (numNonNaValues >= 2) {
-  # Calculate the quantile
-  Qy <- quantile(data[,columnToFilter], c(probability), na.rm = TRUE)
+# Replace outliers with NA
+data[columnToFilter] <- unlist(lapply(data[,columnToFilter], replace_with_na))
 
-  data[columnToFilter] <- unlist(lapply(data[,columnToFilter], replace_with_na))
-
-  # Replace the NAs with interpolated values
-  Zxy <- zoo(data)
-  Zxy <- na.approx(Zxy)
-
-  # Output the results
-  write.csv(Zxy)
-} else {
-  write.csv(data)
-}
-
+# Output the results
+write.csv(data)

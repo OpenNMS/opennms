@@ -51,12 +51,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.CapsdConfig;
-import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.capsd.CapsdConfiguration;
-import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
@@ -76,25 +72,15 @@ public class PollerConfigServlet extends HttpServlet {
     
     PollerConfiguration pollerConfig = null;
 
-    CapsdConfiguration capsdConfig = null;
-
     protected String redirectSuccess;
 
     Map<String, Service> pollerServices = new HashMap<String, Service>();
 
-    Map<String, ProtocolPlugin> capsdProtocols = new HashMap<String, ProtocolPlugin>();
-
-    java.util.List<ProtocolPlugin> capsdColl = new ArrayList<ProtocolPlugin>();
-
     org.opennms.netmgt.config.poller.Package pkg = null;
-
-    Collection<ProtocolPlugin> pluginColl = null;
 
     Properties props = new Properties();
 
     PollerConfig pollerFactory = null;
-
-    CapsdConfig capsdFactory = null;
 
     /**
      * <p>init</p>
@@ -113,18 +99,11 @@ public class PollerConfigServlet extends HttpServlet {
             if (pollerConfig == null) {
                 throw new ServletException("Poller Configuration file is empty");
             }
-            CapsdConfigFactory.init();
-            capsdFactory = CapsdConfigFactory.getInstance();
-            capsdConfig = capsdFactory.getConfiguration();
 
-            if (capsdConfig == null) {
-                throw new ServletException("Poller Configuration file is empty");
-            }
         } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();
-        initCapsdProtocols();
         this.redirectSuccess = config.getInitParameter("redirect.success");
         if (this.redirectSuccess == null) {
             throw new ServletException("Missing required init parameter: redirect.success");
@@ -147,34 +126,14 @@ public class PollerConfigServlet extends HttpServlet {
             if (pollerConfig == null) {
                 throw new ServletException("Poller Configuration file is empty");
             }
-            CapsdConfigFactory.init();
-            capsdFactory = CapsdConfigFactory.getInstance();
-            capsdConfig = capsdFactory.getConfiguration();
 
-            if (capsdConfig == null) {
-                throw new ServletException("Poller Configuration file is empty");
-            }
         } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();
-        initCapsdProtocols();
         this.redirectSuccess = config.getInitParameter("redirect.success");
         if (this.redirectSuccess == null) {
             throw new ServletException("Missing required init parameter: redirect.success");
-        }
-    }
-
-    /**
-     * <p>initCapsdProtocols</p>
-     */
-    public void initCapsdProtocols() {
-        pluginColl = capsdConfig.getProtocolPluginCollection();
-        if (pluginColl != null) {
-            for (ProtocolPlugin plugin : pluginColl) {
-                capsdColl.add(plugin);
-                capsdProtocols.put(plugin.getProtocol(), plugin);
-            }
         }
     }
 
@@ -236,10 +195,8 @@ public class PollerConfigServlet extends HttpServlet {
             deleteThese(deleteList);
 
             Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
-            Writer capsd_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME)), "UTF-8");
             try {
                 Marshaller.marshal(pollerConfig, poller_fileWriter);
-                Marshaller.marshal(capsdConfig, capsd_fileWriter);
             } catch (MarshalException e) {
                 e.printStackTrace();
                 throw new ServletException(e.getMessage());
@@ -250,21 +207,6 @@ public class PollerConfigServlet extends HttpServlet {
         }
 
         response.sendRedirect(this.redirectSuccess);
-    }
-
-    /**
-     * <p>deleteCapsdInfo</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void deleteCapsdInfo(String name) {
-        if (capsdProtocols.get(name) != null) {
-            ProtocolPlugin tmpproto = capsdProtocols.get(name);
-            capsdProtocols.remove(name);
-            pluginColl = capsdProtocols.values();
-            capsdColl.remove(tmpproto);
-            capsdConfig.setProtocolPluginCollection(new ArrayList<ProtocolPlugin>(pluginColl));
-        }
     }
 
     /**
@@ -298,7 +240,6 @@ public class PollerConfigServlet extends HttpServlet {
     public void deleteThese(java.util.List<String> deleteServices) throws IOException {
         for (String svcname : deleteServices) {
             if (pkg != null) {
-                boolean flag = false;
                 Collection<Service> svcColl = pkg.getServices();
                 if (svcColl != null) {
                     for (Service svc : svcColl) {
@@ -306,7 +247,6 @@ public class PollerConfigServlet extends HttpServlet {
                             if (svc.getName().equals(svcname)) {
                                 pkg.removeService(svc);
                                 removeMonitor(svc.getName());
-                                deleteCapsdInfo(svc.getName());
                                 props.remove("service." + svc.getName() + ".protocol");
                                 props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
                                 break;
@@ -320,6 +260,8 @@ public class PollerConfigServlet extends HttpServlet {
 
     /**
      * <p>removeMonitor</p>
+     * 
+     * FIXME: I think that this should be using Iterator.remove()
      *
      * @param service a {@link java.lang.String} object.
      */

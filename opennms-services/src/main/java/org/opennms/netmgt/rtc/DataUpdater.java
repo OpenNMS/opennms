@@ -56,20 +56,20 @@ final class DataUpdater implements Runnable {
     /**
      * The event from which data is to be read
      */
-    private Event m_event;
+    private final Event m_event;
+	private final DataManager m_dataManager;
 
     /**
      * If it is a nodeGainedService, create a new entry in the map
      */
-    private void handleNodeGainedService(long nodeid, InetAddress ip, String svcName) {
+    private void handleNodeGainedService(int nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeGainedService(nodeid, ip, svcName);
+        m_dataManager.nodeGainedService(nodeid, ip, svcName);
 
         LOG.debug("{} added {}: {}: {} to data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
 
@@ -78,15 +78,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeLostService, update downtime on the rtcnode
      */
-    private void handleNodeLostService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleNodeLostService(int nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
+        m_dataManager.nodeLostService(nodeid, ip, svcName, eventTime);
 
 
         LOG.debug("Added nodeLostService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
@@ -95,15 +94,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an interfaceDown, update downtime on the appropriate rtcnodes
      */
-    private void handleInterfaceDown(long nodeid, InetAddress ip, long eventTime) {
+    private void handleInterfaceDown(int nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.interfaceDown(nodeid, ip, eventTime);
+        m_dataManager.interfaceDown(nodeid, ip, eventTime);
 
 
         LOG.debug("Recorded interfaceDown for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
@@ -112,15 +110,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an nodeDown, update downtime on the appropriate rtcnodes
      */
-    private void handleNodeDown(long nodeid, long eventTime) {
+    private void handleNodeDown(int nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeDown(nodeid, eventTime);
+        m_dataManager.nodeDown(nodeid, eventTime);
 
 
         LOG.debug("Recorded nodeDown for nodeid: {}", nodeid);
@@ -129,15 +126,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeUp, update regained time on the appropriate rtcnodes
      */
-    private void handleNodeUp(long nodeid, long eventTime) {
+    private void handleNodeUp(int nodeid, long eventTime) {
 
         if (nodeid == -1 || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/eventtime: {}/{}", m_event.getUei(), nodeid, eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeUp(nodeid, eventTime);
+        m_dataManager.nodeUp(nodeid, eventTime);
 
 
         LOG.debug("Recorded nodeUp for nodeid: {}", nodeid);
@@ -146,15 +142,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is an interfaceUp, update regained time on the appropriate rtcnodes
      */
-    private void handleInterfaceUp(long nodeid, InetAddress ip, long eventTime) {
+    private void handleInterfaceUp(int nodeid, InetAddress ip, long eventTime) {
 
         if (nodeid == -1 || ip == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/eventtime: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.interfaceUp(nodeid, ip, eventTime);
+        m_dataManager.interfaceUp(nodeid, ip, eventTime);
 
 
         LOG.debug("Recorded interfaceUp for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
@@ -163,15 +158,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a nodeRegainedService, update downtime on the rtcnode
      */
-    private void handleNodeRegainedService(long nodeid, InetAddress ip, String svcName, long eventTime) {
+    private void handleNodeRegainedService(int nodeid, InetAddress ip, String svcName, long eventTime) {
 
         if (nodeid == -1 || ip == null || svcName == null || eventTime == -1) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc/eventtime: {}/{}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName, eventTime);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
+        m_dataManager.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
 
         LOG.debug("Added nodeRegainedService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
@@ -180,15 +174,14 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a serviceDeleted, remove corresponding RTC nodes from the map
      */
-    private void handleServiceDeleted(long nodeid, InetAddress ip, String svcName) {
+    private void handleServiceDeleted(int nodeid, InetAddress ip, String svcName) {
 
         if (nodeid == -1 || ip == null || svcName == null) {
             LOG.warn("{} ignored - info incomplete - nodeid/ip/svc: {}/{}/{}", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
             return;
         }
 
-        DataManager dataMgr = RTCManager.getDataManager();
-        dataMgr.serviceDeleted(nodeid, ip, svcName);
+        m_dataManager.serviceDeleted(nodeid, ip, svcName);
 
 
         LOG.debug("{} deleted {}: {}: {} from data store", m_event.getUei(), nodeid, InetAddressUtils.str(ip), svcName);
@@ -206,10 +199,10 @@ final class DataUpdater implements Runnable {
         }
 
         // old node ID
-        long oldNodeId = -1;
+        int oldNodeId = -1;
 
         // new node ID
-        long newNodeId = -1;
+        int newNodeId = -1;
 
         String parmName = null;
         Value parmValue = null;
@@ -227,7 +220,7 @@ final class DataUpdater implements Runnable {
             if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
                 String temp = parmContent;
                 try {
-                    oldNodeId = Long.valueOf(temp).longValue();
+                    oldNodeId = Integer.parseInt(temp);
                 } catch (NumberFormatException nfe) {
                     LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_OLD_NODEID, nfe);
                     oldNodeId = -1;
@@ -238,7 +231,7 @@ final class DataUpdater implements Runnable {
             else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
                 String temp = parmContent;
                 try {
-                    newNodeId = Long.valueOf(temp).longValue();
+                    newNodeId = Integer.parseInt(temp);
                 } catch (NumberFormatException nfe) {
                     LOG.warn("Parameter {} cannot be non-numeric", EventConstants.PARM_NEW_NODEID, nfe);
                     newNodeId = -1;
@@ -250,8 +243,7 @@ final class DataUpdater implements Runnable {
         if (oldNodeId == -1 || newNodeId == -1) {
             LOG.warn("{} did not have all required information for {} Values contained old nodeid: {} new nodeid: {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
         } else {
-            DataManager dataMgr = RTCManager.getDataManager();
-            dataMgr.interfaceReparented(ip, oldNodeId, newNodeId);
+            m_dataManager.interfaceReparented(ip, oldNodeId, newNodeId);
 
             LOG.debug("{} reparented ip: {} from {} to {}", m_event.getUei(), InetAddressUtils.str(ip), oldNodeId, newNodeId);
 
@@ -260,110 +252,11 @@ final class DataUpdater implements Runnable {
     }
 
     /**
-     * Inform the data sender of the new listener
-     */
-    private void handleRtcSubscribe(List<Parm> list) {
-
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
-            return;
-        }
-
-        String url = null;
-        String clabel = null;
-        String user = null;
-        String passwd = null;
-
-        String parmName = null;
-        Value parmValue = null;
-        String parmContent = null;
-
-        for (Parm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_CAT_LABEL)) {
-                clabel = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_USER)) {
-                user = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_PASSWD)) {
-                passwd = parmContent;
-            }
-
-        }
-
-        // check that we got all required parms
-        if (url == null || clabel == null || user == null || passwd == null) {
-            LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", m_event.getUei(), url, clabel, user, passwd);
-
-        } else {
-            RTCManager.getInstance().getDataSender().subscribe(url, clabel, user, passwd);
-
-            LOG.debug("{} subscribed {}: {}: {}", m_event.getUei(), url, clabel, user);
-
-        }
-    }
-
-    /**
-     * Inform the data sender of the listener unsubscribing
-     */
-    private void handleRtcUnsubscribe(List<Parm> list) {
-
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", m_event.getUei());
-            return;
-        }
-
-        String url = null;
-
-        String parmName = null;
-        Value parmValue = null;
-        String parmContent = null;
-
-        for (Parm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-        }
-
-        // check that we got the required parameter
-        if (url == null) {
-            LOG.warn("{} did not have required information.  Value of url: {}", m_event.getUei(), url);
-        } else {
-            RTCManager.getInstance().getDataSender().unsubscribe(url);
-
-            LOG.debug("{} unsubscribed {}", m_event.getUei(), url);
-        }
-    }
-
-    /**
      * If it is a assetInfoChanged method, update RTC
      */
-    private void handleAssetInfoChangedEvent(long nodeid) {
+    private void handleAssetInfoChangedEvent(int nodeid) {
 
-        DataManager dataMgr = RTCManager.getDataManager();
-
-        dataMgr.assetInfoChanged(nodeid);
-
+        m_dataManager.assetInfoChanged(nodeid);
 
         LOG.debug("{} asset info changed for node {}", m_event.getUei(), nodeid);
 
@@ -374,12 +267,9 @@ final class DataUpdater implements Runnable {
      * update RTC since RTC categories may include surveillance
      * categories via "categoryName" or "catinc*" rules
      */
-    private void handleNodeCategoryMembershipChanged(long nodeid) {
+    private void handleNodeCategoryMembershipChanged(int nodeid) {
 
-        DataManager dataMgr = RTCManager.getDataManager();
-
-        dataMgr.nodeCategoryMembershipChanged(nodeid);
-
+        m_dataManager.nodeCategoryMembershipChanged(nodeid);
 
         LOG.debug("{} surveillance category membership changed for node {}", m_event.getUei(), nodeid);
     }
@@ -405,9 +295,9 @@ final class DataUpdater implements Runnable {
             return;
         }
 
-        long nodeid = -1;
+        int nodeid = -1;
         if (m_event.hasNodeid()) {
-            nodeid = m_event.getNodeid();
+            nodeid = m_event.getNodeid().intValue();
         }
 
         InetAddress ip = m_event.getInterfaceAddress();
@@ -454,28 +344,23 @@ final class DataUpdater implements Runnable {
             handleServiceDeleted(nodeid, ip, svcName);
         } else if (eventUEI.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             handleInterfaceReparented(ip, m_event.getParmCollection());
-        } else if (eventUEI.equals(EventConstants.RTC_SUBSCRIBE_EVENT_UEI)) {
-            handleRtcSubscribe(m_event.getParmCollection());
-        } else if (eventUEI.equals(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI)) {
-            handleRtcUnsubscribe(m_event.getParmCollection());
         } else if (eventUEI.equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             handleAssetInfoChangedEvent(nodeid);
         } else if (eventUEI.equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-        	handleNodeCategoryMembershipChanged(nodeid);
+            handleNodeCategoryMembershipChanged(nodeid);
         } else {
-
             LOG.debug("Event subscribed for not handled?!: {}", eventUEI);
         }
-
-        RTCManager.getInstance().incrementCounter();
     }
 
     /**
      * Constructs the DataUpdater object
+     * @param dataManager 
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public DataUpdater(Event event) {
+    public DataUpdater(DataManager dataManager, Event event) {
+    	m_dataManager = dataManager;
         m_event = event;
     }
 

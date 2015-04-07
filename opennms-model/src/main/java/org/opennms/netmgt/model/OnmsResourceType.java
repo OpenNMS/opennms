@@ -94,4 +94,12 @@ public interface OnmsResourceType {
     public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId);
     
     public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId);
+
+    /**
+     * Retrieves a child resource with the given name from the parent.
+     *
+     * @return null if no resource with the given name was found
+     * @throws ObjectRetrievalFailureException If any exceptions are thrown while searching for the resource
+     */
+    public OnmsResource getChildByName(OnmsResource parent, String name);
 }
