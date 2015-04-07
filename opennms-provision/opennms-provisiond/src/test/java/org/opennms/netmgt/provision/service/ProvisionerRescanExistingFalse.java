@@ -183,8 +183,8 @@ public class ProvisionerRescanExistingFalse implements InitializingBean {
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
-        @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
         @JUnitSnmpAgent(host="10.1.15.245", port=161, resource="classpath:testNoRescanOnImport-part2.properties")
     })
     public void testNoRescanOnImport() throws Exception {
