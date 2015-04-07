@@ -36,6 +36,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -169,10 +172,10 @@ public class DefaultSchedulerServiceTest implements InitializingBean {
         deliveryOptions2.setInstanceId("trigger2");
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions2, "0 5/10 * * * ?", context));
         verify(m_reportWrapperService);
-        String[] triggers = m_scheduler.getTriggerNames(TRIGGER_GROUP);
-        assertEquals(2,triggers.length);
-        assertEquals("trigger1",triggers[0]);
-        assertEquals("trigger2",triggers[1]);
+        final List<String> triggers = Arrays.asList(m_scheduler.getTriggerNames(TRIGGER_GROUP));
+        assertEquals(2,triggers.size());
+        assertTrue(triggers.contains("trigger1"));
+        assertTrue(triggers.contains("trigger2"));
         m_schedulerService.removeTrigger("trigger1");
         m_schedulerService.removeTrigger("trigger2");
         assertEquals(0,m_scheduler.getTriggerNames(TRIGGER_GROUP).length);

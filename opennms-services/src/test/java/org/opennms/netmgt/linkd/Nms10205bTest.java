@@ -27,6 +27,12 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.linkd;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.iproute;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.lldp;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.ospf;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
@@ -54,16 +60,14 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 
@@ -255,100 +259,39 @@ Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (
         have themselves as designated bridge.
         
         But The link between Mysore and SRX-100 is lost        
-
          */
-        
-        int start = getStartPoint(links);
-        for (final DataLinkInterface datalinkinterface: links) {
-            int id = datalinkinterface.getId().intValue();
 
-            if (start == id) {
-                checkLink(mumbai, delhi, 519, 28503, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+12 == id ) {
-                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+1 == id ) {
-                checkLink(mumbai,bangalore,507,2401,datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+13 == id ) {
-                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+2 == id ) {
-                checkLink(mumbai, bagmane, 977, 534, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+14 == id ) {
-                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+3 == id ) {
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-                checkLink(mumbai, mysore, 978, 508, datalinkinterface);
-            } else if (start+15 == id ) {
-                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+4 == id ) {
-                checkLink( delhi,bangalore, 3674, 2397, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+16 == id ) {
-                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+5 == id ) {
-                checkLink(delhi, spaceexsw1,  17619,528, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+17 == id ) {
-                checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+24 == id ) {
-                checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (start+6 == id ) {
-                checkLink(bangalore, spaceexsw2, 2398, 551, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+19 == id ) {
-                checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+7 == id ) {
-                checkLink(bangalore, bagmane, 2396, 1732, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+18 == id ) {
-                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+8 == id ) {
-                checkLink(bagmane , mysore, 654, 520, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+20 == id ) {
-                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+9 == id ) {
-                checkLink(bagmane, j635042, 540, 549, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+21 == id ) {
-                checkLink(j635042, bagmane, 549, 540 , datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+25 == id ) {
-                checkLink(j635042, bagmane, 549, 514, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (start+10 == id ) {
-                checkLink(spaceexsw1, spaceexsw2, 1361, 531, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+22 == id ) {
-                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
-                assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            } else if (start+26 == id ) {
-                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (start+11 == id ) {
-                checkLink(spaceexsw2, mumbai,  34,508, datalinkinterface);
-                assertEquals(DiscoveryProtocol.iproute, datalinkinterface.getProtocol());
-            } else if (start+23 == id ) {
-                checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else  {
-            	checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
-            }
-        }
+        checkLinks(links,
+            new DataLinkTestMatcher(mumbai, delhi, 519, 28503, iproute),
+            new DataLinkTestMatcher(delhi, mumbai, 28503, 519, ospf),
+            new DataLinkTestMatcher(mumbai,bangalore,507,2401,iproute),
+            new DataLinkTestMatcher(bangalore, mumbai, 2401, 507, ospf),
+            new DataLinkTestMatcher(mumbai, bagmane, 977, 534, iproute),
+            new DataLinkTestMatcher(bagmane, mumbai, 534, 977, ospf),
+            new DataLinkTestMatcher(mumbai, mysore, 978, 508, iproute),
+            new DataLinkTestMatcher(mysore, mumbai, 508, 978, ospf),
+            new DataLinkTestMatcher( delhi,bangalore, 3674, 2397, iproute),
+            new DataLinkTestMatcher(bangalore, delhi, 2397, 3674, ospf),
+            new DataLinkTestMatcher(delhi, spaceexsw1,  17619,528, iproute),
+            new DataLinkTestMatcher(spaceexsw1, delhi, 528, 17619, ospf),
+            new DataLinkTestMatcher(spaceexsw1, delhi, 528, 28520, lldp),
+            new DataLinkTestMatcher(bangalore, spaceexsw2, 2398, 551, iproute),
+            new DataLinkTestMatcher(spaceexsw2, bangalore, 551, 2398, ospf),
+            new DataLinkTestMatcher(bangalore, bagmane, 2396, 1732, iproute),
+            new DataLinkTestMatcher(bagmane, bangalore, 1732, 2396, ospf),
+            new DataLinkTestMatcher(bagmane , mysore, 654, 520, iproute),
+            new DataLinkTestMatcher(mysore, bagmane, 520, 654, ospf),
+            new DataLinkTestMatcher(bagmane, j635042, 540, 549, iproute),
+            new DataLinkTestMatcher(j635042, bagmane, 549, 540 , ospf),
+            new DataLinkTestMatcher(j635042, bagmane, 549, 514, lldp),
+            new DataLinkTestMatcher(spaceexsw1, spaceexsw2, 1361, 531, iproute),
+            new DataLinkTestMatcher(spaceexsw2, spaceexsw1, 531, 1361, ospf),
+            new DataLinkTestMatcher(spaceexsw2, spaceexsw1, 531, 1361, lldp),
+            new DataLinkTestMatcher(spaceexsw2, mumbai,  34,508, iproute),
+            new DataLinkTestMatcher(bagmane, delhi, 513, 28519, lldp)
+        );
     }
-    
+
     /*
      * 
 
@@ -473,7 +416,6 @@ it has a link to Mysore that does not support LLDP
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        
         assertEquals(4, links.size());
 
         // Linkd is able to find all the lldp links
@@ -483,22 +425,12 @@ it has a link to Mysore that does not support LLDP
         //Delhi           ge-1/1/6        (28520) ----> Space-EX-SW1      ge-0/0/6.0      (528)   515     lldp
         //Bagmane         ge-1/0/2        (514)   ----> J6350-2           ge-0/0/2.0      (549)   516     lldp
         //Space-EX-SW1    ge-0/0/0.0      (1361)  ----> Space-EX-SW2      ge-0/0/0.0      (531)   517     lldp
-        int start = getStartPoint(links);
-        for (final DataLinkInterface datalinkinterface: links) {
-            int id = datalinkinterface.getId().intValue();
-            assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            if (start == id) {
-            	checkLink(bagmane, delhi, 513, 28519, datalinkinterface);
-            } else if (start+1 == id ) {
-            	checkLink(spaceexsw1, delhi, 528, 28520, datalinkinterface);
-            } else if (start+2 == id ) {
-            	checkLink(j635042, bagmane, 549, 514, datalinkinterface);
-            } else if (start+3 == id ) {
-            	checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
-            } else {
-            	checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
-            }
-        }
+        checkLinks(links,
+            new DataLinkTestMatcher(bagmane, delhi, 513, 28519, lldp),
+            new DataLinkTestMatcher(spaceexsw1, delhi, 528, 28520, lldp),
+            new DataLinkTestMatcher(j635042, bagmane, 549, 514, lldp),
+            new DataLinkTestMatcher(spaceexsw2, spaceexsw1, 531, 1361, lldp)
+        );
     }
     
     /*
@@ -658,36 +590,18 @@ Bagmane         ge-1/0/2.0      (540)  ----> J6350_42          ge-0/0/2.0      (
 Space_ex_sw1    ge-0/0/0.0      (1361)  ----> Space_ex_sw2     ge-0/0/0.0      (531)    next hop router         810
         
          */
-        
-        int start = getStartPoint(links);
-        for (final DataLinkInterface datalinkinterface: links) {
-            int id = datalinkinterface.getId().intValue();
-            assertEquals(DiscoveryProtocol.ospf, datalinkinterface.getProtocol());
-            if (start == id ) {
-                checkLink(delhi, mumbai, 28503, 519, datalinkinterface);
-            } else if (start+1 == id) {
-                checkLink(bangalore, mumbai, 2401, 507, datalinkinterface);
-            } else if (start+2 == id) {
-                checkLink(bagmane, mumbai, 534, 977, datalinkinterface);            
-            } else if (start+3 == id) {
-                checkLink(mysore, mumbai, 508, 978, datalinkinterface);
-            } else if (start+4 == id) {
-                checkLink(bangalore, delhi, 2397, 3674, datalinkinterface);
-            } else if (start+5 == id) {
-                checkLink(spaceexsw1, delhi, 528, 17619, datalinkinterface);
-            } else if (start+6 == id ) {
-                checkLink(bagmane, bangalore, 1732, 2396, datalinkinterface);
-            } else if (start+7 == id) {
-                checkLink(spaceexsw2, bangalore, 551, 2398, datalinkinterface);
-            } else if (start+8 == id) {
-                checkLink(mysore, bagmane, 520, 654, datalinkinterface);
-            } else if (start+9 == id) {
-                checkLink(j635042, bagmane, 549, 540, datalinkinterface);
-            } else if (start+10 == id) {
-                checkLink(spaceexsw2, spaceexsw1, 531, 1361, datalinkinterface);
-            } else {
-                checkLink(mumbai,mumbai,-1,-1,datalinkinterface);
-            }
-        }
+        checkLinks(links,
+            new DataLinkTestMatcher(delhi, mumbai, 28503, 519, ospf),
+            new DataLinkTestMatcher(bangalore, mumbai, 2401, 507, ospf),
+            new DataLinkTestMatcher(bagmane, mumbai, 534, 977, ospf),
+            new DataLinkTestMatcher(mysore, mumbai, 508, 978, ospf),
+            new DataLinkTestMatcher(bangalore, delhi, 2397, 3674, ospf),
+            new DataLinkTestMatcher(spaceexsw1, delhi, 528, 17619, ospf),
+            new DataLinkTestMatcher(bagmane, bangalore, 1732, 2396, ospf),
+            new DataLinkTestMatcher(spaceexsw2, bangalore, 551, 2398, ospf),
+            new DataLinkTestMatcher(mysore, bagmane, 520, 654, ospf),
+            new DataLinkTestMatcher(j635042, bagmane, 549, 540, ospf),
+            new DataLinkTestMatcher(spaceexsw2, spaceexsw1, 531, 1361, ospf)
+        );
     }
 }

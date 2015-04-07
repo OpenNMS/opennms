@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO1700B_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO1700B_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO1700B_SNMP_RESOURCE;
@@ -53,10 +55,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.LAPTOP_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.LAPTOP_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.LAPTOP_SNMP_RESOURCE;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -67,15 +65,15 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.CdpInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.topology.RouterInterface;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 
 public class Nms101Test extends LinkdTestBuilder {
-	
-	Nms101NetworkBuilder builder = new Nms101NetworkBuilder();
+    Nms101NetworkBuilder builder = new Nms101NetworkBuilder();
+
     @Before
     public void setUpForceDisvoeryOnEthernet() {
     for (Package pkg : Collections.list(m_linkdConfig.enumeratePackage())) {
@@ -167,15 +165,13 @@ public class Nms101Test extends LinkdTestBuilder {
  
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            if (link.getProtocol() == DiscoveryProtocol.iproute)
-                checkLink(cisco7200a, cisco7200b, 2, 4, link);
-            else if (link.getProtocol() ==  DiscoveryProtocol.cdp)
-                checkLink(cisco7200b, cisco7200a, 4, 2, link);
-        }
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        assertEquals(2, links.size());
 
-        assertEquals("we should have found 2 data links", 2, ifaces.size());
+        checkLinks(links,
+            new DataLinkTestMatcher(cisco7200a, cisco7200b, 2, 4, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco7200b, cisco7200a, 4, 2, DiscoveryProtocol.cdp)
+        );
     }
 
     /*
@@ -254,15 +250,13 @@ public class Nms101Test extends LinkdTestBuilder {
  
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
-        final List<DataLinkInterface> ifaces = m_dataLinkInterfaceDao.findAll();
-        for (final DataLinkInterface link: ifaces) {
-            if (link.getProtocol() == DiscoveryProtocol.iproute)
-                checkLink(cisco3600, cisco3700, 1, 3, link);
-            else if (link.getProtocol() ==  DiscoveryProtocol.cdp)
-                checkLink(cisco3600, cisco3700, 1, 3, link);
-        }
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        assertEquals(2, links.size());
 
-        assertEquals("we should have found 2 data links", 2, ifaces.size());
+        checkLinks(links,
+            new DataLinkTestMatcher(cisco3600, cisco3700, 1, 3, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco3600, cisco3700, 1, 3, DiscoveryProtocol.cdp)
+        );
     }
 
 
@@ -328,54 +322,24 @@ public class Nms101Test extends LinkdTestBuilder {
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
         
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        int start = getStartPoint(links);
-        for (final DataLinkInterface link: links) {
-            int id = link.getId().intValue();
-            if (id == start) {
-                checkLink(laptop, cisco7200a, 10, 3, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+1) {
-                checkLink(cisco7200a, cisco7200b, 2, 4, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+10) {
-                checkLink(cisco7200b, cisco7200a, 4, 2, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else if (id == start+2) {
-                checkLink(cisco7200b, cisco2691, 1, 4, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+8) {
-                checkLink(cisco2691,cisco7200b , 4, 1, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else if (id == start+3) {
-                checkLink(cisco7200b, cisco3700, 2, 1, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+9) {
-                checkLink(cisco3700, cisco7200b, 1, 2, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else if (id == start+4) {
-                checkLink(cisco1700, cisco2691, 2, 2, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+7) {
-                checkLink(cisco1700, cisco2691, 2, 2, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else if (id == start+6) {
-                checkLink(cisco3600, cisco2691, 2, 1, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else if (id == start+5) {
-                checkLink(cisco3600, cisco3700, 1, 3, link);
-                assertEquals(DiscoveryProtocol.iproute, link.getProtocol());
-            } else if (id == start+11) {
-                checkLink(cisco3600, cisco3700, 1, 3, link);
-                assertEquals(DiscoveryProtocol.cdp, link.getProtocol());
-            } else {
-                assertEquals(false, true);
-            }
-        }
-
         assertEquals("we should have found 12 data links", 12, links.size());
+
+        checkLinks(links,
+            new DataLinkTestMatcher(laptop, cisco7200a, 10, 3, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco7200a, cisco7200b, 2, 4, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco7200b, cisco7200a, 4, 2, DiscoveryProtocol.cdp),
+            new DataLinkTestMatcher(cisco7200b, cisco2691, 1, 4, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco2691, cisco7200b, 4, 1, DiscoveryProtocol.cdp),
+            new DataLinkTestMatcher(cisco7200b, cisco3700, 2, 1, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco3700, cisco7200b, 1, 2, DiscoveryProtocol.cdp),
+            new DataLinkTestMatcher(cisco1700, cisco2691, 2, 2, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco1700, cisco2691, 2, 2, DiscoveryProtocol.cdp),
+            new DataLinkTestMatcher(cisco3600, cisco2691, 2, 1, DiscoveryProtocol.cdp),
+            new DataLinkTestMatcher(cisco3600, cisco3700, 1, 3, DiscoveryProtocol.iproute),
+            new DataLinkTestMatcher(cisco3600, cisco3700, 1, 3, DiscoveryProtocol.cdp)
+        );
     }
-    
-    
+
     /*
      *  Discover the following topology
      *  The CDP protocol must found all the links

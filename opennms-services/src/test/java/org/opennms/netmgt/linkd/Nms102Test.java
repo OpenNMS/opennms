@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MAC1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MAC1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.MAC1_SNMP_RESOURCE;
@@ -40,9 +42,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.MIKROTIK_SNMP_RESOURCE;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMSUNG_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMSUNG_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SAMSUNG_SNMP_RESOURCE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 

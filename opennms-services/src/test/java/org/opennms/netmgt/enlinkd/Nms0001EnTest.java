@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_SNMP_RESOURCE;
@@ -41,14 +41,14 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
-
-import java.util.List;
 
 public class Nms0001EnTest extends EnLinkdTestBuilder {
 

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.easymock.EasyMock.expect;
 
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -37,52 +37,26 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
 
-public class DependencyRulesTest extends CorrelationRulesTestCase {
+public class FusionRulesTest extends CorrelationRulesTestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     
     @Test
-    public void testInitialize() throws Exception {
+    public void testDroolsFusion() throws Exception {
         
-        anticipate( createInitializedEvent( 1, 1 ) );
+//        anticipate(createNodeDownEvent(1));
         
-    	EventBuilder bldr = new EventBuilder( "impactedService", "Drools" );
-    	bldr.setNodeid( 1 );
-    	bldr.setInterface( addr( "10.1.1.1" ) );
-    	bldr.setService( "HTTP" );
-    	bldr.addParam("CAUSE", 17 );
-
-    	anticipate( bldr.getEvent() );
-    	
-    	bldr = new EventBuilder( "impactedApplication", "Drools" );
-    	bldr.addParam("APP", "e-commerce" );
-    	bldr.addParam("CAUSE", 17 );
-    	
-    	anticipate( bldr.getEvent() );
+        DroolsCorrelationEngine engine = findEngineByName("droolsFusion");
         
-        DroolsCorrelationEngine engine = findEngineByName("dependencyRules");
+        engine.correlate(createNodeLostServiceEvent(1, "SSH"));
 
-        Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
-        event.setDbid(17);
-	engine.correlate(event);
-
-        // event + initialized
-        m_anticipatedMemorySize = 18;
-        	
-        m_mocks.verifyAll();
-
+        m_anticipatedMemorySize = 5;
+        
         verify(engine);
-        
     }
     
-    private Event createInitializedEvent(int symptom, int cause) {
-        return new EventBuilder("initialized", "Drools").getEvent();
+    private Event createRootCauseResolvedEvent(int symptom, int cause) {
+        return new EventBuilder(createNodeEvent("rootCauseResolved", cause)).getEvent();
     }
-
-    // Currently unused
-//    private Event createRootCauseEvent(int symptom, int cause) {
-//        return new EventBuilder(createNodeEvent("rootCauseEvent", cause)).getEvent();
-//    }
-
 
     public Event createNodeDownEvent(int nodeid) {
         return createNodeEvent(EventConstants.NODE_DOWN_EVENT_UEI, nodeid);
@@ -91,34 +65,16 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
     public Event createNodeUpEvent(int nodeid) {
         return createNodeEvent(EventConstants.NODE_UP_EVENT_UEI, nodeid);
     }
-    
-    public Event createNodeLostServiceEvent(int nodeid, String ipAddr, String svcName)
-    {
-    	return createSvcEvent("uei.opennms.org/nodes/nodeLostService", nodeid, ipAddr, svcName);
-    }
-    
-    public Event createNodeRegainedServiceEvent(int nodeid, String ipAddr, String svcName)
-    {
-    	return createSvcEvent("uei.opennms.org/nodes/nodeRegainedService", nodeid, ipAddr, svcName);
-    }
-    
-    private Event createSvcEvent(String uei, int nodeid, String ipaddr, String svcName)
-    {
-    	return new EventBuilder(uei, "Drools")
-    		.setNodeid(nodeid)
-    		.setInterface( addr( ipaddr ) )
-    		.setService( svcName )
-    		.getEvent();
-    		
-    }
 
     private Event createNodeEvent(String uei, int nodeid) {
         return new EventBuilder(uei, "test")
             .setNodeid(nodeid)
             .getEvent();
     }
-    
 
-
-
+    private Event createNodeLostServiceEvent(int nodeid, String serviceName) {
+        return new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, serviceName)
+            .setNodeid(nodeid)
+            .getEvent();
+    }
 }
