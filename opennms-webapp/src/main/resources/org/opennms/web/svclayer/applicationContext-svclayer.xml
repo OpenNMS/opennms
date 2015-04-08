@@ -40,7 +40,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
-  <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
+  <bean id="pollerApi" class="org.opennms.web.svclayer.support.DefaultPollerService">
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <bean id="demandPollService" class="org.opennms.web.svclayer.support.DefaultDemandPollService">
@@ -136,7 +136,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="graphDao" ref="graphDao"/>
     <property name="rrdDao" ref="rrdDao"/>
   </bean>
-  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.support.DefaultRrdSummaryService">
+  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.rrd.support.DefaultRrdSummaryService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="filterDao" ref="filterDao"/>
     <property name="resourceDao" ref="resourceDao"/>

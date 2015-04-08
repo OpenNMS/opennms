@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
@@ -39,6 +41,7 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.IfInfo;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
@@ -160,11 +163,10 @@ public class CollectionResourceWrapper {
                 m_iflabel = ((IfInfo) resource).getInterfaceLabel();
                 m_ifInfo.putAll(((IfInfo) resource).getAttributesMap());
             } else if (resource instanceof LatencyCollectionResource) {
-                JdbcIfInfoGetter ifInfoGetter = new JdbcIfInfoGetter();
                 String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                m_iflabel = ifInfoGetter.getIfLabel(getNodeId(), ipAddress);
+                m_iflabel = IfLabelDaoImpl.getInstance().getIfLabel(getNodeId(), addr(ipAddress));
                 if (m_iflabel != null) { // See Bug 3488
-                    m_ifInfo.putAll(ifInfoGetter.getIfInfoForNodeAndLabel(getNodeId(), m_iflabel));
+                    m_ifInfo.putAll(IfLabelDaoImpl.getInstance().getInterfaceInfoFromIfLabel(getNodeId(), m_iflabel));
                 } else {
                     LOG.info("Can't find ifLabel for latency resource {} on node {}", resource.getInstance(), getNodeId());
                 }

@@ -60,7 +60,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /**
      * A Map of IP addresses and node IDs
      */
-    private Map<InetAddress, Integer> m_knownips = new HashMap<InetAddress, Integer>();
+    protected Map<InetAddress, Integer> m_knownips = new HashMap<InetAddress, Integer>();
 
     /**
      * Default construct for the instance.

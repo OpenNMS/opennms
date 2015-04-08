@@ -68,6 +68,27 @@
       <bundle>wrap:mvn:com.atomikos/transactions-jdbc/${atomikosVersion}</bundle>
     </feature>
 
+    <feature name="batik" description="Apache :: XML Graphics :: Batik" version="1.7">
+      <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
+      <bundle>wrap:mvn:xml-apis/xml-apis/1.4.01</bundle>
+      <bundle>wrap:mvn:xml-apis/xml-apis-ext/1.3.04</bundle>
+
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-anim/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-awt-util/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-bridge/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-css/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-dom/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-ext/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-gvt/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-parser/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-script/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-svggen/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-svg-dom/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-transcoder/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-util/1.7</bundle>
+      <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/1.7</bundle>
+    </feature>
+
     <feature name="c3p0" description="c3p0" version="0.9.1.2">
       <!-- Add all possible JDBC drivers to the c3p0 import list so that it can classload them -->
       <bundle>wrap:mvn:c3p0/c3p0/0.9.1.2$Bundle-SymbolicName=c3p0&amp;Bundle-Version=0.9.1.2&amp;Import-Package=javax.management,javax.naming,javax.naming.spi,javax.sql,javax.xml.parsers,org.apache.log4j,org.postgresql,org.w3c.dom</bundle>
@@ -83,24 +104,72 @@
       <bundle>wrap:mvn:org.codehaus.castor/castor/1.1.2.1$Bundle-SymbolicName=org.codehaus.castor&amp;Bundle-Version=1.1.2.1&amp;Import-Package=javax.naming,javax.naming.directory,javax.xml.parsers,org.apache.commons.logging,org.apache.oro.text.regex,org.w3c.dom,org.xml.sax,org.xml.sax.helpers</bundle>
     </feature>
 
+    <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
+      <bundle>mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
+    </feature>
+
     <feature name="commons-codec" description="Apache :: commons-codec" version="${commonsCodecVersion}">
       <bundle>mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+    </feature>
+
+    <feature name="commons-cli" description="Apache :: commons-cli" version="1.2">
+      <bundle>mvn:commons-cli/commons-cli/1.2</bundle>
     </feature>
 
     <feature name="commons-collections" description="Apache :: commons-collections" version="${commonsCollectionsVersion}">
       <bundle>mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
 
+    <feature name="commons-configuration" description="Apache :: commons-configuration" version="${commonsConfigurationVersion}">
+      <feature>commons-beanutils</feature>
+      <feature>commons-codec</feature>
+      <feature>commons-digester</feature>
+
+      <bundle>mvn:commons-jxpath/commons-jxpath/1.3</bundle>
+      <!-- jdom has OSGi issues... use the ServiceMix bundle for it -->
+      <!-- @see https://developer.atlassian.com/docs/faq/plugin-framework-faq/using-jdom-in-osgi -->
+      <!-- @see https://techotom.wordpress.com/2014/10/21/fixing-the-default-package-is-not-permitted-by-the-import-package-syntax-with-maven-bundle-plugin/ -->
+      <!-- <bundle>wrap:mvn:jdom/jdom/1.0</bundle> -->
+      <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/1.1_4</bundle>
+      <bundle>wrap:mvn:org.apache.ant/ant/1.8.2</bundle>
+
+      <bundle>mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}</bundle>
+    </feature>
+
+    <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
+      <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
+    </feature>
+
+    <feature name="commons-exec" description="Apache :: commons-exec" version="1.2">
+      <bundle>mvn:org.apache.commons/commons-exec/1.2</bundle>
+    </feature>
+
     <feature name="commons-io" description="Apache :: commons-io" version="${commonsIoVersion}">
       <bundle>mvn:commons-io/commons-io/${commonsIoVersion}</bundle>
+    </feature>
+
+    <feature name="commons-jexl" description="Apache :: commons-jexl" version="2.1.1">
+      <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
     </feature>
 
     <feature name="commons-lang" description="Apache :: commons-lang" version="${commonsLangVersion}">
       <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
 
+    <feature name="commons-net" description="Apache :: commons-net" version="3.3">
+      <bundle>mvn:commons-net/commons-net/3.3</bundle>
+    </feature>
+
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
       <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
+    </feature>
+
+    <feature name="fop" description="Apache :: XML Graphics :: FOP" version="1.0">
+      <bundle>wrap:mvn:org.apache.xmlgraphics/fop/1.0</bundle>
+    </feature>
+
+    <feature name="guava" description="Google :: Guava" version="17.0">
+      <bundle dependency="true">mvn:com.google.guava/guava/17.0</bundle>
     </feature>
 
     <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
@@ -109,11 +178,27 @@
       <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
       <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle>
       <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.1</bundle>
-      <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final</bundle>
+      <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Export-Package=org.hibernate*;version="3.6.10"</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
     </feature>
 
-    <feature name="jaxb" description="Apache ServiceMix :: JAXB" version="2.2.0">
+    <feature name="hibernate-validator41" description="Hibernate :: Hibernate Validator" version="4.1.0.Final">
+      <!-- Declare versions for all exported packages -->
+      <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
+      <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
+    </feature>
+
+    <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
+    <feature name="jaxb" description="EclipseLink :: MOXy" version="${eclipselinkVersion}">
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/${eclipselinkVersion}</bundle>
+      <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
+
+      <!-- Old bundle configuration necessary to run with JDK 6 -->
+      <!--
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
       <bundle dependency="true">wrap:mvn:javax.xml.stream/stax-api/1.0-2</bundle>
       <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1</bundle>
@@ -123,10 +208,35 @@
       <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/2.2.0</bundle>
       <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.2/2.2.0</bundle>
       <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.2.6_1</bundle>
+      -->
+    </feature>
+
+    <feature name="jfreechart" description="JFree :: JFreeChart" version="1.0.13">
+      <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
+      <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
+    </feature>
+
+    <feature name="jersey-client" description="Jersey :: Client" version="1.18.1">
+      <feature>commons-codec</feature>
+
+      <bundle>mvn:com.sun.jersey/jersey-client/1.18.1</bundle>
+      <bundle>mvn:com.sun.jersey/jersey-core/1.18.1</bundle>
+      <bundle>mvn:com.sun.jersey.contribs/jersey-apache-client/1.18</bundle>
+      <bundle>wrap:mvn:commons-httpclient/commons-httpclient/3.1</bundle>
     </feature>
 
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="json-lib" description="json-lib" version="2.2.3">
+      <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
+      <!-- Use the jdk15 qualifier -->
+      <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3//jdk15</bundle>
+    </feature>
+
+    <feature name="org.json" description="org.json" version="20140107">
+      <bundle>wrap:mvn:org.json/json/20140107$Export-Package=org.json</bundle>
     </feature>
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
@@ -137,6 +247,27 @@
       <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
     </feature>
 
+    <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
+      <!-- spring-web is necessary for HTTP remoting -->
+      <feature version="[4.0,4.1)">spring-web</feature>
+      <feature>commons-codec</feature>
+
+      <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/1.3.2.RELEASE$Export-Package=org.springframework.ldap*;version="1.3.2"</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-core/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-config/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-ldap/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-remoting/${springSecurityVersion}</bundle>
+      <bundle>mvn:org.springframework.security/spring-security-web/${springSecurityVersion}</bundle>
+    </feature>
+
+    <feature name="spring-webflow" description="Spring :: Web Flow" version="${springWebFlowVersion}">
+      <bundle>wrap:mvn:opensymphony/ognl/2.6.11</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-binding/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
+      <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
+    </feature>
 
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
@@ -169,6 +300,7 @@
 
     <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
       <feature>atomikos</feature>
+      <feature>c3p0</feature>
       <feature>postgresql</feature>
       <bundle>mvn:org.opennms.core/org.opennms.core.db/${project.version}</bundle>
     </feature>
@@ -192,6 +324,8 @@
       <feature>dnsjava</feature>
       <feature>hibernate36</feature>
       <feature>jaxb</feature>
+      <!-- TODO: Maybe not necessary after Jesse's recent changes -->
+      <feature>spring-security32</feature>
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
@@ -261,8 +395,11 @@
     </feature>
 
     <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
+      <feature>guava</feature>
       <feature>opennms-collection-api</feature>
       <feature>opennms-dao-api</feature>
+      <!-- Parent Spring context -->
+      <feature>opennms-core-daemon</feature>
 
       <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
@@ -305,12 +442,51 @@
       <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-javamail" description="OpenNMS :: Javamail" version="${project.version}">
+      <bundle>mvn:org.opennms/opennms-javamail-api/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
       <feature>opennms-core</feature>
 
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
+      <bundle dependency="true">mvn:org.apache.mina/mina-core/${minaVersion}</bundle>
+      <bundle dependency="true">mvn:io.netty/netty/3.9.4.Final</bundle>
+      <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
+      <feature>castor</feature>
+      <feature>commons-beanutils</feature>
+      <feature>commons-io</feature>
+      <feature>fop</feature>
+      <feature>jersey-client</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-core</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-javamail</feature>
+
+      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
+
+      <bundle>mvn:org.opennms/opennms-reporting/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.availability/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.core/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.dao/${project.version}</bundle>
+      <!--
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.jasper-reports/${project.version}</bundle>
+      -->
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.repository/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-rrd-api" description="OpenNMS :: RRD API" version="${project.version}">
@@ -331,11 +507,56 @@
     </feature>
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
-      <bundle>wrap:mvn:org.json/json/20140107</bundle>
+      <feature>org.json</feature>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
+      <feature>war</feature>
+
+      <feature>commons-beanutils</feature>
+      <feature>commons-configuration</feature>
+      <feature>commons-jexl</feature>
+      <feature>fop</feature>
+      <feature>hibernate-validator41</feature>
+      <feature>jfreechart</feature>
+      <feature>jrobin</feature>
+      <feature>json-lib</feature>
+      <feature>spring-webflow</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-dao</feature>
+      <feature>opennms-provisioning</feature>
+      <feature>opennms-reporting</feature>
+
+      <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
+      <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
+      <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
+      <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>
+      <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
+      <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11</bundle>
+      <!-- <bundle>wrap:mvn:com.google.gwt/gwt-servlet/${gwtVersion}</bundle> -->
+
+      <feature>commons-cli</feature>
+      <feature>commons-exec</feature>
+      <feature>commons-net</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.system-report/${project.version}</bundle>
+
+      <feature>opennms-core-web</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
+
+      <!-- TODO: Make this JAR into a bundle -->
+      <bundle>wrap:mvn:org.opennms/rancid-api/1.0.3</bundle>
+
+      <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+
+      <feature>spring-security32</feature>
+      <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
+
+      <!-- The main webapp WAR file -->
+      <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
+    </feature>
 </features>

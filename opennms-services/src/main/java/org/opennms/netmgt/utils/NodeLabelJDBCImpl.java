@@ -42,6 +42,8 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.NodeLabel;
+import org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,9 @@ import org.slf4j.LoggerFactory;
  * address
  *
  * </PRE>
+ * 
+ * @deprecated This class is highly deprecated. You should use {@link NodeDao} directly
+ * in most cases or use {@link NodeLabelDaoImpl}.
  *
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
@@ -109,30 +114,6 @@ public class NodeLabelJDBCImpl implements NodeLabel {
     private static final String SQL_DB_RETRIEVE_NODELABEL = "SELECT nodelabel,nodelabelsource FROM node WHERE nodeid=?";
 
     /**
-     * Maximum length for node label
-     */
-    public static final int MAX_NODE_LABEL_LENGTH = 256;
-
-    /**
-     * Primary interface selection method MIN. Using this selection method the
-     * interface with the smallest numeric IP address is considered the primary
-     * interface.
-     */
-    private static final String SELECT_METHOD_MIN = "min";
-
-    /**
-     * Primary interface selection method MAX. Using this selection method the
-     * interface with the greatest numeric IP address is considered the primary
-     * interface.
-     */
-    private static final String SELECT_METHOD_MAX = "max";
-
-    /**
-     * Default primary interface select method.
-     */
-    private static final String DEFAULT_SELECT_METHOD = SELECT_METHOD_MIN;
-
-    /**
      * Node label
      */
     private final String m_nodeLabel;
@@ -142,16 +123,6 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      */
     private final NodeLabelSource m_nodeLabelSource;
 
-    /**
-     * The property string in the properties file which specifies the method to
-     * use for determining which interface is primary on a multi-interface box.
-     */
-    public static final String PROP_PRIMARY_INTERFACE_SELECT_METHOD = "org.opennms.bluebird.dp.primaryInterfaceSelectMethod";
-
-    public static NodeLabel getInstance() {
-    	return new NodeLabelJDBCImpl();
-    }
-    
     /**
      * Default constructor
      */
@@ -246,8 +217,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#load(Integer)} method call instead
      */
-    @Override
-    public NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
+    private NodeLabel retrieveLabel(int nodeID, Connection dbConnection) throws SQLException {
         String nodeLabel = null;
         String nodeLabelSource = null;
         PreparedStatement stmt = null;
@@ -337,8 +307,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Use a {@link NodeDao#update(org.opennms.netmgt.model.OnmsNode)} method call instead
      */
-    @Override
-    public void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
+    private void assignLabel(final int nodeID, NodeLabel nodeLabel, final Connection dbConnection) throws SQLException {
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class);
 
         try {
@@ -370,7 +339,6 @@ public class NodeLabelJDBCImpl implements NodeLabel {
         } finally {
             d.cleanUp();
         }
-            	
     }
 
     /**
@@ -388,7 +356,6 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    @Override
     public NodeLabel computeLabel(final int nodeID) throws SQLException {
         final Connection dbConnection = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(NodeLabelJDBCImpl.class, dbConnection);
@@ -430,8 +397,7 @@ public class NodeLabelJDBCImpl implements NodeLabel {
      * 
      * @deprecated Update this to use modern DAO methods instead of raw SQL
      */
-    @Override
-    public NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
+    private NodeLabel computeLabel(final int nodeID, final Connection dbConnection) throws SQLException {
         String netbiosName = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -469,20 +435,19 @@ public class NodeLabelJDBCImpl implements NodeLabel {
         // the method to use for determining which interface on a multi-interface
         // system is to be deemed the primary interface. The primary interface
         // will then determine what the node's label is.
-        String method = System.getProperty(NodeLabelJDBCImpl.PROP_PRIMARY_INTERFACE_SELECT_METHOD);
+        String method = System.getProperty(PROP_PRIMARY_INTERFACE_SELECT_METHOD);
         if (method == null) {
             method = DEFAULT_SELECT_METHOD;
         }
 
         if (!method.equals(SELECT_METHOD_MIN) && !method.equals(SELECT_METHOD_MAX)) {
-		LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
+            LOG.warn("Interface selection method is '{}'.  Valid values are 'min' & 'max'.  Will use default value: {}", method, DEFAULT_SELECT_METHOD);
             method = DEFAULT_SELECT_METHOD;
         }
 
         List<InetAddress> ipv4AddrList = new ArrayList<InetAddress>();
         List<String> ipHostNameList = new ArrayList<String>();
 
-               
         // Issue SQL query to retrieve all managed interface IP addresses from 'ipinterface' table
         try {
             stmt = dbConnection.prepareStatement(SQL_DB_RETRIEVE_MANAGED_INTERFACES);
