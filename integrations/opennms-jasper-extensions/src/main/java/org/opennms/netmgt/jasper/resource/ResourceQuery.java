@@ -31,12 +31,18 @@ package org.opennms.netmgt.jasper.resource;
 import java.io.File;
 import java.util.Arrays;
 
+import org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil;
+
 public class ResourceQuery {
     private String m_rrdDir;
     private String m_node;
     private String m_resourceName;
+    private String m_foreignSource;
+    private String m_foreignId;
     private String[] m_filters;
     private String[] m_strProperties;
+
+    private JRobinDirectoryUtil m_dirUtil = new JRobinDirectoryUtil();
 
     public ResourceQuery() {
     }
@@ -65,9 +71,26 @@ public class ResourceQuery {
     public void setFilters(String[] filters) {
         m_filters = Arrays.copyOf(filters, filters.length);
     }
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+    }
+    public String getForeignId() {
+        return m_foreignId;
+    }
+    public void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+    }
     
     public String constructBasePath() {
-        return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
+        if (!m_dirUtil.isStoreByForeignSource()) {
+            return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
+        }
+        else {
+            return m_dirUtil.getNodeLevelResourceDirectory(getRrdDir(), getNodeId(), getForeignSource(), getForeignId()) + File.separator + getResourceName();
+        }
     }
 
     public String[] getStringProperties() {

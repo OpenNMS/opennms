@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly170_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly170_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly170_SNMP_RESOURCE;
@@ -56,16 +58,14 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly189_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly189_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.FireFly189_SNMP_RESOURCE;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms007NetworkBuilder;
 
@@ -175,35 +175,21 @@ public class Nms007Test extends LinkdTestBuilder {
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
                 
-        assertEquals(10,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
-        final int start = getStartPoint(links);
-        for (final DataLinkInterface datalinkinterface: links) {
-            int linkid = datalinkinterface.getId().intValue();
-            if (linkid == start) 
-                checkLink(fireFly171, fireFly170, 514, 507, datalinkinterface);
-            else if (linkid == start +1 )
-                checkLink(fireFly175, fireFly170, 517, 517, datalinkinterface);
-            else if (linkid == start +2 )
-                checkLink(fireFly189, fireFly170, 517, 517, datalinkinterface);
-            else if (linkid == start +3 )
-                checkLink(fireFly172, fireFly171, 517, 517, datalinkinterface);
-            else if (linkid == start +4 )
-                checkLink(fireFly173, fireFly171, 517, 517, datalinkinterface);
-            else if (linkid == start +5 )
-                checkLink(fireFly173, fireFly172, 517, 517, datalinkinterface);
-            else if (linkid == start +6 )
-                checkLink(fireFly174, fireFly173, 507, 507, datalinkinterface);
-            else if (linkid == start +7 )
-                checkLink(fireFly176, fireFly175, 507, 514, datalinkinterface);
-            else if (linkid == start +8 )
-                checkLink(fireFly189, fireFly175, 517, 517, datalinkinterface);
-            else if (linkid == start +9 )
-                checkLink(fireFly177, fireFly176, 517, 517, datalinkinterface);
-            else 
-                checkLink(fireFly177, fireFly177, -1, -1, datalinkinterface);
+        assertEquals(10, links.size());
 
-        }
+        checkLinks(links,
+            new DataLinkTestMatcher(fireFly171, fireFly170, 514, 507, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly175, fireFly170, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly189, fireFly170, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly172, fireFly171, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly173, fireFly171, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly173, fireFly172, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly174, fireFly173, 507, 507, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly176, fireFly175, 507, 514, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly189, fireFly175, 517, 517, DiscoveryProtocol.ospf),
+            new DataLinkTestMatcher(fireFly177, fireFly176, 517, 517, DiscoveryProtocol.ospf)
+        );
     }
 
 }

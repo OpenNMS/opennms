@@ -58,7 +58,7 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
      * Tests if getting the current snmp configuration for a specific ip address works.
      */
     @Test
-    public void testGetIpInformation() {
+    public void testGetIpInformation() throws Exception {
         // v2c
         new Select(findElementByName("version")).selectByVisibleText("v2c");
         enterText(By.name("ipAddress"), "1.1.1.1");
@@ -83,6 +83,9 @@ public class AdminSnmpConfigForIpPageTest extends OpenNMSSeleniumTestCase {
 
         enterText(By.name("ipAddress"), "1.2.3.4");
         findElementByName("getConfig").click();
+
+        // give the page time to rearrange the DOM before checking things
+        Thread.sleep(1000);
 
         assertEquals("", findElementByName("ipAddress").getAttribute("value"));
         assertEquals("v3", findElementByName("version").getAttribute("value"));
