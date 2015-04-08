@@ -157,6 +157,27 @@ public class BSFMonitor extends AbstractServiceMonitor {
         m_bsfManager.terminate();
     }
     
+    private void undeclareBean(String beanName) {
+        try {
+            m_bsfManager.undeclareBean(beanName);
+        } catch (BSFException e) {
+            LOG.warn("Unable to undeclareBean '{}'", beanName);
+        }
+    }
+
+    private void undeclareBeans(Map<String, Object> map) {
+        undeclareBean("map");
+        undeclareBean("ip_addr");
+        undeclareBean("node_id");
+        undeclareBean("node_label");
+        undeclareBean("svc_name");
+        undeclareBean("bsf_monitor");
+        undeclareBean("results");
+        undeclareBean("times");
+        for (final Entry<String, Object> entry : map.entrySet()) {
+            undeclareBean(entry.getKey());
+        }
+    }
     private synchronized PollStatus executeScript(MonitoredService svc, Map<String, Object> map) {
         PollStatus pollStatus = PollStatus.unavailable();
         String fileName = ParameterMap.getKeyedString(map,"file-name", null);
@@ -257,25 +278,12 @@ public class BSFMonitor extends AbstractServiceMonitor {
             pollStatus = PollStatus.unavailable(e.getMessage());
             LOG.warn("BSFMonitor poll for service '{}' failed with unexpected throwable: {}", svc.getSvcName(), e.getMessage(), e);
         } finally { 
-            try{
                 //remove the beans we've declared so the manager is ready for the next poll
-                m_bsfManager.undeclareBean("map");
-                m_bsfManager.undeclareBean("ip_addr");
-                m_bsfManager.undeclareBean("node_id");
-                m_bsfManager.undeclareBean("node_label");
-                m_bsfManager.undeclareBean("svc_name");
-                m_bsfManager.undeclareBean("bsf_monitor");
-                m_bsfManager.undeclareBean("results");
-                m_bsfManager.undeclareBean("times");
-                for (final Entry<String, Object> entry : map.entrySet()) {
-                    m_bsfManager.undeclareBean(entry.getKey());
-                }
-            }catch(BSFException e) {
-                LOG.warn("BSFMonitor poll for service '{}' unable to undeclare a bean.", svc.getSvcName(), e);
-            }
+                undeclareBeans(map);
         }
         return pollStatus;
     }
+    
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
