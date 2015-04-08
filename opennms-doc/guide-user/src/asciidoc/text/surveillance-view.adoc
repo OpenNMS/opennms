@@ -21,13 +21,21 @@ The matrix-type of display allows a significantly higher aggregation than the si
 In addition, the surveillance view shows nodes rather than services - an important tidbit of information when you look at categories.
 At a glance, you want to know how many of my servers have an issue rather than how many services in this category have an issue.
 
-.Example of a configured _Surveillance view_
+.Example of a configured _Surveillance View_
 image::surveillance-view/01_surveillance-view.png[]
 
-This _Surveillance View_ model is also the foundation of the <<user-guide-dashboard, Dashboard View>>.
-_Surveillance Views_ are defined in the `surveillance-views.xml`.
+This _Surveillance View_ model also builds the foundation of the <<user-guide-dashboard, Dashboard View>>.
+
 
 ==== Default Surveillance View Configuration
+
+_Surveillance Views_ are defined in the `surveillance-views.xml` file.
+This file resides in the _OpenNMS_ `etc` directory.
+
+NOTE: This file can be modified in a text editor and is reread every time the _Surveillance View_ page is loaded.
+Thus, changes to this file do not require _OpenNMS_ to be restarted.
+
+The default configuration looks like this:
 
 [source, xml]
 ----
@@ -67,10 +75,25 @@ _Surveillance Views_ are defined in the `surveillance-views.xml`.
 ----
 WARNING: Please note, that the old `report-category` attribute is deprecated and is no longer supported.
 
-This configuration can also be modified using the _Surveillance View Configurations_ editor on the _OpenNMS_ admin page.
+=== Configuring Surveillance Views
+The _Surveillance View_ configuration can also be modified using the _Surveillance View Configurations_ editor on the _OpenNMS_ _Admin_ page.
 
 .The _Surveillance View Configurations_ UI
 image::surveillance-view/02_surveillance-view-config-ui.png[]
+
+This page gives an overview of the configured _Surveillance Views_ and allows the user to edit, remove or even preview the defined _Surveillance View_.
+Furthermore, the default _Surveillance View_ can be selected using the checkbox in the _DEFAULT_ column.
+
+When editing a _Surveillance View_ the user has to define the view's title and the time in seconds between successive refreshes.
+On the left side of this dialog the defined rows, on the right side the defined columns are listed.
+Beside adding new entries an user can modify or delete existing entries.
+Furthermore, the position of an entry can be modified using the up/down buttons.
+
+.Editing a _Surveillance View_
+image::surveillance-view/03_surveillance-view-config-ui-edit.png[]
+
+Editing row or column definitions require to choose an unique label for this entry and at least one _OpenNMS_ category.
+When finished you can hit the _Save_ button to persist your modified configuration or _Cancel_ to close this dialog.
 
 === Categorizing Nodes
 

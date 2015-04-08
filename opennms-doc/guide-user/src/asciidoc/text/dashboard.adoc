@@ -41,7 +41,7 @@ The _Surveillance View_ has multiple functions.
 You can select columns, rows, single cells and of course all entries in a _Surveillance View_.
 Please refer to the <<user-guide-surveillance-view, Surveillance View Section>> for details on how to configure _Surveillance Views_.
 
-.Information displayed from all nodes matching the surveillance view
+.The _Surveillance View_ forms the basis for the _Dashboard_ page.
 image::dashboard/02_dashboard-surveillance-view.png[]
 
 [[user-guide-dashboard-alarms]]
@@ -60,7 +60,7 @@ image::dashboard/03_dashboard-alarms.png[]
 4. _First Time_: Time for the first occurrence of the _Alarm_.
 5. _Last Time_: Time for the last occurrence of the _Alarm_.
 
-The _Alarms_ component shows the 5 latest _Alarms_ and allows with pagination to navigate to older _Alarms_.
+The _Alarms_ component shows the most recent _Alarms_ and allows the user to scroll through the last 100 _Alarms_.
 
 [[user-guide-dashboard-notifications]]
 ==== Notifications
@@ -78,7 +78,7 @@ image::dashboard/04_dashboard-notifications.png[]
 4. _Responder_: User name who acknowledged the notification
 5. _Response Time_: Time when the user acknowledged the notification
 
-The _Notifications_ component shows the last 8 unacknowledged notifications and allows with pagination to navigate to older unacknowledged notifications.
+The _Notifications_ component shows the most recent unacknowledged notifications and allows the user to scroll through the last 100 _Notifications_.
 
 [[user-guide-dashboard-node-status]]
 ==== Node Status
@@ -92,8 +92,6 @@ image::dashboard/05_dashboard-outages.png[]
 1. _Node_: Label of the monitored node with ongoing outages.
 2. _Current Outages_: Number of services on the node with outages and total number of monitored services, e.g. with the natural meaning of _"3 of 3 services are affected"_.
 3. _24 Hour Availability_: Availability of all services provided by the node calculated by the last 24 hours.
-
-The _Node Status_ component shows the last 5 ongoing _Outages_ and allows with pagination to navigate to older _Outages_.
 
 [[user-guide-dashboard-resource-graph-viewer]]
 ==== Resource Graph Viewer
@@ -110,15 +108,16 @@ It allows to navigate sequentially through resource graphs provided by nodes fil
 
 The _Surveillance View_ component allows to model multiple views for different monitoring contexts.
 It gives the possibility to create special view as example for network operators or server operators.
-The _Dashboard_ shows only *_one_* link:http://www.opennms.org/wiki/Dashboard[configured _Surveillance View_].
+The _Dashboard_ shows only *_one_* configured <<user-guide-surveillance-view, _Surveillance View_>>.
 To give different users the possibility using their _Surveillance View_ fitting there requirements it is possible to map a logged in user to a given _Surveillance View_ used in the _Dashboard_.
 
-The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[User Restriction Filter].
+The selected nodes from the _Surveillance View_ are also aware of link:http://www.opennms.org/wiki/User_Restriction_Filters[_User Restriction Filter_].
 If you have a group of users, which should see just a subset of nodes the _Surveillance View_ will filter nodes which are not related to the assigned user group.
 
-Dashboard is designed to focus, and therefore also restrict, a user's view to devices of their interest. To do this, a new role was added that can be assigned to a user that restricts them to viewing only the dashboard if that is intended.
+The _Dashboard_ is designed to focus, and therefore also restrict, a user's view to devices of their interest.
+To do this, a new role was added that can be assigned to a user that restricts them to viewing only the _Dashboard_ if that is intended.
 
-==== Example configuration
+==== Using the _Dashboard_ role
 
 The following example illustrates how this _Dashboard_ role can be used.
 For instance the user `drv4doe` is assigned the dashboard role.
@@ -132,7 +131,7 @@ image::dashboard/07_dashboard-add-user.png[]
 
 ===== Step 2: Change magic-users.properties
 Now, edit the magic-users.properties file in the `/opt/opennms/etc` directory and set `drv4doe` as a dashboard user.
-[source, java-properties]
+[source, properties]
 ----
 role.dashboard.name=OpenNMS Dashboard User
 role.dashboard.users=drv4doe
@@ -195,4 +194,119 @@ Edit the `$OPENNMS_HOME/etc/surveilliance-view.xml` file to add a definition for
 ----
 
 This configuration and proper assignment of node categories will produce a default _Dashboard_ for all users, other than `drv4doe`.
+
+TIP: You can hide the upper navigation on any page by specifying `?quiet=true;` adding it to the end of the _OpenNMS_ URL.
+This is very handy when using the dashboard on a large monitor or tv screen for office wide viewing.
+
 However, when logging in as `drv4doe`, the user is taking directly to the _Dashboard_ page and is presented with a _Dashboard_ based on the custom _Surveillance View_ definition.
+
+NOTE: The `drv4doe` user is not allowed to navigate to URLs other than the `dashboard.jsp` URL.
+Doing so will result in an _Access Denied_ error.
+
+==== Anonymous dashboards
+
+You can modify the configuration files for the security framework to give you access to one or more dashboards without logging in.
+At the end you'll be able to point a browser at a special URL like `http://.../opennms/dashboard1` or `http://.../opennms/dashboard2` and see a dashboard without any authentication.
+First, configure surveillance views and create dashboard users as above.
+For example, make two dashboards and two users called `dashboard1` and `dashboard2`.
+Test that you can log in as each of the new users and see the correct dashboard.
+Now create some aliases you can use to distinguish between dashboards.
+In `/opt/opennms/jetty-webapps/opennms/WEB-INF`, edit `web.xml`.
+Just before the first `<servlet-mapping>` tag, add the following servlet entries:
+[source, xml]
+----
+  <servlet>
+       <servlet-name>dashboard1</servlet-name>
+       <jsp-file>/dashboard.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+       <servlet-name>dashboard2</servlet-name>
+       <jsp-file>/dashboard.jsp</jsp-file>
+  </servlet>
+----
+Just before the first `<error-page>` tag, add the following servlet-mapping entries:
+[source, xml]
+----
+  <servlet-mapping>
+       <servlet-name>dashboard1</servlet-name>
+       <url-pattern>/dashboard1</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+       <servlet-name>dashboard2</servlet-name>
+       <url-pattern>/dashboard2</url-pattern>
+  </servlet-mapping>
+----
+After the last `<filter-mapping>` tag, add the following filter-mapping entries:
+[source, xml]
+----
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/dashboard.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/dashboard1</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/dashboard2</url-pattern>
+  </filter-mapping>
+----
+Next edit `applicationContext-acegi-security.xml` to enable anonymous authentication for the `/dashboard1` and `/dashboard2` aliases.
+Near the top of the file, find `<bean id="filterChainProxy" ...>`.
+Below the entry for `/rss.jsp*`, add an entry for each of the dashboard aliases:
+[source, xml]
+----
+  <bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">
+    <property name="filterInvocationDefinitionSource">
+      <value>
+        CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+        PATTERN_TYPE_APACHE_ANT
+        /rss.jsp*=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor
+        /dashboard1*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash1AnonymousProcessingFilter,filterInvocationInterceptor
+        /dashboard2*=httpSessionContextIntegrationFilter,logoutFilter,securityContextHolderAwareRequestFilter,dash2AnonymousProcessingFilter,filterInvocationInterceptor
+        /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,basicProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor
+
+...
+----
+About halfway through the file, look for `<bean id="filterInvocationInterceptor" ...>`.
+Below the entry for `/dashboard.jsp`, add an entry for each of the aliases:
+[source, xml]
+----
+  <bean id="filterInvocationInterceptor" class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+
+...
+
+        /frontpage.htm=ROLE_USER,ROLE_DASHBOARD
+        /dashboard.jsp=ROLE_USER,ROLE_DASHBOARD
+        /dashboard1=ROLE_USER,ROLE_DASHBOARD
+        /dashboard2=ROLE_USER,ROLE_DASHBOARD
+        /gwt.js=ROLE_USER,ROLE_DASHBOARD
+
+...
+----
+Finally, near the bottom of the page, add a new instance of `AnonymousProcessingFilter` for each alias.
+[source, xml]
+----
+  <!-- Set the anonymous username to dashboard1 so the dashboard page
+       can match it to a surveillance view of the same name. -->
+  <bean id="dash1AnonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
+    <property name="key"><value>foobar</value></property>
+    <property name="userAttribute"><value>dashboard1,ROLE_DASHBOARD</value></property>
+  </bean>
+
+  <bean id="dash2AnonymousProcessingFilter" class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
+    <property name="key"><value>foobar</value></property>
+    <property name="userAttribute"><value>dashboard2,ROLE_DASHBOARD</value></property>
+  </bean>
+----
+Restart OpenNMS and you should bring up a dashboard at `http://.../opennms/dashboard1` without logging in.
+
+WARNING: There's no way to switch dashboards without closing the browser (or deleting the JSESSIONID session cookie).
+
+WARNING: If you accidentally click a link that requires full user privileges (e.g. Node List), you'll be given a login form.
+Once you get to the login form, there's no going back to the dashboard without restarting the browser.
+If this problem bothers you, you can set `ROLE_USER` in addition to `ROLE_DASHBOARD` in your `userAttribute` property.
+However this will give full user access to anonymous browsers.
