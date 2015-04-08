@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
 
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.LdapDetector;
 import org.springframework.beans.BeansException;
@@ -50,38 +55,39 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@Ignore
 public class LdapDetectorTest implements ApplicationContextAware{
-    
-//    private LdapDetector m_detector;
-//    private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
+
+    private LdapDetector m_detector;
+    private static String DEFAULT_LOCAL_SERVER_IP = "192.168.1.103";
     /*
      * Setup a local Ldap server and test against that server. Then change the IP address to the server
      */
-    
-//    @Before
-//    public void setUp() {
-//        MockLogAppender.setupLogging();
-//        m_detector = getDetector(LdapDetector.class);
-//        m_detector.init();
-//    }
-    
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+        m_detector = getDetector(LdapDetector.class);
+        m_detector.init();
+    }
+
     private ApplicationContext m_applicationContext;
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testMyDetector() throws UnknownHostException {
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
     }
-//    
-//    @Test(timeout=90000)
-//    public void testDetectorFailWrongPort() throws UnknownHostException {
-//        m_detector.setPort(1200);
-//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
-//    }
-//    
-//    @Test(timeout=90000)
-//    public void testDetectorFailNotALdapServer() throws UnknownHostException {
-//        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101")));
-//    }
+
+    @Test(timeout=20000)
+    public void testDetectorFailWrongPort() throws UnknownHostException {
+        m_detector.setPort(1200);
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(DEFAULT_LOCAL_SERVER_IP)));
+    }
+
+    @Test(timeout=20000)
+    public void testDetectorFailNotALdapServer() throws UnknownHostException {
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.101")));
+    }
 
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
@@ -90,8 +96,7 @@ public class LdapDetectorTest implements ApplicationContextAware{
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
-    
-    @SuppressWarnings("unused")
+
     private LdapDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);

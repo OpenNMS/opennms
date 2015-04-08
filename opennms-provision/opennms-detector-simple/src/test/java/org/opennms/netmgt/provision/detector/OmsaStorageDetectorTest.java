@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,10 +48,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-		"classpath:/META-INF/opennms/detectors.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
 public class OmsaStorageDetectorTest implements InitializingBean {
     static final String TEST_IP_ADDRESS = "192.0.2.1";
 
@@ -72,12 +71,14 @@ public class OmsaStorageDetectorTest implements InitializingBean {
         m_detector.setVirtualDiskNumber("1");
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=OmsaStorageDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/omsaStorageDetector.properties")
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setVirtualDiskNumber("2");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
