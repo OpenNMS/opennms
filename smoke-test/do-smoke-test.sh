@@ -91,7 +91,7 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
-	/sbin/service opennms stop
+	"$OPENNMS_HOME"/bin/opennms stop
 	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
 
 	do_log "clean_yum"
@@ -151,7 +151,7 @@ start_opennms() {
 	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
 
 	do_log "opennms start"
-	/sbin/service opennms restart
+	"$OPENNMS_HOME"/bin/opennms restart
 	RETVAL=$?
 
 	if [ $? -gt 0 ]; then
