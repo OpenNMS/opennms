@@ -32,13 +32,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.opennms.netmgt.jasper.jrobin.RrdXportCmd.XPort;
 
-public class JRobinDataSource implements JRRewindableDataSource {
+public class JRobinDataSource implements JRDataSource {
 
     private int m_currentRow = -1;
     private long[] m_timestamps;
@@ -49,7 +49,6 @@ public class JRobinDataSource implements JRRewindableDataSource {
         m_step = step;
         m_timestamps = Arrays.copyOf(timestamps, timestamps.length);
         m_xports = xports;
-        moveFirst();
     }
 
     @Override
@@ -89,8 +88,4 @@ public class JRobinDataSource implements JRRewindableDataSource {
         return m_currentRow < m_timestamps.length;
     }
 
-    @Override
-    public void moveFirst() {
-        m_currentRow = -1;
-    }
 }
