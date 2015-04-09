@@ -13,6 +13,7 @@ if [ -z "$MATCH_RPM" ]; then
 fi
 OPENNMS_HOME=/opt/opennms
 SOURCEDIR="$ME/.."
+JAVA_HOME=`"$SOURCEDIR"/bin/javahome.pl`
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
@@ -151,8 +152,8 @@ configure_opennms() {
 		done
 	popd
 
-	do_log "runjava -s"
-	"$OPENNMS_HOME/bin/runjava" -s || die "'runjava -s' failed."
+	do_log "runjava -S '$JAVA_HOME'"
+	"$OPENNMS_HOME/bin/runjava" -S "$JAVA_HOME" || die "'runjava -S $JAVA_HOME' failed."
 
 	do_log "install -dis"
 	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
