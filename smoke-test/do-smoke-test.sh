@@ -152,8 +152,8 @@ configure_opennms() {
 		done
 	popd
 
-	do_log "runjava -S '$JAVA_HOME'"
-	"$OPENNMS_HOME/bin/runjava" -S "$JAVA_HOME" || die "'runjava -S $JAVA_HOME' failed."
+	do_log "runjava -S '$JAVA_HOME/bin/java'"
+	"$OPENNMS_HOME/bin/runjava" -S "$JAVA_HOME/bin/java" || die "'runjava -S $JAVA_HOME/bin/java' failed."
 
 	do_log "install -dis"
 	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
