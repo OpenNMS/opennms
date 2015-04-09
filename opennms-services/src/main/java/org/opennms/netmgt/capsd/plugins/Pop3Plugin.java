@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -112,7 +112,7 @@ public final class Pop3Plugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                LOG.debug("Pop3Plugin: connected to host: {} on port: {}", port, host);
+                LOG.debug("Pop3Plugin: connected to host: {} on port: {}", host, port);
 
                 // Allocate a line reader
                 //
@@ -142,7 +142,7 @@ public final class Pop3Plugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug("Pop3Plugin: Connection refused to {}: {}", port, InetAddressUtils.str(host));
+                LOG.debug("Pop3Plugin: Connection refused to {}: {}", InetAddressUtils.str(host), port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
@@ -153,7 +153,7 @@ public final class Pop3Plugin extends AbstractPlugin {
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // expected exception
-                LOG.debug("Pop3Plugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
+                LOG.debug("Pop3Plugin: did not connect to host within timeout: {} attempt: {}", timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
                 isAServer = false;
