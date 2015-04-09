@@ -67,11 +67,4 @@ public class HWForecastTest {
             assertEquals(1.0d, table.get(i, "HWUpr"), 0.0001);
         }
     }
-
-    @Test
-    public void canCheckForecastSupport() throws Exception {
-        HWForecast.checkForecastSupport();
-
-        // No exception should be thrown
-    }
 }
