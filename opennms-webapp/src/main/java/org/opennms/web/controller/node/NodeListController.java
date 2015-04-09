@@ -28,9 +28,9 @@
 
 package org.opennms.web.controller.node;
 
-import org.opennms.web.command.NodeListCommand;
 import org.opennms.web.svclayer.NodeListService;
-import org.opennms.web.svclayer.support.NodeListModel;
+import org.opennms.web.svclayer.model.NodeListCommand;
+import org.opennms.web.svclayer.model.NodeListModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;

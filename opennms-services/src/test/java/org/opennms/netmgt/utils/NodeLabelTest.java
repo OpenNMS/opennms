@@ -28,13 +28,22 @@
 
 package org.opennms.netmgt.utils;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Properties;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -48,25 +57,45 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-
-        "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class NodeLabelTest implements InitializingBean {
 
-    // TODO: Add NodeLabelDaoImpl to the Spring context and test it too
-    //@Autowired
-    //private NodeLabel nodeLabelDaoImpl;
+    private final NodeLabel nodeLabelJdbcImpl = new NodeLabelJDBCImpl();
+
+    @Autowired
+    private NodeLabel nodeLabelDaoImpl;
+
+    @Autowired
+    private DatabasePopulator m_populator;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
+    
+    @Before public void createDb() {
+        Properties props = new Properties();
+        props.setProperty("log4j.logger.org.hibernate", "INFO");
+        props.setProperty("log4j.logger.org.springframework", "INFO");
+        props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
+        MockLogAppender.setupLogging(props);
+
+        m_populator.populateDatabase();
+    }
 
     @Test
     public final void test() throws Exception {
-        // Make sure that we can run this method without throwing exceptions
-        NodeLabelJDBCImpl.getInstance().computeLabel(1);
+        NodeLabel jdbcLabelComputed = nodeLabelJdbcImpl.computeLabel(1);
+        String jdbcLabel = nodeLabelJdbcImpl.retrieveLabel(1).toString();
+        nodeLabelJdbcImpl.assignLabel(1, jdbcLabelComputed);
+
+        NodeLabel daoLabelComputed = nodeLabelDaoImpl.computeLabel(1);
+        String daoLabel = nodeLabelDaoImpl.retrieveLabel(1).toString();
+        nodeLabelDaoImpl.assignLabel(1, jdbcLabelComputed);
+
+        assertEquals(jdbcLabelComputed.toString(), daoLabelComputed.toString());
     }
 }

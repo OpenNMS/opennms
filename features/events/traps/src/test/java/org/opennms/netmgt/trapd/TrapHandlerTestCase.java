@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -71,14 +72,16 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-trapDaemon.xml",
         "classpath:/org/opennms/netmgt/trapd/applicationContext-trapDaemonTest.xml"}
 )
+@JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
 public class TrapHandlerTestCase implements InitializingBean {
 
@@ -391,7 +394,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testNodeGainedModifiesIpMgr() throws Exception {
-        long nodeId = 2;
+        long nodeId = 1;
         m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
@@ -415,7 +418,7 @@ public class TrapHandlerTestCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
-        long nodeId = 2;
+        long nodeId = 1;
         m_processorFactory.setNewSuspect(true);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);

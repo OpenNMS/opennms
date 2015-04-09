@@ -36,7 +36,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.api.NodeLabel;
+import org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -44,8 +47,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.netmgt.utils.NodeLabel;
-import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.servlet.MissingParameterException;
@@ -107,13 +108,14 @@ public class NodeLabelChangeServlet extends HttpServlet {
         try {
             final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
             final OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
-            NodeLabel oldLabel = new NodeLabelJDBCImpl(node.getLabel(), node.getLabelSource());
+            NodeLabel nodeLabel = BeanUtils.getBean("daoContext", "nodeLabel", NodeLabel.class);
+            NodeLabel oldLabel = new NodeLabelDaoImpl(node.getLabel(), node.getLabelSource());
             NodeLabel newLabel = null;
 
             if (labelType.equals("auto")) {
-                newLabel = NodeLabelJDBCImpl.getInstance().computeLabel(nodeId);
+                newLabel = nodeLabel.computeLabel(nodeId);
             } else if (labelType.equals("user")) {
-                newLabel = new NodeLabelJDBCImpl(userLabel, NodeLabelSource.USER);
+                newLabel = new NodeLabelDaoImpl(userLabel, NodeLabelSource.USER);
             } else {
                 throw new ServletException("Unexpected labeltype value: " + labelType);
             }
@@ -140,7 +142,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
             if (managedByProvisiond) {
                 response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + node.getForeignSource()));
             } else {
-                NodeLabelJDBCImpl.getInstance().assignLabel(nodeId, newLabel);
+                nodeLabel.assignLabel(nodeId, newLabel);
                 response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
             }
         } catch (SQLException e) {

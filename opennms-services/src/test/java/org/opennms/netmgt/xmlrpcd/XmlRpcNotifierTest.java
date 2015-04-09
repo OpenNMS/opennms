@@ -100,6 +100,7 @@ public class XmlRpcNotifierTest  {
         remoteServer.setUrl("http://localhost:" + port);
         
         m_notifier = new XmlRpcNotifier(new XmlrpcServer[] { remoteServer }, 1, 1500, false, "");
+        //m_notifier.setNodeLabel(new NodeLabelJDBCImpl());
 
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");

@@ -41,7 +41,7 @@
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
         org.opennms.web.element.*,
-        org.opennms.netmgt.poller.PathOutageManagerDaoImpl,
+        org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.events.api.EventConstants,
         org.opennms.netmgt.xml.event.Event,

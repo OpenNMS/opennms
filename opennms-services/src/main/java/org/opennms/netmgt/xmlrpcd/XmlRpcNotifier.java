@@ -41,17 +41,15 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.utils.NodeLabelDaoImpl;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -160,8 +158,8 @@ public final class XmlRpcNotifier {
      */
     private String m_localServer;
     
-    @Autowired
-    private NodeLabelDaoImpl m_nodeLabel;
+    //@Autowired
+    //private NodeLabel m_nodeLabel;
     
     //private ExternalEventRecipient m_recipient;
 
@@ -536,7 +534,7 @@ public final class XmlRpcNotifier {
     	int id = (int)event.getNodeid().intValue();
     	String label = "";
     	try {
-			label = NodeLabelJDBCImpl.getInstance().retrieveLabel(id).getLabel();
+			label = new NodeLabelJDBCImpl().retrieveLabel(id).getLabel();
 		} catch (SQLException e) {
 			LOG.error("Couldn't retrieve NodeLabel: {}" + e.getMessage(), e);
 		}
@@ -666,4 +664,12 @@ public final class XmlRpcNotifier {
             m_xmlrpcClient = null;
         }
     }
+    
+    /**
+     * Used only during testing.
+     * @param nodeLabel
+     */
+    //void setNodeLabel(NodeLabel nodeLabel) {
+    //    m_nodeLabel = nodeLabel;
+    //}
 }

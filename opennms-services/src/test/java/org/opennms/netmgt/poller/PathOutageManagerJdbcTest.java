@@ -50,6 +50,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockNetwork;
