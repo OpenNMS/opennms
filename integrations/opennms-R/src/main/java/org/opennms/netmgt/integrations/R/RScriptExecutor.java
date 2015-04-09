@@ -48,6 +48,8 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.input.CharSequenceInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableTable;
@@ -73,6 +75,8 @@ import freemarker.template.TemplateExceptionHandler;
  * @author jwhite
  */
 public class RScriptExecutor {
+    private static final Logger LOG = LoggerFactory.getLogger(RScriptExecutor.class);
+
     /**
      * The Rscript binary used to execute the .R scripts.
      */
@@ -169,8 +173,9 @@ public class RScriptExecutor {
         try {
             executor.execute(cmdLine);
         } catch (IOException e) {
-            throw new RScriptException("An error occured while executing Rscript, or the requested script.",
-                    inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), e);
+            LOG.error("Failed to invoke Rscript. Stdin: {} Stderr: {}, Stdout: {}",
+                    inputTableAsCsv, stderr, stdout);
+            throw new RScriptException("An error occured while executing Rscript, or the requested script.", e);
         }
 
         // Parse and return the results
@@ -178,8 +183,9 @@ public class RScriptExecutor {
             ImmutableTable<Integer, String, Double> table = fromCsv(stdout.toString());
             return new RScriptOutput(table);
         } catch (Throwable t) {
-            throw new RScriptException("Failed to parse the script's output.",
-                    inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), t);
+            LOG.error("Failed to parse the scripts output. Stdin: {} Stderr: {}, Stdout: {}",
+                    inputTableAsCsv, stderr, stdout);
+            throw new RScriptException("Failed to parse the script's output.", t);
         }
     }
 
