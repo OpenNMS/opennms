@@ -90,8 +90,8 @@ reset_database() {
 	banner "Resetting OpenNMS Database"
 
 	# easy way to make sure no one is holding on to any pg sockets
-	do_log "/sbin/service postgresql restart"
-	/sbin/service postgresql restart
+	do_log "service postgresql restart"
+	service postgresql restart
 
 	sleep 5
 
@@ -103,8 +103,10 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
-	/sbin/service "opennms" stop
-	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
+	"$OPENNMS_HOME"/bin/opennms stop
+
+	do_log "opennms kill"
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
@@ -163,7 +165,7 @@ start_opennms() {
 	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
 
 	do_log "opennms restart"
-	/sbin/service "opennms" restart
+	"$OPENNMS_HOME"/bin/opennms restart
 	RETVAL=$?
 
 	if [ $? -gt 0 ]; then
@@ -214,7 +216,7 @@ stop_opennms() {
 	banner "Stopping OpenNMS"
 
 	do_log "opennms kill"
-	/etc/init.d/"opennms" kill
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	#do_log "yum clean all"
 	#yum clean all || :

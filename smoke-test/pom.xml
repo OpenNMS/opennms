@@ -9,7 +9,7 @@
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.44.0</seleniumVersion>
+    <seleniumVersion>2.45.0</seleniumVersion>
   </properties>
   <dependencies>
     <dependency>
