@@ -32,10 +32,9 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTable;
 import org.opennms.netmgt.linkd.snmp.Dot1dStpGroup;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -58,7 +59,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public final class SnmpVlanCollection implements ReadyRunnable {
+public final class SnmpVlanCollection implements ReadyRunnable, Comparable<SnmpVlanCollection> {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpVlanCollection.class);
     private String m_packageName;
 
@@ -399,5 +400,22 @@ public final class SnmpVlanCollection implements ReadyRunnable {
 
     public String getPackageName() {
         return m_packageName;
+    }
+
+    @Override
+    public int compareTo(final SnmpVlanCollection o) {
+        return new CompareToBuilder()
+            .append(m_packageName, o.m_packageName)
+            .append(m_agentConfig, o.m_agentConfig)
+            .append(m_address, o.m_address)
+            .append(m_dot1dBase, o.m_dot1dBase)
+            .append(m_dot1dBaseTable, o.m_dot1dBaseTable)
+            .append(m_dot1dStp, o.m_dot1dStp)
+            .append(m_dot1dStpTable, o.m_dot1dStpTable)
+            .append(m_dot1dTpFdbTable, o.m_dot1dTpFdbTable)
+            .append(m_dot1qTpFdbTable, o.m_dot1qTpFdbTable)
+            .append(m_collectStp, o.m_collectStp)
+            .append(m_collectBridge, o.m_collectBridge)
+            .toComparison();
     }
 }

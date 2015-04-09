@@ -66,7 +66,7 @@ import org.opennms.netmgt.xml.bind.StatusTypeXmlAdapter;
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DataLinkInterface implements Serializable, Comparable<DataLinkInterface> {
-    private static final long serialVersionUID = -3336726327359373609L;
+    private static final long serialVersionUID = 2497320585094892071L;
 
     public static enum DiscoveryProtocol {
         bridge,
@@ -263,5 +263,11 @@ public class DataLinkInterface implements Serializable, Comparable<DataLinkInter
         return new CompareToBuilder().append(getId(), o.getId()).append(getNode(), o.getNode()).append(getIfIndex(), o.getIfIndex()).append(
             getSource(), o.getSource()).append(getNodeParentId(), o.getNodeParentId()).append(getParentIfIndex(), o.getParentIfIndex()).append(
             getStatus(), o.getStatus()).append(getLastPollTime(), o.getLastPollTime()).append(getLinkTypeId(), o.getLinkTypeId()).toComparison();
+    }
+
+    @Override
+    public String toString() {
+        return "DataLinkInterface [id=" + m_id + ", nodeId=" + m_node.getId() + ", ifIndex=" + m_ifIndex + ", nodeParentId=" + m_nodeParentId + ", parentIfIndex=" + m_parentIfIndex + ", status="
+                + m_status + ", linkTypeId=" + m_linkTypeId + ", lastPollTime=" + m_lastPollTime + ", source=" + m_source + ", protocol=" + m_protocol + "]";
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -78,7 +78,7 @@ public class JdbcQueryDetectorTest implements InitializingBean {
     }
 
     @Before
-    public void setUp() throws SQLException{
+    public void setUp() throws SQLException {
         MockLogAppender.setupLogging();
 
         String url = null;
@@ -90,9 +90,11 @@ public class JdbcQueryDetectorTest implements InitializingBean {
             url = metaData.getURL();
             username = metaData.getUserName();
             conn.close();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
-            conn.close();
+            if (conn != null) {
+                conn.close();
+            }
         }
 
         m_detector.setDbDriver("org.postgresql.Driver");
@@ -108,20 +110,20 @@ public class JdbcQueryDetectorTest implements InitializingBean {
         MockLogAppender.assertNoFatalOrGreater();
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
         assertTrue("JDBCQueryDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setSqlQuery("bogus");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testWrongUserName() throws UnknownHostException{
         m_detector.setUser("wrongUserName");
         m_detector.init();

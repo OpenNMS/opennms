@@ -28,9 +28,9 @@
 
 package org.opennms.web.controller;
 
-import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.svclayer.DistributedStatusService;
-import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.opennms.web.validator.DistributedStatusDetailsValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

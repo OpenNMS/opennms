@@ -49,7 +49,7 @@ public class NodeInfoWindowTest {
 	UI app;
 	@Before
 	public void setUp() throws Exception {
-		Node testNode1 = new Node(9,"172.20.1.10","Cartman");
+		Node testNode1 = new Node(9,"192.0.2.10","Cartman");
 		final URL url = new URL("http://localhost:8080/");
         window = new NodeInfoWindow(null, url);
 		window2 = new NodeInfoWindow(testNode1, url);

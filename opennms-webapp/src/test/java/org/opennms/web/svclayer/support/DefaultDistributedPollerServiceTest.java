@@ -43,7 +43,7 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.test.ThrowableAnticipator;
-import org.opennms.web.command.LocationMonitorIdCommand;
+import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;

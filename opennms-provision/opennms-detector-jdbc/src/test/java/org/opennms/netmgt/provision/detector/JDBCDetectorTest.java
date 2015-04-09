@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,68 +64,69 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class JDBCDetectorTest implements InitializingBean {
-    
+
     @Autowired
     public JdbcDetector m_detector;
-    
+
     @Autowired
     DataSource m_dataSource;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() throws UnknownHostException {
+    public void setUp() throws UnknownHostException, SQLException {
         MockLogAppender.setupLogging();
 
         String url = null;
         String username = null;
+        Connection conn = null;
         try {
-            Connection conn = m_dataSource.getConnection();
+            conn = m_dataSource.getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
             url = metaData.getURL();
             username = metaData.getUserName();
             conn.close();
-            
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
+            if (conn != null) {
+                conn.close();
+            }
         }
-        
-        
+
+
         m_detector.setDbDriver("org.postgresql.Driver");
         m_detector.setPort(5432);
         m_detector.setUrl(url);
         m_detector.setUser(username);
         m_detector.setPassword("");
-        
-        
-        
+
+
+
     }
-    
-	@Test(timeout=90000)
-	public void testDetectorSuccess() throws UnknownHostException{
-		
-		m_detector.init();
-		
-		assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
-	}
-	
-	@Test(timeout=90000)
-    public void testDetectorFailWrongUser() throws UnknownHostException{
-	    m_detector.setUser("wrongUser");
+
+    @Test(timeout=20000)
+    public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
-        
+        assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
+    }
+
+    @Test(timeout=20000)
+    public void testDetectorFailWrongUser() throws UnknownHostException{
+        m_detector.setUser("wrongUser");
+        m_detector.init();
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
-	
-	@Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongUrl() throws UnknownHostException{
         m_detector.setUrl("jdbc:postgres://bogus:5432/blank");
         m_detector.init();
-        
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
-	
+
 }

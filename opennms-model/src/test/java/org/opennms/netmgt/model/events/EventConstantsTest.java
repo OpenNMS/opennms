@@ -30,6 +30,7 @@ package org.opennms.netmgt.model.events;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -202,5 +203,15 @@ public class EventConstantsTest {
         calendar.setTime(date);
         assertEquals(37, calendar.get(Calendar.SECOND));
         assertEquals(calendar.get(Calendar.SECOND), m_timestampCalendar.get(Calendar.SECOND));
+    }
+
+    /**
+     * Make sure that we can parse a datestamp from send-event.pl. The script always sends 
+     * datestamps as English strings, for example: "Tuesday, 17 March 2015 14:44:39 o'clock GMT".
+     * @throws ParseException 
+     */
+    @Test
+    public void testParseSendEventPlDate() throws ParseException {
+        EventConstants.FORMATTER_CUSTOM.get().parse("Tuesday, 17 March 2015 14:44:39 o'clock GMT");
     }
 }

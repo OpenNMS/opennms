@@ -38,6 +38,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
@@ -47,7 +48,9 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
+
 	/**
 	 * This class generates an unique id. 
 	 * The generated id has the format '<prefix><counter>' (e.g. v100). 
@@ -320,6 +323,18 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {
+        if (sourceId == null) {
+            if (targetId == null) {
+                LOG.warn("Source and target vertices are null");
+                return null;
+            } else {
+                LOG.warn("Source vertex is null");
+                return null;
+            }
+        } else if (targetId == null) {
+            LOG.warn("Target vertex is null");
+            return null;
+        }
         SimpleConnector source = new SimpleConnector(sourceId.getNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(targetId.getNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 

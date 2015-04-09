@@ -171,7 +171,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
+        <version>2.5.3</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -831,8 +831,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1114,6 +1114,8 @@
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+    <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLoggingVersion>99.99.99-use-jcl-over-slf4j</commonsLoggingVersion>
@@ -1131,6 +1133,7 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
+    <jodaTimeVersion>2.1</jodaTimeVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
@@ -1154,7 +1157,7 @@
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.7.4</aspectjVersion>
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
-    <springSecurityVersion>3.2.5.RELEASE</springSecurityVersion>
+    <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
 
     <!-- moved here from topology features -->
@@ -2167,6 +2170,12 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jersey-client-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-jetty</artifactId>
         <version>${project.version}</version>
@@ -2622,7 +2631,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.6</version>
+        <version>${commonsConfigurationVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -2638,7 +2647,7 @@
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
-        <version>2.1</version>
+        <version>${commonsDigesterVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -3025,6 +3034,11 @@
         <version>99.99.99-use-opennms-jaxb</version>
       </dependency>
       <dependency>
+        <groupId>jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>99.99.99-exclude-and-use-org.apache.servicemix.bundles.jdom-instead</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-ajp</artifactId>
         <version>${jettyVersion}</version>
@@ -3150,7 +3164,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.1</version>
+        <version>${jodaTimeVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.skyscreamer</groupId>

@@ -33,46 +33,63 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 public class RequisitionFileUtilsTest {
     private FilesystemForeignSourceRepository m_repository;
-    
+    private Path m_requisitionDirectory;
+    private String m_importDirectory;
+    private String m_foreignSourceDirectory;
+
     @Before
     public void createTestRepository() throws Exception {
-        final File requisitionDirectory = new File("target/RequisitionFileUtilsTest");
-        if (requisitionDirectory.exists()) {
-            FileUtils.deleteDirectory(requisitionDirectory);
+        m_requisitionDirectory = Files.createTempDirectory("RequisitionFileUtilsTest");
+        if (m_requisitionDirectory.toFile().exists()) {
+            FileUtils.deleteDirectory(m_requisitionDirectory.toFile());
         }
-        
+
+
         final FilesystemForeignSourceRepository fsr = new FilesystemForeignSourceRepository();
-        fsr.setForeignSourcePath("target/RequisitionFileUtilsTest/foreign-sources");
-        fsr.setRequisitionPath("target/RequisitionFileUtilsTest/imports");
+        m_importDirectory = new File(m_requisitionDirectory.toFile(), "imports").getPath();
+        m_foreignSourceDirectory = new File(m_requisitionDirectory.toFile(), "foreign-sources").getPath();
+
+        fsr.setRequisitionPath(m_importDirectory);
+        fsr.setForeignSourcePath(m_foreignSourceDirectory);
         fsr.afterPropertiesSet();
-        
+
         fsr.save(new Requisition("test"));
         m_repository = fsr;
     }
-    
+
+    @After
+    public void destroyTestRepository() throws Exception {
+        FileUtils.deleteDirectory(m_requisitionDirectory.toFile());
+    }
+
     @Test
     public void testCreateTemporaryRequisition() throws Exception {
         final File file = RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         assertNotNull(file);
-        assertTrue(file.getPath().contains("target/RequisitionFileUtilsTest/imports/test"));
-        assertTrue(file.getPath().matches(".*target/RequisitionFileUtilsTest/imports/test.xml.\\d+"));
-        
+        assertTrue(file.getPath().contains(m_importDirectory + File.separator + "test"));
+        assertTrue(file.getParentFile().getName().equals("imports"));
+        assertTrue(file.getName().matches("test\\.xml\\.\\d+"));
+
         final List<File> snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertNotNull(snapshots);
         assertEquals(1, snapshots.size());
+        Thread.sleep(1);
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         assertEquals(2, RequisitionFileUtils.findSnapshots(m_repository, "test").size());
-        
+
         m_repository.save(new Requisition("test2"));
         RequisitionFileUtils.createSnapshot(m_repository, "test2", new Date());
         assertEquals(1, RequisitionFileUtils.findSnapshots(m_repository, "test2").size());
@@ -86,13 +103,13 @@ public class RequisitionFileUtilsTest {
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
         Thread.sleep(1);
         RequisitionFileUtils.createSnapshot(m_repository, "test", new Date());
-        
+
         List<File> snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertNotNull(snapshots);
         assertEquals(3, snapshots.size());
 
         RequisitionFileUtils.deleteAllSnapshots(m_repository);
-        
+
         snapshots = RequisitionFileUtils.findSnapshots(m_repository, "test");
         assertEquals(0, snapshots.size());
     }
