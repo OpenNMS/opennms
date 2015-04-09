@@ -174,7 +174,8 @@ public class RScriptExecutor {
             executor.execute(cmdLine);
         } catch (IOException e) {
             LOG.error("Failed to invoke Rscript. Stdin: {} Stderr: {}, Stdout: {}",
-                    inputTableAsCsv, stderr, stdout);
+                    inputTableAsCsv, stdin, stderr, stdout);
+            System.err.println(stderr);
             throw new RScriptException("An error occured while executing Rscript, or the requested script.", e);
         }
 
@@ -184,7 +185,7 @@ public class RScriptExecutor {
             return new RScriptOutput(table);
         } catch (Throwable t) {
             LOG.error("Failed to parse the scripts output. Stdin: {} Stderr: {}, Stdout: {}",
-                    inputTableAsCsv, stderr, stdout);
+                    inputTableAsCsv, stdin, stderr, stdout);
             throw new RScriptException("Failed to parse the script's output.", t);
         }
     }
