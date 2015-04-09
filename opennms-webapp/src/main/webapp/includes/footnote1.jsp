@@ -51,11 +51,10 @@
 
   <c:otherwise>
     <!-- Footnote1 -->
-
-    <div id="footer">
-      <p>
-          (*) Denotes an interface that no longer exists in the database, or a resource that is not an interface.
-      </p>
+    <div class="row">
+      <div class="col-md-12">
+          <b>(*) Denotes an interface that no longer exists in the database, or a resource that is not an interface.</b>
+      </div>
     </div>
   </c:otherwise>
 </c:choose>
