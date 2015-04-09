@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +121,10 @@ public class WebMonitor extends AbstractServiceMonitor {
                 }
             }
 
+            if (ParameterMap.getKeyedBoolean(map, "use-ssl-filter", false)) {
+                clientWrapper.trustSelfSigned(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
+            }
+
             if(ParameterMap.getKeyedBoolean(map,"auth-enabled",false)) {
                 clientWrapper.addBasicCredentials(ParameterMap.getKeyedString(map, "auth-user", DEFAULT_USER), ParameterMap.getKeyedString(map, "auth-password", DEFAULT_PASSWORD));
                 if (ParameterMap.getKeyedBoolean(map, "auth-preemptive", true)) {
@@ -163,6 +168,8 @@ public class WebMonitor extends AbstractServiceMonitor {
             LOG.info(e.getMessage());
         } catch (URISyntaxException e) {
             LOG.info(e.getMessage());
+        } catch (GeneralSecurityException gse) {
+            LOG.error("Unable to set SSL trust to allow self-signed certificates", gse);
         } finally {
             IOUtils.closeQuietly(clientWrapper);
         }
