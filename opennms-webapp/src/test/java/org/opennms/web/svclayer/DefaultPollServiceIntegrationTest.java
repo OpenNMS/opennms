@@ -41,7 +41,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.api.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

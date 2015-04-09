@@ -91,6 +91,8 @@
             opennms-full-assembly.
           -->
           <features>
+            <feature>activemq-broker</feature>
+
             <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>

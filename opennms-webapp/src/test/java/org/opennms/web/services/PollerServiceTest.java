@@ -48,6 +48,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.svclayer.support.DefaultPollerService;
 
 public class PollerServiceTest extends TestCase {
 	

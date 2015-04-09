@@ -35,9 +35,9 @@
 			java.util.Set,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.netmgt.poller.PathOutageManager,
-			org.opennms.netmgt.poller.PathOutageManagerDaoImpl
-" %>
+			org.opennms.netmgt.dao.api.PathOutageManager,
+			org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Path Outage Nodes" />
