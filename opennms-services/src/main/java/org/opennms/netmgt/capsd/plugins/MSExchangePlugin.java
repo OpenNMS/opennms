@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -123,7 +123,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                LOG.debug("MSExchangePlugin: connected to host: {} on port: {}", port, host);
+                LOG.debug("MSExchangePlugin: connected to host: {} on port: {}", host, port);
 
                 // Allocate a line reader
                 //
@@ -141,7 +141,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug("isServer: Connection refused to {}: {}", port, InetAddressUtils.str(host));
+                LOG.debug("isServer: Connection refused to {}: {}", InetAddressUtils.str(host), port);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
@@ -150,7 +150,7 @@ public final class MSExchangePlugin extends AbstractPlugin {
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // ignore this
-                LOG.debug("MSExchangePlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
+                LOG.debug("MSExchangePlugin: did not connect to host within timeout: {} attempt: {}", timeout, attempts);
             } catch (IOException e) {
                 LOG.info("isServer: Unexpected I/O exception occured with host {} on port {}", InetAddressUtils.str(host), port, e);
             } catch (Throwable t) {
