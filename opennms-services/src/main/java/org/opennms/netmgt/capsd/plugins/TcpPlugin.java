@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,7 +109,7 @@ public final class TcpPlugin extends AbstractPlugin {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(host, port), timeout);
                 socket.setSoTimeout(timeout);
-                LOG.debug("TcpPlugin: connected to host: {} on port: {}", port, host);
+                LOG.debug("TcpPlugin: connected to host: {} on port: {}", host, port);
 
                 // If banner matching string is null or wildcard ("*") then we
                 // only need to test connectivity and we've got that!
@@ -146,7 +146,7 @@ public final class TcpPlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                LOG.debug("TcpPlugin: Connection refused to {}: {}", port, InetAddressUtils.str(host));
+                LOG.debug("TcpPlugin: Connection refused to {}: {}", InetAddressUtils.str(host), port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
@@ -158,7 +158,7 @@ public final class TcpPlugin extends AbstractPlugin {
             } catch (InterruptedIOException e) {
                 // This is an expected exception
                 //
-                LOG.debug("TcpPlugin: did not connect to host within timeout: {} attempt: {}", attempts, timeout);
+                LOG.debug("TcpPlugin: did not connect to host within timeout: {} attempt: {}", timeout, attempts);
                 isAServer = false;
             } catch (IOException e) {
                 LOG.info("TcpPlugin: An expected I/O exception occured connecting to host {} on port {}", InetAddressUtils.str(host), port, e);

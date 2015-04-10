@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -107,7 +107,7 @@ final class DataUpdater implements Runnable {
         dataMgr.interfaceDown(nodeid, ip, eventTime);
 
 
-        LOG.debug("Recorded interfaceDown for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
+        LOG.debug("Recorded interfaceDown for nodeid: {} ip: {}", nodeid, InetAddressUtils.str(ip));
     }
 
     /**
@@ -158,7 +158,7 @@ final class DataUpdater implements Runnable {
         dataMgr.interfaceUp(nodeid, ip, eventTime);
 
 
-        LOG.debug("Recorded interfaceUp for nodeid: {} ip: {}", InetAddressUtils.str(ip), nodeid);
+        LOG.debug("Recorded interfaceUp for nodeid: {} ip: {}", nodeid, InetAddressUtils.str(ip));
     }
 
     /**
@@ -175,7 +175,7 @@ final class DataUpdater implements Runnable {
         dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
 
-        LOG.debug("Added nodeRegainedService to nodeid: {} ip: {} svcName: {}", svcName, nodeid, InetAddressUtils.str(ip));
+        LOG.debug("Added nodeRegainedService to nodeid: {} ip: {} svcName: {}", nodeid, InetAddressUtils.str(ip), svcName);
     }
 
     /**
@@ -427,7 +427,7 @@ final class DataUpdater implements Runnable {
         }
 
 
-        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventTimeStr, eventUEI, nodeid, InetAddressUtils.str(ip), svcName);
+        LOG.debug("Event UEI: {}\tnodeid: {}\tip: {}\tsvcName: {}\teventTime: {}", eventUEI, nodeid, InetAddressUtils.str(ip), svcName, eventTimeStr);
 
         //
         //
