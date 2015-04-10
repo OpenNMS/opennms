@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -117,7 +117,7 @@ public class RTCNodeSvcTimesList extends LinkedList<RTCNodeSvcTime> {
         removeExpiredOutages();
 
         if (regainedtime > 0 && regainedtime < losttime) {
-            LOG.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time {}\tregainedtime in milliseconds: {}", regainedtime, "less than lost time -> losttime in milliseconds: {}", losttime);
+            LOG.warn("RTCNodeSvcTimesList: Rejecting service time pair since regained time {}\tregainedtime in milliseconds: {} less than lost time -> losttime in milliseconds: {}", regainedtime, losttime);
 
             return;
         }

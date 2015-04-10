@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -163,7 +163,7 @@ public final class TcpEventProxy implements EventProxy {
             m_sock = new Socket();
             m_sock.connect(m_address, m_timeout);
             m_sock.setSoTimeout(500);
-            LOG.debug("Default Charset:", Charset.defaultCharset().displayName());
+            LOG.debug("Default Charset: {}", Charset.defaultCharset().displayName());
             LOG.debug("Setting Charset: UTF-8");
             m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()), Charset.forName("UTF-8"));
             m_input = m_sock.getInputStream();
