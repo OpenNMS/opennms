@@ -74,7 +74,7 @@ public class FilterFavoriteServiceTest {
 
     		@Override
     		public DaoSupport<FilterFavoriteDao> getDaoSupport() {
-    			return new DaoSupport(FilterFavoriteDao.class, service.getFilterFavoriteDao());
+    			return new DaoSupport<FilterFavoriteDao>(FilterFavoriteDao.class, service.getFilterFavoriteDao());
     		}
 
     		@Override
