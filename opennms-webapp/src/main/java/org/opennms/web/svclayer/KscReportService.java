@@ -79,7 +79,7 @@ public interface KscReportService {
      * @param graphs a {@link java.util.List} object.
      * @return a {@link java.util.List} object.
      */
-    public List<OnmsResource>getResourcesFromGraphs(List<Graph> graphs);
+    public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs);
     /**
      * <p>getTimeSpans</p>
      *
