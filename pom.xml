@@ -879,7 +879,11 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>-Xmx1024m</argLine>
+          <!--
+            Set java.security.egd so that entropy exhaustion doesn't cause 
+            problematic pauses when starting MockSnmpAgent in unit tests
+          -->
+          <argLine>-Xmx1024m -Djava.security.egd=/dev/./urandom</argLine>
           <includes>
             <include>**/*Test.java</include>
           </includes>          
