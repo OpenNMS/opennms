@@ -1486,4 +1486,15 @@ delabel%.&lt;/b>&lt;/a> The %service% data source expression %parm[ds]% on resou
       <logmsg dest="logndisplay">The hardware discovery on node %nodelabel% (IP address %interface%) has been completed successfuly.</logmsg>
       <severity>Normal</severity>
    </event>
+   <event>
+      <uei>uei.opennms.org/internal/kscReportUpdated</uei>
+      <event-label>OpenNMS-defined internal event: KSC report updated</event-label>
+      <descr>&lt;p&gt;The KSC Report '%parm[reportTitle]%' has been updated (remaining graphs: %parm[graphCount]%).&lt;/p&gt;
+         &lt;p&gt;Some graphs defined on the report have been removed, due to an invalid resource or chart.&lt;/p&gt;
+         &lt;p&gt;A resource is not valid on any of the following situations: the nodeId (or nodeSource) doesn't exist, the resource type 
+         is not valid or doesn't exist on the node, the resource name is not valid or doesn't exist on the node.&lt;/p&gt;
+         &lt;p&gt;Check the logs for more details.&lt;/p&gt;</descr>
+      <logmsg dest="logndisplay">The KSC Report %parm[reportTitle]% has been updated.</logmsg>
+      <severity>Warning</severity>
+   </event>
 </events>
