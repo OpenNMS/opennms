@@ -29,6 +29,8 @@
 package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -239,7 +241,27 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
         m_loaders.put(agentAddress, new PropertyOidContainer(resource));
     }
-    
+
+    public static void updateIntValue(final SnmpAgentAddress agentAddress, String oid, int value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getInt32(value));
+    }
+
+    public static void updateStringValue(final SnmpAgentAddress agentAddress, String oid, String value) {
+        try {
+            m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getOctetString(value.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // Should be impossible
+        }
+    }
+
+    public static void updateCounter32Value(final SnmpAgentAddress agentAddress, String oid, long value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getCounter32(value));
+    }
+
+    public static void updateCounter64Value(final SnmpAgentAddress agentAddress, String oid, BigInteger value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getCounter64(value));
+    }
+
     public static void removeHost(final SnmpAgentAddress agentAddr) {
         m_loaders.remove(agentAddr);
     }

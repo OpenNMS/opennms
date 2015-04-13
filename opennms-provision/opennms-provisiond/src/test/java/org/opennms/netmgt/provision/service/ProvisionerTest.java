@@ -829,6 +829,50 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(0, getNodeDao().countAll());
     }
 
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpTestData3.properties")
+    public void testIfIndexChangeNms6567() throws Exception {
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
+
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+
+        m_nodeDao.flush();
+
+        assertEquals(2, getInterfaceDao().countAll());
+
+        // Verify the initial state of the ifIndex values
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.201").getIfIndex().intValue());
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.201").getSnmpInterface().getIfIndex().intValue());
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.204").getIfIndex().intValue());
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.204").getSnmpInterface().getIfIndex().intValue());
+
+        // This is a pretty pedantic check :)
+        assertEquals(4, getSnmpInterfaceDao().findByNodeIdAndIfIndex(node.getId(), 4).getIfIndex().intValue());
+        assertEquals(5, getSnmpInterfaceDao().findByNodeIdAndIfIndex(node.getId(), 5).getIfIndex().intValue());
+
+        // Swap the ifIndex values for the two interfaces
+        m_mockSnmpDataProvider.updateIntValue(new SnmpAgentAddress(InetAddressUtils.addr("198.51.100.201"), 161), ".1.3.6.1.2.1.4.20.1.2.198.51.100.201", 4);
+        m_mockSnmpDataProvider.updateIntValue(new SnmpAgentAddress(InetAddressUtils.addr("198.51.100.201"), 161), ".1.3.6.1.2.1.4.20.1.2.198.51.100.204", 5);
+
+        // Rescan
+        runScan(scan);
+
+        m_nodeDao.flush();
+
+        assertEquals(2, getInterfaceDao().countAll());
+
+        // Verify that the ifIndex fields on the interfaces have been updated
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.201").getIfIndex().intValue());
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.201").getSnmpInterface().getIfIndex().intValue());
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.204").getIfIndex().intValue());
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.204").getSnmpInterface().getIfIndex().intValue());
+    }
+
     @Test
     public void testDeleteService() throws Exception {
 
