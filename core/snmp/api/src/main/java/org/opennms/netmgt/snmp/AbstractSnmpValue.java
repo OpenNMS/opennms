@@ -91,6 +91,10 @@ public abstract class AbstractSnmpValue implements SnmpValue {
 
             while (i < end) {
                 i++;
+                // If there are insufficient trailing bytes, return false
+                if (i >= bytes.length) {
+                    return false;
+                }
                 octet = bytes[i];
                 if ((octet & 0xC0) != 0x80) {
                     //System.err.println("Not a valid trailing byte.");
