@@ -103,6 +103,16 @@
         <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.9.2.1.20" instance="pfTablesTblIndex" alias="pftTblPktsOutXPass" type="counter" />
       </group>
 
+      <!-- A copy of mib2-host-resources-storage, but using a different resource type to work around
+           the problem of junk instances exposed by the FreeBSD management agent -->
+      <group name="mib2-host-resources-storage-fbsd" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageFBSD" alias="hrStorageType"       type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageFBSD" alias="hrStorageDescr"      type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageFBSD" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageFBSD" alias="hrStorageSize"       type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageFBSD" alias="hrStorageUsed"       type="gauge" />
+      </group>
+
       <group name="pfsense-labels" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.2" instance="pfLabelsLblIndex" alias="pfLabelsLblName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.12325.1.200.1.11.2.1.3" instance="pfLabelsLblIndex" alias="pfLabelsLblEvals" type="counter" />
@@ -117,8 +127,8 @@
         <collect>
           <includeGroup>mib2-host-resources-system</includeGroup>
           <includeGroup>mib2-host-resources-memory</includeGroup>
-          <!-- hrStorage is problematic on pfSense, over 200 instances on 2.0.1 -->
-          <!-- <includeGroup>mib2-host-resources-storage</includeGroup> -->
+          <includeGroup>mib2-host-resources-storage-fbsd</includeGroup>
+          <includeGroup>mib2-host-resources-processor</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>mib2-X-interfaces-pkts</includeGroup>
           <includeGroup>pfsense-system-scalars</includeGroup>
@@ -126,6 +136,7 @@
           <includeGroup>pfsense-srcnode-scalars</includeGroup>
           <includeGroup>pfsense-pfinterfaces</includeGroup>
           <includeGroup>pfsense-pftables</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
           <!-- Omitting labels since I have no way to test on my instance -->
           <!-- <includeGroup>pfsense-labels</includeGroup> -->
         </collect>
