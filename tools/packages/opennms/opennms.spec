@@ -221,8 +221,8 @@ Requires(pre):	%{name}-plugin-protocol-xml
 Requires:	%{name}-plugin-protocol-xml
 Requires(pre):	%{name}-plugin-protocol-xmp
 Requires:	%{name}-plugin-protocol-xmp
-Requires(pre):	%{name}-plugin-collector-vtdxml-handler
-Requires:	%{name}-plugin-collector-vtdxml-handler
+#Requires(pre):	%{name}-plugin-collector-vtdxml-handler
+#Requires:	%{name}-plugin-collector-vtdxml-handler
 
 %description plugins
 This installs all optional plugins.
@@ -452,19 +452,19 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %{extrainfo2}
 
 
-%package plugin-collector-vtdxml-handler
-Summary:	VTD-XML Collection Handler
-Group:		Applications/System
-License:	GPL
-Requires(pre):	%{name}-plugin-protocol-xml = %{version}-%{release}
-Requires:	%{name}-plugin-protocol-xml = %{version}-%{release}
-
-%description plugin-collector-vtdxml-handler
-The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
-VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
-
-%{extrainfo}
-%{extrainfo2}
+#%package plugin-collector-vtdxml-handler
+#Summary:	VTD-XML Collection Handler
+#Group:		Applications/System
+#License:	GPL
+#Requires(pre):	%{name}-plugin-protocol-xml = %{version}-%{release}
+#Requires:	%{name}-plugin-protocol-xml = %{version}-%{release}
+#
+#%description plugin-collector-vtdxml-handler
+#The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
+#VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
+#
+#%{extrainfo}
+#%{extrainfo2}
 
 
 %prep
@@ -859,10 +859,10 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/datacollection/juniper-tca*
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
-%files plugin-collector-vtdxml-handler
-%defattr(664 root root 775)
-%{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
-%{instprefix}/lib/vtd-xml-*.jar
+#%files plugin-collector-vtdxml-handler
+#%defattr(664 root root 775)
+#%{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
+#%{instprefix}/lib/vtd-xml-*.jar
 
 %post -p /bin/bash docs
 ROOT_INST="$RPM_INSTALL_PREFIX0"

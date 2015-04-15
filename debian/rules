@@ -182,9 +182,9 @@ install: build
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/xml-datacollection-config.xml        debian/opennms-plugin-protocol-xml/var/lib/opennms/etc-pristine/
 	
 	# VTD-XML
-	install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
-	mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
+	#install -d -m 755 debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms
+	#mv debian/temp/lib/vtd-xml-*.jar                                                           debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
+	#mv debian/temp/lib/opennms-vtdxml-collector-handler-*.jar                                  debian/opennms-plugin-collector-vtdxml-handler/usr/share/java/opennms/
 	
 	# XMP
 	mv debian/temp/lib/xmp-*.jar                                                               debian/opennms-plugin-protocol-xmp/usr/share/java/opennms/
