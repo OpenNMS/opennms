@@ -1,7 +1,7 @@
 %{!?version:%define version 1.5.93}
 %{!?releasenumber:%define releasenumber 0}
 %{!?instprefix:%define instprefix /opt/opennms}
-%{!?jdk:%define jdk java-1.8.0-openjdk}
+%{!?jdk:%define jdk jdk >= 1:1.5}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -54,6 +54,8 @@ mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true packag
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}
 tar -C $RPM_BUILD_ROOT%{instprefix} -xvzf target/centric-troubleticketer-*.tar.gz
 chmod 644 $RPM_BUILD_ROOT%{instprefix}/lib/*.jar
+# HACK ALERT!
+rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/commons-io-*.jar
 
 %clean
 rm -rf $RPM_BUILD_ROOT

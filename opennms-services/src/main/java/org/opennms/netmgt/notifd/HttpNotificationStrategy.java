@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,7 +96,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         } else {
             LOG.info("send: Found \"post-\" arguments..., continuing with an HTTP POST using URL: {}", url);
             for (final NameValuePair post : posts) {
-                LOG.debug("send: post argument: {} = {}", post.getValue(), post.getName());
+                LOG.debug("send: post argument: {} = {}", post.getName(), post.getValue());
             }
             method = new HttpPost(url);
             try {
@@ -244,7 +244,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     private String getUrlAsPrefix() {
         String url = null; 
         for (Argument arg: getArgsByPrefix("url")) {
-            LOG.debug("Found url switch: {} with value: {}", arg.getValue(), arg.getSwitch());
+            LOG.debug("Found url switch: {} with value: {}", arg.getSwitch(), arg.getValue());
             url = arg.getValue();
         }
         return url;

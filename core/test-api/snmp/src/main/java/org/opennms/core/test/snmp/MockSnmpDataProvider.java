@@ -30,13 +30,24 @@ package org.opennms.core.test.snmp;
 
 import java.io.IOException;
 
+import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.springframework.core.io.Resource;
 
 public interface MockSnmpDataProvider {
 
-	public void setDataForAddress(SnmpAgentAddress address, Resource resource) throws IOException ;
+	void addAgent(SnmpAgentAddress address, MockSnmpAgent agent);
 
-	public void resetData();
+	void updateIntValue(SnmpAgentAddress address, String oid, int val);
+
+	void updateStringValue(SnmpAgentAddress address, String oid, String val);
+
+	void updateCounter32Value(SnmpAgentAddress address, String oid, int val);
+
+	void updateCounter64Value(SnmpAgentAddress address, String oid, long val);
+
+	void setDataForAddress(SnmpAgentAddress address, Resource resource) throws IOException ;
+
+	void resetData();
 
 }

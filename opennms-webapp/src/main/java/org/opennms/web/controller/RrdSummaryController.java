@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.Marshaller;
 import org.opennms.netmgt.config.attrsummary.Summary;
-import org.opennms.web.svclayer.RrdSummaryService;
-import org.opennms.web.svclayer.SummarySpecification;
+import org.opennms.web.svclayer.model.SummarySpecification;
+import org.opennms.web.svclayer.rrd.RrdSummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;

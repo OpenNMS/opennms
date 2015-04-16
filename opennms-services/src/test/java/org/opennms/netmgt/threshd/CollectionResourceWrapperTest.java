@@ -352,12 +352,12 @@ public class CollectionResourceWrapperTest {
         network.addNode(1, "testNode");
         network.addInterface(ipAddress);
         network.setIfAlias(ifName);
+        network.setIfIndex(ifIndex);
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        db.update("update snmpinterface set snmpifindex=?, snmpifname=?, snmpifdescr=? where id=?", ifIndex, ifName, ifName, 1);
         DataSourceFactory.setInstance(db);
 
         // Create Mock Collection Agent

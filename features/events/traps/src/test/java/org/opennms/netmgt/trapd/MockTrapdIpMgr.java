@@ -34,7 +34,7 @@ package org.opennms.netmgt.trapd;
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class MockTrapdIpMgr extends JdbcTrapdIpMgr {
+public class MockTrapdIpMgr extends HibernateTrapdIpMgr {
     @Override
     public void afterPropertiesSet() throws Exception {
         // Don't check for the dataSource property being set

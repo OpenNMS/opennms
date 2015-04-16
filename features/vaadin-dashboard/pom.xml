@@ -56,7 +56,7 @@
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.plugin.version}</version>
                 <configuration>
-                    <extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
                     <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
                     <noServer>true</noServer>

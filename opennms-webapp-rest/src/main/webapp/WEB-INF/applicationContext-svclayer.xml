@@ -99,4 +99,16 @@
   </bean>
   <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
+  <!-- Foreign Sources Configuration -->
+  <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
+      <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+      <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+  </bean>
+  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
+    <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
+    <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="categoryDao" ref="categoryDao"/>
+    <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
 </beans>

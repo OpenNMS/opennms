@@ -143,7 +143,6 @@
     <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>${groovyVersion}</version>
         <exclusions>
           <exclusion>
             <groupId>asm</groupId>

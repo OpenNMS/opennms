@@ -54,70 +54,63 @@ public class Notifd extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         return "notifdContext";
     }
 
-    /**
-     * @return Notifd instance
-     */
-    private org.opennms.netmgt.notifd.Notifd getNotifd() {
-        return org.opennms.netmgt.notifd.Notifd.getInstance();
-    }
-
     @Override
     /** {@inheritDoc} */
     public long getNotificationTasksQueued() {
-        return getNotifd().getNotificationManager().getNotificationTasksQueued();
+        return getDaemon().getNotificationManager().getNotificationTasksQueued();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getBinaryNoticesAttempted() {
-        return getNotifd().getNotificationManager().getBinaryNoticesAttempted();
+        return getDaemon().getNotificationManager().getBinaryNoticesAttempted();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getJavaNoticesAttempted() {
-        return getNotifd().getNotificationManager().getJavaNoticesAttempted();
+        return getDaemon().getNotificationManager().getJavaNoticesAttempted();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getBinaryNoticesSucceeded() {
-        return getNotifd().getNotificationManager().getBinaryNoticesSucceeded();
+        return getDaemon().getNotificationManager().getBinaryNoticesSucceeded();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getJavaNoticesSucceeded() {
-        return getNotifd().getNotificationManager().getJavaNoticesSucceeded();
+        return getDaemon().getNotificationManager().getJavaNoticesSucceeded();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getBinaryNoticesFailed() {
-        return getNotifd().getNotificationManager().getBinaryNoticesFailed();
+        return getDaemon().getNotificationManager().getBinaryNoticesFailed();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getJavaNoticesFailed() {
-        return getNotifd().getNotificationManager().getJavaNoticesFailed();
+        return getDaemon().getNotificationManager().getJavaNoticesFailed();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getBinaryNoticesInterrupted() {
-        return getNotifd().getNotificationManager().getBinaryNoticesInterrupted();
+        return getDaemon().getNotificationManager().getBinaryNoticesInterrupted();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getJavaNoticesInterrupted() {
-        return getNotifd().getNotificationManager().getJavaNoticesInterrupted();
+        return getDaemon().getNotificationManager().getJavaNoticesInterrupted();
     }
 
     @Override
     /** {@inheritDoc} */
     public long getUnknownNoticesInterrupted() {
-        return getNotifd().getNotificationManager().getUnknownNoticesInterrupted();
+        return getDaemon().getNotificationManager().getUnknownNoticesInterrupted();
     }
 }
