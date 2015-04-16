@@ -80,6 +80,13 @@
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>
 
+  <!-- filter out invalid file:// Origin: header to avoid CORS issues with Compass -->
+  <filter>
+    <description>Filter out invalid file:// Origin: header to avoid CORS issues with Compass</description>
+    <filter-name>Origin Filter</filter-name>
+    <filter-class>org.opennms.web.api.OriginHeaderFilter</filter-class>
+  </filter>
+
   <!-- NOTE, this filter is not mapped to anything by default.  To enable CORS for ReST,
        uncomment the "CORS Filter" <filter-mapping> section later in this file. -->
   <filter>
@@ -179,6 +186,11 @@
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Origin Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
   <!--
