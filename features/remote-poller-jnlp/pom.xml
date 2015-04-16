@@ -154,6 +154,8 @@
           <outputJarVersions>false</outputJarVersions>
           <verbose>false</verbose>
           <verifyjar>true</verifyjar>
+          <canUnsign>true</canUnsign>
+          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
           <sign>
             <keystore>${webstart.keystore}</keystore>
             <keypass>${webstart.keypass}</keypass>
