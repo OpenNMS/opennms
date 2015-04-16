@@ -163,6 +163,7 @@
             <alias>${webstart.keyalias}</alias>
             <dnameCn>${webstart.dnameCn}</dnameCn>
             <dnameCn>${webstart.dnameCn}</dnameCn>
+            <verify>true</verify>
           </sign>
           <updateManifestEntries>
             <Permissions>all-permissions</Permissions>
