@@ -185,15 +185,6 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 		.alias("ipInterface.node", "node")
 		.eq("node.id", nodeId); // Add an extra restriction on the node ID
 
-		/*
-		 * NOTE: This assumes that the category contains the current list of nodes.
-		 * This value is added as a side-effect of calling {@link #getNodes(RTCCategory)}.
-		 */
-		Collection<Integer> nodes = category.getNodes();
-		if (nodes != null && nodes.size() > 0) {
-			builder.in("node.id", nodes);
-		}
-
 		List<String> services = category.getServiceCollection();
 		if (services != null && services.size() > 0) {
 			builder.alias("serviceType", "serviceType")
