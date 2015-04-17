@@ -103,7 +103,8 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
         // get the rolling window
         final long rWindow = 24L * 60L * 60L * 1000L;
 
-        LOG.debug("curdate: {}", curDate);
+        LOG.debug("Retrieving availability statistics for {} with current date: {} and rolling window: {}",
+                    category.getLabel(), curDate, rWindow);
 
         // create the data
         final EuiLevel level = new EuiLevel();
@@ -165,6 +166,8 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 
         // add category
         level.addCategory(levelCat);
+
+        LOG.debug("Done retrieving availability statistics for {} with {} services.", category.getLabel(), numServicesInCategory);
 
         return level;
     }
