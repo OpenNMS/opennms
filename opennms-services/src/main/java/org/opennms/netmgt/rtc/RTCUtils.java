@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -117,7 +118,8 @@ public abstract class RTCUtils {
 		String filterRule = cat.getEffectiveRule();
 		try {
 			LOG.debug("Category: {}\t{}", cat.getLabel(), filterRule);
-			Set<Integer> nodeIds = filterDao.getNodeMap(filterRule).keySet();
+			// Use a TreeSet to keep the node ids sorted
+			Set<Integer> nodeIds = new TreeSet<Integer>(filterDao.getNodeMap(filterRule).keySet());
 			LOG.debug("Number of nodes satisfying rule: {}", nodeIds.size());
 			return nodeIds;
 		} catch (FilterParseException e) {

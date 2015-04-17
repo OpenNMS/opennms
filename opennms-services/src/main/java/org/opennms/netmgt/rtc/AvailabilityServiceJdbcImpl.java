@@ -158,7 +158,7 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 
             // update the category statistics
             numServicesInCategory += services.size();
-            outageTimeInCategory += outageTimeInCategory;
+            outageTimeInCategory += outageTime;
         }
 
         // calculate the outage percentage using tallied values
