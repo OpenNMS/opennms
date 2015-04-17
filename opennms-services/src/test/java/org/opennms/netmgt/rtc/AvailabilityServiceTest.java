@@ -162,7 +162,7 @@ public class AvailabilityServiceTest implements TemporaryDatabaseAware<MockDatab
         category = euiLevel.getCategory(0);
         // This number should only need to be adjusted if the duration of the outage
         // or the number of services in the category changes
-        assertEquals(99.6527, category.getCatvalue(), 0.001);
+        assertEquals(RTCUtils.getOutagePercentage(1800000, 86400000, 6), category.getCatvalue(), 0.0001);
         assertEquals(2, category.getNodeCount());
     }
 
