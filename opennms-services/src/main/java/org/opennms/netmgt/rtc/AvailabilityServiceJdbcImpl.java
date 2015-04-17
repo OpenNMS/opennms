@@ -33,15 +33,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
+import org.opennms.netmgt.xml.rtc.Category;
+import org.opennms.netmgt.xml.rtc.EuiLevel;
+import org.opennms.netmgt.xml.rtc.Header;
+import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,142 +73,110 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 	@Autowired
 	private JdbcTemplate m_jdbcTemplate;
 
-	@Override
-	public Collection<Integer> getNodes(RTCCategory category) {
-		// Refresh the list of nodes contained inside the RTCCategory
-		category.clearNodes();
-		category.addAllNodes(RTCUtils.getNodeIdsForCategory(m_filterDao,  category));
-		return category.getNodes();
-	}
-
-	/**
-	 * Get the value (uptime) for the category in the last 'rollingWindow'
-	 * starting at current time
-	 *
-	 * @param catLabel
-	 *            the category to which the node should belong to
-	 * @param curTime
-	 *            the current time
-	 * @param rollingWindow
-	 *            the window for which value is to be calculated
-	 * @return the value(uptime) for the category in the last 'rollingWindow'
-	 *         starting at current time
-	 */
-	@Override
-	public double getValue(RTCCategory category, long curTime, long rollingWindow) {
-		double outageTime = 0.0;
-		Criteria criteria = createServiceCriteriaForCategory(category);
-		List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
-		for (OnmsMonitoredService service : services) {
-			try {
-				outageTime += RTCUtils.getOutageTimeInWindow(service.getNodeId(), service.getIpAddressAsString(), service.getServiceId(), new Date(curTime - rollingWindow), new Date(curTime));
-			} catch (SQLException e) {
-				LOG.warn("Cannot calculate availability for service " + service.toString() + ": " + e.getMessage(), e);
-			}
-		}
-		return RTCUtils.getOutagePercentage(outageTime, rollingWindow, services.size());
-	}
-
-	/**
-	 * Get the value (uptime) for the nodeid in the last 'rollingWindow' starting
-	 * at current time in the context of the passed category
-	 *
-	 * @param nodeid
-	 *            the node for which value is to be calculated
-	 * @param catLabel
-	 *            the category to which the node should belong to
-	 * @param curTime
-	 *            the current time
-	 * @param rollingWindow
-	 *            the window for which value is to be calculated
-	 * @return the value(uptime) for the node in the last 'rollingWindow'
-	 *         starting at current time in the context of the passed category
-	 */
-	@Override
-	public double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow) {
-		double outageTime = 0.0;
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
-		List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
-		for (OnmsMonitoredService service : services) {
-			try {
-				outageTime += RTCUtils.getOutageTimeInWindow(service.getNodeId(), service.getIpAddressAsString(), service.getServiceId(), new Date(curTime - rollingWindow), new Date(curTime));
-			} catch (SQLException e) {
-				LOG.warn("Cannot calculate availability for service " + service.toString() + ": " + e.getMessage(), e);
-			}
-		}
-		return RTCUtils.getOutagePercentage(outageTime, rollingWindow, services.size());
-	}
-
-	/**
-	 * Get the service count for the nodeid in the context of the passed
-	 * category
-	 *
-	 * @param nodeid
-	 *            the node for which service count is to be calculated
-	 * @param catLabel
-	 *            the category to which the node should belong to
-	 * @return the service count for the nodeid in the context of the passed
-	 *         category
-	 */
-	@Override
-	public int getServiceCount(int nodeid, RTCCategory category) {
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
-		return m_monitoredServiceDao.countMatching(criteria);
-	}
-
-	/**
-	 * Get the service down count for the nodeid in the context of the passed
-	 * category
-	 *
-	 * @param nodeid
-	 *            the node for which service down count is to be calculated
-	 * @param catLabel
-	 *            the category to which the node should belong to
-	 * @return the service down count for the nodeid in the context of the
-	 *         passed category
-	 */
-	@Override
-	public int getServiceDownCount(int nodeid, RTCCategory category) {
-		int retval = 0;
-		Criteria criteria = createServiceCriteriaForNodeInCategory(nodeid, category);
-		for (OnmsMonitoredService service : m_monitoredServiceDao.findMatching(criteria)) {
-			if (m_outageDao.currentOutageForService(service) != null) {
-				retval++;
-			}
-		}
-		return retval;
-	}
-
-	/**
-	 * <p>getCategories</p>
-	 *
-	 * @return the categories
-	 */
+    /**
+     * Builds a map of configured categories, keyed by label.
+     *
+     * @return the categories
+     */
 	@Override
 	public Map<String, RTCCategory> getCategories() {
 		return RTCUtils.createCategoriesMap();
 	}
 
-	private Criteria createServiceCriteriaForCategory(RTCCategory category) {
-		CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
+    /**
+     * Optimized method for calculating the category statistics
+     * that aims to reduce the number of calls to the database.
+     *
+     * In its current form, getOutageTimeInWindow() is called for
+     * every service in the category, which is not ideal.
+     */
+    @Override
+    public synchronized EuiLevel getEuiLevel(RTCCategory category) {
+        final Header header = new Header();
+        header.setVer("1.9a");
+        header.setMstation("");
 
-		Set<Integer> nodes = RTCUtils.getNodeIdsForCategory(m_filterDao, category);
-		if (nodes != null && nodes.size() > 0) {
-			builder.alias("ipInterface", "ipInterface")
-			.alias("ipInterface.node", "node")
-			.in("node.id", nodes);
-		}
+        // current time
+        final Date curDate = new Date();
+        final long curTime = curDate.getTime();
 
-		List<String> services = category.getServiceCollection();
-		if (services != null && services.size() > 0) {
-			builder.alias("serviceType", "serviceType")
-			.in("serviceType.name", category.getServiceCollection());
-		}
+        // get the rolling window
+        final long rWindow = 24L * 60L * 60L * 1000L;
 
-		return builder.toCriteria();
-	}
+        LOG.debug("curdate: {}", curDate);
 
-	private Criteria createServiceCriteriaForNodeInCategory(int nodeId, RTCCategory category) {
+        // create the data
+        final EuiLevel level = new EuiLevel();
+
+        // set created in m_header and add to level
+        header.setCreated(EventConstants.formatToString(curDate));
+        level.setHeader(header);
+
+        final Category levelCat = new Category();
+
+        // category label
+        levelCat.setCatlabel(category.getLabel());
+
+        double outageTimeInCategory = 0.0;
+        int numServicesInCategory = 0;
+
+        final Date windowStart = new Date(curTime - rWindow);
+        final Date windowEnd = new Date(curTime);
+
+        // nodes in this category
+        for (final int nodeID : getNodes(category)) {
+
+            // find the list of monitored services for this node
+            final Criteria criteria = createServiceCriteriaForNodeInCategory(nodeID, category);
+            final List<OnmsMonitoredService> services = m_monitoredServiceDao.findMatching(criteria);
+
+            // sum the outage time for all of the node's services
+            final double outageTime = services.stream()
+                    .mapToDouble(service -> getOutageTimeInWindow(service, windowStart, windowEnd))
+                    .sum();
+
+            // count the number of services that are currently down
+            final long numServicesDown = services.stream()
+                    .filter(service -> m_outageDao.currentOutageForService(service) != null)
+                    .count();
+
+            final Node levelNode = new Node();
+            levelNode.setNodeid(nodeID);
+
+            // value for this node for this category
+            levelNode.setNodevalue(RTCUtils.getOutagePercentage(outageTime, rWindow, services.size()));
+
+            // node service count
+            levelNode.setNodesvccount(services.size());
+
+            // node service down count
+            levelNode.setNodesvcdowncount(numServicesDown);
+
+            // add the node
+            levelCat.addNode(levelNode);
+
+            // update the category statistics
+            numServicesInCategory += services.size();
+            outageTimeInCategory += outageTimeInCategory;
+        }
+
+        // calculate the outage percentage using tallied values
+        levelCat.setCatvalue(RTCUtils.getOutagePercentage(outageTimeInCategory, rWindow, numServicesInCategory));
+
+        // add category
+        level.addCategory(levelCat);
+
+        return level;
+    }
+
+    private Collection<Integer> getNodes(RTCCategory category) {
+        // Refresh the list of nodes contained inside the RTCCategory
+        category.clearNodes();
+        category.addAllNodes(RTCUtils.getNodeIdsForCategory(m_filterDao,  category));
+        return category.getNodes();
+    }
+
+	private static Criteria createServiceCriteriaForNodeInCategory(int nodeId, RTCCategory category) {
 		CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class)
 		.alias("ipInterface", "ipInterface")
 		.alias("ipInterface.node", "node")
@@ -227,4 +199,13 @@ public class AvailabilityServiceJdbcImpl implements AvailabilityService {
 
 		return builder.toCriteria();
 	}
+
+    private static double getOutageTimeInWindow(final OnmsMonitoredService service, final Date start, final Date end) {
+        try {
+            return RTCUtils.getOutageTimeInWindow(service.getNodeId(), service.getIpAddressAsString(), service.getServiceId(), start, end);
+        } catch (SQLException e) {
+            LOG.warn("Cannot calculate availability for service {}", service, e);
+            return 0.0d;
+        }
+    }
 }

@@ -52,7 +52,7 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.rtc.utils.EuiLevelMapper;
+import org.opennms.netmgt.rtc.utils.LegacyEuiLevelMapper;
 import org.opennms.netmgt.rtc.utils.PipedMarshaller;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -87,11 +87,6 @@ public class DataSender implements Fiber {
      * The data sender thread pool
      */
     private final ExecutorService m_dsrPool;
-
-    /**
-     * The category to XML mapper
-     */
-    private final EuiLevelMapper m_euiMapper;
 
     /**
      * The allowable number of times posts can have errors before an URL is
@@ -136,9 +131,6 @@ public class DataSender implements Fiber {
         m_dsrPool = Executors.newFixedThreadPool(configFactory.getSenders(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), configFactory.getSenders())
         );
-
-        // create category converter
-        m_euiMapper = new EuiLevelMapper(m_dataMgr);
 
         // get post error limit
         POST_ERROR_LIMIT = configFactory.getErrorsBeforeUrlUnsubscribe();
@@ -243,7 +235,7 @@ public class DataSender implements Fiber {
                 try {
                     LOG.debug("DataSender: posting data to: {}", url);
 
-                    final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
+                    final EuiLevel euidata = m_dataMgr.getEuiLevel(cat);
                     inr = new PipedMarshaller(euidata).getReader();
 
                     // Connect with a fairly long timeout to allow the web UI time to register the
@@ -337,7 +329,7 @@ public class DataSender implements Fiber {
 
             final EuiLevel euidata;
             try {
-                euidata = m_euiMapper.convertToEuiLevelXML(cat);
+                euidata = m_dataMgr.getEuiLevel(cat);
             } catch (final Throwable t) {
                 LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
                 continue;
