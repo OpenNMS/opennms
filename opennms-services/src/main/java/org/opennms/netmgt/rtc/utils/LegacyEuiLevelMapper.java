@@ -31,7 +31,7 @@ package org.opennms.netmgt.rtc.utils;
 import java.util.Date;
 
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.rtc.AvailabilityService;
+import org.opennms.netmgt.rtc.DataManager;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.opennms.netmgt.xml.rtc.Header;
@@ -50,18 +50,18 @@ import org.slf4j.LoggerFactory;
  * @see org.opennms.netmgt.rtc.datablock.RTCCategory
  * @see org.opennms.netmgt.xml.rtc.EuiLevel
  */
-public class EuiLevelMapper extends Object {
-    private static final Logger LOG = LoggerFactory.getLogger(EuiLevelMapper.class);
+public class LegacyEuiLevelMapper {
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyEuiLevelMapper.class);
     /**
      * The header to be sent out for the availability xml(rtceui.xsd)
      */
     private final Header m_header;
-    private final AvailabilityService m_dataMgr;
+    private final DataManager m_dataMgr;
 
     /**
      * Constructor
      */
-    public EuiLevelMapper(AvailabilityService dataMgr) {
+    public LegacyEuiLevelMapper(DataManager dataMgr) {
         m_dataMgr = dataMgr;
         m_header = new Header();
         m_header.setVer("1.9a");

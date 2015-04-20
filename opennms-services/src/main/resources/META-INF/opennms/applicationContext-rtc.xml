@@ -36,7 +36,7 @@
     END LEGACY IMPLEMENTATION
   -->
 
-  <bean id="availabilityServiceJdbcImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceJdbcImpl"/>
+  <bean id="availabilityServiceHibernateImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceHibernateImpl"/>
 
   <!-- This EventListener listens for subscribe and unsubscribe events -->
   <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
@@ -46,7 +46,7 @@
 
   <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
     <!-- LEGACY IMPLEMENTATION: <constructor-arg ref="dataManager"/> -->
-    <constructor-arg ref="availabilityServiceJdbcImpl"/>
+    <constructor-arg ref="availabilityServiceHibernateImpl"/>
     <constructor-arg ref="rtcConfigFactory"/>
   </bean>
 
