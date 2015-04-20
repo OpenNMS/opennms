@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -53,6 +54,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
+@DirtiesContext
 public abstract class CorrelationRulesTestCase {
 
     @Autowired
@@ -88,6 +90,10 @@ public abstract class CorrelationRulesTestCase {
 
     protected void anticipate(Event event) {
         getAnticipator().anticipateEvent(event);
+    }
+
+    protected Event createNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
+    	return createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, nodeId, ipAddr, svcName, locationMonitor);
     }
 
     protected Event createRemoteNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {

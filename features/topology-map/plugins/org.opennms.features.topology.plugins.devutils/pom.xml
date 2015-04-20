@@ -79,6 +79,12 @@
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jaxb-dependencies</artifactId>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 

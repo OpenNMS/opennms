@@ -69,10 +69,6 @@
       <artifactId>hibernate-core</artifactId>
       <version>${hibernateVersion}</version>
       <exclusions>
-	<exclusion>
-		<groupId>org.hibernate.javax.persistence</groupId>
-		<artifactId>hibernate-jpa-2.0-api</artifactId>
-	</exclusion>
         <exclusion>
           <groupId>asm</groupId>
           <artifactId>asm</artifactId>

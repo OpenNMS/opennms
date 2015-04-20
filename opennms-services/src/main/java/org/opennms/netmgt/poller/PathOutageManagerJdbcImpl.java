@@ -42,6 +42,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,

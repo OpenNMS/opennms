@@ -46,7 +46,7 @@
 
 <iframe id='app' src="RemotePollerMap/app.jsp" scrolling="no" frameborder="0" width="100%" seamless></iframe>
 
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 var timer;
 
 var waitFor = function(callback) {

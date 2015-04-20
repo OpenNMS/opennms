@@ -53,6 +53,8 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.RTCHashMap;
 import org.opennms.netmgt.rtc.datablock.RTCNode;
 import org.opennms.netmgt.rtc.datablock.RTCNodeKey;
+import org.opennms.netmgt.rtc.utils.LegacyEuiLevelMapper;
+import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -99,6 +101,11 @@ public class DataManager implements AvailabilityService, InitializingBean {
 
 	@Autowired
 	private MonitoredServiceDao m_monitoredServiceDao;
+
+    /**
+     * The category to XML mapper
+     */
+    private final LegacyEuiLevelMapper m_euiMapper;
 
 	private class RTCNodeProcessor implements RowCallbackHandler {
 		RTCNodeKey m_currentKey = null;
@@ -280,7 +287,10 @@ public class DataManager implements AvailabilityService, InitializingBean {
 		return args.toArray();
 	}
 
-    public DataManager() {};
+    public DataManager() {
+        // create category converter
+        m_euiMapper = new LegacyEuiLevelMapper(this);
+    };
 
     /**
      * Constructor. Parses categories from the categories.xml and populates them
@@ -685,7 +695,6 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the value(uptime) for the category in the last 'rollingWindow'
      *         starting at current time
      */
-    @Override
     public synchronized double getValue(RTCCategory category, long curTime, long rollingWindow) {
         return m_map.getValue(category.getLabel(), curTime, rollingWindow);
     }
@@ -705,7 +714,6 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the value(uptime) for the node in the last 'rollingWindow'
      *         starting at current time in the context of the passed category
      */
-    @Override
     public synchronized double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow) {
         return m_map.getValue(nodeid, category.getLabel(), curTime, rollingWindow);
     }
@@ -721,7 +729,6 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the service count for the nodeid in the context of the passed
      *         category
      */
-    @Override
     public synchronized int getServiceCount(int nodeid, RTCCategory category) {
         return m_map.getServiceCount(nodeid, category.getLabel());
     }
@@ -737,7 +744,6 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @return the service down count for the nodeid in the context of the
      *         passed category
      */
-    @Override
     public synchronized int getServiceDownCount(int nodeid, RTCCategory category) {
         return m_map.getServiceDownCount(nodeid, category.getLabel());
     }
@@ -752,8 +758,12 @@ public class DataManager implements AvailabilityService, InitializingBean {
         return m_categories;
     }
 
-    @Override
     public Collection<Integer> getNodes(RTCCategory category) {
         return category.getNodes();
+    }
+
+    @Override
+    public EuiLevel getEuiLevel(RTCCategory category) {
+        return m_euiMapper.convertToEuiLevelXML(category);
     }
 }

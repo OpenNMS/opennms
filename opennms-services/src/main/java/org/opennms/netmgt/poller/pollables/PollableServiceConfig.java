@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -112,9 +112,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
         try {
             ServiceMonitor monitor = getServiceMonitor();
-            LOG.debug("Polling {} using pkg {}", packageName, m_service);
+            LOG.debug("Polling {} using pkg {}", m_service, packageName);
             PollStatus result = monitor.poll(m_service, getParameters());
-            LOG.debug("Finish polling {} using pkg {} result = {}", result, m_service, packageName);
+            LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
             return result;
         } catch (Throwable e) {
             LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);

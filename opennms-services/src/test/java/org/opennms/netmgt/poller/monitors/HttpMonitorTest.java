@@ -216,7 +216,7 @@ public class HttpMonitorTest {
         MockUtil.println("Reason: "+reason);
         assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(reason);
-        assertTrue(reason + "should be 'HTTP connection timeout' or 'No route to host'", reason.contains("HTTP connection timeout") || reason.contains("No route to host"));
+        assertTrue(reason + "should be 'HTTP connection timeout', 'No route to host', or 'Network is unreachable'", reason.contains("HTTP connection timeout") || reason.contains("No route to host") || reason.contains("Network is unreachable"));
     }
 
     @Test

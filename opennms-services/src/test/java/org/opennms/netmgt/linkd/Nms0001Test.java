@@ -46,14 +46,16 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
 public class Nms0001Test extends LinkdTestBuilder {
@@ -121,8 +123,6 @@ public class Nms0001Test extends LinkdTestBuilder {
         assertEquals(3,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
 
-        int start=getStartPoint(datalinkinterfaces);
-
         /*
          * 
          * These are the links among the following nodes discovered using 
@@ -132,22 +132,12 @@ public class Nms0001Test extends LinkdTestBuilder {
          * oedipus:ae0.0(575):10.1.0.10/30   <-->    siegfrie:ae0.0(533):10.1.0.9/30
          * 
          */
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-            
-            Integer linkid = datalinkinterface.getId();
-            if ( linkid == start) {
-                checkLink(froh, oedipus, 599, 578, datalinkinterface);
-            } else if (linkid == start+1 ) {
-                checkLink(froh, siegfrie, 600, 552, datalinkinterface);
-            } else if (linkid == start+2) {
-                checkLink(oedipus, siegfrie, 575, 533, datalinkinterface);
-            } else {
-                // error
-                checkLink(froh,froh,-1,-1,datalinkinterface);
-            } 
-            
-        }
-        
+        checkLinks(datalinkinterfaces,
+            new DataLinkTestMatcher(froh, oedipus, 599, 578, DiscoveryProtocol.isis),
+            new DataLinkTestMatcher(froh, siegfrie, 600, 552, DiscoveryProtocol.isis),
+            new DataLinkTestMatcher(oedipus, siegfrie, 575, 533, DiscoveryProtocol.isis)
+        );
+
         DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599)).iterator().next();
         iface.setNodeParentId(oedipus.getId());
         iface.setParentIfIndex(578);

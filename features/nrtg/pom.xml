@@ -56,7 +56,7 @@
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
             <!-- | each module can override these defaults in their osgi.bnd file -->
             <_include>-osgi.bnd</_include>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-Activator>${bundle.activator}</Bundle-Activator>
           </instructions>
         </configuration>

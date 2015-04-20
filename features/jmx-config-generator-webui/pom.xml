@@ -28,7 +28,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Vaadin-Application>org.opennms.features.jmxconfiggenerator.webui.JmxConfigGeneratorApplication</Vaadin-Application>
                         <Vaadin-Alias>/${project.artifactId}</Vaadin-Alias>
                         <Include-Resource>src/main/webapp,{maven-resources}</Include-Resource>
@@ -55,8 +55,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <!-- Compiles your custom GWT components with the GWT compiler -->
@@ -70,7 +70,7 @@
                     <!-- if you don't specify any modules, the plugin will find them -->
                     <webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
                     <!--extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8998</extraJvmArgs -->
-                    <extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
                     <runTarget>vaadin-prototype</runTarget>
                     <hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>
                     <noServer>true</noServer>

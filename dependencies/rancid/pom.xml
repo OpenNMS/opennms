@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>rancid-api</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>

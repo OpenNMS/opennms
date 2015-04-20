@@ -9,13 +9,22 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
   <name>OpenNMS Features System Report</name>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
   <dependencies>
     <dependency>
@@ -42,6 +51,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -79,17 +89,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-<!--
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
--->
-
 </project>

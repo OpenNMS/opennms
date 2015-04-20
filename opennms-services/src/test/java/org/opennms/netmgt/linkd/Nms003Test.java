@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SNMP_RESOURCE_003;
@@ -37,10 +39,9 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH2_SNMP_RESOURCE_003;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH3_SNMP_RESOURCE_003;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -106,23 +107,12 @@ public class Nms003Test extends LinkdTestBuilder {
         
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(2,m_dataLinkInterfaceDao.countAll());
-        final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        assertEquals(2, links.size());
 
-        int start=getStartPoint(datalinkinterfaces);
-
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-            Integer linkid = datalinkinterface.getId();
-            if ( linkid == start) {
-                checkLink(switch1, switch2, 5001, 5001, datalinkinterface);
-                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
-            } else if (linkid == start+1) {
-                checkLink(switch2, switch3, 5002, 5001, datalinkinterface);
-                assertEquals(DiscoveryProtocol.bridge, datalinkinterface.getProtocol());
-            } else {
-                // error
-                checkLink(switch1,switch1,-1,-1,datalinkinterface);
-            }     
-        }
+        checkLinks(links,
+            new DataLinkTestMatcher(switch1, switch2, 5001, 5001, DiscoveryProtocol.bridge),
+            new DataLinkTestMatcher(switch2, switch3, 5002, 5001, DiscoveryProtocol.bridge)
+        );
     }
 }

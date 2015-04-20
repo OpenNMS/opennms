@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,6 +96,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+        LOG.warn("GpMonitor: This poller monitor is deprecated in favor of SystemExecuteMonitor. GpMonitor will be removed in a future release.");
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         //
@@ -142,7 +143,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
 
-		LOG.debug("poll: address = {}, script = {}, arguments = {}, {}", tracker, hostAddress, script, args);
+		LOG.debug("poll: address = {}, script = {}, arguments = {}, {}", hostAddress, script, args, tracker);
 
         // Give it a whirl
         //
@@ -230,7 +231,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         // return the status of the service
         //
-        LOG.debug("poll: GP - serviceStatus= {} {}", hostAddress, serviceStatus);
+        LOG.debug("poll: GP - serviceStatus= {} {}", serviceStatus, hostAddress);
         return serviceStatus;
     }
     

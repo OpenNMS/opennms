@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.cdp;
+import static org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol.lldp;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ROUTER1_SNMP_RESOURCE;
@@ -56,20 +61,16 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH5_SNMP_RESOURCE;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Collection;
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
-import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
 public class Nms17216Test extends LinkdTestBuilder {
@@ -248,89 +249,45 @@ public class Nms17216Test extends LinkdTestBuilder {
 
         assertTrue(m_linkd.runSingleLinkDiscovery("example1"));
 
-        assertEquals(19,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        assertEquals(19, datalinkinterfaces.size());
 
-        int start=getStartPoint(datalinkinterfaces);
-
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-            Integer linkid = datalinkinterface.getId();
-            if ( linkid == start) {
-                // switch1 gi0/9 -> switch2 gi0/1 --lldp --cdp
-                checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+11) {
-                checkLink(switch2, switch1, 10101, 10109, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+1 ) {
-                // switch1 gi0/10 -> switch2 gi0/2 --lldp --cdp
-                checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+12 ) {
-                // switch1 gi0/10 -> switch2 gi0/2 --lldp --cdp
-                checkLink(switch2, switch1, 10102, 10110, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+2) {
-                // switch1 gi0/11 -> switch2 gi0/3 --lldp --cdp
-                checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+13) {
-                // switch1 gi0/11 -> switch2 gi0/3 --lldp --cdp
-                checkLink(switch2, switch1, 10103, 10111, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+3) {
-                // switch1 gi0/12 -> switch2 gi0/4 --lldp --cdp
-                checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+14) {
-                // switch1 gi0/12 -> switch2 gi0/4 --lldp --cdp
-                checkLink(switch2, switch1, 10104, 10112, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+4) {
-                // switch2 gi0/19 -> switch3 Fa0/19 --lldp --cdp
-                checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+15) {
-                // switch2 gi0/19 -> switch3 Fa0/19 --lldp --cdp
-                checkLink(switch3, switch2, 10019, 10119, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+5) {
-                // switch2 gi0/20 -> switch3 Fa0/20 --lldp --cdp
-                checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
-                assertEquals(DiscoveryProtocol.lldp, datalinkinterface.getProtocol());
-            } else if (linkid == start+16) {
-                // switch2 gi0/20 -> switch3 Fa0/20 --lldp --cdp
-                checkLink(switch3, switch2, 10020, 10120, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+6) {
-                checkLink(router4, router3, 3, 8, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+7) {
-                checkLink(router2, router1, 12, 13, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+8) {
-                checkLink(router3, router2, 13, 13, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+9) {
-                //switch4 FastEthernet0/1    ----> router3   GigabitEthernet0/1
-                checkLink(router3, switch4, 9, 10001, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+10) {
-                // switch1 gi0/1 -> router1 Fa0/20 --cdp
-                checkLink(router1, switch1, 7, 10101, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+17) {
-                // switch3 Fa0/1 -> switch5 Fa0/23 --cdp
-                checkLink(switch5, switch3, 10001, 10023, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else if (linkid == start+18) {
-                // switch3 gi0/1 -> switch5 Fa0/20 --cdp
-                checkLink(switch5, switch3, 10013, 10024, datalinkinterface);
-                assertEquals(DiscoveryProtocol.cdp, datalinkinterface.getProtocol());
-            } else {
-                fail("link ID " + linkid + " was not in the expected range " + start + "-" + (start+18));
-            }
-        }
+        checkLinks(datalinkinterfaces,
+            // switch1 gi0/9 -> switch2 gi0/1 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10101, 10109, lldp),
+            new DataLinkTestMatcher(switch2, switch1, 10101, 10109, cdp),
+            // switch1 gi0/10 -> switch2 gi0/2 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10102, 10110, lldp),
+            // switch1 gi0/10 -> switch2 gi0/2 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10102, 10110, cdp),
+            // switch1 gi0/11 -> switch2 gi0/3 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10103, 10111, lldp),
+            // switch1 gi0/11 -> switch2 gi0/3 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10103, 10111, cdp),
+            // switch1 gi0/12 -> switch2 gi0/4 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10104, 10112, lldp),
+            // switch1 gi0/12 -> switch2 gi0/4 --lldp --cdp
+            new DataLinkTestMatcher(switch2, switch1, 10104, 10112, cdp),
+            // switch2 gi0/19 -> switch3 Fa0/19 --lldp --cdp
+            new DataLinkTestMatcher(switch3, switch2, 10019, 10119, lldp),
+            // switch2 gi0/19 -> switch3 Fa0/19 --lldp --cdp
+            new DataLinkTestMatcher(switch3, switch2, 10019, 10119, cdp),
+            // switch2 gi0/20 -> switch3 Fa0/20 --lldp --cdp
+            new DataLinkTestMatcher(switch3, switch2, 10020, 10120, lldp),
+            // switch2 gi0/20 -> switch3 Fa0/20 --lldp --cdp
+            new DataLinkTestMatcher(switch3, switch2, 10020, 10120, cdp),
+            new DataLinkTestMatcher(router4, router3, 3, 8, cdp),
+            new DataLinkTestMatcher(router2, router1, 12, 13, cdp),
+            new DataLinkTestMatcher(router3, router2, 13, 13, cdp),
+            //switch4 FastEthernet0/1    ----> router3   GigabitEthernet0/1
+            new DataLinkTestMatcher(router3, switch4, 9, 10001, cdp),
+            // switch1 gi0/1 -> router1 Fa0/20 --cdp
+            new DataLinkTestMatcher(router1, switch1, 7, 10101, cdp),
+            // switch3 Fa0/1 -> switch5 Fa0/23 --cdp
+            new DataLinkTestMatcher(switch5, switch3, 10001, 10023, cdp),
+            // switch3 gi0/1 -> switch5 Fa0/20 --cdp
+            new DataLinkTestMatcher(switch5, switch3, 10013, 10024, cdp)
+        );
     }
 
     /*
@@ -400,33 +357,22 @@ public class Nms17216Test extends LinkdTestBuilder {
 
         assertEquals(6,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> links = m_dataLinkInterfaceDao.findAll();
+        assertEquals(6, links.size());
 
-        int startid = getStartPoint(links);
-        for (final DataLinkInterface link: links) {
-//            printLink(datalinkinterface);
-            Integer linkid = link.getId();
-            if ( linkid == startid) {
-                // switch1 gi0/9 -> switch2 gi0/1 --lldp
-                checkLink(switch2, switch1, 10101, 10109, link);
-            } else if (linkid == startid +1 ) {
-                // switch1 gi0/10 -> switch2 gi0/2 --lldp
-                checkLink(switch2, switch1, 10102, 10110, link);
-            } else if (linkid == startid+2) {
-                // switch1 gi0/11 -> switch2 gi0/3 --lldp
-                checkLink(switch2, switch1, 10103, 10111, link);
-            } else if (linkid == startid+3) {
-                // switch1 gi0/12 -> switch2 gi0/4 --lldp
-                checkLink(switch2, switch1, 10104, 10112, link);
-            } else if (linkid == startid+4) {
-                // switch2 gi0/19 -> switch3 Fa0/19 --lldp
-                checkLink(switch3, switch2, 10019, 10119, link);
-            } else if (linkid == startid+5) {
-                // switch2 gi0/20 -> switch3 Fa0/20 --lldp
-                checkLink(switch3, switch2, 10020, 10120, link);
-            } else {
-                fail("link ID " + linkid + " was not in the expected range " + startid + "-" + (startid+5));
-            }
-        }
+        checkLinks(links,
+            // switch1 gi0/9 -> switch2 gi0/1 --lldp
+            new DataLinkTestMatcher(switch2, switch1, 10101, 10109, lldp),
+            // switch1 gi0/10 -> switch2 gi0/2 --lldp
+            new DataLinkTestMatcher(switch2, switch1, 10102, 10110, lldp),
+            // switch1 gi0/11 -> switch2 gi0/3 --lldp
+            new DataLinkTestMatcher(switch2, switch1, 10103, 10111, lldp),
+            // switch1 gi0/12 -> switch2 gi0/4 --lldp
+            new DataLinkTestMatcher(switch2, switch1, 10104, 10112, lldp),
+            // switch2 gi0/19 -> switch3 Fa0/19 --lldp
+            new DataLinkTestMatcher(switch3, switch2, 10019, 10119, lldp),
+            // switch2 gi0/20 -> switch3 Fa0/20 --lldp
+            new DataLinkTestMatcher(switch3, switch2, 10020, 10120, lldp)
+        );
     }
 
     @Test
@@ -480,10 +426,12 @@ public class Nms17216Test extends LinkdTestBuilder {
 
         assertEquals(1,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
+        assertEquals(1, datalinkinterfaces.size());
 
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-                checkLink(router3, switch4, 9, 10001, datalinkinterface);
-        }
+        checkLinks(datalinkinterfaces,
+            // switch1 gi0/9 -> switch2 gi0/1 --lldp
+            new DataLinkTestMatcher(router3, switch4, 9, 10001, cdp)
+        );
     }
 
 }

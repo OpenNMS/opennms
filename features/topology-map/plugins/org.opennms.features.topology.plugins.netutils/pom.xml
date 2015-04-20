@@ -51,7 +51,7 @@
 						<version>${gwtPluginVersion}</version>
 						<configuration>
 							<webappDirectory>${project.build.directory}/${project.build.finalName}/VAADIN/widgetsets</webappDirectory>
-							<extraJvmArgs>-XX:MaxPermSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
+							<extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx1g -Xss1024k</extraJvmArgs>
 							<draftCompile>false</draftCompile>
 							<compileReport>false</compileReport>
 						</configuration>

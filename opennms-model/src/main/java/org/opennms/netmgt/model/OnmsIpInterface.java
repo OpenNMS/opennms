@@ -516,6 +516,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     public void mergeInterfaceAttributes(OnmsIpInterface scannedIface) {
         
+        if (hasNewValue(scannedIface.getIfIndex(), getIfIndex())) {
+            setIfIndex(scannedIface.getIfIndex());
+        }
+    
         if (hasNewValue(scannedIface.getIsManaged(), getIsManaged())) {
             setIsManaged(scannedIface.getIsManaged());
         }

@@ -249,6 +249,10 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
+  <bean id="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
+
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -278,6 +282,10 @@
   </bean>
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
+
+  <bean id="nodeLabel" class="org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl"/>
+  
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeLabel" ref="nodeLabel" />
 
   <bean id="requisitionedCategoryAssociationDao" class="org.opennms.netmgt.dao.hibernate.RequisitionedCategoryAssociationDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -314,6 +322,10 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
+
+  <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
 
   <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
