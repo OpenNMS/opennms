@@ -31,10 +31,20 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>jboss-repo</id>
+      <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
+    </repository>
+    <repository>
       <id>jboss-public-repository-group</id>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <url>http://maven.opennms.org/content/repositories/jboss-public-repository-group/</url>
+    </repository>
+    <repository>
+      <id>jboss-deprecated</id>
+      <url>http://maven.opennms.org/content/repositories/jboss-deprecated/</url>
+    </repository>
+    <repository>
+      <id>central</id>
+      <url>http://maven.opennms.org/content/groups/maven.org-release2/</url>
     </repository>
   </repositories>
 </project>
