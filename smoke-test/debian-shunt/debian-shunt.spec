@@ -4,7 +4,7 @@
 Name:			debian-shunt
 Summary:		Placeholder package to make RPM on debian happy
 Version:		1.0
-Release:		1
+Release:		2
 License:		Public Domain
 Group:			Development/Tools
 BuildArch:		noarch
@@ -18,6 +18,8 @@ Provides: jicmp = 1.4.1
 Provides: jicmp6 = 1.2.1
 Provides: postgresql-server = 9.3
 Provides: jdk = 2000:1.8.0
+Provides: java-1.8.0
+Provides: jre-1.8.0
 
 %description
 This is a placeholder wrapper package to provide the dependencies necessary
