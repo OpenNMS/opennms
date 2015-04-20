@@ -25,7 +25,7 @@
     <resourceType name="hrStorageFBSD" label="Storage (FreeBSD, MIB-2 Host Resources)"
                   resourceLabel="${hrStorageDescr}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
-        <parameter key="match-expression" value="not(#hrStorageDescr matches '^(MALLOC|UMA):.*')" />
+        <parameter key="match-expression" value="not(#hrStorageDescr matches '(^(MALLOC|UMA):.*)|(^(/dev|/var/dhcpd/dev)$)'" />
       </persistenceSelectorStrategy>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="hrStorageDescr" />
@@ -137,6 +137,10 @@
           <includeGroup>pfsense-pfinterfaces</includeGroup>
           <includeGroup>pfsense-pftables</includeGroup>
           <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
           <!-- Omitting labels since I have no way to test on my instance -->
           <!-- <includeGroup>pfsense-labels</includeGroup> -->
         </collect>
