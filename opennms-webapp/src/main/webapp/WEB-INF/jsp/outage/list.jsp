@@ -98,8 +98,6 @@
   <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
     <jsp:include page="/includes/search-constraints-box.jsp" />
     <br/>
 

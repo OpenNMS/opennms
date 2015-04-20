@@ -49,16 +49,15 @@ public interface QueryManager {
     String getNodeLabel(int nodeId) throws SQLException;
 
     /**
-     * <p>openOutage</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param date a {@link java.util.Date} object.
-     * @param outageIdSQL a {@link java.lang.String} object.
+     * Creates a new outage for the given service without setting
+     * the lost event id.
      */
-    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, Date date);
+    Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
+
+    /**
+     * Set or updates the lost event id on the specified outage.
+     */
+    void updateOpenOutageWithEventId(int outageId, int lostEventId);
 
     /**
      * Marks the outage for the given service as resolved

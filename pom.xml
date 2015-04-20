@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>15.0.1</version>
+  <version>15.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1038,7 +1038,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>15.0.1</opennms.osgi.version>
+    <opennms.osgi.version>15.0.2.SNAPSHOT</opennms.osgi.version>
     <maven.metadata.legacy>true</maven.metadata.legacy>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
@@ -1051,13 +1051,13 @@
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
     <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
-    <install.servlet.dir>${install.webapps.dir}/${install.package.name}</install.servlet.dir>
+    <install.servlet.dir>${install.webapps.dir}/opennms</install.servlet.dir>
     <install.share.dir>${install.dir}/share</install.share.dir>
     <install.bin.dir>${install.dir}/bin</install.bin.dir>
     <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
-    <install.pid.file>${install.logs.dir}/${install.package.name}.pid</install.pid.file>
+    <install.pid.file>${install.logs.dir}/opennms.pid</install.pid.file>
     
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>

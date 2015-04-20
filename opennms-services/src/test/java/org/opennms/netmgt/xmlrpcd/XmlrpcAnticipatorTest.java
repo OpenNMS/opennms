@@ -32,22 +32,20 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.apache.xmlrpc.XmlRpcClient;
-import org.apache.xmlrpc.XmlRpcException;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.apache.xmlrpc.XmlRpcClient;
+import org.apache.xmlrpc.XmlRpcException;
+
 public class XmlrpcAnticipatorTest extends TestCase {
-    private static final int PORT = 59000;
-    
     private XmlrpcAnticipator m_anticipator;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         
-        m_anticipator = new XmlrpcAnticipator(PORT);
+        m_anticipator = new XmlrpcAnticipator(0);
     }
 
     @Override
@@ -78,7 +76,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
         // It's already been set up in setUp(), so just shutdown
         m_anticipator.shutdown();
 
-        m_anticipator = new XmlrpcAnticipator(PORT);
+        m_anticipator = new XmlrpcAnticipator(0);
         // Let tearDown() do the shutdown
     }
     
@@ -94,7 +92,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
         
         m_anticipator.anticipateCall("howCheesyIsIt", t2);
         
-        XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
+        XmlRpcClient client = new XmlRpcClient("http://localhost:" + m_anticipator.getPort());
         Vector<Object> v2 = new Vector<Object>();
         v2.add(t2);
         client.execute("howCheesyIsIt", v2);
@@ -122,7 +120,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
         
         m_anticipator.anticipateCall("howCheesyIsIt", t);
         
-        XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
+        XmlRpcClient client = new XmlRpcClient("http://localhost:" + m_anticipator.getPort());
         client.execute("howCheesyIsIt", v2);
 
         try {
@@ -160,7 +158,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
         
         m_anticipator.anticipateCall("howCheesyIsIt", t);
         
-        XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
+        XmlRpcClient client = new XmlRpcClient("http://localhost:" + m_anticipator.getPort());
         client.execute("howCheesyIsIt", v2);
         
         try {

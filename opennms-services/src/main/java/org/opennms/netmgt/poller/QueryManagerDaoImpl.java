@@ -106,16 +106,32 @@ public class QueryManagerDaoImpl implements QueryManager {
             throw new IllegalArgumentException("Invalid date format: " + time, e);
         }
     }
-    
+
+    /** {@inheritDoc} */
     @Override
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
-        openOutage(nodeId, ipAddr, svcName, serviceLostEventId, time);
+    public Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime) {
+        LOG.info("opening outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, lostTime);
+        final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
+        final OnmsOutage outage = new OnmsOutage(lostTime, service);
+        m_outageDao.saveOrUpdate(outage);
+        return outage.getId();
     }
 
-    private void openOutage(int nodeId, String ipAddr, String svcName, int serviceLostEventId, Date time) {
-        OnmsEvent event = m_eventDao.get(serviceLostEventId);
-        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
-        OnmsOutage outage = new OnmsOutage(new Timestamp(time.getTime()), event, service);
+    /** {@inheritDoc} */
+    @Override
+    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+        LOG.info("updating open outage {} with event id {}", outageId, lostEventId);
+
+        final OnmsEvent event = m_eventDao.get(lostEventId);
+        final OnmsOutage outage = m_outageDao.get(outageId);
+        if (outage == null) {
+            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
+                    outageId, lostEventId);
+            return;
+        }
+
+        // Update the outage
+        outage.setServiceLostEvent(event);
         m_outageDao.saveOrUpdate(outage);
     }
 
@@ -123,10 +139,14 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime) {
         LOG.info("resolving outage for {}:{}:{} @ {}", nodeId, ipAddr, svcName, regainedTime);
-        int serviceId = m_serviceTypeDao.findByName(svcName).getId();
+        final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), svcName);
+        if (service == null) {
+            LOG.warn("Failed to resolve the pending outage for {}:{}:{} @ {}. The service could not be found.",
+                    nodeId, ipAddr, svcName, regainedTime);
+            return null;
+        }
 
-        OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, InetAddressUtils.addr(ipAddr), serviceId);
-        OnmsOutage outage = m_outageDao.currentOutageForService(service);
+        final OnmsOutage outage = m_outageDao.currentOutageForService(service);
         if (outage == null) {
             return null;
         }
@@ -142,8 +162,13 @@ public class QueryManagerDaoImpl implements QueryManager {
     public void updateResolvedOutageWithEventId(int outageId, int regainedEventId) {
         LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
 
-        OnmsEvent event = m_eventDao.get(regainedEventId);
-        OnmsOutage outage = m_outageDao.get(outageId);
+        final OnmsEvent event = m_eventDao.get(regainedEventId);
+        final OnmsOutage outage = m_outageDao.get(outageId);
+        if (outage == null) {
+            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
+                    outageId, regainedEventId);
+            return;
+        }
 
         // Update the outage
         outage.setServiceRegainedEvent(event);

@@ -68,7 +68,7 @@ public class DhcpPluginTest {
     @Test
     public void testPlugin() throws MarshalException, ValidationException, IOException {
         DhcpPlugin plugin = new DhcpPlugin();
-        assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("172.20.1.1")));
+        assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("192.0.2.1")));
     }
     
 }

@@ -28,6 +28,7 @@
 
 package org.opennms.web.svclayer;
 
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.GraphResults;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,4 +54,12 @@ public interface GraphResultsService {
     public GraphResults findResults(String[] resources,
             String[] reports,
             long start, long end, String relativeTime);
+
+    /**
+     * <p>getAllPrefabGraphs</p>
+     *
+     * @param resourceId a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.netmgt.model.PrefabGraph} objects.
+     */
+    public PrefabGraph[] getAllPrefabGraphs(String resourceId);
 }

@@ -30,6 +30,7 @@ package org.opennms.web.controller.admin.thresholds;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.api.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -50,6 +52,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.*;
 
 /**
@@ -560,45 +563,99 @@ public class ThresholdController extends AbstractController implements Initializ
             baseDef.setDescription(description);
         }
 
-        String triggeredUEI = request.getParameter("triggeredUEI");
-        if (triggeredUEI == null || "".equals(triggeredUEI)) {
-            baseDef.setTriggeredUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
-        }
-        else {
-            baseDef.setTriggeredUEI(triggeredUEI);
-            this.ensureUEIInEventConf(triggeredUEI, "exceeded");
-        }
-
-        String rearmedUEI = request.getParameter("rearmedUEI");
-        if (rearmedUEI == null || "".equals(rearmedUEI)) {
-            baseDef.setRearmedUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
-        }
-        else {
-            baseDef.setRearmedUEI(rearmedUEI);
-            this.ensureUEIInEventConf(rearmedUEI, "rearmed");
-        }
         baseDef.setDsType(request.getParameter("dsType"));
         baseDef.setType(request.getParameter("type"));
         baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
         baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
         baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
 
+        String clearKey = null;
+
+        String triggeredUEI = request.getParameter("triggeredUEI");
+        if (triggeredUEI == null || "".equals(triggeredUEI)) {
+            baseDef.setTriggeredUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
+        }
+        else {
+            org.opennms.netmgt.xml.eventconf.Event source = getSourceEvent(baseDef.getType(), true);
+            if (source != null && source.getAlarmData() != null && source.getAlarmData().getReductionKey() != null) {
+                clearKey = source.getAlarmData().getReductionKey().replace("%uei%", triggeredUEI);
+            }
+            baseDef.setTriggeredUEI(triggeredUEI);
+            this.ensureUEIInEventConf(source, triggeredUEI, baseDef.getType(), null, true);
+        }
+
+        String rearmedUEI = request.getParameter("rearmedUEI");
+        if (rearmedUEI == null || "".equals(rearmedUEI) || baseDef.getType().equals("relativeChange") || baseDef.getType().equals("absoluteChange")) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
+            baseDef.setRearmedUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
+        }
+        else {
+            org.opennms.netmgt.xml.eventconf.Event source = getSourceEvent(baseDef.getType(), false);
+            baseDef.setRearmedUEI(rearmedUEI);
+            this.ensureUEIInEventConf(source, rearmedUEI, baseDef.getType(), clearKey, false);
+        }
+    }
+    
+    private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(String thresholdType, boolean isTrigger) {
+        String sourceUei = null;
+        switch(thresholdType) {
+        case "high":
+            sourceUei = isTrigger ? EventConstants.HIGH_THRESHOLD_EVENT_UEI : EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
+            break;
+        case "low":
+            sourceUei = isTrigger ? EventConstants.LOW_THRESHOLD_EVENT_UEI : EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
+            break;
+        case "relativeChange":
+                sourceUei = isTrigger ? EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI : null;
+            break;
+        case "absoluteChange":
+            sourceUei = isTrigger ? EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI : null;
+            break;
+        case "rearmingAbsoluteChange":
+            sourceUei = isTrigger ? EventConstants.REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI : EventConstants.REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI;
+            break;
+        }
+        if (sourceUei == null) {
+            return null;
+        }
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(sourceUei);
+        if (eventsForUEI != null && eventsForUEI.size() > 0) {
+            return eventsForUEI.get(0);
+        }
+        return null;
     }
 
-    private void ensureUEIInEventConf(String uei, String typeDesc) {
-        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(uei);
+    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, String thresholdType, String clearKey, boolean isTrigger) {
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(targetUei);
         if (eventsForUEI == null || eventsForUEI.size() == 0) {
-            //UEI doesn't exist.  Add it
+            String typeDesc = isTrigger ? "exceeded" : "rearmed";
             org.opennms.netmgt.xml.eventconf.Event event = new org.opennms.netmgt.xml.eventconf.Event();
-            event.setUei(uei);
-            event.setEventLabel("User-defined threshold event " + uei);
-            event.setDescr("Threshold " + typeDesc + " for %service% datasource " +
-                    "%parm[ds]% on interface %interface%, parms: %parm[all]%");
+            event.setUei(targetUei);
+            event.setEventLabel("User-defined " + thresholdType + " threshold event " + typeDesc + ": " + targetUei);
             Logmsg logmsg = new Logmsg();
-            logmsg.setDest("logndisplay");
-            logmsg.setContent("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
             event.setLogmsg(logmsg);
-            event.setSeverity("Warning");
+            if (source == null) {
+                event.setDescr("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+                logmsg.setDest("logndisplay");
+                logmsg.setContent("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+                event.setLogmsg(logmsg);
+                event.setSeverity("Warning");
+            } else {
+                event.setDescr(source.getDescr());
+                event.setSeverity(source.getSeverity());
+                event.setOperinstruct(source.getOperinstruct());
+                logmsg.setDest(source.getLogmsg().getDest());
+                logmsg.setContent(source.getLogmsg().getContent());
+                if (source.getAlarmData() != null) {
+                    AlarmData alarmData = new AlarmData();
+                    alarmData.setAlarmType(source.getAlarmData().getAlarmType());
+                    alarmData.setAutoClean(source.getAlarmData().getAutoClean());
+                    alarmData.setReductionKey(source.getAlarmData().getReductionKey());
+                    if (!isTrigger && clearKey != null) {
+                        alarmData.setClearKey(clearKey);
+                    }
+                    event.setAlarmData(alarmData);
+                }
+            }
             m_eventConfDao.addEventToProgrammaticStore(event);
             eventConfChanged = true;
         }

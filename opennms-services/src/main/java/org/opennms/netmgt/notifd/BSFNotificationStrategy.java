@@ -43,6 +43,7 @@ import org.apache.bsf.BSFManager;
 import org.apache.bsf.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -133,7 +134,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
     }
 
     private void declareBeans(BSFManager bsfManager) throws BSFException {
-        NodeDao nodeDao = Notifd.getInstance().getNodeDao();
+        NodeDao nodeDao = BeanUtils.getFactory("notifdContext", NodeDao.class);
         Integer nodeId;
         try {
             nodeId = Integer.valueOf(m_notifParams.get(NotificationManager.PARAM_NODE));

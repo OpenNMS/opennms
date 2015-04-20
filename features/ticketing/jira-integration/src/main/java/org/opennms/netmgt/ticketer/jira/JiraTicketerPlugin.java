@@ -50,6 +50,7 @@ import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Comment;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.Transition;
@@ -61,7 +62,7 @@ import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactor
  * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
  * This implementation relies on the JIRA REST interface and is compatible
  * with JIRA 5.0+.
- * 
+ *
  * @see http://www.atlassian.com/software/jira/overview
  * @see http://docs.atlassian.com/jira-rest-java-client/1.0/apidocs/
  *
@@ -121,7 +122,7 @@ public class JiraTicketerPlugin implements Plugin {
             ticket.setState(getStateFromId(issue.getStatus().getName()));
 
             return ticket;
-        } else { 
+        } else {
             return null;
         }
     }
@@ -198,7 +199,10 @@ public class JiraTicketerPlugin implements Plugin {
             builder.setDescription(ticket.getDetails());
             builder.setDueDate(new DateTime(Calendar.getInstance()));
 
-            jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+            BasicIssue createdIssue = jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+            LOG.info("created ticket " + createdIssue);
+
+            ticket.setId(createdIssue.getKey());
 
         } else {
             // Otherwise update the existing ticket

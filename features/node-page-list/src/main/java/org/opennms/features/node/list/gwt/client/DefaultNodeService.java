@@ -86,7 +86,7 @@ public class DefaultNodeService implements NodeService {
     " \"ifOperStatus\" : \"1\"," +
     " \"ifSpeed\" : \"10000000\"," +
     " \"ifType\" : \"6\"," +
-    " \"ipAddress\" : \"172.20.1.11\"," +
+    " \"ipAddress\" : \"192.0.2.11\"," +
     " \"ipInterfaces\" : \"130\"," +
     " \"lastCapsdPoll\" : \"2010-12-14T11:18:23.385-05:00\"," +
     " \"netMask\" : \"255.255.255.0\"," +
@@ -123,7 +123,7 @@ public class DefaultNodeService implements NodeService {
     
     @Override
     public void getAllSnmpInterfacesForNode(int nodeId, RequestCallback callback) {
-        String url = BASE_URL + nodeId + "/snmpinterfaces?limit=0";
+        String url = BASE_URL + nodeId + "/snmpinterfaces?limit=0&orderBy=ifIndex";
         sendRequest(callback, url);
     }
 

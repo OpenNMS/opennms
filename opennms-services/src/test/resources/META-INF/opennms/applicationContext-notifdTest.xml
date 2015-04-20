@@ -64,6 +64,14 @@
     
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
+    <bean id="eventConfResourceLocation" class="java.lang.String">
+      <constructor-arg value="file:src/test/resources/org/opennms/netmgt/notifd/eventconf.xml" />
+	</bean>
+
+    <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
+      <property name="configResource" ref="eventConfResourceLocation" />
+    </bean>
+
     <bean id="broadcastEventProcessor" class="org.opennms.netmgt.notifd.BroadcastEventProcessor">
       <property name="notifdConfigManager" ref="notifdConfigFactory" />
       <property name="notificationManager" ref="notificationFactory" />
@@ -72,6 +80,7 @@
       <property name="destinationPathManager" ref="destinationPathFactory" />
       <property name="notificationCommandManager" ref="notificationCommandFactory" />
       <property name="pollOutagesConfigManager" ref="pollOutagesConfigFactory" />
+      <property name="eventConfDao" ref="eventConfDao" />
     </bean>
 
     <bean name="daemon" class="org.opennms.netmgt.notifd.Notifd" />

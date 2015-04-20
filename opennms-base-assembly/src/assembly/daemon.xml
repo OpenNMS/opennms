@@ -15,9 +15,6 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <excludes>
-        <exclude>opennms</exclude>
-      </excludes>
       <directory>target/classes/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
@@ -25,9 +22,6 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <excludes>
-        <exclude>opennms.service</exclude>
-      </excludes>
       <directory>target/classes/etc</directory>
       <outputDirectory>etc</outputDirectory>
       <fileMode>0644</fileMode>
@@ -98,20 +92,6 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>target/classes/bin/opennms</source>
-      <outputDirectory>bin</outputDirectory>
-      <destName>${install.package.name}</destName>
-      <fileMode>0755</fileMode>
-    </file>
-    <file>
-      <source>target/classes/etc/opennms.service</source>
-      <outputDirectory>etc</outputDirectory>
-      <destName>${install.package.name}.service</destName>
-      <fileMode>0644</fileMode>
-    </file>
-  </files>
   <dependencySets>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>

@@ -79,8 +79,8 @@ import org.springframework.util.Assert;
 @JUnitTemporaryDatabase
 @JUnitSnmpAgents(value={
 		@JUnitSnmpAgent(host="192.168.1.1", resource = "classpath:snmpAssetTestData.properties"),
-		@JUnitSnmpAgent(host="172.20.1.201", resource = "classpath:snmpAssetTestData.properties"),
-		@JUnitSnmpAgent(host="172.20.1.204", resource = "classpath:snmpAssetTestData.properties")
+		@JUnitSnmpAgent(host="192.0.2.201", resource = "classpath:snmpAssetTestData.properties"),
+		@JUnitSnmpAgent(host="192.0.2.204", resource = "classpath:snmpAssetTestData.properties")
 })
 public class SnmpAssetProvisioningAdapterIntegrationTest implements InitializingBean {
 

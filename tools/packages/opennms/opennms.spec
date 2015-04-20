@@ -46,7 +46,6 @@ AutoReq: no
 AutoProv: no
 
 %define with_tests	0%{nil}
-%define with_docs	1%{nil}
 
 Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
@@ -60,8 +59,8 @@ Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires(pre):		%{name}-webui      >= %{version}-%{release}
-Requires:		%{name}-webui      >= %{version}-%{release}
+Requires(pre):		%{name}-webui       = %{version}-%{release}
+Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
 Requires(pre):		postgresql-server  >= 8.4
@@ -96,7 +95,7 @@ Requires(pre):	jicmp6
 Requires:	jicmp6
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
-Obsoletes:	%{name} < 1.3.11
+Obsoletes:	opennms < 1.3.11
 
 %description core
 The core backend.  This package contains the main daemon responsible
@@ -120,7 +119,6 @@ option, like so:
 %{extrainfo2}
 
 
-%if %{with_docs}
 %package docs
 Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
@@ -131,7 +129,6 @@ This package contains the API and user documentation.
 %{extrainfo}
 %{extrainfo2}
 
-%endif
 
 %package remote-poller
 Summary:	Remote (Distributed) Poller for %{_descr}
@@ -168,7 +165,7 @@ Group:		Applications/System
 Requires(pre):	%{name}-core = %{version}-%{release}
 Requires:	%{name}-core = %{version}-%{release}
 Provides:	%{name}-webui = %{version}-%{release}
-Obsoletes:	%{name}-webapp < 1.3.11
+Obsoletes:	opennms-webapp < 1.3.11
 
 %description webapp-jetty
 The web UI.  This is the Jetty version, which runs
@@ -556,15 +553,12 @@ export OPENNMS_HOME PATH
 
 END
 
-%if %{with_docs}
-
-mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-tar -xvzf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/guide-all/target/*.tar.gz -C $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
+rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+mkdir -p $RPM_BUILD_ROOT%{_docdir}
+mv $RPM_BUILD_ROOT%{instprefix}/docs $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
-%endif
 
 install -d -m 755 $RPM_BUILD_ROOT%{logdir}
 mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
@@ -578,13 +572,9 @@ rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%
 chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
 
 install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/%{name}-remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{name}-remote-poller
+install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
+install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
-
-if [ '%{name}' != 'opennms' ]; then
-	ln -sf "%{name}" $RPM_BUILD_ROOT%{instprefix}/bin/opennms
-fi
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
 
@@ -593,8 +583,8 @@ cd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
-	grep -v '%{_initrddir}/%{name}-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
 	grep -v '3gpp' | \
@@ -617,8 +607,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
-	grep -v '%{_initrddir}/%{name}-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/%{name}-remote-poller' | \
+	grep -v '%{_initrddir}/opennms-remote-poller' | \
+	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
 	grep -v 'ncs.xml' | \
 	grep -v 'drools-engine.d/ncs' | \
@@ -726,15 +716,13 @@ rm -rf $RPM_BUILD_ROOT
 			%{instprefix}/data
 			%{instprefix}/deploy
 
-%if %{with_docs}
 %files docs
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
-%endif
 
 %files remote-poller
-%attr(755,root,root) %{_initrddir}/%{name}-remote-poller
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/%{name}-remote-poller
+%attr(755,root,root) %{_initrddir}/opennms-remote-poller
+%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
 
@@ -876,24 +864,44 @@ rm -rf $RPM_BUILD_ROOT
 %{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
 %{instprefix}/lib/vtd-xml-*.jar
 
-%post docs
-printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
-if [ -e "$RPM_INSTALL_PREFIX0/docs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-	echo "failed: $RPM_INSTALL_PREFIX0/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+%post -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
+
+printf -- "- making symlink for $ROOT_INST/docs... "
+if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+	echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
 else
-	rm -rf "$RPM_INSTALL_PREFIX0/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$RPM_INSTALL_PREFIX0/docs"
+	rm -rf "$ROOT_INST/docs"
+	ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
 	echo "done"
 fi
 
-%postun docs
+%postun -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
+
 if [ "$1" = 0 ]; then
-	if [ -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-		rm -f "$RPM_INSTALL_PREFIX0/docs"
+	if [ -L "$ROOT_INST/docs" ]; then
+		rm -f "$ROOT_INST/docs"
 	fi
 fi
 
-%post core
+%post -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
@@ -904,38 +912,38 @@ for prefix in lib lib64; do
 		SYSTEMDDIR="/usr/$prefix/systemd/system"
 		printf -- "- installing service into $SYSTEMDDIR... "
 		install -d -m 755 "$SYSTEMDDIR"
-		install -m 655 "%{instprefix}/etc/%{name}.service" "$SYSTEMDDIR"/
+		install -m 655 "%{instprefix}/etc/opennms.service" "$SYSTEMDDIR"/
 		echo "done"
 	fi
 done
 
-if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
-	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory or file, but it should be a symlink to $RPM_INSTALL_PREFIX2."
+if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/logs... "
+	if [ -e "$ROOT_INST/logs" ] && [ ! -L "$ROOT_INST/logs" ]; then
+		echo "failed: $ROOT_INST/logs is a real directory or file, but it should be a symlink to $LOG_INST."
 		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/logs"
-		ln -sf "$RPM_INSTALL_PREFIX2" "$RPM_INSTALL_PREFIX0/logs"
+		rm -rf "$ROOT_INST/logs"
+		ln -sf "$LOG_INST" "$ROOT_INST/logs"
 		echo "done"
 	fi
 fi
 
-if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
-	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/share is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX1."
+if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/share... "
+	if [ -e "$ROOT_INST/share" ] && [ ! -L "$ROOT_INST/share" ]; then
+		echo "failed: $ROOT_INST/share is a real directory, but it should be a symlink to $SHARE_INST."
 		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/share"
-		ln -sf "$RPM_INSTALL_PREFIX1" "$RPM_INSTALL_PREFIX0/share"
+		rm -rf "$ROOT_INST/share"
+		ln -sf "$SHARE_INST" "$ROOT_INST/share"
 		echo "done"
 	fi
 fi
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
-if [ `ls $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
-	for i in $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew; do
+if [ `ls $ROOT_INST/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
+	for i in $ROOT_INST/etc/*.sql.rpmnew; do
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
@@ -943,41 +951,41 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-CLASS_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
 	echo "FOUND"
 	echo ""
 	echo "WARNING: $TOTAL_UPDATES old update files were found in your"
-	echo "$RPM_INSTALL_PREFIX0/lib/updates directory.  They have been deleted"
+	echo "$ROOT_INST/lib/updates directory.  They have been deleted"
 	echo "because they should now be out of date."
 	echo ""
 else
 	echo "done"
 fi
 
-rm -f $RPM_INSTALL_PREFIX0/etc/configured
+rm -f $ROOT_INST/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf $RPM_INSTALL_PREFIX0/bin/%{name} $dir/init.d/%{name}
+		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
 		break
 	fi
 done
 
 for LIBNAME in jicmp jicmp6 jrrd; do
-	if [ `grep "opennms.library.${LIBNAME}" "$RPM_INSTALL_PREFIX0/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
+	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
-			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$RPM_INSTALL_PREFIX0/etc/libraries.properties"
+			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$ROOT_INST/etc/libraries.properties"
 		fi
 	fi
 done
 
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
-if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
-	find "$RPM_INSTALL_PREFIX0/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
-	find "$RPM_INSTALL_PREFIX0/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
+if [ -d "$ROOT_INST/data" ]; then
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -prune -o -print | xargs rm -rf
+	find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print | xargs rm -rf
 fi
 echo "done"
 
@@ -989,12 +997,18 @@ echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."
 echo ""
 
-%postun core
+%postun -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
 	for dir in logs share; do
-		if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
-			rm -f "$RPM_INSTALL_PREFIX0/$dir"
+		if [ -L "$ROOT_INST/$dir" ]; then
+			rm -f "$ROOT_INST/$dir"
 		fi
 	done
 fi

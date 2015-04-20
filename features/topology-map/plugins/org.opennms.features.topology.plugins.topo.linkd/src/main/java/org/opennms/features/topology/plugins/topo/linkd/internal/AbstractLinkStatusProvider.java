@@ -28,16 +28,25 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
-
-import java.util.*;
 
 public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
 
@@ -60,12 +69,16 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
 
         @Override
         public Map<String, String> getStatusProperties() {
-            Map<String, String> statusMap = new HashMap<String, String>();
+            Map<String, String> statusMap = new LinkedHashMap<String, String>();
             statusMap.put("status", m_status);
 
             return statusMap;
         }
 
+        @Override
+        public String toString() {
+            return "LinkStatus[" + m_status + "]";
+        }
     }
     private AlarmDao m_alarmDao;
 
@@ -96,7 +109,17 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
             for (EdgeAlarmStatusSummary eSum : edgeAlarmSummaries) {
                 String linkId = eSum.getId();
                 EdgeRef edge = mappedRefs.get(linkId);
-                if (returnMap.size() > 0 && edge != null) returnMap.put(edge, getLinkStatusForSummary(eSum));
+
+                final Status existingStatus = returnMap.get(edge);
+                final Status edgeStatus = getLinkStatusForSummary(eSum);
+
+                if (existingStatus != null) {
+                    if ("unknown".equals(existingStatus.computeStatus())) {
+                        returnMap.put(edge, edgeStatus);
+                    } else if ("up".equals(existingStatus.computeStatus()) && "down".equals(edgeStatus.computeStatus())) {
+                        returnMap.put(edge, edgeStatus);
+                    }
+                }
             }
         }
 
@@ -104,14 +127,14 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
         return returnMap;
     }
 
-    protected LinkStatus getLinkStatusForSummary(EdgeAlarmStatusSummary summary) {
+    protected Status getLinkStatusForSummary(EdgeAlarmStatusSummary summary) {
         return new LinkStatus(summary);
     };
 
     protected abstract Set<Integer> getLinkIds(Map<String, EdgeRef> mappedRefs);
 
     protected Map<String, EdgeRef> mapRefs(Collection<EdgeRef> edges) {
-        Map<String, EdgeRef> retVal = new HashMap<String, EdgeRef>();
+        Map<String, EdgeRef> retVal = new LinkedHashMap<String, EdgeRef>();
         for (EdgeRef edge : edges) {
             String nameSpace = getNameSpace();
             if(edge.getNamespace().equals(nameSpace)) retVal.put(edge.getId(), edge);
@@ -120,7 +143,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
     }
 
     protected Map<EdgeRef, Status> initializeMap(Collection<EdgeRef> edges) {
-        Map<EdgeRef, Status> retVal = new HashMap<EdgeRef, Status>();
+        Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
         for (EdgeRef edge : edges) {
             String nameSpace = getNameSpace();
             if(edge.getNamespace().equals(nameSpace)) retVal.put(edge, new LinkStatus("unknown"));
@@ -134,7 +157,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
 
     protected List<OnmsAlarm> getLinkDownAlarms() {
         org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsAlarm.class);
-        criteria.addRestriction(new EqRestriction("uei", "uei.opennms.org/internal/topology/linkDown"));
+        criteria.addRestriction(new EqRestriction("uei", EventConstants.TOPOLOGY_LINK_DOWN_EVENT_UEI));
         criteria.addRestriction(new NeRestriction("severity", OnmsSeverity.CLEARED));
         return getAlarmDao().findMatching(criteria);
     }

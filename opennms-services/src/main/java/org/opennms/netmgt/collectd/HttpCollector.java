@@ -179,7 +179,7 @@ public class HttpCollector implements ServiceCollector {
                     doCollection(this, collectionResource);
                     m_collectionResourceList.add(collectionResource);
                 } catch (HttpCollectorException e) {
-                    LOG.error("collect: http collection failed", e);
+                    LOG.warn("collect: http collection failed", e);
 
                     /*
                      * FIXME: This doesn't make sense since everything is SNMP
@@ -450,12 +450,12 @@ public class HttpCollector implements ServiceCollector {
                             LOG.debug("processResponse: found a parsable number with locale \"{}\".", locale);
                             break;
                         } catch (final ParseException e) {
-                            LOG.error("attribute {} failed to match a parsable number with locale \"{}\"! Matched \"{}\" instead.", attribDef.getAlias(), locale, value);
+                            LOG.warn("attribute {} failed to match a parsable number with locale \"{}\"! Matched \"{}\" instead.", attribDef.getAlias(), locale, value);
                         }
                     }
 
                     if (num == null) {
-                        LOG.error("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
+                        LOG.warn("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
                         continue;
                     }
 
