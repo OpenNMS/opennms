@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +52,7 @@ import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -89,10 +89,16 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
 	}
 
     /**
-     * Optimized method for calculating the category statistics
-     * that aims to reduce the number of calls to the database.
+     * Optimized method for calculating the category statistics.
+     *
+     * We start off by retrieving outages affecting the nodes and services
+     * in the given category, and group these by node id.
+     *
+     * Using the outages, we calculate node-level statistics
+     * and tally the values to calculate the category statistics.
      */
     @Override
+    @Transactional(readOnly=true)
     public synchronized EuiLevel getEuiLevel(RTCCategory category) {
         final Header header = new Header();
         header.setVer("1.9a");
@@ -127,45 +133,39 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         final Date windowStart = new Date(curTime - rWindow);
         final Date windowEnd = new Date(curTime);
 
-        final Collection<Integer> nodes = getNodes(category);
+        // category specifics
+        final List<Integer> nodeIds = getNodes(category);
         final List<String> serviceNames = category.getServiceCollection();
 
-        // retrieve all of the services in this category, grouped by node
-        final Map<Integer, List<OnmsMonitoredService>> servicesByNode = getServices(nodes, serviceNames);
-
-        // flatten the list of services in this category
-        final List<OnmsMonitoredService> allServices = Lists.newLinkedList();
-        servicesByNode.values().forEach(allServices::addAll);
-
-        // retrieve the outages associated with the list of services that fall within our window
-        final Map<Integer, List<OnmsOutage>> outagesByService = getOutages(allServices, windowStart, windowEnd);
+        // retrieve the outages associated with the given nodes, only retrieving those that affect our window
+        final Map<Integer, List<OnmsOutage>> outagesByNode = getOutages(nodeIds, serviceNames, windowStart, windowEnd);
 
         // calculate the node level statistics
-        for (final int nodeID : nodes) {
-            List<OnmsMonitoredService> services = servicesByNode.get(nodeID);
-            if (services == null) {
-                // Use an empty list if this particular node has no services
-                services = Lists.newArrayList();
+        for (final int nodeId : nodeIds) {
+            List<OnmsOutage> outages = outagesByNode.get(nodeId);
+            if (outages == null) {
+                outages = Lists.newArrayList();
             }
 
-            // sum the outage time for all of the node's services
-            final double outageTime = services.stream()
-                    .mapToDouble(service -> getOutageTimeInWindow(outagesByService.get(service.getId()), windowStart, windowEnd))
-                    .sum();
+            // sum the outage time
+            final double outageTime = getOutageTimeInWindow(outages, windowStart, windowEnd);
 
-            // count the number of services that are currently down
-            final long numServicesDown = services.stream()
-                    .filter(service -> hasOngoingOutage(outagesByService.get(service.getId())))
+            // determine the number of services
+            final int numServices = getNumServices(nodeId, serviceNames);
+
+            // count the number of outstanding outages
+            final long numServicesDown = outages.stream()
+                    .filter(outage -> outage.getIfRegainedService() == null)
                     .count();
 
             final Node levelNode = new Node();
-            levelNode.setNodeid(nodeID);
+            levelNode.setNodeid(nodeId);
 
             // value for this node for this category
-            levelNode.setNodevalue(RTCUtils.getOutagePercentage(outageTime, rWindow, services.size()));
+            levelNode.setNodevalue(RTCUtils.getOutagePercentage(outageTime, rWindow, numServices));
 
             // node service count
-            levelNode.setNodesvccount(services.size());
+            levelNode.setNodesvccount(numServices);
 
             // node service down count
             levelNode.setNodesvcdowncount(numServicesDown);
@@ -174,7 +174,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
             levelCat.addNode(levelNode);
 
             // update the category statistics
-            numServicesInCategory += services.size();
+            numServicesInCategory += numServices;
             outageTimeInCategory += outageTime;
         }
 
@@ -222,16 +222,12 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         return Math.min(downtimeInWindow, windowLength);
     }
 
-    private Map<Integer, List<OnmsMonitoredService>> getServices(Collection<Integer> nodes, List<String> serviceNames) {
-        if (nodes == null || nodes.size() == 0) {
-            return Maps.newHashMap();
-        }
-
+    private int getNumServices(int nodeId, List<String> serviceNames) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class)
             .alias("ipInterface", "ipInterface")
             .alias("ipInterface.node", "node")
             .eq("ipInterface.isManaged", "M")
-            .in("node.id", nodes);
+            .eq("node.id", nodeId);
 
         if (serviceNames != null && serviceNames.size() > 0) {
             builder.alias("serviceType", "serviceType")
@@ -239,12 +235,11 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         }
 
         // Retrieve the services and group them by node id
-        return m_monitoredServiceDao.findMatching(builder.toCriteria()).stream()
-            .collect(Collectors.groupingBy(OnmsMonitoredService::getNodeId));
+        return m_monitoredServiceDao.countMatching(builder.toCriteria());
     }
 
-    private Map<Integer, List<OnmsOutage>> getOutages(List<OnmsMonitoredService> services, Date start, Date end) {
-        if (services == null || services.size() == 0) {
+    private Map<Integer, List<OnmsOutage>> getOutages(List<Integer> nodeIds, List<String> serviceNames, Date start, Date end) {
+        if (nodeIds == null || nodeIds.size() == 0) {
             return Maps.newHashMap();
         }
 
@@ -256,23 +251,25 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
                     new GtRestriction("ifRegainedService", start),
                     new LeRestriction("ifRegainedService", end))
             )
-            .in("monitoredService", services);
+            // Only select outages affecting our nodes
+            .alias("monitoredService", "monitoredService")
+            .alias("monitoredService.ipInterface", "ipInterface")
+            .alias("ipInterface.node", "node")
+            .eq("ipInterface.isManaged", "M")
+            .in("node.id", nodeIds);
 
-        // Retrieve the outages and group them by monitored service id
-        return m_outageDao.findMatching(builder.toCriteria()).stream()
-            .collect(Collectors.groupingBy(outage -> outage.getMonitoredService().getId()));
-    }
-
-    private boolean hasOngoingOutage(List<OnmsOutage> outages) {
-        if (outages == null) {
-            return false;
+        // Only select outages affecting services with the given names, if set
+        if (serviceNames != null && serviceNames.size() > 0) {
+            builder.alias("monitoredService.serviceType", "serviceType")
+            .in("serviceType.name", serviceNames);
         }
 
-        return outages.stream()
-            .anyMatch(outage -> outage.getIfRegainedService() == null);
+        // Retrieve the outages and group them by node id
+        return m_outageDao.findMatching(builder.toCriteria()).stream()
+            .collect(Collectors.groupingBy(outage -> outage.getNodeId()));
     }
 
-    private Collection<Integer> getNodes(RTCCategory category) {
+    private List<Integer> getNodes(RTCCategory category) {
         // Refresh the list of nodes contained inside the RTCCategory
         category.clearNodes();
         category.addAllNodes(RTCUtils.getNodeIdsForCategory(m_filterDao,  category));
