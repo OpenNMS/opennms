@@ -324,8 +324,6 @@
       <feature>dnsjava</feature>
       <feature>hibernate36</feature>
       <feature>jaxb</feature>
-      <!-- TODO: Maybe not necessary after Jesse's recent changes -->
-      <feature>spring-security32</feature>
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>

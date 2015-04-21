@@ -41,7 +41,7 @@ public class Rtcd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netm
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Rtcd";
+        return "rtc";
     }
 
     /** {@inheritDoc} */
