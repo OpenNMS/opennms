@@ -50,6 +50,31 @@
     }
 %>
 
-<iframe id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
+<div class="row" style="height:95%">
+    <div class="col-md-10" style="height:100%">
+        <iframe name="dashboard" id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
+    </div>
+    <div class="col-md-2">
+        <div class="resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed">
+            <ul class="nav nav-stacked">
+                <li>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#surveillanceview" data-target="#surveillanceview">Surveillance View</a>
+                </li>
+                <li>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#alarms" data-target="#alarms">Alarms</a>
+                </li>
+                <li>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#notifications">Notifications</a>
+                </li>
+                <li>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#outages">Outages</a>
+                </li>
+                <li>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#resourcegraphs">Resource Graphs</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
