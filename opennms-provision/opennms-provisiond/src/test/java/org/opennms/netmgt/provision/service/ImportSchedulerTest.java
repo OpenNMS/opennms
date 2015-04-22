@@ -102,7 +102,8 @@ public class ImportSchedulerTest implements InitializingBean {
         RequisitionDef def = m_dao.getDefs().get(0);
         
         JobDetail detail = new JobDetail("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false, false);
-        detail.getJobDataMap().put(ImportJob.KEY, def.getImportUrlResource());
+        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
+        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
 
         
         class MyBoolWrapper {
@@ -140,8 +141,10 @@ public class ImportSchedulerTest implements InitializingBean {
                 
                 if (jobInstance instanceof ImportJob) {
                     Assert.assertNotNull( ((ImportJob)jobInstance).getProvisioner());
-                    Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.KEY));
-                    Assert.assertEquals("dns://localhost/localhost", context.getJobDetail().getJobDataMap().get(ImportJob.KEY));
+                    Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.URL));
+                    Assert.assertEquals("dns://localhost/localhost", context.getJobDetail().getJobDataMap().get(ImportJob.URL));
+                    Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.RESCAN_EXISTING));
+                    Assert.assertEquals("true", context.getJobDetail().getJobDataMap().get(ImportJob.RESCAN_EXISTING));
                 }
                 callTracker.setCalled(true);
             }
