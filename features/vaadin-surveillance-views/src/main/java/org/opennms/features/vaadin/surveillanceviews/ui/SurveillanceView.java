@@ -31,6 +31,8 @@ import com.vaadin.data.Property;
 import com.vaadin.event.UIEvents;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
@@ -52,7 +54,7 @@ import java.util.List;
  *
  * @author Christian Pape
  */
-public class SurveillanceView extends VerticalLayout implements UIEvents.PollListener {
+public class SurveillanceView extends CssLayout implements UIEvents.PollListener {
     /**
      * the logger instance
      */
@@ -221,11 +223,6 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
         setSizeFull();
 
         /**
-         * set spacing
-         */
-        setSpacing(true);
-
-        /**
          * set the view to be displayed
          */
         setView(selectedView);
@@ -268,11 +265,18 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getCss(Component c) {
+        return "padding-left: 0px;";
+    }
+
+    /**
      * Set the view to be displayed by this component.
      *
      * @param view the view to be displayed
      */
-
     public void setView(View view) {
         /**
          * set the field
@@ -312,16 +316,30 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
         /**
          * ...and add the header and the table itself
          */
-        upperLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"surveillanceview\"></div>", ContentMode.HTML));
+
+        upperLayout.addComponent(new Label("<div id=\"surveillanceview\"/>", ContentMode.HTML));
         upperLayout.addComponent(m_surveillanceViewTableHeader);
         upperLayout.addComponent(m_surveillanceViewTable);
 
-        addComponent(upperLayout);
+        if (!m_dashboard) {
+            addComponent(upperLayout);
+        } else {
+            /**
+             * if dashboard should be displayed add the detail tables and components
+             */
 
-        /**
-         * if dashoard should be displayed add the detail tables and components
-         */
-        if (m_dashboard) {
+            CssLayout leftCssLayout = new CssLayout() {
+                @Override
+                protected String getCss(Component c) {
+                    return "padding-bottom: 6px;";
+                }
+            };
+
+            leftCssLayout.setPrimaryStyleName("col-md-10");
+
+            CssLayout rightCssLayout = new CssLayout();
+            rightCssLayout.setPrimaryStyleName("col-md-2");
+
             lowerLayout = new VerticalLayout();
             lowerLayout.setSpacing(true);
 
@@ -336,13 +354,13 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             /**
              * add them to the layout
              */
-            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"alarms\"></div>", ContentMode.HTML));
+            lowerLayout.addComponent(new Label("<div id=\"alarms\"/>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewAlarmTable);
-            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"notifications\"></div>", ContentMode.HTML));
+            lowerLayout.addComponent(new Label("<div id=\"notifications\"/>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewNotificationTable);
-            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"outages\"></div>", ContentMode.HTML));
+            lowerLayout.addComponent(new Label("<div id=\"outages\"/>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
-            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"resourcegraphs\"></div>", ContentMode.HTML));
+            lowerLayout.addComponent(new Label("<div id=\"resourcegraphs\"/>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             /**
@@ -357,8 +375,38 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
              * add the layout to this component
              */
             addComponent(lowerLayout);
-            setExpandRatio(lowerLayout, 1.0f);
+
+            leftCssLayout.addComponent(upperLayout);
+            leftCssLayout.addComponent(lowerLayout);
+
+            CssLayout resultsSidebar = new CssLayout();
+            resultsSidebar.setPrimaryStyleName("resource-graphs-sidebar hidden-print hidden-xs hidden-sm sidebar-fixed");
+            resultsSidebar.setId("results-sidebar");
+
+            resultsSidebar.addComponent(new Label("<ul class=\"nav nav-stacked\">\n" +
+                    "                <li>\n" +
+                    "                    <a href=\"#surveillanceview\" data-target=\"#surveillanceview\">Surveillance View</a>\n" +
+                    "                </li>\n" +
+                    "                <li>\n" +
+                    "                    <a href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
+                    "                </li>\n" +
+                    "                <li>\n" +
+                    "                    <a href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
+                    "                </li>\n" +
+                    "                <li>\n" +
+                    "                    <a href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +
+                    "                </li>\n" +
+                    "                <li>\n" +
+                    "                    <a href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
+                    "                </li>\n" +
+                    "            </ul>", ContentMode.HTML));
+
+            rightCssLayout.addComponent(resultsSidebar);
+
+            addComponent(leftCssLayout);
+            addComponent(rightCssLayout);
         }
+
     }
 
     /**
