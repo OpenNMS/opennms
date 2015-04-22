@@ -79,13 +79,13 @@
                     <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#alarms" data-target="#alarms">Alarms</a>
                 </li>
                 <li>
-                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#notifications">Notifications</a>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#notifications" data-target="#notifications">Notifications</a>
                 </li>
                 <li>
-                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#outages">Outages</a>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#outages" data-target="#outages">Outages</a>
                 </li>
                 <li>
-                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#resourcegraphs">Resource Graphs</a>
+                    <a target="dashboard" href="osgi/vaadin-surveillance-views?dashboard=true<%= viewName %>#resourcegraphs" data-target="#resourcegraphs">Resource Graphs</a>
                 </li>
             </ul>
         </div>
