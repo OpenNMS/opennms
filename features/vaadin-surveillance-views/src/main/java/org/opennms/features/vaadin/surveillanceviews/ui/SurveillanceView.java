@@ -29,6 +29,7 @@ package org.opennms.features.vaadin.surveillanceviews.ui;
 
 import com.vaadin.data.Property;
 import com.vaadin.event.UIEvents;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -215,6 +216,11 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
         this.m_enabled = enabled;
 
         /**
+         * setting full size
+         */
+        setSizeFull();
+
+        /**
          * set spacing
          */
         setSpacing(true);
@@ -306,6 +312,7 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
         /**
          * ...and add the header and the table itself
          */
+        upperLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"surveillanceview\"></div>", ContentMode.HTML));
         upperLayout.addComponent(m_surveillanceViewTableHeader);
         upperLayout.addComponent(m_surveillanceViewTable);
 
@@ -329,9 +336,13 @@ public class SurveillanceView extends VerticalLayout implements UIEvents.PollLis
             /**
              * add them to the layout
              */
+            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"alarms\"></div>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewAlarmTable);
+            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"notifications\"></div>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewNotificationTable);
+            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"outages\"></div>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
+            lowerLayout.addComponent(new Label("<div class=\"panel panel-default text-center\" id=\"resourcegraphs\"></div>", ContentMode.HTML));
             lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             /**
