@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.network.IPAddress;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
 public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCollection> {
@@ -50,8 +51,12 @@ public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCo
         final Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("options", "value");
 
+        final String ipAddr = "127.0.0.1";
+        // Instantiate the InetAddress like the InetAddressXmlAdapter does
+        final InetAddress inetAddr = new IPAddress(ipAddr).toInetAddress();
+
         final AgentResponse response = new AgentResponse(
-                InetAddress.getLocalHost(),
+                inetAddr,
                 161,
                 "SNMP",
                 parameters
@@ -63,7 +68,7 @@ public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCo
                 responses,
                 "<agents count=\"1\" totalCount=\"1\">" + 
                 "<agent>" +
-                "    <address>127.0.0.1</address>" +
+                "    <address>" + ipAddr + "</address>" +
                 "    <port>161</port>" +
                 "    <serviceName>SNMP</serviceName>" +
                 "    <parameters>" +
