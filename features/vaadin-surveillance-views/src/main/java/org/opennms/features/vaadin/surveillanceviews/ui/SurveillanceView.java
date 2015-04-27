@@ -336,6 +336,7 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
             };
 
             leftCssLayout.setPrimaryStyleName("col-md-10");
+            leftCssLayout.setId("dashboard-content");
 
             CssLayout rightCssLayout = new CssLayout();
             rightCssLayout.setPrimaryStyleName("col-md-2");
@@ -354,13 +355,16 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
             /**
              * add them to the layout
              */
-            lowerLayout.addComponent(new Label("<div id=\"alarms\"/>", ContentMode.HTML));
+            surveillanceViewAlarmTable.setId("alarms");
             lowerLayout.addComponent(surveillanceViewAlarmTable);
-            lowerLayout.addComponent(new Label("<div id=\"notifications\"/>", ContentMode.HTML));
+
+            surveillanceViewNotificationTable.setId("notifications");
             lowerLayout.addComponent(surveillanceViewNotificationTable);
-            lowerLayout.addComponent(new Label("<div id=\"outages\"/>", ContentMode.HTML));
+
+            surveillanceViewNodeRtcTable.setId("outages");
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
-            lowerLayout.addComponent(new Label("<div id=\"resourcegraphs\"/>", ContentMode.HTML));
+
+            surveillanceViewGraphComponent.setId("resourcegraphs");
             lowerLayout.addComponent(surveillanceViewGraphComponent);
 
             /**
@@ -399,7 +403,10 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
                     "                <li>\n" +
                     "                    <a href=\"#resourcegraphs\" data-target=\"#resourcegraphs\">Resource Graphs</a>\n" +
                     "                </li>\n" +
-                    "            </ul>", ContentMode.HTML));
+                    "            </ul>" +
+                    "<script type=\"text/javascript\">\n" +
+                    "            $('body').scrollspy({ target: '#results-sidebar' });\n" +
+                    "</script>\n", ContentMode.HTML));
 
             rightCssLayout.addComponent(resultsSidebar);
 
