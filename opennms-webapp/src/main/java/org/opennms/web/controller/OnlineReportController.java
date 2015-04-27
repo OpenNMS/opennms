@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.api.reporting.ReportFormat;
@@ -74,9 +75,6 @@ public class OnlineReportController {
     @RequestMapping(method=RequestMethod.GET)
     public void referenceData(ModelMap data, @RequestParam("reportId") String reportId) {
 
-        // Add the command to the model
-        data.put(COMMAND_NAME, m_reportWrapperService.getParameters(reportId));
-
         List<ReportFormat> formats = m_reportWrapperService.getFormats(reportId);
         data.put("formats", formats);
         List<String> onmsCategories = m_categoryDao.getAllCategoryNames();
@@ -88,12 +86,17 @@ public class OnlineReportController {
     @InitBinder
     public void initBinder(ServletRequestDataBinder binder) {
         binder.registerCustomEditor(
-            Date.class,
-            new CustomDateEditor(
-                new SimpleDateFormat("yyyy-MM-dd"),
-                true
-            )
+                Date.class,
+                new CustomDateEditor(
+                        new SimpleDateFormat("yyyy-MM-dd"),
+                        true
+                )
         );
+    }
+
+    @ModelAttribute(COMMAND_NAME)
+    public ReportParameters formBackingObject(HttpServletRequest req) throws Exception {
+        return m_reportWrapperService.getParameters(req.getParameter("reportId"));
     }
 
     @RequestMapping(method=RequestMethod.POST)
