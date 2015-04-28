@@ -30,20 +30,13 @@ package org.opennms.netmgt.rtc;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -117,69 +110,13 @@ public abstract class RTCUtils {
 		String filterRule = cat.getEffectiveRule();
 		try {
 			LOG.debug("Category: {}\t{}", cat.getLabel(), filterRule);
-			Set<Integer> nodeIds = filterDao.getNodeMap(filterRule).keySet();
+			// Use a TreeSet to keep the node ids sorted
+			Set<Integer> nodeIds = new TreeSet<Integer>(filterDao.getNodeMap(filterRule).keySet());
 			LOG.debug("Number of nodes satisfying rule: {}", nodeIds.size());
 			return nodeIds;
 		} catch (FilterParseException e) {
 			LOG.error("Unable to parse filter rule {} ignoring category {}", filterRule, cat.getLabel(), e);
 			return Collections.emptySet();
 		}
-	}
-
-	/**
-	 * TODO: Consolidate this function with similar {@link CategoryModel#getServiceAvailability(int, String, int, Date, Date)}
-	 *
-	 * @param nodeId a int.
-	 * @param ipAddr a {@link java.lang.String} object.
-	 * @param serviceId a int.
-	 * @param start a {@link java.util.Date} object.
-	 * @param end a {@link java.util.Date} object.
-	 * @return a double.
-	 * @throws java.sql.SQLException if any.
-	 */
-	public static double getOutageTimeInWindow(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
-		if (ipAddr == null || start == null || end == null) {
-			throw new IllegalArgumentException("Cannot take null parameters.");
-		}
-
-		if (end.before(start)) {
-			throw new IllegalArgumentException("Cannot have an end time before the start time.");
-		}
-
-		if (end.equals(start)) {
-			throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
-		}
-
-		final DBUtils d = new DBUtils(RTCUtils.class);
-		try {
-			Connection conn = DataSourceFactory.getInstance().getConnection();
-			d.watch(conn);
-
-			PreparedStatement stmt = conn.prepareStatement("select getOutageTimeInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and ifservices.nodeid = node.nodeid and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
-			d.watch(stmt);
-
-			stmt.setInt(1, nodeId);
-			stmt.setString(2, ipAddr);
-			stmt.setInt(3, serviceId);
-			// yes, these are supposed to be backwards, the end time first
-			stmt.setTimestamp(4, new Timestamp(end.getTime()));
-			stmt.setTimestamp(5, new Timestamp(start.getTime()));
-			stmt.setInt(6, nodeId);
-			stmt.setString(7, ipAddr);
-			stmt.setInt(8, serviceId);
-
-			ResultSet rs = stmt.executeQuery();
-			d.watch(rs);
-
-			if (rs.next()) {
-				return rs.getDouble("avail");
-			}
-		} catch (final SQLException e) {
-			LOG.warn("Failed to get service availability for nodeId {}, interface {}, serviceId {}", nodeId, ipAddr, serviceId, e);
-		} finally {
-			d.cleanUp();
-		}
-
-		return -1.0;
 	}
 }

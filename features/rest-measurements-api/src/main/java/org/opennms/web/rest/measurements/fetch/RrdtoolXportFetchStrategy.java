@@ -111,17 +111,21 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             cmdLine.addArgument("" + maxrows);
         }
 
+        // Use labels without spaces when executing the xport command
+        // These are mapped back to the requested labels in the response
+        final Map<String, String> labelMap = Maps.newHashMap();
+
         int k = 0;
         for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
             final Source source = entry.getKey();
             final String rrdFile = entry.getValue();
+            final String tempLabel = Integer.toString(++k);
+            labelMap.put(tempLabel, source.getLabel());
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
-                    k, rrdFile, source.getAttribute(),
+                    tempLabel, rrdFile, source.getAttribute(),
                     source.getAggregation()));
-            cmdLine.addArgument(String.format("XPORT:%s:%s", k,
-                    source.getLabel()));
-            k++;
+            cmdLine.addArgument(String.format("XPORT:%s:%s", tempLabel, tempLabel));
         }
 
         // Use commons-exec to execute rrdtool
@@ -180,7 +184,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
         final Map<String, double[]> columns = Maps.newHashMapWithExpectedSize(numColumns);
         i = 0;
         for (String label : rrdXport.getMeta().getLegends()) {
-            columns.put(label, values[i++]);
+            columns.put(labelMap.get(label), values[i++]);
         }
 
         return new FetchResults(timestamps, columns, rrdXport.getMeta().getStep() * 1000, constants);

@@ -39,9 +39,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -52,7 +55,6 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.rtc.utils.EuiLevelMapper;
 import org.opennms.netmgt.rtc.utils.PipedMarshaller;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -83,15 +85,15 @@ public class DataSender implements Fiber {
      */
     private final Map<String, Set<HttpPostInfo>> m_catUrlMap = new HashMap<String, Set<HttpPostInfo>>();
 
+    /*
+     * Bounded queued used by the thread pool.
+     */
+    final BlockingQueue<Runnable> m_queue;
+
     /**
      * The data sender thread pool
      */
     private final ExecutorService m_dsrPool;
-
-    /**
-     * The category to XML mapper
-     */
-    private final EuiLevelMapper m_euiMapper;
 
     /**
      * The allowable number of times posts can have errors before an URL is
@@ -132,13 +134,13 @@ public class DataSender implements Fiber {
     public DataSender(final AvailabilityService dataMgr, final RTCConfigFactory configFactory) {
         m_dataMgr = dataMgr;
 
-        // create and start the data sender pool
-        m_dsrPool = Executors.newFixedThreadPool(configFactory.getSenders(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), configFactory.getSenders())
-        );
+        // NMS-7622: Limit the number of queued update tasks with a bounded queue
+        m_queue = new LinkedBlockingDeque<Runnable>(Math.max(4 * configFactory.getSenders(), 32));
 
-        // create category converter
-        m_euiMapper = new EuiLevelMapper(m_dataMgr);
+        m_dsrPool = new ThreadPoolExecutor(1, configFactory.getSenders(),
+                30, TimeUnit.SECONDS,
+                m_queue,
+                new LogPreservingThreadFactory(getClass().getSimpleName(), configFactory.getSenders()));
 
         // get post error limit
         POST_ERROR_LIMIT = configFactory.getErrorsBeforeUrlUnsubscribe();
@@ -234,48 +236,52 @@ public class DataSender implements Fiber {
             LOG.debug("Subscribed to URL: {}\tcatlabel: {}\tuser:{}", url, catlabel, user);
         }
 
-        m_dsrPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                // send data
-                Reader inr = null;
-                InputStream inp = null;
-                try {
-                    LOG.debug("DataSender: posting data to: {}", url);
+        try {
+            m_dsrPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    // send data
+                    Reader inr = null;
+                    InputStream inp = null;
+                    try {
+                        LOG.debug("DataSender: posting data to: {}", url);
 
-                    final EuiLevel euidata = m_euiMapper.convertToEuiLevelXML(cat);
-                    inr = new PipedMarshaller(euidata).getReader();
+                        final EuiLevel euidata = m_dataMgr.getEuiLevel(cat);
+                        inr = new PipedMarshaller(euidata).getReader();
 
-                    // Connect with a fairly long timeout to allow the web UI time to register the
-                    // {@link RTCPostServlet}. Actually, this doesn't seem to work because the POST
-                    // will immediately throw a {@link ConnectException} if the web UI isn't ready
-                    // yet. Oh well.
-                    inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
+                        // Connect with a fairly long timeout to allow the web UI time to register the
+                        // {@link RTCPostServlet}. Actually, this doesn't seem to work because the POST
+                        // will immediately throw a {@link ConnectException} if the web UI isn't ready
+                        // yet. Oh well.
+                        inp = HttpUtils.post(postInfo.getURL(), inr, user, passwd, 8 * HttpUtils.DEFAULT_POST_BUFFER_SIZE, 60000);
 
-                    final byte[] tmp = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = inp.read(tmp)) != -1) {
-                        if (LOG.isDebugEnabled()) {
-                            if (bytesRead > 0) {
-                                LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                        final byte[] tmp = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = inp.read(tmp)) != -1) {
+                            if (LOG.isDebugEnabled()) {
+                                if (bytesRead > 0) {
+                                    LOG.debug("DataSender: post response: {}", new String(tmp, 0, bytesRead));
+                                }
                             }
                         }
-                    }
 
-                    LOG.debug("DataSender: posted data for category: {}", catlabel);
-                } catch (final ConnectException e) {
-                    // These exceptions will be thrown if we try to POST RTC data before the web UI is available.
-                    // Don't log a large stack trace for this because it will happen during startup before the
-                    // RTCPostServlet is ready to handle requests.
-                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage());
-                } catch (final Throwable t) {
-                    LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
-                } finally {
-                    IOUtils.closeQuietly(inp);
-                    IOUtils.closeQuietly(inr);
+                        LOG.debug("DataSender: posted data for category: {}", catlabel);
+                    } catch (final ConnectException e) {
+                        // These exceptions will be thrown if we try to POST RTC data before the web UI is available.
+                        // Don't log a large stack trace for this because it will happen during startup before the
+                        // RTCPostServlet is ready to handle requests.
+                        LOG.warn("DataSender:  Unable to send category '{}' to URL '{}': {}", catlabel, url, e.getMessage());
+                    } catch (final Throwable t) {
+                        LOG.warn("DataSender:  Unable to send category '{}' to URL '{}'", catlabel, url, t);
+                    } finally {
+                        IOUtils.closeQuietly(inp);
+                        IOUtils.closeQuietly(inr);
+                    }
                 }
-            }
-        });
+            });
+        } catch (RejectedExecutionException e) {
+            LOG.warn("Unable to queue datasender. The task was rejected by the pool. Current queue size: {}.", m_queue.size(), e);
+        }
     }
 
     /**
@@ -337,7 +343,7 @@ public class DataSender implements Fiber {
 
             final EuiLevel euidata;
             try {
-                euidata = m_euiMapper.convertToEuiLevelXML(cat);
+                euidata = m_dataMgr.getEuiLevel(cat);
             } catch (final Throwable t) {
                 LOG.warn("DataSender: unable to convert data to xml for category: '{}'", catlabel, t);
                 continue;
@@ -398,7 +404,7 @@ public class DataSender implements Fiber {
         try {
             m_dsrPool.execute(new SendRequest());
         } catch (final RejectedExecutionException e) {
-            LOG.warn("Unable to queue datasender to the dsConsumer queue", e);
+            LOG.warn("Unable to queue datasender. The task was rejected by the pool. Current queue size: {}.", m_queue.size(), e);
         }
     }
 
