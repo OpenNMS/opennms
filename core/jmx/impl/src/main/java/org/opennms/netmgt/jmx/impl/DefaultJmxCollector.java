@@ -88,6 +88,11 @@ public class DefaultJmxCollector implements JmxCollector {
     }
 
     private void collect(MBeanServerConnection concreteConnection, JmxCollection jmxCollection, JmxSampleProcessor sampleProcessor) {
+        if (jmxCollection == null || jmxCollection.getMbeanCount() < 1) {
+            logger.info("No MBeans to collect.");
+            return;
+        }
+
         try {
             for (Mbean eachMbean : jmxCollection.getMbeans()) {
                 logger.debug("Collecting MBean (objectname={}, wildcard={})", eachMbean.getObjectname(), isWildcard(eachMbean.getObjectname()));
