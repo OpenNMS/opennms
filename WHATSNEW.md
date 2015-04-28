@@ -1,52 +1,64 @@
-What's New in OpenNMS 15
+What's New in OpenNMS 16
 ========================
 
-Since OpenNMS 14, a number of backend architectural changes have occurred, as well as a
-UI rewrite.
+Since OpenNMS 15, many features have been refactored to increase modularity of the OpenNMS code. New reporting capabilities have also been added to
+support integration with external graphing engines such as Grafana.
 
-Java 7 and 8
-------------
-
-OpenNMS 14 dropped support for Java 6, which has been EOL'd for some time now.  OpenNMS 15
-requires Java 7 or higher to run.
-
-Note that *building* under Java 8 still has some known issues.  It is strongly recommended
-that you build and run under Java 7 until Java 8 has had enough time to be well-tested.
-
-Core Updates
-------------
-
-As always, many updates and cleanups have been made to the OpenNMS core, through refactoring,
-addition of unit tests, and other code modernization.
-
-* A few subsystems have been updated to run properly under OSGi.
-* A large number of places where we were still using JDBC calls have been converted
-  to use our DAO infrastructure and Hibernate.
-* The OpenNMS ReST APIs now support CORS properly to aid in writing web applications that
-  consume or update OpenNMS data.
-
-Events
+Java 8
 ------
 
-New or updated trap definitions have been added for the following classes of devices:
+All build and dependency issues with Java 8 have been resolved and now OpenNMS 16 requires Java 8 as the runtime environment. To run OpenNMS 16,
+we recommend the most recent version of Oracle JDK 8 for your platform.
 
-* Citrix NetScaler
-* Mikrotik RouterOS
-* OpenSSH syslog events
-* Procmail syslog events
-* Postfix syslog events
-* Siemens HiPath
-* Veeam Backup/Replication
+Capsd Has Been Removed
+----------------------
 
-Web UI and APIs
----------------
+The legacy capability scanner, Capsd, has been removed from OpenNMS. It was deprecated in OpenNMS 1.12 and disabled by default in 
+OpenNMS 14 in favor of the provisioning systems of OpenNMS. The Capsd code has now been removed completely which will enable us to
+streamline the data access code of OpenNMS. This will make the system easier to maintain and may improve performance down the road.
 
-* The Jetty container has been upgraded to use Jetty 8.
-* The entire web UI has been updated to use bootstrap themeing.  While our initial
-  implementation was designed to match the existing OpenNMS UI as much as possible,
-  this now makes it MUCH easier to improve the UI more rapidly going forward.
+API Changes
+-----------
+
+Several classes changed location in OpenNMS 16 and these changes may require you to update configuration files or scripts with the new names.
+
+* The *IndexStorageStrategy* and *PersistAllSelectorStrategy* classes moved into the *org.opennms.netmgt.collection.support* Java package. These classes 
+  are heavily referenced in data collection configuration files. There is an upgrade task that should update all data collection files when you 
+  run the *install* command after upgrading OpenNMS.
+* All *EventUtils* class methods were consolidated inside the *org.opennms.netmgt.model.events.EventUtils* class.
+
+New Features
+------------
+
+* There is a new REST service that can be used to export performance data. This service can be used to easily export OpenNMS metrics into external
+  graphing engines such as Grafana.
+* Holt-Winters forecast reports have been added.
+
+Dependency Updates
+------------------
+
+A number of internal libraries have been upgraded for bugfixes and new features. None of these updates should require configuration changes.
+
+* Spring has been upgraded from 3.2.9 to 4.0.5.
+* Spring Security has been upgraded from 3.1.7 to 3.2.7.
+* Drools has been upgraded from 5.1.1 to 6.0.1.
+* Apache Camel has been upgraded from 2.13.2 to 2.14.1.
+* The webapp schemas have all been updated to the Servlet 3.0 specification.
+
+Internal Updates
+----------------
+
+Various parts of the OpenNMS system were rewritten in OpenNMS 16 to improve maintainability or performance of the code.
+
+* The JMX detector, monitor, and collector were refactored for modularity.
+* The Dashboard was rewritten using the Vaadin UI toolkit to improve and modernize its look-and-feel.
+* Bean Scripting Framework (BSF) notifications and the BSFMonitor were optimized and are now much more efficient. (Thanks to David Schlenk for this contribution!)
+* RTC, which calculates the availability percentages for the category panel on the main page, was rewritten using Spring for initialization and 
+  using database calls to perform availability calculations. This will improve its maintainability.
+* The web controllers for provisioning, RANCID integration, reports, the node list, and Remote Poller administration were rewritten
+  to modernize their code.
+* The REST portion of the OpenNMS webapp was modularized into its own project.
+* The web UI service layer was separated from the main web UI to improve modularity.
 
 
 [GNU Affero General Public License 3.0]: http://www.gnu.org/licenses/agpl-3.0.html
-[User Restriction Filters]: http://www.opennms.org/wiki/User_Restriction_Filters
-[the Hardware Inventory wiki page]: http://www.opennms.org/wiki/Hardware_Inventory_Entity_MIB
