@@ -533,7 +533,7 @@ abstract public class PollerConfigManager implements PollerConfig {
  
         // if there are NO include ranges then treat act as if the user include
         // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
-        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0 && pkg.getIncludeUrls().size() == 0;
         
         final byte[] addr = toIpAddrBytes(iface);
 
@@ -554,6 +554,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         for (final String spec : pkg.getSpecifics()) {
             if (new ByteArrayComparator().compare(addr, toIpAddrBytes(spec)) == 0) {
                 has_specific = true;
+                LOG.debug("interfaceInPackage: Interface {} defined as 'specific'", iface);
                 break;
             }
         }
@@ -561,6 +562,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         for (final String includeUrl : pkg.getIncludeUrls()) {
             if (interfaceInUrl(iface, includeUrl)) {
                 has_specific = true;
+                LOG.debug("interfaceInPackage: Interface {} exist on {}", iface, includeUrl);
                 break;
             }
         }
@@ -571,10 +573,12 @@ abstract public class PollerConfigManager implements PollerConfig {
                 if (comparison > 0) {
                     int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
                     if (endComparison <= 0) {
+                        LOG.debug("interfaceInPackage: Interface {} matches an exclude range", iface);
                         has_range_exclude = true;
                         break;
                     }
                 } else if (comparison == 0) {
+                    LOG.debug("interfaceInPackage: Interface {} matches an exclude range", iface);
                     has_range_exclude = true;
                     break;
                 }
