@@ -335,11 +335,11 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
                 }
             };
 
-            leftCssLayout.setPrimaryStyleName("col-md-10");
+            leftCssLayout.setPrimaryStyleName("col-md-11");
             leftCssLayout.setId("dashboard-content");
 
             CssLayout rightCssLayout = new CssLayout();
-            rightCssLayout.setPrimaryStyleName("col-md-2");
+            rightCssLayout.setPrimaryStyleName("col-md-1");
 
             lowerLayout = new VerticalLayout();
             lowerLayout.setSpacing(true);
