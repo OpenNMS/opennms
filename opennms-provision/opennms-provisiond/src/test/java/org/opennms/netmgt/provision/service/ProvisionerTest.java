@@ -37,6 +37,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -82,12 +83,14 @@ import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
@@ -1745,6 +1748,50 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         assertEquals(1, n.getCategories().size());
         assertTrue(n.hasCategory("ThisIsAlsoMadeUp"));
+    }
+
+    /**
+     * Test for NMS-7636
+     */
+    @Test(timeout=300000)
+    public void resourcesAreNotDeletedWhenNodeScanIsAborted() throws InterruptedException, ExecutionException, UnknownHostException {
+        // Setup a node with a single interface and service
+        NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("node1");
+
+        builder.addInterface("192.168.0.1")
+            .getInterface()
+            // Pretend this was discovered an hour ago
+            .setIpLastCapsdPoll(new Date(new Date().getTime() - 60*60*1000));
+
+        builder.addService(new OnmsServiceType());
+
+        OnmsNode node = builder.getCurrentNode();
+        getNodeDao().save(node);
+
+        // Preliminary check
+        assertEquals(1, node.getIpInterfaces().size());
+
+        // Issue a scan without setting up the requisition
+        // Expect a nodeScanAborted event
+        m_eventAnticipator.anticipateEvent(nodeScanAborted(node.getId()));
+        m_eventAnticipator.setDiscardUnanticipated(true);
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), "should_not_exist", "1");
+        runScan(scan);
+
+        m_eventAnticipator.verifyAnticipated();
+        m_eventAnticipator.reset();
+
+        // The interface should remain
+        assertEquals(1, node.getIpInterfaces().size());
+    }
+
+    private Event nodeScanAborted(final int nodeId) {
+        final EventBuilder eb = new EventBuilder(EventConstants.PROVISION_SCAN_ABORTED_UEI, "Test");
+        eb.setNodeid(nodeId);
+        final Event event = eb.getEvent();
+        return event;
     }
 
     private Event nodeScanCompleted(final int nodeId) {
