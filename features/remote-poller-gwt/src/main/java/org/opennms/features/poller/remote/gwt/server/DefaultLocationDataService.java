@@ -64,6 +64,8 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
 import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.config.monitoringLocations.Tag;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -73,7 +75,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
@@ -230,7 +231,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     public LocationInfo getLocationInfo(final String locationName) {
         waitForGeocoding("getLocationInfo");
 
-        final OnmsMonitoringLocationDefinition def = m_locationDao.findMonitoringLocationDefinition(locationName);
+        final LocationDef def = m_locationDao.findMonitoringLocationDefinition(locationName);
         if (def == null) {
             LOG.warn("no monitoring location found for name {}", locationName);
             return null;
@@ -246,7 +247,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      */
     @Transactional
     @Override
-    public LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def) {
+    public LocationInfo getLocationInfo(final LocationDef def) {
         waitForGeocoding("getLocationInfo");
         
         if (def == null) {
@@ -259,7 +260,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return getLocationInfo(def, monitorStatus);
     }
 
-    private LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def, final StatusDetails monitorStatus) {
+    private LocationInfo getLocationInfo(final LocationDef def, final StatusDetails monitorStatus) {
         GWTLatLng latLng = getLatLng(def, false);
         
         if (latLng == null) {
@@ -267,46 +268,53 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             latLng = new GWTLatLng(35.715751, -79.16262);
         }
         
-        final GWTMarkerState state = new GWTMarkerState(def.getName(), latLng, Status.UNKNOWN);
+        final GWTMarkerState state = new GWTMarkerState(def.getLocationName(), latLng, Status.UNKNOWN);
+        
+        Set<String> tags = new TreeSet<String>();
+        if (def.getTags() != null) {
+            for (Tag tag : def.getTags()) {
+                tags.add(tag.getName());
+            }
+        }
+        
         final LocationInfo locationInfo = new LocationInfo(
-            def.getName(),
-            def.getArea(),
+            def.getLocationName(),
+            def.getMonitoringArea(),
             def.getGeolocation(),
             latLng.getCoordinates(),
             def.getPriority(),
             state,
             null,
-            def.getTags()
+            tags
         );
         
         state.setStatus(monitorStatus.getStatus());
         locationInfo.setStatusDetails(monitorStatus);
         
-        //LOG.debug("getLocationInfo({}) returning {}", def.getName(), locationInfo);
+        //LOG.debug("getLocationInfo({}) returning {}", def.getLocationName(), locationInfo);
         return locationInfo;
     }
 
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public StatusDetails getStatusDetailsForLocation(final OnmsMonitoringLocationDefinition def) {
+    public StatusDetails getStatusDetailsForLocation(final LocationDef def) {
         waitForGeocoding("getStatusDetails");
         
-        final DefaultLocationDataService.MonitorStatusTracker mst = new DefaultLocationDataService.MonitorStatusTracker(def.getName());
-
+        final DefaultLocationDataService.MonitorStatusTracker mst = new DefaultLocationDataService.MonitorStatusTracker(def.getLocationName());
         final List<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
 
         for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
             monitors.add(transformLocationMonitor(mon));
         }
 
-        for (OnmsLocationSpecificStatus status : m_locationDao.getMostRecentStatusChangesForLocation(def.getName())) {
+        for (OnmsLocationSpecificStatus status : m_locationDao.getMostRecentStatusChangesForLocation(def.getLocationName())) {
             mst.onStatus(status);
         }
 
         LocationMonitorState monitorState = new LocationMonitorState(monitors, mst.drain());
         StatusDetails statusDetails = monitorState.getStatusDetails();
-        LOG.debug("getStatusDetails({}) returning {}", def.getName(), statusDetails);
+        LOG.debug("getStatusDetails({}) returning {}", def.getLocationName(), statusDetails);
         return statusDetails;
     }
 
@@ -324,7 +332,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
 
         final String definitionName = monitors.get(0).getDefinitionName();
-        final OnmsMonitoringLocationDefinition def = m_locationDao.findMonitoringLocationDefinition(definitionName);
+        final LocationDef def = m_locationDao.findMonitoringLocationDefinition(definitionName);
         if (def == null) {
             LOG.warn("unable to find monitoring location definition for '{}'", definitionName);
             return null;
@@ -468,7 +476,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     public LocationDetails getLocationDetails(final String locationName) {
         waitForGeocoding("getLocationDetails");
 
-        final OnmsMonitoringLocationDefinition def = m_locationDao.findMonitoringLocationDefinition(locationName);
+        final LocationDef def = m_locationDao.findMonitoringLocationDefinition(locationName);
         if (def == null) {
             LOG.warn("no monitoring location found for name {}", locationName);
             return null;
@@ -484,12 +492,12 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      */
     @Transactional
     @Override
-    public LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def) {
+    public LocationDetails getLocationDetails(final LocationDef def) {
         waitForGeocoding("getLocationDetails");
 
         final LocationDetails ld = new LocationDetails();
-        final DefaultLocationDataService.MonitorStatusTracker mst = new DefaultLocationDataService.MonitorStatusTracker(def.getName());
-        final DefaultLocationDataService.ApplicationStatusTracker ast = new DefaultLocationDataService.ApplicationStatusTracker(def.getName());
+        final DefaultLocationDataService.MonitorStatusTracker mst = new DefaultLocationDataService.MonitorStatusTracker(def.getLocationName());
+        final DefaultLocationDataService.ApplicationStatusTracker ast = new DefaultLocationDataService.ApplicationStatusTracker(def.getLocationName());
 
         final List<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
 
@@ -518,14 +526,14 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         final Date to = new Date();
         final Date from = new Date(to.getTime() - AVAILABILITY_MS);
-        for (OnmsLocationSpecificStatus status : m_locationDao.getMostRecentStatusChangesForLocation(def.getName())) {
+        for (OnmsLocationSpecificStatus status : m_locationDao.getMostRecentStatusChangesForLocation(def.getLocationName())) {
             mst.onStatus(status);
             ast.onStatus(status);
         }
 
         ld.setLocationMonitorState(new LocationMonitorState(monitors, mst.drain()));
         ld.setApplicationState(new ApplicationState(from, to, applications, monitors, ast.drainStatuses()));
-        LOG.debug("getLocationDetails({}) returning {}", def.getName(), ld);
+        LOG.debug("getLocationDetails({}) returning {}", def.getLocationName(), ld);
         return ld;
     }
 
@@ -580,15 +588,15 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         waitForGeocoding("getApplicationDetails");
 
         final Collection<LocationInfo> locations = new ArrayList<LocationInfo>();
-        final Map<String, OnmsMonitoringLocationDefinition> definitions = new HashMap<String, OnmsMonitoringLocationDefinition>();
+        final Map<String, LocationDef> definitions = new HashMap<String, LocationDef>();
 
         // check for any monitors that have changed status
-        for (OnmsMonitoringLocationDefinition def : m_locationDao.findAllMonitoringLocationDefinitions()) {
+        for (LocationDef def : m_locationDao.findAllMonitoringLocationDefinitions()) {
             for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
                 final MonitorStatus status = m_monitorStatuses.get(mon.getDefinitionName());
                 if (status == null || !status.equals(mon.getStatus())) {
-                    definitions.put(def.getName(), def);
-                    m_monitorStatuses.put(def.getName(), mon.getStatus());
+                    definitions.put(def.getLocationName(), def);
+                    m_monitorStatuses.put(def.getLocationName(), mon.getStatus());
                 }
             }
         }
@@ -601,7 +609,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             }
         }
 
-        for (final OnmsMonitoringLocationDefinition def : definitions.values()) {
+        for (final LocationDef def : definitions.values()) {
             final LocationInfo location = getLocationInfo(def);
             locations.add(location);
         }
@@ -612,7 +620,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean x) {
+    public GWTLatLng getLatLng(final LocationDef def, boolean x) {
         GWTLatLng latLng = null;
         final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
 
@@ -650,11 +658,11 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     public void handleAllMonitoringLocationDefinitions(final Collection<LocationDefHandler> handlers) {
         waitForGeocoding("handleAllMonitoringLocationDefinitions");
 
-        final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+        final Collection<LocationDef> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
         for (LocationDefHandler handler : handlers) {
             handler.start(definitions.size());
         }
-        for (final OnmsMonitoringLocationDefinition def : definitions) {
+        for (final LocationDef def : definitions) {
             for (LocationDefHandler handler : handlers) {
                 handler.handle(def);
                 /*
@@ -723,8 +731,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
      */
     public void updateGeolocations() {
         LOG.info("geolocating monitoring location definitions");
-        final Collection<OnmsMonitoringLocationDefinition> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
-        for (final OnmsMonitoringLocationDefinition def : definitions) {
+        final Collection<LocationDef> definitions = m_locationDao.findAllMonitoringLocationDefinitions();
+        for (final LocationDef def : definitions) {
             final GWTLatLng latLng = getLatLng(def, true);
             if (latLng != null) {
                 def.setCoordinates(latLng.getCoordinates());
@@ -945,7 +953,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         for(Map.Entry<String, StatusDetails> entry : statusDetails.entrySet()) {
 
-            OnmsMonitoringLocationDefinition def = getLocationMonitorDao().findMonitoringLocationDefinition(entry.getKey());
+            LocationDef def = getLocationMonitorDao().findMonitoringLocationDefinition(entry.getKey());
             LocationInfo locationInfo = this.getLocationInfo(def, entry.getValue());
             locations.add(locationInfo);
             
@@ -956,7 +964,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     @Override
     public Map<String, StatusDetails> getStatusDetailsForAllLocations() {
-        final Collection<OnmsMonitoringLocationDefinition> definitions = getLocationMonitorDao().findAllMonitoringLocationDefinitions();
+        final Collection<LocationDef> definitions = getLocationMonitorDao().findAllMonitoringLocationDefinitions();
         
         AllMonitorStatusTracker tracker = new AllMonitorStatusTracker();
         MonitorTracker monTracker = new MonitorTracker();
@@ -971,10 +979,10 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         
         
         Map<String, StatusDetails> statusDetails = new LinkedHashMap<String, StatusDetails>();
-        for (final OnmsMonitoringLocationDefinition def : definitions) {
-            LocationMonitorState monitorState = new LocationMonitorState(monTracker.drain(def.getName()), tracker.drain(def.getName()));
+        for (final LocationDef def : definitions) {
+            LocationMonitorState monitorState = new LocationMonitorState(monTracker.drain(def.getLocationName()), tracker.drain(def.getLocationName()));
             final StatusDetails monitorStatus = monitorState.getStatusDetails();
-            statusDetails.put(def.getName(), monitorStatus);
+            statusDetails.put(def.getLocationName(), monitorStatus);
         }
         return statusDetails;
     }

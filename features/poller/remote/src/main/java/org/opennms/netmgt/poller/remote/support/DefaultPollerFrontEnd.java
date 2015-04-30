@@ -44,8 +44,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
@@ -575,7 +575,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
+    public Collection<LocationDef> getMonitoringLocations() {
         assertInitialized();
         return m_backEnd.getMonitoringLocations();
     }

@@ -48,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -58,9 +59,8 @@ import org.opennms.netmgt.model.OnmsLocationAvailDefinition;
 import org.opennms.netmgt.model.OnmsLocationAvailDefinitionList;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinitionList;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.rest.support.OnmsMonitoringLocationDefinitionList;
 import org.opennms.web.rest.support.TimeChunker;
 import org.opennms.web.rest.support.TimeChunker.TimeChunk;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +119,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
         readLock();
         try {
-            List<OnmsMonitoringLocationDefinition> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+            List<LocationDef> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
             return new OnmsMonitoringLocationDefinitionList(monitors);
         } finally {
             readUnlock();
@@ -202,7 +202,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         try {
             MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
             
-            OnmsMonitoringLocationDefinition locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
+            LocationDef locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
             if (locationDefinition == null) {
                 throw new IllegalArgumentException("Cannot find location definition: " + location);
             }

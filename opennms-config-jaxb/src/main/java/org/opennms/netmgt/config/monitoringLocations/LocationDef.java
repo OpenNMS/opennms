@@ -59,7 +59,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The collection package name is used to associate with a collection
  * configuration found in the collectd-configuration.xml file.
  */
-
 @XmlRootElement(name="location-def")
 @XmlAccessorType(XmlAccessType.NONE)
 public class LocationDef implements Serializable {
@@ -111,6 +110,10 @@ public class LocationDef implements Serializable {
 
     public LocationDef() {
         super();
+    }
+
+    public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
+        this(locationName, monitoringArea, pollingPackageName, null, null, null, 0L, new String[0]);
     }
 
     public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName, final String collectionPackageName, final String geolocation, final String coordinates, final Long priority, final String... tags) {

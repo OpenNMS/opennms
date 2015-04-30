@@ -28,10 +28,10 @@
 
 package org.opennms.web.validator;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
@@ -65,7 +65,7 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
                                new Object[] { "location" }, 
                                "Value required.");
         } else {
-            OnmsMonitoringLocationDefinition locationDef =
+            LocationDef locationDef =
                 m_locationMonitorDao.findMonitoringLocationDefinition(cmd.getLocation());
             if (locationDef == null) {
                 errors.rejectValue("location", "location.not-found",

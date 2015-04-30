@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -48,12 +49,11 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.springframework.util.Assert;
 
 public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
     private AtomicInteger m_id = new AtomicInteger(0);
-    private Map<String,OnmsMonitoringLocationDefinition> m_locationDefinitions = new HashMap<String,OnmsMonitoringLocationDefinition>();
+    private Map<String,LocationDef> m_locationDefinitions = new HashMap<String,LocationDef>();
     private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
 
     @Override
@@ -67,10 +67,10 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     @Override
-    public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
+    public Collection<OnmsLocationMonitor> findByLocationDefinition(final LocationDef locationDefinition) {
         final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
         for (final OnmsLocationMonitor mon : findAll()) {
-            if (mon.getDefinitionName().equals(locationDefinition.getName())) {
+            if (mon.getDefinitionName().equals(locationDefinition.getLocationName())) {
                 monitors.add(mon);
             }
         }
@@ -100,12 +100,12 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     @Override
-    public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-        return new ArrayList<OnmsMonitoringLocationDefinition>(m_locationDefinitions.values());
+    public List<LocationDef> findAllMonitoringLocationDefinitions() {
+        return new ArrayList<LocationDef>(m_locationDefinitions.values());
     }
 
     @Override
-    public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName) {
+    public LocationDef findMonitoringLocationDefinition(final String monitoringLocationDefinitionName) {
         if (m_locationDefinitions.containsKey(monitoringLocationDefinitionName)) {
             return m_locationDefinitions.get(monitoringLocationDefinitionName);
         }
@@ -113,13 +113,13 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     @Override
-    public void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition def) {
-        m_locationDefinitions.put(def.getName(), def);
+    public void saveMonitoringLocationDefinition(final LocationDef def) {
+        m_locationDefinitions.put(def.getLocationName(), def);
     }
 
     @Override
-    public void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> defs) {
-        for (final OnmsMonitoringLocationDefinition def : defs) {
+    public void saveMonitoringLocationDefinitions(final Collection<LocationDef> defs) {
+        for (final LocationDef def : defs) {
            saveMonitoringLocationDefinition(def);
         }
     }
@@ -307,6 +307,11 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
         for (final OnmsLocationMonitor monitor : findAll()) {
             if (monitor.getStatus() == MonitorStatus.PAUSED) monitor.setStatus(MonitorStatus.STARTED);
         }
+    }
+
+    @Override
+    public void deleteMonitoringLocationDefinition(String locationName) {
+        m_locationDefinitions.remove(locationName);
     }
 
 }

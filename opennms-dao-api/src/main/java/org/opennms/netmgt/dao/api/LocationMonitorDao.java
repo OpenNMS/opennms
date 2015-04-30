@@ -32,12 +32,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 /**
  * <p>LocationMonitorDao interface.</p>
@@ -50,10 +50,10 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
     /**
      * <p>findByLocationDefinition</p>
      *
-     * @param locationDefinition a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @param locationDefinition a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition);
+    Collection<OnmsLocationMonitor> findByLocationDefinition(final LocationDef locationDefinition);
     
     /**
      * <p>findByApplication</p>
@@ -68,29 +68,31 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      *
      * @return a {@link java.util.List} object.
      */
-    List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
+    List<LocationDef> findAllMonitoringLocationDefinitions();
     
     /**
      * <p>findMonitoringLocationDefinition</p>
      *
      * @param monitoringLocationDefinitionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @return a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
      */
-    OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName);
-    
+    LocationDef findMonitoringLocationDefinition(final String monitoringLocationDefinitionName);
+
     /**
      * <p>saveMonitoringLocationDefinition</p>
      *
-     * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @param def a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
      */
-    void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition def);
-    
+    void saveMonitoringLocationDefinition(final LocationDef def);
+
     /**
      * <p>saveMonitoringLocationDefinitions</p>
      *
      * @param defs a {@link java.util.Collection} object.
      */
-    void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> defs);
+    void saveMonitoringLocationDefinitions(final Collection<LocationDef> defs);
+
+    void deleteMonitoringLocationDefinition(String locationName);
 
     /**
      * <p>saveStatusChange</p>
@@ -190,5 +192,4 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
      * Mark all paused location monitors as started
      */
     void resumeAll();
-
 }

@@ -48,6 +48,7 @@ import java.util.TreeSet;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -58,14 +59,13 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -88,9 +88,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private ResourceDao m_resourceDao = m_easyMockUtils.createMock(ResourceDao.class);
     private GraphDao m_graphDao = m_easyMockUtils.createMock(GraphDao.class);
 
-    private OnmsMonitoringLocationDefinition m_locationDefinition1;
-    private OnmsMonitoringLocationDefinition m_locationDefinition2;
-    private OnmsMonitoringLocationDefinition m_locationDefinition3;
+    private LocationDef m_locationDefinition1;
+    private LocationDef m_locationDefinition2;
+    private LocationDef m_locationDefinition3;
     private OnmsLocationMonitor m_locationMonitor1_1;
     private OnmsLocationMonitor m_locationMonitor2_1;
     private OnmsLocationMonitor m_locationMonitor2_2;
@@ -121,9 +121,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_service.setGraphDao(m_graphDao);
         m_service.afterPropertiesSet();
         
-        m_locationDefinition1 = new OnmsMonitoringLocationDefinition("Raleigh", "raleigh", "OpenNMS NC");
-        m_locationDefinition2 = new OnmsMonitoringLocationDefinition("Durham", "durham", "OpenNMS NC");
-        m_locationDefinition3 = new OnmsMonitoringLocationDefinition("Columbus", "columbus", "OpenNMS OH");
+        m_locationDefinition1 = new LocationDef("Raleigh", "OpenNMS NC", "raleigh");
+        m_locationDefinition2 = new LocationDef("Durham", "OpenNMS NC", "durham");
+        m_locationDefinition3 = new LocationDef("Columbus", "OpenNMS OH", "columbus");
 
         m_application1 = new OnmsApplication();
         m_application1.setName("Application 1");
@@ -211,7 +211,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
         
-        command.setLocation(m_locationDefinition1.getName());
+        command.setLocation(m_locationDefinition1.getLocationName());
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("application cannot be null"));
@@ -249,10 +249,10 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
 
-        command.setLocation(m_locationDefinition1.getName());
+        command.setLocation(m_locationDefinition1.getLocationName());
         command.setApplication("invalid application");
         
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getLocationName())).andReturn(m_locationDefinition1);
         expect(m_applicationDao.findByName(command.getApplication())).andReturn(null);
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -272,7 +272,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
 
-        command.setLocation(m_locationDefinition1.getName());
+        command.setLocation(m_locationDefinition1.getLocationName());
         command.setApplication(m_application1.getName());
 
         expectEverything();
@@ -300,7 +300,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
 
-        command.setLocation(m_locationDefinition1.getName());
+        command.setLocation(m_locationDefinition1.getLocationName());
         command.setApplication(m_application1.getName());
 
         expectEverything();
@@ -349,11 +349,11 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
 
-        command.setLocation(m_locationDefinition1.getName());
+        command.setLocation(m_locationDefinition1.getLocationName());
         command.setApplication(m_application1.getName());
 
         expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getLocationName())).andReturn(m_locationDefinition1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
 
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");
@@ -407,11 +407,11 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         DistributedStatusDetailsCommand command = new DistributedStatusDetailsCommand();
         Errors errors = new BindException(command, "command");
 
-        command.setLocation(m_locationDefinition3.getName());
+        command.setLocation(m_locationDefinition3.getLocationName());
         command.setApplication(m_application2.getName());
 
         expect(m_applicationDao.findByName("Application 2")).andReturn(m_application2);
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getName())).andReturn(m_locationDefinition3);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition3.getLocationName())).andReturn(m_locationDefinition3);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition3)).andReturn(new HashSet<OnmsLocationMonitor>());
 
         m_easyMockUtils.replayAll();
@@ -513,7 +513,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     
     public void testCreateFacilityStatusTable() throws Exception {
          // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -602,7 +602,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         OnmsApplication app = m_application2;
         
         // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         
@@ -654,7 +654,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
      */
     public void testCreateFacilityStatusTableLayoutApplicationsVertically() throws Exception {
         // No need to shuffle, since this is a list
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -772,7 +772,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testDetails() {
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -796,7 +796,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
         
-        String locationName = m_locationDefinition2.getName();
+        String locationName = m_locationDefinition2.getLocationName();
         String applicationName = m_application2.getName();
         String monitorId = "";
         String timeSpan = "Last Day";
@@ -853,7 +853,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongLocationDetails() {
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -919,7 +919,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
     
     public void testWrongApplicationDetails() {
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = new LinkedList<OnmsMonitoringLocationDefinition>();
+        List<LocationDef> locationDefinitions = new LinkedList<LocationDef>();
         locationDefinitions.add(m_locationDefinition1);
         locationDefinitions.add(m_locationDefinition2);
         locationDefinitions.add(m_locationDefinition3);
@@ -930,7 +930,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         applications.add(m_application2);
         expect(m_applicationDao.findAll()).andReturn(applications);
         
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition2.getName())).andReturn(m_locationDefinition2);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition2.getLocationName())).andReturn(m_locationDefinition2);
         expect(m_applicationDao.findByName("Big Bad Voodoo Daddy Application")).andReturn(null);
         
         List<OnmsLocationMonitor> monitors = new ArrayList<OnmsLocationMonitor>();
@@ -943,7 +943,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
             m_locationMonitorDao.initialize(service.getIpInterface().getNode());
         }
 
-        String locationName = m_locationDefinition2.getName();
+        String locationName = m_locationDefinition2.getLocationName();
         String applicationName = "Big Bad Voodoo Daddy Application";
         String monitorId = "";
         String previousLocation = "";
@@ -1044,7 +1044,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
     public void expectEverything() {
         expect(m_applicationDao.findByName("Application 1")).andReturn(m_application1);
-        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getName())).andReturn(m_locationDefinition1);
+        expect(m_locationMonitorDao.findMonitoringLocationDefinition(m_locationDefinition1.getLocationName())).andReturn(m_locationDefinition1);
         expect(m_locationMonitorDao.findByLocationDefinition(m_locationDefinition1)).andReturn(Collections.singleton(m_locationMonitor1_1));
 
         OnmsMonitoredService httpService = findMonitoredService(m_services, m_ip, "HTTP");

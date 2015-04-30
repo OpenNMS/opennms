@@ -53,6 +53,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -62,7 +63,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -131,14 +131,14 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
     @Transactional
     public void testRegister() {
         
-        final Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
+        final Collection<LocationDef> locations = m_backEnd.getMonitoringLocations();
         assertNotNull("locations list should not be null", locations);
         assertFalse("locations list should not be empty", locations.isEmpty());
 
         final int initialCount = m_locationMonitorDao.findAll().size();
         
-        for (final OnmsMonitoringLocationDefinition location : locations) {
-            final int locationMonitorId = m_backEnd.registerLocationMonitor(location.getName());
+        for (final LocationDef location : locations) {
+            final int locationMonitorId = m_backEnd.registerLocationMonitor(location.getLocationName());
             assertTrue(locationMonitorId > 0);
             assertEquals(MonitorStatus.REGISTERED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         }

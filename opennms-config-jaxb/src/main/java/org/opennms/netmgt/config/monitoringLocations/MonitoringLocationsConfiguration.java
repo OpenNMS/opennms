@@ -44,7 +44,6 @@ import org.opennms.core.xml.ValidateUsing;
 /**
  * Top-level element for configuration remote monitoring locations.
  */
-
 @XmlRootElement(name="monitoring-locations-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("monitoring-locations.xsd")

@@ -32,10 +32,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.opennms.web.svclayer.model.LocationMonitorListModel;
@@ -71,7 +71,7 @@ public class DefaultDistributedPollerService implements
         
         LocationMonitorListModel model = new LocationMonitorListModel();
         for (OnmsLocationMonitor monitor : monitors) {
-            OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
+            LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
             model.addLocationMonitor(new LocationMonitorModel(monitor, def));
         }
         
@@ -107,8 +107,8 @@ public class DefaultDistributedPollerService implements
                 implements Comparator<OnmsLocationMonitor> {
         @Override
         public int compare(OnmsLocationMonitor o1, OnmsLocationMonitor o2) {
-            OnmsMonitoringLocationDefinition def1 = null;
-            OnmsMonitoringLocationDefinition def2 = null;
+            LocationDef def1 = null;
+            LocationDef def2 = null;
             
             if (o1.getDefinitionName() != null) {
                 def1 = m_locationMonitorDao.findMonitoringLocationDefinition(o1.getDefinitionName());
@@ -120,12 +120,12 @@ public class DefaultDistributedPollerService implements
             
             int diff;
             
-            if ((def1 == null || def1.getArea() == null) && (def2 != null && def2.getArea() != null)) {
+            if ((def1 == null || def1.getMonitoringArea() == null) && (def2 != null && def2.getMonitoringArea() != null)) {
                 return 1;
-            } else if ((def1 != null && def1.getArea() != null) && (def2 == null || def2.getArea() == null)) {
+            } else if ((def1 != null && def1.getMonitoringArea() != null) && (def2 == null || def2.getMonitoringArea() == null)) {
                 return -1;
-            } else if ((def1 != null && def1.getArea() != null) && (def2 != null && def2.getArea() != null)) {
-                if ((diff = def1.getArea().compareToIgnoreCase(def1.getArea())) != 0) {
+            } else if ((def1 != null && def1.getMonitoringArea() != null) && (def2 != null && def2.getMonitoringArea() != null)) {
+                if ((diff = def1.getMonitoringArea().compareToIgnoreCase(def1.getMonitoringArea())) != 0) {
                     return diff;
                 }
             }
@@ -149,7 +149,7 @@ public class DefaultDistributedPollerService implements
         }
         
         OnmsLocationMonitor monitor = m_locationMonitorDao.load(cmd.getMonitorId());
-        OnmsMonitoringLocationDefinition def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
+        LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
         model.addLocationMonitor(new LocationMonitorModel(monitor, def));
 
         return model;

@@ -52,6 +52,7 @@ import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
@@ -64,7 +65,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -269,7 +269,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      */
     @Transactional(readOnly=true)
     @Override
-    public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
+    public Collection<LocationDef> getMonitoringLocations() {
         return m_locMonDao.findAllMonitoringLocationDefinitions();
     }
 
@@ -364,7 +364,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private String getPackageName(final OnmsLocationMonitor mon) {
-        final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
+        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
         }
@@ -516,12 +516,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /** {@inheritDoc} */
     @Override
     public int registerLocationMonitor(final String monitoringLocationId) {
-        final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
+        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         if (def == null) {
-            throw new ObjectRetrievalFailureException(OnmsMonitoringLocationDefinition.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
+            throw new ObjectRetrievalFailureException(LocationDef.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }
         final OnmsLocationMonitor mon = new OnmsLocationMonitor();
-        mon.setDefinitionName(def.getName());
+        mon.setDefinitionName(def.getLocationName());
         mon.setStatus(MonitorStatus.REGISTERED);
 
         m_locMonDao.save(mon);

@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.poller.PollStatus;
@@ -313,7 +313,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Assert.notNull(locationName, "location cannot be null");
         Assert.notNull(applicationName, "application cannot be null");
         
-        OnmsMonitoringLocationDefinition location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+        LocationDef location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
         if (location == null) {
             throw new IllegalArgumentException("Could not find location for "
                                                + "location name \""
@@ -371,7 +371,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         SimpleWebTable table = new SimpleWebTable();
         
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        List<LocationDef> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
 
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
         if (applications.size() == 0) {
@@ -395,12 +395,12 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addColumn(application.getName(), "");
         }
         
-        for (OnmsMonitoringLocationDefinition locationDefinition : locationDefinitions) {
+        for (LocationDef locationDefinition : locationDefinitions) {
             Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
             
             table.newRow();
-            table.addCell(locationDefinition.getArea(), "");
-            table.addCell(locationDefinition.getName(), "");
+            table.addCell(locationDefinition.getMonitoringArea(), "");
+            table.addCell(locationDefinition.getLocationName(), "");
             
             for (OnmsApplication application : sortedApplications) {
                 Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
@@ -696,11 +696,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
 
     private String createHistoryPageUrl(
-            OnmsMonitoringLocationDefinition locationDefinition,
+            LocationDef locationDefinition,
             OnmsApplication application) {
 
         List<String> params = new ArrayList<String>(2);
-        params.add("location=" + Util.encode(locationDefinition.getName()));
+        params.add("location=" + Util.encode(locationDefinition.getLocationName()));
         params.add("application=" + Util.encode(application.getName()));
         
         return "distributedStatusHistory.htm"
@@ -715,7 +715,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             String timeSpan, String previousLocationName) {
         List<String> errors = new LinkedList<String>();
         
-        List<OnmsMonitoringLocationDefinition> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        List<LocationDef> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
 
         List<RelativeTimePeriod> periods = Arrays.asList(RelativeTimePeriod.getDefaultPeriods());
 
@@ -723,7 +723,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         List<OnmsApplication> sortedApplications = new ArrayList<OnmsApplication>(applications);
         Collections.sort(sortedApplications);
 
-        OnmsMonitoringLocationDefinition location = new OnmsMonitoringLocationDefinition();
+        LocationDef location = new LocationDef();
         if (locationName == null) {
             if (!locationDefinitions.isEmpty()) {
                 location = locationDefinitions.get(0);
@@ -768,7 +768,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collections.sort(sortedMonitors);
 
         OnmsLocationMonitor monitor = null;
-        if (monitorIdInt != -1 && location.getName().equals(previousLocationName)) {
+        if (monitorIdInt != -1 && location.getLocationName().equals(previousLocationName)) {
             for (OnmsLocationMonitor m : sortedMonitors) {
                 if (m.getId().equals(monitorIdInt)) {
                     monitor = m;

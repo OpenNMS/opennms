@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model;
+package org.opennms.web.rest.support;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,18 +35,19 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 
 @XmlRootElement
-public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<OnmsMonitoringLocationDefinition> {
+public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<LocationDef> {
     private static final long serialVersionUID = 1L;
 
     public OnmsMonitoringLocationDefinitionList() { super(); }
-    public OnmsMonitoringLocationDefinitionList(final Collection<? extends OnmsMonitoringLocationDefinition> definitions) {
+    public OnmsMonitoringLocationDefinitionList(final Collection<? extends LocationDef> definitions) {
         super(definitions);
     }
 
     @XmlElement(name="locations")
-    public List<OnmsMonitoringLocationDefinition> getObjects() {
+    public List<LocationDef> getObjects() {
         return super.getObjects();
     }
 }
