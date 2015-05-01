@@ -704,8 +704,10 @@ public class NodeScan implements Scan {
         }
 
         void deleteObsoleteResources(final BatchTask phase) {
-            getProvisionService().updateNodeScanStamp(getNodeId(), getScanStamp());
-            getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
+            if (!isAborted()) {
+                getProvisionService().updateNodeScanStamp(getNodeId(), getScanStamp());
+                getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
+            }
         }
 
         private void doPersistNodeInfo(final BatchTask phase) {
