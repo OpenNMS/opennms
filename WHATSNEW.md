@@ -31,8 +31,7 @@ New Features
 ------------
 
 * There is a new REST service that can be used to export performance data. This service can be used to easily export OpenNMS metrics into external
-  graphing engines such as Grafana.
-* Holt-Winters forecast reports have been added.
+  graphing engines such as Grafana. See the REST API documentation for details.
 
 Dependency Updates
 ------------------
@@ -44,6 +43,7 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * Drools has been upgraded from 5.1.1 to 6.0.1.
 * Apache Camel has been upgraded from 2.13.2 to 2.14.1.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
+* Smack (used for XMPP notifications) has been upgraded from 3.0.4 to 4.0.6.
 
 Internal Updates
 ----------------
