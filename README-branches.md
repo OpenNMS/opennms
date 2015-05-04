@@ -81,7 +81,7 @@ Described below is where the various packages built from the GitFlow
 branches are located:
 
 * stable: latest `master` release (`16.0.0`)
-* testing: latest `develop` branch snapshot (`17.0.0-SNAPSHOT`)
+* testing: latest `master` release (`16.0.0`)
 * snapshot: latest `develop` branch snapshot (`17.0.0-SNAPSHOT`)
 
 Future Release Cycle
