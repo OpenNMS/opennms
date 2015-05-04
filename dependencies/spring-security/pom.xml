@@ -445,9 +445,9 @@
   </dependencies>
   <repositories>
     <repository>
-        <id>spring-milestones</id>
-        <name>Spring Milestones</name>
-        <url>http://repo.spring.io/milestone</url>
+        <id>spring-releases</id>
+        <name>Spring Releases</name>
+        <url>http://repo.spring.io/release</url>
         <snapshots>
             <enabled>false</enabled>
         </snapshots>
