@@ -29,49 +29,83 @@
 
 --%>
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+<%@page language="java" contentType="text/html" session="true" %>
+
+<%--
+/*******************************************************************************
+ * Check org.opennms.dashboard.implementation for selected implementation      *
+ *******************************************************************************/
+--%>
 
 <%
-    String viewName = "";
+    String dashboardImplementation = System.getProperty("org.opennms.dashboard.implementation", "vaadin").trim();
 
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
-    }
+    if (!"gwt".equals(dashboardImplementation)) {
 %>
 
-<script type="text/javascript">
+    <%--
+    /*******************************************************************************
+     * Include VAADIN implementation                                               *
+     *******************************************************************************/
+    --%>
 
-  var isInitialized = false;
-  var checkInterval = setInterval(checkIframe, 1000);
+    <%
+        String viewName = "";
 
-  function checkIframe(){
+        if (request.getParameterMap().containsKey("viewName")) {
+            viewName = "&viewName=" + request.getParameter("viewName");
+        }
+    %>
 
-      var iframe = document.getElementById("surveillance-iframe");
+    <script type="text/javascript">
 
-      iframe.contentWindow.postMessage("test", window.location.origin);
-      if(isInitialized){
-          clearInterval(checkInterval);
-      }
-  }
+        var isInitialized = false;
+        var checkInterval = setInterval(checkIframe, 1000);
 
-  function receiveMessage(event){
-    isInitialized = true;
-    if(event.origin !== window.location.origin)
-      return;
+        function checkIframe(){
 
-    var elem = document.getElementById("surveillance-view");
-    elem.style.height = event.data;
+            var iframe = document.getElementById("surveillance-iframe");
 
-  }
+            iframe.contentWindow.postMessage("test", window.location.origin);
+            if(isInitialized){
+                clearInterval(checkInterval);
+            }
+        }
 
-  window.addEventListener("message", receiveMessage, false);
+        function receiveMessage(event){
+            isInitialized = true;
+            if(event.origin !== window.location.origin)
+                return;
 
-</script>
+            var elem = document.getElementById("surveillance-view");
+            elem.style.height = event.data;
+        }
 
-<div id="surveillance-view">
+        window.addEventListener("message", receiveMessage, false);
 
-<iframe id="surveillance-iframe" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
-</div>
+    </script>
+
+    <div id="surveillance-view">
+    <iframe id="surveillance-iframe" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="min-height:100%; min-width:100%;"></iframe>
+    </div>
+
+<% } else { %>
+
+    <%--
+    /*******************************************************************************
+     * Include GWT implementation                                                  *
+     *******************************************************************************/
+    --%>
+
+    <meta name='gwt:module' content='org.opennms.dashboard.Dashboard' />
+    <link media="screen" href="css/dashboard.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src='dashboard/dashboard.nocache.js'></script>
+    <table class="dashboard" cellspacing="5" width="100%">
+        <tbody>
+        <tr>
+            <td class="dashletCell"id="surveillanceView"></td>
+        </tr>
+        </tbody>
+    </table>
+
+<% } %>

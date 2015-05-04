@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -519,8 +520,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private Properties getServiceProperties(MonitoredService svc) {
+            final InetAddress addr = InetAddressUtils.addr(svc.getIpAddr());
+            boolean requireBrackets = addr != null && addr instanceof Inet6Address && !svc.getIpAddr().startsWith("[");
             Properties properties = new Properties();
-            properties.put("ipaddr", svc.getIpAddr());
+            properties.put("ipaddr", requireBrackets ? "[" + svc.getIpAddr() + "]" : svc.getIpAddr());
             properties.put("nodeid", svc.getNodeId());
             properties.put("nodelabel", svc.getNodeLabel());
             properties.put("svcname", svc.getSvcName());

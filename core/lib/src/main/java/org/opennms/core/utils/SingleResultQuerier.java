@@ -37,6 +37,8 @@ import javax.sql.DataSource;
 /**
  * <p>SingleResultQuerier class.</p>
  *
+ * @deprecated Use Hibernate instead of plain JDBC
+ *
  * @author ranger
  * @version $Id: $
  */

@@ -53,8 +53,15 @@ public class RrdtoolDataSource implements JRRewindableDataSource {
 		    return Long.valueOf(m_data.getMeta().getStep().getContent());
 		}
 		int index = getColumnIndex(field);
-		return new Double(m_data.getData().getRow(m_currentRow).getV(index).getContent());
+		return toDouble(m_data.getData().getRow(m_currentRow).getV(index).getContent());
 	}
+
+    private static Double toDouble(final String value) {
+        if ("inf".equalsIgnoreCase(value)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return new Double(value);
+    }
 
 	private String getColumnName(JRField field) {
 		return field.getDescription() == null || field.getDescription().trim().equals("")
