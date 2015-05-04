@@ -177,8 +177,6 @@ public class IfLabelDaoImpl extends AbstractIfLabel implements IfLabel {
         builder.eq("node.id", nodeId);
         builder.ne("ipInterfaces.isManaged", "D");
         builder.eq("ipInterfaces.ipAddress", ipAddr);
-        // TODO: Make sure that this is handled by the Hibernate mappings
-        // ipinterface.ifindex = snmpinterface.snmpifindex ??
 
         List<OnmsSnmpInterface> ifaces = m_snmpInterfaceDao.findMatching(builder.toCriteria());
 
@@ -227,9 +225,8 @@ public class IfLabelDaoImpl extends AbstractIfLabel implements IfLabel {
         builder.alias("ipInterfaces.node", "node", JoinType.LEFT_JOIN);
         builder.eq("ifIndex", ifIndex);
         builder.eq("node.id", nodeId);
-        builder.ne("ipInterfaces.isManaged", 'D');
-        builder.eq("ipInterfaces.ip", ipAddr);
-        builder.eq("ipInterfaces.ifIndex", ifIndex);
+        builder.ne("ipInterfaces.isManaged", "D");
+        builder.eq("ipInterfaces.ipAddress", ipAddr);
 
         List<OnmsSnmpInterface> ifaces = m_snmpInterfaceDao.findMatching(builder.toCriteria());
 
