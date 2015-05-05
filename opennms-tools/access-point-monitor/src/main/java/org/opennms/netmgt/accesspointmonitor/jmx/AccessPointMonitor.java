@@ -42,7 +42,7 @@ public class AccessPointMonitor extends AbstractSpringContextJmxServiceDaemon<or
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.AccessPointMonitor";
+        return "access-point-monitor";
     }
 
     /** {@inheritDoc} */
