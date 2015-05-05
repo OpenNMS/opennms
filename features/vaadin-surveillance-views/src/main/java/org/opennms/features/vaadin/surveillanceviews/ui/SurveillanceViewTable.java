@@ -226,6 +226,36 @@ public class SurveillanceViewTable extends Table {
          * if dashboard is enabled...
          */
         if (m_dashboard) {
+            setCellStyleGenerator(new CellStyleGenerator() {
+                @Override
+                public String getStyle(Table table, Object itemId, Object propertyId) {
+                    /**
+                     * the row header column will not be faded out
+                     */
+                    if ("".equals(propertyId)) {
+                        return null;
+                    }
+
+                    if (m_selectedItemId != null && m_selectedPropertyId != null && m_selectedItemId.equals(itemId) && m_selectedPropertyId.equals(propertyId)) {
+                        return null;
+                    }
+
+                    if (m_selectedPropertyId == null && m_selectedItemId == null) {
+                        return null;
+                    }
+
+                    if (m_selectedItemId == null && m_selectedPropertyId != null && m_selectedPropertyId.equals(propertyId)) {
+                        return null;
+                    }
+
+                    if (m_selectedPropertyId == null && m_selectedItemId != null && m_selectedItemId.equals(itemId)) {
+                        return null;
+                    }
+
+                    return "marked";
+                }
+            });
+
             /**
              * ...add a click listener for cells...
              */
@@ -249,6 +279,7 @@ public class SurveillanceViewTable extends Table {
                          * this handles row clicks
                          */
                         m_selectedItemId = itemClickEvent.getItemId();
+                        m_selectedPropertyId = null;
 
                         Notification.show(m_selectedItemId + " selected");
 
@@ -274,11 +305,15 @@ public class SurveillanceViewTable extends Table {
                         m_selectedRowCategories = m_allRowCategories;
                         m_selectedColumnCategories = m_allColumnCategories;
 
+                        m_selectedItemId = null;
+                        m_selectedPropertyId = null;
+
                         Notification.show("All entries selected");
                     } else {
                         /**
                          * this handles the rest of the header cells
                          */
+                        m_selectedItemId = null;
                         m_selectedPropertyId = headerClickEvent.getPropertyId();
 
                         m_selectedRowCategories = m_allRowCategories;
