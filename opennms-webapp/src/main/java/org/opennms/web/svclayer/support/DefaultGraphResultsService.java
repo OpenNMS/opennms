@@ -63,8 +63,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultGraphResultsService.class);
 
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + DefaultGraphResultsService.class);
-
     private ResourceDao m_resourceDao;
 
     private GraphDao m_graphDao;

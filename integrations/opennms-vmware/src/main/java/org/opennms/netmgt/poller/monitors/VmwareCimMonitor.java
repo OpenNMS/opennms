@@ -77,7 +77,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
     /**
      * logging for VMware data collection
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareCimMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareCimMonitor.class);
 
     /**
      * the node dao object for retrieving assets

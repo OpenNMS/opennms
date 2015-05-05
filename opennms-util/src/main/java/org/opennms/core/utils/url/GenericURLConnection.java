@@ -49,7 +49,7 @@ public abstract class GenericURLConnection extends URLConnection {
     /**
      * Logging to output.log
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Output." + GenericURLConnection.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(GenericURLConnection.class);
 
     /**
      * URL for connection
