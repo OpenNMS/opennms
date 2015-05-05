@@ -45,7 +45,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        m_anticipator = new XmlrpcAnticipator(0);
+        m_anticipator = new XmlrpcAnticipator();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class XmlrpcAnticipatorTest extends TestCase {
         // It's already been set up in setUp(), so just shutdown
         m_anticipator.shutdown();
 
-        m_anticipator = new XmlrpcAnticipator(0);
+        m_anticipator = new XmlrpcAnticipator();
         // Let tearDown() do the shutdown
     }
     
