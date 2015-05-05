@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -380,7 +381,7 @@ public class DatabasePopulator {
         final LocationDef def = new LocationDef();
         def.setLocationName("RDU");
         def.setMonitoringArea("East Coast");
-        def.setPollingPackageName("example1");
+        def.setPollingPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
         def.setCoordinates("35.715751,-79.16262");
         def.setPriority(1L);

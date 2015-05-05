@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.config;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -42,6 +44,7 @@ import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -81,13 +84,13 @@ public class CollectionConfigurationResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        final String collectionPackageName = def.getCollectionPackageName();
-        if (collectionPackageName == null || "".equals(collectionPackageName)) {
-            LOG.warn("Monitoring location {} does not have a collection package defined.", location);
-            return Response.status(Response.Status.NOT_FOUND).build();
+        final List<String> collectionPackageNames = def.getCollectionPackageNames();
+        if (collectionPackageNames != null) {
+            final CollectdConfiguration collectdConfig = m_collectdConfigResource.get().getCollectdConfigurationForPackages(collectionPackageNames);
+            return Response.ok(collectdConfig).build();
         }
 
-        final CollectdConfiguration collectdConfig = m_collectdConfigResource.get().getCollectdConfigurationForPackage(collectionPackageName);
-        return Response.ok(collectdConfig).build();
+        LOG.warn("Monitoring location {} does not have a collection package defined.", location);
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }

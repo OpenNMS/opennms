@@ -51,7 +51,7 @@ public class MonitoringLocationsConfiguration implements Serializable {
     private static final long serialVersionUID = 4774677097952128710L;
 
     @XmlElementWrapper(name="locations")
-    @XmlElement(name="location-def")
+    @XmlElement(name="location")
     private List<LocationDef> m_locations;
 
     public MonitoringLocationsConfiguration() {
@@ -90,8 +90,20 @@ public class MonitoringLocationsConfiguration implements Serializable {
         m_locations.add(location);
     }
 
+    /**
+     * Only used for unit testing.
+     * 
+     * @param locationName
+     * @param monitoringArea
+     * @param pollingPackageName
+     * @param collectionPackageName
+     * @param geolocation
+     * @param coordinates
+     * @param priority
+     * @param tags
+     */
     public void addLocation(final String locationName, final String monitoringArea, final String pollingPackageName, final String collectionPackageName, final String geolocation, final String coordinates, final Long priority, final String... tags) {
-        addLocation(new LocationDef(locationName, monitoringArea, pollingPackageName, collectionPackageName, geolocation, coordinates, priority, tags));
+        addLocation(new LocationDef(locationName, monitoringArea, null, pollingPackageName == null ? null : new String[] { pollingPackageName } , collectionPackageName == null ? null : new String[] { collectionPackageName }, geolocation, coordinates, priority, tags == null ? null : tags));
     }
 
     @Override

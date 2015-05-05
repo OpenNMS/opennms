@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.config.monitoringLocations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 import org.custommonkey.xmlunit.Difference;
@@ -67,16 +69,16 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
     }
 
     /*
-     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: presence of child nodes to be: Expected presence of child nodes to be 'true' but was 'false' - comparing <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4] to <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4]
-     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: number of child nodes: Expected number of child nodes '1' but was '0' - comparing <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4] to <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4]
-     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: presence of child node: Expected presence of child node 'ns1:tags' but was 'null' - comparing <ns1:tags...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4]/tags[1] to  at null
+     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: presence of child nodes to be: Expected presence of child nodes to be 'true' but was 'false' - comparing <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4] to <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location[4]
+     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: number of child nodes: Expected number of child nodes '1' but was '0' - comparing <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location-def[4] to <location-def...> at /monitoring-locations-configuration[1]/locations[1]/location[4]
+     * 2014-01-23 11:15:32,958 WARN [main] org.opennms.core.test.xml.XmlTest - Found difference: presence of child node: Expected presence of child node 'ns1:tags' but was 'null' - comparing <ns1:tags...> at /monitoring-locations-configuration[1]/locations[1]/location[4]/tags[1] to  at null
      */
     @Override
     protected boolean ignoreDifference(final Difference d) {
         // we don't care if an empty <tags /> is added or not
         final String xpathLocation = d.getControlNodeDetail().getXpathLocation();
         LOG.debug("xpath location = {}", xpathLocation);
-        if (xpathLocation != null && xpathLocation.contains("/monitoring-locations-configuration[1]/locations[1]/location-def[4]")) {
+        if (xpathLocation != null && xpathLocation.contains("/monitoring-locations-configuration[1]/locations[1]/location[4]")) {
             return true;
         }
         return super.ignoreDifference(d);
@@ -106,7 +108,7 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
         final LocationDef def = new LocationDef();
         def.setLocationName("RDU");
         def.setMonitoringArea("raleigh");
-        def.setPollingPackageName("raleigh");
+        def.setPollingPackageNames(Collections.singletonList("raleigh"));
         def.setGeolocation("35.7174,-79.1619");
         config.addLocation(def);
 
@@ -116,21 +118,21 @@ public class MonitoringLocationsConfigurationTest extends XmlTestNoCastor<Monito
     private static MonitoringLocationsConfiguration getDemoMonitoringLocationsConfig() {
         final MonitoringLocationsConfiguration config = new MonitoringLocationsConfiguration();
 
-        final LocationDef ma = new LocationDef("MA", "USA", "usa", null, "BOS", "42.363143,-71.0072436", 100l, "foo");
+        final LocationDef ma = new LocationDef("MA", "USA", null, new String[] { "usa" }, null, "BOS", "42.363143,-71.0072436", 100L, "foo");
         config.addLocation(ma);
 
-        final LocationDef nc = new LocationDef("NC", "USA", "usa", null, "220 Chatham Business Drive, Pittsboro, NC 27312", "35.71736,-79.161814", 100l, "bar", "baz");
+        final LocationDef nc = new LocationDef("NC", "USA", null, new String[] { "usa" }, null, "220 Chatham Business Drive, Pittsboro, NC 27312", "35.71736,-79.161814", 100L, "bar", "baz");
         config.addLocation(nc);
 
-        config.addLocation(new LocationDef("GA", "USA", "usa", null, "ATL", "33.639975,-84.444032", 100l, "baz"));
-        config.addLocation("OH", "USA", "usa", null, "Columbus, OH", "39.9611755,-82.9987942", 100l);
-        config.addLocation("MN", "USA", "usa", null, "MSP", "44.881234,-93.203111", 100l);
-        config.addLocation("CO", "USA", "usa", null, "Vail, CO", "39.6402638,-106.3741955", 100l);
-        config.addLocation("CA", "USA", "usa", null, "LAX", "33.9434916,-118.4089705", 100l);
-        config.addLocation("TX", "USA", "usa", null, "DFW", "32.8961644,-97.0427084", 100l);
-        config.addLocation("FL", "USA", "usa", null, "MIA", "25.7889689,-80.2264393", 100l);
-        config.addLocation("MT", "USA", "usa", null, "FCA", "48.311389,-114.255", 100l);
-        config.addLocation("AZ", "USA", "usa", null, "PHX", "33.4483771,-112.0740373", 100l);
+        config.addLocation(new LocationDef("GA", "USA", null, new String[] { "usa" }, null, "ATL", "33.639975,-84.444032", 100L, "baz"));
+        config.addLocation("OH", "USA", "usa", null, "Columbus, OH", "39.9611755,-82.9987942", 100L);
+        config.addLocation("MN", "USA", "usa", null, "MSP", "44.881234,-93.203111", 100L);
+        config.addLocation("CO", "USA", "usa", null, "Vail, CO", "39.6402638,-106.3741955", 100L);
+        config.addLocation("CA", "USA", "usa", null, "LAX", "33.9434916,-118.4089705", 100L);
+        config.addLocation("TX", "USA", "usa", null, "DFW", "32.8961644,-97.0427084", 100L);
+        config.addLocation("FL", "USA", "usa", null, "MIA", "25.7889689,-80.2264393", 100L);
+        config.addLocation("MT", "USA", "usa", null, "FCA", "48.311389,-114.255", 100L);
+        config.addLocation("AZ", "USA", "usa", null, "PHX", "33.4483771,-112.0740373", 100L);
 
         return config;
     }

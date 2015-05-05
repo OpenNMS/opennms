@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -115,8 +117,34 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         /**
          * This construct uses the existing data but updates the server timestamp
          */
-        public SimplePollerConfiguration(SimplePollerConfiguration pollerConfiguration) {
-            this(pollerConfiguration.getConfigurationTimestamp(), pollerConfiguration.getPolledServices());
+        public SimplePollerConfiguration(SimplePollerConfiguration... pollerConfiguration) {
+            this(getNewestTimestamp(pollerConfiguration), combinePolledServices(pollerConfiguration));
+        }
+
+        private static Date getNewestTimestamp(SimplePollerConfiguration... pollerConfigurations) {
+            if (pollerConfigurations == null || pollerConfigurations.length < 1) {
+                return new Date(0);
+            }
+            Date retval = new Date(0);
+            for (SimplePollerConfiguration config : pollerConfigurations) {
+                Date current = config.getConfigurationTimestamp();
+                if (retval.before(current)) {
+                    retval = current;
+                }
+            }
+            return retval;
+        }
+
+        private static PolledService[] combinePolledServices(SimplePollerConfiguration... pollerConfigurations) {
+            if (pollerConfigurations == null || pollerConfigurations.length < 1) {
+                return new PolledService[0];
+            }
+            Set<PolledService> retval = new TreeSet<PolledService>();
+            for (SimplePollerConfiguration config : pollerConfigurations) {
+                PolledService[] services = config.getPolledServices();
+                retval.addAll(Arrays.asList(services == null ? new PolledService[0] : services));
+            }
+            return retval.toArray(new PolledService[0]);
         }
 
         @Override
@@ -305,21 +333,25 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 			    return new EmptyPollerConfiguration();
 			}
 			
-            String pollingPackageName = getPackageName(mon);
-            
-            ConcurrentHashMap<String, SimplePollerConfiguration> cache = m_configCache.get();
-            SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
-            if (pollerConfiguration == null) {
-                pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
-                SimplePollerConfiguration configInCache = cache.putIfAbsent(pollingPackageName, pollerConfiguration);
-                // Make sure that we get the up-to-date value out of the ConcurrentHashMap
-                if (configInCache != null) {
-                    pollerConfiguration = configInCache;
+            List<String> pollingPackageNames = getPackageName(mon);
+
+            List<SimplePollerConfiguration> addMe = new ArrayList<SimplePollerConfiguration>();
+            for (String pollingPackageName : pollingPackageNames) {
+                ConcurrentHashMap<String, SimplePollerConfiguration> cache = m_configCache.get();
+                SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
+                if (pollerConfiguration == null) {
+                    pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
+                    SimplePollerConfiguration configInCache = cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+                    // Make sure that we get the up-to-date value out of the ConcurrentHashMap
+                    if (configInCache != null) {
+                        pollerConfiguration = configInCache;
+                    }
                 }
+                addMe.add(pollerConfiguration);
             }
-            
+
             // construct a copy so the serverTime gets updated (and avoid threading issues)
-            return new SimplePollerConfiguration(pollerConfiguration);
+            return new SimplePollerConfiguration(addMe.toArray(new SimplePollerConfiguration[0]));
 		} catch (final Exception e) {
 			LOG.warn("An error occurred retrieving the poller configuration for location monitor ID {}", locationMonitorId, e);
 			return new EmptyPollerConfiguration();
@@ -347,11 +379,16 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
     }
 
-    private Package getPollingPackageForMonitor(final OnmsLocationMonitor mon) {
-        String pollingPackageName = getPackageName(mon);
-
+    private Package getPollingPackageForMonitorAndService(final OnmsLocationMonitor mon, OnmsMonitoredService monSvc) {
+        List<String> pollingPackageNames = getPackageName(mon);
         String definitionName = mon.getDefinitionName();
-        return getPollingPackage(pollingPackageName, definitionName);
+        for (String pollingPackageName : pollingPackageNames) {
+            Package pkg = getPollingPackage(pollingPackageName, definitionName);
+            if (m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg) != null) {
+                return pkg;
+            }
+        }
+        throw new IllegalStateException("Could not find package from monitor " + mon.getName() + " that contains service " + monSvc.getServiceName());
     }
 
     private Package getPollingPackage(String pollingPackageName,
@@ -363,12 +400,12 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return pkg;
     }
 
-    private String getPackageName(final OnmsLocationMonitor mon) {
+    private List<String> getPackageName(final OnmsLocationMonitor mon) {
         final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
         }
-        return def.getPollingPackageName();
+        return def.getPollingPackageNames();
     }
 
     /** {@inheritDoc} */
@@ -565,7 +602,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         try {
 			if (newStatus.getPollResult().getResponseTime() != null) {
-			    final Package pkg = getPollingPackageForMonitor(locationMonitor);
+			    final Package pkg = getPollingPackageForMonitorAndService(locationMonitor, monSvc);
 			    saveResponseTimeData(Integer.toString(locationMonitorId), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
 			}
 		} catch (final Exception e) {

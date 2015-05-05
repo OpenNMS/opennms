@@ -35,9 +35,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 
-@XmlRootElement
+@XmlRootElement(name="locations")
+@ValidateUsing("monitoring-locations.xsd")
 public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<LocationDef> {
     private static final long serialVersionUID = 1L;
 
@@ -46,7 +48,7 @@ public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<Locati
         super(definitions);
     }
 
-    @XmlElement(name="locations")
+    @XmlElement(name="location")
     public List<LocationDef> getObjects() {
         return super.getObjects();
     }

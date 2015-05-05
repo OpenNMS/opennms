@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.monitoringLocations;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +40,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 /**
  * <p>
@@ -59,7 +62,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The collection package name is used to associate with a collection
  * configuration found in the collectd-configuration.xml file.
  */
-@XmlRootElement(name="location-def")
+@XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
 public class LocationDef implements Serializable {
     private static final long serialVersionUID = -7651610012389148818L;
@@ -78,13 +81,25 @@ public class LocationDef implements Serializable {
     private String m_monitoringArea;
 
     /**
-     * The polling package associated with this monitoring location.
+     * The provisioning foreign sources associated with this monitoring location.
      */
-    @XmlAttribute(name="polling-package-name")
-    private String m_pollingPackageName;
+    @XmlElementWrapper(name="foreign-source-names")
+    @XmlElement(name="foreign-source-name")
+    private List<String> m_foreignSourceNames;
 
-    @XmlAttribute(name="collection-package-name")
-    private String m_collectionPackageName;
+    /**
+     * The polling packages associated with this monitoring location.
+     */
+    @XmlElementWrapper(name="polling-package-names")
+    @XmlElement(name="polling-package-name")
+    private List<String> m_pollingPackageNames;
+
+    /**
+     * The collection packages associated with this monitoring location.
+     */
+    @XmlElementWrapper(name="collection-package-names")
+    @XmlElement(name="collection-package-name")
+    private List<String> m_collectionPackageNames;
 
     /**
      * The geolocation (address) of this monitoring location.
@@ -112,16 +127,23 @@ public class LocationDef implements Serializable {
         super();
     }
 
+    /**
+     * This constructor is only used during unit testing.
+     * 
+     * @param locationName
+     * @param monitoringArea
+     * @param pollingPackageName
+     */
     public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, pollingPackageName, null, null, null, 0L, new String[0]);
+        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
     }
 
-    public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName, final String collectionPackageName, final String geolocation, final String coordinates, final Long priority, final String... tags) {
-        this();
+    public LocationDef(final String locationName, final String monitoringArea, final String[] foreignSourceNames, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final String coordinates, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_pollingPackageName = pollingPackageName;
-        m_collectionPackageName = collectionPackageName;
+        m_foreignSourceNames = (foreignSourceNames == null ? null : Arrays.asList(foreignSourceNames));
+        m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
+        m_collectionPackageNames = (collectionPackageNames == null ? null : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
         m_coordinates = coordinates;
         m_priority = priority;
@@ -149,20 +171,28 @@ public class LocationDef implements Serializable {
         m_monitoringArea = monitoringArea;
     }
 
-    public String getPollingPackageName() {
-        return m_pollingPackageName;
+    public List<String> getForeignSourceNames() {
+        return m_foreignSourceNames;
     }
 
-    public void setPollingPackageName(final String pollingPackageName) {
-        m_pollingPackageName = pollingPackageName;
+    public void setForeignSourceNames(final List<String> foreignSourceNames) {
+        m_foreignSourceNames = foreignSourceNames;
     }
 
-    public String getCollectionPackageName() {
-        return m_collectionPackageName;
+    public List<String> getPollingPackageNames() {
+        return m_pollingPackageNames;
     }
 
-    public void setCollectionPackageName(final String collectionPackageName) {
-        m_collectionPackageName = collectionPackageName;
+    public void setPollingPackageNames(final List<String> pollingPackageNames) {
+        m_pollingPackageNames = pollingPackageNames;
+    }
+
+    public List<String> getCollectionPackageNames() {
+        return m_collectionPackageNames;
+    }
+
+    public void setCollectionPackageNames(final List<String> collectionPackageNames) {
+        m_collectionPackageNames = collectionPackageNames;
     }
 
     public String getGeolocation() {
@@ -182,7 +212,7 @@ public class LocationDef implements Serializable {
     }
 
     public Long getPriority() {
-        return m_priority == null? 100L : m_priority;
+        return m_priority == null ? 100L : m_priority;
     }
 
     public void setPriority(final Long priority) {
@@ -191,7 +221,7 @@ public class LocationDef implements Serializable {
 
     public List<Tag> getTags() {
         if (m_tags == null) {
-            return Collections.emptyList();
+            return null;
         } else {
             return Collections.unmodifiableList(m_tags);
         }
@@ -213,8 +243,9 @@ public class LocationDef implements Serializable {
         result = prime * result + ((m_geolocation == null) ? 0 : m_geolocation.hashCode());
         result = prime * result + ((m_locationName == null) ? 0 : m_locationName.hashCode());
         result = prime * result + ((m_monitoringArea == null) ? 0 : m_monitoringArea.hashCode());
-        result = prime * result + ((m_pollingPackageName == null) ? 0 : m_pollingPackageName.hashCode());
-        result = prime * result + ((m_collectionPackageName == null) ? 0 : m_collectionPackageName.hashCode());
+        result = prime * result + ((m_foreignSourceNames == null || m_foreignSourceNames.size() == 0) ? 0 : m_foreignSourceNames.hashCode());
+        result = prime * result + ((m_pollingPackageNames == null || m_pollingPackageNames.size() == 0) ? 0 : m_pollingPackageNames.hashCode());
+        result = prime * result + ((m_collectionPackageNames == null || m_collectionPackageNames.size() == 0) ? 0 : m_collectionPackageNames.hashCode());
         result = prime * result + ((m_priority == null) ? 0 : m_priority.hashCode());
         result = prime * result + ((m_tags == null || m_tags.size() == 0) ? 0 : m_tags.hashCode());
         return result;
@@ -222,85 +253,36 @@ public class LocationDef implements Serializable {
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
         if (obj == null) {
             return false;
+        }
+        if (this == obj) {
+            return true;
         }
         if (!(obj instanceof LocationDef)) {
             return false;
         }
         final LocationDef other = (LocationDef) obj;
-        if (m_coordinates == null) {
-            if (other.m_coordinates != null) {
-                return false;
-            }
-        } else if (!m_coordinates.equals(other.m_coordinates)) {
-            return false;
-        }
-        if (m_geolocation == null) {
-            if (other.m_geolocation != null) {
-                return false;
-            }
-        } else if (!m_geolocation.equals(other.m_geolocation)) {
-            return false;
-        }
-        if (m_locationName == null) {
-            if (other.m_locationName != null) {
-                return false;
-            }
-        } else if (!m_locationName.equals(other.m_locationName)) {
-            return false;
-        }
-        if (m_monitoringArea == null) {
-            if (other.m_monitoringArea != null) {
-                return false;
-            }
-        } else if (!m_monitoringArea.equals(other.m_monitoringArea)) {
-            return false;
-        }
-        if (m_pollingPackageName == null) {
-            if (other.m_pollingPackageName != null) {
-                return false;
-            }
-        } else if (!m_pollingPackageName.equals(other.m_pollingPackageName)) {
-            return false;
-        }
-        if (m_collectionPackageName == null) {
-            if (other.m_collectionPackageName != null) {
-                return false;
-            }
-        } else if (!m_collectionPackageName.equals(other.m_collectionPackageName)) {
-            return false;
-        }
-        if (m_priority == null) {
-            if (other.m_priority != null) {
-                return false;
-            }
-        } else if (!m_priority.equals(other.m_priority)) {
-            return false;
-        }
-        if (m_tags == null || m_tags.size() == 0) {
-            if (other.m_tags != null && other.m_tags.size() > 0) {
-                return false;
-            }
-        } else {
-            if (other.m_tags == null || other.m_tags.size() == 0) {
-                return false;
-            } else if (!m_tags.equals(other.m_tags)) {
-                return false;
-            }
-        }
-        return true;
+        return new EqualsBuilder()
+            .append(getCoordinates(), other.getCoordinates())
+            .append(getGeolocation(), other.getGeolocation())
+            .append(getLocationName(), other.getLocationName())
+            .append(getMonitoringArea(), other.getMonitoringArea())
+            .append(getForeignSourceNames(), other.getForeignSourceNames())
+            .append(getPollingPackageNames(), other.getPollingPackageNames())
+            .append(getCollectionPackageNames(), other.getCollectionPackageNames())
+            .append(getPriority(), other.getPriority())
+            .append(getTags(), other.getTags())
+            .isEquals();
     }
 
     @Override
     public String toString() {
         return "LocationDef [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
-                ", polling-package-name=" + m_pollingPackageName +
-                ", collection-package-name=" + m_collectionPackageName +
+                ", foreign-source-names=" + m_foreignSourceNames +
+                ", polling-package-names=" + m_pollingPackageNames +
+                ", collection-package-names=" + m_collectionPackageNames +
                 ", geolocation=" + m_geolocation +
                 ", coordinates=" + m_coordinates +
                 ", priority=" + m_priority +

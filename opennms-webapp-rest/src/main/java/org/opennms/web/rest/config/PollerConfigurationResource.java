@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.config;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -81,13 +83,13 @@ public class PollerConfigurationResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        final String pollingPackageName = def.getPollingPackageName();
-        if (pollingPackageName == null || "".equals(pollingPackageName)) {
-            LOG.warn("Monitoring location {} does not have a polling package defined.", location);
-            return Response.status(Response.Status.NOT_FOUND).build();
+        final List<String> pollingPackageNames = def.getPollingPackageNames();
+        if (pollingPackageNames != null) {
+            final PollerConfiguration pollerConfig = m_pollerConfigResource.get().getPollerConfigurationForPackages(pollingPackageNames);
+            return Response.ok(pollerConfig).build();
         }
 
-        final PollerConfiguration pollerConfig = m_pollerConfigResource.get().getPollerConfigurationForPackage(pollingPackageName);
-        return Response.ok(pollerConfig).build();
+        LOG.warn("Monitoring location {} does not have a polling package defined.", location);
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }
