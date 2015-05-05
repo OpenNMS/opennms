@@ -117,7 +117,7 @@ public class VmwareViJavaAccess {
     /**
      * logging for VMware library VI Java
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareViJavaAccess.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareViJavaAccess.class);
 
     /**
      * the config dao

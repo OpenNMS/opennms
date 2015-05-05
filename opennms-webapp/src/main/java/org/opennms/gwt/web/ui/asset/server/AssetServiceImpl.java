@@ -90,7 +90,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
         s_connectionOptions.add("");
     }
 
-    private static final Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + AssetServiceImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(AssetServiceImpl.class);
 
     /**
      * asset data access object for asset records

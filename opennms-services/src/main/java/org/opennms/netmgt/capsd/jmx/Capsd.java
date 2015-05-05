@@ -43,7 +43,7 @@ public class Capsd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return "OpenNMS.Capsd";
+        return "capsd";
     }
 
     /** {@inheritDoc} */
