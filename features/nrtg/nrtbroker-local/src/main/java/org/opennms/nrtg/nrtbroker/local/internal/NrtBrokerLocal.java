@@ -103,7 +103,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtBrokerLocal.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtBrokerLocal.class);
 
     private List<ProtocolCollector> m_protocolCollectors;
     private TimedOutMap m_measurementSets = new TimedOutMap();
