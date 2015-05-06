@@ -189,9 +189,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             for (XmlSource source : collection.getXmlSources()) {
                 LOG.debug("collect: starting source url '{}' collection", source.getUrl());
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                LOG.debug("collect: parsed url for source url '{}'", source.getUrl());
+                LOG.debug("collect: parsed url for source url '{}'", urlStr);
                 Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
-                LOG.debug("collect: parsed request for source url '{}'", source.getUrl());
+                LOG.debug("collect: parsed request for source url '{}' : {}", urlStr, request);
                 fillCollectionSet(urlStr, request, agent, collectionSet, source);
                 LOG.debug("collect: finished source url '{}' collection", source.getUrl());
             }
@@ -386,6 +386,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return null;
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
         final Request request = new Request();
+        request.setMethod(unformattedRequest.getMethod());
         for (Header header : unformattedRequest.getHeaders()) {
             request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep));
         }
