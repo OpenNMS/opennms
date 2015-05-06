@@ -166,7 +166,7 @@ public class HttpUrlConnection extends URLConnection {
                 final Content cnt = m_request.getContent();
                 HttpPost post = new HttpPost(ub.build());
                 ContentType contentType = ContentType.create(cnt.getType());
-                LOG.info("Processing POST request for %s", contentType);
+                LOG.info("Processing POST request for {}", contentType);
                 if (contentType.getMimeType().equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType())) {
                     FormFields fields = JaxbUtils.unmarshal(FormFields.class, cnt.getData());
                     post.setEntity(fields.getEntity());
