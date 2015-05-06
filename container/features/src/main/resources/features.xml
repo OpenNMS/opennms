@@ -225,6 +225,11 @@
       <bundle>wrap:mvn:commons-httpclient/commons-httpclient/3.1</bundle>
     </feature>
 
+    <feature name="jolokia" description="Jolokia" version="1.2.3">
+      <feature>http</feature>
+      <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
+    </feature>
+
     <feature name="jrobin" description="JRobin" version="1.6.0-SNAPSHOT">
       <bundle>mvn:org.jrobin/jrobin/1.6.0-SNAPSHOT</bundle>
     </feature>
@@ -364,6 +369,8 @@
     </feature>
 
     <feature name="opennms-config-jaxb" description="OpenNMS :: Configuration :: JAXB" version="${project.version}">
+      <feature>commons-lang</feature>
+
       <feature>opennms-core</feature>
       <feature>opennms-snmp</feature>
 
