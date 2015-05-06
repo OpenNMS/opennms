@@ -460,8 +460,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param urlString the URL string
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected Document getXmlDocument(String urlString, Request request) {
+    protected Document getXmlDocument(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -470,8 +471,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             is = c.getInputStream();
             final Document doc = getXmlDocument(is, request);
             return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);
@@ -484,30 +483,27 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param is the input stream
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected Document getXmlDocument(InputStream is, Request request) {
-        try {
-            is = preProcessHtml(request, is);
-            is = applyXsltTransformation(request, is);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setIgnoringComments(true);
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(is, writer, "UTF-8");
-            String contents = writer.toString();
-            Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
-            // Ugly hack to deal with DOM & XPath 1.0's battle royale 
-            // over handling namespaces without a prefix. 
-            if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
-                factory.setNamespaceAware(false);
-                builder = factory.newDocumentBuilder();
-                doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
-            }
-            return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
+    protected Document getXmlDocument(InputStream is, Request request) throws Exception {
+        is = preProcessHtml(request, is);
+        is = applyXsltTransformation(request, is);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringComments(true);
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(is, writer, "UTF-8");
+        String contents = writer.toString();
+        Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+        // Ugly hack to deal with DOM & XPath 1.0's battle royale 
+        // over handling namespaces without a prefix. 
+        if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
+            factory.setNamespaceAware(false);
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
         }
+        return doc;
     }
 
     /**
