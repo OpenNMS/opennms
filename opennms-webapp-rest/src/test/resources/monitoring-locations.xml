@@ -8,15 +8,14 @@
       <collection-package-names>
         <collection-package-name>example1</collection-package-name>
       </collection-package-names>
-      <ns1:tags xmlns:ns1="http://xmlns.opennms.org/xsd/config/tags"/>
     </location>
     <location location-name="00002" monitoring-area="IN" geolocation="2 Open St., Network, MS 00002" coordinates="38.2096,-85.8704" priority="100">
       <polling-package-names>
         <polling-package-name>example2</polling-package-name>
       </polling-package-names>
-      <ns2:tags xmlns:ns2="http://xmlns.opennms.org/xsd/config/tags">
+      <tags>
         <tag name="even"/>
-      </ns2:tags>
+      </tags>
     </location>
     <location location-name="00003" monitoring-area="IN" geolocation="2 Open St., Network, MS 00002" coordinates="38.2096,-85.8704" priority="100">
       <polling-package-names>
@@ -25,9 +24,9 @@
       <collection-package-names>
         <collection-package-name>example2</collection-package-name>
       </collection-package-names>
-      <ns2:tags xmlns:ns2="http://xmlns.opennms.org/xsd/config/tags">
+      <tags>
         <tag name="odd"/>
-      </ns2:tags>
+      </tags>
     </location>
   </locations>
 </monitoring-locations-configuration>
