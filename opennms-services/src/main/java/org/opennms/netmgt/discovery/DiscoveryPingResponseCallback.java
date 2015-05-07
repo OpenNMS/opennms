@@ -50,7 +50,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryPingResponseCallback.class);
     
-    static final String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
+    private static final String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
     
     private DiscoveryConfigFactory m_discoveryFactory;
 
