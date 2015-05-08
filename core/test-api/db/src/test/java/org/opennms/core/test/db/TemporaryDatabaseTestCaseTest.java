@@ -30,20 +30,25 @@ package org.opennms.core.test.db;
 
 import java.util.Date;
 
+import org.junit.Test;
+
 public class TemporaryDatabaseTestCaseTest extends TemporaryDatabaseTestCase {
     @Override
     public void testNothing() {
         // Nothing, just make sure that setUp() and tearDown() work
     }
-    
+
+    @Test
     public void testExecuteSQL() {
         executeSQL("SELECT now()");
     }
     
+    @Test
     public void testExecuteSQLFromJdbcTemplate() {
         jdbcTemplate.queryForObject("SELECT now()", Date.class);
     }
     
+    @Test
     public void testExecuteSQLFromGetJdbcTemplate() {
         getJdbcTemplate().queryForObject("SELECT now()", Date.class);
     }

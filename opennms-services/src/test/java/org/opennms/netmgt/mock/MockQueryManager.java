@@ -63,7 +63,7 @@ public class MockQueryManager implements QueryManager {
             @Override
             public void visitService(MockService s) {
                 if (ipaddr.equals(s.getInterface().getIpAddr())) {
-                    serviceIds.add(Integer.valueOf(s.getId()));
+                    serviceIds.add(Integer.valueOf(s.getSvcId()));
                 }
             }
 

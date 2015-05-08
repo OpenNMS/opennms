@@ -31,6 +31,7 @@ package org.opennms.netmgt.mock;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.poller.InetNetworkInterface;
@@ -46,7 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class MockService extends MockElement implements MonitoredService {
-    
+
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+
     public static enum SvcMgmtStatus {
         ACTIVE("A"),
         DELETED("D"),
@@ -82,6 +85,8 @@ public class MockService extends MockElement implements MonitoredService {
     
     private PollStatus m_pollStatus;
 
+    private final int m_id;
+
     private int m_serviceId;
 
     private final String m_svcName;
@@ -101,6 +106,7 @@ public class MockService extends MockElement implements MonitoredService {
     */
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
+        m_id = ID_COUNTER.getAndIncrement();
         m_svcName = svcName;
         m_serviceId = serviceId;
         m_pollStatus = PollStatus.up();
@@ -133,11 +139,19 @@ public class MockService extends MockElement implements MonitoredService {
      * @return a int.
      */
     public int getId() {
+        return m_id;
+    }
+
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
+    public int getSvcId() {
         return m_serviceId;
     }
 
-
-    public void setId(Integer nextServiceId) {
+    public void setSvcId(Integer nextServiceId) {
         m_serviceId = nextServiceId;
     }
 

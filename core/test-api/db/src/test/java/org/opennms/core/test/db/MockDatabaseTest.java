@@ -150,7 +150,7 @@ public class MockDatabaseTest extends TestCase {
                 assertEquals("Assertion failed: " + svc, svc.getNodeId(), nodeId);
                 assertEquals("Assertion failed: " + svc, svc.getIpAddr(), ipAddr);
                 assertEquals("Assertion failed: " + svc, svc.getSvcName(), serviceName);
-                assertEquals("Assertion failed: " + svc, svc.getId(), serviceId);
+                assertEquals("Assertion failed: " + svc, svc.getSvcId(), serviceId);
                 assertEquals("Assertion failed: " + svc, svc.getMgmtStatus().toDbString(), status);
             }
         };
@@ -180,7 +180,7 @@ public class MockDatabaseTest extends TestCase {
                 int serviceId = rs.getInt("serviceId");
                 assertEquals(nodeId, svc.getNodeId());
                 assertEquals(ipAddr, svc.getIpAddr());
-                assertEquals(serviceId, svc.getId());
+                assertEquals(serviceId, svc.getSvcId());
             }
         };
         querier.execute();

@@ -339,7 +339,7 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
 			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
+    <sql>
+      DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
+      DROP TRIGGER IF EXISTS setIfServiceKeysOnUpdateTrigger ON outages;
+
+      DROP TRIGGER IF EXISTS setIpInterfaceKeysOnInsertTrigger ON ifServices;
+      DROP TRIGGER IF EXISTS setIpInterfaceKeysOnUpdateTrigger ON ifServices;
+
+      DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnInsertTrigger ON ipInterface;
+      DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
+    </sql>
+    <dropProcedure procedureName="setIfServiceKeysOnInsert"/>
+    <dropProcedure procedureName="setIfServiceKeysOnUpdate"/>
+    <dropProcedure procedureName="setIpInterfaceKeysOnInsert"/>
+    <dropProcedure procedureName="setIpInterfaceKeysOnUpdate"/>
+    <dropProcedure procedureName="setSnmpInterfaceKeysOnInsert"/>
+    <dropProcedure procedureName="setSnmpInterfaceKeysOnUpdate"/>
+
+    <rollback>
+      <!-- TODO -->
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

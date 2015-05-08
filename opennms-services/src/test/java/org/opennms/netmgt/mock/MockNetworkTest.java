@@ -280,8 +280,8 @@ public class MockNetworkTest extends TestCase {
         assertEquals("HTTP", httpSvc.getSvcName());
         assertEquals(svrIface, httpSvc.getInterface());
 
-        assertTrue(icmpSvc.getId() == icmpSvc2.getId());
-        assertFalse(icmpSvc.getId() == httpSvc.getId());
+        assertTrue(icmpSvc.getSvcId() == icmpSvc2.getSvcId());
+        assertFalse(icmpSvc.getSvcId() == httpSvc.getSvcId());
     }
 
     public void testEventListeners() {
@@ -497,7 +497,7 @@ public class MockNetworkTest extends TestCase {
         List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
         for (MockService svc : expectedSvcs) {
-            assertTrue(svcs.contains(Integer.valueOf(svc.getId())));
+            assertTrue(svcs.contains(Integer.valueOf(svc.getSvcId())));
         }
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");

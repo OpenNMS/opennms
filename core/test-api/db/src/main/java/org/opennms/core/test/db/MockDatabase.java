@@ -128,8 +128,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public void writeInterface(MockInterface iface) {
         LOG.info("Inserting interface into database with IP address {}", iface.getAddress());
         writeSnmpInterface(iface);
-        Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "M" };
-        update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
+        Object[] values = { iface.getId(), iface.getNodeId(), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "M" };
+        update("insert into ipInterface (id, nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?, ?);", values);
     }
 
     public void writeSnmpInterface(MockInterface iface) {
@@ -142,16 +142,16 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         String svcName = svc.getSvcName();
         Integer serviceId = getServiceID(svcName);
         if (serviceId == null) {
-            svc.setId(getNextServiceId());
-            Object[] svcValues = { svc.getId(), svcName };
-            LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getId());
+            svc.setSvcId(getNextServiceId());
+            Object[] svcValues = { svc.getSvcId(), svcName };
+            LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getSvcId());
             update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         } else {
-            svc.setId(serviceId);
+            svc.setSvcId(serviceId);
         }
         String status = svc.getMgmtStatus().toDbString();
-        Object[] values = { Integer.valueOf(svc.getNodeId()), str(svc.getAddress()), Integer.valueOf(svc.getId()), status };
-        update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
+        Object[] values = { svc.getId(), svc.getInterface().getId(), Integer.valueOf(svc.getNodeId()), str(svc.getAddress()), Integer.valueOf(svc.getSvcId()), status };
+        update("insert into ifServices (id, ipInterfaceId, nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?, ?, ?);", values);
     }
 
     public void writePathOutage(MockPathOutage out) {
@@ -209,7 +209,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     
     public int countOutagesForService(MockService svc, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
-        Object[] values = { Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()) };
+        Object[] values = { Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getSvcId()) };
         return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql, values);
     }
 
@@ -220,14 +220,15 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public void createOutage(MockService svc, int eventId, Timestamp time) {
         Object[] values = {
                 getNextOutageId(), // outageID
+                svc.getId(), // service ID
                 Integer.valueOf(eventId),           // svcLostEventId
                 Integer.valueOf(svc.getNodeId()), // nodeId
                 str(svc.getAddress()),                // ipAddr
-                Integer.valueOf(svc.getId()),       // serviceID
+                Integer.valueOf(svc.getSvcId()),       // serviceID
                 time, // ifLostService
                };
         
-        update("insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?);", values);
+        update("insert into outages (outageId, ifServiceId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?, ?);", values);
         
     }
     
@@ -242,7 +243,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 timestamp, // ifLostService
                 Integer.valueOf(svc.getNodeId()), // nodeId
                 svc.getIpAddr(),                // ipAddr
-                Integer.valueOf(svc.getId()),       // serviceID
+                Integer.valueOf(svc.getSvcId()),       // serviceID
                };
         
         update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL));", values);
@@ -285,13 +286,13 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
-        Object[] values = { String.valueOf(newStatus), Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()) };
+        Object[] values = { String.valueOf(newStatus), Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getSvcId()) };
         update("update ifServices set status = ? where nodeId = ? and ipAddr = ? and serviceId = ?", values);
     }
 
     public char getServiceStatus(MockService svc) {
         SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?");
-        querier.execute(Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getId()));
+        querier.execute(Integer.valueOf(svc.getNodeId()), svc.getIpAddr(), Integer.valueOf(svc.getSvcId()));
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
             return 'X';
@@ -387,17 +388,17 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     
     public Collection<Outage> getOpenOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is null",
-                svc.getNodeId(), svc.getIpAddr(), svc.getId());
+                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
     
     public Collection<Outage> getOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ?",
-                svc.getNodeId(), svc.getIpAddr(), svc.getId());
+                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
     
     public Collection<Outage> getClosedOutages(MockService svc) {
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null",
-                svc.getNodeId(), svc.getIpAddr(), svc.getId());
+                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
 
     /**
