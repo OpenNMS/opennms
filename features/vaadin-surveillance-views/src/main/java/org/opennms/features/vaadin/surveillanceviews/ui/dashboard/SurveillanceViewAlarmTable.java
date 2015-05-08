@@ -75,6 +75,10 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
          */
         private int nodeId;
         /**
+         * alarm severity id
+         */
+        private int severityId;
+        /**
          * alarm severity
          */
         private String severity;
@@ -98,6 +102,10 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
          * last event date
          */
         private Date lastEventTime;
+        /**
+         * the UEI
+         */
+        private String uei;
 
         /**
          * Constructor for instantiating new alarm instances.
@@ -111,8 +119,10 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
          * @param firstEventTime the first event date
          * @param lastEventTime  the last event date
          */
-        public Alarm(int id, String severity, String nodeLabel, int nodeId, String logMsg, int counter, Date firstEventTime, Date lastEventTime) {
+        public Alarm(int id, String uei, int severityId, String severity, String nodeLabel, int nodeId, String logMsg, int counter, Date firstEventTime, Date lastEventTime) {
             this.id = id;
+            this.uei = uei;
+            this.severityId = severityId;
             this.severity = severity;
             this.nodeLabel = nodeLabel;
             this.nodeId = nodeId;
@@ -126,12 +136,20 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
             return severity;
         }
 
+        public int getSeverityId() {
+            return severityId;
+        }
+
         public int getNodeId() {
             return nodeId;
         }
 
         public int getId() {
             return id;
+        }
+
+        public String getUei() {
+            return uei;
         }
 
         public String getNodeLabel() {
@@ -316,18 +334,18 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
         });
 
         /**
-         * add logMsg column
+         * add severity column
          */
-        addGeneratedColumn("logMsg", new ColumnGenerator() {
+        addGeneratedColumn("severity", new ColumnGenerator() {
             @Override
             public Object generateCell(Table table, Object itemId, Object propertyId) {
                 Alarm alarm = (Alarm) itemId;
-                return getImageSeverityLayout(alarm.getLogMsg());
+                return getImageSeverityLayout(alarm.getSeverity());
             }
         });
 
         /**
-         * set a cell style generator that handles the logMsg column
+         * set a cell style generator that handles the severity column
          */
         setCellStyleGenerator(new CellStyleGenerator() {
             @Override
@@ -336,7 +354,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
 
                 String style = alarm.getSeverity().toLowerCase();
 
-                if ("logMsg".equals(propertyId)) {
+                if ("severity".equals(propertyId)) {
                     style += "-image";
                 }
 
@@ -348,21 +366,23 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
          * set column headers
          */
         setColumnHeader("nodeLabel", "Node");
-        setColumnHeader("logMsg", "Log Msg");
+        setColumnHeader("severity", "Severity");
+        setColumnHeader("uei", "UEI");
         setColumnHeader("counter", "Count");
-        setColumnHeader("firstEventTime", "First Time");
         setColumnHeader("lastEventTime", "Last Time");
+        setColumnHeader("logMsg", "Log Msg");
 
-        setColumnExpandRatio("nodeLabel", 2.0f);
+        setColumnExpandRatio("nodeLabel", 2.25f);
+        setColumnExpandRatio("severity", 1.0f);
+        setColumnExpandRatio("uei", 3.0f);
+        setColumnExpandRatio("counter", 0.5f);
+        setColumnExpandRatio("lastEventTime", 1.5f);
         setColumnExpandRatio("logMsg", 4.0f);
-        setColumnExpandRatio("counter", 1.0f);
-        setColumnExpandRatio("firstEventTime", 1.0f);
-        setColumnExpandRatio("lastEventTime", 1.0f);
 
         /**
          * set visible columns
          */
-        setVisibleColumns("nodeLabel", "logMsg", "counter", "firstEventTime", "lastEventTime");
+        setVisibleColumns("nodeLabel", "severity", "uei", "counter", "lastEventTime", "logMsg");
     }
 
     /**
@@ -391,7 +411,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                         nodeMap.put(onmsAlarm.getNodeId(), getSurveillanceViewService().getNodeForId(onmsAlarm.getNodeId()));
                     }
 
-                    alarms.add(new Alarm(onmsAlarm.getId(), onmsAlarm.getSeverity().getLabel(), nodeMap.get(onmsAlarm.getNodeId()).getLabel(), onmsAlarm.getNodeId(), onmsAlarm.getLogMsg(), onmsAlarm.getCounter(), onmsAlarm.getFirstEventTime(), onmsAlarm.getLastEventTime()));
+                    alarms.add(new Alarm(onmsAlarm.getId(), onmsAlarm.getUei(), onmsAlarm.getSeverityId(), onmsAlarm.getSeverity().getLabel(), nodeMap.get(onmsAlarm.getNodeId()).getLabel(), onmsAlarm.getNodeId(), onmsAlarm.getLogMsg(), onmsAlarm.getCounter(), onmsAlarm.getFirstEventTime(), onmsAlarm.getLastEventTime()));
                 }
                 return alarms;
             }
@@ -421,7 +441,7 @@ public class SurveillanceViewAlarmTable extends SurveillanceViewDetailTable {
                             /**
                              * sort the alarms
                              */
-                            sort(new Object[]{"lastEventTime"}, new boolean[]{true});
+                            sort(new Object[]{"severityId", "lastEventTime"}, new boolean[]{false, false});
 
                             /**
                              * refresh the table
