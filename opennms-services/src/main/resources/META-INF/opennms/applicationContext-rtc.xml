@@ -22,7 +22,6 @@
     state based on events to calculate availability. It is attached to the event
     channel with the broadcastEventProcessor bean.
   -->
-  <!--
   <bean name="dataManager" class="org.opennms.netmgt.rtc.DataManager"/>
 
   <bean name="broadcastEventProcessor" class="org.opennms.netmgt.rtc.BroadcastEventProcessor"/>
@@ -31,12 +30,14 @@
     <property name="annotatedListener" ref="broadcastEventProcessor" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
-  -->
   <!--
     END LEGACY IMPLEMENTATION
   -->
 
+  <!-- NEW IMPLEMENTATION -->
+  <!--
   <bean id="availabilityServiceHibernateImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceHibernateImpl"/>
+  -->
 
   <!-- This EventListener listens for subscribe and unsubscribe events -->
   <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
@@ -45,8 +46,10 @@
   </bean>
 
   <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
-    <!-- LEGACY IMPLEMENTATION: <constructor-arg ref="dataManager"/> -->
-    <constructor-arg ref="availabilityServiceHibernateImpl"/>
+    <!-- LEGACY IMPLEMENTATION -->
+    <constructor-arg ref="dataManager"/>
+    <!-- NEW IMPLEMENTATION -->
+    <!-- <constructor-arg ref="availabilityServiceHibernateImpl"/> -->
     <constructor-arg ref="rtcConfigFactory"/>
   </bean>
 
