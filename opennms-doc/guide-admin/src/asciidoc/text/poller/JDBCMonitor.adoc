@@ -26,8 +26,7 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
 
-NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter the IP or resolved hostname of the interface the monitored service is assigned to.
-
+NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
 ===== Provide the database driver
 

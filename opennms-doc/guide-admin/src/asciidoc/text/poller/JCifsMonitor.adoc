@@ -73,7 +73,7 @@ TIP: Please consider, if you are accessing shares with Mac OSX you have some sid
 
 This example shows how to configure the _JCifsMonitor_ to test if a file share is available over a network.
 For this example we have access to a share for error logs and we want to get an outage if we have any error log files in our folder.
-The share is named 'log'.
+The share is named _log_.
 The service should go back to normal if the error log file is deleted and the folder is empty.
 
 .JCifsMonitor configuration to test that a shared folder is empty

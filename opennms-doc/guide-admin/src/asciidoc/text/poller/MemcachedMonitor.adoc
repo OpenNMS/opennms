@@ -51,7 +51,7 @@ The following metrics are collected:
 
 ===== Examples
 
-The following example shows a configuration in the 'poller-configuration.xml'.
+The following example shows a configuration in the `poller-configuration.xml`.
 
 [source, xml]
 ----
