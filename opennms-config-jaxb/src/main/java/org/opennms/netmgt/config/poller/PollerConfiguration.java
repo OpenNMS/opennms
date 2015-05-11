@@ -145,18 +145,6 @@ public class PollerConfiguration implements Serializable {
     }
 
     /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    public String getXmlrpc() {
-        return m_xmlrpc == null? "false" : m_xmlrpc;
-    }
-    
-    public void setXmlrpc(final String xmlrpc) {
-        m_xmlrpc = xmlrpc;
-    }
-
-    /**
      * Flag which indicates if the optional path outage feature is enabled
      */
     public String getPathOutageEnabled() {
@@ -241,7 +229,6 @@ public class PollerConfiguration implements Serializable {
         newConfig.setThreads(getThreads());
         newConfig.setNextOutageId(getNextOutageId());
         newConfig.setServiceUnresponsiveEnabled(getServiceUnresponsiveEnabled());
-        newConfig.setXmlrpc(getXmlrpc());
         newConfig.setPathOutageEnabled(getPathOutageEnabled());
         newConfig.setNodeOutage(getNodeOutage());
         

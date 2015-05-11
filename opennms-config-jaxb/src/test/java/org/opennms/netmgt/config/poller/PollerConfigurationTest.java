@@ -152,7 +152,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");
@@ -202,7 +201,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");
