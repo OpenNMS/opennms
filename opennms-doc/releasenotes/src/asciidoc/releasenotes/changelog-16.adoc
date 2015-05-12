@@ -130,6 +130,7 @@ The codename for 16.0.0 is _Daredevil_.
 * Create a ReST API to expose the available detectors/policies/categories/assets/services required to manipulate foreign sources (Issue http://issues.opennms.org/browse/NMS-7609[NMS-7609])
 * Need upgrade task for collection strategy classes (Issue http://issues.opennms.org/browse/NMS-7612[NMS-7612])
 * Create opennms.properties option to choose between new and old dashboard (Issue http://issues.opennms.org/browse/NMS-7619[NMS-7619])
+* Deprecation of LinkD (Issue http://issues.opennms.org/browse/NMS-7632[NMS-7632])
 
 ===== Story
 
