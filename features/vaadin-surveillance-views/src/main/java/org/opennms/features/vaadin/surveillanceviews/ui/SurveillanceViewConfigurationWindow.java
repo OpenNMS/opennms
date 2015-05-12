@@ -87,7 +87,7 @@ public class SurveillanceViewConfigurationWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(80, Sizeable.Unit.PERCENTAGE);
-        setHeight(66, Sizeable.Unit.PERCENTAGE);
+        setHeight(75, Sizeable.Unit.PERCENTAGE);
 
         /**
          * Title field
