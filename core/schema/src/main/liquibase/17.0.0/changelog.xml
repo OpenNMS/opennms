@@ -4,24 +4,107 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
+  <changeSet author="seth" id="17.0.0-drop-vulnscand-tables">
+    <dropSequence sequenceName="vulnnxtid" />
+    <dropTable tableName="vulnPlugins" />
+    <dropTable tableName="vulnerabilities" />
+
+    <rollback>
+      <!-- TODO -->
+    </rollback>
+  </changeSet>
+
   <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
     <sql>
       DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnInsert;
       DROP TRIGGER IF EXISTS setIfServiceKeysOnUpdateTrigger ON outages;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnUpdate;
 
       DROP TRIGGER IF EXISTS setIpInterfaceKeysOnInsertTrigger ON ifServices;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnInsert;
       DROP TRIGGER IF EXISTS setIpInterfaceKeysOnUpdateTrigger ON ifServices;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnUpdate;
 
       DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnInsertTrigger ON ipInterface;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnInsert;
       DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate;
     </sql>
+
+    <!--
+    Doesn't work on our current version of Liquibase.
+
     <dropProcedure procedureName="setIfServiceKeysOnInsert"/>
     <dropProcedure procedureName="setIfServiceKeysOnUpdate"/>
     <dropProcedure procedureName="setIpInterfaceKeysOnInsert"/>
     <dropProcedure procedureName="setIpInterfaceKeysOnUpdate"/>
     <dropProcedure procedureName="setSnmpInterfaceKeysOnInsert"/>
     <dropProcedure procedureName="setSnmpInterfaceKeysOnUpdate"/>
+    -->
 
+    <rollback>
+      <!-- TODO -->
+    </rollback>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-ifservices-composite-key-fields">
+    <!-- Drop foreign keys that rely on legacy columns -->
+    <!-- TODO: Figure out how to match this auto-generated constraint name -->
+    <dropForeignKeyConstraint baseTableName="ifservices" constraintName="fk_nodeID3"/>
+    <!-- Drop indices that rely on legacy columns -->
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_status"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_status"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_idx"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_serviceid_idx"/>
+    <!-- Create equivalent indices -->
+    <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_svc_unique" unique="true">
+      <column name="ipInterfaceId" type="INTEGER"/>
+      <column name="serviceId" type="INTEGER"/>
+    </createIndex>
+    <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_status" unique="false">
+      <column name="ipInterfaceId" type="INTEGER"/>
+      <column name="status" type="CHARACTER(1)"/>
+    </createIndex>
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="ifservices" columnName="nodeid"/>
+    <dropColumn tableName="ifservices" columnName="ipaddr"/>
+    <rollback>
+      <!-- TODO -->
+    </rollback>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-ipinterface-composite-key-fields">
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="ipinterface" columnName="ifindex"/>
+    <rollback>
+      <!-- TODO -->
+    </rollback>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-outages-composite-key-fields">
+    <!-- Drop foreign keys that rely on legacy columns -->
+    <!-- TODO: Figure out how to match this auto-generated constraint name -->
+    <dropForeignKeyConstraint baseTableName="outages" constraintName="fk_nodeID4"/>
+    <!-- TODO: Figure out how to match this auto-generated constraint name -->
+    <dropForeignKeyConstraint baseTableName="outages" constraintName="fk_serviceID2"/>
+    <!-- TODO: Figure out how to match this auto-generated constraint name -->
+    <dropForeignKeyConstraint baseTableName="outages" constraintName="ifServices_fkey1"/>
+    <!-- Drop indices that rely on legacy columns -->
+    <dropIndex tableName="outages" indexName="outages_nodeid_ipaddr_svc_idx"/>
+    <dropIndex tableName="outages" indexName="outages_nodeid_idx"/>
+    <dropIndex tableName="outages" indexName="outages_serviceid_idx"/>
+    <dropIndex tableName="outages" indexName="outages_ipaddr_idx"/>
+    <dropIndex tableName="outages" indexName="outages_ifServivceId_idx"/><!-- Just fix spelling -->
+    <!-- Create equivalent indices -->
+    <createIndex tableName="outages" indexName="outages_ifServiceId_idx" unique="false">
+      <column name="ifServiceId" type="INTEGER"/>
+    </createIndex>
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="outages" columnName="nodeid"/>
+    <dropColumn tableName="outages" columnName="ipaddr"/>
+    <dropColumn tableName="outages" columnName="serviceid"/>
     <rollback>
       <!-- TODO -->
     </rollback>
