@@ -137,7 +137,7 @@ public class MockDatabaseTest extends TestCase {
     }
     
     public void testServiceQuery() {
-        Querier querier = new Querier(m_db, "select nodeId, ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, service where ifServices.serviceId = service.serviceId;") {
+        Querier querier = new Querier(m_db, "select node.nodeid as nodeId, ipinterface.ipaddr as ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, ipinterface, node, service where ifServices.serviceId = service.serviceId and ipinterface.id = ifServices.ipInterfaceId and node.nodeid = ipinterface.nodeid;") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
@@ -162,7 +162,7 @@ public class MockDatabaseTest extends TestCase {
         m_db.update("delete from node where nodeid = '1'");
         assertEquals(0, m_db.countRows("select * from node where nodeid = '1'"));
         assertEquals(0, m_db.countRows("select * from ipInterface where nodeid = '1'"));
-        assertEquals(0, m_db.countRows("select * from ifServices where nodeid = '1'"));
+        assertEquals(0, m_db.countRows("select * from ifServices, ipInterface, node where ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeid = node.nodeId and node.nodeid = '1'"));
     }
 
     public void testOutage() {
@@ -172,7 +172,7 @@ public class MockDatabaseTest extends TestCase {
         m_db.writeEvent(svcLostEvent);
         m_db.createOutage(svc, svcLostEvent);
         assertEquals(1, m_db.countOutagesForService(svc));
-        Querier querier = new Querier(m_db, "select * from outages") {
+        Querier querier = new Querier(m_db, "select node.nodeid as nodeid, ipinterface.ipaddr as ipaddr, ifservices.serviceid as serviceid from outages, ifservices, ipinterface, node where outages.ifserviceid = ifservices.id and ifservices.ipinterfaceid = ipinterface.id and ipinterface.nodeid = node.nodeid") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");

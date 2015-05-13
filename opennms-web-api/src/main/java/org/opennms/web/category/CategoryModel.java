@@ -412,7 +412,7 @@ public class CategoryModel extends Object {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and ifservices.nodeid = node.nodeid and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipInterfaceId = ipinterface.id and ipInterface.nodeid = node.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and node.nodeid=? and ipInterface.ipaddr=? and ifServices.serviceid=?");
             d.watch(stmt);
             
             stmt.setInt(1, nodeId);
