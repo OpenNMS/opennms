@@ -39,7 +39,7 @@ The `packet-count` and `packet-timeout` parameters instead service this purpose 
 * One or more _Cisco_ devices running an _IOS_ image of recent vintage; any 12.2 or later image is probably fine.
 Even very low-end devices appear to support the CISCO-PING-MIB.
 * The _IOS_ devices that will perform the remote pings must be configured with an _SNMP write community_ string whose source address access-list includes the address of the OpenNMS server and whose MIB view (if any) includes the OID of the _ciscoPingTable_.
-* The corresponding _SNMP write community_ string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of 'snmp-config.xml' or a `<definition>` child element that applies to the _SNMP-primary_ interface of the _IOS_ device(s) that will perform the remote pings.
+* The corresponding _SNMP write community_ string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of `snmp-config.xml` or a `<definition>` child element that applies to the _SNMP-primary_ interface of the _IOS_ device(s) that will perform the remote pings.
 
 ===== Scalability concerns
 
@@ -68,11 +68,11 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
 |===
 | Parameter                     | Description                                                                           | Required | Default value
 | `timeout`                     | A timeout, in milliseconds, that should override the SNMP timeout specified in
-                                  'snmp-config.xml'. Do not use without a very good reason to do so.                    | optional | from 'snmp-config.xml'
+                                  `snmp-config.xml`. Do not use without a very good reason to do so.                    | optional | from `snmp-config.xml`
 | `retry`                       | Number of retries to attempt if the initial attempt times out. Overrides the
-                                  equivalent value from 'snmp-config.xml'. Do not use unless really needed.             | optional | from 'snmp-config.xml'
+                                  equivalent value from `snmp-config.xml`. Do not use unless really needed.             | optional | from `snmp-config.xml`
 | `version`                     | SNMP protocol version (1, 2c, or 3) to use for operations performed by this service
-                                  monitor. Do not use with out a very good reason to do so.                             | optional | from 'snmp-config.xml'
+                                  monitor. Do not use with out a very good reason to do so.                             | optional | from `snmp-config.xml`
 | `packet-count`                | Number of ping packets that the remote _IOS_ device should send.                      | optional | `5`
 | `packet-size`                 | Size, in bytes, of each ping packet that the remote _IOS_ device should send.         | optional | `100`
 | `packet-timeout`              | Timeout, in milliseconds, of each ping packet sent by the remote _IOS_ device.        | optional | `2000`
@@ -170,7 +170,7 @@ Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scen
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 This time, though, we will use the special value `${ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
 Since we want the same _IOS_ device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
-Example 'poller-configuration.xml' additions
+Example `poller-configuration.xml` additions
 
 [source, xml]
 ----

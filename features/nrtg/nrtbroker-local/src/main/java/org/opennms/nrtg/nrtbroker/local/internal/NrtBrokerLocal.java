@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.ProtocolCollector;
@@ -83,15 +84,16 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
 
         private synchronized void doHousekeeping() {
-            for (final Iterator<String> it = m_lastAccess.keySet().iterator(); it.hasNext();) {
-                final String key = it.next();
-                final Date lastAccess = m_lastAccess.get(key);
+            final Iterator<Entry<String,Date>> it = m_lastAccess.entrySet().iterator();
+            while (it.hasNext()) {
+                final Entry<String,Date> entry = it.next();
+                final Date lastAccess = entry.getValue();
                 final Date now = new Date();
                 if (now.getTime() - lastAccess.getTime() > 120000) {
-                    m_lastAccess.remove(key);
-                    m_measurementSets.remove(key);
+                    it.remove(); // removes entry from m_lastAccess to avoid ConcurrentModificationException
+                    m_measurementSets.remove(entry.getKey());
 
-                    logger.warn("Timed out object removed '{}'", key);
+                    logger.warn("Timed out object removed '{}'", entry.getKey());
                 }
             }
         }
@@ -101,7 +103,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtBrokerLocal.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtBrokerLocal.class);
 
     private List<ProtocolCollector> m_protocolCollectors;
     private TimedOutMap m_measurementSets = new TimedOutMap();

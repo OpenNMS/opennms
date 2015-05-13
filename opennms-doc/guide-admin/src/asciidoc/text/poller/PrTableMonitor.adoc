@@ -34,12 +34,12 @@ ____
 [options="header, autowidth"]
 |===
 | Parameter | Description                                                        | Required | Default value
-| `port`    | The port to which connection shall be tried.                       | optional | from 'snmp-config.xml'
-| `retry`   | Number of polls to attempt.                                        | optional | from 'snmp-config.xml'
+| `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
+| `retry`   | Number of polls to attempt.                                        | optional | from `snmp-config.xml`
 | `retries` | *Deprecated*.
               Same as `retry`.
-              Parameter `retry` takes precedence if both are set.                | optional | from 'snmp-config.xml'
-| `timeout` | Time in milliseconds to wait before receiving the SNMP response.   | optional | from 'snmp-config.xml'
+              Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
+| `timeout` | Time in milliseconds to wait before receiving the SNMP response.   | optional | from `snmp-config.xml`
 |===
 
 ===== Examples

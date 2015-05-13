@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NrtBrokerJms implements NrtBroker {
     
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtBrokerJms.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtBrokerJms.class);
 
     private JmsTemplate m_jmsTemplate;
     private final SimpleMessageConverter simpleMessageConverter = new SimpleMessageConverter();

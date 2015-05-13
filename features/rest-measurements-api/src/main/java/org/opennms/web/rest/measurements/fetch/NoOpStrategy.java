@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.protocols.xml.collector;
+package org.opennms.web.rest.measurements.fetch;
 
-/**
- * The Class XmlCollectorException.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- */
-public class XmlCollectorException extends RuntimeException {
-    
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1315895761910431343L;
+import java.util.List;
 
-    /**
-     * Instantiates a new XML collector exception.
-     *
-     * @param message the message
-     * @param cause the cause
-     */
-    public XmlCollectorException(String message, Throwable cause) {
-        super(message, cause);
-    }
+import org.opennms.web.rest.measurements.model.Source;
 
-    /**
-     * Instantiates a new XML collector exception.
-     *
-     * @param message the message
-     */
-    public XmlCollectorException(String message) {
-        super(message);
+public class NoOpStrategy implements MeasurementFetchStrategy {
+
+    @Override
+    public FetchResults fetch(long start, long end, long step, int maxrows,
+            List<Source> sources) throws Exception {
+        throw new Exception("NoOpStrategy cannot fetch.");
     }
 
 }
