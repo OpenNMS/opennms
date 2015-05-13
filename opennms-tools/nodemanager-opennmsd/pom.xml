@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennmsd</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <description/>
   <packaging>groovy-jar</packaging>
   <build>
@@ -113,7 +113,7 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>nnm-api</artifactId>
-      <version>0.9-SNAPSHOT</version>
+      <version>0.9</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

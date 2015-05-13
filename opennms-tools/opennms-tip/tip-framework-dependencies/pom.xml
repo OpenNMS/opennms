@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tip</artifactId>
-    <version>16.0.0-SNAPSHOT</version>
+    <version>16.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tip</groupId>
@@ -15,7 +15,7 @@
     can depend on to use the Open Tip Framework
   </description>
   <properties>
-    <tip-framework.version>1.1.0-SNAPSHOT</tip-framework.version>
+    <tip-framework.version>1.1.0</tip-framework.version>
   </properties>
   <dependencies>
     <!-- External TIP dependencies -->

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.jasper</groupId>
   <artifactId>resource-query-provider</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <name>Resource Query iReport Field Provider</name>
   <build>
     <pluginManagement>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
-      <version>1.13.2-SNAPSHOT</version>
+      <version>1.13.2</version>
       <type>pom</type>
     </dependency>
     <dependency>

@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.opennms.m2e.extensions</groupId>
     <artifactId>m2eclipse-extensions</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
   </parent>
   <artifactId>org.opennms.m2e.castor.feature</artifactId>
   <packaging>eclipse-feature</packaging>
