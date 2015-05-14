@@ -83,7 +83,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return Arrays.asList(new Object[][] {
                 {
                     getMinimalPollerConfiguration(),
-                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" xmlrpc=\"false\" pathOutageEnabled=\"false\">"
+                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" pathOutageEnabled=\"false\">"
                     + "   <node-outage status=\"on\" pollAllIfNoCriticalServiceDefined=\"true\"/>"
                     + "   <package name=\"test\">"
                     + "      <filter>abc</filter>"

@@ -160,8 +160,6 @@ public class ForwardingEventListener implements EventListener {
 		ueiList.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
 		
 		ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
-		
-		ueiList.add(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
 
         //Remote Poller Events
         ueiList.add(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI);

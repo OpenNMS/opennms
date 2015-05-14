@@ -80,13 +80,6 @@ public class PollerConfiguration implements Serializable {
     private String m_serviceUnresponsiveEnabled = "false";
 
     /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    @XmlAttribute(name="xmlrpc")
-    private String m_xmlrpc = "false";
-
-    /**
      * Flag which indicates if the optional path outage feature is enabled
      */
     @XmlAttribute(name="pathOutageEnabled")
@@ -257,7 +250,6 @@ public class PollerConfiguration implements Serializable {
         result = prime * result + ((m_pathOutageEnabled == null) ? 0 : m_pathOutageEnabled.hashCode());
         result = prime * result + ((m_serviceUnresponsiveEnabled == null) ? 0 : m_serviceUnresponsiveEnabled.hashCode());
         result = prime * result + ((m_threads == null) ? 0 : m_threads.hashCode());
-        result = prime * result + ((m_xmlrpc == null) ? 0 : m_xmlrpc.hashCode());
         return result;
     }
 
@@ -322,13 +314,6 @@ public class PollerConfiguration implements Serializable {
         } else if (!m_threads.equals(other.m_threads)) {
             return false;
         }
-        if (m_xmlrpc == null) {
-            if (other.m_xmlrpc != null) {
-                return false;
-            }
-        } else if (!m_xmlrpc.equals(other.m_xmlrpc)) {
-            return false;
-        }
         return true;
     }
 
@@ -338,7 +323,6 @@ public class PollerConfiguration implements Serializable {
                 "threads=" + m_threads +
                 ",nextOutageId=" + m_nextOutageId +
                 ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
-                ",xmlrpc=" + m_xmlrpc +
                 ",pathOutageEnabled=" + m_pathOutageEnabled +
                 ",nodeOutage=" + m_nodeOutage +
                 ",packages=" + m_packages +
