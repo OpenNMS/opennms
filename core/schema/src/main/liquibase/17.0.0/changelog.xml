@@ -4,16 +4,24 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-  <changeSet author="seth" id="17.0.0-drop-vulnscand-tables">
+  <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
     <sql>
       DROP SEQUENCE IF EXISTS vulnnxtid;
     </sql>
-    <dropTable tableName="vulnPlugins" />
-    <dropTable tableName="vulnerabilities" />
+  </changeSet>
 
-    <rollback>
-      <!-- TODO -->
-    </rollback>
+  <changeSet author="seth" id="17.0.0-drop-vulnplugins-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="vulnplugins"/>
+    </preConditions> 
+    <dropTable tableName="vulnplugins" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-vulnerabilities-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="vulnerabilities"/>
+    </preConditions> 
+    <dropTable tableName="vulnerabilities" />
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
