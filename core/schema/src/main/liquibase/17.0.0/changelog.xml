@@ -27,19 +27,19 @@
   <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
     <sql>
       DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
-      DROP FUNCTION IF EXISTS setIfServiceKeysOnInsert;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnInsert();
       DROP TRIGGER IF EXISTS setIfServiceKeysOnUpdateTrigger ON outages;
-      DROP FUNCTION IF EXISTS setIfServiceKeysOnUpdate;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnUpdate();
 
       DROP TRIGGER IF EXISTS setIpInterfaceKeysOnInsertTrigger ON ifServices;
-      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnInsert;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnInsert();
       DROP TRIGGER IF EXISTS setIpInterfaceKeysOnUpdateTrigger ON ifServices;
-      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnUpdate;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnUpdate();
 
       DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnInsertTrigger ON ipInterface;
-      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnInsert;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnInsert();
       DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
-      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate();
     </sql>
 
     <!--
