@@ -5,7 +5,9 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="seth" id="17.0.0-drop-vulnscand-tables">
-    <dropSequence sequenceName="vulnnxtid" />
+    <sql>
+      DROP SEQUENCE IF EXISTS vulnnxtid;
+    </sql>
     <dropTable tableName="vulnPlugins" />
     <dropTable tableName="vulnerabilities" />
 
