@@ -27,7 +27,7 @@ image::surveillance-view/01_surveillance-view.png[]
 This _Surveillance View_ model also builds the foundation of the <<user-guide-dashboard, Dashboard View>>.
 
 
-==== Default Surveillance View Configuration
+=== Default Surveillance View Configuration
 
 _Surveillance Views_ are defined in the `surveillance-views.xml` file.
 This file resides in the _OpenNMS_ `etc` directory.
@@ -107,4 +107,4 @@ The first matching item wins:
 
 . Surveillance View name equal to the user name they used when logging into OpenNMS.
 . Surveillance View name equal to the user's assigned OpenNMS group name
-. Surveillance View name equal to the 'default-view' attribute in the surveillance-views.xml configuration file.
+. Surveillance View name equal to the `default-view` attribute in the `surveillance-views.xml` configuration file.

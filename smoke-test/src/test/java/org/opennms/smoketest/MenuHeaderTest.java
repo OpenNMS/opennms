@@ -105,15 +105,6 @@ public class MenuHeaderTest extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
         frontPage();
-        clickMenuItem("Maps", "SVG", "map/index.jsp");
-        findElementById("opennmsSVGMaps");
-        try {
-            final Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-            alert.dismiss();
-        } catch (final Exception e) {
-        }
-
-        frontPage();
         clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
         findElementByXpath("//h3[text()='OpenNMS System']");
         findElementByXpath("//h3[text()='Operations']");

@@ -33,9 +33,9 @@ If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is mar
 |===
 | Parameter       | Description                                                                                         | Required | Default value
 | `retry`         | Number of retries to get the information from the SNMP agent before the service is marked as
-                    _down_.                                                                                             | optional | from 'snmp-config.xml'
-| `timeout`       | Time in milliseconds to wait for the result from the SNMP agent before making the next attempt.     | optional | from 'snmp-config.xml'
-| `admin-tag`     | The `tag` attribute from your IP SLA configuration you want to monitor.                             | required | `-`
+                    _down_.                                                                                             | optional | from `snmp-config.xml`
+| `timeout`       | Time in milliseconds to wait for the result from the SNMP agent before making the next attempt.     | optional | from `snmp-config.xml`
+| `admin-tag`     | The `tag` attribute from your _IP SLA_ configuration you want to monitor.                           | required | `-`
 | `ignore-thresh` | Boolean indicates if just the status or configured threshold should be monitored.                   | required | ``
 |===
 
@@ -78,7 +78,7 @@ WARNING: It´s not possible to reconfigure an IP SLA entry.
          If you want to change parameters, you have to delete the whole configuration and reconfigure it with your new parameters.
          Backup your Cisco configuration manually or take a look at http://www.shrubbery.net/rancid/[RANCID].
 
-To monitor both of the entries the configuration in 'poller-configuration.xml' requires two service definition entries:
+To monitor both of the entries the configuration in `poller-configuration.xml` requires two service definition entries:
 
 [source, xml]
 ----

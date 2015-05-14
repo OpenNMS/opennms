@@ -38,7 +38,7 @@ CAUTION: This monitor is not checking the loadbalanced service it self.
 The following example checks a server group called _central_webfront_http_.
 If at least 70% of the servers are active, the service is up.
 If less then 70% of the servers are active the service is down.
-A configuration like the following can be used for the example in the 'poller-configuration.xml'.
+A configuration like the following can be used for the example in the `poller-configuration.xml`.
 
 [source, xml]
 ----
