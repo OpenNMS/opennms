@@ -134,12 +134,6 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public List<java.lang.String[]> getNodeServices(int nodeId) {
         return null;
     }

@@ -248,17 +248,15 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }        
 
     public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
-        
+
         Object[] values = {
                 Integer.valueOf(eventId),           // svcLostEventId
                 timestamp, // ifLostService
-                Integer.valueOf(svc.getNodeId()), // nodeId
-                svc.getIpAddr(),                // ipAddr
-                Integer.valueOf(svc.getSvcId()),       // serviceID
+                Integer.valueOf(svc.getId()) // ifServiceId
                };
-        
-        // TODO: Alert if more than 1 row is updated
-        update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? from ifServices inner join ipInterface on ifServices.ipInterfaceId = ipInterface.id inner join node on ipInterface.nodeid = node.nodeid where node.nodeid = ? AND ipinterface.ipAddr = ? AND ifservices.serviceID = ? and ifRegainedService IS NULL", values);
+
+        // TODO: Alert if more than 1 row is updated, should not be possible with index in place
+        update("UPDATE outages set svcRegainedEventID = ?, ifRegainedService = ? WHERE ifServiceId = ? AND ifRegainedService IS NULL", values);
     }
 
     /**
@@ -365,10 +363,11 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public Collection<Outage> getOutages(String criteria, Object... values) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         final List<Outage> outages = new LinkedList<Outage>();
-        Querier loadExisting = new Querier(this, "select * from outages, ifServices, ipInterface, node where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = node.nodeId "+critSql) {
+        Querier loadExisting = new Querier(this, "select * from outages, ifServices, ipInterface, node, service where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = node.nodeId and ifServices.serviceId = service.serviceId"+critSql) {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
+                outage.setServiceName(rs.getString("serviceName"));
                 outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
                 boolean open = (rs.getObject("ifRegainedService") == null);
                 if (!open) {
@@ -380,37 +379,19 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
         loadExisting.execute(values);
         
-        Querier setServiceNames = new Querier(this, "select * from service") {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                int serviceId = rs.getInt("serviceId");
-                String serviceName = rs.getString("serviceName");
-                for(Outage outage : outages) {
-                    if (outage.getServiceId() == serviceId) {
-                        outage.setServiceName(serviceName);
-                    }
-                }
-            }
-        };
-        
-        setServiceNames.execute();
-        
         return outages;
     }
     
     public Collection<Outage> getOpenOutages(MockService svc) {
-        return getOutages("node.nodeId = ? and ipInterface.ipAddr = ? and ifServices.serviceID = ? and ifRegainedService is null",
-                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
+        return getOutages("outages.ifServiceId = ? and ifRegainedService is null", svc.getId());
     }
     
     public Collection<Outage> getOutages(MockService svc) {
-        return getOutages("node.nodeId = ? and ipInterface.ipAddr = ? and ifServices.serviceID = ?",
-                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
+        return getOutages("outages.ifServiceId = ?", svc.getId());
     }
     
     public Collection<Outage> getClosedOutages(MockService svc) {
-        return getOutages("node.nodeId = ? and ipInterface.ipAddr = ? and ifServices.serviceID = ? and ifRegainedService is not null",
-                svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
+        return getOutages("outages.ifServiceId = ? and ifRegainedService is not null", svc.getId());
     }
 
     /**

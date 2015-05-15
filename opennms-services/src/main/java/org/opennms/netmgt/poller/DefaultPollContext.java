@@ -363,12 +363,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        getQueryManager().reparentOutages(ipAddr, oldNodeId, newNodeId);
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#isServiceUnresponsiveEnabled()
      */

@@ -2434,6 +2434,7 @@ public class PollablesTest {
         MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 
+        m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
