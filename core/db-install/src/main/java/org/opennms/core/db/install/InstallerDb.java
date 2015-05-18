@@ -655,18 +655,21 @@ public class InstallerDb {
             final String returns = m.group(4);
             // final String rest = m.group(5);
 
-            
-            if (functionExists(function, columns, returns)) {
-                if (t != null && t.isOnDatabase(getConnection())) {
-                    t.removeFromDatabase(getConnection());
-                    
+            try {
+                if (functionExists(function, columns, returns)) {
+                    if (t != null && t.isOnDatabase(getConnection())) {
+                        t.removeFromDatabase(getConnection());
+                        
+                    }
+                    st.execute("DROP FUNCTION " + function + " (" + columns + ")");
+                    st.execute(createSql);
+                    m_out.print("OK (dropped and re-added)");
+                } else {
+                    st.execute(createSql);
+                    m_out.print("OK");
                 }
-                st.execute("DROP FUNCTION " + function + " (" + columns + ")");
-                st.execute(createSql);
-                m_out.print("OK (dropped and re-added)");
-            } else {
-                st.execute(createSql);
-                m_out.print("OK");
+            } catch (SQLException e) {
+                throw new IllegalStateException("Could not add function: " + function, e);
             }
         }
         m_out.println("");
