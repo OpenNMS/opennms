@@ -13,8 +13,8 @@
   </description>
   <licenses>
     <license>
-      <name>GNU General Public License</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <name>GNU Affero General Public License</name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
       <comments>
         This Maven metadata is provided for informational purposes only. For specific licensing 
         questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
@@ -36,6 +36,17 @@
     </notifiers>
   </ciManagement>
   <developers>
+    <developer>
+      <id>soleger</id>
+      <name>Seth Leger</name>
+      <email>seth@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Architect</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
     <developer>
       <id>brozow</id>
       <name>Matt Brozowski</name>
@@ -59,7 +70,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
- <mailingLists>
+  <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -90,9 +101,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
-    <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
-    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/master</url>
+    <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
+    <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
     <!-- new structure -->
