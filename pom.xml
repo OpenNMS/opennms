@@ -456,11 +456,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.6</version>
-        <executions>
-          <execution>
-            <goals><goal>clean</goal></goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -854,6 +849,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
+          <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>
@@ -879,14 +875,9 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <!--
-            Set java.security.egd so that entropy exhaustion doesn't cause 
-            problematic pauses when starting MockSnmpAgent in unit tests
-          -->
-          <argLine>-Xmx1024m -Djava.security.egd=/dev/./urandom</argLine>
           <includes>
             <include>**/*Test.java</include>
-          </includes>          
+          </includes>
         </configuration>
       </plugin>
       <plugin>
@@ -1015,6 +1006,19 @@
   </reporting>
 
   <properties>
+    <!--
+      Surefire forked JVM arguments
+      @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
+
+      Use 1GB of heap for running tests.
+
+      Set java.security.egd so that entropy exhaustion doesn't cause
+      problematic pauses when starting MockSnmpAgent in unit tests.
+
+      Add target/endorsed as an endorsed API directory in case projects require it.
+    -->
+    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+
     <build.skip.tarball>false</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
