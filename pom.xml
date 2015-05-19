@@ -729,6 +729,45 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.4.201502262128</version>
+        <configuration>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <classDumpDir>${project.build.directory}/classes</classDumpDir>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <destFile>${project.build.directory}/jacoco.exec</destFile>
+          <!-- Append all .exec content to the same file -->
+          <append>true</append>
+          <includes>
+            <!-- All OpenNMS Java packages -->
+            <include>org/opennms/**</include>
+            <include>liquibase/ext/opennms/**</include>
+            <include>org/openoss/opennms/**</include>
+          </includes>
+          <excludes>
+            <!-- Spring CGLIB proxies -->
+            <exclude>**/*FastClassBySpringCGLIB*</exclude>
+            <exclude>**/*EnhancerBySpringCGLIB*</exclude>
+            <!-- CGLIB proxies -->
+            <exclude>**/*EnhancerByCGLIB*</exclude>
+            <!-- javassist proxies -->
+            <exclude>**/*_jvst*</exclude>
+            <!-- Unit test classes -->
+            <exclude>**/*Test.*</exclude>
+            <exclude>**/*TestCase.*</exclude>
+            <!-- Duplicate classes -->
+            <exclude>**/SnmpUtilsTest*</exclude>
+            <!-- Drools rules -->
+            <exclude>org/opennms/netmgt/correlation/drools/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Rule*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentImpactedEvent*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentResolvedEvent*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -928,6 +967,22 @@
           </dependency>
         </dependencies>
       </plugin>
+      <!-- jacoco code coverage testing library -->
+      <!--
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
     </plugins>
   </build>
 
