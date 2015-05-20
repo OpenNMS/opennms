@@ -64,6 +64,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * Note that this test may have some issues inside Eclipse related to
+ * Spring's ability to classload the changelog.xml files by using the
+ * "classpath*:/changelog.xml" resource identifier. Run it outside Eclipse
+ * using mvn if you run into problems.
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/migratorTest.xml"
@@ -168,6 +174,41 @@ public class MigratorTest {
         assertTrue(ids.size() > 0);
         assertEquals("test-api.schema.a", ids.get(0).getId());
         assertEquals("test-api.schema.b", ids.get(1).getId());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase(createSchema=false)
+    public void testRealChangelog() throws Exception {
+
+        assertFalse(changelogExists());
+
+        final Migration migration = new Migration();
+        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
+
+        final Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.setAdminDataSource(m_dataSource);
+        m.setValidateDatabaseVersion(false);
+        m.setCreateUser(false);
+        m.setCreateDatabase(false);
+
+        // Add a resource accessor to the migration so that it will load multiple changelog.xml files
+        // from the classpath
+        for (final Resource resource : getRealChangelog()) {
+            LOG.info("=== found resource: {} ===", resource);
+            migration.setAccessor(new ExistingResourceAccessor(resource));
+            m.migrate(migration);
+        }
+
+        final List<ChangelogEntry> ids = getChangelogEntries();
+        assertTrue(ids.size() > 0);
+        // Check to make sure some of the changelogs ran
+        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-ipinterface-composite-key-fields".equals(id.getId())));
+        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-outages-composite-key-fields".equals(id.getId())));
     }
 
     @Test
@@ -312,6 +353,18 @@ public class MigratorTest {
             URI uri = resource.getURI();
             if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
+            resources.add(resource);
+        }
+        return resources;
+    }
+
+    private List<Resource> getRealChangelog() throws IOException {
+        final List<Resource> resources = new ArrayList<Resource>();
+        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+            URI uri = resource.getURI();
+            System.err.println(uri.toString());
+            if (uri.getScheme().equals("file") && !uri.toString().contains("opennms/core/schema")) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("opennms.core.schema")) continue;
             resources.add(resource);
         }
         return resources;

@@ -4,12 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-  <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
-    <sql>
-      DROP SEQUENCE IF EXISTS vulnnxtid;
-    </sql>
-  </changeSet>
-
+  <!-- Drop all legacy vulscand tables and sequences -->
   <changeSet author="seth" id="17.0.0-drop-vulnplugins-table">
     <preConditions onFail="MARK_RAN">
       <tableExists tableName="vulnplugins"/>
@@ -24,6 +19,35 @@
     <dropTable tableName="vulnerabilities" />
   </changeSet>
 
+  <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
+    <sql>
+      DROP SEQUENCE IF EXISTS vulnnxtid;
+    </sql>
+  </changeSet>
+
+
+  <!-- Fix a misspelled outage index -->
+  <changeSet author="seth" id="17.0.0-remove-misspelled-outage-index">
+    <preConditions onFail="MARK_RAN">
+      <indexExists indexName="outages_ifservivceid_idx"/>
+    </preConditions> 
+    <dropIndex tableName="outages" indexName="outages_ifservivceid_idx"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-add-correctly-spelled-outage-index">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <indexExists indexName="outages_ifserviceid_idx"/>
+      </not>
+    </preConditions> 
+
+    <createIndex tableName="outages" indexName="outages_ifserviceid_idx" unique="false">
+      <column name="ifserviceid" type="INTEGER"/>
+    </createIndex>
+  </changeSet>
+
+
+  <!-- Remove all of the legacy triggers and related fields from ipinterface, ifservices, and outages -->
   <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
     <sql>
       DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
@@ -41,83 +65,51 @@
       DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
       DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate();
     </sql>
-
-    <!--
-    Doesn't work on our current version of Liquibase.
-
-    <dropProcedure procedureName="setIfServiceKeysOnInsert"/>
-    <dropProcedure procedureName="setIfServiceKeysOnUpdate"/>
-    <dropProcedure procedureName="setIpInterfaceKeysOnInsert"/>
-    <dropProcedure procedureName="setIpInterfaceKeysOnUpdate"/>
-    <dropProcedure procedureName="setSnmpInterfaceKeysOnInsert"/>
-    <dropProcedure procedureName="setSnmpInterfaceKeysOnUpdate"/>
-    -->
-
-    <rollback>
-      <!-- TODO -->
-    </rollback>
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-remove-legacy-ifservices-composite-key-fields">
-    <!-- Drop foreign keys that rely on legacy columns -->
-    <!-- TODO: Figure out how to match this auto-generated constraint name -->
-    <dropForeignKeyConstraint baseTableName="ifservices" constraintName="fk_nodeID3"/>
     <!-- Drop indices that rely on legacy columns -->
-    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique"/>
     <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_status"/>
     <dropIndex tableName="ifservices" indexName="ifservices_nodeid_status"/>
     <dropIndex tableName="ifservices" indexName="ifservices_nodeid_idx"/>
     <dropIndex tableName="ifservices" indexName="ifservices_nodeid_serviceid_idx"/>
+    <!-- Use SQL for this one because we need it to cascade into a foreign key -->
+    <!-- <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique"/> -->
+    <sql>
+      DROP INDEX ifservices_nodeid_ipaddr_svc_unique CASCADE;
+    </sql>
+
     <!-- Create equivalent indices -->
     <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_svc_unique" unique="true">
-      <column name="ipInterfaceId" type="INTEGER"/>
-      <column name="serviceId" type="INTEGER"/>
+      <column name="ipinterfaceid" type="INTEGER"/>
+      <column name="serviceid" type="INTEGER"/>
     </createIndex>
     <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_status" unique="false">
-      <column name="ipInterfaceId" type="INTEGER"/>
+      <column name="ipinterfaceid" type="INTEGER"/>
       <column name="status" type="CHARACTER(1)"/>
     </createIndex>
+
     <!-- Drop legacy columns -->
     <dropColumn tableName="ifservices" columnName="nodeid"/>
     <dropColumn tableName="ifservices" columnName="ipaddr"/>
-    <rollback>
-      <!-- TODO -->
-    </rollback>
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-remove-legacy-ipinterface-composite-key-fields">
     <!-- Drop legacy columns -->
     <dropColumn tableName="ipinterface" columnName="ifindex"/>
-    <rollback>
-      <!-- TODO -->
-    </rollback>
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-remove-legacy-outages-composite-key-fields">
-    <!-- Drop foreign keys that rely on legacy columns -->
-    <!-- TODO: Figure out how to match this auto-generated constraint name -->
-    <dropForeignKeyConstraint baseTableName="outages" constraintName="fk_nodeID4"/>
-    <!-- TODO: Figure out how to match this auto-generated constraint name -->
-    <dropForeignKeyConstraint baseTableName="outages" constraintName="fk_serviceID2"/>
-    <!-- TODO: Figure out how to match this auto-generated constraint name -->
-    <dropForeignKeyConstraint baseTableName="outages" constraintName="ifServices_fkey1"/>
     <!-- Drop indices that rely on legacy columns -->
     <dropIndex tableName="outages" indexName="outages_nodeid_ipaddr_svc_idx"/>
     <dropIndex tableName="outages" indexName="outages_nodeid_idx"/>
     <dropIndex tableName="outages" indexName="outages_serviceid_idx"/>
     <dropIndex tableName="outages" indexName="outages_ipaddr_idx"/>
-    <dropIndex tableName="outages" indexName="outages_ifServivceId_idx"/><!-- Just fix spelling -->
-    <!-- Create equivalent indices -->
-    <createIndex tableName="outages" indexName="outages_ifServiceId_idx" unique="false">
-      <column name="ifServiceId" type="INTEGER"/>
-    </createIndex>
+
     <!-- Drop legacy columns -->
     <dropColumn tableName="outages" columnName="nodeid"/>
     <dropColumn tableName="outages" columnName="ipaddr"/>
     <dropColumn tableName="outages" columnName="serviceid"/>
-    <rollback>
-      <!-- TODO -->
-    </rollback>
   </changeSet>
 
 </databaseChangeLog>

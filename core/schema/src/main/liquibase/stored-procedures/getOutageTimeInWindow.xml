@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -30,8 +29,8 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,timestamp without time 
                 FROM outages 
                 WHERE ifServiceId = ifsrvid 
                         AND (
-                                (ifRegainedService IS NULL AND ifLostService <= xtime)
-                                OR (ifRegainedService > ytime)
+                                (ifRegainedService IS NULL AND ifLostService &lt;= xtime)
+                                OR (ifRegainedService &gt; ytime)
                         )
         LOOP
          BEGIN
