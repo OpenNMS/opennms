@@ -136,18 +136,17 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
             // Disable implicitlyWait
             m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
 
-            // Make sure that the 'Availability' element is not present
+            // If this is the only node on the system, we'll be sent directly
+            // to its node details page.
             findElementByXpath("//h3[text()='Availability']");
-
-            fail("Found element //h3[text()='Availability']");
         } catch (NoSuchElementException e) {
-            // This is expected
+            // If there are multiple nodes, we will be on the node list page, 
+            // click through to the node
+            findElementByLink(NODE_LABEL).click();
         } finally {
             // Restore the implicitlyWait timeout
             m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
-        // We should be on the node list page, click through to the node
-        findElementByLink(NODE_LABEL).click();
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
