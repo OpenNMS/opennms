@@ -29,11 +29,15 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -129,11 +133,21 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
+            // Disable implicitlyWait
+            m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+
+            // Make sure that the 'Availability' element is not present
             findElementByXpath("//h3[text()='Availability']");
-        } catch (final Exception e) {
-            // We should be on the node list page, click through to the node
-            findElementByLink(NODE_LABEL).click();
+
+            fail("Found element //h3[text()='Availability']");
+        } catch (NoSuchElementException e) {
+            // This is expected
+        } finally {
+            // Restore the implicitlyWait timeout
+            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
+        // We should be on the node list page, click through to the node
+        findElementByLink(NODE_LABEL).click();
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
