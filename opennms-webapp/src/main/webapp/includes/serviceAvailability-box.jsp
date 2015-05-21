@@ -109,7 +109,7 @@
     int nodeId = service.getNodeId();
     String ipAddr = service.getIpAddress();
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 
     String warnClass = "Normal";
 
