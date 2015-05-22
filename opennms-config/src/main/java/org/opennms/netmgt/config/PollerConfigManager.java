@@ -321,22 +321,6 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
-     * This method returns the boolean flag xmlrpc to indicate if notification
-     * to external xmlrpc server is needed.
-     *
-     * @return true if need to notify an external xmlrpc server
-     */
-    @Override
-    public boolean shouldNotifyXmlrpc() {
-        try {
-            getReadLock().lock();
-            return Boolean.valueOf(m_config.getXmlrpc());
-        } finally {
-            getReadLock().unlock();
-        }
-    }
-
-    /**
      * This method returns the boolean flag pathOutageEnabled to indicate if
      * path outage processing on nodeDown events is enabled
      *

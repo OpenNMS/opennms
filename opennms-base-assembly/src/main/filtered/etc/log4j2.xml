@@ -199,7 +199,6 @@
         <KeyValuePair key="trapd"                value="DEBUG" />
         <KeyValuePair key="vacuumd"              value="DEBUG" />
         <KeyValuePair key="web"                  value="DEBUG" />
-        <KeyValuePair key="xmlrpcd"              value="DEBUG" />
       </DynamicThresholdFilter>
 
       <appender-ref ref="RoutingAppender"/>

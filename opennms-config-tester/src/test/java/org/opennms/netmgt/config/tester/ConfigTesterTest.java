@@ -530,12 +530,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testXmlrpcdConfiguration() {
-        testConfigFile("xmlrpcd-configuration.xml");
-    }
-
-
-    @Test
     public void testVMwareCimDatacollectionConfig() {
         testConfigFile("vmware-cim-datacollection-config.xml");
     }

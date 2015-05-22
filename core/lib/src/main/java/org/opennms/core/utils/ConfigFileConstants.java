@@ -158,13 +158,6 @@ public abstract class ConfigFileConstants {
      */
     public static final int VACUUMD_CONFIG_FILE_NAME;
 
-    //
-
-    /**
-     * The opennms xmlrpcd config file
-     */
-    public static final int XMLRPCD_CONFIG_FILE_NAME;
-
     /**
      * The config file specifying the rrd config (ie JRobin vs JNI)
      */
@@ -542,7 +535,6 @@ public abstract class ConfigFileConstants {
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
         OPENNMS_SERVER_CONFIG_FILE_NAME = 48;
-        XMLRPCD_CONFIG_FILE_NAME = 49;
 
         DHCPD_CONFIG_FILE_NAME = 50;
 
@@ -670,7 +662,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
         FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME] = "opennms-server.xml";
-        FILE_ID_TO_NAME[XMLRPCD_CONFIG_FILE_NAME] = "xmlrpcd-configuration.xml";
         FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
