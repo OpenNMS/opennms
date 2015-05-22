@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -65,6 +67,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -111,12 +114,32 @@ public class OpenNMSSeleniumTestCase {
                 wait = new WebDriverWait(m_driver, TimeUnit.SECONDS.convert(LOAD_TIMEOUT, TimeUnit.MILLISECONDS));
 
                 m_driver.get(BASE_URL + "opennms/login.jsp");
+
+                // Wait until the login form is complete
                 wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
+                wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
+
                 enterText(By.name("j_username"), "admin");
                 enterText(By.name("j_password"), "admin");
                 findElementByName("Login").click();
+
                 wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
-            } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                try {
+                    // Disable implicitlyWait
+                    m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+                    try {
+                        // Make sure that the 'login-attempt-failed' element is not present
+                        findElementById("login-attempt-failed");
+                        fail("Login failed: " + findElementById("login-attempt-failed-reason").getText());
+                    } catch (NoSuchElementException e) {
+                        // This is expected
+                    }
+                } finally {
+                    // Restore the implicitlyWait timeout
+                    m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+                }
+            } catch (final InstantiationException | IllegalAccessException | ClassNotFoundException | TimeoutException e) {
                 LOG.debug("Failed to get driver", e);
                 throw new RuntimeException("Tests aren't going to work.  Bailing.");
             }
@@ -391,10 +414,40 @@ public class OpenNMSSeleniumTestCase {
     }
 
     protected WebElement enterText(final By selector, final String text) {
+        return enterText(m_driver, selector, text);
+    }
+
+    /**
+     * CAUTION: There are a variety of Firefox-specific bugs related to using
+     * {@link WebElement#sendKeys(CharSequence...)}. We're doing this bizarre
+     * sequence of operations to try and work around them.
+     *
+     * @see https://code.google.com/p/selenium/issues/detail?id=2487
+     * @see https://code.google.com/p/selenium/issues/detail?id=8180
+     */
+    protected static WebElement enterText(WebDriver driver, final By selector, final String text) {
         LOG.debug("Enter text: '{}' into selector: {}", text, selector);
-        final WebElement element = m_driver.findElement(selector);
+        final WebElement element = driver.findElement(selector);
+
+        // Clear the element content
         element.clear();
+        // Because clear() seems to be async, verify that it worked before
+        // continuing so that we don't erase the value
+        int i = 0;
+        while (!"".equals(element.getAttribute("value").trim()) && (i++ < 100)) {
+            try { Thread.sleep(200); } catch (InterruptedException e) {}
+        }
+
+        // Focus on the element before typing
+        new Actions(driver).moveToElement(element).click().perform();
+        // Again, focus on the element before typing
+        element.sendKeys("");
+        // Send the keys
         element.sendKeys(text);
+        i = 0;
+        while (!text.equals(element.getAttribute("value")) && (i++ < 100)) {
+            try { Thread.sleep(200); } catch (InterruptedException e) {}
+        }
         return element;
     }
 

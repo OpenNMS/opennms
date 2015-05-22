@@ -52,7 +52,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 ===== Examples
 
 The following example shows how to monitor the process called _httpd_ running on a server using this monitor.
-The configuration in 'poller-configuration.xml' has to be defined as the following:
+The configuration in `poller-configuration.xml` has to be defined as the following:
 [source, xml]
 ----
 <service name="Process-httpd" interval="300000" user-defined="false" status="on">

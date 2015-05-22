@@ -7,8 +7,8 @@ This monitor is used to monitor the availability and functionality of http://en.
 This monitor has two parts, the first one is the monitor class _DhcpMonitor_ executed by _Pollerd_ and the second part is a background daemon _Dhcpd_ running inside the OpenNMS JVM and listening for DHCP responses.
 A DHCP server is tested by sending a _DISCOVER_ message.
 If the DHCP server responds with an _OFFER_ the service is marked as up.
-The _Dhcpd_ background daemon is disabled by default and has to be activated in 'service-configuration.xml' in OpenNMS by setting `service enabled="true"`.
-The behavior for testing the DHCP server can be modified in the 'dhcp-configuration.xml' configuration file.
+The _Dhcpd_ background daemon is disabled by default and has to be activated in `service-configuration.xml` in OpenNMS by setting `service enabled="true"`.
+The behavior for testing the DHCP server can be modified in the `dhcp-configuration.xml` configuration file.
 
 IMPORTANT: It is required to install the `opennms-plugin-protocol-dhcp` before you can use this feature.
 
@@ -17,7 +17,7 @@ IMPORTANT: It is required to install the `opennms-plugin-protocol-dhcp` before y
 {apt-get,yum} install opennms-plugin-protocol-dhcp
 ----
 
-If you try to start OpenNMS without the _opennms-plugin-protocol-dhcp_ you will see the following error message in 'output.log':
+If you try to start OpenNMS without the _opennms-plugin-protocol-dhcp_ you will see the following error message in `output.log`:
 
 ----
 An error occurred while attempting to start the "OpenNMS:Name=Dhcpd" service (class org.opennms.netmgt.dhcpd.jmx.Dhcpd).  Shutting down and exiting.
@@ -36,7 +36,7 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and using por
 | Remote Enabled | false
 |===
 
-.Service monitor parameters configured in 'poller-configuration.xml'
+.Service monitor parameters configured in `poller-configuration.xml`
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                    | Required | Default value
@@ -49,7 +49,7 @@ CAUTION: Make sure no DHCP client is running on the OpenNMS server and using por
 
 ===== _Dhcpd_ configuration
 
-._Dhcpd_ parameters in 'dhcp-configuration.xml'.
+._Dhcpd_ parameters in `dhcp-configuration.xml`.
 [options="autowidth"]
 |===
 | Parameter          | Description                                                                       | Required           | Default value
@@ -90,10 +90,10 @@ image::poller/02_02_dhcp-monitor-messages-unicast.png[]
 
 ===== Example testing DHCP server in the same subnet
 
-Example configuration how to configure the monitor in the 'poller-configuration.xml'.
+Example configuration how to configure the monitor in the `poller-configuration.xml`.
 The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 seconds for the DHCP server _OFFER_ message.
 
-.Step 1: Configure a DHCP service in 'poller-configuration.xml'
+.Step 1: Configure a DHCP service in `poller-configuration.xml`
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">
@@ -107,7 +107,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 <monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
 ----
 
-.Step 2: Enable the OpenNMS _Dhcpd_ daemon in 'service-configuration.xml'
+.Step 2: Enable the OpenNMS _Dhcpd_ daemon in `service-configuration.xml`
 [source, xml]
 ----
 <service enabled="true">
@@ -133,7 +133,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 
 ===== Example testing DHCP server in a different subnet in extended mode
 
-You can use the same monitor in 'poller-configuration.xml' as in the example above.
+You can use the same monitor in `poller-configuration.xml` as in the example above.
 
 .Configure _Dhcpd_ to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
 [source, xml]

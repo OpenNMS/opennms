@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <linkd-configuration threads="5" initial_sleep_time="3600000"
                      snmp_poll_interval="18000000" discovery_link_interval="1800000">
-    
+<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!                                                                        !!!!
+!!!!                               ATTENTION                                !!!!
+!!!!                                                                        !!!!
+!!!!                          LinkD is deprecated                           !!!!
+!!!!                                                                        !!!!
+!!!! Linkd is deprecated in favour of Enhanced LinkD and will be removed in !!!!
+!!!! OpenNMS Meridian 17.0.0. Please migrate to Enhanced LinkD as soon as   !!!!
+!!!! possible. If you encounter any problems using Enhanced LinkD please    !!!!
+!!!! free to open Bug Reports at http://issues.opennms.org/ .               !!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
 
     <iproutes>
         <vendor vendor_name="netscreen" sysoidRootMask=".1.3.6.1.4.1.3224"
