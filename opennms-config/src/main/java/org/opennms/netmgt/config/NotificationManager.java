@@ -746,7 +746,7 @@ public abstract class NotificationManager {
     public String getServiceNoticeStatus(final String nodeID, final String ipaddr, final String service) throws SQLException {
         String notify = "Y";
 
-        final String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
+        final String query = "SELECT notify FROM ifservices, ipInterface, node, service WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid=? AND ipInterface.ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
         java.sql.Connection connection = null;
         final DBUtils d = new DBUtils(getClass());
 
@@ -1224,7 +1224,7 @@ public abstract class NotificationManager {
     }
 
     /**
-     * Adds additional parameters defined by the user in the notificaiton
+     * Adds additional parameters defined by the user in the notification
      * configuration XML.
      *
      * @param paramMap a {@link java.util.Map} object.

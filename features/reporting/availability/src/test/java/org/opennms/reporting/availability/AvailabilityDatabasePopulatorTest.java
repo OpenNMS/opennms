@@ -127,9 +127,9 @@ public class AvailabilityDatabasePopulatorTest implements InitializingBean {
 
 		try {
 			List<OnmsMonitoredService> stmt = m_template.query(
-					"SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, " + "service WHERE ((ifServices.nodeid = 1 )" + 
-					"AND (ifServices.ipaddr = '192.168.100.1') AND ipinterface.ipaddr = '192.168.100.1' AND ipinterface.isManaged ='M' AND " + 
-					"(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = 1 AND node.nodetype = 'A'", 
+					"SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, service WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId " + 
+					"AND ipinterface.ipaddr = '192.168.100.1' AND ipinterface.isManaged ='M' AND " + 
+					"ifServices.serviceid = service.serviceid AND ifservices.status = 'A' AND node.nodeid = 1 AND node.nodetype = 'A'",
 					new RowMapper<OnmsMonitoredService>() {
                                                 @Override
 						public OnmsMonitoredService mapRow(ResultSet rs, int rowNum) throws SQLException {

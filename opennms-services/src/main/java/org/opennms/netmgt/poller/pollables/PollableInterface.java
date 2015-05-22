@@ -286,16 +286,10 @@ public class PollableInterface extends PollableContainer {
             public void run() {
                 oldNode.resetStatusChanged();
                 newNode.resetStatusChanged();
-              
-                int oldNodeId = getNodeId();
-                String oldIp = getIpAddr();
-                int newNodeId = newNode.getNodeId();
                 
                 oldNode.removeMember(PollableInterface.this);
                 newNode.addMember(PollableInterface.this);
                 setNode(newNode);
-
-                getContext().reparentOutages(oldIp, oldNodeId, newNodeId);
                 
                 if (getCause() == null || getCause().equals(oldNode.getCause())) {
                     // the current interface outage is a node outage or no outage at all

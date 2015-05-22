@@ -139,7 +139,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                         while (ipIter.hasNext()) {
                             ip = str(ipIter.next());
-                            LOG.debug("ecexuting {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
+                            LOG.debug("executing {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
 
                             // get node info for this ip
                             ipInfoGetStmt.setString(1, ip);
@@ -154,10 +154,8 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                                 // get the services for this IP address
                                 ResultSet svcRS = null;
-                                servicesGetStmt.setLong(1, nodeid);
-                                servicesGetStmt.setString(2, ip);
-                                servicesGetStmt.setString(3, ip);
-                                servicesGetStmt.setLong(4, nodeid);
+                                servicesGetStmt.setString(1, ip);
+                                servicesGetStmt.setLong(2, nodeid);
                                 svcRS = servicesGetStmt.executeQuery();
                                 db.watch(svcRS);
 

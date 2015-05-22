@@ -63,8 +63,8 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <forkMode>pertest</forkMode>
-          <argLine>-Xmx256m</argLine>
           <includes>
             <include>**/*Test.java</include>
           </includes>     

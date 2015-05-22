@@ -92,7 +92,7 @@
     String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
     String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" ;
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
 <div id="availability-box" class="panel panel-default">

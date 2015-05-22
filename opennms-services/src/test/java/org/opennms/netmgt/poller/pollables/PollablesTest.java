@@ -267,15 +267,14 @@ public class PollablesTest {
 
         final PollableNetwork pNetwork = new PollableNetwork(pollContext);
 
-        String sql = "select ifServices.nodeId as nodeId, node.nodeLabel as nodeLabel, ifServices.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
+        String sql = "select node.nodeId as nodeId, node.nodeLabel as nodeLabel, ipInterface.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
                 "from ifServices " +
-                "join node on ifServices.nodeId = node.nodeId " +
+                "join ipInterface on ifServices.ipInterfaceId = ipInterface.id " +
+                "join node on ipInterface.nodeId = node.nodeId " +
                 "join service on ifServices.serviceId = service.serviceId " +
                 "left outer join outages on " +
-                "ifServices.nodeId = outages.nodeId and " +
-                "ifServices.ipAddr = outages.ipAddr and " +
-                "ifServices.serviceId = outages.serviceId and " +
-                "ifRegainedService is null " +
+                    "ifServices.id = outages.ifServiceId and " +
+                    "ifRegainedService is null " +
                 "left outer join events on outages.svcLostEventId = events.eventid " +
                 "where ifServices.status = 'A'";
 
@@ -614,8 +613,8 @@ public class PollablesTest {
         pDot1Icmp.doPoll();
         m_network.processStatusChange(new Date());
 
-        final String ifOutageOnNode1 = "select * from outages where nodeId = 1 and ipAddr = '192.168.1.1'";
-        final String ifOutageOnNode2 = "select * from outages where nodeId = 2 and ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
 
         m_eventMgr.finishProcessingEvents();
 
@@ -2016,7 +2015,7 @@ public class PollablesTest {
 
     @Test
     public void testAddDownServiceToUpNodeHasNoCritSvc() throws Exception {
-        testAddDownServiceToUpNode(3, "Firewal", "192.168.1.4", "SMTP", "SNMP");
+        testAddDownServiceToUpNode(3, "Firewall", "192.168.1.4", "SMTP", "SNMP");
     }
 
     private void testAddDownServiceToUpNode(int nodeId, String nodeLabel,
@@ -2435,6 +2434,7 @@ public class PollablesTest {
         MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 
+        m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
