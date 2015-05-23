@@ -26,33 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.dao.support;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
-public class MockResourceType implements OnmsResourceType {
-    private String m_name = "nothing but foo";
-    private String m_label = "even more foo";
-    private String m_link = "http://www.google.com/search?q=opennms";
-
-    @Override
-    public String getLabel() {
-        return m_label;
-    }
-
-    @Override
-    public String getLinkForResource(OnmsResource resource) {
-        return m_link;
-    }
-
-    @Override
-    public String getName() {
-        return m_name;
-    }
+/**
+ * Extended by all top-level resources to ensure consistent behavior.
+ *
+ * @author jwhite
+ */
+public abstract class AbstractTopLevelResourceType implements OnmsResourceType {
 
     @Override
     public boolean isResourceTypeOnParent(OnmsResource parent) {
@@ -61,24 +47,20 @@ public class MockResourceType implements OnmsResourceType {
 
     @Override
     public List<OnmsResource> getResourcesForParent(OnmsResource parent) {
-        return Collections.emptyList();
+        return getTopLevelResources();
     }
 
     @Override
     public OnmsResource getChildByName(OnmsResource parent, String name) {
-        return null;
+        if (parent != null) {
+            return null;
+        }
+
+        return getResourceByName(name);
     }
 
-    public void setLink(String link) {
-        m_link = link;
-    }
+    public abstract List<OnmsResource> getTopLevelResources();
 
-    public void setLabel(String label) {
-        m_label = label;
-    }
-
-    public void setName(String name) {
-        m_name = name;
-    }
+    public abstract OnmsResource getResourceByName(String name);
 
 }

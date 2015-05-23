@@ -39,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -100,14 +101,14 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         long start = System.currentTimeMillis();
         long end = start + (24 * 60 * 60 * 1000);
         
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "snmp/1/eth0", "ifInOctets.jrb");
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
         MockResourceType childResourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet,  new ResourcePath("foo"));
         childResource.setParent(topResource);
         
         File snmp = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);

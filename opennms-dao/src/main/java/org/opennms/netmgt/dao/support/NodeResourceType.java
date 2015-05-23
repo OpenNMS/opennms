@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,38 +28,46 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.LazyList;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
-public class NodeResourceType implements OnmsResourceType {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(NodeResourceType.class);
-    
+/**
+ * Nodes are top-level resources stored in paths like:
+ *   snmp/${nodeId}/ds.rrd
+ *
+ * Note that the node resource may exist even if it's path
+ * is empty since we consider response time resources, which
+ * are stored in other folders, to be children.
+ *
+ */
+public final class NodeResourceType extends AbstractTopLevelResourceType {
+
     /** Constant <code>s_emptyAttributeSet</code> */
-    protected static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
+    private static final Set<OnmsAttribute> s_emptyAttributeSet = Collections.unmodifiableSet(new HashSet<OnmsAttribute>());
+
     private final ResourceDao m_resourceDao;
+    private final NodeDao m_nodeDao;
 
     /**
      * <p>Constructor for NodeResourceType.</p>
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
      */
-    public NodeResourceType(ResourceDao resourceDao) {
+    public NodeResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
+        m_nodeDao = nodeDao;
     }
 
     /**
@@ -84,126 +92,59 @@ public class NodeResourceType implements OnmsResourceType {
 
     /** {@inheritDoc} */
     @Override
-    public List<OnmsResource> getResourcesForDomain(String domain) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsResource> getResourcesForNode(int nodeId) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OnmsResource getChildByName(OnmsResource parent, String nodeIdStr) {
-        // Nodes are top-level resources
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-       public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
-           return null;
-       }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isResourceTypeOnDomain(String domain) {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isResourceTypeOnNode(int nodeId) {
-        return false;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-       public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
-           return false;
-       }
-
-    /** {@inheritDoc} */
-    @Override
     public String getLinkForResource(OnmsResource resource) {
         return "element/node.jsp?node=" + resource.getName();
     }
-    
-    /**
-     * <p>createChildResource</p>
-     *
-     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
-     */
-    public OnmsResource createChildResource(OnmsNode node) {
-        NodeChildResourceLoader loader = new NodeChildResourceLoader(node.getId(), node.getForeignSource(), node.getForeignId());
-        OnmsResource r = new OnmsResource(node.getId().toString(), node.getLabel(), this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader));
-        r.setEntity(node);
-        loader.setParent(r);
 
-        return r;
+    @Override
+    public List<OnmsResource> getTopLevelResources() {
+        // We handle these in the DefaultResourceDao class
+        // instead of here since we may need to create nodeSource[] types
+        return Collections.emptyList();
     }
-    
-    
-    private class NodeChildResourceLoader implements LazyList.Loader<OnmsResource> {
-        private int m_nodeId;
-        private String m_nodeSource;
-        private OnmsResource m_parent;
-        
-        public NodeChildResourceLoader(int nodeId, String foreignSource, String foreignId) {
-            m_nodeId = nodeId;
-            m_nodeSource = foreignSource == null || foreignId == null ? null : foreignSource + ':' + foreignId;
-        }
-        
-        public void setParent(OnmsResource parent) {
-            m_parent = parent;
+
+    @Override
+    public OnmsResource getResourceByName(String nodeIdStr) {
+        int nodeId;
+        try {
+            nodeId = Integer.parseInt(nodeIdStr);
+        } catch (NumberFormatException e) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeIdStr, "Top-level resource of type node is not numeric: " + nodeIdStr, null);
         }
 
-        @Override
-        public List<OnmsResource> load() {
-            List<OnmsResource> children = new LinkedList<OnmsResource>();
-
-            if (ResourceTypeUtils.isStoreByForeignSource() && m_nodeSource != null) {
-                for (OnmsResourceType resourceType : getResourceTypesForNodeSource(m_nodeSource, m_nodeId)) {
-                    for (OnmsResource resource : resourceType.getResourcesForNodeSource(m_nodeSource, m_nodeId)) {
-                        resource.setParent(m_parent);
-                        children.add(resource);
-                        LOG.debug("load: adding resource {}", resource.toString());
-                    }
-                }
-            } else {
-                for (OnmsResourceType resourceType : getResourceTypesForNode(m_nodeId)) {
-                    for (OnmsResource resource : resourceType.getResourcesForNode(m_nodeId)) {
-                        resource.setParent(m_parent);
-                        children.add(resource);
-                        LOG.debug("load: adding resource {}", resource.toString());
-                    }
-                }
-            }
-
-            return children;
-        }
-        
-        private Collection<OnmsResourceType> getResourceTypesForNode(int nodeId) {
-            Collection<OnmsResourceType> resourceTypes = new LinkedList<OnmsResourceType>();
-            for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
-                if (resourceType.isResourceTypeOnNode(nodeId)) {
-                    resourceTypes.add(resourceType);
-                }
-            }
-            return resourceTypes;
+        final OnmsNode node = m_nodeDao.get(nodeId);
+        if (node == null) {
+            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeIdStr, "Top-level resource of type node could not be found: " + nodeIdStr, null);
         }
 
-        private Collection<OnmsResourceType> getResourceTypesForNodeSource(String nodeSource, int nodeId) {
-            Collection<OnmsResourceType> resourceTypes = new LinkedList<OnmsResourceType>();
-            for (OnmsResourceType resourceType : m_resourceDao.getResourceTypes()) {
-                if (resourceType.isResourceTypeOnNodeSource(nodeSource, nodeId)) {
-                    resourceTypes.add(resourceType);
-                }
-            }
-            return resourceTypes;
+        // We don't check the existence of the resource path, since the
+        // resource may exists, even if this directory is empty
+        // i.e. there are response[] type resources but no nodeSnmp[] resources
+
+        return createResourceForNode(node);
+    }
+
+    protected ResourcePath getResourcePathForNode(OnmsNode node) {
+        return new ResourcePath(ResourceTypeUtils.SNMP_DIRECTORY, Integer.toString(node.getId()));
+    }
+
+    protected OnmsResource createResourceForNode(OnmsNode node) {
+        final ResourcePath path = getResourcePathForNode(node);
+        final LazyChildResourceLoader loader = new LazyChildResourceLoader(m_resourceDao);          
+        final OnmsResource resource = new OnmsResource(Integer.toString(node.getId()), node.getLabel(),
+                this, s_emptyAttributeSet, new LazyList<OnmsResource>(loader), path);
+        resource.setEntity(node);
+        loader.setParent(resource);
+        return resource;
+    }
+
+    /**
+     * Convenience method. supports both node and nodeSource.
+     */
+    public static boolean isNode(OnmsResource resource) {
+        if (resource == null) {
+            return false;
         }
+        return resource.getResourceType() instanceof NodeResourceType || resource.getResourceType() instanceof NodeSourceResourceType;
     }
 }

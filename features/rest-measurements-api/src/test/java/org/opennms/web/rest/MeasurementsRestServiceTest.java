@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.rest.measurements.model.QueryRequest;
 import org.opennms.web.rest.measurements.model.Source;
@@ -37,6 +38,8 @@ public abstract class MeasurementsRestServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
     public void setUp() {
         BeanUtils.assertAutowiring(this);
 
@@ -45,6 +48,8 @@ public abstract class MeasurementsRestServiceTest {
         node.setLabel("node1");
         m_nodeDao.save(node);
         m_nodeDao.flush();
+
+        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
     }
 
     @Test

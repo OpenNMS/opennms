@@ -103,7 +103,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         
         String lbl  = Util.convertToJsSafeString(childResource.getLabel());
         
-        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes(), childResource.getPath());
         resource.setParent(childResource.getParent());
         resource.setEntity(childResource.getEntity());
         resource.setLink(childResource.getLink());

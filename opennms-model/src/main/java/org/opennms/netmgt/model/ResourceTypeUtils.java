@@ -319,8 +319,17 @@ public abstract class ResourceTypeUtils {
      * @return a {@link java.io.File} object.
      */
     public static File getRelativeNodeSourceDirectory(String nodeSource) {
-        String[] ident = nodeSource.split(":");
+        String[] ident = getFsAndFidFromNodeSource(nodeSource);
         return new File(FOREIGN_SOURCE_DIRECTORY, File.separator + ident[0] + File.separator + ident[1]);
+    }
+
+    public static String[] getFsAndFidFromNodeSource(String nodeSource) {
+        final String[] ident = nodeSource.split(":", 2);
+        if (!(ident.length == 2)) {
+            LOG.warn("'%s' is not in the format foreignSource:foreignId.", nodeSource);
+            throw new IllegalArgumentException("Node definition '" + nodeSource + "' is invalid, it should be in the format: 'foreignSource:foreignId'.");
+        }
+        return ident;
     }
 
     /**

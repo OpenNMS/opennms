@@ -28,41 +28,53 @@
 
 package org.opennms.netmgt.dao.support;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 public class NodeSnmpResourceTypeTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
+    private NodeDao m_nodeDao = createNiceMock(NodeDao.class);
+
+    private ResourceDao m_resourceDao = createNiceMock(ResourceDao.class);
+
     @Test
     public void canGetChildByName() throws IOException {
-        final OnmsNode node = createMock(OnmsNode.class);
-        final OnmsResource parent = createMock(OnmsResource.class);
-        
-        expect(node.getId()).andReturn(1);
-        expect(parent.getId()).andReturn("node[1]");
-        expect(parent.getEntity()).andReturn(node);
-        replay(parent, node);
+        final FilesystemResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
+        resourceStorageDao.setRrdDirectory(tempFolder.getRoot());
 
-        final DefaultResourceDao resourceDao = new DefaultResourceDao();
-        resourceDao.setRrdDirectory(tempFolder.getRoot());
+        File nodeSnmpFolder = tempFolder.newFolder("snmp", "1");
+        File rrd = new File(nodeSnmpFolder, "ds" + RrdUtils.getExtension());
+        rrd.createNewFile();
 
-        final NodeSnmpResourceType nodeSnmpResourceType = new NodeSnmpResourceType(resourceDao);
-        
+        final NodeSnmpResourceType nodeSnmpResourceType = new NodeSnmpResourceType(resourceStorageDao);
+
+        final OnmsResource parent = getNodeResource(1);
+
         final OnmsResource resource = nodeSnmpResourceType.getChildByName(parent, new String(""));
         assertEquals("node[1].nodeSnmp[]", resource.getId());
         assertEquals(parent, resource.getParent());
+    }
+
+    private OnmsResource getNodeResource(int nodeId) {
+        final NodeResourceType nodeResourceType = new NodeResourceType(m_resourceDao, m_nodeDao);
+        final OnmsNode node = new OnmsNode();
+        node.setId(nodeId);
+        node.setLabel("Node"+ nodeId);
+        return nodeResourceType.createResourceForNode(node);
     }
 }
