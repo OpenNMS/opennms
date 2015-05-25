@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tip</artifactId>
-    <version>16.0.0</version>
+    <version>16.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.tip</groupId>
@@ -12,7 +12,7 @@
   <name>OpenNMS Resource Alarm Interface</name>
   <properties>
     <web.port>8080</web.port>
-    <tip-api.version>0.2.0</tip-api.version>
+    <tip-api.version>0.2.0-SNAPSHOT</tip-api.version>
     <slf4j.version>1.6.1</slf4j.version>
   </properties>
   <build>
