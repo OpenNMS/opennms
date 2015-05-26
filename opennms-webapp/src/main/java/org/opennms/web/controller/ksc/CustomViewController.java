@@ -174,18 +174,8 @@ public class CustomViewController extends AbstractController implements Initiali
                     prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
                 }
             }
-
-            // Get default graph type from first element of graph_options
-            // XXX Do we care about the tests on reportType?
-            if (("node".equals(reportType) || "nodeSource".equals(reportType) || "domain".equals(reportType))
-                    && overrideGraphType == null
-                    && !prefabGraphs.isEmpty()) {
-                // Get the name of the first item.  prefabGraphs is sorted.
-                overrideGraphType = prefabGraphs.iterator().next().getName();
-                    LOG.debug("custom_view: setting default graph type to {}", overrideGraphType);
-            }
         }
-        
+
         List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
         for (Graph graph : graphCollection) {
             OnmsResource resource = resourceMap.get(graph.toString());
