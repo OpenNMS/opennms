@@ -213,9 +213,9 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.api.RrdDao#createGraph(java.lang.String, java.io.File)
      */
     @Override
-    public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
+    public InputStream createGraph(String command) throws DataRetrievalFailureException {
        try {
-           return m_rrdStrategy.createGraph(command, workDir);
+           return m_rrdStrategy.createGraph(command, m_rrdBaseDirectory);
        } catch (Throwable e) {
            throw new DataRetrievalFailureException("Could not create graph: " + e, e);
        }
@@ -288,4 +288,5 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }
     }
+
 }

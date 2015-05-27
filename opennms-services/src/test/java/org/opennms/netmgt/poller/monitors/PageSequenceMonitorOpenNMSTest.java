@@ -51,21 +51,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- *
+ * This test runs the {@link PageSequenceMonitor} against an OpenNMS web UI
+ * as a form of smoke testing.
+ * 
+ * @author Seth
  */
-
 @RunWith(SpringJUnit4ClassRunner.class)
-/*
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class,
-    JUnitHttpServerExecutionListener.class
-})
-*/
 @ContextConfiguration(locations="classpath:META-INF/opennms/emptyContext.xml")
-//@JUnitHttpServer(port=10342)
-public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ {
+public class PageSequenceMonitorOpenNMSTest {
 
     AbstractServiceMonitor m_monitor;
     Map<String, Object> m_params;
@@ -102,7 +95,6 @@ public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ 
 
     @Test
     @Ignore
-    // @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testOpenNMSUserInterface() throws Exception {
 
         StringBuffer config = new StringBuffer();

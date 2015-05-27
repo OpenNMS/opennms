@@ -58,7 +58,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <systemProperties>
             <property>
               <name>java.endorsed.dirs</name>
@@ -87,7 +87,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4.1</version>
         <configuration>
           <filesets>
             <fileset>

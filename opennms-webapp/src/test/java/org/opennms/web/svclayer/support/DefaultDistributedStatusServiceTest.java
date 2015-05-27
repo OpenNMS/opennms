@@ -65,6 +65,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.ThrowableAnticipator;
@@ -842,7 +843,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
         
         for (OnmsMonitoredService service : services) {
-            OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+            OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));
             expect(m_resourceDao.getResourceForIpInterface(service.getIpInterface(), monitor)).andReturn(resource);
             
             expect(m_graphDao.getPrefabGraphsForResource(resource)).andReturn(new PrefabGraph[] { httpGraph, httpsGraph });

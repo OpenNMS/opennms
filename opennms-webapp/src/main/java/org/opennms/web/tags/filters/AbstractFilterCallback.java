@@ -80,11 +80,15 @@ public abstract class AbstractFilterCallback implements FilterCallback {
 
     @Override
     public List<Filter> parse(String[] filters) {
+        /*
+        We don't need to do this; the values have already been URL-decoded.
+
         if (filters != null) {
             for (int i = 0; i < filters.length; i++) {
                 filters[i] = URLDecoder.decode(filters[i]);
             }
         }
+        */
         return getIndividualFilterList(filters, servletContext);
     }
 

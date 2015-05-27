@@ -163,16 +163,12 @@ public class MockPollContext implements PollContext, EventListener {
         MockUtil.println("Resolving Outage for "+mSvc);
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
-    
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", newNodeId, oldNodeId, ipAddr);
-    }
-    
+
     @Override
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
+
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }

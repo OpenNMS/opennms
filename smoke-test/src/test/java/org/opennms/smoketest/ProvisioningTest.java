@@ -29,11 +29,15 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -57,9 +61,7 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
     Setter type(final String suffix, final String value) {
         return new Setter() {
             public void setField(final String prefix) {
-                final WebElement element = findElementByName(prefix + "." + suffix);
-                element.clear();
-                element.sendKeys(value);
+                enterText(By.name(prefix + "." + suffix), value);
             }
         };
     }
@@ -131,10 +133,19 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
+            // Disable implicitlyWait
+            m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+
+            // If this is the only node on the system, we'll be sent directly
+            // to its node details page.
             findElementByXpath("//h3[text()='Availability']");
-        } catch (final Exception e) {
-            // We should be on the node list page, click through to the node
+        } catch (NoSuchElementException e) {
+            // If there are multiple nodes, we will be on the node list page, 
+            // click through to the node
             findElementByLink(NODE_LABEL).click();
+        } finally {
+            // Restore the implicitlyWait timeout
+            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));

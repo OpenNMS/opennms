@@ -326,11 +326,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_threads;
     }
 
-    @Override
-    public boolean shouldNotifyXmlrpc() {
-        return false;
-    }
-
     /**
      * @param svcName
      * @return

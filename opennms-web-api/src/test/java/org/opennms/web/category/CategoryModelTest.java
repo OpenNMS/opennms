@@ -154,9 +154,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(0), new Date(startTime + timeframe)), 0.0000001);
 		// No downtime yet
-		assertEquals(100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Take down one service
 		assertEquals(0, m_db.countOpenOutagesForService(service));
@@ -167,9 +167,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total, one totally down, the other 2 up
 		assertEquals(48.0 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(0.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(0.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		timeframe = 60L * 60L * 4L * 1000L;
 
@@ -177,9 +177,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total, one totally down, the other 2 up
 		assertEquals(8.0 / 12.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(0.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(0.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Bring the service back up after 2 hours
 		m_db.resolveOutage(service, events[1].getDbid(), new Timestamp(2L * 60L * 60L * 1000L));
@@ -191,9 +191,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(70.0 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(22.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(22.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Shift the start time forward 30 minutes so that we only see 30 minutes of downtime
 		startTime = 30L * 60L * 1000L;
@@ -202,9 +202,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(70.5 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(22.5 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(22.5 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		startTime = 0L;
 		timeframe = 60L * 60L * 4L * 1000L;
@@ -213,9 +213,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(10.0 / 12.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(2.0 / 4.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(2.0 / 4.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		startTime = 0L;
 		timeframe = 60L * 60L * 24L * 1000L;
@@ -229,9 +229,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total, one totally down, the other 2 up
 		assertEquals(69.0 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Shift the start time forward 60 minutes so that we only see 60 minutes of downtime
 		// from the first outage and 2 hours from the second outage
@@ -241,9 +241,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(69.0 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Bring the service back up after 1.5 hours
 		m_db.resolveOutage(service, events[3].getDbid(), new Timestamp((24L * 60L * 60L * 1000L) /* 24 hours */ + (30L * 60L * 1000L) /* 30 minutes */));
@@ -256,9 +256,9 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(69.0 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(21.0 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 
 		// Shift the start time forward 60 minutes so that we only see 60 minutes of downtime
 		// from the first outage and 1.5 hours from the second outage
@@ -268,8 +268,8 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		// There are 3 services total
 		assertEquals(69.5 / 72.0 * 100.0, CategoryModel.getInterfaceAvailability(service.getNodeId(), service.getIpAddr(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001);
 		// One hour of downtime
-		assertEquals(21.5 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
-		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(21.5 / 24.0 * 100.0, CategoryModel.getServiceAvailability(service.getNodeId(), service.getIpAddr(), service.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSmtp.getNodeId(), upSmtp.getIpAddr(), upSmtp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
+		assertEquals(100.0, CategoryModel.getServiceAvailability(upSnmp.getNodeId(), upSnmp.getIpAddr(), upSnmp.getSvcId(), new Date(startTime), new Date(startTime + timeframe)), 0.0000001); 
 	}
 }

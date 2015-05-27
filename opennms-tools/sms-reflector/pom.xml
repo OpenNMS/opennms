@@ -74,11 +74,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <systemPropertyVariables>
             <net.sourceforge.cobertura.datafile>${basedir}/target/cobertura/cobertura.ser</net.sourceforge.cobertura.datafile>
           </systemPropertyVariables>
           <forkMode>pertest</forkMode>
-          <argLine>-Xmx1024m</argLine>
           <includes>
             <include>**/*Test.java</include>
           </includes>

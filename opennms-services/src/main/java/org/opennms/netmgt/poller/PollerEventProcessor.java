@@ -44,8 +44,8 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
@@ -53,7 +53,6 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xmlrpcd.XmlrpcUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -358,10 +357,6 @@ final class PollerEventProcessor implements EventListener {
         PollableNode node = getNetwork().getNode(nodeId.intValue());
         if (node == null) {
             LOG.error("Nodeid {} does not exist in pollable node map, unable to delete node.", nodeId);
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist in pollable node map.", status, "OpenNMS.Poller");
-            }
             return;
         }
         node.delete();
@@ -433,10 +428,6 @@ final class PollerEventProcessor implements EventListener {
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
             LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
-            }
             return;
         }
         iface.delete();
@@ -760,13 +751,6 @@ final class PollerEventProcessor implements EventListener {
 
     private PollableNetwork getNetwork() {
         return getPoller().getNetwork();
-    }
-
-    /**
-     * @return Returns the XMLRPC.
-     */
-    private boolean isXmlRPCEnabled() {
-        return getPollerConfig().shouldNotifyXmlrpc();
     }
 
     public static class Service implements Comparable<Service> {

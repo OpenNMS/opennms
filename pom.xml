@@ -13,8 +13,8 @@
   </description>
   <licenses>
     <license>
-      <name>GNU General Public License</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <name>GNU Affero General Public License</name>
+      <url>http://www.gnu.org/licenses/agpl.html</url>
       <comments>
         This Maven metadata is provided for informational purposes only. For specific licensing 
         questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
@@ -36,6 +36,17 @@
     </notifiers>
   </ciManagement>
   <developers>
+    <developer>
+      <id>soleger</id>
+      <name>Seth Leger</name>
+      <email>seth@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Architect</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
     <developer>
       <id>brozow</id>
       <name>Matt Brozowski</name>
@@ -59,7 +70,7 @@
       <timezone>-5</timezone>
     </developer>
   </developers>
- <mailingLists>
+  <mailingLists>
     <mailingList>
       <name>OpenNMS Discuss List</name>
       <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
@@ -90,9 +101,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:git:git://opennms.git.sourceforge.net/gitroot/opennms/opennms</connection>
-    <developerConnection>scm:git:ssh://${user.name}@opennms.git.sourceforge.net/gitroot/opennms/opennms</developerConnection>
-    <url>http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=shortlog;h=refs/heads/master</url>
+    <connection>scm:git:https://github.com/OpenNMS/opennms.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/OpenNMS/opennms.git</developerConnection>
+    <url>https://github.com/OpenNMS/opennms</url>
   </scm>
   <modules>
     <!-- new structure -->
@@ -456,11 +467,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.6</version>
-        <executions>
-          <execution>
-            <goals><goal>clean</goal></goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -723,6 +729,45 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.4.201502262128</version>
+        <configuration>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <classDumpDir>${project.build.directory}/classes</classDumpDir>
+          <!-- TODO: Figure out how to configure this to be the same path for all projects -->
+          <destFile>${project.build.directory}/jacoco.exec</destFile>
+          <!-- Append all .exec content to the same file -->
+          <append>true</append>
+          <includes>
+            <!-- All OpenNMS Java packages -->
+            <include>org/opennms/**</include>
+            <include>liquibase/ext/opennms/**</include>
+            <include>org/openoss/opennms/**</include>
+          </includes>
+          <excludes>
+            <!-- Spring CGLIB proxies -->
+            <exclude>**/*FastClassBySpringCGLIB*</exclude>
+            <exclude>**/*EnhancerBySpringCGLIB*</exclude>
+            <!-- CGLIB proxies -->
+            <exclude>**/*EnhancerByCGLIB*</exclude>
+            <!-- javassist proxies -->
+            <exclude>**/*_jvst*</exclude>
+            <!-- Unit test classes -->
+            <exclude>**/*Test.*</exclude>
+            <exclude>**/*TestCase.*</exclude>
+            <!-- Duplicate classes -->
+            <exclude>**/SnmpUtilsTest*</exclude>
+            <!-- Drools rules -->
+            <exclude>org/opennms/netmgt/correlation/drools/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Println*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/Rule*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentImpactedEvent*</exclude>
+            <exclude>org/opennms/netmgt/correlation/ncs/SendComponentResolvedEvent*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -854,6 +899,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
         <configuration>
+          <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.awt.headless>true</java.awt.headless>
             <mock.logLevel>${mock.logLevel}</mock.logLevel>
@@ -879,14 +925,9 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <!--
-            Set java.security.egd so that entropy exhaustion doesn't cause 
-            problematic pauses when starting MockSnmpAgent in unit tests
-          -->
-          <argLine>-Xmx1024m -Djava.security.egd=/dev/./urandom</argLine>
           <includes>
             <include>**/*Test.java</include>
-          </includes>          
+          </includes>
         </configuration>
       </plugin>
       <plugin>
@@ -926,6 +967,22 @@
           </dependency>
         </dependencies>
       </plugin>
+      <!-- jacoco code coverage testing library -->
+      <!--
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
     </plugins>
   </build>
 
@@ -1015,6 +1072,19 @@
   </reporting>
 
   <properties>
+    <!--
+      Surefire forked JVM arguments
+      @see http://maven.apache.org/surefire/maven-surefire-plugin/examples/system-properties.html
+
+      Use 1GB of heap for running tests.
+
+      Set java.security.egd so that entropy exhaustion doesn't cause
+      problematic pauses when starting MockSnmpAgent in unit tests.
+
+      Add target/endorsed as an endorsed API directory in case projects require it.
+    -->
+    <argLine>-Xmx1g -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+
     <build.skip.tarball>false</build.skip.tarball>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

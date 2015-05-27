@@ -28,6 +28,7 @@
 
 package org.opennms.nrtg.web.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -45,11 +46,12 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -68,6 +70,7 @@ public class NrtController {
     private GraphDao m_graphDao;
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
+    private ResourceStorageDao m_resourceStorageDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
@@ -322,7 +325,7 @@ public class NrtController {
             final String rrdRelativePath = attr.getRrdRelativePath();
             final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
 
-            final Set<Entry<String, String>> metaDataEntrySet = RrdUtils.readMetaDataFile(m_resourceDao.getRrdDirectory().getPath(), rrdName).entrySet();
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(ResourcePath.get(rrdName.split(File.separator))).entrySet();
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();
@@ -396,5 +399,13 @@ public class NrtController {
 
     public void setNrtBroker(NrtBroker nrtBroker) {
         this.m_nrtBroker = nrtBroker;
+    }
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
     }
 }

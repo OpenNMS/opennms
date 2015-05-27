@@ -28,7 +28,6 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -114,12 +113,11 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
     private InputStream getInputStreamForCommand(String command) {
         boolean debug = true;
-        File workDir = m_resourceDao.getRrdDirectory(true);
 
         InputStream tempIn = null;
         try {
-            LOG.debug("Executing RRD command in directory '{}': {}", workDir, command);
-            tempIn = m_rrdDao.createGraph(command, workDir);
+            LOG.debug("Executing RRD command: {}", command);
+            tempIn = m_rrdDao.createGraph(command);
         } catch (final DataAccessException e) {
         	LOG.warn("Exception while creating graph.", e);
             if (debug) {
@@ -168,7 +166,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         String command = createPrefabCommand(graph,
                                              t.getCommandPrefix(),
-                                             m_resourceDao.getRrdDirectory(true),
                                              report,
                                              width,
                                              height);
@@ -305,7 +302,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
      * @return a {@link java.lang.String} object.
      */
 
-    protected String createPrefabCommand(Graph graph, String commandPrefix, File workDir, String reportName, Integer width, Integer height) {
+    protected String createPrefabCommand(Graph graph, String commandPrefix, String reportName, Integer width, Integer height) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
         String[] rrds = getRrdNames(graph.getResource(), graph.getPrefabGraph().getColumns());

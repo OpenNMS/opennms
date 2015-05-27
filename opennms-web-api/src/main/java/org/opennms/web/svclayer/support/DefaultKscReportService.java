@@ -181,7 +181,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                 List<OnmsResource> resourcesForParent = resourcesMap.get(parent);
                 if (resourcesForParent == null) {
                     try {
-                        resourcesForParent = getResourceService().getResourceListById(resourceId);
+                        resourcesForParent = getResourceService().getResourceById(resourceId).getChildResources();
                         if (resourcesForParent == null) {
                             LOG.warn("getResourcesFromGraphs: no resources found for parent {}", parent);
                             continue;

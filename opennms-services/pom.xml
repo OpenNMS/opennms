@@ -34,7 +34,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <systemPropertyVariables>
             <opennms.home>${project.build.testOutputDirectory}</opennms.home>
             <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>

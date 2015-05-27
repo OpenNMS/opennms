@@ -290,22 +290,6 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
-    <event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
-    <descr>
-      &lt;p&gt;This event will be produced by capsd to carry the process status
-                        information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
-                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
-                        status, %parm[status]%.&lt;/p&gt;
-    </descr>
-    <logmsg dest="logndisplay">
-      &lt;p&gt;A request has been made to xmlrpcd to report status for 
-      %parm[srcUei]%.&lt;/p&gt;
-    </logmsg>
-    <severity>Normal</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/internal/discovery/newSuspect</uei>
     <event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
     <descr>

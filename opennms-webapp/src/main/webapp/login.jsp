@@ -41,12 +41,12 @@
          --%>
 <c:if test="${not empty param.login_error}">
   <blockquote>
-    <p class="lead text-danger">
+    <p id="login-attempt-failed" class="lead text-danger">
       Your log-in attempt failed, please try again.
     </p>
 
     <%-- This is: AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY --%>
-    <p>Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
+    <p id="login-attempt-failed-reason">Reason: ${SPRING_SECURITY_LAST_EXCEPTION.message}</p>
   </blockquote>
 </c:if>
 
