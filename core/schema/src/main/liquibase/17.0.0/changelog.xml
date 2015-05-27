@@ -112,4 +112,18 @@
     <dropColumn tableName="outages" columnName="serviceid"/>
   </changeSet>
 
+  <changeSet author="seth" id="17.0.0-drop-servicemap-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="servicemap"/>
+    </preConditions> 
+    <dropTable tableName="servicemap" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-servermap-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="servermap"/>
+    </preConditions> 
+    <dropTable tableName="servermap" />
+  </changeSet>
+
 </databaseChangeLog>
