@@ -1,12 +1,13 @@
 
-=== RadiusAuthMonitor
+==== RadiusAuthMonitor
 
-This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] service.
-The availability is tested by sending an _AUTH_ packet to the host.
-If a valid _ACCEPT_ response is received, then the _RADIUS_ service is _up_ and considered as available.
+This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
+The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
+If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
 
 IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for OpenNMS.
 
+[source, bash]
 ----
 {apt-get,yum} install opennms-plugin-protocol-radius
 ----
@@ -27,7 +28,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 ----
 <1> The `Access-Accept` message which is evaluated by the monitor.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -35,7 +36,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the RadiusAuthMonitor
 [options="header, autowidth"]
@@ -55,8 +56,8 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
                originating the _Access-Request_.                                                                       | optional | `opennms`
 |===
 
-==== Examples
-Example configuration how to configure the monitor in the 'poller-configuration.xml'.
+===== Examples
+Example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]
 ----
