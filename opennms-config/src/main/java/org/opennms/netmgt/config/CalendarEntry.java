@@ -42,10 +42,10 @@ import org.opennms.core.utils.Owner;
  */
 public class CalendarEntry {
     
-    Date m_start;
-    Date m_end;
-    String m_descr;
-    List<Owner> m_labels;
+    private final Date m_start;
+    private final Date m_end;
+    private final String m_descr;
+    private final List<Owner> m_labels;
     
     /**
      * <p>Constructor for CalendarEntry.</p>

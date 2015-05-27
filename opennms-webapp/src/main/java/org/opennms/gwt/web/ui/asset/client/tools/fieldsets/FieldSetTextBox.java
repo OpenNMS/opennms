@@ -28,12 +28,12 @@
 
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.opennms.gwt.web.ui.asset.client.tools.validation.StringMaxLengthValidator;
 
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiConstructor;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * @author <a href="mailto:MarkusNeumannMarkus@gmail.com">Markus Neumann</a>
@@ -68,8 +68,6 @@ public class FieldSetTextBox extends AbstractFieldSet implements FieldSet, KeyUp
 		textBox.setEnabled(enabled);
 		textBox.addChangeHandler(this);
 		textBox.addKeyUpHandler(this);
-		textBox.setStyleName("textBox");
-		textBox.setSize("300px", "18px");
 		panel.add(textBox);
 	}
 

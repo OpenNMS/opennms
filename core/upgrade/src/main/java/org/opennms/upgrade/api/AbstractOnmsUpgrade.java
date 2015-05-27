@@ -33,12 +33,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -63,6 +66,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
 
+    private static final String MERIDIAN = "meridian";
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractOnmsUpgrade.class);
 
     /** The Constant ZIP_EXT. */
@@ -77,6 +82,10 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     /** The OpenNMS version. */
     private String onmsVersion;
 
+    private String onmsProductDescription = "OpenNMS";
+
+    private String onmsProductName = "opennms";
+
     /** The Data Source. */
     private DataSource dataSource;
 
@@ -88,6 +97,37 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     public AbstractOnmsUpgrade() throws OnmsUpgradeException {
         registerProperties(getMainProperties());
         registerProperties(getRrdProperties());
+        locateOpenNMSProduct();
+    }
+
+    /**
+     * Sets the version.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param version the new version
+     */
+    protected void setVersion(String version) {
+        onmsVersion = version;
+    }
+
+    /**
+     * Sets the product name.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param productName the new product name
+     */
+    protected void setProductName(String productName) {
+        onmsProductName = productName;
+    }
+
+    /**
+     * Sets the product description.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param productDescription the new product description
+     */
+    protected void setProductDescription(String productDescription) {
+        onmsProductDescription = productDescription;
     }
 
     /* (non-Javadoc)
@@ -427,9 +467,59 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             if (version == null) {
                 throw new OnmsUpgradeException("Can't retrive OpenNMS version");
             }
-            onmsVersion = version;
+            final Pattern versionPattern = Pattern.compile("^(\\d+\\.\\d+\\.\\d+).*?$");
+            final Matcher m = versionPattern.matcher(version);
+            if (m.matches()) {
+                onmsVersion = m.group(1);
+            } else {
+                onmsVersion = version;
+            }
         }
         return onmsVersion;
+    }
+
+    /**
+     * Locate OpenNMS product.
+     */
+    private void locateOpenNMSProduct()  {
+        try {
+            final InputStream installerProperties = getClass().getResourceAsStream("/installer.properties");
+            if (installerProperties != null) {
+                final Properties props = new Properties();
+                props.load(installerProperties);
+                installerProperties.close();
+                onmsProductName = (String) props.get("install.package.name");
+                onmsProductDescription = (String) props.get("install.package.description");
+            }
+        } catch (final IOException e) {
+        }
+    }
+
+    /**
+     * Gets the OpenNMS product name.
+     *
+     * @return the OpenNMS product name
+     */
+    public String getOpennmsProductName() {
+        return onmsProductName;
+    }
+
+    /**
+     * Gets the OpenNMS product description.
+     *
+     * @return the OpenNMS product description
+     */
+    public String getOpennmsProductDescription() {
+        return onmsProductDescription;
+    }
+
+    /**
+     * Checks if is meridian.
+     *
+     * @return true, if is meridian
+     */
+    public boolean isMeridian() {
+        return getOpennmsProductName().equals(MERIDIAN);
     }
 
     /**
@@ -444,9 +534,12 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     protected boolean isInstalledVersionGreaterOrEqual(int mayor, int minor, int release) throws OnmsUpgradeException {
         String version = getOpennmsVersion();
         String[] a = version.split("\\.");
+        int c_major = isMeridian() ? Integer.parseInt(a[0]) + 13 :  Integer.parseInt(a[0]); // Meridian ~ 14.0.4
+        int c_minor = isMeridian() ? Integer.parseInt(a[1]) + 1 :Integer.parseInt(a[1]); // Be sure it's greater than 14.0.3
+        int c_release = Integer.parseInt(a[2]);
         try {
             int supplied  = mayor * 100 + minor * 10 + release;
-            int installed = Integer.parseInt(a[0]) * 100 + Integer.parseInt(a[1]) * 10 + Integer.parseInt(a[2].replaceFirst("[^\\d].+", ""));
+            int installed = c_major * 100 + c_minor * 10 + c_release;
             return installed >= supplied;
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't process the OpenNMS version");
@@ -460,9 +553,10 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected void printMainSettings() throws OnmsUpgradeException {
         log("OpenNMS Home: %s\n", getHomeDirectory());
-        log("OpenNMS Version: %s\n", getOpennmsVersion());
+        log("OpenNMS Version: %s\n", getOpennmsProductDescription() + " " + getOpennmsVersion());
         log("Is RRDtool enabled? %s\n", isRrdToolEnabled());
         log("Is storeByGroup enabled? %s\n", isStoreByGroupEnabled());
+        log("Is storeByForeignSource enabled? %s\n", isStoreByForeignSourceEnabled());
         log("RRD Extension: %s\n", getRrdExtension());
         log("RRD Strategy: %s\n", getRrdStrategy());
     }

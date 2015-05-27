@@ -38,29 +38,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="headTitle" value="View" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+	<jsp:param name="title" value="" />
+	<jsp:param name="headTitle" value="${role.name}" />
 	<jsp:param name="headTitle" value="Roles" />
 	<jsp:param name="breadcrumb" value="<a href='roles'>Role List</a>" />
-	<jsp:param name="breadcrumb" value="View Role" />
+	<jsp:param name="breadcrumb" value="${role.name}" />
 </jsp:include>
 
-
-<!--  swiped this and images/new.gif from webcalendar.sf.net -->
-<style type="text/css">
-
-.new {
-  border-width: 0px;
-  float: right;
-}
-
-.date {
-  border-width: 0px;
-  float: left;
-}
-
-</style>
 
 <script type="text/javascript" >
 
@@ -90,57 +75,63 @@
 
 </script>
 
-<h3>View Role</h3>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<c:out value="${role.name}" />
+		</h3>
+	</div>
 
-<table width="100%" border="1" bordercolor="black">
-	         <tr>
-    		    		<td bgcolor="#999999"><b>Name</b></td>
-				<td><c:out value="${role.name}"/></td>
-    		    		<td bgcolor="#999999"><b>Currently On Call</b></td>
-				<td>
-					<c:forEach var="scheduledUser" items="${role.currentUsers}">
-						<c:out value="${scheduledUser}"/>
-					</c:forEach>	
-				</td>
-          	</tr>
-	         <tr>
-    		    		<td bgcolor="#999999"><b>Supervisor</b></td>
-				<td><c:out value="${role.defaultUser}"/></td>
-    		    		<td bgcolor="#999999"><b>Membership Group</b></td>
-				<td><c:out value="${role.membershipGroup}"/></td>
-          	</tr>
-          	<tr>
-    		    		<td bgcolor="#999999"><b>Description</b></td>
-				<td colspan="3"><c:out value="${role.description}"/></td>
-          	</tr>
-		</table>
+	<table class="table table-condensed severity">
+		<tr>
+			<th class="col-md-1">Name</th>
+			<td class="col-md-5"><c:out value="${role.name}" /></td>
+			<th class="col-md-1">Currently&nbsp;On&nbsp;Call</th>
+			<td class="col-md-5">
+			<c:forEach var="scheduledUser" items="${role.currentUsers}">
+				<c:out value="${scheduledUser}" />
+			</c:forEach></td>
+		</tr>
+		<tr>
+			<th>Supervisor</th>
+			<td><c:out value="${role.defaultUser}" /></td>
+			<th>Membership&nbsp;Group</th>
+			<td><c:out value="${role.membershipGroup}" /></td>
+		</tr>
+		<tr>
+			<th>Description</th>
+			<td colspan="3"><c:out value="${role.description}" /></td>
+		</tr>
+	</table>
+</div>
 
+<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
+	<input type="hidden" name="operation" value="view"/>
+	<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+	<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
+</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
+	<input type="hidden" name="operation" value="view"/>
+	<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+	<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
+</form>
 
-<h3>Role Schedule</h3>
-  <table>
-	<tr>
-		<td>&nbsp;
-				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
-					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
-				</form>
-				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
-					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
-				</form>
-			</td>
-		<td colspan="4">
-			<table  border="1" bordercolor="black">
-			<caption>
-				<a href="javascript:prevMonth()">&#139;&#139;&#139;</a>&nbsp;
-				<B><c:out value="${calendar.monthAndYear}"/></B>&nbsp;
-				<a href="javascript:nextMonth()">&#155;&#155;&#155;</a>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Role Schedule</h3>
+	</div>
+
+	<table class="table table-condensed table-bordered severity">
+			<caption class="text-center">
+				<button class="btn btn-default" onclick="prevMonth()">&laquo;</button>
+				&nbsp;
+				<strong><c:out value="${calendar.monthAndYear}"/></strong>
+				&nbsp;
+				<button class="btn btn-default" onclick="nextMonth()">&raquo;</button>
 			</caption>
 				<tr>
 				<c:forEach var="day" items="${calendar.weeks[0].days}">
-				<th bgcolor="#999999">
+				<th>
 					<b><c:out value="${day.dayOfWeek}"/></b>
 				</th>
 				</c:forEach>
@@ -150,29 +141,30 @@
 					<c:forEach var="day" items="${week.days}">
 					<td>
 					<c:if test="${calendar.month == day.month}">
-						<b class="date"><c:out value="${day.dayOfMonth}"/></b>
+						<p><strong><c:out value="${day.dayOfMonth}"/></strong></p>
 						<c:forEach var="entry" items="${day.entries}">
-							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:<c:forEach var="owner" items="${entry.labels}">&nbsp;<c:choose><c:when test="${owner.supervisor}">unscheduled</c:when><c:otherwise><c:out value="${owner.user}"/></c:otherwise></c:choose></c:forEach><br/>
+							<fmt:formatDate value="${entry.startTime}" type="time" pattern="hh:mm'&nbsp;'a"/>:
+							<c:forEach var="owner" items="${entry.labels}">&nbsp;
+								<c:choose>
+									<c:when test="${owner.supervisor}">
+										<div class="label label-default">Unscheduled</div><br/>
+									</c:when>
+									<c:otherwise>
+										<div class="label label-primary"><c:out value="${owner.user}"/></div><br/>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
 						</c:forEach>
 					</c:if>
 					</td>
 					</c:forEach>
 				</tr>
 				</c:forEach>
-			</table>
-		</td>				
-	</tr>
-	<tr align="right">
-		<td>&nbsp;</td>
-		<td>
-		<table>
-		<tr>
-		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-			<input type="submit" value="Done" />
-		</form>
-		</td>
-		</tr>
-		</table>
+	</table>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<form class="form-inline" action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
+	<input class="form-control" type="submit" value="Done" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

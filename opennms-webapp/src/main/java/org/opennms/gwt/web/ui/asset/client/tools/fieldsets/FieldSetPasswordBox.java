@@ -68,8 +68,7 @@ public class FieldSetPasswordBox extends AbstractFieldSet implements FieldSet, K
 		passBox.setEnabled(enabled);
 		passBox.addChangeHandler(this);
 		passBox.addKeyUpHandler(this);
-		passBox.setStyleName("passBox");
-		passBox.setSize("300px", "18px");
+		passBox.addStyleName("form-control");
 		panel.add(passBox);
 	}
 

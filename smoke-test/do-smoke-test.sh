@@ -12,11 +12,24 @@ if [ -z "$MATCH_RPM" ]; then
 	MATCH_RPM=no
 fi
 OPENNMS_HOME=/opt/opennms
-SOURCEDIR="$ME/opennms-source"
+SOURCEDIR="$ME/.."
+JAVA_HOME=`"$SOURCEDIR"/bin/javahome.pl`
 
 PACKAGES="$@"; shift
 if [ -z "$PACKAGES" ]; then
 	PACKAGES="opennms opennms-plugins"
+fi
+PACKAGE_NAME=""
+for PACK in $PACKAGES; do
+	if [ `echo "$PACK" | grep -c -- -` -eq 0 ] && [ -z "$PACKAGE_NAME" ]; then
+		echo "Assuming '$PACK' is the 'main' package."
+		PACKAGE_NAME="$PACK"
+		break;
+	fi
+done
+if [ -z "$PACKAGE_NAME" ]; then
+	echo "Unable to determine main package name."
+	exit 1
 fi
 
 die() {
@@ -48,18 +61,18 @@ get_branch_from_git() {
 }
 
 get_branch_from_rpm() {
-	rpm -qi opennms 2>&1 | grep 'This is an OpenNMS build from the' | sed -e 's,^.*build from the ,,' -e 's, branch.*$,,'
+	rpm -qi "$PACKAGE_NAME" 2>&1 | grep ' build from the' | sed -e 's,^.*build from the ,,' -e 's, branch.*$,,'
 }
 
 get_hash_from_rpm() {
-	rpm -qi opennms 2>&1 | grep http://opennms.git.sourceforge.net | sed -e 's,^.*shortlog;h=,,'
+	rpm -qi "$PACKAGE_NAME" 2>&1 | grep -E '(opennms.git.sourceforge.net|github.com)' | sed -e 's,^.*shortlog;h=,,'
 }
 
 clean_maven() {
-	banner "Cleaning out old Maven files"
+	banner "Cleaning out old Maven files that can conflict or have issues."
 
 	if [ -d "$HOME/.m2/repository" ]; then
-		rm -rf "${HOME}"/.m2/repository
+		rm -rf "${HOME}"/.m2/repository/org/opennms "${HOME}"/.m2/repository/org/springframework
 	fi
 }
 
@@ -78,8 +91,8 @@ reset_database() {
 	banner "Resetting OpenNMS Database"
 
 	# easy way to make sure no one is holding on to any pg sockets
-	do_log "/etc/init.d/postgresql restart"
-	/etc/init.d/postgresql restart
+	do_log "service postgresql restart"
+	service postgresql restart
 
 	sleep 5
 
@@ -91,45 +104,37 @@ reset_opennms() {
 	banner "Resetting OpenNMS Installation"
 
 	do_log "opennms stop"
-	ps auxwww | grep opennms_bootstrap | awk '{ print $2 }' | xargs kill -9
+	"$OPENNMS_HOME"/bin/opennms stop
+
+	do_log "opennms kill"
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	do_log "clean_yum"
 	clean_yum || die "Unable to clean up old RPM files."
 
-	do_log "removing existing opennms RPMs"
-	rpm -qa --queryformat='%{name}\n' | grep -E '^opennms' | grep -v -E '^opennms-repo-' | xargs yum -y remove
+	do_log "removing existing RPMs"
+	rpm -qa --queryformat='%{name}\n' | grep -E "^(opennms|${PACKAGE_NAME}|meridian)" | grep -v -E '^opennms-repo-' | xargs yum -y remove
 
 	do_log "wiping out \$OPENNMS_HOME"
 	rm -rf "$OPENNMS_HOME"/* /var/log/opennms /var/opennms
 
 	if [ `ls "$ME"/../../rpms/*.rpm | wc -l` -gt 0 ]; then
-		do_log "rpm -Uvh $ME/../../rpms/*.rpm"
-		rpm -Uvh "$ME"/../../rpms/*.rpm
+		do_log yum -y localinstall "$ME"/../../rpms/*.rpm
+		yum -y localinstall "$ME"/../../rpms/*.rpm
 	else
 		echo "Unable to locate RPMs for installing!"
 		exit 1
 	fi
 }
 
-get_source() {
-	banner "Getting OpenNMS Source"
-
-	do_log "rsync source from $ME to $SOURCEDIR"
-	rsync -ar --exclude=target --exclude=smoke-test --delete "$ME"/../  "$SOURCEDIR"/ || die "Unable to create source dir."
+build_tests() {
+	banner "Compiling Tests"
 
 	pushd "$SOURCEDIR"
-		do_log "cleaning git"
-		git clean -fdx || die "Unable to clean source tree."
-		git reset --hard HEAD
-
-		# if $MATCH_RPM is set to "yes", then reset the code to the git hash the RPM was built from
-		case $MATCH_RPM in
-			yes|y)
-				do_log "resetting git hash"
-				git reset --hard `get_hash_from_rpm` || die "Unable to reset git tree."
-				;;
-		esac
+		do_log "./compile.pl -Psmoke --projects :smoke-test --also-make clean install"
+		./compile.pl -Psmoke --projects :smoke-test --also-make clean install || die "failed to compile smoke tests"
 	popd
+
 }
 
 configure_opennms() {
@@ -147,54 +152,72 @@ configure_opennms() {
 		done
 	popd
 
-	do_log "runjava -s"
-	$OPENNMS_HOME/bin/runjava -s || die "'runjava -s' failed."
+	do_log "runjava -S '$JAVA_HOME/bin/java'"
+	"$OPENNMS_HOME/bin/runjava" -S "$JAVA_HOME/bin/java" || die "'runjava -S $JAVA_HOME/bin/java' failed."
 
 	do_log "install -dis"
-	$OPENNMS_HOME/bin/install -dis || die "Unable to run OpenNMS install."
+	"$OPENNMS_HOME/bin/install" -dis || die "Unable to run OpenNMS install."
 }
 
 start_opennms() {
 	banner "Starting OpenNMS"
 
-	do_log "opennms start"
-	/etc/init.d/opennms start || die "Unable to start OpenNMS."
-	# wait a little longer for OSGi to settle down after we know OpenNMS came up
-	sleep 20
+	do_log "find \*.rpmorig -o -name \*.rpmnew"
+	find "$OPENNMS_HOME" -type f -name \*.rpmorig -o -name \*.rpmnew
+
+	do_log "opennms restart"
+	"$OPENNMS_HOME"/bin/opennms restart
+	RETVAL=$?
+
+	if [ $? -gt 0 ]; then
+		if [ -x /usr/bin/systemctl ]; then
+			/usr/bin/systemctl status "opennms".service
+		fi
+		die "OpenNMS failed to start."
+	fi
+
+#	COUNT=0
+#	do_log "Waiting for OpenNMS to start..."
+#	while true; do
+#		if [ $COUNT -gt 300 ]; then
+#			do_log "We've waited 5 minutes and OpenNMS still hasn't started.  Bailing."
+#			exit 1
+#		fi
+#		COUNT=`expr $COUNT + 1`
+#		MANAGER_LOG=`find "$OPENNMS_HOME"/logs -name manager.log 2>/dev/nul`
+#		if [ -n "$MANAGER_LOG" ] && [ -e "$MANAGER_LOG" ]; then
+#			if [ `grep -c "Startup complete" "$MANAGER_LOG"` -gt 0 ]; then
+#				do_log "OpenNMS startup complete."
+#				break
+#			fi
+#		fi
+#	done
+}
+
+clean_firefox() {
+	rm -rf "$HOME"/.mozilla
 }
 
 run_tests() {
 	banner "Running Tests"
 
 	local RETVAL=0
-	rm -rf ~/.m2/repository/org/opennms
 
-	pushd "$SOURCEDIR"
-		do_log "bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install"
-		bin/bamboo.pl -Psmoke --projects :smoke-test --also-make install
-	popd
-
+	EXTRA_ARGS=""
 	do_log "compile.pl test"
 	pushd "$SOURCEDIR/smoke-test"
-		../compile.pl -t -Denable.snapshots=true -DupdatePolicy=always -Dorg.opennms.smoketest.logLevel=INFO test
+		../compile.pl -t -Dorg.opennms.smoketest.logLevel=INFO $EXTRA_ARGS test
 		RETVAL=$?
 	popd
 
 	return $RETVAL
 }
 
-post_clean() {
-	rsync -ar "${SOURCEDIR}/smoke-test/target/" target/ || :
-	rm -rf "${SOURCEDIR}" || :
-	rm -rf "${HOME}"/.m2/repository || :
-	rm -rf "${ME}"/../target || :
-}
-
 stop_opennms() {
 	banner "Stopping OpenNMS"
 
 	do_log "opennms kill"
-	/etc/init.d/opennms kill
+	"$OPENNMS_HOME"/bin/opennms kill
 
 	#do_log "yum clean all"
 	#yum clean all || :
@@ -205,14 +228,14 @@ stop_opennms() {
 clean_maven
 reset_opennms
 reset_database
-get_source
 configure_opennms
 start_opennms
+clean_firefox
 
+build_tests
 run_tests
 RETVAL=$?
 
-post_clean
 stop_opennms
 
 exit $RETVAL

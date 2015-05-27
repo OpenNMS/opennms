@@ -48,7 +48,6 @@ import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -197,8 +196,9 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
      * @param urlString the URL string
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected VTDNav getVTDXmlDocument(String urlString, Request request) {
+    protected VTDNav getVTDXmlDocument(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -211,8 +211,6 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
             VTDNav nav = getVTDXmlDocument(is, request);
             LOG.debug("getXmlDocument: returning VTDNav");
             return nav;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);
@@ -225,19 +223,16 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
      * @param is the input stream
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected VTDNav getVTDXmlDocument(InputStream is, Request request) {
-        try {
-            is = preProcessHtml(request, is);
-            is = applyXsltTransformation(request, is);
-            VTDGen vg = new VTDGen();
-            vg.setDoc(IOUtils.toByteArray(is));
-            vg.parse(true);
-            final VTDNav nav = vg.getNav();
-            return nav;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
-        }
+    protected VTDNav getVTDXmlDocument(InputStream is, Request request) throws Exception {
+        is = preProcessHtml(request, is);
+        is = applyXsltTransformation(request, is);
+        VTDGen vg = new VTDGen();
+        vg.setDoc(IOUtils.toByteArray(is));
+        vg.parse(true);
+        final VTDNav nav = vg.getNav();
+        return nav;
     }
 
 }

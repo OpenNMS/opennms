@@ -76,7 +76,7 @@ class AlarmView extends PageableTableView {
         table.setText(row, 2, ""+alarm.getCount());
         table.setText(row, 3, alarm.getFirstEventTime().toString());
         table.setText(row, 4, alarm.getLastEventTime().toString());
-        table.getRowFormatter().setStyleName(row, alarm.getSeverity());
+        table.getRowFormatter().setStyleName(row, "severity-" + alarm.getSeverity().toLowerCase());
     }
     
     private String stripHtmlTags(String description) {

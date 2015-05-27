@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage Events Configuration" />
   <jsp:param name="headTitle" value="Manage Events Configuration" />
   <jsp:param name="location" value="admin" />
@@ -43,5 +43,5 @@
   <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 
-<iframe src="admin-events" frameborder="0" style="height:100%; width:100%;"></iframe>
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<iframe src="admin-events" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

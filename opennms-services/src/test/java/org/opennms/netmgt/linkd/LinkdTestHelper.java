@@ -29,7 +29,13 @@
 package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
@@ -40,12 +46,14 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpInterfaceDao;
 import org.opennms.netmgt.dao.api.StpNodeDao;
 import org.opennms.netmgt.dao.api.VlanDao;
-import org.opennms.netmgt.linkd.Linkd;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.CdpInterface;
 import org.opennms.netmgt.model.topology.RouterInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,10 +64,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 
 public abstract class LinkdTestHelper implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdTestHelper.class);
 
     @Autowired
     protected NodeDao m_nodeDao;
-    
+
     @Autowired
     protected SnmpInterfaceDao m_snmpInterfaceDao;
 
@@ -68,16 +77,16 @@ public abstract class LinkdTestHelper implements InitializingBean {
 
     @Autowired
     protected DataLinkInterfaceDao m_dataLinkInterfaceDao;
-        
+
     @Autowired
     protected StpNodeDao m_stpNodeDao;
-    
+
     @Autowired
     protected StpInterfaceDao m_stpInterfaceDao;
-    
+
     @Autowired
     protected IpRouteInterfaceDao m_ipRouteInterfaceDao;
-    
+
     @Autowired
     protected AtInterfaceDao m_atInterfaceDao;
 
@@ -107,7 +116,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.err.println("Target cdp ifname: "+cdp.getCdpTargetIfName());
         System.err.println("-----------------------------------------------------------");
         System.err.println("");        
-    	
+
     }
 
 
@@ -149,15 +158,27 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.out.println("");
 
     }
-    
-    protected void checkLink(OnmsNode node, OnmsNode nodeparent, int ifindex, int parentifindex, DataLinkInterface datalinkinterface) {
-        printLink(datalinkinterface);
-        printNode(node);
-        printNode(nodeparent);
-        assertEquals(node.getId(),datalinkinterface.getNode().getId());
-        assertEquals(ifindex,datalinkinterface.getIfIndex().intValue());
-        assertEquals(nodeparent.getId(), datalinkinterface.getNodeParentId());
-        assertEquals(parentifindex,datalinkinterface.getParentIfIndex().intValue());
+
+    protected void checkLinks(final Collection<DataLinkInterface> dataLinkInterfaceCollection, final DataLinkTestMatcher... dataLinkTestData) {
+        assertEquals(dataLinkInterfaceCollection.size(), dataLinkTestData.length);
+
+        final List<DataLinkInterface> links = new ArrayList<>(dataLinkInterfaceCollection);
+        final List<DataLinkTestMatcher> testData = new ArrayList<>(Arrays.asList(dataLinkTestData));
+
+        LINKS: for (final DataLinkInterface link: links) {
+            final ListIterator<DataLinkTestMatcher> it = testData.listIterator();
+            while (it.hasNext()) {
+                final DataLinkTestMatcher testDatum = it.next();
+                if (testDatum.matches(link)) {
+                    LOG.debug("Link {} matches test data {}", link, testDatum);
+                    it.remove();
+                    continue LINKS;
+                }
+            }
+            LOG.debug("Remaining test data: {}", testData);
+            LOG.debug("Failed link: {}", link);
+            fail("No match found for DataLinkInterface: " + link);
+        }
     }
 
     protected void printNode(OnmsNode node) {
@@ -167,16 +188,55 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.err.println("nodesysname: " + node.getSysName());
         System.err.println("nodesysoid: " + node.getSysObjectId());
         System.err.println("");
-        
+
     }
-    
+
     protected int getStartPoint(List<DataLinkInterface> links) {
         int start = 0;
         for (final DataLinkInterface link:links) {
-            if (start==0 || link.getId().intValue() < start)
-                start = link.getId().intValue();                
+            if (start==0 || link.getId().intValue() < start) {
+                start = link.getId().intValue();
+            }
         }
         return start;
     }
-        
+
+    final class DataLinkTestMatcher {
+        private final OnmsNode m_node;
+        private final OnmsNode m_parentNode;
+        private final int m_ifIndex;
+        private final int m_parentIfIndex;
+        private final DiscoveryProtocol m_discoveryProtocol;
+
+        public DataLinkTestMatcher(final OnmsNode node, final OnmsNode parentNode, final int ifIndex, final int parentIfIndex, final DiscoveryProtocol dp) {
+            m_node = node;
+            m_parentNode = parentNode;
+            m_ifIndex = ifIndex;
+            m_parentIfIndex = parentIfIndex;
+            m_discoveryProtocol = dp;
+        }
+
+        public boolean matches(final DataLinkInterface link) {
+            if (m_discoveryProtocol != link.getProtocol()) {
+                return false;
+            }
+            if (m_node.getId() == link.getNodeId()
+                    && m_parentNode.getId() == link.getNodeParentId()
+                    && m_ifIndex == link.getIfIndex().intValue()
+                    && m_parentIfIndex == link.getParentIfIndex().intValue()) {
+                return true;
+                //            } else if (m_parentNode.getId() == link.getNodeId()
+                //                && m_node.getId() == link.getNodeParentId()
+                //                && m_parentIfIndex == link.getIfIndex().intValue()
+                //                && m_ifIndex == link.getParentIfIndex().intValue()) {
+                //                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "DataLinkTestMatcher [node=" + m_node.getId() + ", parentNode=" + m_parentNode.getId() + ", ifIndex=" + m_ifIndex + ", parentIfIndex=" + m_parentIfIndex + ", protocol=" + m_discoveryProtocol + "]";
+        }
+    };
 }

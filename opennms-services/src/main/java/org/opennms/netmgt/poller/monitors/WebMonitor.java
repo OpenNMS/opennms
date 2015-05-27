@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,9 @@ public class WebMonitor extends AbstractServiceMonitor {
             String queryString = ParameterMap.getKeyedString(map,"queryString",null);
             if (queryString != null && !queryString.trim().isEmpty()) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(queryString, Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
             }
 
             final HttpGet getMethod = new HttpGet(ub.build());
@@ -116,6 +119,10 @@ public class WebMonitor extends AbstractServiceMonitor {
                     final String headerValue = ParameterMap.getKeyedString(map,key + "_value",null);
                     getMethod.setHeader(headerName, headerValue);
                 }
+            }
+
+            if (ParameterMap.getKeyedBoolean(map, "use-ssl-filter", false)) {
+                clientWrapper.trustSelfSigned(ParameterMap.getKeyedString(map, "scheme", DEFAULT_SCHEME));
             }
 
             if(ParameterMap.getKeyedBoolean(map,"auth-enabled",false)) {
@@ -161,6 +168,8 @@ public class WebMonitor extends AbstractServiceMonitor {
             LOG.info(e.getMessage());
         } catch (URISyntaxException e) {
             LOG.info(e.getMessage());
+        } catch (GeneralSecurityException gse) {
+            LOG.error("Unable to set SSL trust to allow self-signed certificates", gse);
         } finally {
             IOUtils.closeQuietly(clientWrapper);
         }

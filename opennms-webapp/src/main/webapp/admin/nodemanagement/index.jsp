@@ -67,7 +67,7 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Node Management" />
   <jsp:param name="headTitle" value="Node Management" />
   <jsp:param name="headTitle" value="Admin" />
@@ -89,16 +89,20 @@
   <input name="node" value="<%=nodeId%>" type="hidden"/>
 </form>
 
-<h2>Node: <%=node_db.getLabel()%> (ID: <%=node_db.getId()%>)</h2>
+<h4>Node: <%=node_db.getLabel()%> (ID: <%=node_db.getId()%>)</h4>
 <% if (isRequisitioned) { %>
-<h2><em>Created via requisition <strong><%=node_db.getForeignSource()%></strong> (foreignId: <strong><%=node_db.getForeignId()%></strong>)</em></h2>
+<h4><em>Created via requisition <strong><%=node_db.getForeignSource()%></strong> (foreignId: <strong><%=node_db.getForeignId()%></strong>)</em></h4>
 <% } else { %>
-<h2><em>Not a member of any requisition</em></h2>
+<h4><em>Not a member of any requisition</em></h4>
 <% } %>
 
-<div class="TwoColLAdmin">
-  <h3>Admin Options</h3>
-
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Admin Options</h3>
+      </div>
+      <div class="panel-body">
   <% if (!isRequisitioned) { %>
   <p>
     <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
@@ -140,12 +144,17 @@
   </p>
 
   <% } %>
-</div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
       
-<div class="TwoColRAdmin">
 
-  <h3>Option Descriptions</h3>
-
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Option Descriptions</h3>
+      </div>
+      <div class="panel-body">
   <% if (!isRequisitioned) { %>
   <p>
     <b>Change Node Label</b> allows administrators either to specify a node 
@@ -206,7 +215,9 @@
   </p>
 
   <% } %>
-  
-</div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

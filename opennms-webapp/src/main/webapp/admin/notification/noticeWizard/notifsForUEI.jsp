@@ -62,13 +62,13 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Event" />
   <jsp:param name="headTitle" value="Choose Event" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.jsp'>Event Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.htm'>Event Notifications</a>" />
   <jsp:param name="breadcrumb" value="Existing notifications for UEI" />
 </jsp:include>
 
@@ -104,8 +104,11 @@
 	<input type="hidden" name="uei" value="<%=uei%>"/>
 </form>
 
-<h2>Existing Notifications for UEI <%=uei%></h2>
-      <table width="50%">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Existing Notifications for UEI <%=uei%></h3>
+  </div>
+      <table class="table table-condensed">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
       <% for(Notification notif : notifsForUEI) { 
           	String varbindDescription="";
@@ -125,4 +128,6 @@
 <% } %>
 		<tr><td colspan="6"><a href="javascript: document.newNotificationForm.submit()">Create a new notification</a></td></tr>
       </table>
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div> <!-- panel -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

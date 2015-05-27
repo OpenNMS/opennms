@@ -34,7 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
 
-    String[] m_userGroupList;
+    private static final long serialVersionUID = -7850100700631490637L;
+
+   private String[] m_userGroupList;
 
     /**
      * Records the remote address and will also set the session Id if a session

@@ -93,7 +93,7 @@ import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.Parameter;
 import org.opennms.netmgt.config.httpdatacollection.Uri;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +179,7 @@ public class HttpCollector implements ServiceCollector {
                     doCollection(this, collectionResource);
                     m_collectionResourceList.add(collectionResource);
                 } catch (HttpCollectorException e) {
-                    LOG.error("collect: http collection failed", e);
+                    LOG.warn("collect: http collection failed", e);
 
                     /*
                      * FIXME: This doesn't make sense since everything is SNMP
@@ -450,12 +450,12 @@ public class HttpCollector implements ServiceCollector {
                             LOG.debug("processResponse: found a parsable number with locale \"{}\".", locale);
                             break;
                         } catch (final ParseException e) {
-                            LOG.error("attribute {} failed to match a parsable number with locale \"{}\"! Matched \"{}\" instead.", attribDef.getAlias(), locale, value);
+                            LOG.warn("attribute {} failed to match a parsable number with locale \"{}\"! Matched \"{}\" instead.", attribDef.getAlias(), locale, value);
                         }
                     }
 
                     if (num == null) {
-                        LOG.error("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
+                        LOG.warn("processResponse: gave up attempting to parse numeric value, skipping group {}", attribDef.getMatchGroup());
                         continue;
                     }
 
@@ -598,7 +598,9 @@ public class HttpCollector implements ServiceCollector {
             final URIBuilder ub = new URIBuilder(uri);
             if (query.length() > 0) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(query.toString(), Charset.forName("UTF-8"));
-                ub.setParameters(params);
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
             }
             uriWithQueryString = ub.build();
             return new HttpGet(uriWithQueryString);

@@ -48,7 +48,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -59,6 +59,8 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.CreateIfNecessaryTemplate;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -76,7 +78,6 @@ import org.opennms.netmgt.model.RequisitionedCategoryAssociation;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -158,6 +159,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
 
     @Autowired
+    private DiscoveryConfigurationFactory m_discoveryFactory;
+
+    @Autowired
     @Qualifier("transactionAware")
     private EventForwarder m_eventForwarder;
 
@@ -166,7 +170,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Autowired
-    @Qualifier("fastPending")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_pendingForeignSourceRepository;
 
     @Autowired
@@ -174,6 +178,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
+
+    private HostnameResolver m_hostnameResolver = new DefaultHostnameResolver();
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -225,12 +231,37 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
         dbNode.mergeNode(node, accumulator, false);
 
+        updateNodeHostname(dbNode);
         m_nodeDao.update(dbNode);
         m_nodeDao.flush();
 
         accumulator.flush();
         final EntityVisitor eventAccumlator = new UpdateEventVisitor(m_eventForwarder, rescanExisting);
         dbNode.visit(eventAccumlator);
+    }
+
+    private void updateNodeHostname(final OnmsNode node) {
+        if (NodeLabelSource.HOSTNAME.equals(node.getLabelSource()) || NodeLabelSource.ADDRESS.equals(node.getLabelSource())) {
+            OnmsIpInterface primary = node.getPrimaryInterface();
+            if (primary == null && node.getIpInterfaces() != null) {
+                primary = node.getIpInterfaces().iterator().next();
+            }
+
+            if (primary != null) {
+                LOG.debug("Node Label was set by hostname or address.  Re-resolving.");
+                final InetAddress addr = primary.getIpAddress();
+                final String ipAddress = str(addr);
+                final String hostname = m_hostnameResolver.getHostname(addr);
+
+                if (hostname == null || ipAddress.equals(hostname)) {
+                    node.setLabel(ipAddress);
+                    node.setLabelSource(NodeLabelSource.ADDRESS);
+                } else {
+                    node.setLabel(hostname);
+                    node.setLabelSource(NodeLabelSource.HOSTNAME);
+                }
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -296,13 +327,79 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void deleteService(final Integer nodeId, final InetAddress addr, final String service) {
+        LOG.debug("deleteService: nodeId={}, addr={}, service={}", nodeId, addr, service);
         final OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, addr, service);
-        if (monSvc != null && shouldDelete(monSvc)) {
-            m_monitoredServiceDao.delete(monSvc);
-            m_monitoredServiceDao.flush();
-            monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
-        }
+        if (monSvc == null) return;
 
+        final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
+        final String addrAsString = str(addr);
+
+        if (isDiscoveryEnabled()) {
+            LOG.debug("deleteService: discovery is enabled");
+            final String foreignSource = monSvc.getForeignSource();
+            final String foreignId = monSvc.getForeignId();
+            OnmsNode requisitionedNode = null;
+            if (foreignSource != null && foreignId != null) {
+                requisitionedNode = getRequisitionedNode(foreignSource, foreignId);
+            }
+
+            if (isRequisitionedEntityDeletionEnabled() || requisitionedNode == null) {
+                LOG.debug("deleteService: requisitioned entity deletion is enabled, or the node does not exist in the requisition");
+                // we're allowing deletion, or there is no requisition for the node, so go for it
+                final OnmsIpInterface iface = monSvc.getIpInterface();
+                final OnmsNode node = iface.getNode();
+
+                final boolean lastService = (iface.getMonitoredServices().size() == 1);
+                final boolean lastInterface = (node.getIpInterfaces().size() == 1);
+
+                if (requisitionedNode != null && requisitionedNode.containsService(addr, service)) {
+                    LOG.warn("Deleting requisitioned service {} from node {}/{}/{} on address {} (it will come back on next import)", service, nodeId, foreignSource, foreignId, addrAsString);
+                } else {
+                    LOG.debug("Deleting discovered service {} from node {}/{}/{} on address {}", service, nodeId, foreignSource, foreignId, addrAsString);
+                }
+
+                // remove the service from the interface
+                iface.removeMonitoredService(monSvc);
+                m_nodeDao.saveOrUpdate(iface.getNode());
+                m_nodeDao.flush();
+                monSvc.visit(visitor);
+
+                if (lastService) {
+                    // the interface should be deleted too
+                    if (requisitionedNode != null && requisitionedNode.containsInterface(addr)) {
+                        LOG.warn("Deleting requisitioned interface {} from node {}/{}/{} (it will come back on next import)", addrAsString, nodeId, foreignSource, foreignId);
+                    } else {
+                        LOG.debug("Deleting discovered interface {} from node {}/{}/{}", addrAsString, nodeId, foreignSource, foreignId);
+                    }
+                    node.removeIpInterface(iface);
+                    m_nodeDao.saveOrUpdate(node);
+                    m_nodeDao.flush();
+                    iface.visit(visitor);
+
+                    if (lastInterface) {
+                        // the node should be deleted too
+                        if (requisitionedNode != null) {
+                            LOG.warn("Deleting requisitioned node {}/{}/{} (it will come back on next import)", nodeId, foreignSource, foreignId);
+                        } else {
+                            LOG.debug("Deleting discovered node {}/{}/{}", nodeId, foreignSource, foreignId);
+                        }
+                        m_nodeDao.delete(node);
+                        m_nodeDao.flush();
+                        node.visit(visitor);
+                    }
+                }
+            } else {
+                LOG.debug("NOT deleting requisitioned service {} from node {}/{}/{} on address {} (enableDeletionOfRequisitionedEntities=false)", service, nodeId, foreignSource, foreignId, addrAsString);
+            }
+        } else {
+            if (shouldDelete(monSvc)) {
+                final OnmsIpInterface iface = monSvc.getIpInterface();
+                iface.removeMonitoredService(monSvc);
+                m_nodeDao.saveOrUpdate(iface.getNode());
+                m_nodeDao.flush();
+                monSvc.visit(visitor);
+            }
+        }
     }
 
     private boolean shouldDelete(final OnmsMonitoredService monSvc) {
@@ -313,7 +410,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if (foreignSource == null) return isDiscoveryEnabled();
 
         // if we enable deletion of requisitioned entities then we can delete this 
-        if (isRequisitionedEntityDeletionEnabled()) return true;
+        if (isRequisitionedEntityDeletionEnabled()) {
+            return true;
+        }
 
         // otherwise only delete if it is not requisitioned
         return !isRequisitioned(monSvc);
@@ -551,24 +650,24 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsMonitoredService doUpdate(OnmsMonitoredService dbObj) { // NMS-3906
                 LOG.debug("current status of service {} on node with IP {} is {} ", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress(), dbObj.getStatus());
                 switch (dbObj.getStatus()) {
-                    case "S":
-                        LOG.debug("suspending polling for service {} on node with IP {}", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
-                        dbObj.setStatus("F");
-                        m_monitoredServiceDao.update(dbObj);
-                        sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, dbObj);
-                        break;
-                    case "R":
-                        LOG.debug("resume polling for service {} on node with IP {}", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
-                        dbObj.setStatus("A");
-                        m_monitoredServiceDao.update(dbObj);
-                        sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, dbObj);
-                        break;
-                    case "A":
-                        // we can ignore active statuses
-                        break;
-                    default:
-                        LOG.warn("Unhandled state: {}", dbObj.getStatus());
-                        break;
+                case "S":
+                    LOG.debug("suspending polling for service {} on node with IP {}", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
+                    dbObj.setStatus("F");
+                    m_monitoredServiceDao.update(dbObj);
+                    sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, dbObj);
+                    break;
+                case "R":
+                    LOG.debug("resume polling for service {} on node with IP {}", dbObj.getServiceName(), dbObj.getIpAddress().getHostAddress());
+                    dbObj.setStatus("A");
+                    m_monitoredServiceDao.update(dbObj);
+                    sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, dbObj);
+                    break;
+                case "A":
+                    // we can ignore active statuses
+                    break;
+                default:
+                    LOG.warn("Unhandled state: {}", dbObj.getStatus());
+                    break;
                 }
                 return dbObj;
             }
@@ -632,7 +731,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public OnmsNode getRequisitionedNode(final String foreignSource, final String foreignId) throws ForeignSourceRepositoryException {
-        final OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
+        OnmsNodeRequisition nodeReq = null;
+        try {
+            nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
+        } catch (ForeignSourceRepositoryException e) {
+            // just fall through, nodeReq will be null
+        }
         if (nodeReq == null) {
             LOG.warn("nodeReq for node {}:{} cannot be null!", foreignSource, foreignId);
             return null;
@@ -977,7 +1081,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     m_categoryAssociationDao.saveOrUpdate(r);
                     changed = true;
                 }
-                
+
                 m_categoryAssociationDao.flush();
                 return changed;
             }
@@ -989,6 +1093,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final boolean changed = handleCategoryChanges(dbNode);
 
                 dbNode.mergeNodeAttributes(node, accumulator);
+                updateNodeHostname(dbNode);
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
@@ -1238,10 +1343,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                final String hostname = getHostnameForIp(ipAddress);
-
-                // @ipv6
                 final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+
+                final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
                     node.setLabel(ipAddress);
                     node.setLabelSource(NodeLabelSource.ADDRESS);
@@ -1249,6 +1353,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     node.setLabel(hostname);
                     node.setLabelSource(NodeLabelSource.HOSTNAME);
                 }
+
                 node.setForeignSource(foreignSource == null ? FOREIGN_SOURCE_FOR_DISCOVERED_NODES : foreignSource);
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
@@ -1317,12 +1422,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return true;
     }
 
-
-
-    private String getHostnameForIp(final String address) {
-        return addr(address).getCanonicalHostName();
-    }
-
     /** {@inheritDoc} */
     @Transactional
     @Override
@@ -1342,5 +1441,13 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getDistPoller());
         return node;
+    }
+
+    public void setHostnameResolver(final HostnameResolver resolver) {
+        m_hostnameResolver = resolver;
+    }
+
+    public HostnameResolver getHostnameResolver() {
+        return m_hostnameResolver;
     }
 }

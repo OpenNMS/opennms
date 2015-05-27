@@ -35,8 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,13 +64,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
-
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -184,9 +185,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             for (XmlSource source : collection.getXmlSources()) {
                 LOG.debug("collect: starting source url '{}' collection", source.getUrl());
                 String urlStr = parseUrl(source.getUrl(), agent, collection.getXmlRrd().getStep());
-                LOG.debug("collect: parsed url for source url '{}'", source.getUrl());
+                LOG.debug("collect: parsed url for source url '{}'", urlStr);
                 Request request = parseRequest(source.getRequest(), agent, collection.getXmlRrd().getStep());
-                LOG.debug("collect: parsed request for source url '{}'", source.getUrl());
+                LOG.debug("collect: parsed request for source url '{}' : {}", urlStr, request);
                 fillCollectionSet(urlStr, request, agent, collectionSet, source);
                 LOG.debug("collect: finished source url '{}' collection", source.getUrl());
             }
@@ -383,6 +384,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return null;
         final OnmsNode node = getNodeDao().get(agent.getNodeId());
         final Request request = new Request();
+        request.setMethod(unformattedRequest.getMethod());
         for (Header header : unformattedRequest.getHeaders()) {
             request.addHeader(header.getName(), parseString(header.getName(), header.getValue(), node, agent.getHostAddress(), collectionStep));
         }
@@ -433,8 +435,16 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             BeanWrapper wrapper = new BeanWrapperImpl(node.getAssetRecord());
             for (PropertyDescriptor p : wrapper.getPropertyDescriptors()) {
                 Object obj = wrapper.getPropertyValue(p.getName());
-                if (obj != null)
-                    formattedString = formattedString.replaceAll("[{](?i)" + p.getName() + "[}]", obj.toString());
+                if (obj != null){
+                    String objStr = obj.toString();
+                    try {
+                        //NMS-7381 - if pulling from asset info you'd expect to not have to encode reserved words yourself.  
+                        objStr = URLEncoder.encode(obj.toString(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    formattedString = formattedString.replaceAll("[{](?i)" + p.getName() + "[}]", objStr);
+                }
             }
         }
         if (formattedString.matches(".*[{].+[}].*"))
@@ -448,8 +458,9 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param urlString the URL string
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected Document getXmlDocument(String urlString, Request request) {
+    protected Document getXmlDocument(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -458,8 +469,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             is = c.getInputStream();
             final Document doc = getXmlDocument(is, request);
             return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);
@@ -472,30 +481,27 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @param is the input stream
      * @param request the request
      * @return the XML document
+     * @throws Exception the exception
      */
-    protected Document getXmlDocument(InputStream is, Request request) {
-        try {
-            is = preProcessHtml(request, is);
-            is = applyXsltTransformation(request, is);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setIgnoringComments(true);
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(is, writer, "UTF-8");
-            String contents = writer.toString();
-            Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
-            // Ugly hack to deal with DOM & XPath 1.0's battle royale 
-            // over handling namespaces without a prefix. 
-            if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
-                factory.setNamespaceAware(false);
-                builder = factory.newDocumentBuilder();
-                doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
-            }
-            return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
+    protected Document getXmlDocument(InputStream is, Request request) throws Exception {
+        is = preProcessHtml(request, is);
+        is = applyXsltTransformation(request, is);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringComments(true);
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(is, writer, "UTF-8");
+        String contents = writer.toString();
+        Document doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
+        // Ugly hack to deal with DOM & XPath 1.0's battle royale 
+        // over handling namespaces without a prefix. 
+        if(doc.getNamespaceURI() != null && doc.getPrefix() == null){
+            factory.setNamespaceAware(false);
+            builder = factory.newDocumentBuilder();
+            doc = builder.parse(IOUtils.toInputStream(contents, "UTF-8"));
         }
+        return doc;
     }
 
     /**

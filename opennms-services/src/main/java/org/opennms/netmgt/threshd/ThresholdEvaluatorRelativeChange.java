@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 

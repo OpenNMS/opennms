@@ -1,0 +1,77 @@
+
+==== Requisitions
+
+_RESTful_ service to the OpenNMS Provisioning Requisitions.
+In this _API_, these "groups" of nodes are aptly named and treated as requisitions.
+
+This current implementation supports _CRUD_ operations for managing provisioning requisitions.
+Requisitions are first _POSTed_ and no provisioning (import/synchronize) operations are taken.
+This is done so that a) the _XML_ can be verified and b) so that the operations can happen at a later time.
+They are moved to the deployed state (put in the active requisition repository) when an import is run.
+
+If a request says that it gets the _active_ requisition, that means it returns the pending requisition (being edited for deployment) if there is one, otherwise it returns the deployed requisition.
+Note that anything that says it _adds/deletes/modifies_ a _node_, _interface_, etc. in these instructions is referring to modifying that element from the _requisition_ not from the database itself.
+That will happen upon import/synchronization.
+
+You may write requisition data if the authenticated user is in the _provision_, _rest_, or _admin_ roles.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                           | Description
+| `/requisitions`                                                                    | Get all active requisitions.
+| `/requisitions/count`                                                              | Get the number of active requisitions. (Returns plaintext, rather than _XML_ or _JSON_.)
+| `/requisitions/deployed`                                                           | Get the list of all deployed (active) requisitions.
+| `/requisitions/deployed/count`                                                     | Get the number of deployed requisitions. (Returns plaintext, rather than _XML_ or _JSON_.)
+| `/requisitions/{name}`                                                             | Get the active requisition for the given foreign source name.
+| `/requisitions/{name}/nodes`                                                       | Get the list of nodes being requisitioned for the given foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}`                                           | Get the node with the given foreign _ID_ for the given foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces`                                | Get the interfaces for the node with the given foreign _ID_ and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}`                    | Get the interface with the given IP for the node with the specified foreign _ID_ and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}/services`           | Get the services for the interface with the specified IP address, foreign _ID_, and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}` | Get the given service with the specified IP address, foreign _ID_, and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/categories`                                | Get the categories for the node with the given foreign _ID_ and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/categories/{categoryName}`                 | Get the category with the given name for the node with the specified foreign _ID_ and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/assets`                                    | Get the assets for the node with the given foreign _ID_ and foreign source name.
+| `/requisitions/{name}/nodes/{foreignId}/assets/{assetName}`                        | Get the value of the asset for the given assetName for the node with the given foreign _ID_ and foreign source name.
+|===
+
+===== POSTs (Adding Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                 | Description
+| `/requisitions`                                                          | Adds (or replaces) a requisition.
+| `/requisitions/{name}/nodes`                                             | Adds (or replaces) a node in the specified requisition. This operation can be very helpful when working with [[Large Requisitions]].
+| `/requisitions/{name}/nodes/{foreignId}/interfaces`                      | Adds (or replaces) an interface for the given node in the specified requisition.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}/services` | Adds (or replaces) a service on the given interface in the specified requisition.
+| `/requisitions/{name}/nodes/{foreignId}/categories`                      | Adds (or replaces) a category for the given node in the specified requisition.
+| `/requisitions/{name}/nodes/{foreignId}/assets`                          | Adds (or replaces) an asset for the given node in the specified requisition.
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                        | Description
+| `/requisitions/{name}/import`                                   | Performs an import/synchronize on the specified foreign source. This turns the "active" requisition into the "deployed" requisition.
+| `/requisitions/{name}/import?rescanExisting=false`              | Performs an import/synchronize on the specified foreign source. This turns the "active" requisition into the "deployed" requisition. Existing nodes will not be scanned until the next rescan interval, only newly-added nodes will be. Useful if you're planning on making a series of changes.
+| `/requisitions/{name}`                                          | Update the specified foreign source.
+| `/requisitions/{name}/nodes/{foreignId}`                        | Update the specified node for the given foreign source.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}` | Update the specified IP address for the given node and foreign source.
+|===
+
+===== DELETEs (Removing Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                           | Description
+| `/requisitions/{name}`                                                             | Delete the pending requisition for the named foreign source.
+| `/requisitions/deployed/{name}`                                                    | Delete the active requisition for the named foreign source.
+| `/requisitions/{name}/nodes/{foreignId}`                                           | Delete the node with the given foreign _ID_ from the given requisition.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}`                    | Delete the IP address from the requisitioned node with the given foreign _ID_ and foreign source.
+| `/requisitions/{name}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}` | Delete the service from the requisitioned interface with the given IP address, foreign _ID_ and foreign source.
+| `/requisitions/{name}/nodes/{foreignId}/categories/{category}`                     | Delete the category from the node with the given foreign _ID_ and foreign source.
+| `/requisitions/{name}/nodes/{foreignId}/assets/{field}`                            | Delete the field from the requisition's nodes asset with the given foreign _ID_ and foreign source.
+|===

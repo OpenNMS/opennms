@@ -1,11 +1,11 @@
 
-=== HttpsMonitor
+==== HttpsMonitor
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server.
 The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
 All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpMonitor's documentation>> for more information.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -13,7 +13,7 @@ All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpM
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the HttpsMonitor
 [options="header, autowidth"]
@@ -22,7 +22,7 @@ All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpM
 | `port`                 | A list of TCP ports to which connection shall be tried. | optional | `443`
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----

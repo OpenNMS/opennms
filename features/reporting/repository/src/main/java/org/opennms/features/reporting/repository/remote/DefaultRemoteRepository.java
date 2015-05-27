@@ -28,11 +28,11 @@
 
 package org.opennms.features.reporting.repository.remote;
 
-import com.sun.jersey.api.client.GenericType;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
@@ -41,12 +41,12 @@ import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.sdo.RemoteReportSDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 /**
  * <p>DefaultRemoteRepository class.</p>
@@ -57,15 +57,12 @@ import java.util.List;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {
-        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
-        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultRemoteRepository implements ReportRepository {
 
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultRemoteRepository.class.getName());
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepository.class);
 
     /**
      * Model for repository configuration for remote-repository.xml

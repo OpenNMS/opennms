@@ -1,5 +1,5 @@
 
-=== SystemExecuteMonitor
+==== SystemExecuteMonitor
 
 If it is required to execute a system call or run a script to determine a service status, the SystemExecuteMonitor can be used.
 It is calling a script or system command, if required it provides additional arguments to the call.
@@ -8,7 +8,7 @@ As an alternative, the output of the system call can be matched against a banner
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as down.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,18 +16,16 @@ If the banner is not available in the output the status is determined as down.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the SystemExecuteMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                      | Required | Default value
-| `script`  | The system-call to execute.                      | required | `-`
-| `args`    | The arguments to hand over to the system-call. +
-              It supports variable replacement, see below.     | optional | `-`
-| `banner`  | A string that is match against the output of +
-              the system-call. If the output contains the +
-              banner, the service is determined as _UP_.       | optional | `-`
+| Parameter | Description                                                                                               | Required | Default value
+| `script`  | The system-call to execute.                                                                               | required | `-`
+| `args`    | The arguments to hand over to the system-call. It supports variable replacement, see below.               | optional | `-`
+| `banner`  | A string that is match against the output of the system-call. If the output contains the banner, the
+              service is determined as _UP_.                                                                            | optional | `-`
 |===
 
 The parameter `args` supports variable replacement for the following set of variables.
@@ -45,15 +43,15 @@ The parameter `args` supports variable replacement for the following set of vari
 | `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----
-<parameter key="args" value="-i {ipaddr} -t ${timeout}"/>
+<parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
-==== SystemExecuteMonitor vs GpMonitor
+===== SystemExecuteMonitor vs GpMonitor
 
 The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
 

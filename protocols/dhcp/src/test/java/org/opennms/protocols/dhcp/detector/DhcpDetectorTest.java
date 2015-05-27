@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
@@ -57,17 +58,17 @@ import edu.bucknell.net.JDHCP.DHCPSocket;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath*:/META-INF/opennms/detectors.xml"})
 public class DhcpDetectorTest implements InitializingBean {
-	
+
     //Tested local DHCP client
-    private static String DHCP_SERVER_IP = "172.20.1.1";
-    
+    private static String DHCP_SERVER_IP = "192.0.2.1";
+
     @Autowired
     public DhcpDetector m_detector;
-    
+
     private Dhcpd m_dhcpd;
-    
+
     private Thread m_dhcpdThread = null;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -82,79 +83,83 @@ public class DhcpDetectorTest implements InitializingBean {
         // binds on port 68, hardcoded  :P
         //m_dhcpd.start();
     }
-    
+
     @After
     public void tearDown(){
         // m_dhcpd.stop();
     }
-    
-	@Test(timeout=90000)
-	public void testDetectorWired() {
-	   assertNotNull(m_detector);
-	}
-	
-	@Test(timeout=90000)
-	@Ignore
-	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
-	    m_detector.setTimeout(5000);
-	    m_detector.init();
-	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
-	    
-	}
-	
-	@Test(timeout=90000)
-	@Ignore
-	public void testJdhcp() throws IOException{
-	    DHCPSocket mySocket = new DHCPSocket(68);
-	    DHCPMessage messageOut = new DHCPMessage(InetAddressUtils.addr(DHCP_SERVER_IP)); 
-	    
-	    // fill DHCPMessage object 
-        messageOut.setOp((byte) 1);    
-        messageOut.setHtype((byte) 1);
-        messageOut.setHlen((byte) 6);
-        messageOut.setHops((byte) 0);
-        messageOut.setXid(191991743); // should be a random int
-        messageOut.setSecs((short) 0);
-        messageOut.setFlags((short) 0);
-    
-        byte[] hw = new byte[16];
-        hw[0] = (byte) 0x00;
-        hw[1] = (byte) 0x60;
-        hw[2] = (byte) 0x97; 
-        hw[3] = (byte) 0xC6; 
-        hw[4] = (byte) 0x76;
-        hw[5] = (byte) 0x64;
-        messageOut.setChaddr(hw);
-    
-        // set message type option to DHCPDISCOVER
-        byte[] opt = new byte[1];
-        opt[0] = (byte) DHCPMessage.DISCOVER;
-        messageOut.setOption(53,  opt);
-    
-        mySocket.send(messageOut);
-        
-        DHCPMessage messageIn = new DHCPMessage();
-        mySocket.receive(messageIn);
-    
-        messageIn.printMessage();
-        System.out.println("Destination Address:  " + messageIn.getDestinationAddress());
-        System.out.println("Ch Address:  " + Arrays.toString(messageIn.getChaddr()));
-        System.out.println("Siaddr:  " + Arrays.toString(messageIn.getSiaddr()));
-        System.out.println("Ciaddr: " + Arrays.toString(messageIn.getCiaddr()));
-        
-        System.out.println("Option54: " + Arrays.toString(messageIn.getOption(54)));
-        System.out.println(InetAddress.getByAddress(messageIn.getOption(54)));
-        
-	}
-	
 
-	public void setDhcpdThread(Thread dhcpdThread) {
+    @Test(timeout=90000)
+    public void testDetectorWired() {
+        assertNotNull(m_detector);
+    }
+
+    @Test(timeout=90000)
+    @Ignore
+    public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
+        m_detector.setTimeout(5000);
+        m_detector.init();
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP)));
+
+    }
+
+    @Test(timeout=90000)
+    @Ignore
+    public void testJdhcp() throws IOException{
+        DHCPSocket mySocket = new DHCPSocket(68);
+
+        try {
+            DHCPMessage messageOut = new DHCPMessage(InetAddressUtils.addr(DHCP_SERVER_IP)); 
+    
+            // fill DHCPMessage object 
+            messageOut.setOp((byte) 1);    
+            messageOut.setHtype((byte) 1);
+            messageOut.setHlen((byte) 6);
+            messageOut.setHops((byte) 0);
+            messageOut.setXid(191991743); // should be a random int
+            messageOut.setSecs((short) 0);
+            messageOut.setFlags((short) 0);
+    
+            byte[] hw = new byte[16];
+            hw[0] = (byte) 0x00;
+            hw[1] = (byte) 0x60;
+            hw[2] = (byte) 0x97; 
+            hw[3] = (byte) 0xC6; 
+            hw[4] = (byte) 0x76;
+            hw[5] = (byte) 0x64;
+            messageOut.setChaddr(hw);
+    
+            // set message type option to DHCPDISCOVER
+            byte[] opt = new byte[1];
+            opt[0] = (byte) DHCPMessage.DISCOVER;
+            messageOut.setOption(53,  opt);
+    
+            mySocket.send(messageOut);
+    
+            DHCPMessage messageIn = new DHCPMessage();
+            mySocket.receive(messageIn);
+    
+            messageIn.printMessage();
+            System.out.println("Destination Address:  " + messageIn.getDestinationAddress());
+            System.out.println("Ch Address:  " + Arrays.toString(messageIn.getChaddr()));
+            System.out.println("Siaddr:  " + Arrays.toString(messageIn.getSiaddr()));
+            System.out.println("Ciaddr: " + Arrays.toString(messageIn.getCiaddr()));
+    
+            System.out.println("Option54: " + Arrays.toString(messageIn.getOption(54)));
+            System.out.println(InetAddress.getByAddress(messageIn.getOption(54)));
+        } finally {
+            IOUtils.closeQuietly(mySocket);
+        }
+    }
+
+
+    public void setDhcpdThread(Thread dhcpdThread) {
         m_dhcpdThread = dhcpdThread;
     }
 
     public Thread getDhcpdThread() {
         return m_dhcpdThread;
     }
-	
-	
+
+
 }

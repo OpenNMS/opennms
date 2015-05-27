@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -93,6 +94,9 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
                 bldr.addParam("ifIpAddress", ipaddr);
             }
         }
+        if (resource.isNodeResource() && UNKNOWN.equals(dsLabelValue)) {
+            dsLabelValue = CollectionResource.RESOURCE_TYPE_NODE;
+        }
 
         // Set resource label
         bldr.addParam("label", dsLabelValue);
@@ -102,15 +106,21 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
 
         // Add datasource name
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
-        
+
+        // Add threshold description
+        String descr = getThresholdConfig().getBasethresholddef().getDescription();
+        bldr.addParam("description", descr != null && !descr.trim().equals("") ? descr : getThresholdConfig().getDatasourceExpression());
+
         // Add last known value of the datasource fetched from its RRD file
         bldr.addParam("value", formatValue(dsValue));
 
-        // Add the instance name of the resource in question
-        bldr.addParam("instance", resource.getInstance() == null ? "null" : resource.getInstance());
+        String defaultInstance = resource.isNodeResource() ? CollectionResource.RESOURCE_TYPE_NODE : UNKNOWN;
 
         // Add the instance name of the resource in question
-        bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? "null" : resource.getInstanceLabel());
+        bldr.addParam("instance", resource.getInstance() == null ? defaultInstance : resource.getInstance());
+
+        // Add the instance label of the resource in question
+        bldr.addParam("instanceLabel", resource.getInstanceLabel() == null ? defaultInstance : resource.getInstanceLabel());
 
         // Add the resource ID required to call the Graph API.
         bldr.addParam("resourceId",resource.getResourceId());

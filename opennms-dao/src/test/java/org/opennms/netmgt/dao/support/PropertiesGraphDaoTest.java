@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.FileSystemResource;
@@ -638,7 +639,7 @@ public class PropertiesGraphDaoTest {
         attributes.add(new RrdGraphAttribute("ifInOctets", "", ""));
         attributes.add(new RrdGraphAttribute("ifOutOctets", "", ""));
         attributes.add(new ExternalValueAttribute("ifSpeed", ""));
-        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes, ResourcePath.get("foo"));
         PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
         assertEquals("prefab graph array size", 1, graphs.length);
         assertEquals("prefab graph[0] name", "mib2.bits", graphs[0].getName());
@@ -654,7 +655,7 @@ public class PropertiesGraphDaoTest {
         attributes.add(new RrdGraphAttribute("ifHCInOctets", "", ""));
         attributes.add(new RrdGraphAttribute("ifHCOutOctets", "", ""));
         attributes.add(new ExternalValueAttribute("ifSpeed", ""));
-        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes, ResourcePath.get("foo"));
         PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
         assertEquals("prefab graph array size", 1, graphs.length);
         assertEquals("prefab graph[0] name", "mib2.HCbits", graphs[0].getName());
@@ -668,7 +669,7 @@ public class PropertiesGraphDaoTest {
         attributes.add(new RrdGraphAttribute("ifHCInOctets", "", ""));
         attributes.add(new RrdGraphAttribute("ifHCOutOctets", "", ""));
         attributes.add(new ExternalValueAttribute("ifSpeed", ""));
-        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("node", "1", resourceType, attributes, ResourcePath.get("foo"));
         PrefabGraph[] graphs = m_dao.getPrefabGraphsForResource(resource);
         assertEquals("prefab graph array size", 1, graphs.length);
         assertEquals("prefab graph[0] name", "mib2.HCbits", graphs[0].getName());

@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PendingPollEvent
@@ -63,12 +61,7 @@ public class PendingPollEvent extends PollEvent {
     public PendingPollEvent(final Event event) {
         super(Scope.fromUei(event.getUei()));
         m_event = event;
-        try {
-            m_date = EventConstants.parseToDate(m_event.getTime());
-        } catch (final ParseException e) {
-            LOG.error("Unable to convert event time to date", e);
-            m_date = new Date();
-        }
+        m_date = m_event.getTime();
         m_expirationTimeInMillis = m_date.getTime() + PENDING_EVENT_TIMEOUT;
     }
 

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -165,10 +165,6 @@ groovy.compiler.output.path=target/classes
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-struts</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
         <exclusion>
@@ -269,6 +265,11 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

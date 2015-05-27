@@ -93,6 +93,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     private Map<String, Collection<? extends GrantedAuthority>> m_roles = null;
     
+    private Map<String,GrantedAuthority> m_authorities = new HashMap<>();
+
     private long m_magicUsersLastModified;
 
     private long m_groupsLastModified;
@@ -277,23 +279,34 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         }
 
         for (String role : roleList) {
-            authorities.add(new SimpleGrantedAuthority(role));
+            authorities.add(getAuthority(role));
         }
 
         return authorities;
     }
 
+    protected GrantedAuthority getAuthority(final String role) {
+        if (!m_authorities.containsKey(role)) {
+            m_authorities.put(role, new SimpleGrantedAuthority(role));
+        }
+        return m_authorities.get(role);
+    }
+
     /**
      * <p>getAuthoritiesByUsername</p>
      *
-     * @param user a {@link java.lang.String} object.
+     * @param username a {@link java.lang.String} object.
      * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
      */
-    protected Collection<? extends GrantedAuthority> getAuthoritiesByUsername(String user) {
-        if (m_roles.containsKey(user)) {
-            return m_roles.get(user);
+    protected Collection<? extends GrantedAuthority> getAuthoritiesByUsername(final String username) {
+        if (m_roles.containsKey(username)) {
+            final Collection<? extends GrantedAuthority> roles = m_roles.get(username);
+            LOG.debug("User {} has roles: {}", username, roles);
+            return roles;
         } else {
-            return Arrays.asList(new GrantedAuthority[] { ROLE_USER });
+            final List<GrantedAuthority> roles = Arrays.asList(new GrantedAuthority[] { ROLE_USER });
+            LOG.debug("User {} has roles: {}", username, roles);
+            return roles;
         }
     }
 
@@ -420,10 +433,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     /** {@inheritDoc} */
     @Override
-    public OnmsUser getByUsername(String username) {
+    public SpringSecurityUser getByUsername(String username) {
         reloadIfNecessary();
 
-        OnmsUser user;
+        final OnmsUser user;
         if (m_magicUsers.containsKey(username)) {
             user = m_magicUsers.get(username);
         } else {
@@ -434,9 +447,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             return null;
         }
 
-        user.setAuthorities(getAuthoritiesByUsername(username));
-
-        return user;
+        final SpringSecurityUser springUser = new SpringSecurityUser(user);
+        springUser.setAuthorities(getAuthoritiesByUsername(username));
+        return springUser;
     }
 
     private void reloadIfNecessary() {

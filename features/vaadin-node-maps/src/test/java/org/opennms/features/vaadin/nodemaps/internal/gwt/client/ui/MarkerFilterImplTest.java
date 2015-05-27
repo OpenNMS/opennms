@@ -142,6 +142,10 @@ public class MarkerFilterImplTest {
 
         marker.addCategory("this has the string 'blah' in it too!");
         assertTrue(filter.matches(marker));
+        
+        marker.setForeignSource("sanJose");
+        filter.setSearchString("foreignSource:sanJose");
+        assertTrue(filter.matches(marker));
     }
 
     @Test
@@ -161,6 +165,10 @@ public class MarkerFilterImplTest {
         assertFalse(filter.matches(marker));
 
         marker.addCategory("blah");
+        assertTrue(filter.matches(marker));
+
+        marker.setForeignSource("sanJose");
+        filter.setSearchString("foreignSource=sanJose");
         assertTrue(filter.matches(marker));
     }
 

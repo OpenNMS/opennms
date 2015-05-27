@@ -1,5 +1,8 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
 
-=== StrafePingMonitor
+==== StrafePingMonitor
+
 This monitor is used to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint using _ICMP_.
 The main use case is to monitor a _WAN_ end point and visualize packet loss and _ICMP_ packet round trip time deviation.
 The _StrafePingMonitor_ performs multiple _ICMP echo requests_ (ping) and stores the response-time of each as well as the packet loss, in a _RRD_ file.
@@ -8,7 +11,7 @@ Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of th
 .Visualization of a graph from the StrafePingMonitor
 image::poller/01_strafeping.png[]
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,23 +19,24 @@ image::poller/01_strafeping.png[]
 | Remote Enabled | false
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 Monitor specific parameters for the StrafePingMonitor
 [options="header, autowidth"]
 |===
-| Parameter           | Description                                                                              | Required | Default value
-| `timeout`           | Time in milliseconds to wait before assuming that a packet has not responded             | optional | `800`
-| `retry`             | The number of retries to attempt when a packet fails to respond in the given timeout     | optional | `2`
-| `ping-count`        | The number of pings to attempt each interval                                             | required | `20`
-| `failure-ping-count`| The number of pings that need to fail for the service to be considered down              | required | `20`
-| `wait-interval`     | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                   | required | `50`
+| Parameter           | Description                                                                                | Required | Default value
+| `timeout`           | Time in milliseconds to wait before assuming that a packet has not responded               | optional | `800`
+| `retry`             | The number of retries to attempt when a packet fails to respond in the given timeout       | optional | `2`
+| `ping-count`        | The number of pings to attempt each interval                                               | required | `20`
+| `failure-ping-count`| The number of pings that need to fail for the service to be considered down                | required | `20`
+| `wait-interval`     | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                     | required | `50`
 | `rrd-repository`    | The location to write _RRD data_. Generally, you will not want to change this from default | required | `$OPENNMS_HOME/share/rrd/response`
-| `rrd-base-name`     | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                | required | `strafeping`
+| `rrd-base-name`     | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
 |===
 
 
-==== Examples
+===== Examples
+
 The _StrafePingMonitor_ is typically used on WAN connections and not activated for every ICMP enabled device in your network.
 Further this monitor is much I/O heavier than just a simple RRD graph with a single ICMP response time measurement.
 By default you can find a separate _poller package_ in the 'poller-configuration.xml' called _strafer_.

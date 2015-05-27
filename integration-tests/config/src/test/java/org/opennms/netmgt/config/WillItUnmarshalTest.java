@@ -55,7 +55,6 @@ import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -114,7 +113,6 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
@@ -191,8 +189,6 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -205,13 +201,14 @@ public class WillItUnmarshalTest {
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
-        addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.CASTOR);
         addFile(Source.CONFIG, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, Impl.CASTOR);
@@ -237,7 +234,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
@@ -257,8 +254,6 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
@@ -267,7 +262,7 @@ public class WillItUnmarshalTest {
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
@@ -298,6 +293,10 @@ public class WillItUnmarshalTest {
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
                                                    new String[] { "xml" },
                                                    true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    Events.class,
+                    Impl.JAXB);
             addFile(Source.ABSOLUTE,
                     file.getPath(),
                     Events.class,

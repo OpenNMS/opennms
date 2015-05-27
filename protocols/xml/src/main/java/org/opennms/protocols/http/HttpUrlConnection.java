@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -127,7 +128,10 @@ public class HttpUrlConnection extends URLConnection {
         // Add User Authentication
         String[] userInfo = m_url.getUserInfo() == null ? null :  m_url.getUserInfo().split(":");
         if (userInfo != null && userInfo.length == 2) {
-            m_clientWrapper.addBasicCredentials(userInfo[0], userInfo[1]);
+            // If the URL contains a username/password, it might need to be decoded
+            String uname = URLDecoder.decode(userInfo[0], "UTF-8");
+            String pwd = URLDecoder.decode(userInfo[1], "UTF-8");
+            m_clientWrapper.addBasicCredentials(uname, pwd);
         }
 
     }
@@ -151,7 +155,9 @@ public class HttpUrlConnection extends URLConnection {
             ub.setPath(m_url.getPath());
             if (m_url.getQuery() != null && !m_url.getQuery().trim().isEmpty()) {
                 final List<NameValuePair> params = URLEncodedUtils.parse(m_url.getQuery(), Charset.forName("UTF-8"));
-                ub.addParameters(params);
+                if (!params.isEmpty()) {
+                    ub.addParameters(params);
+                }
             }
 
             // Build Request
@@ -160,7 +166,7 @@ public class HttpUrlConnection extends URLConnection {
                 final Content cnt = m_request.getContent();
                 HttpPost post = new HttpPost(ub.build());
                 ContentType contentType = ContentType.create(cnt.getType());
-                LOG.info("Processing POST request for %s", contentType);
+                LOG.info("Processing POST request for {}", contentType);
                 if (contentType.getMimeType().equals(ContentType.APPLICATION_FORM_URLENCODED.getMimeType())) {
                     FormFields fields = JaxbUtils.unmarshal(FormFields.class, cnt.getData());
                     post.setEntity(fields.getEntity());

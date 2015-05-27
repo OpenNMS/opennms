@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
@@ -33,6 +33,7 @@
     <module>db-install</module>
     <module>doc</module>
     <module>icmp-jna</module>
+    <module>jmx</module>
     <module>lib</module>
     <module>logging-api</module>
     <module>runtime</module>
@@ -40,6 +41,7 @@
     <module>snmp</module>
     <module>soa</module>
     <module>spring</module>
+    <module>spring-web</module>
     <module>tasks</module>
     <module>test-api</module>
     <module>upgrade</module>

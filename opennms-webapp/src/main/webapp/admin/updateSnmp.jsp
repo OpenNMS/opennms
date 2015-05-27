@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-		org.opennms.netmgt.EventConstants,
+	import="org.opennms.netmgt.events.api.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.servlet.MissingParameterException,
@@ -51,7 +50,7 @@
         snmpRestart.setNodeid(Long.valueOf(nodeid));
         snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
-        snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
+        snmpRestart.setTime(new java.util.Date());
 
         try {
                 Util.createEventProxy().send(snmpRestart);
@@ -90,7 +89,7 @@
   <c:param name="intf" value="<%=ipAddr%>"/>
 </c:url>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Update SNMP Information" />
   <jsp:param name="headTitle" value="Rescan" />
   <jsp:param name="headTitle" value="SNMP Information" />
@@ -100,11 +99,16 @@
   <jsp:param name="breadcrumb" value="Update SNMP Information" />
 </jsp:include>
 
-<h3>Update SNMP Information</h3>
-      
-<p>
-  The interface has had its SNMP information updated. This should cause any
-  changes in SNMP community names or collection to take effect.
-</p>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Update SNMP Information</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      The interface has had its SNMP information updated. This should cause any
+      changes in SNMP community names or collection to take effect.
+    </p>
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

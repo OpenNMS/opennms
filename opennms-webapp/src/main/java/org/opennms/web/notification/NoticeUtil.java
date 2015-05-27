@@ -28,6 +28,7 @@
 
 package org.opennms.web.notification;
 
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
@@ -65,7 +66,13 @@ public abstract class NoticeUtil extends Object {
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
         String type = tokens.nextToken();
-        String value = tokens.nextToken();
+        String value;
+        try {
+            value = tokens.nextToken();
+        } catch (NoSuchElementException e) {
+            // No value was specified, return null for this filter
+            return null;
+        }
 
         if (type.equals(AcknowledgedByFilter.TYPE)) {
             filter = new AcknowledgedByFilter(value);

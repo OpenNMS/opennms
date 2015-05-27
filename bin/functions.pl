@@ -85,7 +85,7 @@ delete $ENV{'M2_HOME'};
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 $OOSNMP_TRUSTSTORE = File::Spec->catfile($PREFIX, 'bin', 'oosnmp.net.trustStore');
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
+	$MAVEN_OPTS = "-Xmx1280m -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
 }
 
 my $result = GetOptions(
@@ -253,7 +253,7 @@ sub find_git {
 }
 
 sub get_minimum_java {
-	my $minimum_java = '1.6';
+	my $minimum_java = '1.8';
 
 	my $pomfile = File::Spec->catfile($PREFIX, 'pom.xml');
 	if (-e $pomfile) {

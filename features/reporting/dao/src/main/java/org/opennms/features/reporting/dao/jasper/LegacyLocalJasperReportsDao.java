@@ -41,7 +41,6 @@ import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -54,12 +53,11 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalJasperReportsDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class);
 
     /**
      * List of generic report definitions

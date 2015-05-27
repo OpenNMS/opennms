@@ -30,17 +30,18 @@ package org.opennms.netmgt.jasper.rrdtool;
 
 import java.util.Date;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
-public class RrdtoolDataSource implements JRDataSource {
+public class RrdtoolDataSource implements JRRewindableDataSource {
 
 	private int m_currentRow = -1;
 	private Xport m_data;
 
 	public RrdtoolDataSource(Xport data) {
 		this.m_data = data;
+		moveFirst();
 	}
 
         @Override
@@ -49,11 +50,18 @@ public class RrdtoolDataSource implements JRDataSource {
 			long ts = new Long(m_data.getData().getRow(m_currentRow).getT().getContent()) * 1000L;
 			return new Date(ts);
 		}else if ("Step".equalsIgnoreCase(getColumnName(field))) {
-		    return Integer.valueOf(m_data.getMeta().getStep().getContent());
+		    return Long.valueOf(m_data.getMeta().getStep().getContent());
 		}
 		int index = getColumnIndex(field);
-		return new Double(m_data.getData().getRow(m_currentRow).getV(index).getContent());
+		return toDouble(m_data.getData().getRow(m_currentRow).getV(index).getContent());
 	}
+
+    private static Double toDouble(final String value) {
+        if ("inf".equalsIgnoreCase(value)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return new Double(value);
+    }
 
 	private String getColumnName(JRField field) {
 		return field.getDescription() == null || field.getDescription().trim().equals("")
@@ -77,4 +85,8 @@ public class RrdtoolDataSource implements JRDataSource {
 		return -1;
 	}
 
+    @Override
+    public void moveFirst() {
+        m_currentRow = -1;
+    }
 }

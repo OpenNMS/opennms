@@ -39,6 +39,7 @@ import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.test.ThrowableAnticipator;
@@ -177,7 +178,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute));
+        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
         expect(m_rrdDao.getPrintValue(attribute, attributeVisitor.getConsolidationFunction(), attributeVisitor.getStartTime(), attributeVisitor.getEndTime())).andReturn(1.0);
         m_statisticVisitor.visit(attribute, 1.0);
 
@@ -198,7 +199,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
         OnmsAttribute attribute = new StringPropertyAttribute("ifInOctets", "one billion octets!");
-        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute));
+        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
 
         m_mocks.replayAll();
         attributeVisitor.visit(attribute);
@@ -217,7 +218,7 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute));
+        new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
         expect(m_rrdDao.getPrintValue(attribute, attributeVisitor.getConsolidationFunction(), attributeVisitor.getStartTime(), attributeVisitor.getEndTime())).andReturn(Double.NaN);
 
         m_mocks.replayAll();

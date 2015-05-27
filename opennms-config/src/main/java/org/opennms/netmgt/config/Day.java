@@ -49,9 +49,9 @@ import org.opennms.netmgt.config.groups.Role;
  */
 public class Day {
     
-    private Calendar m_calendar;
-    private Role m_role;
-    private GroupManager m_groupManager;
+    private final Calendar m_calendar;
+    private final Role m_role;
+    private final GroupManager m_groupManager;
 
     /**
      * <p>Constructor for Day.</p>

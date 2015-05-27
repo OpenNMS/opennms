@@ -32,5 +32,5 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface OnmsHeaderProvider {
 
-    String getHeaderHtml(HttpServletRequest request);
+    String getHeaderHtml(HttpServletRequest request) throws Exception;
 }

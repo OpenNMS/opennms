@@ -59,6 +59,7 @@ public class SyslogMessage {
         }
     };
 
+    private Class<? extends SyslogParser> m_parserClass;
     private SyslogFacility m_facility = SyslogFacility.UNKNOWN;
     private SyslogSeverity m_severity = SyslogSeverity.UNKNOWN;
     private Integer m_version;
@@ -83,6 +84,14 @@ public class SyslogMessage {
         m_processName = processName;
         m_processId = processId;
         m_message = message;
+    }
+
+    public Class<? extends SyslogParser> getParserClass() {
+        return m_parserClass;
+    }
+
+    public void setParserClass(final Class<? extends SyslogParser> parser) {
+        m_parserClass = parser;
     }
 
     public SyslogFacility getFacility() {
@@ -221,6 +230,7 @@ public class SyslogMessage {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+            .append("parser", m_parserClass == null ? "Unknown" : m_parserClass.getName())
             .append("facility", m_facility)
             .append("severity", m_severity)
             .append("version", m_version)

@@ -28,7 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 
