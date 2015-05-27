@@ -65,7 +65,7 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+        public <T> void registerAsService(Class<T> serviceClass, T serviceBean, VaadinApplicationContext applicationContext, Dictionary<String,Object> additionalProperties) {
            
         }
 
@@ -75,7 +75,7 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Properties additionalProperties) {
+        public <T> List<T> getServices(Class<T> clazz, VaadinApplicationContext applicationContext, Hashtable<String,Object> additionalProperties) {
             return null; 
         }
 
@@ -392,7 +392,7 @@ public class OSGiVerticesUpdateManagerTest {
 
         @Override
         public Set<EdgeStatusProvider> getEdgeStatusProviders() {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
 
         @Override

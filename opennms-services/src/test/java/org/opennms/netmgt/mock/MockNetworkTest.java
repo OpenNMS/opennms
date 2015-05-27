@@ -37,14 +37,14 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -280,8 +280,8 @@ public class MockNetworkTest extends TestCase {
         assertEquals("HTTP", httpSvc.getSvcName());
         assertEquals(svrIface, httpSvc.getInterface());
 
-        assertTrue(icmpSvc.getId() == icmpSvc2.getId());
-        assertFalse(icmpSvc.getId() == httpSvc.getId());
+        assertTrue(icmpSvc.getSvcId() == icmpSvc2.getSvcId());
+        assertFalse(icmpSvc.getSvcId() == httpSvc.getSvcId());
     }
 
     public void testEventListeners() {
@@ -497,7 +497,7 @@ public class MockNetworkTest extends TestCase {
         List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
         for (MockService svc : expectedSvcs) {
-            assertTrue(svcs.contains(Integer.valueOf(svc.getId())));
+            assertTrue(svcs.contains(Integer.valueOf(svc.getSvcId())));
         }
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");

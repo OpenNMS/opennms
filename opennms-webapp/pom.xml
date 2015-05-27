@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -19,6 +19,20 @@
   </properties>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jasig.maven</groupId>
+        <artifactId>sass-maven-plugin</artifactId>
+        <version>${sass.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals><goal>update-stylesheets</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
+          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -44,7 +58,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <!-- Don't specify argLine here or it will override the value from /pom.xml -->
           <systemProperties>
             <property>
               <name>java.endorsed.dirs</name>
@@ -73,7 +87,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.4.1</version>
         <configuration>
           <filesets>
             <fileset>
@@ -90,12 +103,182 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
           <webResources>
             <resource>
               <filtering>true</filtering>
               <directory>${basedir}/src/main/web-filtered</directory>
             </resource>
           </webResources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <supportedProjectTypes>
+            <supportedProjectType>bundle</supportedProjectType>
+            <supportedProjectType>jar</supportedProjectType>
+            <supportedProjectType>war</supportedProjectType>
+          </supportedProjectTypes>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+
+            <!-- Specify the servlet path for the WAR -->
+            <Webapp-Context>opennms</Webapp-Context> <!-- Deprecated -->
+            <Web-ContextPath>opennms</Web-ContextPath>
+
+            <!--
+              Add the webapp JAR itself and WEB-INF/classes to the bundle classpath. 
+              All embedded JAR files will be appended to this list as well.
+            -->
+            <Bundle-ClassPath>.,WEB-INF/classes,WEB-INF/lib/opennms-webapp-${project.version}.jar</Bundle-ClassPath>
+            <!-- Directory that will hold embedded dependency JAR files -->
+            <Embed-Directory>WEB-INF/lib</Embed-Directory>
+            <!--
+              Embed everything with 'compile' or 'runtime' scope. Dependencies with 'provided' scope will be loaded out of OSGi 
+              or from the shared classpath of /opt/opennms/lib.
+            -->
+            <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+            <!-- Embed transitive dependencies in WEB-INF/lib -->
+            <Embed-Transitive>true</Embed-Transitive>
+
+            <Import-Package>
+              <!-- 
+                These are required classes that are not autodetected by bnd from:
+                  - web.xml
+                  - Spring
+              -->
+              org.eclipse.jetty.servlet,
+              org.opennms.core.soa.config,
+              org.springframework.beans.factory.config;version="[4.0,5)",
+              org.springframework.context.config;version="[4.0,5)",
+              org.springframework.context.support;version="[4.0,5)",
+              org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
+              org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              <!-- Spring Security namespace handler -->
+              org.springframework.security.config;version="[3.2,4)",
+              org.springframework.security.web.authentication;version="[3.2,4)",
+              org.springframework.transaction.config;version="[4.0,5)",
+              org.springframework.web.context;version="[4.0,5)",
+              org.springframework.web.filter;version="[4.0,5)",
+
+              <!-- Spring Web Flow -->
+              <!-- There are no versions here because the webflow JAR is a wrapped dep :/ -->
+              org.springframework.webflow.expression,
+              org.springframework.webflow.expression.el,
+              org.springframework.webflow.expression.spel,
+              org.springframework.webflow.scope,
+              org.springframework.webflow.security,
+              org.springframework.webflow.engine,
+              org.springframework.webflow.engine.builder,
+              org.springframework.webflow.engine.builder.model,
+              org.springframework.webflow.engine.builder.support,
+              org.springframework.webflow.engine.impl,
+              org.springframework.webflow.engine.model,
+              org.springframework.webflow.engine.model.registry,
+              org.springframework.webflow.engine.model.builder,
+              org.springframework.webflow.engine.model.builder.xml,
+              org.springframework.webflow.engine.support,
+              org.springframework.webflow.conversation,
+              org.springframework.webflow.conversation.impl,
+              org.springframework.webflow.mvc,
+              org.springframework.webflow.mvc.portlet,
+              org.springframework.webflow.mvc.builder,
+              org.springframework.webflow.mvc.view,
+              org.springframework.webflow.mvc.servlet,
+              org.springframework.webflow.persistence,
+              org.springframework.webflow.context,
+              org.springframework.webflow.context.web,
+              org.springframework.webflow.context.portlet,
+              org.springframework.webflow.context.servlet,
+              org.springframework.webflow.validation,
+              org.springframework.webflow.action,
+              org.springframework.webflow.execution,
+              org.springframework.webflow.execution.factory,
+              org.springframework.webflow.execution.repository,
+              org.springframework.webflow.execution.repository.snapshot,
+              org.springframework.webflow.execution.repository.impl,
+              org.springframework.webflow.execution.repository.support,
+              org.springframework.webflow.test,
+              org.springframework.webflow.test.execution,
+              org.springframework.webflow.config,
+              org.springframework.webflow.executor,
+              org.springframework.webflow.core,
+              org.springframework.webflow.core.collection,
+              org.springframework.webflow.upgrade,
+              org.springframework.webflow.definition,
+              org.springframework.webflow.definition.registry,
+
+              <!-- Mark some packages that dependency JARs rely on as optional -->
+              <!-- Optional dependencies of jdom -->
+              oracle.xml*;resolution:=optional,
+              org.jaxen*;resolution:=optional,
+              <!-- Optional dependencies on old JAXP implementations -->
+              com.sun.org.apache*;resolution:=optional,
+              <!-- Optional dependency on Tomcat taglibs -->
+              org.apache.taglibs*;resolution:=optional,
+              <!-- These are probably optional dependencies of BSF -->
+              org.mozilla.javascript;resolution:=optional,
+              org.python.core;resolution:=optional,
+              org.python.util;resolution:=optional,
+
+              <!-- Exclude some deprecated packages that get detected by bnd -->
+              <!-- Exclude FOP 0.20.0 package -->
+              !org.apache.fop.messaging,
+              <!-- Deprecated dependency on Apache Avalon LogKit -->
+              !org.apache.log,
+              <!-- Exclude GWT packages, they are not needed at runtime and we are embedding gwt-servlet.jar -->
+              !com.google*,
+              <!-- Exclude sitemesh, not sure where the hell it is coming from -->
+              !com.opensymphony.module.sitemesh.filter,
+              <!-- Exclude JUnit, not sure where the hell it is coming from -->
+              !junit*,
+              <!-- Exclude Gilead, it is an optional GWT dependency -->
+              !net.sf.gilead*,
+              <!-- This is a spurious code generation dependency -->
+              !org.zeroturnaround.javarebel,
+              *
+            </Import-Package>
+            <!-- 
+              TODO: Exclude all packages from export to get the webapp to load.
+              This needs to be changed to allow the webapp to function. We need to resolve
+              package conflicts between opennms-webapp and other projects.
+            -->
+            <Export-Package>
+              <!--
+              org.opennms.web.account.selfService,
+              org.opennms.web.admin.discovery,
+              org.opennms.web.admin.nodeManagement,
+              org.opennms.web.admin.notification,
+              org.opennms.web.admin.roles,
+              org.opennms.web.admin.users,
+              org.opennms.web.alarm,
+              org.opennms.web.asset,
+              org.opennms.web.category,
+              org.opennms.web.element,
+              org.opennms.web.event,
+              org.opennms.web.graph,
+              org.opennms.web.mail,
+              org.opennms.web.nodelabel
+              -->
+              !*
+            </Export-Package>
+          </instructions>
         </configuration>
       </plugin>
       <plugin>
@@ -129,35 +312,6 @@
         </configuration>
       </plugin>
 
-<!--
-      <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/web/snmpinfo/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/config/snmp-info</namespace>
-              <file>snmp-info.xsd</file>
-            </schema>
-          </schemas>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -240,20 +394,21 @@
     					<pluginExecutions>
     						<pluginExecution>
     							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									maven-dependency-plugin
-    								</artifactId>
+    								<groupId>org.apache.maven.plugins</groupId>
+    								<artifactId>maven-dependency-plugin</artifactId>
     								<versionRange>[2.4,)</versionRange>
-    								<goals>
-    									<goal>copy</goal>
-    								</goals>
+    								<goals><goal>copy</goal></goals>
     							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
+    							<action><ignore/></action>
+    						</pluginExecution>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.jasig.maven</groupId>
+    								<artifactId>sass-maven-plugin</artifactId>
+    								<versionRange>[${sass.maven.plugin.version},)</versionRange>
+    								<goals><goal>update-stylesheets</goal></goals>
+    							</pluginExecutionFilter>
+    							<action><ignore/></action>
     						</pluginExecution>
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
@@ -382,6 +537,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
@@ -424,7 +584,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -436,6 +595,12 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.gwt-bootstrap</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -584,11 +749,15 @@
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jexl</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -640,26 +809,10 @@
     <dependency>
       <groupId>org.tuckey</groupId>
       <artifactId>urlrewritefilter</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>poi</groupId>
-      <artifactId>poi</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
 
@@ -667,9 +820,28 @@
     <!-- these should all be <scope>compile</scope> -->
 
     <dependency>
+      <groupId>poi</groupId>
+      <artifactId>poi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Use an OSGi-compatible jdom bundle -->
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
+      <version>1.1_4</version>
+    </dependency>
+    <dependency>
       <groupId>org.extremecomponents</groupId>
       <artifactId>extremecomponents</artifactId>
-      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -677,6 +849,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <!--
 
       JMesa is the latest version of the extremecomponents library. We
@@ -685,7 +858,6 @@
     <dependency>
       <groupId>org.jmesa</groupId>
       <artifactId>jmesa</artifactId>
-      <scope>${onmsLibScope}</scope>
     </dependency>
     -->
     <dependency>
@@ -704,6 +876,11 @@
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-visualization</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>${freemarkerVersion}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
@@ -714,12 +891,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -737,6 +908,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -770,6 +946,11 @@
     <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

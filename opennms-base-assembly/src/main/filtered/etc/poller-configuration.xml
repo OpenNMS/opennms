@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
 <poller-configuration threads="30" 
+                      pathOutageEnabled="false"
                       serviceUnresponsiveEnabled="false"> 
+
   <node-outage status="on">
     <critical-service name="ICMP" />
   </node-outage>
+
   <package name="example1">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
@@ -190,10 +193,12 @@
     <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
+      <parameter key="ignoreStandBy" value="false"/>
     </service>
     <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
+      <parameter key="ignoreStandBy" value="false"/>
     </service>
 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->

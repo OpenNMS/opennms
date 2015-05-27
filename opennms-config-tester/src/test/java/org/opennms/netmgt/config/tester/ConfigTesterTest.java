@@ -88,7 +88,6 @@ public class ConfigTesterTest {
     @Test
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
-        assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
     }
 
     @Test
@@ -125,11 +124,6 @@ public class ConfigTesterTest {
      */
     public void testC3p0Properties() {
         ignoreConfigFile("c3p0.properties");
-    }
-
-    @Test
-    public void testCapsdConfiguration() {
-        testConfigFile("capsd-configuration.xml");
     }
 
     @Test
@@ -534,12 +528,6 @@ public class ConfigTesterTest {
     public void testWmiDatacollectionConfig() {
         testConfigFile("wmi-datacollection-config.xml");
     }
-
-    @Test
-    public void testXmlrpcdConfiguration() {
-        testConfigFile("xmlrpcd-configuration.xml");
-    }
-
 
     @Test
     public void testVMwareCimDatacollectionConfig() {

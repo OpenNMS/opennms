@@ -31,135 +31,176 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Threshold Editor" />
 	<jsp:param name="headTitle" value="Edit Threshold" />
 	<jsp:param name="headTitle" value="Thresholds" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp'>Threshold Groups</a>" />
-    <jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp?groupName=${groupName}&editGroup'>Edit Group</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp'>Threshold Groups</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp?groupName=${groupName}&editGroup'>Edit Group</a>" />
 	<jsp:param name="breadcrumb" value="Edit Threshold" />
-	
 </jsp:include>
-<h3>Edit threshold</h3>
 
-<form name="frm" action="admin/thresholds/index.htm" method="post">
+<form name="frm" role="form" action="admin/thresholds/index.htm" method="post">
 <input type="hidden" name="finishThresholdEdit" value="1"/>
 <input type="hidden" name="thresholdIndex" value="${thresholdIndex}"/>
 <input type="hidden" name="groupName" value="${groupName}"/>
 <input type="hidden" name="isNew" value="${isNew}"/>
-  <table class="normal">
-    <tr>
-    	<th class="standardheader">Type</th>
-    	<th class="standardheader">Datasource</th>
-    	<th class="standardheader">Datasource type</th>
-    	<th class="standardheader">Datasource label</th>
-    	<th class="standardheader">Value</th>
-    	<th class="standardheader">Re-arm</th>
-    	<th class="standardheader">Trigger</th>
-    </tr>
-    	<tr>
-    		<td class="standard">
-    			<select name="type">
-    				<c:forEach items="${thresholdTypes}" var="thisType">
-   						<c:choose>
-  							<c:when test="${threshold.type==thisType}">
-    							<c:set var="selected">selected="selected"</c:set>
-  							</c:when>
-	 						<c:otherwise>
-	    						<c:set var="selected" value=""/>
-	  						</c:otherwise>
-						</c:choose>
-						<option ${selected} value='${thisType}'>${thisType}</option>
-    				</c:forEach>
-    			</select>
-    		</td>
-    		<td class="standard"><input type="text" name="dsName" size="30" maxlength="19" value="${threshold.dsName}"/></td>
-    		<td class="standard">
-    		   	<select name="dsType">
-    				<c:forEach items="${dsTypes}" var="thisDsType">
-   						<c:choose>
-  							<c:when test="${threshold.dsType==thisDsType.key}">
-    							<c:set var="selected">selected="selected"</c:set>
-  							</c:when>
-	 						<c:otherwise>
-	    						<c:set var="selected" value=""/>
-	  						</c:otherwise>
-						</c:choose>
-						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
-    				</c:forEach>
-    			</select></td>
- 			<td class="standard"><input type="text" name="dsLabel" size="30" value="${threshold.dsLabel}"/></td>
-    		<td class="standard"><input type="text" name="value" size="10" value="${threshold.value}"/></td>
-    		<td class="standard"><input type="text" name="rearm" size="10" value="${threshold.rearm}"/></td>
-    		<td class="standard"><input type="text" name="trigger" size="10" value="${threshold.trigger}"/></td>
-    	</tr>
-    </table>
-    <table class="normal">
-         <tr>
-                <th class="standardheader">Description</th>
-                <th class="standardheader">Triggered UEI</th>
-                <th class="standardheader">Re-armed UEI</th>
-        </tr>
-    	<tr>
-			<td class="standard"><input type="text" name="description" size="60" value="${threshold.description}"/></td>
-			<td class="standard"><input type="text" name="triggeredUEI" size="60" value="${threshold.triggeredUEI}"/></td>
-		    <td class="standard"><input type="text" name="rearmedUEI" size="60" value="${threshold.rearmedUEI}"/></td>
-    	</tr>
-  </table>
-  <input type="submit" name="submitAction" value="${saveButtonTitle}"/>
-  <input type="submit" name="submitAction" value="${cancelButtonTitle}"/>
-  
 <input type="hidden" name="filterSelected" value="${filterSelected}"/>
-<h3>Resource Filters</h3>
-<table class="normal">
-    <tr><td>Filter Operator</td>
-    <td><select name="filterOperator">
-        <c:forEach items="${filterOperators}" var="thisOperator">
-            <c:choose>
-                <c:when test="${threshold.filterOperator==thisOperator}">
-                    <c:set var="selected">selected="selected"</c:set>
-                </c:when>
-                <c:otherwise>
-                    <c:set var="selected" value=""/>
-                </c:otherwise>
-            </c:choose>
-            <option ${selected} value='${thisOperator}'>${thisOperator}</option>
-        </c:forEach>
-    </select></td></tr>
-</table>
-<table class="normal">
-<tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
-  <c:forEach items="${threshold.resourceFilter}" var="filter" varStatus="i">
-    <tr>
-        <c:choose>
-          <c:when test="${i.count==filterSelected}">
-            <td><input type="text" name="updateFilterField" size="60" value="${filter.field}"/></td>
-            <td><input type="text" name="updateFilterRegexp" size="60" value="${filter.content}"/></td>          
-            <td><input type="submit" name="submitAction" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
-          </c:when>
-          <c:otherwise>
-            <td class="standard"><input type="text" disabled="disabled" size="60" value="${filter.field}"/></td>
-            <td class="standard"><input type="text" disabled="disabled" size="60" value="${filter.content}"/></td>
-            <td><input type="submit" name="submitAction" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                <input type="submit" name="submitAction" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                <input type="submit" name="submitAction" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                <input type="submit" name="submitAction" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Edit threshold</h3>
+      </div>
+      <table class="table table-condensed">
+        <tr>
+        	<th>Type</th>
+        	<th>Datasource</th>
+        	<th>Datasource type</th>
+        	<th>Datasource label</th>
+        	<th>Value</th>
+        	<th>Re-arm</th>
+        	<th>Trigger</th>
+        </tr>
+        	<tr>
+        		<td>
+        			<select name="type" class="form-control">
+        				<c:forEach items="${thresholdTypes}" var="thisType">
+       						<c:choose>
+      							<c:when test="${threshold.type==thisType}">
+        							<c:set var="selected">selected="selected"</c:set>
+      							</c:when>
+    	 						<c:otherwise>
+    	    						<c:set var="selected" value=""/>
+    	  						</c:otherwise>
+    						</c:choose>
+    						<option ${selected} value='${thisType}'>${thisType}</option>
+        				</c:forEach>
+        			</select>
+        		</td>
+        		<td><input type="text" name="dsName" class="form-control" size="30" maxlength="19" value="${threshold.dsName}"/></td>
+        		<td>
+        		   	<select name="dsType" class="form-control">
+        				<c:forEach items="${dsTypes}" var="thisDsType">
+       						<c:choose>
+      							<c:when test="${threshold.dsType==thisDsType.key}">
+        							<c:set var="selected">selected="selected"</c:set>
+      							</c:when>
+    	 						<c:otherwise>
+    	    						<c:set var="selected" value=""/>
+    	  						</c:otherwise>
+    						</c:choose>
+    						<option ${selected} value='${thisDsType.key}'>${thisDsType.value}</option>
+        				</c:forEach>
+        			</select></td>
+     			<td><input type="text" class="form-control" name="dsLabel" size="30" value="${threshold.dsLabel}"/></td>
+        		<td><input type="text" class="form-control" name="value" size="10" value="${threshold.value}"/></td>
+        		<td><input type="text" class="form-control" name="rearm" size="10" value="${threshold.rearm}"/></td>
+        		<td><input type="text" class="form-control" name="trigger" size="10" value="${threshold.trigger}"/></td>
+        	</tr>
+      </table>
+      <table class="table table-condensed">
+             <tr>
+                    <th>Description</th>
+                    <th>Triggered UEI</th>
+                    <th>Re-armed UEI</th>
+            </tr>
+        	<tr>
+    			<td><input type="text" name="description" class="form-control" size="60" value="${threshold.description}"/></td>
+    			<td><input type="text" name="triggeredUEI" class="form-control" size="60" value="${threshold.triggeredUEI}"/></td>
+    		    <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${threshold.rearmedUEI}"/></td>
+        	</tr>
+      </table>
+      <div class="panel-footer">
+        <input type="submit" name="submitAction" class="btn btn-default" value="${saveButtonTitle}"/>
+        <input type="submit" name="submitAction" class="btn btn-default" value="${cancelButtonTitle}"/>
+      </div> <!-- panel-footer -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+  
+<div class="row">
+  <div class="col-md-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Resource Filters</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <table class="table table-condensed">
+              <tr>
+                <th>Filter Operator</th>
+              </tr>
+              <tr>
+                <td>
+                  <select name="filterOperator" class="form-control">
+                      <c:forEach items="${filterOperators}" var="thisOperator">
+                          <c:choose>
+                              <c:when test="${threshold.filterOperator==thisOperator}">
+                                  <c:set var="selected">selected="selected"</c:set>
+                              </c:when>
+                              <c:otherwise>
+                                  <c:set var="selected" value=""/>
+                              </c:otherwise>
+                          </c:choose>
+                          <option ${selected} value='${thisOperator}'>${thisOperator}</option>
+                      </c:forEach>
+                  </select>
                 </td>
-          </c:otherwise>
-        </c:choose>
-    </tr>
-  </c:forEach>
-    <tr>
-        <td><input type="text" name="filterField" size="60"/></td>
-        <td><input type="text" name="filterRegexp" size="60"/></td>
-        <td><input type="submit" name="submitAction" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
-    </tr>
-</table>
+              </tr>
+            </table>
+          </div> <!-- column -->
+        </div> <!-- row -->
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-condensed">
+            <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
+              <c:forEach items="${threshold.resourceFilter}" var="filter" varStatus="i">
+                <tr>
+                    <c:choose>
+                      <c:when test="${i.count==filterSelected}">
+                        <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${filter.field}"/></td>
+                        <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${filter.content}"/></td>
+                        <td><input type="submit" name="submitAction" class="btn btn-default" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
+                      </c:when>
+                      <c:otherwise>
+                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.field}"/></td>
+                        <td><input type="text" disabled="disabled" class="form-control" size="60" value="${filter.content}"/></td>
+                        <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            </td>
+                      </c:otherwise>
+                    </c:choose>
+                </tr>
+              </c:forEach>
+                <tr>
+                    <td><input type="text" name="filterField" class="form-control" size="60"/></td>
+                    <td><input type="text" name="filterRegexp" class="form-control" size="60"/></td>
+                    <td><input type="submit" name="submitAction" class="btn btn-default" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
+                </tr>
+            </table>
+          </div> <!-- column -->
+        </div> <!-- row -->
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
   
 </form>
-<h3>Help</h3>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel">
+      <div class="panel-heading">
+        <h3 class="panel-title">Help</h3>
+      </div>
+      <div class="panel-body">
 <p>
 <b>Description</b>: An optional description for the threshold, to help identify what is their purpose.<br/>
 <b>Type</b>:<br/>
@@ -185,4 +226,9 @@ you use a one-word version of your company name as the category to avoid name co
 &nbsp;&nbsp;<b>operator=OR</b>: if the resource match any of them, the threshold will be processed.<br/>
 &nbsp;&nbsp;<b>operator=AND</b>: the resource must match all the filters.
 </p>
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

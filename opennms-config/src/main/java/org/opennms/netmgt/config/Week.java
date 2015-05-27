@@ -42,19 +42,10 @@ import org.opennms.netmgt.config.groups.Role;
  */
 public class Week {
     
-    private Calendar m_calendar;
-    private Role m_role;
-    private GroupManager m_groupManager;
+    private final Calendar m_calendar;
+    private final Role m_role;
+    private final GroupManager m_groupManager;
 
-    /**
-     * <p>Constructor for Week.</p>
-     *
-     * @param weekBegin a {@link java.util.Calendar} object.
-     */
-    public Week(Calendar weekBegin) {
-        m_calendar = weekBegin;
-    }
-    
     /**
      * <p>Constructor for Week.</p>
      *

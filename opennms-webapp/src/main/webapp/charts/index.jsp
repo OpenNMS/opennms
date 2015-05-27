@@ -34,7 +34,7 @@
             pageEncoding="UTF-8"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Charts" />
   <jsp:param name="headTitle" value="Charts" />
   <jsp:param name="location" value="chart" />
@@ -46,7 +46,7 @@
 
 <%--Align images in the center of the page --%>
 
-<div id="include-charts">
+<div class="row row-centered" id="include-charts">
 <%--Get collection of charts --%>
 <%
 for (BarChart chartConfig : ChartUtils.getChartCollection()) {
@@ -59,4 +59,4 @@ for (BarChart chartConfig : ChartUtils.getChartCollection()) {
 
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

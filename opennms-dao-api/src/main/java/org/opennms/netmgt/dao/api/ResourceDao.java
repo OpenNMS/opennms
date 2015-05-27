@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,21 +41,6 @@ import org.opennms.netmgt.model.OnmsResourceType;
  * <p>ResourceDao interface.</p>
  */
 public interface ResourceDao {
-    
-    /**
-     * <p>getRrdDirectory</p>
-     *
-     * @return a {@link java.io.File} object.
-     */
-    public File getRrdDirectory();
-    
-    /**
-     * <p>getRrdDirectory</p>
-     *
-     * @param verify a boolean.
-     * @return a {@link java.io.File} object.
-     */
-    public File getRrdDirectory(boolean verify);
 
     /**
      * <p>getResourceTypes</p>
@@ -64,7 +48,14 @@ public interface ResourceDao {
      * @return a {@link java.util.Collection} object.
      */
     public Collection<OnmsResourceType> getResourceTypes();
-    
+
+    /**
+     * <p>findTopLevelResources</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<OnmsResource> findTopLevelResources();
+
     /**
      * <p>getResourceById</p>
      *
@@ -74,29 +65,6 @@ public interface ResourceDao {
     public OnmsResource getResourceById(String id);
 
     /**
-     * <p>getResourceListById</p>
-     *
-     * Fetch a specific list of resources by string ID.
-     * @param id a {@link java.lang.String} object.
-     * @return Resources or null if resources cannot be found.
-     */
-    public List<OnmsResource> getResourceListById(String id);
-    
-    /**
-     * <p>findDomainResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findDomainResources();
-   
-    /**
-     * <p>findTopLevelResources</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> findTopLevelResources();
-
-    /**
      * <p>getResourceForNode</p>
      *
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -104,14 +72,6 @@ public interface ResourceDao {
      */
     public OnmsResource getResourceForNode(OnmsNode node);
 
-    /**
-     * <p>getResourceForIpInterface</p>
-     *
-     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
-     */
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface);
-    
     /**
      * <p>getResourceForIpInterface</p>
      *

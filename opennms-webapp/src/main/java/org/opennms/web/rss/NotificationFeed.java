@@ -30,6 +30,7 @@ package org.opennms.web.rss;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.web.notification.Notification;
 import org.opennms.web.notification.NotificationModel;
@@ -66,7 +67,7 @@ public class NotificationFeed extends AbstractFeed {
         feed.setDescription("Notifications");
         feed.setLink(getUrlBase() + "notification/browse");
 
-        ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         try {
             NotificationModel model = new NotificationModel();
@@ -89,6 +90,7 @@ public class NotificationFeed extends AbstractFeed {
                     entry.setUpdatedDate(notification.getTimeReplied());
                 }
                 entry.setLink(getUrlBase() + "notification/detail.jsp?notice=" + notification.getId());
+                entry.setAuthor("OpenNMS");
                 
                 entries.add(entry);
             }

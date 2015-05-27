@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,14 +39,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.MemcachedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,6 +68,8 @@ public class MemcachedDetectorTest implements InitializingBean {
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
         m_detector.setServiceName("Memcached");
+        m_detector.setPort(1000);
+        m_detector.setIdleTime(3000);
         m_detector.setTimeout(1000);
         m_detector.init();
     }
@@ -82,7 +82,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testServerSuccess() throws Exception{
         m_server  = new SimpleServer() {
             @Override
@@ -110,7 +110,7 @@ public class MemcachedDetectorTest implements InitializingBean {
         }
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testServerFail() throws Exception{
         m_server  = new SimpleServer() {
             @Override

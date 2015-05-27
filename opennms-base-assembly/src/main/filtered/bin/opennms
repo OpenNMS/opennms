@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # chkconfig:   345 99 01
-# description: Starts and stops the OpenNMS network management \
+# description: Starts and stops the ${install.package.description} network management \
 #              poller and backend processes
 # processname: opennms
 # pidfile:     ${install.pid.file}
@@ -14,8 +14,8 @@
 # Should-Stop:       $time $named ypbind
 # Default-Start:     3 5
 # Default-Stop:      0 1 2 6
-# Short-Description: OpenNMS daemon for network monitoring
-# Description:       OpenNMS daemon for network monitoring
+# Short-Description: ${install.package.description} daemon for network monitoring
+# Description:       ${install.package.description} daemon for network monitoring
 ### END INIT INFO
 #
 #  $Id$
@@ -127,11 +127,12 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -o  Enable OProfile profiling
       -c  Controller HTTP connection timeout in seconds.
       -v  Verbose mode.  When used with the "status" command, gives the
-          results for all OpenNMS services.  When used with "start", enables
-          some verbose debugging, such as details on garbage collection.
-      -Q  Quick mode.  Don't wait for OpenNMS to startup.  Useful if you
-          want to watch the logs while OpenNMS starts up without wanting to
-          open another terminal window.
+          results for all ${install.package.description} services.
+          When used with "start", enables some verbose debugging, such
+          as details on garbage collection.
+      -Q  Quick mode.  Don't wait for ${install.package.description} to start up.
+          Useful if you want to watch the logs while ${install.package.description} starts up
+          without wanting to open another terminal window.
 
 END
 	return
@@ -202,8 +203,7 @@ checkXmlFiles(){
 
 WARNING!  The following file(s) contain the
 'non-ip-snmp-primary' or 'non-ip-interfaces' attributes,
-which were deprecated in OpenNMS 1.10 and removed in
-OpenNMS 1.11.
+which no longer exist.
 
 Please check your import files and remove the deprecated
 attributes, and restart.
@@ -238,7 +238,7 @@ The format of the original files may have changed since
 you modified them before installing a new version.
 Please double-check that your configuration files are
 up-to-date and delete any leftover .$EXTENSION files or
-OpenNMS will not start.
+${install.package.description} will not start.
 
 END
 			case $COMMAND in
@@ -276,13 +276,13 @@ doStart(){
 	status=$?
 	case $status in
 		0)
-			echo "OpenNMS is already running." >&2
+			echo "${install.package.description} is already running." >&2
 			return 0
 			;;
 
 		160)
-			echo "OpenNMS is partially running." >&2
-			echo "If you have just attempted starting OpenNMS, please try again in a few" >&2
+			echo "${install.package.description} is partially running." >&2
+			echo "If you have just attempted starting ${install.package.description}, please try again in a few" >&2
 			echo "moments, otherwise, at least one service probably had issues starting." >&2
 			echo "Check your logs in $LOG_DIRECTORY for errors." >&2
 			return 1
@@ -301,7 +301,7 @@ doStart(){
 
 	$JAVA_CMD -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
 	if [ $? -ne 0 ]; then
-		echo "OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml." >&2
+		echo "${install.package.description} was unable to connect to the 'opennms' database configured in opennms-datasources.xml." >&2
 		return 1
 	fi
 
@@ -366,12 +366,12 @@ doStart(){
 	fi
 
 	if [ $START_TIMEOUT -eq 0 ]; then
-		# don't wait for OpenNMS to startup
+		# don't wait for startup
 		$opennms_echo "(not waiting for startup) \c"
 		return 0
 	fi
 
-	# wait for OpenNMS to startup
+	# wait for startup
 	STATUS_ATTEMPTS=0
 	while [ $STATUS_ATTEMPTS -lt $START_TIMEOUT ]; do
 		if doStatus; then
@@ -380,14 +380,14 @@ doStart(){
 		if /bin/ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
 			true		# Java process is still running... don't do anything
 		else
-			echo "Started OpenNMS, but it stopped running: for details see $REDIRECT" >&2
+			echo "Started ${install.package.description}, but it stopped running: for details see $REDIRECT" >&2
 			return 1
 		fi
 		sleep $STATUS_WAIT
 		STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
 	done
 
-	echo "Started OpenNMS, but it has not finished starting up" >&2
+	echo "Started ${install.package.description}, but it has not finished starting up" >&2
 	return 1
 }
 
@@ -399,7 +399,7 @@ doPause(){
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 	else
-		echo "OpenNMS is not running." >&2
+		echo "${install.package.description} is not running." >&2
 	fi
 }
 
@@ -411,7 +411,7 @@ doResume(){
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 	else
-		echo "OpenNMS is not running." >&2
+		echo "${install.package.description} is not running." >&2
 	fi
 }
 
@@ -421,7 +421,7 @@ doCheck() {
 		exit 0
 	fi
 
-	echo "OpenNMS is not running... Restarting" >&2
+	echo "${install.package.description} is not running... Restarting" >&2
 	$OPENNMS_HOME/bin/opennms start
 
 	exit 0
@@ -430,13 +430,13 @@ doCheck() {
 doStop() {
 	doStatus
 	if [ $? -eq 3 ]; then
-		echo "Trying to stop OpenNMS but it's already stopped." >&2
+		echo "Trying to stop ${install.package.description} but it's already stopped." >&2
 		return 0   # LSB says: stopping when stopped is successful
 	fi
 
 	pid=`getPid`
 	if [ -n "$pid" ]; then
-		echo "=== OpenNMS Complimentary Thread Dump ===" >> $REDIRECT
+		echo "=== ${install.package.description} Complimentary Thread Dump ===" >> $REDIRECT
 		kill -3 "$pid" >> $REDIRECT 2>&1
 	fi
 
@@ -537,7 +537,6 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 
 # define needed for grep to find opennms easily
 JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
-
 BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 
 #MANAGER_OPTIONS="-DOPENNMSLAUNCH"
@@ -560,10 +559,10 @@ else
     ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -DisThreadContextMapInheritable=true"
 fi
 
-if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxPermSize > /dev/null ; then
+if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxMetaspaceSize > /dev/null ; then
 	true # do nothing
 else
-	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxPermSize=256m"
+	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=256m"
 fi
 
 if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -Djava.io.tmpdir > /dev/null ; then
@@ -664,7 +663,7 @@ fi
 
 if [ ! -f $OPENNMS_HOME/etc/configured ]; then
 	cat <<END >&2
-$0: OpenNMS not configured.
+$0: ${install.package.description} not configured.
 $OPENNMS_HOME/etc/configured does not exist.
 
 You need to run the installer to set up the database.  In most
@@ -700,7 +699,7 @@ fi
 
 case "$COMMAND" in
 	start|spawn)
-		$opennms_echo "Starting OpenNMS: \c"
+		$opennms_echo "Starting ${install.package.description}: \c"
 
 		if [ -f /etc/SuSE-release ]; then
 			doStart
@@ -729,7 +728,7 @@ case "$COMMAND" in
 		;;
 
 	stop)
-		$opennms_echo "Stopping OpenNMS: \c"
+		$opennms_echo "Stopping ${install.package.description}: \c"
 		if [ -f /etc/SuSE-release ]; then
 			doStop
 
@@ -776,7 +775,7 @@ case "$COMMAND" in
 
 	status)
 		if [ -f /etc/SuSE-release ]; then
-			$opennms_echo "Checking for OpenNMS: \c"
+			$opennms_echo "Checking for ${install.package.description}: \c"
 			if [ $VERBOSE -gt 0 ]; then
 				echo ""
 			fi

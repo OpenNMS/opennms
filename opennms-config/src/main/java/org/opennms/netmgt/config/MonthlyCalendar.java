@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.groups.Role;
  * @version $Id: $
  * @since 1.8.1
  */
-public class MonthlyCalendar extends AbstractWebCalendar {
+public class MonthlyCalendar implements WebCalendar {
     
     private GregorianCalendar m_calendar;
     private Role m_role;

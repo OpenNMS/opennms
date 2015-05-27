@@ -1,17 +1,17 @@
 
 [[doc-guidelines-include-source]]
 == Code Snippets ==
-It is possible to include code snippets, configuration- or source code files in the documentation.
-With the given language parameter the source code or configuration is rendered with syntax highlighting.
+You can include code snippets, configuration- or source code files in the documentation.
+You can enable syntax highlighting by providing the given language parameter, this will work on source code or configuration.
 
 === Explicitly defined in the document ===
 
-WARNING: Use this kind of code snippets as little as possible.
-They are well known to get out of sync with reality after a while.
+WARNING: be careful to use this kind of code snippets as sparsely as possible.
+Code becomes obsolete very quickly, archaic usage practices are detrimental.
 
-This is how to do it:
+if you do wish to include snippets use the following method:
 
-.This is a sample configuration explicitely in the documentation
+.This is a sample configuration explicitly in the documentation
 [source,xml]
 ----
 <service name="DNS" interval="300000" user-defined="false" status="on">
@@ -26,7 +26,7 @@ This is how to do it:
 </service>
 ----
 
-If there's no suitable syntax highlighter, just omit the language: +[source]+.
+If there's no suitable syntax highlighter for the code used just omit the language: +[source]+.
 
 Currently the following syntax highlighters are enabled:
 
@@ -37,12 +37,12 @@ Currently the following syntax highlighters are enabled:
 * Python
 * XML
 
-For other highlighters we could add see https://code.google.com/p/google-code-prettify/.
+For other highlighters that could be added see https://code.google.com/p/google-code-prettify/.
 
 === Included from an example file
-You can also include source or configuration from an external file.
-It allows to provide a working example configuration maintaining doc and example in the same time.
-The behavior is the same as with images, the path is relative to the *.adoc file where the file is included.
+You can include source or configuration from an external file.
+In this way you can provide a working example configuration maintaining doc and example at the same time.
+The procedure and rules are the same as with images, the path is relative to the *.adoc file where the file to be used is included.
 
 .Include complete external file
  [source,xml]
@@ -57,11 +57,11 @@ This is how it's rendered:
 include::../configs/wmi-config.xml[]
 ----
 
-=== Include only parts of a file
-If you want to include just a specific part of a large configuration file, you can assign tages which indicates AsciiDoc what part has to be included.
+=== Include parts of a file
+If you want to include just a specific segment of a large configuration file, you can assign tags that indicate to AsciiDoc the section that is to be included.
 In this example just the service definition of the _ICMP monitor_ should be included.
 
-In the 'poller-configuration.xml' tag the part as the following:
+In the 'poller-configuration.xml' tag the section in the following manner:
 
 [source,xml]
 ----
@@ -73,7 +73,7 @@ In the 'poller-configuration.xml' tag the part as the following:
   <rra>RRA:MAX:0.5:288:366</rra>
   <rra>RRA:MIN:0.5:288:366</rra>
 </rrd>
-<!-- // tag::IcmpServiceConfig[] -->
+# tag::IcmpServiceConfig[] -->
 <service name="ICMP" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2" />
   <parameter key="timeout" value="3000" />
@@ -81,7 +81,7 @@ In the 'poller-configuration.xml' tag the part as the following:
   <parameter key="rrd-base-name" value="icmp" />
   <parameter key="ds-name" value="icmp" />
 </service>
-<!-- // end::IcmpServiceConfig[] -->
+# end::IcmpServiceConfig[] -->
 <service name="DNS" interval="300000" user-defined="false" status="on">
   <parameter key="retry" value="2" />
   <parameter key="timeout" value="5000" />
@@ -99,4 +99,4 @@ In the 'poller-configuration.xml' tag the part as the following:
 [source,xml]
 include::../configs/poller-configuration.xml[tags=IcmpServiceConfig]
 
-NOTE: Spaces and tabs are taken from the original file as it is.
+NOTE: Spaces and tabs are taken from the original file.

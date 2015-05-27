@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpHwInventoryAdapterConfigDao;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.hardware.HwExtension;
@@ -42,14 +41,15 @@ import org.opennms.netmgt.config.hardware.MibObj;
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.HwEntityAttributeType;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableRow;
 import org.opennms.netmgt.provision.snmp.EntityPhysicalTableTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -243,6 +243,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
             if (walker.timedOut()) {
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent timed out while scanning the " + trackerName + " table");
             }  else if (walker.failed()) {
+                LOG.error("Aborting entities scan for " + agentConfig, walker.getErrorThrowable());
                 throw new SnmpHardwareInventoryException("Aborting entities scan: Agent failed while scanning the " + trackerName + " table: " + walker.getErrorMessage());
             }
         } catch (final InterruptedException e) {
@@ -251,7 +252,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
 
         OnmsHwEntity root = tracker.getRootEntity();
         if (root == null) {
-            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like the node does not have an implementation for the entPhysicalTable of the ENTITY-MIB.");
+            throw new SnmpHardwareInventoryException("Cannot get root entity for node " + node.getLabel() + ", it seems like its SNMP agent does not have an implementation for the entPhysicalTable of the ENTITY-MIB, or it has an incorrect implementation of it.");
         }
 
         return root;

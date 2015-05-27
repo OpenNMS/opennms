@@ -77,7 +77,7 @@ public class JCifsMonitor extends AbstractServiceMonitor {
     /**
      * logging for JCifs monitor
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Poller." + JCifsMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(JCifsMonitor.class);
 
     /**
      * This method queries the CIFS share.

@@ -4,7 +4,9 @@ src/main/webapp/WEB-INF/lib
 src/main/webapp/WEB-INF/log4j.properties
 src/main/webapp/WEB-INF/version.properties
 bin
+node_modules
 tomcat
 www-test
 war
 .gwt
+/target/

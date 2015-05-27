@@ -60,7 +60,7 @@
 
     public String getContent(OnmsHwEntity entity) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<table>");
+        sb.append("<table class=\"table table-condensed table-bordered\">");
         sb.append("<tr><th>Description</th><td>" + entity.getEntPhysicalDescr() + "</td></tr>");
         if (StringUtils.isNotBlank(entity.getEntPhysicalVendorType()))
             sb.append("<tr><th>Vendor Type</th><td>" + entity.getEntPhysicalVendorType() + "</td></tr>");
@@ -104,22 +104,21 @@
     String nodeBreadCrumb = "<a href='element/node.jsp?node=" + node.getId()  + "'>Node</a>";
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Hardware Inventory" />
   <jsp:param name="headTitle" value="Hardware Inventory" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="Hardware Inventory" />
   <jsp:param name="link" value='<link type="text/css" href="hardware/jquery.treegrid.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/jquery/jquery-1.8.2.min.js"></script>' />
   <jsp:param name="script" value='<script type="text/javascript" src="hardware/jquery.treegrid.js"></script>' />
 </jsp:include>
 
 <br/>
-<table class="tree">
+<table class="table table-condensed table-hover tree">
   <% if (root == null) { %>
-       <br/>
-       <h2>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h2>
+      <br/>
+      <div class="jumbotron"><h3>The node <%= node.getLabel() %> doesn't have hardware information on the database.</h3></div>
   <% } else {
        printTree(out, root);
      }
@@ -130,4 +129,4 @@
   $('.tree').treegrid();
 </script>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

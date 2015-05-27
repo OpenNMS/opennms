@@ -83,6 +83,11 @@ public class SendmailHost implements Serializable {
         super();
     }
 
+    public SendmailHost(final String host, final Long port) {
+        m_host = host;
+        m_port = port;
+    }
+
     public void deletePort() {
         m_port = null;
     }

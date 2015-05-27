@@ -15,7 +15,7 @@ OpenNMSRemotePoller install ^
   --JvmOptions="-Dopennms.home=%OPENNMS_HOME%" ^
   ++JvmOptions="-Djava.rmi.activation.port=1099" ^
   ++JvmOptions=-Xmx384m ^
-  ++JvmOptions=-XX:MaxPermSize=256M ^
+  ++JvmOptions=-XX:MaxMetaspaceSize=256M ^
   ++JvmOptions="-Xdebug" ^
   ++JvmOptions="-Xnoagent" ^
   ++JvmOptions="-Djava.compiler=none" ^

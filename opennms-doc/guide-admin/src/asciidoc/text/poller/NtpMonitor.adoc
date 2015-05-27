@@ -1,12 +1,12 @@
 
-=== NtpMonitor
+==== NtpMonitor
 
 The NTP monitor tests for NTP service availability.
 During the poll an NTP request query packet is generated.
 If a response is received, it is parsed and validated.
 If the response is a valid NTP response, the service is considered available.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -14,7 +14,7 @@ If the response is a valid NTP response, the service is considered available.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the NtpMonitor
 [options="header, autowidth"]
@@ -25,7 +25,7 @@ If the response is a valid NTP response, the service is considered available.
 | `timeout` | Time in milliseconds to wait for a response.               | optional | `5000`
 |===
 
-==== Examples
+===== Examples
 
 [source, xml]
 ----

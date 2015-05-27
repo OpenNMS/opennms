@@ -30,15 +30,18 @@
 
 @GrabResolver(name='opennms-repo', root='http://maven.opennms.org/content/groups/opennms.org-release')
 
-@Grab(group='org.opennms.dependencies', module='spring-dependencies', type='pom', version='1.8.10')
+@Grab(group='org.slf4j', module='slf4j-simple', version='1.7.5')
+
+@Grab(group='org.opennms.dependencies', module='spring-dependencies', type='pom', version='1.13.1')
 import org.springframework.util.*;
 
-@Grab(group='org.opennms', module='opennms-model', version='1.8.10')
+@Grab(group='org.opennms', module='opennms-model', version='1.13.1')
 import org.opennms.netmgt.model.*;
 
-@Grab(group='org.opennms', module='opennms-services', version='1.8.10')
+@Grab(group='org.opennms', module='opennms-services', version='1.13.1')
 import org.opennms.netmgt.poller.*;
 import org.opennms.netmgt.poller.monitors.*;
+
 
 public class runPageSequenceMonitor implements MonitoredService {
     private int m_nodeId = 21;
@@ -68,8 +71,10 @@ public class runPageSequenceMonitor implements MonitoredService {
     }
 
     public NetworkInterface getNetInterface() {
-        return new IPv4NetworkInterface(getAddress());
+        return new InetNetworkInterface(getAddress());
     }
+
+    public String getSvcUrl() { return null }
 
     public InetAddress getAddress() {
         return m_inetAddr;

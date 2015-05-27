@@ -76,18 +76,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /*
- * Big To-dos: - Fix all of the XXX items (some coding, some discussion)
+ * TODO:
+ * - Fix all of the XXX items (some coding, some discussion)
  * - Change the Exceptions to something more reasonable
- * - Do exception handling where it makes sense (give users reasonable
- *   error messages for common problems)
+ * - Do exception handling where it makes sense (give users reasonable error messages for common problems)
  * - Javadoc
  */
 
 /**
  * <p>Installer class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public class Installer {
 
@@ -178,10 +175,8 @@ public class Installer {
             m_installerDb.setNoRevert(m_do_not_revert);
             m_installerDb.setAdminDataSource(adminDs);
             m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
-            m_installerDb.setPostgresOpennmsPassword(dsConfig.getPassword());
             m_installerDb.setDataSource(ds);
             m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
-            m_installerDb.setSchemaName(dsConfig.getSchemaName());
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
@@ -197,6 +192,22 @@ public class Installer {
         }
 
         checkIPv6();
+
+        /*
+         * Make sure we can execute the rrdtool binary when the
+         * JniRrdStrategy is enabled.
+         */
+
+        boolean using_jni_rrd_strategy = System.getProperty("org.opennms.rrd.strategyClass", "")
+                .contains("JniRrdStrategy");
+
+        if (using_jni_rrd_strategy) {
+            File rrd_binary = new File(System.getProperty("rrd.binary"));
+            if (!rrd_binary.canExecute()) {
+                throw new Exception("Cannot execute the rrdtool binary '" + rrd_binary.getAbsolutePath()
+                        + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
+            }
+        }
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -397,6 +408,8 @@ public class Installer {
         
         loadEtcPropertiesFile("opennms.properties");
         loadEtcPropertiesFile("model-importer.properties");
+        // Used to retrieve 'org.opennms.rrd.strategyClass'
+        loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
@@ -1228,14 +1241,5 @@ public class Installer {
             System.out.printf("successful.. round trip time: %.3f ms%n", rtt.doubleValue() / 1000.0);
         }
         
-    }
-
-    /**
-     * <p>getInstallerDb</p>
-     *
-     * @return a {@link org.opennms.install.db.InstallerDb} object.
-     */
-    public InstallerDb getInstallerDb() {
-        return m_installerDb;
     }
 }

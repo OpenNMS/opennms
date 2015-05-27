@@ -34,6 +34,9 @@
   <inherits name="com.google.gwt.user.User"/>
   <inherits name="com.google.gwt.i18n.I18N"/>
      
+  <!-- Bootstrap 3 bindings -->
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3NoThemeNoJs"/>
+
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.opennms.gwt.web.ui.asset.client.AssetPage'/>
   

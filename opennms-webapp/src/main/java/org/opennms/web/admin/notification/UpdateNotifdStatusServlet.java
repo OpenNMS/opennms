@@ -30,15 +30,14 @@ package org.opennms.web.admin.notification;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +72,8 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
             throw new ServletException("Could not update notification status: " + e.getMessage(), e);
         }
 
-        // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
-        dispatcher.forward(request, response);
+        // Redirect to admin/index.jsp
+        response.sendRedirect("index.jsp");
     }
 
     protected void sendEvent(String uei, HttpServletRequest request) {

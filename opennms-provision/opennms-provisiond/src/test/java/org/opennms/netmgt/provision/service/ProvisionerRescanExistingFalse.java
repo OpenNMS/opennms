@@ -47,11 +47,11 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -183,8 +183,8 @@ public class ProvisionerRescanExistingFalse implements InitializingBean {
     @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgents({
-        @JUnitSnmpAgent(host="172.20.1.201", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
-        @JUnitSnmpAgent(host="172.20.1.204", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="192.0.2.201", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
+        @JUnitSnmpAgent(host="192.0.2.204", port=161, resource="classpath:testNoRescanOnImport-part1.properties"),
         @JUnitSnmpAgent(host="10.1.15.245", port=161, resource="classpath:testNoRescanOnImport-part2.properties")
     })
     public void testNoRescanOnImport() throws Exception {

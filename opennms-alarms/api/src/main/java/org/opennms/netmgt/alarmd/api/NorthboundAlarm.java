@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 
@@ -300,7 +299,7 @@ public class NorthboundAlarm implements Preservable {
     private final String m_ossKey;
     private final String m_ossState;
     private final String m_alarmKey;
-    private final OnmsServiceType m_service;
+    private final String m_service;
     private final OnmsSeverity m_severity;
     private final Date m_suppressed;
     private final Date m_suppressedUntil;
@@ -390,7 +389,7 @@ public class NorthboundAlarm implements Preservable {
         m_ossKey = alarm.getOssPrimaryKey();
         m_ossState = alarm.getQosAlarmState();
         m_alarmKey = alarm.getReductionKey();
-        m_service = alarm.getServiceType();
+        m_service = alarm.getServiceType() == null ? null : alarm.getServiceType().getName();
         m_severity = alarm.getSeverity();
         //alarm.getSeverityId();
         //alarm.getSeverityLabel();
@@ -485,7 +484,7 @@ public class NorthboundAlarm implements Preservable {
 		return m_alarmKey;
 	}
 
-	public OnmsServiceType getService() {
+	public String getService() {
 		return m_service;
 	}
 

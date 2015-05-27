@@ -112,7 +112,7 @@
 </c:url>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
   <jsp:param name="headTitle" value="${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
@@ -136,7 +136,7 @@ function doDelete() {
 
 </sec:authorize>
 	
-      <h2>${service.serviceName} service on ${service.ipAddress.hostAddress}</h2>
+      <h4>${service.serviceName} service on ${service.ipAddress.hostAddress}</h4>
 
        <sec:authorize url="admin/deleteService">
          <form method="post" name="delete" action="admin/deleteService">
@@ -146,17 +146,17 @@ function doDelete() {
        </sec:authorize>
 
         
-      <p>
-         <a href="${eventUrl}">View Events</a>
+      <ul class="list-inline">
+         <li><a href="${eventUrl}">View Events</a></li>
          
  	
        <sec:authorize url="admin/deleteService">
-         &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
+         <li><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
        </sec:authorize>
 
 	
 
-      </p>
+      </ul>
  
           
 
@@ -164,11 +164,14 @@ function doDelete() {
          </form>
       </sec:authorize>
 
-
-      <div class="TwoColLeft">
+      <div class="row">
+      <div class="col-md-6">
             <!-- general info box -->
-            <h3>General</h3>
-            <table>
+            <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">General</h3>
+            </div>
+            <table class="table table-condensed">
               <tr>
                 <c:url var="nodeLink" value="element/node.jsp">
                   <c:param name="node" value="${service.ipInterface.node.id}"/>
@@ -196,9 +199,14 @@ function doDelete() {
                 <td>${monitorClass}</td>
               </tr>
             </table>
+            </div>
+            <!-- simple parameters box -->
             <c:if test="${parameters != null}">
-              <h3>Service Parameters</h3>
-              <table class="o-box">
+              <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Service Parameters</h3>
+              </div>
+              <table class="table table-condensed">
               <c:forEach var="entry" items="${parameters}">
                 <tr>
                   <th nowrap>${entry.key}</th>
@@ -206,13 +214,17 @@ function doDelete() {
                 </tr>
               </c:forEach>
               </table>
+            </div>
             </c:if>
+            <!-- XML parameters box -->
             <c:if test="${xmlParams != null}">
               <c:forEach var="entry" items="${xmlParams}">
-                <h3>${entry.key}</h3>
-                <table class="o-box">
-                  <tr><td>${entry.value}</td></tr>
-                </table>
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">${entry.key}</h3>
+                  </div>
+                  <div class="panel-body" style="overflow-x:scroll;">${entry.value}</div>
+                </div>
               </c:forEach>
             </c:if>
 
@@ -221,9 +233,9 @@ function doDelete() {
             
             <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
             
-      </div> <!-- class="TwoColLeft" -->
+      </div> <!-- content-left" -->
 
-      <div class="TwoColRight">
+      <div class="col-md-6">
             <!-- events list box -->
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="${service.ipInterface.node.id}" />
@@ -236,8 +248,9 @@ function doDelete() {
       
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
-      </div> <!-- class="TwoColRight" -->
+      </div> <!-- content-right -->
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 

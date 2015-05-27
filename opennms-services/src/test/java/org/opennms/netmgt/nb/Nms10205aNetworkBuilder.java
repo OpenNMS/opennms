@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:alejandro@opennms.org">Alejandro Galue</a>
  */
 
-public class Nms10205aNetworkBuilder extends TestNetworkBuilder {
+public class Nms10205aNetworkBuilder extends NmsNetworkBuilder {
     static {
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.5"), 520);
         MUMBAI_IP_IF_MAP.put(InetAddressUtils.addr("192.168.5.13"), 507);

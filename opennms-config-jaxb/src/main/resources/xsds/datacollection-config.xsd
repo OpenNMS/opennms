@@ -512,7 +512,7 @@
         <simpleType>
           <restriction base="string">
             <pattern
-              value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)" />
+              value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)|[Hh](ex|EX)[Ss](tring|TRING)" />
           </restriction>
         </simpleType>
       </attribute>

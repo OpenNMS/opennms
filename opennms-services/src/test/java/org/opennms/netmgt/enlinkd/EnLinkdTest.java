@@ -27,15 +27,15 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SWITCH1_SYSOID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_SYSOID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_SYSOID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SYSOID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_SYSOID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SYSOID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;

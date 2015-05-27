@@ -103,17 +103,20 @@
 
     long timelineEnd = new Date().getTime() / 1000;
     long timelineStart = timelineEnd - 3600 * 24;
-    int timelineWidth = 250;
-    String emptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
+    String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
+    String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/";
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
-<h3>Availability</h3>
-<table>
+<div id="availability-box" class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">Availability</h3>
+</div>
+<table class="table table-condensed severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="Cleared nobright"><img src="/opennms/rest/timeline/header/<%=timelineStart%>/<%=timelineEnd%>/<%=timelineWidth%>"></td>
+    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
     <td class="<%= overallStatus %> nobright"><%= overallStatusString %></td>
   </tr>
 
@@ -138,13 +141,13 @@
             }
         }
 
-        String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + ipAddr + "/" + service.getServiceName() + "/" + timelineStart + "/" + timelineEnd + "/" + timelineWidth;
+        String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + java.net.URLEncoder.encode(ipAddr, "UTF-8") + "/" + java.net.URLEncoder.encode(service.getServiceName(), "UTF-8") + "/" + timelineStart + "/" + timelineEnd + "/";
     %>
     <%
       String serviceClass;
 
       if( service.isManaged() ) {
-        svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+        svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
         serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
       } else {
         serviceClass = "Indeterminate";
@@ -155,14 +158,19 @@
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
-      <td class="Cleared nobright"><script src="<%=timelineUrl%>"></script></td>
-      <td class="<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
+      <td class="Cleared nobright">
+        <span data-src="<%=timelineUrl%>"></span>
+      </td>
+      <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
-      <td class="Cleared nobright"><img src="<%=emptyUrl%>"></td>
-      <td class="<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
+      <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+      <td class="severity-<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
     </tr>
   <% } %>
 </table>
+</div>
+
+<script type="text/javascript" src="js/timeline-resize.js"></script>

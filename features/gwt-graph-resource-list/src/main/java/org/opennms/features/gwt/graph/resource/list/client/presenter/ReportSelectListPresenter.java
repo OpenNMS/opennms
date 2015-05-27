@@ -47,16 +47,17 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     private ReportSelectListView<ResourceListItem> m_view;
     private SearchPopupDisplay m_searchPopup;
+    private final String m_targetUrl;
     private String m_baseUrl;
 
-    public ReportSelectListPresenter(ReportSelectListView<ResourceListItem> view, SearchPopupDisplay searchView, String baseUrl) {
+    public ReportSelectListPresenter(ReportSelectListView<ResourceListItem> view, SearchPopupDisplay searchView, String targetUrl, String baseUrl) {
         setView(view);
         getView().setPresenter(this);
         initializeSearchPopup(searchView);
+        m_targetUrl = targetUrl;
         m_baseUrl = baseUrl;
     }
-    
-    
+
     private void initializeSearchPopup(SearchPopupDisplay searchPopupView) {
         m_searchPopup = searchPopupView;
         m_searchPopup.setHeightOffset(425);
@@ -112,9 +113,10 @@ public class ReportSelectListPresenter implements Presenter, ReportSelectListVie
 
     private void buildUrlAndGoToGraphPage(List<ResourceListItem> reports) {
         StringBuilder sb = new StringBuilder();
-        sb.append(m_baseUrl + "graph/results.htm?reports=all&resourceId=");
-        
-        
+        sb.append(m_baseUrl);
+        sb.append(m_targetUrl);
+        sb.append("?reports=all&resourceId=");
+
         boolean first = true;
         for(ResourceListItem item : reports) {
             if(!first) {

@@ -61,10 +61,10 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+	<jsp:param name="title" value="Roles" />
 	<jsp:param name="headTitle" value="Roles" />
-	<jsp:param name="breadcrumb" value="Role List" />
+	<jsp:param name="breadcrumb" value="Roles" />
 </jsp:include>
 
 <script type="text/javascript" >
@@ -88,16 +88,19 @@
 	<input type="hidden" name="role" />
 </form>
 
-<h3>Role Configuration</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Roles</h3>
+  </div>
 
-<table width="100%" border="1" bordercolor="black">
+  <table class="table table-condensed severity">
+         <tr>
+          <th class="col-md-2">Name</th>
+          <th class="col-md-2">Supervisor</th>
+          <th class="col-md-2">Currently On Call</th>
+          <th class="col-md-2">Membership Group</th>
+          <th class="col-md-4">Description</th>
 
-         <tr bgcolor="#999999">
-          <td><b>Name</b></td>
-          <td><b>Supervisor</b></td>
-          <td><b>Currently On Call</b></td>
-          <td><b>Membership Group</b></td>
-          <td><b>Description</b></td>
 			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
 				
@@ -116,4 +119,4 @@
 			</c:forEach>
 		</table>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

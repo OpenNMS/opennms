@@ -138,7 +138,7 @@
 
 </script>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Path Outline" />
   <jsp:param name="headTitle" value="Path Outline" />
   <jsp:param name="headTitle" value="Admin" />
@@ -150,87 +150,106 @@
 
 <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the piece of the path that you want to edit from below. When
-  all editing is complete click the <i>Finish</i> button. No changes will
-  be permanent until the <i>Finish</i> button has been clicked.</h3>
-
-<form method="post" name="outline" action="admin/notification/destinationWizard" onsubmit="return finish();">
+<form role="form" class="form-horizontal" method="post" name="outline" action="admin/notification/destinationWizard" onsubmit="return finish();">
   <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
   <input type="hidden" name="index"/>
   <input type="hidden" name="userAction"/>
   <input type="hidden" name="escalation" value="false"/>
-  <table>
-    <tr>
-      <td>Name: 
-      <% if (newPath.getName()==null) { %>
-        <input type="text" name="name" value=""/>
-      <% } else { %>
-        <input type="text" name="name" value="<%=newPath.getName()%>"/>
-      <% } %>
-      </td>
-    </tr>
-    <tr>
-      <td>
-      Initial Delay: <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
-      </td>
-    </tr>
-    <% for (int i = 0; i < targetLinks.size(); i++) { %>
-     <tr>
-       <td>
-        <table width="15%" bgcolor="#999999" border="1">
-          <tr>
-            <td width="10%">
-              <b>
-              <% if (i==0) { %>
-                <%="Initial Targets"%>
-              <% } else { %>
-                <%="Escalation #" + i%>
-              <% } %>
-              </b>
-              <br/>
-              <% if (i > 0) { %>  
-                Delay:
-                <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br/>
-              <% } %>
-              <%=buildTargetList(i, newPath, "escalate"+i)%>  
-            </td>
-            <td width="5%" valign="top">
-                <input type="button" value="Edit" onclick="edit_path(<%=i-1%>)"/>
-                <br/>
-                &nbsp;
-                <br/>
-                <%if (i > 0) { %>
-                  <input type="button" value="Remove" onclick="remove_path(<%=i-1%>)"/>
-                <% } else { %>
-                  &nbsp;
-                <% } %>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <input type="button" value="Add Escalation" onclick="add_path(<%=i%>)"/>
-      </td>
-    </tr>
-    <% } %>
-    <tr>
-      <td>
-        <input type="submit" value="Finish"/>
-        <input type="button" value="Cancel" onclick="cancel()"/>
-      </td>
-    </tr>
-  </table>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose the piece of the path that you want to edit from below. When
+          all editing is complete click the <i>Finish</i> button. No changes will
+          be permanent until the <i>Finish</i> button has been clicked.</h3>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label for="input_name" class="control-label col-sm-2">Name:</label>
+          <div class="col-sm-10">
+            <% if (newPath.getName()==null) { %>
+              <input type="text" class="form-control" name="name" value=""/>
+            <% } else { %>
+              <input type="text" class="form-control" name="name" value="<%=newPath.getName()%>"/>
+            <% } %>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
+          <div class="col-sm-10">
+            <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+      <table class="table table-condensed table-borderless">
+        <% for (int i = 0; i < targetLinks.size(); i++) { %>
+         <tr>
+           <td>
+            <% if (i!=0) { %>
+            <hr>
+            <% } %>
+            <table class="table table-condensed table-borderless">
+              <tr>
+                <td width="10%">
+                  <b>
+                  <% if (i==0) { %>
+                    <%="Initial Targets"%>
+                  <% } else { %>
+                    <%="Escalation #" + i%>
+                  <% } %>
+                  </b>
+                  <br/>
+                  <% if (i > 0) { %>
+                    Delay:
+                    <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br/>
+                  <% } %>
+                  <%=buildTargetList(i, newPath, "escalate"+i)%>
+                </td>
+                <td width="5%" valign="top">
+                    <input type="button" class="btn btn-default" value="Edit" onclick="edit_path(<%=i-1%>)"/>
+                    <br/>
+                    &nbsp;
+                    <br/>
+                    <%if (i > 0) { %>
+                      <input type="button" class="btn btn-default" value="Remove" onclick="remove_path(<%=i-1%>)"/>
+                    <% } else { %>
+                      &nbsp;
+                    <% } %>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="button" class="btn btn-default" value="Add Escalation" onclick="add_path(<%=i%>)"/>
+          </td>
+        </tr>
+        <% } %>
+      </table>
+           </div> <!-- column -->
+         </div> <!-- form-group -->
+      </div> <!-- panel-body -->
+      <div class="panel-footer">
+        <input type="submit" class="btn btn-default" value="Finish"/>
+        <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
+      </div> <!-- panel-footer -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
           boolean gotCurrValue = false;
-          StringBuffer buffer = new StringBuffer("<select name=\"" + name  + "\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control\" id=\"input_" + name + "\" name=\"" + name  + "\">");
                     
           for (int i = 0; i < intervals.length; i++)
           {
@@ -255,7 +274,7 @@
     
     public String buildTargetList(int index, Path path, String name)
     {
-        StringBuffer buffer = new StringBuffer("<select width=\"200\" style=\"width: 200px\" name=\""+name+"\" size=\"4\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" name=\""+name+"\" size=\"4\">");
         Target[] targetList = new Target[0];
         
         if (index == 0)

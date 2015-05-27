@@ -4,7 +4,7 @@ OpenNMS License
 This file is part of OpenNMS(R).
 
 Copyright (C) 2014 The OpenNMS Group, Inc.
-OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
 
 OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 

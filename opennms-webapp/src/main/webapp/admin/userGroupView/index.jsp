@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Configure Users and Groups" />
   <jsp:param name="headTitle" value="Users and Groups" />
   <jsp:param name="headTitle" value="Admin" />
@@ -43,47 +43,65 @@
   <jsp:param name="breadcrumb" value="Users and Groups" />
 </jsp:include>
 
-<div class="TwoColLAdmin" >
-      <h3>Users and Groups</h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Users and Groups</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          <a HREF="admin/userGroupView/users/list.jsp">Configure Users</a>
+        </p>
+        <p>
+          <a HREF="admin/userGroupView/groups/list.htm">Configure Groups</a>
+        </p>
+        <p>
+          <a HREF="admin/userGroupView/roles">Configure Roles</a>
+        </p>
+        <!--
+        <p>
+          <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
+        </p>
+        -->
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-      <p>
-        <a HREF="admin/userGroupView/users/list.jsp">Configure Users</a>
-      </p>
-      <p>
-        <a HREF="admin/userGroupView/groups/list.htm">Configure Groups</a>
-      </p>
-      <p>
-        <a HREF="admin/userGroupView/roles">Configure Roles</a>
-      </p>
-      <!--
-      <p>
-        <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
-      </p>
-      -->
-</div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Users</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          Add new <em>Users</em>, change user names and passwords, and edit notification information.
+        </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-<div  class="TwoColRAdmin">
-      <h3>Users</h3>
-      <p>
-        Add new <em>Users</em>, change user names and passwords, and edit notification information.
-      </p>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Groups</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          Assign and unassign <em>Users</em> to <em>Groups</em>.
+        </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
 
-      <h3>Groups</h3>
-      <p>
-        Assign and unassign <em>Users</em> to <em>Groups</em>.
-      </p>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Roles</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+          Configure Roles that define On Call schedules for users.
+        </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-      <h3>Roles</h3>
-      <p>
-        Configure Roles that define On Call schedules for users.
-      </p>
-      <!--
-      <h3>Views</h3>
-      <p>
-        Assign and unassign <em>Users</em> and <em>Groups</em> to <em>Views</em>.
-      </p>
-      -->
-</div>
-
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

@@ -66,7 +66,7 @@ function runDbMaint() {
            SELECT eventid 
              FROM notifications 
             WHERE eventid = events.eventid)
-              AND eventtime < now() - interval '6 weeks');"
+              AND eventtime < now() - interval '6 weeks';"
 
   # Routine maintenance if autovacuum isn't running
   #runsql "VACUUM;"

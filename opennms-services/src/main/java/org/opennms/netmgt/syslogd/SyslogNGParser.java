@@ -64,6 +64,7 @@ public class SyslogNGParser extends SyslogParser {
 
         final Matcher matcher = getMatcher();
         final SyslogMessage message = new SyslogMessage();
+        message.setParserClass(getClass());
         try {
             int priorityField = Integer.parseInt(matcher.group(1));
             message.setFacility(SyslogFacility.getFacilityForCode(priorityField));

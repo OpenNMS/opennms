@@ -39,10 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
-import org.opennms.web.snmpinfo.SnmpInfo;
+import org.opennms.web.svclayer.model.SnmpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

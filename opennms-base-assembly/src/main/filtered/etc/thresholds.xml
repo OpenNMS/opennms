@@ -18,7 +18,7 @@
         		<expression type="high" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="90.0" rearm="75.0" trigger="2">
         		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
         		</expression>
-        		<expression type="relativeChange" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="0.5" rearm="0.0" trigger="2">
+        		<expression description="Trigger a warning event when the percentage of disk space used on any disk of type hrStorageFixedDisk (e.g. a locally attached or USB-attached hard disk) increases by a relative 33.3% compared to its most recent previous measurement (e.g. there is suddenly less free space)" type="relativeChange" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="1.333" rearm="0.0" trigger="1">
         		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
         		</expression>
 
@@ -39,8 +39,8 @@
         			<!-- Filter out special filesystems. See bug http://issues.opennms.org/browse/NMS-5116 -->
         			<resource-filter field="ns-dskPath">^(?:(?!(/proc|/sys|/dev/pts)).)+$</resource-filter>
         		</threshold>
-        		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
-        		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
+        		<threshold description="Trigger an alert when the percentage of disk space used on any disk increases by a relative 33.3% compared to its most recent previous measurement (that is, there is suddenly less free space)" type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="1.333" rearm="0.0" trigger="1"/>
+        		<threshold description="Trigger an alert when the percentage of inodes used on any disk increases by a relative 33.3% compared to its most recent previous measurement (that is, there are suddenly fewer free inodes)" type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="1.333" rearm="0.0" trigger="1"/>
         		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>
         		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"> 
         		    <resource-filter field="memTotalSwap">^[1-9]+[.0-9]*$</resource-filter>

@@ -84,13 +84,13 @@
 
 %>
 
-<table width="50%">
+<table class="table table-condensed">
   
 
 
 <% if (iproutes == null || iproutes.length == 0) { %>
   <tr>
-    <td colspan="7">No IP routes have been discovered for this node.</td>
+    <td>No IP routes have been discovered for this node.</td>
   </tr>
 <% } else { %>
  <thead>

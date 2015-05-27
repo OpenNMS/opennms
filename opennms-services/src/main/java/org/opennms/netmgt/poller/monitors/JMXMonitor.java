@@ -28,100 +28,92 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Map;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.JmxUtils;
+import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * This class computes the response time of making a connection to 
- * the remote server.  If the connection is successful the reponse time 
- * RRD is updated.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
+import java.net.InetAddress;
+import java.util.Map;
 
 @Distributable
 /**
- * <p>Abstract JMXMonitor class.</p>
+ * This class computes the response time of making a connection to
+ * the remote server.  If the connection is successful the reponse time
+ * RRD is updated.
  *
- * @author ranger
- * @version $Id: $
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public abstract class JMXMonitor extends AbstractServiceMonitor {
 
-    
-    public static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
+
+    private class Timer {
+
+        private long startTime;
+
+        private Timer() {
+            reset();
+        }
+
+        public void reset() {
+            this.startTime = System.nanoTime();
+        }
+
+        public long getStartTime() {
+            return startTime;
+        }
+    }
+
+    protected abstract String getConnectionName();
+
     /**
-     * <p>getMBeanServerConnection</p>
-     *
-     * @param parameterMap a {@link java.util.Map} object.
-     * @param address a {@link java.net.InetAddress} object.
-     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
+     * {@inheritDoc}
      */
-    public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
-    
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
-     */
-    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
 
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
+        final NetworkInterface<InetAddress> iface = svc.getNetInterface();
+        final InetAddress ipv4Addr = iface.getAddress();
 
-        PollStatus     serviceStatus = PollStatus.unavailable();
-        String         dsName        = null;
-        InetAddress    ipv4Addr      = (InetAddress)iface.getAddress();
-        
-        ConnectionWrapper connection = null;
-
-
+        PollStatus serviceStatus = PollStatus.unavailable();
         try {
-            
-            int retry = ParameterMap.getKeyedInteger(map, "retry", 3);
+            final Timer timer = new Timer();
+            final JmxConnectionManager connectionManager = new DefaultConnectionManager(ParameterMap.getKeyedInteger(map, "retry", 3));
+            final JmxConnectionManager.RetryCallback retryCallback = new JmxConnectionManager.RetryCallback() {
+                @Override
+                public void onRetry() {
+                    timer.reset();
+                }
+            };
 
-            long t0 = 0;
-            for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
-                LOG.debug("connecting to {} on node ID {}, attempt number {}", InetAddressUtils.str(ipv4Addr), svc.getNodeId(), attempts + 1);
-                try {
-                    t0 = System.nanoTime();
-                    connection = getMBeanServerConnection(map, ipv4Addr);
-                    if (connection != null) {
-                        connection.getMBeanServer().getMBeanCount();
-                        long nanoResponseTime = System.nanoTime() - t0;
-                        serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
-                        break;
-                    }
-                }
-                catch(IOException e) {
-                    String reason = dsName+": IOException while polling address: " + ipv4Addr;
-                    LOG.debug(reason);
-                    serviceStatus = PollStatus.unavailable(reason);
-                    break;
-                }
+            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), InetAddrUtils.str(ipv4Addr), JmxUtils.convertToStringMap(map), retryCallback)) {
+
+                connection.getMBeanServerConnection().getMBeanCount();
+                long nanoResponseTime = System.nanoTime() - timer.getStartTime();
+                serviceStatus = PollStatus.available(nanoResponseTime / 1000000.0);
+            } catch (JmxServerConnectionException mbse) {
+                // Number of retries exceeded
+                String reason = "IOException while polling address: " + ipv4Addr;
+                LOG.debug(reason);
+                serviceStatus = PollStatus.unavailable(reason);
             }
         } catch (Throwable e) {
-            String reason = dsName+" Monitor - failed! " + InetAddressUtils.str(ipv4Addr);
+            String reason = "Monitor - failed! " + InetAddressUtils.str(ipv4Addr);
             LOG.debug(reason);
             serviceStatus = PollStatus.unavailable(reason);
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
-        
         return serviceStatus;
     }
 }

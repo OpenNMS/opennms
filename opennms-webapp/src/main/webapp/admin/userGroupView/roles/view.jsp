@@ -64,7 +64,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />
 	<jsp:param name="headTitle" value="View" />
 	<jsp:param name="headTitle" value="Roles" />
@@ -119,51 +119,54 @@
 
 </script>
 
-<h3>View Role</h3>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">View Role</h3>
+  </div>
+  <table class="table table-condensed">
+    <tr>
+      <th>Name</th>
+        <td>${role.name}</td>
+      <th>Currently On Call</th>
+  	<td>
+  	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
+  		<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
+  		<span title="${fullName}">${scheduledUser}</span>
+  	  </c:forEach>
+  	</td>
+    </tr>
 
-<table>
-  <tr>
-    <th>Name</th>
-	<td>${role.name}</td>
-    <th>Currently On Call</th>
-	<td>
-	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
-		<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
-		<span title="${fullName}">${scheduledUser}</span>
-	  </c:forEach>	
-	</td>
-  </tr>
-  
-  <tr>
-    <th>Supervisor</th>
-	<td>
-	  <c:set var="supervisorUser">${role.defaultUser}</c:set>
-	  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
-	  <span title="${fullName}">${role.defaultUser}</span></td>
-    <th>Membership Group</th>
-	<td>${role.membershipGroup}</td>
-  </tr>
-  
-  <tr>
-    <th>Description</th>
-	<td colspan="3">${role.description}</td>
-  </tr>
-</table>
+    <tr>
+      <th>Supervisor</th>
+  	<td>
+  	  <c:set var="supervisorUser">${role.defaultUser}</c:set>
+  	  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
+  	  <span title="${fullName}">${role.defaultUser}</span></td>
+      <th>Membership Group</th>
+  	<td>${role.membershipGroup}</td>
+    </tr>
 
+    <tr>
+      <th>Description</th>
+  	<td colspan="3">${role.description}</td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
-			<input type="hidden" name="operation" value="editDetails"/>
-			<input type="hidden" name="role" value="${role.name}"/>
-			<input type="submit" value="Edit Details" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
+  <input type="hidden" name="operation" value="editDetails"/>
+  <input type="hidden" name="role" value="${role.name}"/>
+  <button type="submit" class="btn btn-default">Value Details</button>
+</form>
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-			<input type="submit" value="Done" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
+  <button type="submit" class="btn btn-default">Done</button>
+</form>
 
-<h3>Role Schedule</h3>
-
-
+<div class="panel panel-default top-buffer">
+  <div class="panel-heading">
+    <h3 class="panel-title">Role Schedule</h3>
+  </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="${role.name}"/>
@@ -185,9 +188,8 @@
 					<input type="hidden" name="schedIndex"/>
 					<input type="hidden" name="timeIndex"/>
 				</form>
-
-			<table>
-			  <caption>
+			<table class="table table-bordered">
+			  <caption class="text-center">
 				<a href="javascript:prevMonth()">&#139;&#139;&#139;</a>&nbsp;
 				<b>${calendar.monthAndYear}</b>&nbsp;
 				<a href="javascript:nextMonth()">&#155;&#155;&#155;</a>
@@ -214,10 +216,10 @@
 				  </tr>
 				</c:forEach>
 			</table>
+</div> <!-- panel-title -->
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-			<input type="submit" value="Done" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
+  <button type="submit" class="btn btn-default">Done</button>
+</form>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

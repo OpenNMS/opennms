@@ -49,16 +49,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.api.Util;
 import org.opennms.web.graph.KscResultSet;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.KscReportService;
-import org.opennms.web.svclayer.ResourceService;
+import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -148,7 +151,18 @@ public class CustomViewController extends AbstractController implements Initiali
         // Get the list of available prefabricated graph options 
         Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
-        removeBrokenGraphsFromReport(report);
+        if (removeBrokenGraphsFromReport(report) && reportId > -1) {
+            m_kscReportFactory.setReport(reportId, report);
+            m_kscReportFactory.saveCurrent();
+            EventBuilder eb = new EventBuilder(EventConstants.KSC_REPORT_UPDATED_UEI, "Web UI");
+            eb.addParam(EventConstants.PARAM_REPORT_TITLE, report.getTitle() == null ? "Report #" + report.getId() : report.getTitle());
+            eb.addParam(EventConstants.PARAM_REPORT_GRAPH_COUNT, report.getGraphCount());
+            try {
+                Util.createEventProxy().send(eb.getEvent());
+            } catch (Throwable e) {
+                LOG.error("Can't send event " + eb.getEvent(), e);
+            }
+        }
         List<Graph> graphCollection = report.getGraphCollection();
         if (!graphCollection.isEmpty()) {
             List<OnmsResource> resources = getKscReportService().getResourcesFromGraphs(graphCollection);
@@ -285,19 +299,28 @@ public class CustomViewController extends AbstractController implements Initiali
         return modelAndView;
     }
     
-    private void removeBrokenGraphsFromReport(Report report) {
+    // Returns true if the report was modified due to invalid resource IDs. 
+    private boolean removeBrokenGraphsFromReport(Report report) {
         for (Iterator<Graph> itr = report.getGraphCollection().iterator(); itr.hasNext();) {
             Graph graph = itr.next();
             try {
-                getKscReportService().getResourceFromGraph(graph);
+                OnmsResource r = getKscReportService().getResourceFromGraph(graph);
+                if (r == null) {
+                    LOG.error("Removing graph '{}' in KSC report '{}' because the resource it refers to could not be found. Perhaps resource '{}' (or its ancestor) referenced by this graph no longer exists?", graph.getTitle(), report.getTitle(), graph.getResourceId());
+                    itr.remove();
+                    return true;
+                }
             } catch (ObjectRetrievalFailureException orfe) {
                 LOG.error("Removing graph '{}' in KSC report '{}' because the resource it refers to could not be found. Perhaps resource '{}' (or its ancestor) referenced by this graph no longer exists?", graph.getTitle(), report.getTitle(), graph.getResourceId());
                 itr.remove();
+                return true;
             } catch (Throwable e) {
                 LOG.error("Unexpected error while scanning through graphs in report: {}", e.getMessage(), e);
                 itr.remove();
+                return true;
             }
         }
+        return false;
     }
 
     private void promoteResourceAttributesIfNecessary(final OnmsResource resource) {
@@ -361,7 +384,7 @@ public class CustomViewController extends AbstractController implements Initiali
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -370,7 +393,7 @@ public class CustomViewController extends AbstractController implements Initiali
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
@@ -379,7 +402,7 @@ public class CustomViewController extends AbstractController implements Initiali
     /**
      * <p>getResourceService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @return a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public ResourceService getResourceService() {
         return m_resourceService;
@@ -388,7 +411,7 @@ public class CustomViewController extends AbstractController implements Initiali
     /**
      * <p>setResourceService</p>
      *
-     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @param resourceService a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;

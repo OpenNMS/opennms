@@ -98,7 +98,7 @@ public class AliasedResource extends SnmpCollectionResource {
             return Integer.toString(getIfInfo().getNodeId());
         } else if ("nodelabel".equalsIgnoreCase(m_domain)) {
             try {
-                return NodeLabelJDBCImpl.getInstance().retrieveLabel(getIfInfo().getNodeId()).getLabel();
+                return new NodeLabelJDBCImpl().retrieveLabel(getIfInfo().getNodeId()).getLabel();
             } 
             catch (Throwable e) {
                 return "nodeid-" + Integer.toString(getIfInfo().getNodeId());
