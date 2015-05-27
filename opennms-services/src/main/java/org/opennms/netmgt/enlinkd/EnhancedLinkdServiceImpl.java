@@ -247,7 +247,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected CdpLink query() {
-				return m_dao.get(nodeId, saveMe.getCdpCacheIfIndex());
+				return m_dao.get(nodeId, saveMe.getCdpCacheIfIndex(), saveMe.getCdpCacheDeviceIndex());
 			}
 
 			@Override

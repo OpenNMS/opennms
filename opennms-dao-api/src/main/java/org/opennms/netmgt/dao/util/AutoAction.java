@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.util;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Autoaction;
 
 /**
@@ -49,7 +49,7 @@ public abstract class AutoAction {
         String text = autoact.getContent();
         String state = autoact.getState();
 
-        return Constants.escape(text, Constants.DB_ATTRIB_DELIM) + Constants.DB_ATTRIB_DELIM + state;
+        return EventDatabaseConstants.escape(text, EventDatabaseConstants.DB_ATTRIB_DELIM) + EventDatabaseConstants.DB_ATTRIB_DELIM + state;
 
     }
 
@@ -69,16 +69,16 @@ public abstract class AutoAction {
 
         for (int index = 0; index < autoacts.length; index++) {
             if (!first)
-                buf.append(Constants.MULTIPLE_VAL_DELIM);
+                buf.append(EventDatabaseConstants.MULTIPLE_VAL_DELIM);
             else
                 first = false;
 
-            buf.append(Constants.escape(format(autoacts[index]), Constants.MULTIPLE_VAL_DELIM));
+            buf.append(EventDatabaseConstants.escape(format(autoacts[index]), EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         }
 
         if (buf.length() >= sz) {
             buf.setLength(sz - 4);
-            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+            buf.append(EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR);
         }
 
         return buf.toString();

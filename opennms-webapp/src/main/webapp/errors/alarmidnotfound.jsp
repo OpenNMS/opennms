@@ -51,7 +51,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Alarm ID Not Found" />
   <jsp:param name="headTitle" value="Error" />
@@ -67,13 +67,14 @@
   of the alarms</a> to find the alarm you are looking for.
 </p>
 
-<form method="get" action="alarm/detail.jsp">
-  <p>
-    Get&nbsp;details&nbsp;for&nbsp;Alarm&nbsp;ID:
-    <br/>
-    <input type="text" name="id"/>
-    <input type="submit" value="Search"/>
-  </p>
+<form role="form" method="get" action="alarm/detail.htm">
+  <div class="row">
+    <div class="form-group col-md-2">
+      <label for="input_id">Get&nbsp;details&nbsp;for&nbsp;Alarm&nbsp;ID:</label>
+      <input type="text" class="form-control" name="id"/>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-default">Search</button>
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

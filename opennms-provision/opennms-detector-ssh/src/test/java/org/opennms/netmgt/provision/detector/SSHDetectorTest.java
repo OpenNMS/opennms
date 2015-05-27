@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.net.UnknownHostException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.ssh.SshDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,8 +51,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
+@Ignore
 public class SSHDetectorTest implements ApplicationContextAware, InitializingBean {
     //Tested on a local server with SSH
+    private static final String TEST_HOST = "192.168.1.103";
 
     @Autowired
     public SshDetector m_detector;
@@ -64,29 +71,28 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
         m_detector.setTimeout(1);
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
-        //m_detector.init();
-        //assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        m_detector.init();
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_HOST)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws UnknownHostException{
-        //m_detector.setPort(30);
-        //m_detector.init();
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        m_detector.setPort(30);
+        m_detector.init();
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_HOST)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorFailBanner() throws UnknownHostException{
-        //m_detector.setBanner("Hello there crazy");
-        //m_detector.init();
-        //assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
+        m_detector.setBanner("Hello there crazy");
+        m_detector.init();
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_HOST)));
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // TODO Auto-generated method stub
 
     }

@@ -28,15 +28,6 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.util.Assert;
-
-import javax.xml.bind.JAXB;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,6 +35,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.bind.JAXB;
+
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * <p>DefaultRemoteRepositoryConfigDao class.</p>
@@ -55,13 +55,12 @@ import java.util.List;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultRemoteRepositoryConfigDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(DefaultRemoteRepositoryConfigDao.class);
 
     /**
      * Config resource for remote repository configuration file

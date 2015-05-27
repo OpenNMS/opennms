@@ -154,6 +154,14 @@ public class SendmailTest implements Serializable {
         super();
     }
 
+    public SendmailTest(final Long attemptInternal, final Boolean debug, final Boolean useAuthentication, final Boolean useJmta) {
+        super();
+        m_attemptInterval = attemptInternal;
+        m_debug = debug;
+        m_useAuthentication = useAuthentication;
+        m_useJmta = useJmta;
+    }
+
     /**
      * 
      * 
@@ -175,6 +183,10 @@ public class SendmailTest implements Serializable {
      */
     public void addJavamailProperty(final int index, final JavamailProperty javamailProperty) throws IndexOutOfBoundsException {
         m_javamailProperties.add(index, javamailProperty);
+    }
+
+    public void addJavamailProperty(final String name, final String value) {
+        m_javamailProperties.add(new JavamailProperty(name, value));
     }
 
     public void deleteAttemptInterval() {
@@ -708,6 +720,10 @@ public class SendmailTest implements Serializable {
         m_sendmailHost = sendmailHost;
     }
 
+    public void setSendmailHost(final String host, final Long port) {
+        m_sendmailHost = new SendmailHost(host, port);
+    }
+
     /**
      * Sets the value of field 'sendmailMessage'. The field
      * 'sendmailMessage' has the following description: Define the
@@ -767,6 +783,10 @@ public class SendmailTest implements Serializable {
      */
     public void setUserAuth(final UserAuth userAuth) {
         m_userAuth = userAuth;
+    }
+
+    public void setUserAuth(final String username, final String password) {
+        m_userAuth = new UserAuth(username, password);
     }
 
     /**

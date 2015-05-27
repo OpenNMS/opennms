@@ -48,6 +48,7 @@ import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -172,10 +173,10 @@ public class ResourceTypeUtilsTest {
 
 
     private OnmsResource createResource() {
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
         Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(1);
         attributes.add(new RrdGraphAttribute("foo", "1/eth0", "foo.jrb"));
-        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes, new ResourcePath("foo"));
         childResource.setParent(topResource);
         return childResource;
     }

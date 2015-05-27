@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 
 /**
  * <p>Scope class.</p>

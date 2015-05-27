@@ -36,30 +36,18 @@
 	
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Service ID Not Found" />
   <jsp:param name="breadcrumb" value="Error" />
 </jsp:include>
-
-
-
 
 <h1>Service  Not Found</h1>
 
 <p>
   The service is invalid. No such service in database for node ${node}, interface ${intf}, service ID ${serviceId}
   <br/>
-  
-  
-  
 </p>
 
-
-
-
-
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 

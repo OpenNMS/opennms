@@ -37,8 +37,7 @@
 		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.api.Util,
-        org.opennms.netmgt.filter.FilterDaoFactory,
-		org.opennms.netmgt.filter.FilterParseException,
+        org.opennms.netmgt.filter.FilterDaoFactory,org.opennms.netmgt.filter.api.FilterParseException,
 		org.opennms.netmgt.config.notifications.*
 	"
 %>
@@ -64,7 +63,7 @@
       notServices = new String[0];
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Validate Rule" />
   <jsp:param name="headTitle" value="Validate Rule" />
   <jsp:param name="headTitle" value="Admin" />
@@ -91,32 +90,42 @@
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
-<h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
-          'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
-      <table width="100%">
-        <tr>
-          <td width="10%">Current Rule:
-          </td>
-          <td align="left"> <%=newRule%>
-          </td>
-      </table>
-      <br/>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
+              'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
+      </div>
+          <table class="table table-condensed">
+            <tr>
+              <td width="10%">Current Rule:
+              </td>
+              <td align="left"> <%=newRule%>
+              </td>
+          </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-md-6">
       <form method="post" name="addresses" action="admin/notification/noticeWizard/notificationWizard">
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
-        <table width="25%" border="1">
-          <tr bgcolor="#999999">
-            <td width="50%">
-              <b>Interfaces</b>
-            </td>
-            <td width="50%">
-              <b>Services Associated with the Interfaces</b>
-            </td>
+        <table class="table table-condensed">
+          <tr>
+            <th>
+              Interfaces
+            </th>
+            <th>
+              Services Associated with the Interfaces
+            </th>
           </tr>
           <%=buildInterfaceTable(newRule, services, notServices)%>
         </table>
-        <table width="100%">
+        <table class="table">
          <tr> 
           <td>
            <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
@@ -125,8 +134,10 @@
         </tr>
         </table>
       </form>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
   public String buildInterfaceTable(String rule, String[] serviceList, String[] notServiceList)

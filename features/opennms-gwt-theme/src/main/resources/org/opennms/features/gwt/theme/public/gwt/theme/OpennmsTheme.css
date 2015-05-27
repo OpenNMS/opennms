@@ -10,15 +10,8 @@
  *    * html .gwt-Widget {
  *      property: rule applies to all versions of IE
  *    }
+ * updated
  */
-
-body, table td, select {
-  font-family: "Lucida Grande", Verdana, sans-serif;
-}
-pre {
-  font-family: "courier new", courier;
-  font-size: small;
-}
 
 /**
  * The reference theme can be used to determine when this style sheet has
@@ -1103,9 +1096,7 @@ td.datePickerMonth {
 	background-color: white;
 	
 }
-.gwt-TabLayoutPanel .gwt-TabLayoutPanelTabs {
-	font-size: 70%;
-}
+
 .gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
   border-color: #bcbcbc;
 /*   border-style: solid; */
@@ -1170,3 +1161,39 @@ td.datePickerMonth {
     border: none;
     background-color: inherit;
 }
+
+.gwt-TabLayoutPanel{
+    margin-top: 2px;
+    border: none;
+}
+
+.gwt-TabLayoutPanelContentContainer {
+    border: 3px solid #b5b5b5;
+}
+
+.gwt-TabLayoutPanelTab {
+    font-size: 11px;
+}
+
+table.ipInterfaceTable, table.snmpInterfaceTable, table.opennms-gwt-table{
+    width: 100%;
+    border: 1px solid #b5b5b5;
+}
+
+table.ipInterfaceTable th, table.snmpInterfaceTable th, table.opennms-gwt-table th{
+    border: 1px solid #b5b5b5;
+    background-color: rgb(68,68,68);
+}
+
+table.ipInterfaceTable td, table.snmpInterfaceTable td, table.opennms-gwt-table td{
+    border: 1px solid #b5b5b5;
+}
+
+table.onms-table-no-borders-margin{
+    width: 100%;
+}
+
+table.onms-table-no-borders-margin td{
+    padding-left: 10px;
+}
+

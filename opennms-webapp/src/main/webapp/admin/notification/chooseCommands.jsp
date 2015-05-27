@@ -60,7 +60,7 @@
     Path newPath = (Path)user.getAttribute("newPath");
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Commands" />
   <jsp:param name="headTitle" value="Choose Commands" />
   <jsp:param name="headTitle" value="Admin" />
@@ -98,39 +98,40 @@
 
 <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the commands to use for each user and group. More than one
-command can be chosen for each (except for email addresses). Also
-choose the desired behavior for automatic notification on "UP" events.</h3>
-
 <form method="post" name="commands"
       action="admin/notification/destinationWizard">
   <%=Util.makeHiddenTags(request)%>
-
   <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
 
-  <br/>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Choose the commands to use for each user and group. More than one
+    command can be chosen for each (except for email addresses). Also
+    choose the desired behavior for automatic notification on "UP" events.</h3>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-4">
+        <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
+      </div>
+    </div>
+    <input type="reset" class="btn btn-default"/>
+  </div> <!-- panel-body -->
+  <div class="panel-footer">
+    <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+  </div>
+</div> <!-- panel -->
 
-  <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
-
-  <div class="spacer"><!-- --></div>
-
-  <br/>
-
-  <input type="reset"/>
-
-  <br/>
-
-  <a href="javascript:next()">Next &#155;&#155;&#155;</a>
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildCommands(Path path, int index)
       throws ServletException
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
+        buffer.append("<table class=\"table table-condensed table-borderless\">");
         
         Target targets[] = null;
         
@@ -164,7 +165,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
     public String buildCommandSelect(Path path, int index, String name)
       throws ServletException
     {
-        StringBuffer buffer = new StringBuffer("<select multiple size=\"3\" NAME=\"" + name + "Commands\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple size=\"3\" NAME=\"" + name + "Commands\">");
         
         TreeMap<String, Command> commands = null;
         Collection<String> selectedOptions = null;
@@ -202,7 +203,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
     public String buildAutoNotifySelect(String name, String currValue)
     {
           String values[] = {"off", "auto", "on"};
-          StringBuffer buffer = new StringBuffer("<select size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          StringBuffer buffer = new StringBuffer("<select class=\"form-control\" size=\"3\" NAME=\"" + name  + "AutoNotify\">");
           String defaultOption = "on";
  
           if(currValue == null || currValue.equals("")) {

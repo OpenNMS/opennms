@@ -36,12 +36,14 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
-import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
+import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.annotations.EventExceptionHandler;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventPostProcessor;
+import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -62,7 +64,7 @@ public class AnnotationBasedEventListenerAdapterTest {
     private Set<String> m_subscriptions;
     
     @EventListener(name=ANNOTATED_NAME)
-    private static class AnnotatedListener {
+    public static class AnnotatedListener {
         
         public int preProcessedEvents = 0;
         public int receivedEventCount = 0;

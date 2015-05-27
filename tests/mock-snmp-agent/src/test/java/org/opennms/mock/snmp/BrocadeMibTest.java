@@ -29,6 +29,7 @@
 package org.opennms.mock.snmp;
 
 import static org.junit.Assert.*;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -43,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.utils.InetAddressUtils;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.SNMP4JSettings;
@@ -138,8 +140,12 @@ public class BrocadeMibTest  {
         m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(m_usm);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("brocadeTestData1.properties"), "127.0.0.1/1691");	// Homage to Empire
-        
+        try {
+            m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("brocadeTestData1.properties"), str(InetAddress.getLocalHost()) + "/0");
+        } catch (Throwable e) {
+            m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("brocadeTestData1.properties"), str(InetAddressUtils.ONE_TWENTY_SEVEN) + "/0");
+        }
+
         m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
     }
     
@@ -278,7 +284,7 @@ public class BrocadeMibTest  {
 		PDU response;
 		CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(m_agent.getInetAddress(), m_agent.getPort()));
 		target.setVersion(version);
 
         TransportMapping<UdpAddress> transport = null;
@@ -306,7 +312,7 @@ public class BrocadeMibTest  {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(m_agent.getInetAddress(), m_agent.getPort()));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(5000);
         

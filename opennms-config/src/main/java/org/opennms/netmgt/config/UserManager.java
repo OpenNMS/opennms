@@ -55,7 +55,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
@@ -64,6 +63,7 @@ import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 

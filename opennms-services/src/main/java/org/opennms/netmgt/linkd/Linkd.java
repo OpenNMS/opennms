@@ -34,27 +34,26 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.topology.AtInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
@@ -101,7 +100,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     private List<LinkableNode> m_nodes;
 
-    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
+    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new TreeMap<String, Map<String, List<AtInterface>>>();
 
     /**
      * the list of {@link java.net.InetAddress} for which new suspect event is
@@ -860,7 +859,7 @@ public class Linkd extends AbstractServiceDaemon {
         synchronized (m_macToAtinterface) {
             if (!m_macToAtinterface.containsKey(packageName)) {
                 LOG.debug("addAtInterface: creating map for package {}.",packageName);
-                m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
+                m_macToAtinterface.put(packageName, new TreeMap<String, List<AtInterface>>());
             }
 
             final List<AtInterface> atis;
@@ -912,7 +911,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 
     public Set<String> getActivePackages() {
-        Set<String> packages = new HashSet<String>();
+        Set<String> packages = new TreeSet<String>();
         synchronized (m_nodes) {
             for (LinkableNode node: m_nodes)
                 packages.add(node.getPackageName());

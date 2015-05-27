@@ -690,7 +690,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 graphDef.hrule(value, getColor(color[1]), (hrule.length > 1 ? hrule[1] : ""));
             } else if (arg.endsWith("/rrdtool") || arg.equals("graph") || arg.equals("-")) {
             	// ignore, this is just a leftover from the rrdtool-specific options
-
+            } else if (arg.trim().isEmpty()) {
+                // ignore empty whitespace arguments
             } else {
                 LOG.warn("JRobin: Unrecognized graph argument: {}", arg);
             }

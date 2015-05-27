@@ -38,7 +38,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage Reports" />
   <jsp:param name="headTitle" value="Manage Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -53,80 +53,85 @@
 	<c:param name="p" value="~" />
 </c:url>
 
+<div class="row">
+    <div class="col-md-12">
+        <c:choose>
+            <c:when test="${empty pagedListHolder.pageList}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Database Report List</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>None found.</p>
+                    </div>
+                </div>
+            </c:when>
 
-<c:choose>
+            <c:otherwise>
+                <form:form commandName="command">
+                    <element:pagedList pagedListHolder="${pagedListHolder}" pagedLink="${pagedLink}" />
 
-    <c:when test="${empty pagedListHolder.pageList}">
-        <h3>Database Report List</h3>
-        <div class="boxWrapper">
-            <p>None found.</p>
-        </div>
-    </c:when>
-
-    <c:otherwise>
-        <form:form commandName="command">
-            <element:pagedList pagedListHolder="${pagedListHolder}" pagedLink="${pagedLink}" />
-
-            <div class="spacer"><!--  --></div>
-            <table>
-                <thead>
-                <tr>
-                    <th>title</th>
-                    <th>report ID</th>
-                    <th>run date</th>
-                    <th>view report</th>
+                    <div class="spacer"><!--  --></div>
+                    <table class="table table-condensed table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>report ID</th>
+                            <th>run date</th>
+                            <th>view report</th>
+                            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                            <th>select</th>
+                            <% } %>
+                        </tr>
+                        </thead>
+                            <%-- // show only current page worth of data --%>
+                        <c:forEach items="${pagedListHolder.pageList}" var="report">
+                            <tr>
+                                <td>${report.title}</td>
+                                <td>${report.reportId}</td>
+                                <td>${report.date}</td>
+                                <td>
+                                    <c:if test="${empty formatMap[report.reportId]}">
+                                        <a href="report/database/downloadReport.htm?fileName=${report.location}">Download</a>
+                                    </c:if>
+                                    <c:forEach items='${formatMap[report.reportId]}' var="format">
+                                        <a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
+                                    </c:forEach>
+                                </td>
+                                <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                                <td><form:checkbox path="ids" value="${report.id}"/></td>
+                                <% } %>
+                            </tr>
+                        </c:forEach>
+                    </table>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                    <th>select</th>
+                        <div class="pagination">
+                            <a onClick="toggle(true, 'ids')">Select all</a> /
+                            <a onClick="toggle(false, 'ids')">Deselect all</a>
+                        </div>
                     <% } %>
-                </tr>
-                </thead>
-                    <%-- // show only current page worth of data --%>
-                <c:forEach items="${pagedListHolder.pageList}" var="report">
-                    <tr>
-                        <td>${report.title}</td>
-                        <td>${report.reportId}</td>
-                        <td>${report.date}</td>
-                        <td>
-                            <c:if test="${empty formatMap[report.reportId]}">
-                                <a href="report/database/downloadReport.htm?fileName=${report.location}">Download</a>
-                            </c:if>
-                            <c:forEach items='${formatMap[report.reportId]}' var="format">
-                                <a href="report/database/downloadReport.htm?locatorId=${report.id}&format=${format}">${format}</a>
-                            </c:forEach>
-                        </td>
-                        <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                        <td><form:checkbox path="ids" value="${report.id}"/></td>
-                        <% } %>
-                    </tr>
-                </c:forEach>
-            </table>
-            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                <div class="pagination">
-                    <a onClick="toggle(true, 'ids')">Select all</a> /
-                    <a onClick="toggle(false, 'ids')">Deselect all</a>
-                </div>
-            <% } %>
 
-            <% // if deletion was successful %>
-            <c:if test="${not empty success}">
-                <div class="alert-success" style="clear:both">
-                        ${success}
-                </div>
-            </c:if>
+                    <% // if deletion was successful %>
+                    <c:if test="${not empty success}">
+                        <div class="alert-success" style="clear:both">
+                                ${success}
+                        </div>
+                    </c:if>
 
-            <% // If user is not allowed to delete %>
-            <c:if test="${not empty error}">
-                <div class="alert-error" style="clear:both">
-                        ${error}
-                </div>
-            </c:if>
-            <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-            <input type="submit" value="delete checked reports"/>
-            <% } %>
+                    <% // If user is not allowed to delete %>
+                    <c:if test="${not empty error}">
+                        <div class="alert-error" style="clear:both">
+                                ${error}
+                        </div>
+                    </c:if>
+                    <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
+                    <input class="btn btn-default" type="submit" value="delete checked reports"/>
+                    <% } %>
 
-        </form:form>
-    </c:otherwise>
-</c:choose>
+                </form:form>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</div>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

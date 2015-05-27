@@ -31,6 +31,7 @@ package org.opennms.features.vaadin.nodemaps.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -293,6 +295,7 @@ public class NodeMapsApplication extends UI {
     private void createRootLayout() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
         setContent(m_rootLayout);
         addHeader();
 
@@ -311,10 +314,10 @@ public class NodeMapsApplication extends UI {
     private void addHeader() {
         if (m_headerProvider != null) {
             try {
-                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request)));
+                URL pageUrl = Page.getCurrent().getLocation().toURL();
+                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request, pageUrl)));
             } catch (final Exception e) {
-                LOG.warn("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
-
+                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
             }
         }
         if (m_headerHtml != null) {

@@ -1,5 +1,5 @@
 [Unit]
-Description=OpenNMS server
+Description=${install.package.description} server
 Wants=${install.postgresql.service}.service
 Requires=network.target network-online.target
 After=${install.postgresql.service}.service network.target network-online.target

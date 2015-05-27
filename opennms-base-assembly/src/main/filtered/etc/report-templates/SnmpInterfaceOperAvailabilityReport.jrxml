@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-10T10:46:40 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d322a978-7598-48de-8949-76277710f0e4">
 	<property name="ireport.zoom" value="1.5026296018031553"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Warning/Critical">
 		<conditionalStyle>
@@ -137,45 +140,45 @@ GROUP BY
 		<groupHeader>
 			<band height="30">
 				<staticText>
-					<reportElement style="Table-Header" x="0" y="10" width="76" height="20"/>
+					<reportElement style="Table-Header" x="0" y="10" width="76" height="20" uuid="1a64792a-20c9-4462-a205-55b2a28f3d59"/>
 					<textElement verticalAlignment="Middle"/>
 					<text><![CDATA[node label:]]></text>
 				</staticText>
 				<textField>
-					<reportElement style="Table-Header" x="76" y="10" width="224" height="20"/>
+					<reportElement style="Table-Header" x="76" y="10" width="224" height="20" uuid="b47bf3ab-6e9b-458f-8dc6-26cb3db6f22a"/>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="Table-Header" x="300" y="10" width="55" height="20"/>
+					<reportElement style="Table-Header" x="300" y="10" width="55" height="20" uuid="53897437-0667-4316-ac0e-6d30275771c6"/>
 					<textElement textAlignment="Center" verticalAlignment="Top">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Count]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table-Header" x="355" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="355" y="10" width="50" height="20" uuid="cdfba45b-9def-41e2-9e73-2ffc96d49112"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[MTTR (hours)]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table-Header" x="405" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="405" y="10" width="50" height="20" uuid="80186953-1c84-4db4-a468-8a1fef31ba09"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Hours]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table-Header" x="455" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="455" y="10" width="50" height="20" uuid="fd126494-e7df-4d83-a20d-01d98c3d87df"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Outage Percent]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Table-Header" x="505" y="10" width="50" height="20"/>
+					<reportElement style="Table-Header" x="505" y="10" width="50" height="20" uuid="845e9223-2768-4bc2-be83-94832e2a326f"/>
 					<textElement textAlignment="Center">
 						<font size="8"/>
 					</textElement>
@@ -187,34 +190,56 @@ GROUP BY
 	<background>
 		<band splitType="Stretch"/>
 	</background>
-	<title>
-		<band height="4" splitType="Stretch"/>
-	</title>
 	<pageHeader>
-		<band height="79" splitType="Stretch">
+		<band height="80" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="384" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="607ff7e5-3063-4ad2-abb5-0d5df3df3721">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SNMP Interface Availability Report]]></text>
 			</staticText>
 			<image>
-				<reportElement x="391" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="361" y="0" width="194" height="50" uuid="23478233-18bb-43cd-ae48-248d06c9e242">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="34" width="384" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+				<reportElement key="" style="Range" x="0" y="30" width="355" height="20" uuid="676d183c-aff7-4f99-ac1c-7079d3bee595">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="54" width="384" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy/MM/dd HH:mm:ss">
+				<reportElement key="" style="Creation-Date" x="0" y="60" width="355" height="20" uuid="5514a05c-279e-4c5b-b6b8-9e10bc9c1cf6">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="74" width="555" height="1"/>
+				<reportElement x="0" y="79" width="555" height="1" uuid="925dae0e-0dae-4d28-b3c5-3bdc9afb96a3">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
@@ -224,43 +249,43 @@ GROUP BY
 	<detail>
 		<band height="23" splitType="Stretch">
 			<rectangle>
-				<reportElement style="Warning/Critical" x="26" y="0" width="529" height="20" backcolor="#FFFFFF"/>
+				<reportElement style="Warning/Critical" x="26" y="0" width="529" height="20" backcolor="#FFFFFF" uuid="272c14df-33a3-49d9-94ae-9293c74f4f72"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<textField>
-				<reportElement style="Warning/Critical" mode="Opaque" x="76" y="0" width="225" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="76" y="0" width="225" height="20" uuid="7f8541d0-f9d2-4024-83b4-8f03386fb67d"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifname}.equals( "" ) ? $F{snmpifdescr} : $F{snmpifname}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{snmpifname}.equals( "" ) ? $F{snmpifdescr} : $F{snmpifname}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Warning/Critical" mode="Opaque" x="300" y="0" width="55" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="300" y="0" width="55" height="20" uuid="ceb0b03c-fe9a-4ba7-8897-bd68ff42f43d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Long"><![CDATA[$F{outages_count}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{outages_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" mode="Opaque" x="405" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="405" y="0" width="50" height="20" uuid="ec97b2d7-dfc8-4a71-b2fa-cdf9699763b7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" mode="Opaque" x="455" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="455" y="0" width="50" height="20" uuid="dbd92814-7ead-4d65-a4e3-43771a2dcdd6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_percent}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{outages_percent}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" mode="Opaque" x="505" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="505" y="0" width="50" height="20" uuid="70da3cc7-81a2-4762-9922-805f9dc7089d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{avail_percent}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{avail_percent}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" mode="Opaque" x="355" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="355" y="0" width="50" height="20" uuid="d8a15e51-26ba-4e65-b76f-6b67785eb4e8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Warning/Critical" mode="Opaque" x="26" y="0" width="50" height="20"/>
+				<reportElement style="Warning/Critical" mode="Opaque" x="26" y="0" width="50" height="20" uuid="818172fa-8571-4c33-9f43-75796274b089"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[ interface:]]></text>
 			</staticText>
@@ -270,82 +295,94 @@ GROUP BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="32" splitType="Stretch">
+		<band height="30" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<line>
-				<reportElement x="0" y="9" width="555" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1" uuid="b29b43b4-a148-4e94-9f54-a9d3e57d5453">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement style="Body" x="0" y="15" width="74" height="15"/>
-				<textElement/>
-				<text><![CDATA[Report begin: ]]></text>
-			</staticText>
-			<textField evaluationTime="Page">
-				<reportElement style="Body" x="74" y="15" width="126" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$P{START_TIME}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Body" x="260" y="15" width="131" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date(
-    new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
-)]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Body" x="200" y="15" width="60" height="14"/>
-				<textElement/>
-				<text><![CDATA[Report end: ]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="435" y="10" width="80" height="20"/>
+				<reportElement style="Paging-Footer" x="435" y="5" width="80" height="20" uuid="49c16c6f-be94-4720-95ff-671aadb0bef4">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="515" y="10" width="40" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				<reportElement style="Paging-Footer" x="515" y="5" width="40" height="20" uuid="ab9c239a-2cca-4cf4-a1b2-969d364c3d1a">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
 	<noData>
 		<band height="135">
 			<staticText>
-				<reportElement x="0" y="92" width="555" height="43"/>
-				<textElement/>
+				<reportElement x="0" y="85" width="555" height="43" uuid="beab7ba2-43d3-4696-8490-74f3d6bd16f0">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<text><![CDATA[There is no data for this report.
 
 Please ensure that the SNMP Interface Poller is activated and working.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="384" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="57b75dc8-84e8-4f84-8168-1692ccb4e1c8">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SNMP Interface Availability Report]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Sub-sub-header" x="0" y="34" width="384" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+				<reportElement style="Range" x="0" y="30" width="355" height="20" uuid="53881e7f-8619-492e-91dc-ca2edd1babe6">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="54" width="384" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy/MM/dd HH:mm:ss">
+				<reportElement style="Creation-Date" x="0" y="60" width="355" height="20" uuid="25a561d0-72d5-4dc1-a519-41563ed1beb0">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="74" width="555" height="1"/>
+				<reportElement x="0" y="80" width="555" height="1" uuid="e446970f-d568-4776-aabd-7e97e6ced51e">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 			<image>
-				<reportElement x="391" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="361" y="0" width="194" height="50" uuid="ff5624b8-ccb3-42f9-8b6c-d9820c5d3e5c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 		</band>
 	</noData>

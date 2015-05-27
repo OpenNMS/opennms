@@ -33,10 +33,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -168,7 +170,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
                 LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on edge to default: {}", edge);
             } 
 
-            if (edge.id == null) {
+            if (edge.id == null || edge.source == null || edge.target == null) {
                 LoggerFactory.getLogger(this.getClass()).warn("Invalid edge unmarshalled from {}: {}", source.toString(), edge);
             } else if (edge.id.startsWith(SIMPLE_EDGE_ID_PREFIX)) {
                 try {

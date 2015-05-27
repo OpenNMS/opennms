@@ -21,6 +21,7 @@
 #                    and notification management
 ### END INIT INFO
 
+OPENNMS_HOME=/usr/share/opennms
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/opennms
 NAME=opennms
@@ -37,17 +38,18 @@ fi
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	for dir in /usr/lib/jvm/java-6-sun; do
+	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
 		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
 			JAVA_HOME="$dir"
 			break
 		fi
-	done
+    done
+fi
 
-	if [ -z "$JAVA_HOME" ]; then
-		echo "You need to set a valid JAVA_HOME in /etc/default/$NAME" >&2
-		exit 1
-	fi
+# Check for JAVA_HOME
+if [ -z "$JAVA_HOME" ]; then
+	echo "\$JAVA_HOME is not set.  Set it in /etc/default/$NAME or run \`$OPENNMS_HOME/bin/runjava -s\` to autoconfigure." >&2
+	exit 1
 fi
 export JAVA_HOME
 

@@ -51,10 +51,10 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -78,11 +78,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)

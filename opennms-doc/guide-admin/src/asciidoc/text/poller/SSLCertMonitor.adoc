@@ -1,5 +1,6 @@
 
-=== SSLCertMonitor
+==== SSLCertMonitor
+
 This monitor is used to test if a SSL certificate presented by a remote network server are
 valid. A certificate is invalid if its initial time is prior to the current time, or if the current time
 is prior to 7 days (configurable) before the expiration time. The monitor only supports SSL on
@@ -18,8 +19,7 @@ The output shows you the time range a certificate is valid:
 
 You can configure a threshold in days applied on the `notAfter` date.
 
-
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -27,7 +27,7 @@ You can configure a threshold in days applied on the `notAfter` date.
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the SSLCertMonitor
 [options="header, autowidth"]
@@ -43,7 +43,8 @@ WARNING: The monitor has no support for communicating on other protocol layers a
 is not able to send a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, XMPP, LDAP,
 or NNTP.
 
-==== Examples
+===== Examples
+
 The following example shows how to monitor SSL certificates on services like IMAPS, SMTPS and HTTPS.
 If the certificates expire within 30 days the service goes down and indicates this issue in the reason of the monitor.
 In this example the monitoring interval is reduced to test the certificate every 2 hours (7,200,000 ms).

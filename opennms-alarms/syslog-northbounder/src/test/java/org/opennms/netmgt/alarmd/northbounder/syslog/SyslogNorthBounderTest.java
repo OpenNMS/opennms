@@ -199,7 +199,7 @@ public class SyslogNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
         
-        OnmsDistPoller distpoller = new OnmsDistPoller("barbrady", "172.20.1.11");
+        OnmsDistPoller distpoller = new OnmsDistPoller("barbrady", "192.0.2.11");
         OnmsNode node = new OnmsNode(distpoller, "p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");

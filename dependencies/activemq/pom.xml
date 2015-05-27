@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>15.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -17,6 +17,10 @@
       <version>${activemqVersion}</version>
       <scope>compile</scope>
       <exclusions>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
@@ -145,6 +149,10 @@
         <exclusion>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>jsp-2.1</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

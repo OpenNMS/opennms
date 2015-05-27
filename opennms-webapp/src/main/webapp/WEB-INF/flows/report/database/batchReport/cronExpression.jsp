@@ -35,7 +35,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -44,24 +44,34 @@
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
 
-<h3>Cron Expression</h3>
-<div class="boxWrapper">
-    <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
-    <form:form commandName="triggerDetails" cssClass="stdform">
-
-    <p>
-		<form:label path="cronExpression" cssClass="label">
-			<c:out value="cron expression"/>
-		</form:label>
-		<form:input path="cronExpression"/>
-
-    </p>
-    <span class="indent">
-        <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-        <input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-        <input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
-    </span>
-    </form:form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cron Expression</h3>
+            </div>
+            <div class="panel-body">
+                <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
+                <form:form commandName="triggerDetails" cssClass="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <form:label for="cronExpression" path="cronExpression" cssClass="label">
+                                <c:out value="cron expression"/>
+                            </form:label>
+                            <form:input path="cronExpression"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+                            <input type="submit" class="btn btn-default" name="_eventId_revise" value="Revise"/>&#160;
+                            <input type="submit" class="btn btn-default" name="_eventId_cancel" value="Cancel"/>&#160;
+                        </div>
+                    </div>
+                </form:form>
+            </div>
+        </div>
+    </div>
 </div>
-  
-<jsp:include page="/includes/footer.jsp" flush="false" />
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

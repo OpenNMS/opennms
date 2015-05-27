@@ -63,7 +63,7 @@ public class AlarmDetailController extends MultiActionController {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + AlarmDetailController.class.getName());
+    private Logger logger = LoggerFactory.getLogger(AlarmDetailController.class);
 
     /**
      * <p>setWebAlarmRepository</p>

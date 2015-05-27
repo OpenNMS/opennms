@@ -47,6 +47,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
@@ -83,13 +85,11 @@ import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.nb.TestNetworkBuilder;
+import org.opennms.netmgt.nb.NmsNetworkBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -104,7 +104,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingBean {
+public class EnLinkdSnmpTest extends NmsNetworkBuilder implements InitializingBean {
     
 	private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpTest.class);
     
@@ -280,6 +280,139 @@ public class EnLinkdSnmpTest extends TestNetworkBuilder implements InitializingB
 			}
 
         }
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-6921.
+     * 
+     * @see http://issues.opennms.org/browse/NMS-6912
+
+     * 
+     * @throws Exception
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DW_IP, port=161, resource=DW_SNMP_RESOURCE)
+    })
+    public void testLldpDragonWaveLocalGroupWalk() throws Exception {
+
+        String trackerName = "lldpLocalGroup";
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
+                LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, lldpLocalGroup);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                LOG.info(
+                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+                LOG.info(
+                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: collection interrupted, exiting",e);
+            return;
+        }
+
+        LldpElement eiA = lldpLocalGroup.getLldpElement();
+        System.err.println("local chassis type: " + LldpChassisIdSubType.getTypeString(eiA.getLldpChassisIdSubType().getValue()));
+        System.err.println("local chassis id: " + eiA.getLldpChassisId());
+        System.err.println("local sysname: " + eiA.getLldpSysname());
+        
+        assertEquals("cf", eiA.getLldpChassisId());
+        assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT, eiA.getLldpChassisIdSubType());
+        assertEquals("NuDesign", eiA.getLldpSysname());
+    }
+
+    /**
+     * This test is designed to test the issues in bug NMS-6921.
+     * 
+     * @see http://issues.opennms.org/browse/NMS-6912
+
+     * 
+     * @throws Exception
+     */
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DW_IP, port=161, resource=DW_SNMP_RESOURCE)
+    })
+    public void testLldpDragonWaveLldpLocGetter() throws Exception {
+
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
+                
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(config);
+                LldpLink link = lldpLocPort.get(1);
+                assertEquals(1, link.getLldpLocalPortNum().intValue());
+                assertEquals("cf", link.getLldpPortId());
+                assertEquals("NuDesign", link.getLldpPortDescr());
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, link.getLldpPortIdSubType());
+    }
+
+    @Test
+    @JUnitSnmpAgent(host=DW_IP, port=161, resource=DW_SNMP_RESOURCE)
+    public void testLldpDragonWaveRemTableWalk() throws Exception {
+
+        final SnmpAgentConfig snmpAgent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DW_IP));
+        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(snmpAgent);
+        LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
+
+            public void processLldpRemRow(final LldpRemRow row) {
+
+                System.err.println("----------lldp rem----------------");
+                System.err.println("columns number in the row: "
+                        + row.getColumnCount());
+
+                assertEquals(6, row.getColumnCount());
+                LldpLink link = row.getLldpLink(lldpLocPort);
+
+                assertEquals(1, row.getLldpRemLocalPortNum().intValue());
+                System.err.println("local port number: "
+                        + row.getLldpRemLocalPortNum());
+
+                assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT,
+                             link.getLldpRemChassisIdSubType());
+                System.err.println("remote chassis type: "
+                        + LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue()));
+
+                assertEquals("cf", link.getLldpRemChassisId());
+                System.err.println("remote chassis: "
+                        + link.getLldpRemChassisId());
+
+                assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,
+                             link.getLldpRemPortIdSubType());
+                System.err.println("remote port type: "
+                        + LldpPortIdSubType.getTypeString(link.getLldpRemPortIdSubType().getValue()));
+
+
+                assertEquals("cf", link.getLldpRemPortId());
+                System.err.println("remote port id: "
+                        + link.getLldpRemPortId());
+
+                assertEquals("NuDesign", link.getLldpRemPortDescr());
+                System.err.println("remote port descr: "
+                        + link.getLldpRemPortDescr());
+                
+
+                assertEquals("NuDesign", link.getLldpRemSysname());
+                System.err.println("remote sysname: "
+                        + link.getLldpRemSysname());
+
+            }
+        };
+        String trackerName = "lldpRemTable";
+        SnmpWalker walker = SnmpUtils.createWalker(snmpAgent, trackerName,
+                                                   lldpRemTable);
+        walker.start();
+
+        try {
+            walker.waitFor();
+        } catch (final InterruptedException e) {
+            assertEquals(false, true);
+        }
+
     }
 
     @Test

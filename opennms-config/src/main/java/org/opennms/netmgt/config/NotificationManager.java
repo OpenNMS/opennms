@@ -60,13 +60,13 @@ import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.SingleResultQuerier;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Tticket;
@@ -590,7 +590,7 @@ public abstract class NotificationManager {
                                 numkey = Integer.parseInt(key.substring(1));
                             } catch (Exception e) {}
                         }
-                        int idx = 0;
+                        int idx = 1;
                         for (Parm p : event.getParmCollection()) {
                             if (numkey > 0) {
                                 if (numkey == idx) {
@@ -746,7 +746,7 @@ public abstract class NotificationManager {
     public String getServiceNoticeStatus(final String nodeID, final String ipaddr, final String service) throws SQLException {
         String notify = "Y";
 
-        final String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
+        final String query = "SELECT notify FROM ifservices, ipInterface, node, service WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid=? AND ipInterface.ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
         java.sql.Connection connection = null;
         final DBUtils d = new DBUtils(getClass());
 
@@ -1224,7 +1224,7 @@ public abstract class NotificationManager {
     }
 
     /**
-     * Adds additional parameters defined by the user in the notificaiton
+     * Adds additional parameters defined by the user in the notification
      * configuration XML.
      *
      * @param paramMap a {@link java.util.Map} object.
@@ -1278,12 +1278,12 @@ public abstract class NotificationManager {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
-                event.setTime(rs.getString("eventtime"));
+                event.setTime(rs.getDate("eventtime"));
                 event.setHost(rs.getString("eventhost"));
                 event.setInterface(rs.getString("ipaddr"));
                 event.setSnmphost(rs.getString("eventsnmphost"));
                 event.setService(getServiceName(rs.getInt("serviceid")));
-                event.setCreationTime(rs.getString("eventcreatetime"));
+                event.setCreationTime(rs.getDate("eventcreatetime"));
                 event.setSeverity(rs.getString("eventseverity"));
                 event.setPathoutage(rs.getString("eventpathoutage"));
                 Tticket tticket = new Tticket();

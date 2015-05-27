@@ -30,17 +30,34 @@ package org.opennms.netmgt.model;
 
 import java.io.File;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>RrdGraphAttribute class.</p>
  */
+@XmlRootElement(name = "rrd-graph-attribute")
+@XmlAccessorType(XmlAccessType.NONE)
 public class RrdGraphAttribute implements OnmsAttribute {
 
+    @XmlAttribute(name = "name")
     private String m_name;
+
+    @XmlAttribute(name = "relativePath")
     private String m_relativePath;
+
+    @XmlAttribute(name = "rrdFile")
     private String m_rrdFile;
+
     private OnmsResource m_resource;
-    
+
+    @SuppressWarnings("unused")
+    private RrdGraphAttribute() {
+        throw new UnsupportedOperationException("No-arg constructor for JAXB.");
+    }
+
     /**
      * <p>Constructor for RrdGraphAttribute.</p>
      *

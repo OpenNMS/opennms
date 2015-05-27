@@ -1,5 +1,6 @@
 
-=== Pop3Monitor
+==== Pop3Monitor
+
 The POP3 monitor tests for POP3 service availability on a node.
 The monitor first tries to establish a TCP connection on the specified port.
 If a connection is established, a service banner should have been received.
@@ -18,7 +19,7 @@ The behaviour can be simulated with `telnet`:
  +OK
  Connection closed by foreign host.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -26,7 +27,7 @@ The behaviour can be simulated with `telnet`:
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the Pop3Monitor
 [options="header, autowidth"]
@@ -34,13 +35,14 @@ The behaviour can be simulated with `telnet`:
 | Parameter            | Description                                                                                | Required | Default value
 | `port`               | TCP port to connect to.                                                                    | optional | `110`
 | `retry`              | Number of attempts to find the service available.                                          | optional | `0`
-| `strict-timeout`     | Boolean 
+| `strict-timeout`     | Boolean
                          If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
                          attempts.                                                                                  | optional | `false`
 | `timeout`            | Timeout in milliseconds for the underlying socket's _connect_ and _read_ operations.       | optional | `3000`
 |===
 
-==== Examples
+===== Examples
+
 [source, xml]
 ----
 <service name="POP3" interval="300000" user-defined="false" status="on">

@@ -94,7 +94,12 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
     	// Clear cache on reload
     	m_dynamicVariableCache.clear();
 
-        m_vars = new TreeMap<OID, Object>();
+    	if (props.isEmpty()) {
+            m_scope = new DefaultMOScope(new OID(".1"), false, new OID(".1"), false);
+            return Collections.singletonList((ManagedObject)this);
+    	}
+
+    	m_vars = new TreeMap<OID, Object>();
 
         for(final Entry<Object, Object> e : props.entrySet()) {
             final String key = (String)e.getKey();
@@ -112,7 +117,6 @@ public class PropertiesBackedManagedObject implements ManagedObject, MockSnmpMOL
                 throw nfe;
             }
         }
-
 
         m_scope = new DefaultMOScope(m_vars.firstKey(), true, m_vars.lastKey(), true);
         

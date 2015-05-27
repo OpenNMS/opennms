@@ -160,13 +160,13 @@ public class AttributesTable extends Table {
 	public void commit() throws SourceException, InvalidValueException {
 		super.commit();
 		if (isReadOnly()) return; //we do not commit on read only
-		for (Field f : fields) f.commit();
+		for (Field<?> f : fields) f.commit();
 	}
 
 	@Override
 	public void discard() throws SourceException {
 		super.discard();
-		for (Field f : fields) f.discard();
+		for (Field<?> f : fields) f.discard();
 	}
 	
 	@Override
@@ -174,7 +174,7 @@ public class AttributesTable extends Table {
 		super.validate();
 		InvalidValueException validationException = null;
 		//validators must be invoked manually
-		for (Field tf : fieldsToValidate.values()) {
+		for (Field<?> tf : fieldsToValidate.values()) {
 			try {
 				tf.validate();
 			} catch (InvalidValueException ex) {

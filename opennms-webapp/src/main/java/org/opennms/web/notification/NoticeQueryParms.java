@@ -37,10 +37,6 @@ import org.opennms.web.filter.Filter;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class NoticeQueryParms extends Object {
     public SortStyle sortStyle;
@@ -62,6 +58,6 @@ public class NoticeQueryParms extends Object {
      * @return an array of org$opennms$web$filter$Filter objects.
      */
     public Filter[] getFilters() {
-        return filters.toArray(new Filter[filters.size()]);
+        return filters == null ? new Filter[0] : filters.toArray(new Filter[filters.size()]);
     }
 }

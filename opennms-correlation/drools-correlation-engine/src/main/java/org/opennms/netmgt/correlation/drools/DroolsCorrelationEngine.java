@@ -39,14 +39,16 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
-import org.drools.RuleBase;
-import org.drools.RuleBaseConfiguration;
-import org.drools.RuleBaseConfiguration.AssertBehaviour;
-import org.drools.RuleBaseFactory;
-import org.drools.WorkingMemory;
-import org.drools.compiler.DroolsParserException;
-import org.drools.compiler.PackageBuilder;
-import org.drools.compiler.PackageBuilderConfiguration;
+import org.drools.compiler.compiler.DroolsParserException;
+import org.drools.compiler.compiler.PackageBuilder;
+import org.drools.compiler.compiler.PackageBuilderConfiguration;
+import org.drools.core.RuleBase;
+import org.drools.core.RuleBaseConfiguration;
+import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
+import org.drools.core.RuleBaseFactory;
+import org.drools.core.WorkingMemory;
+import org.kie.api.conf.EventProcessingOption;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
@@ -65,9 +67,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private WorkingMemory m_workingMemory;
     private List<String> m_interestingEvents;
     private List<Resource> m_rules;
-    private Map<String, Object> m_globals = new HashMap<String, Object>();
+    private Map<String, Object> m_globals = new HashMap<>();
     private String m_name;
     private String m_assertBehaviour;
+    private String m_eventProcessingMode;
     
     /** {@inheritDoc} */
     @Override
@@ -128,18 +131,25 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      */
     public void initialize() throws Exception {
     	final Properties props = new Properties();
+        
         props.setProperty("drools.dialect.java.compiler.lnglevel", "1.6");
 
-        final PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
-        final PackageBuilder builder = new PackageBuilder( conf );
+        final PackageBuilderConfiguration packageBuilderConfig = new PackageBuilderConfiguration(props);
+        final PackageBuilder builder = new PackageBuilder( packageBuilderConfig );
         
         loadRules(builder);
         
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
-        RuleBaseConfiguration config = new RuleBaseConfiguration();
-        config.setAssertBehaviour(behaviour);
-
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( config );
+        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
+        ruleBaseConfig.setAssertBehaviour(behaviour);
+        
+        EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
+        if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
+            eventProcessingOption = EventProcessingOption.STREAM;
+        }
+        ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
+        
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase( ruleBaseConfig );
 
         if (builder.hasErrors()) {
             LOG.warn("Unable to initialize Drools engine: {}", builder.getErrors());
@@ -154,7 +164,6 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
         }
-
     }
 
     private void loadRules(final PackageBuilder builder) throws DroolsParserException, IOException {
@@ -190,7 +199,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @return a {@link java.util.List} object.
      */
     public List<Object> getMemoryObjects() {
-    	final List<Object> objects = new LinkedList<Object>();
+    	final List<Object> objects = new LinkedList<>();
         for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); ) {
         	objects.add(it.next());
         }
@@ -230,7 +239,15 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         m_workingMemory.setGlobal(name, value);
     }
 
-	public void setAssertBehaviour(String assertBehaviour) {
-		m_assertBehaviour = assertBehaviour;
-	}
+    public void setAssertBehaviour(String assertBehaviour) {
+            m_assertBehaviour = assertBehaviour;
+    }
+
+    public String getEventProcessingMode() {
+        return m_eventProcessingMode;
+    }
+
+    public void setEventProcessingMode(String eventProcessingMode) {
+        this.m_eventProcessingMode = eventProcessingMode;
+    }
 }

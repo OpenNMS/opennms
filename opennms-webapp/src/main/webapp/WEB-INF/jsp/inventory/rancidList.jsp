@@ -36,7 +36,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
   <jsp:param name="headTitle" value="Inventory List" />
@@ -46,37 +46,48 @@
   <jsp:param name="breadcrumb" value="Inventory List" />
   
 </jsp:include>
+<div class="row">
+    <div class="col-md-12">
+        <h2> Node: ${model.id} </h2>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">RWS status</h3>
+            </div>
 
-<h2> Node: ${model.id} </h2>
+            <table class="table table-condensed table-bordered">
+                <tr>
+                    <td>${model.RWSStatus}</td>
+                </tr>
+            </table>
+        </div>
 
-<h3>RWS status</h3>
-<table class="o-box">
-		<tr>
-	  		<td>${model.RWSStatus}</td>
-	  	</tr>
-</table>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Associated Elements</h3>
+            </div>
 
-<!-- Elements box -->
-<h3>Associated Elements</h3>
+            <table class="table table-condensed table-bordered">
+                <tr>
+                    <th>Group</th>
+                    <th>Version</th>
+                    <th>Revision Date</th>
+                </tr>
+                <c:forEach items="${model.grouptable}" var="groupelm">
+                    <tr>
+                        <td>${groupelm.group}
+                        </td>
+                        <td>${groupelm.version}
+                            <a href="inventory/invnode.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.version}">(inventory)</a>
+                            <a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&viewvc=${groupelm.urlViewVC}">(configuration)</a>
+                        </td>
+                        <td>${groupelm.date}</td>
 
-<table class="o-box">
-<tr>
-	<th>Group</th>
-	<th>Version</th>
-	<th>Revision Date</th>
-</tr>
-<c:forEach items="${model.grouptable}" var="groupelm">
-	<tr>
-		<td>${groupelm.group}
-		</td>
-		<td>${groupelm.version}
-		<a href="inventory/invnode.htm?node=${model.db_id}&groupname=${groupelm.group}&version=${groupelm.version}">(inventory)</a>
-		<a href="inventory/rancidViewVc.htm?node=${model.db_id}&groupname=${groupelm.group}&viewvc=${groupelm.urlViewVC}">(configuration)</a>
-		</td>
-		<td>${groupelm.date}</td>
+                    </tr>
+                </c:forEach>
+            </table>
 
-	</tr>
-</c:forEach>
-</table>
+        </div>
+    </div>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

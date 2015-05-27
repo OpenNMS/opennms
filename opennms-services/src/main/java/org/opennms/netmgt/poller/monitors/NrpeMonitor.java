@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -145,7 +145,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-        LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
+        LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         //
@@ -163,7 +163,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("NrpeMonitor: connected to host: {} on port: {}", port, ipv4Addr);
+                LOG.debug("NrpeMonitor: connected to host: {} on port: {}", ipv4Addr, port);
                 
             	reason = "Perhaps check the value of 'usessl' for this monitor against the NRPE daemon configuration";
                 socket = wrapSocket(socket, useSsl);

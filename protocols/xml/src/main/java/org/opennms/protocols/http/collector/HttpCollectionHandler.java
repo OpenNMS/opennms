@@ -50,7 +50,6 @@ import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -165,8 +164,9 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      * @param urlString the URL string
      * @param request the request
      * @return the JSoup document
+     * @throws Exception the exception
      */
-    protected Document getJsoupDocument(String urlString, Request request) {
+    protected Document getJsoupDocument(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -175,8 +175,6 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             is = c.getInputStream();
             final Document doc = Jsoup.parse(is, "UTF-8", "/");
             return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);

@@ -2,21 +2,21 @@
 <datacollection-group name="pfSense">
 
       <resourceType name="pfIfIfIndex" label="pfSense Interface" resourceLabel="${pfIfIfDescr}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="pfIfIfDescr" />
         </storageStrategy>
       </resourceType>
 
       <resourceType name="pfTablesTblIndex" label="pfSense PF Table" resourceLabel="${pftTblDescr}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="pftTblDescr" />
         </storageStrategy>
       </resourceType>
 
       <resourceType name="pfLabelsLblIndex" label="pfSense PF Label" resourceLabel="${pfLabelsLblName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy" />
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
           <parameter key="sibling-column-name" value="pfLabelsLblName" />
         </storageStrategy>

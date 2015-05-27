@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,41 +62,41 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         })
 })
 public class DnsDetectorTest {
-    
+
     private DnsDetector m_detector;
-    
+
     @Before
     public void setUp() throws SocketException {
         MockLogAppender.setupLogging();
 
         m_detector = new DnsDetector();
         m_detector.setTimeout(500);
-        
+
         //m_socket = new DatagramSocket(4445);
         //m_serverThread = createThread();
         //m_serverThread.start();
     } 
-    
+
     @After
     public void tearDown() {
         //m_serverThread.stop();
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setPort(9153);
         m_detector.setLookup("www.google.com");
         m_detector.init();
-        
+
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(5000);
         m_detector.setLookup("www.google.com");
         m_detector.init();
-        
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
 
     }
