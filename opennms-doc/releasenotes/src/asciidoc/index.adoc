@@ -31,6 +31,7 @@ include::common/preface.adoc[]
 [releasenotes-changelog]
 == Changelog
 :numbered!:
+include::releasenotes/changelog-16.adoc[]
 include::releasenotes/changelog-15.adoc[]
 include::releasenotes/changelog-14.adoc[]
 include::releasenotes/changelog-1.13.adoc[]

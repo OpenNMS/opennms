@@ -21,7 +21,7 @@ image::webui/opsboard/02_opsboard-concept.png[]
 === Configuration
 
 To create and configure _Ops Boards_ administration permissions are required.
-The configuration section is in admin area of OpenNMS and named 'Ops Board Config Web Ui'.
+The configuration section is in admin area of OpenNMS and named _Ops Board Config Web Ui_.
 
 .Navigation to the _Ops Board_ configuration
 image::webui/opsboard/03_admin-configure-opsboard.png[]
@@ -36,16 +36,16 @@ image::webui/opsboard/04_add-dashlet.png[]
  3. Add a _Dashlet_ to show OpenNMS monitoring information
  4. Show a preview of the whole _Ops Board_
  5. List of available _Dashlets_
- 6. 'Priority' for this _Dashlet_ in _Ops Board_ rotation, lower priority means it will be displayed more often
- 7. 'Duration' in seconds for this _Dashlet_ in the _Ops Board_ rotation
- 8. Change 'Priority' if the _Dashlet_ is in alert state, this is optional and maybe not available in all _Dashlets_
- 9. Change 'Duration' if the _Dashlet_ is in alert state, it is optional and maybe not available in all _Dashlets_
+ 6. _Priority_ for this _Dashlet_ in _Ops Board_ rotation, lower priority means it will be displayed more often
+ 7. _Duration_ in seconds for this _Dashlet_ in the _Ops Board_ rotation
+ 8. Change _Priority_ if the _Dashlet_ is in alert state, this is optional and maybe not available in all _Dashlets_
+ 9. Change _Duration_ if the _Dashlet_ is in alert state, it is optional and maybe not available in all _Dashlets_
  10. Configuration properties for this _Dashlet_
  11. Remove this _Dashlet_ from the _Ops Board_
  12. Order _Dashlets_ for the rotation on the _Ops Board_ and the tile view in the _Ops Panel_
  13. Show a preview for the whole _Ops Board_
 
-The configured _Ops Board_ can be used by navigating in the main menu to 'Dashboard -> Ops Board'.
+The configured _Ops Board_ can be used by navigating in the main menu to _Dashboard -> Ops Board_.
 
 .Navigation to use the _Ops Board_
 image::webui/opsboard/05_opsboard-user.png[]

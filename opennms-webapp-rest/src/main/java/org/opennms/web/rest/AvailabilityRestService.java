@@ -208,7 +208,6 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     AvailabilityNode getAvailabilityNode(final int id) throws Exception {
-        final CategoryModel categoryModel = CategoryModel.getInstance();
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -216,14 +215,14 @@ public class AvailabilityRestService extends OnmsRestService {
         if (dbNode == null) {
             return null;
         }
-        final double nodeAvail = categoryModel.getNodeAvailability(id);
+        final double nodeAvail = CategoryModel.getNodeAvailability(id);
 
         final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
         for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
-            final double ifaceAvail = categoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
+            final double ifaceAvail = CategoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
             final AvailabilityIpInterface ai = new AvailabilityIpInterface(iface, ifaceAvail);
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
-                final double serviceAvail = categoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
+                final double serviceAvail = CategoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
                 final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail);
                 ai.addService(ams);
             }

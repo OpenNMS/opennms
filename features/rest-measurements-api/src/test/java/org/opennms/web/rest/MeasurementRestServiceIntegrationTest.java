@@ -45,6 +45,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,8 @@ public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyR
     @Autowired
     protected NodeDao m_nodeDao;
 
+    protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
     @Before
     public void setUp() throws Throwable {
         super.setUp();
@@ -97,7 +100,9 @@ public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyR
         File rrdDirectory = new File("src/test/resources/share/jrb");
         assertTrue(rrdDirectory.canRead());
 
-        m_resourceDao.setRrdDirectory(rrdDirectory);
+        m_resourceStorageDao.setRrdDirectory(rrdDirectory);
+        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
+
         System.setProperty("rrd.base.dir", rrdDirectory.getAbsolutePath());
     }
 

@@ -56,7 +56,6 @@ import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -169,8 +168,9 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * @param urlString the URL string
      * @param request the request
      * @return the JSON object
+     * @throws Exception the exception
      */
-    protected JSONObject getJSONObject(String urlString, Request request) {
+    protected JSONObject getJSONObject(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -181,8 +181,6 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             IOUtils.copy(is, writer);
             final JSONObject jsonObject = JSONObject.fromObject(writer.toString());
             return jsonObject;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);

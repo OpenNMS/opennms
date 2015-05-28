@@ -21,13 +21,11 @@ If the banner is not available in the output the status is determined as down.
 .Monitor specific parameters for the SystemExecuteMonitor
 [options="header, autowidth"]
 |===
-| Parameter | Description                                      | Required | Default value
-| `script`  | The system-call to execute.                      | required | `-`
-| `args`    | The arguments to hand over to the system-call. +
-              It supports variable replacement, see below.     | optional | `-`
-| `banner`  | A string that is match against the output of +
-              the system-call. If the output contains the +
-              banner, the service is determined as _UP_.       | optional | `-`
+| Parameter | Description                                                                                               | Required | Default value
+| `script`  | The system-call to execute.                                                                               | required | `-`
+| `args`    | The arguments to hand over to the system-call. It supports variable replacement, see below.               | optional | `-`
+| `banner`  | A string that is match against the output of the system-call. If the output contains the banner, the
+              service is determined as _UP_.                                                                            | optional | `-`
 |===
 
 The parameter `args` supports variable replacement for the following set of variables.

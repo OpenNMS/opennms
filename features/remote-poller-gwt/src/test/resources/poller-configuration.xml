@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
-<poller-configuration threads="1" serviceUnresponsiveEnabled="false" nextOutageId="SELECT nextval('outageNxtId')" xmlrpc="false">
+<poller-configuration threads="1" serviceUnresponsiveEnabled="false" nextOutageId="SELECT nextval('outageNxtId')">
 	<node-outage status="on" pollAllIfNoCriticalServiceDefined="true" />
 	<package name="example1">
 		<filter>IPADDR IPLIKE *.*.*.*</filter>

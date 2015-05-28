@@ -62,7 +62,7 @@ import java.util.List;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + GraphResultsController.class);
+    private static Logger logger = LoggerFactory.getLogger(GraphResultsController.class);
     
     private GraphResultsService m_graphResultsService;
     

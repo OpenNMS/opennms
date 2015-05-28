@@ -290,7 +290,9 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
         final Set<LocationMonitorIpInterface> ifaces = new HashSet<LocationMonitorIpInterface>();
         for (final OnmsLocationSpecificStatus status : m_statuses) {
-            ifaces.add(new LocationMonitorIpInterface(status.getLocationMonitor(), status.getMonitoredService().getIpInterface()));
+            if (status.getMonitoredService().getNodeId() == nodeId) {
+                ifaces.add(new LocationMonitorIpInterface(status.getLocationMonitor(), status.getMonitoredService().getIpInterface()));
+            }
         }
         return ifaces;
     }

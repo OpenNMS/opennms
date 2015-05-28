@@ -83,7 +83,6 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +99,6 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-provisioner.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
@@ -134,10 +132,6 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 	@Autowired
 	private TransactionTemplate m_transactionTemplate;
-
-	@Autowired
-	private OpenNMSProvisioner m_provisioner;
-
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -207,8 +201,6 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
 		m_pollerConfig.setDefaultPollInterval(2000L);
 		m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
-
-		m_provisioner.setPollerConfig(m_pollerConfig);
 
 		m_anticipator = new EventAnticipator();
 		m_outageAnticipator = new OutageAnticipator(m_db);
@@ -1140,41 +1132,9 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		svc1.bringDown();
 
 		verifyAnticipated(10000);
-    }
-
-    @Test
-	public void testNodeGainedDynamicService() throws Exception {
-		m_pollerConfig.setNodeOutageProcessingEnabled(true);
-
-		startDaemons();
-
-        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        configStream.close();
-        
-		m_provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,
-				"www.opennms.org");
-
-		assertNotNull("The service id for MyDNS is null", m_db
-				.getServiceID("MyDNS"));
-		MockUtil.println("The service id for MyDNS is: "
-				+ m_db.getServiceID("MyDNS").toString());
-
-		m_anticipator.reset();
-		
-		testSendNodeGainedService("MyDNS", "HTTP");
-
 	}
 
-    @Test
+	@Test
 	public void testSuspendPollingResumeService() {
 
 		MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
@@ -1348,7 +1308,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
 			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs

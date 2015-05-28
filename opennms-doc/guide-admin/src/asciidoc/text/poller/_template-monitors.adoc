@@ -36,7 +36,7 @@ This is optional just if you can use variables in the configuration
 
 ===== Examples
 
-Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]
 ----

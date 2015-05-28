@@ -89,7 +89,6 @@
         <entry key="vmware-cim-datacollection-config.xml" value="VmwareCimDatacollectionConfigDao"/>
         <entry key="vmware-datacollection-config.xml" value="VmwareDatacollectionConfigDao"/>
         <entry key="vmware-config.xml" value="VmwareConfigDao"/>
-        <entry key="xmlrpcd-configuration.xml" value="xmlrpcdConfigFactory"/>
         <!-- <entry key="xmp-config.xml" value="xmpConfigFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmp-datacollection-config.xml" value="xmpCollectionFactory"/> --><!-- Not part of standard build -->
         <!-- <entry key="xmpp-configuration.properties" value="unknown"/> --><!-- config code not in its own class -->
@@ -578,12 +577,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="VmwareConfigDao" class="org.opennms.netmgt.dao.jaxb.VmwareConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/vmware-config.xml"/>
   </bean>
-
-  <bean id="xmlrpcdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.XmlrpcdConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="xmlrpcdConfigFactory" class="org.opennms.netmgt.config.XmlrpcdConfigFactory" depends-on="xmlrpcdConfigFactory-init" factory-method="getInstance"/>
 
   <!--
   <bean id="xmpConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

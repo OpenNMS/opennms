@@ -81,7 +81,7 @@ public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceT
         File rrdDirectory = new File("src/test/resources/share/rrd");
         assertTrue(rrdDirectory.canRead());
 
-        m_resourceDao.setRrdDirectory(rrdDirectory);
+        m_resourceStorageDao.setRrdDirectory(rrdDirectory);
         System.setProperty("rrd.base.dir", rrdDirectory.getAbsolutePath());
         System.setProperty("rrd.binary", "rrdtool");
     }

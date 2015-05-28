@@ -67,16 +67,16 @@ Monitor specific parameters for the OmsaStorageMonitor
 | Parameter           | Description                                                                                     | Required | Default value
 | `virtualDiskNumber` | The disk index of your RAID array                                                               | optional | `1`
 | `retry`             | Amount of attempts opening a connection and try to get the greeting banner before the service
-                        goes down.                                                                                      | optional | `from snmp-config.xml`
+                        goes down.                                                                                      | optional | from `snmp-config.xml`
 | `timeout`           | Time in milliseconds to wait before receiving the
-                        SNMP response.                                                                                  | optional | `from snmp-config.xml`
-| `port`              | The TCP port OpenManage is listening                                                            | optional | `from snmp-config.xml`
+                        SNMP response.                                                                                  | optional | from `snmp-config.xml`
+| `port`              | The TCP port OpenManage is listening                                                            | optional | from `snmp-config.xml`
 |===
 
 
 ===== Examples
 
-Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and can look like this:
 [source, xml]

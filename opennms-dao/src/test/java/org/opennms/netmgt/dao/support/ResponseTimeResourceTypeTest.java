@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,8 +34,10 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,19 +48,20 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 public class ResponseTimeResourceTypeTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private DefaultResourceDao resourceDao = new DefaultResourceDao();
-
-    private NodeDao nodeDao = createMock(NodeDao.class);
+    private FilesystemResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
     private IpInterfaceDao ipInterfaceDao = createMock(IpInterfaceDao.class);
 
@@ -68,25 +71,34 @@ public class ResponseTimeResourceTypeTest {
 
     private Set<OnmsIpInterface> ipInterfaces = new HashSet<OnmsIpInterface>();
 
-    private ResponseTimeResourceType responseTimeResourceType = new ResponseTimeResourceType(resourceDao, nodeDao, ipInterfaceDao);
+    private ResponseTimeResourceType responseTimeResourceType = new ResponseTimeResourceType(resourceStorageDao, ipInterfaceDao);
+
+    private NodeDao nodeDao = createMock(NodeDao.class);
+
+    private ResourceDao resourceDao = createMock(ResourceDao.class);
 
     @Before
-    public void setUp() {
-        resourceDao.setRrdDirectory(tempFolder.getRoot());
-        tempFolder.newFolder(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1");
+    public void setUp() throws IOException {
+        resourceStorageDao.setRrdDirectory(tempFolder.getRoot());
+        File ifResponseFolder = tempFolder.newFolder(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1");
+        File http = new File(ifResponseFolder, "http" + RrdUtils.getExtension());
+        http.createNewFile();
 
         ipInterfaces.add(ipInterface);
     }
 
     @Test
     public void canGetResourcesForNode() throws IOException {
-        expect(nodeDao.get(1)).andReturn(node);
         expect(node.getIpInterfaces()).andReturn(ipInterfaces);
         expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
 
-        replay(nodeDao, node, ipInterface);
-        List<OnmsResource> resources = responseTimeResourceType.getResourcesForNode(1);
-        verify(nodeDao, node, ipInterface);
+        replay(node, ipInterface);
+        NodeResourceType nodeResourceType = new NodeResourceType(resourceDao, nodeDao);
+        OnmsResource nodeResource = new OnmsResource("1", "Node", nodeResourceType, Collections.emptySet(), ResourcePath.get("foo"));
+        nodeResource.setEntity(node);
+        
+        List<OnmsResource> resources = responseTimeResourceType.getResourcesForParent(nodeResource);
+        verify(node, ipInterface);
 
         assertEquals(1, resources.size());
         assertEquals("127.0.0.1", resources.get(0).getName());
@@ -94,7 +106,6 @@ public class ResponseTimeResourceTypeTest {
 
     @Test
     public void canGetChildByName() throws IOException {
-        expect(ipInterface.getIpAddress()).andReturn(InetAddress.getByName("127.0.0.1")).atLeastOnce();
         expect(ipInterfaceDao.get(node, "127.0.0.1")).andReturn(ipInterface);
 
         OnmsResource parent = createMock(OnmsResource.class);

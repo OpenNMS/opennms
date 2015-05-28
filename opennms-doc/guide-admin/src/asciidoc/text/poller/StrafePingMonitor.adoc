@@ -24,14 +24,14 @@ image::poller/01_strafeping.png[]
 Monitor specific parameters for the StrafePingMonitor
 [options="header, autowidth"]
 |===
-| Parameter           | Description                                                                              | Required | Default value
-| `timeout`           | Time in milliseconds to wait before assuming that a packet has not responded             | optional | `800`
-| `retry`             | The number of retries to attempt when a packet fails to respond in the given timeout     | optional | `2`
-| `ping-count`        | The number of pings to attempt each interval                                             | required | `20`
-| `failure-ping-count`| The number of pings that need to fail for the service to be considered down              | required | `20`
-| `wait-interval`     | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                   | required | `50`
+| Parameter           | Description                                                                                | Required | Default value
+| `timeout`           | Time in milliseconds to wait before assuming that a packet has not responded               | optional | `800`
+| `retry`             | The number of retries to attempt when a packet fails to respond in the given timeout       | optional | `2`
+| `ping-count`        | The number of pings to attempt each interval                                               | required | `20`
+| `failure-ping-count`| The number of pings that need to fail for the service to be considered down                | required | `20`
+| `wait-interval`     | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                     | required | `50`
 | `rrd-repository`    | The location to write _RRD data_. Generally, you will not want to change this from default | required | `$OPENNMS_HOME/share/rrd/response`
-| `rrd-base-name`     | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                | required | `strafeping`
+| `rrd-base-name`     | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
 |===
 
 

@@ -61,9 +61,9 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
+    private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices, ipInterface WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = ? AND status ='A'";
 
-    private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL and nodeid=?";
+    private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages, ifServices, ipInterface WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = ? AND svcregainedeventid IS NULL";
 
     private static final String COUNT_NODES_IN_PATH = "SELECT count(DISTINCT pathoutage.nodeid) FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D'";
 
@@ -73,9 +73,9 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_NODELABEL_BY_NODEID = "SELECT nodelabel FROM node WHERE nodeid=?";
 
-    private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages WHERE ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
+    private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages, ifServices, ipInterface WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
-    private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
+    private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifServices, ipInterface WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.ipaddr=? AND status='A' AND ifServices.serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
     private static final String GET_DEPENDENCY_NODES_BY_NODEID="select po.nodeid from pathoutage po left join ipinterface intf on po.criticalpathip=intf.ipaddr where intf.nodeid=?";
 

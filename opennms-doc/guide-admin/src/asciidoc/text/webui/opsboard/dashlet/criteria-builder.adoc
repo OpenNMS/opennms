@@ -12,24 +12,24 @@ It is possible to combine multiple _Criteria_ to display just a subset of inform
 | Restriction | Property           | Value 1   | Value 2  | Description
 | `Asc`       | -                  | -         | -        | ascending order
 | `Desc`      | -                  | -         | -        | descending order
-| `Between`   | database attribute | 'String'  | 'String' | Subset of data between value 1 and value 2
-| `Contains`  | database attribute | 'String'  | -        | Select all data which contains a given text string in a given database attribute
+| `Between`   | database attribute | _String_  | _String_ | Subset of data between value 1 and value 2
+| `Contains`  | database attribute | _String_  | -        | Select all data which contains a given text string in a given database attribute
 | `Distinct`  | database attribute | -         | -        | Select a single instance
-| `Eq`        | database attribute | 'String'  | -        | Select data where attribute equals (`==`) a given text string
-| `Ge`        | database attribute | 'String'  | -        | Select data where attribute is greater equals than (`>=`) a given text value
-| `Gt`        | database attribute | 'String'  | -        | Select data where attribute is greater than (`>`) a given text value
-| `Ilike`     | database attribute | 'String'  | -        | 'unknown'
-| `In`        | database attribute | 'String'  | -        | 'unknown'
-| `Iplike`    | database attribute | 'String'  | -        | Select data where attribute matches an given IPLIKE expression
+| `Eq`        | database attribute | _String_  | -        | Select data where attribute equals (`==`) a given text string
+| `Ge`        | database attribute | _String_  | -        | Select data where attribute is greater equals than (`>=`) a given text value
+| `Gt`        | database attribute | _String_  | -        | Select data where attribute is greater than (`>`) a given text value
+| `Ilike`     | database attribute | _String_  | -        | _unknown_
+| `In`        | database attribute | _String_  | -        | _unknown_
+| `Iplike`    | database attribute | _String_  | -        | Select data where attribute matches an given IPLIKE expression
 | `IsNull`    | database attribute | -         | -        | Select data where attribute is null
 | `IsNotNull` | database attribute | -         | -        | Select data where attribute is *not* null
 | `IsNotNull` | database attribute | -         | -        | Select data where attribute is *not* null
-| `Le`        | database attribute | 'String'  | -        | Select data where attribute is less equals than (`<=`) a given text value
-| `Lt`        | database attribute | 'String'  | -        | Select data where attribute is less than (`<`) a given text value
-| `Le`        | database attribute | 'String'  | -        | Select data where attribute is less equals than (`<=`) a given text value
-| `Like`      | database attribute | 'String'  | -        | Select data where attribute is like a given text value similar to SQL `like`
-| `Limit`     | -                  | 'Integer' | -        | Limit the result set by a given number
-| `Ne`        | database attribute | 'String'  | -        | Select data where attribute is not equals (`!=`) a given text value
-| `Not`       | database attribute | 'String'  | -        | 'unknown difference between `Ne`'
+| `Le`        | database attribute | _String_  | -        | Select data where attribute is less equals than (`<=`) a given text value
+| `Lt`        | database attribute | _String_  | -        | Select data where attribute is less than (`<`) a given text value
+| `Le`        | database attribute | _String_  | -        | Select data where attribute is less equals than (`<=`) a given text value
+| `Like`      | database attribute | _String_  | -        | Select data where attribute is like a given text value similar to SQL `like`
+| `Limit`     | -                  | _Integer_ | -        | Limit the result set by a given number
+| `Ne`        | database attribute | _String_  | -        | Select data where attribute is not equals (`!=`) a given text value
+| `Not`       | database attribute | _String_  | -        | _unknown_ difference between `Ne`
 | `OrderBy`   | database attribute | -         | -        | Order the result set by a given attribute
 |===

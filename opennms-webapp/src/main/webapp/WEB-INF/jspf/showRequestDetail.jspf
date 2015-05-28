@@ -18,7 +18,7 @@ calling JSP page.
 <tr><th colspan="3">Request parameters</th></tr>
 <tr><th>Name</th><th>Class</th><th>Value</th></tr>
 <%
-java.util.Enumeration __request_param_e = request.getParameterNames();
+java.util.Enumeration<String> __request_param_e = request.getParameterNames();
 while (__request_param_e.hasMoreElements()) {
     String name = (String) __request_param_e.nextElement();
     String valueClass = request.getParameter(name).getClass().getName();
@@ -34,7 +34,7 @@ while (__request_param_e.hasMoreElements()) {
 <tr><th colspan="3">Page context attributes</th></tr>
 <tr><th>Name</th><th>Class</th><th>Value</th></tr>
 <%
-java.util.Enumeration __pageContext_attr_e = pageContext.getAttributeNamesInScope(PageContext.PAGE_SCOPE);
+java.util.Enumeration<String> __pageContext_attr_e = pageContext.getAttributeNamesInScope(PageContext.PAGE_SCOPE);
 while (__pageContext_attr_e.hasMoreElements()) {
     String name = (String) __pageContext_attr_e.nextElement();
     String valueClass = pageContext.getAttribute(name, PageContext.PAGE_SCOPE).getClass().getName();
@@ -50,7 +50,7 @@ while (__pageContext_attr_e.hasMoreElements()) {
 <tr><th colspan="3">Request attributes</th></tr>
 <tr><th>Name</th><th>Class</th><th>Value</th></tr>
 <%
-java.util.Enumeration __request_attr_e = request.getAttributeNames();
+java.util.Enumeration<String> __request_attr_e = request.getAttributeNames();
 while (__request_attr_e.hasMoreElements()) {
     String name = (String) __request_attr_e.nextElement();
     String valueClass = request.getAttribute(name).getClass().getName();
@@ -70,7 +70,7 @@ javax.servlet.http.HttpSession __show_detail_session = request.getSession();
 if (__show_detail_session == null) {
     out.println("<tr><td colspan=\"3\">No session</td></tr>");
 } else {
-	java.util.Enumeration __session_attr_e =
+	java.util.Enumeration<String> __session_attr_e =
 	    __show_detail_session.getAttributeNames();
 	while (__session_attr_e.hasMoreElements()) {
 	    String name = (String) __session_attr_e.nextElement();
@@ -88,7 +88,7 @@ if (__show_detail_session == null) {
 <tr><th colspan="3">Servlet init parameters</th></tr>
 <tr><th>Name</th><th>Class</th><th>Value</th></tr>
 <%
-java.util.Enumeration __init_param_e =
+java.util.Enumeration<String> __init_param_e =
 	    getServletConfig().getInitParameterNames();
 while (__init_param_e.hasMoreElements()) {
     String name = (String) __init_param_e.nextElement();
@@ -106,7 +106,7 @@ while (__init_param_e.hasMoreElements()) {
 <%
 javax.servlet.ServletContext __servlet_context =
 	    getServletConfig().getServletContext();
-java.util.Enumeration __context_attr_e =
+java.util.Enumeration<String> __context_attr_e =
 	    __servlet_context.getAttributeNames();
 while (__context_attr_e.hasMoreElements()) {
     String name = (String) __context_attr_e.nextElement();
