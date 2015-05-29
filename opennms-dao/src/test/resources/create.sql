@@ -51,10 +51,6 @@ drop table node cascade;
 drop table service cascade;
 drop table distPoller cascade;
 drop table events cascade;
-drop table vulnerabilities cascade;
-drop table vulnPlugins cascade;
-drop table serverMap cascade;
-drop table serviceMap cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -97,7 +93,6 @@ drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
 drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
-drop sequence vulnNxtId;
 drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
@@ -178,11 +173,6 @@ create sequence outageNxtId minvalue 1;
 --# install: notifyNxtId notifyID notifications
 create sequence notifyNxtId minvalue 1;
 
---# Sequence for the vulnerabilityID column in the vulnerabilities table
---#          sequence, column,         table
---# install: vulnNxtId vulnerabilityID vulnerabilities
-create sequence vulnNxtId minvalue 1;
-
 --# Sequence for the id column in the categories table
 --#          sequence, column, table
 --# install: catNxtId categoryid   categories
@@ -224,41 +214,6 @@ CREATE TABLE accessLocks (
 
 --# 
 
-
---########################################################################
---# serverMap table - Contains a list of IP Addresses mapped to
---#                   OpenNMS servers
---#
---# This table contains the following fields:
---#
---#  ipAddr      : IP address of the device to be monitored
---#  serverName  : Text field to store the server name
---#
---########################################################################
-
-create table serverMap (
-	ipAddr			text not null,
-	serverName		varchar(64) not null );
-
-create index server_name_idx on serverMap(serverName);
-
---########################################################################
---# serviceMap table - Contains a list of IP Addresses mapped to
---#                    OpenNMS services
---#
---# This table contains the following fields:
---#
---#  ipAddr          : IP address of the device to be monitored
---#  serviceName     : Text field to store the service name
---#
---########################################################################
-
-create table serviceMap (
-	ipAddr			text not null,
-	serviceMapName		varchar(255) not null
-);
-create index servicemap_name_idx on serviceMap(serviceMapName);
-create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
 --########################################################################
 --# distPoller table - Contains information on Distributed Pollers
@@ -739,9 +694,7 @@ create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, event
 --#                      a non-null value when a new outage is inserted
 --#                      but might be null in case of an opennms upgrade
 --#  svcRegainedEventID: ID of the event that cleared the outage
---#  nodeID            : Unique integer identifier for node
---#  ipAddr            : IP Address of node's interface
---#  serviceID         : Unique integer identifier of service/poller package
+--#  ifServiceId       : Unique integer identifier of service
 --#  ifLostService     : Time of lost service event
 --#  ifRegainedService : Time of regained service event
 --#  suppressTime 	   : Time to suppress the outage
