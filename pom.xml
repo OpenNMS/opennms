@@ -1215,6 +1215,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
+    <newtsVersion>1.2.0</newtsVersion>
     <paxExamVersion>2.6.0</paxExamVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -2362,6 +2363,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-newts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-tcp</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2478,6 +2484,12 @@
         <groupId>org.opennms</groupId>
         <artifactId>opennms-vmware</artifactId>
         <version>${project.version}</version>
+      </dependency>
+     <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>newts-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>

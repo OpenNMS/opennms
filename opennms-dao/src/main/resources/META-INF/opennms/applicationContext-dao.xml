@@ -493,9 +493,15 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
+<!--
+   TODO: Use factory pattern to create to appropriate bean.
+
   <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
     <property name="rrdDirectory" value="${rrd.base.dir}" />
   </bean>
+-->
+
+  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 

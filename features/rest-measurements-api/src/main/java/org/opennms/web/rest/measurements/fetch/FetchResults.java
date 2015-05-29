@@ -28,8 +28,10 @@
 
 package org.opennms.web.rest.measurements.fetch;
 
+import java.util.Arrays;
 import java.util.Map;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 /**
@@ -72,5 +74,14 @@ public class FetchResults {
 
     public Map<String, Object> getConstants() {
         return m_constants;
+    }
+
+    public String toString() {
+       return Objects.toStringHelper(this.getClass())
+            .add("timestamps", Arrays.toString(m_timestamps))
+            .add("columns", m_columns)
+            .add("step", m_step)
+            .add("constants", m_constants)
+            .toString();
     }
 }

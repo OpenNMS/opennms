@@ -39,6 +39,12 @@
       <artifactId>opennms-rrd-jrobin</artifactId>
     </dependency>
 
+    <!-- Newts -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-newts</artifactId>
+    </dependency>
+
     <!-- Third party -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

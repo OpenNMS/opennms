@@ -14,6 +14,7 @@
     <module>opennms-rrd-jrobin</module>
     <module>opennms-rrd-rrdtool</module>
     <module>opennms-rrd-tcp</module>
+    <module>opennms-rrd-newts</module>
     <module>opennms-rrd-model</module>
   </modules>
   <build>
