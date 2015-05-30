@@ -354,8 +354,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         // then create the resource using the node type instead of the nodeSource type
         if (createUsingNodeSourceType) {
             final boolean nodeSourcePathExists = m_resourceStorageDao.exists(m_nodeSourceResourceType.getResourcePathForNode(node));
-            final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
-            createUsingNodeSourceType = nodeSourcePathExists || !nodePathExists;
+            if (!nodeSourcePathExists) {
+                final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
+                createUsingNodeSourceType = !nodePathExists;
+            }
         }
 
         // Create the resource
