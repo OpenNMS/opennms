@@ -1,7 +1,5 @@
 package org.opennms.netmgt.rrd.newts;
 
-import org.opennms.newts.api.Resource;
-
 import com.google.common.base.Objects;
 
 /**
@@ -22,10 +20,6 @@ public class RrdDb {
         return m_path;
     }
 
-    public Resource getResource() {
-        return NewtsUtils.getResourceFromPath(m_path);
-    }
-    
     public String toString() {
         return Objects.toStringHelper(this.getClass())
                 .add("path", m_path)

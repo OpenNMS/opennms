@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.newts.api.Resource;
 
 import com.google.common.base.Objects;
 
@@ -32,10 +31,6 @@ public class RrdDef {
 
     public String getPath() {
         return m_path;
-    }
-
-    public Resource getResource() {
-        return NewtsUtils.getResourceFromPath(m_path);
     }
 
     public List<RrdDs> getDataSources() {

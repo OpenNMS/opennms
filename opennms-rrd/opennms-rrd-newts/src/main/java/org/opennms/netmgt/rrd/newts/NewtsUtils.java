@@ -19,6 +19,7 @@ import org.opennms.newts.cassandra.CassandraSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -61,6 +62,20 @@ public class NewtsUtils {
                 hostname, port, keyspace);
 
         return new CassandraSession(keyspace, hostname, port, CASSANDRA_COMPRESSION);
+    }
+
+    protected static void addParentPathAttributes(String path, Map<String, String> attributes) {
+        // Add all of the parent paths as attributes
+        String resourceId = NewtsUtils.getResourceIdFromPath(path);
+        StringBuffer sb = new StringBuffer();
+        String[] els = resourceId.split(":");
+        for (int i = 0; i < els.length - 1; i++) {
+            if (sb.length() > 0) {
+                sb.append(":");
+            }
+            sb.append(els[i]);
+            attributes.put("_parent" + i, sb.toString());
+        }
     }
 
     /**
@@ -122,14 +137,20 @@ public class NewtsUtils {
                 }
             }
 
+            Resource resource;
+            if (attributes == null) {
+                resource = new Resource(getResourceIdFromPath(def.getPath()));
+            } else {
+                resource = new Resource(getResourceIdFromPath(def.getPath()), Optional.of(attributes));
+            }
+
             samples.add(
                 new Sample(
                     timestamp,
-                    def.getResource(),
+                    resource,
                     ds.getName(),
                     ds.getMetricType(),
-                    ValueType.compose(val, ds.getMetricType()),
-                    attributes
+                    ValueType.compose(val, ds.getMetricType())
                 )
             );
         }
@@ -143,7 +164,7 @@ public class NewtsUtils {
      * i.e. /opt/opennms/share/rrd/snmp/1/loadavg1.newts would map to snmp:1:loadavg1 
      *
      */
-    protected static Resource getResourceFromPath(String path) {
+    protected static String getResourceIdFromPath(String path) {
         final String prefix = Paths.get(System.getProperty("opennms.home"), "share", "rrd").toString();
 
         // Initial sanitation
@@ -179,8 +200,7 @@ public class NewtsUtils {
             // Remove any existing separators from the components
             sb.append(el.replace(":", ""));
         }
-
-        return new Resource(sb.toString());
+        return sb.toString();
     }
 
     /**

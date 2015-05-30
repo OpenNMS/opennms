@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -135,15 +134,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     private List<Result> searchFor(ResourcePath path, int depth) {
         BooleanQuery q = new BooleanQuery();
-        for (final String entry : path) {
-            if (q.getClauses().size() == 0) {
-                // OR the first term
-                q.add(new TermQuery(new Term(entry)), Operator.OR);
-            } else {
-                // AND all the others
-                q.add(new TermQuery(new Term(entry)), Operator.AND);
-            }
-        }
+        q.add(toTermQuery(path), Operator.OR);
         List<Result> matchingResults = Lists.newArrayList();
 
         LOG.trace("Searching for '{}'.", q);
@@ -161,6 +152,12 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         }
 
         return matchingResults;
+    }
+
+    protected static TermQuery toTermQuery(ResourcePath path) {
+        String els[] = path.elements();
+        int idx = els.length - 1;
+        return new TermQuery(new Term("_parent"+idx, toResourceId(path)));
     }
 
     protected static String toResourceId(ResourcePath path) {

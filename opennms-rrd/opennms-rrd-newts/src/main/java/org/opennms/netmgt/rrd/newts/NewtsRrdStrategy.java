@@ -109,9 +109,16 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     @Override
     public void createFile(RrdDef def, Map<String, String> attributeMappings) {
         // Store the attributes
-        if (attributeMappings != null) {
-            m_attrsByPath.put(def.getPath(), attributeMappings);
+        Map<String, String> attributes = attributeMappings;
+        if (attributes == null) {
+            // The map may continue to be referenced by the indexer
+            // after an insert()
+            attributes = Maps.newConcurrentMap();
         }
+
+        NewtsUtils.addParentPathAttributes(def.getPath(), attributes);
+
+        m_attrsByPath.put(def.getPath(), attributes);
     }
 
     @Override
@@ -164,7 +171,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     @Override
     public Double fetchLastValueInRange(String rrdFile, String ds,
             int interval, int range) throws NumberFormatException, RrdException {
-        final Resource resource = NewtsUtils.getResourceFromPath(rrdFile);
+        final Resource resource = new Resource(NewtsUtils.getResourceIdFromPath(rrdFile));
         final Timestamp end = Timestamp.now();
         final Timestamp start = end.minus(range, TimeUnit.SECONDS);
 
