@@ -94,8 +94,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                         "on mlink.macaddress = ntm.physaddress " +
                         "left join ipinterface ip on ip.ipaddr = ntm.netaddress " +
                         "left join node on ip.nodeid = node.nodeid " +
+                        "where ip.nodeid is not null " +
                         "order by bridgeport;").list();
-                //where ip.nodeid is not null
             }
         });
 
