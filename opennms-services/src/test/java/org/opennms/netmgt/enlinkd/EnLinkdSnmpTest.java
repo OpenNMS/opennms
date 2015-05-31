@@ -50,6 +50,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
@@ -67,7 +68,6 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
-
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
@@ -131,6 +131,37 @@ public class EnLinkdSnmpTest extends NmsNetworkBuilder implements InitializingBe
     			InetAddress.getByName("192.168.0.5"),InetAddress.getByName("255.255.255.252")));
     	assertEquals(true, InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
     			InetAddress.getByName("10.168.0.5"),InetAddress.getByName("255.0.0.0")));
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE)
+    })
+    public void testCdpGlobalGroupCollection() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
+
+        String trackerName = "cdpGlobalGroup";
+
+        final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpGlobalGroup);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals("r-ro-suce-pict-001.infra.u-ssi.net",cdpGlobalGroup.getCdpDeviceId());
+        assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
+
     }
 
     
