@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -18,13 +17,14 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.Sample;
+import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 
 /**
  * This is an attempt to use Newts as a data store using the
@@ -43,8 +43,6 @@ import com.google.common.collect.Queues;
  */
 public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
-    private static final int QUEUE_CAPACITY = 2048;
-
     protected static final String FILE_EXTENSION = ".newts";
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsRrdStrategy.class);
@@ -53,8 +51,12 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     // Newts
     /////////
 
+    @Autowired
     private NewtsPersistor m_persistor;
-    
+
+    @Autowired
+    private SampleRepository m_sampleRepository;
+
     private Thread m_persistorThread = null;
 
     // Number of seconds to keep samples for
@@ -66,8 +68,6 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     // Keep track of the attributes set by file system path
     private final Map<String, Map<String, String>> m_attrsByPath = Maps.newConcurrentMap();
 
-    private final LinkedBlockingQueue<Collection<Sample>> m_sampleQueue = Queues.newLinkedBlockingQueue(QUEUE_CAPACITY);
-    
     @Override
     public synchronized void setConfigurationProperties(Properties props) {
         m_ttl = Integer.valueOf((String)props.getOrDefault(NewtsUtils.TTL_PROPERTY, NewtsUtils.DEFAULT_TTL));
@@ -79,7 +79,6 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         } else {
             LOG.info("Starting persistor thread.");
 
-            m_persistor = new NewtsPersistor(m_ttl, m_sampleQueue);
             m_persistorThread = new Thread(m_persistor);
             m_persistorThread.setName("NewtsPersistor");
             m_persistorThread.start();
@@ -144,7 +143,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         final Map<String, String> attributes = m_attrsByPath.get(db.getPath());
         final List<Sample> samples = NewtsUtils.getSamplesFromRrdUpdateString(def, data, attributes);
         LOG.debug("Adding {} samples to the queue.", samples.size());
-        if (!m_sampleQueue.offer(samples)) {
+        if (!m_persistor.getQueue().offer(samples)) {
             LOG.warn("The queue rejected {} samples. These will be lost.", samples.size());
         }
 
@@ -178,7 +177,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         LOG.debug("Selecting samples for resource {} from {} to {}", resource, start, end);
 
         // Grab all of the sample in the requested interval
-        final Results<Sample> samples = m_persistor.getSampleRepository().select(resource, Optional.of(start), Optional.of(end));
+        final Results<Sample> samples = m_sampleRepository.select(resource, Optional.of(start), Optional.of(end));
 
         LOG.debug("Retrieved samples: {}", samples);
 

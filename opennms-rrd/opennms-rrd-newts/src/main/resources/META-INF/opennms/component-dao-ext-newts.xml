@@ -3,17 +3,76 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
   <context:annotation-config />
-  <cache:annotation-driven />
+
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <property name="searchSystemEnvironment" value="true" />
+  </bean>
+
+  <bean id="cassandra.keyspace" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.keyspace:newts}" />
+  </bean>
+
+  <bean id="cassandra.hostname" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.hostname:localhost}" />
+  </bean>
+
+  <bean id="cassandra.port" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.port:9042}" />
+  </bean>
+
+  <bean id="cassandra.compression" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.compression:NONE}" />
+  </bean>
+
+  <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
+  </bean>
+
+  <bean id="search.cassandra.time-to-live" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
+  </bean>
+
+  <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.maxSampleProcessorThreads:8}" />
+  </bean>
+
+  <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.maxCacheEntries:8192}" />
+  </bean>
+
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSession" />
+
+  <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
+
+  <bean id="resourceMetadataCache" class="org.opennms.newts.cassandra.search.GuavaResourceMetadataCache" />
+
+  <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" />
+
+  <bean id="cassandraIndexerSampleProcessor" class="org.opennms.newts.cassandra.search.CassandraIndexerSampleProcessor" />
+
+  <bean id="sampleProcessors" class="com.google.common.collect.Sets" factory-method="newHashSet">
+    <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
+  </bean>
+
+  <bean id="sampleProcessorService" class="org.opennms.newts.api.SampleProcessorService">
+    <constructor-arg index="0" ref="sampleProcessor.maxThreads" />
+    <constructor-arg index="1" ref="sampleProcessors" />
+  </bean>
+
+  <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" />
+
+  <bean id="newtsPersistor" class="org.opennms.netmgt.rrd.newts.NewtsPersistor" />
 
   <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
 

@@ -15,7 +15,6 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
-import org.opennms.newts.cassandra.CassandraSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,19 +49,6 @@ public class NewtsUtils {
     public static final String DEFAULT_PORT = "9043";
 
     public static final String DEFAULT_TTL = "" + 86400 * 365;
-
-    private static final String CASSANDRA_COMPRESSION = "NONE";
-
-    public static CassandraSession getCassrandraSession() {
-        String hostname = System.getProperty(HOSTNAME_PROPERTY, DEFAULT_HOSTNAME);
-        int port = Integer.valueOf(System.getProperty(PORT_PROPERTY, DEFAULT_PORT));
-        String keyspace = System.getProperty(KEYSPACE_PROPERTY, DEFAULT_KEYSPACE);
-
-        LOG.info("Using hostname {}, port {} and keyspace {}.",
-                hostname, port, keyspace);
-
-        return new CassandraSession(keyspace, hostname, port, CASSANDRA_COMPRESSION);
-    }
 
     protected static void addParentPathAttributes(String path, Map<String, String> attributes) {
         // Add all of the parent paths as attributes

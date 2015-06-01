@@ -45,9 +45,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ImportResource("/META-INF/opennms/component-dao-ext-newts.xml")
 public class ConditionalNewtsDaoContext {
 
-    private static final String RRD_STRATEGY_CLASS_PROPETERY_NAME = "org.opennms.rrd.strategyClass";
+    public static final String RRD_STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.rrd.strategyClass";
 
-    private static final String NEWTS_RRD_STRATEGY_CLASS_NAME = "org.opennms.netmgt.rrd.newts.NewtsRrdStrategy";
+    public static final String NEWTS_RRD_STRATEGY_CLASS_NAME = "org.opennms.netmgt.rrd.newts.NewtsRrdStrategy";
 
     static class Condition implements ConfigurationCondition {
          @Override
@@ -57,7 +57,7 @@ public class ConditionalNewtsDaoContext {
 
          @Override
          public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-             final String rrdStrategyClass = System.getProperty(RRD_STRATEGY_CLASS_PROPETERY_NAME);
+             final String rrdStrategyClass = System.getProperty(RRD_STRATEGY_CLASS_PROPERTY_NAME);
              return NEWTS_RRD_STRATEGY_CLASS_NAME.equals(rrdStrategyClass);
          }
     }

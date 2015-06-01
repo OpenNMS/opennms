@@ -1,7 +1,6 @@
 package org.opennms.web.rest.measurements.fetch;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,24 +8,20 @@ import java.util.Map.Entry;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.newts.NewtsUtils;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
-import org.opennms.newts.api.SampleProcessorService;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.AggregationFunction;
 import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -44,8 +39,6 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private static final int STEP_LOWER_BOUND_IN_MS = 120 * 1000;
 
     private final ResourceDao m_resourceDao;
-
-    private final MetricRegistry m_registry = new MetricRegistry();
 
     private SampleRepository m_sampleRepository = null;
 
@@ -161,9 +154,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private synchronized SampleRepository getSampleRepository() {
         if (m_sampleRepository == null) {
-            SampleProcessorService processors = new SampleProcessorService(1, Collections.emptySet());
-
-            m_sampleRepository = new CassandraSampleRepository(NewtsUtils.getCassrandraSession(), 0, m_registry, processors);
+            throw new RuntimeException("Unsupported. Needs move to Spring.");
         }
         return m_sampleRepository;
     }

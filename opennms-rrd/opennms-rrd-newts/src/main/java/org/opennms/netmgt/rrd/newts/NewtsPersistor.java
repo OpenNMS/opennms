@@ -2,29 +2,21 @@ package org.opennms.netmgt.rrd.newts;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.SampleProcessor;
-import org.opennms.newts.api.SampleProcessorService;
 import org.opennms.newts.api.SampleRepository;
-import org.opennms.newts.cassandra.CassandraSession;
-import org.opennms.newts.cassandra.search.CassandraIndexer;
-import org.opennms.newts.cassandra.search.CassandraIndexerSampleProcessor;
-import org.opennms.newts.cassandra.search.GuavaResourceMetadataCache;
-import org.opennms.newts.cassandra.search.ResourceMetadataCache;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Queues;
 
 /**
  * The NewtsPersistor is responsible for persisting samples gathered
@@ -43,33 +35,14 @@ public class NewtsPersistor implements Runnable {
 
     private static final long DELAY_IN_MS = 250;
 
-    // Ideally this value would correspond to the number of unique resource this system
-    // may process. However, this comes at the cost of storing a ResourceMetadata object
-    // for every one of these.
-    private static final long MAX_CACHE_ENTRIES = 4096;
-
-    private static final int SAMPLE_PROCESSOR_MAX_THREADS = 4;
-
     private static final long DELAY_AFTER_FAILURE_IN_MS = 5 * 1000;
 
-    private final int m_ttl;
+    private static final int QUEUE_CAPACITY = 2048;
 
-    private final LinkedBlockingQueue<Collection<Sample>> m_queue;
+    private final LinkedBlockingQueue<Collection<Sample>> m_queue = Queues.newLinkedBlockingQueue(QUEUE_CAPACITY);
 
-    private final MetricRegistry m_registry = new MetricRegistry();
-
-    private final ResourceMetadataCache m_cache = new GuavaResourceMetadataCache(MAX_CACHE_ENTRIES, m_registry);
-
-    private CassandraSession m_session = null;
-
-    private SampleRepository m_sampleRepository = null;
-
-    private CassandraIndexer m_indexer = null;
-
-    public NewtsPersistor(int ttl, LinkedBlockingQueue<Collection<Sample>> queue) {
-        m_ttl = ttl;
-        m_queue = queue;
-    }
+    @Autowired
+    private SampleRepository m_sampleRepository ;
 
     @Override
     public void run() {
@@ -108,7 +81,7 @@ public class NewtsPersistor implements Runnable {
                     flattenedSamples = builder.build();
 
                     LOG.debug("Inserting {} samples", flattenedSamples.size());
-                    getSampleRepository().insert(flattenedSamples);
+                    m_sampleRepository.insert(flattenedSamples);
 
                     if (LOG.isDebugEnabled()) {
                         String uniqueResourceIds = flattenedSamples.stream()
@@ -137,29 +110,7 @@ public class NewtsPersistor implements Runnable {
         }
     }
 
-    private synchronized CassandraSession getSession() {
-        if (m_session == null) {
-            m_session = NewtsUtils.getCassrandraSession();
-        }
-        return m_session;
-    }
-
-    private synchronized CassandraIndexer getIndexer() {
-        if (m_indexer == null) {
-            m_indexer = new CassandraIndexer(getSession(), m_ttl, m_cache, m_registry);
-        }
-        return m_indexer;
-    }
-
-    public synchronized SampleRepository getSampleRepository() {
-        if (m_sampleRepository == null) {
-            // Index the samples
-            Set<SampleProcessor> sampleProcessors = Sets.newHashSet(new CassandraIndexerSampleProcessor(getIndexer()));
-            SampleProcessorService processors = new SampleProcessorService(SAMPLE_PROCESSOR_MAX_THREADS, sampleProcessors);
-
-            // Sample repositories are used for reading/writing
-            m_sampleRepository = new CassandraSampleRepository(getSession(), m_ttl, m_registry, processors);
-        }
-        return m_sampleRepository;
+    public BlockingQueue<Collection<Sample>> getQueue() {
+        return m_queue;
     }
 }

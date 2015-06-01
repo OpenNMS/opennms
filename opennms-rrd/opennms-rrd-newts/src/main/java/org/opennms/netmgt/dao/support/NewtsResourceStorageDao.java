@@ -11,18 +11,16 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
-import org.opennms.netmgt.rrd.newts.NewtsUtils;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.SearchResults.Result;
-import org.opennms.newts.api.search.Searcher;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
-import org.opennms.newts.cassandra.CassandraSession;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
@@ -52,14 +50,14 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsResourceStorageDao.class);
 
-    private CassandraSession m_session = null;
-
-    private CassandraSearcher m_searcher = null;
-
-    private MetricRegistry m_registry = new MetricRegistry();
-
     private static final int INFINITE_DEPTH = -1;
-    
+
+    @Autowired
+    private CassandraSearcher m_searcher;
+
+    @Autowired
+    private MetricRegistry m_registry;
+
     @Override
     public boolean exists(ResourcePath path) {
         return exists(path, INFINITE_DEPTH);
@@ -138,7 +136,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         List<Result> matchingResults = Lists.newArrayList();
 
         LOG.trace("Searching for '{}'.", q);
-        SearchResults results = getSearcher().search(q);
+        SearchResults results = m_searcher.search(q);
         LOG.trace("Found {} results.", results.size());
         for (final Result result : results) {
             Integer relativeDepth = getRelativeDepth(path, toResourcePath(result.getResource().getId()));
@@ -192,7 +190,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         if (resourceId == null) {
             return null;
         }
-        
+
         String els[] = resourceId.split(":");
         if (els.length == 0) {
             return null;
@@ -216,20 +214,8 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 return null;
             }
         }
-        
+
         return childEls.length - parentEls.length; 
-    }
-
-    private synchronized Searcher getSearcher() {
-        if (m_searcher == null) {
-            if (m_session == null) {
-                m_session = NewtsUtils.getCassrandraSession();
-            }
-
-            m_searcher = new CassandraSearcher(m_session, m_registry);
-        }
-
-        return m_searcher;
     }
 
     @VisibleForTesting
