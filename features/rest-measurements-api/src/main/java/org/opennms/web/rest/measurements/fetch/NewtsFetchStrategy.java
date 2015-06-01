@@ -36,6 +36,11 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
+    // The heartbeat will default to this constant * the requested step
+    private static final int HEARTBEAT_MULTIPLIER = 3;
+
+    private static final int RESOLUTION_MULTIPLIER = 2;
+
     private static final int STEP_LOWER_BOUND_IN_MS = 120 * 1000;
 
     private final ResourceDao m_resourceDao;
@@ -106,7 +111,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                 final String name = source.getLabel();
                 final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 
-                resultDescriptor.datasource(name, metricName, 2*step, fn);
+                resultDescriptor.datasource(name, metricName, HEARTBEAT_MULTIPLIER*step, fn);
                 resultDescriptor.export(name);
             }
 
@@ -116,7 +121,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             }
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
-            Results<Measurement> results = getSampleRepository().select(new Resource(newtsResourceId), startTs, endTs, resultDescriptor, Duration.millis(2*step));
+            Results<Measurement> results = getSampleRepository().select(new Resource(newtsResourceId), startTs, endTs, resultDescriptor, Duration.millis(RESOLUTION_MULTIPLIER*step));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
