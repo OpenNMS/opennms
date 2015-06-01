@@ -493,17 +493,11 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
-<!--
-   TODO: Use factory pattern to create to appropriate bean.
+  <!-- Optionally include the beans required to work with RRD/JRB files -->
+  <bean class="org.opennms.netmgt.dao.support.ConditionalRrdDaoContext" />
 
-  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
-    <property name="rrdDirectory" value="${rrd.base.dir}" />
-  </bean>
--->
-
-  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+  <!-- Optionally include the beans required to work with other persistence strategies -->
+  <import resource="classpath*:/META-INF/opennms/component-dao-ext.xml" />
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
