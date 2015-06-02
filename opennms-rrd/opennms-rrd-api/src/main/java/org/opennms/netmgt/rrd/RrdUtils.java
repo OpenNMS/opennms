@@ -39,63 +39,14 @@ import java.util.Properties;
 import org.opennms.core.utils.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Provides static methods for interacting with round robin files. Supports JNI
- * and JRobin based files and provides queuing for managing differences in
- * collection speed and disk write speed. This behavior is implemented using the
- * Strategy pattern with a different RrdStrategy for JRobin and JNI as well as a
- * Strategy that provides Queueing on top of either one.
- *
- * The following System properties select which strategy is in use.
- *
- * <pre>
- *
- *  org.opennms.rrd.usejni: (defaults to true)
- *   true - use the existing RRDTool code via the JNI interface
- *
- * @see JniRrdStrategy false - use the pure java JRobin interface
- * @see JRobinRrdStrategy
- *
- * org.opennms.rrd.usequeue: (defaults to true) use the queueing that allows
- * collection to occur even though the disks are keeping up.
- * @see QueuingRrdStrategy
- *
- *
- * </pre>
+ * Provides static methods for interacting with round robin files.
  */
 public abstract class RrdUtils {
     private static final Logger LOG = LoggerFactory.getLogger(RrdUtils.class);
     private static PropertiesCache s_cache = new PropertiesCache();
-
-    private static RrdStrategy<?, ?> m_rrdStrategy = null;
-
-    /**
-     * Use the {@link ClassPathXmlApplicationContext#ClassPathXmlApplicationContext(String[], Class)}
-     * constructor so that we make sure to load the XML resources from the same classloader as the
-     * class itself so that classloading works under OSGi.
-     */
-    private static final BeanFactory m_context;
-
-    static {
-        ClassLoader old = null;
-        try {
-            old = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(RrdUtils.class.getClassLoader());
-            m_context = new ClassPathXmlApplicationContext(new String[]{
-                // Default RRD configuration context
-                //
-                // Use an absolute path, otherwise Spring will try to resolve the resource relative
-                // to the RrdUtils class package.
-                "/org/opennms/netmgt/rrd/rrd-configuration.xml"
-            }, RrdUtils.class);
-        } finally {
-            Thread.currentThread().setContextClassLoader(old);
-        }
-    }
 
     /**
      * Writes a file with the attribute to rrd track mapping next to the rrd file.
@@ -138,45 +89,6 @@ public abstract class RrdUtils {
         }
 
         return Collections.emptyMap();
-    }
-
-    public static enum StrategyName {
-        basicRrdStrategy,
-        queuingRrdStrategy,
-        tcpAndBasicRrdStrategy,
-        tcpAndQueuingRrdStrategy
-    }
-
-    /**
-     * <p>getStrategy</p>
-     *
-     * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
-     */
-    @SuppressWarnings("unchecked")
-    private static <D, F> RrdStrategy<D, F> getStrategy() {
-        RrdStrategy<D, F> retval = null;
-        if (m_rrdStrategy == null) {
-            if ((Boolean) m_context.getBean("useQueue")) {
-                if ((Boolean) m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndQueuingRrdStrategy.toString());
-                } else {
-                    retval = (RrdStrategy<D, F>) m_context.getBean(StrategyName.queuingRrdStrategy.toString());
-                }
-            } else {
-                if ((Boolean) m_context.getBean("useTcp")) {
-                    retval = (RrdStrategy<D, F>) m_context.getBean(StrategyName.tcpAndBasicRrdStrategy.toString());
-                } else {
-                    retval = (RrdStrategy<D, F>) m_context.getBean(StrategyName.basicRrdStrategy.toString());
-                }
-            }
-        } else {
-            retval = (RrdStrategy<D, F>) m_rrdStrategy;
-        }
-
-        if (retval == null) {
-            throw new IllegalStateException("RrdUtils not initialized");
-        }
-        return retval;
     }
 
     /**
@@ -265,7 +177,7 @@ public abstract class RrdUtils {
 
             return true;
         } catch (Throwable e) {
-            String path = directory + File.separator + rrdName + getStrategy().getDefaultFileExtension();
+            String path = directory + File.separator + rrdName + rrdStrategy.getDefaultFileExtension();
             LOG.error("createRRD: An error occurred creating rrdfile {}", path, e);
             throw new org.opennms.netmgt.rrd.RrdException("An error occurred creating rrdfile " + path + ": " + e, e);
         }
