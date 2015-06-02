@@ -54,7 +54,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdUtils;
 
 public class ResponseTimeResourceTypeTest {
 
@@ -80,8 +79,10 @@ public class ResponseTimeResourceTypeTest {
     @Before
     public void setUp() throws IOException {
         resourceStorageDao.setRrdDirectory(tempFolder.getRoot());
+        resourceStorageDao.setRrdExtension(".rrd");
+
         File ifResponseFolder = tempFolder.newFolder(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1");
-        File http = new File(ifResponseFolder, "http" + RrdUtils.getExtension());
+        File http = new File(ifResponseFolder, "http.rrd");
         http.createNewFile();
 
         ipInterfaces.add(ipInterface);

@@ -36,6 +36,8 @@ import java.util.HashSet;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
+import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -45,7 +47,6 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
@@ -55,16 +56,15 @@ import org.opennms.test.FileAnticipator;
 public class DefaultRrdDaoIntegrationTest extends TestCase {
     private FileAnticipator m_fileAnticipator;
 
-    private RrdStrategy<Object,Object> m_rrdStrategy;
-    
+    private RrdStrategy<RrdDef,RrdDb> m_rrdStrategy;
+
     private DefaultRrdDao m_dao;
-    
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-        m_rrdStrategy = RrdUtils.getStrategy();
+
+        m_rrdStrategy = new JRobinRrdStrategy();
         
         m_fileAnticipator = new FileAnticipator();
         
@@ -116,11 +116,11 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         File intf = m_fileAnticipator.tempDir(node, childResource.getName());
         
         RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), "GAUGE", 600, "U", "U");
-        Object def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def, null);
-        File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + RrdUtils.getExtension());
+        File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + m_rrdStrategy.getDefaultFileExtension());
         
-        Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < 10; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 + 300*i) + ":1");
         }

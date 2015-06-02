@@ -32,7 +32,6 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.rrd.MultiOutputRrdStrategy;
 import org.opennms.netmgt.rrd.QueuingRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 import org.slf4j.Logger;
@@ -53,6 +52,9 @@ public class MeasurementFetchStrategyFactory {
     @Autowired
     private ResourceDao m_resourceDao;
 
+    @Autowired
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
 	public MeasurementFetchStrategy getFetchStrategy() {
 		RrdStrategy<?, ?> strategy = findRrdStrategy();
 
@@ -66,8 +68,8 @@ public class MeasurementFetchStrategyFactory {
         }
 	}
 
-	private static RrdStrategy<?, ?> findRrdStrategy() {
-        return findRrdStrategy(RrdUtils.getStrategy());
+	private RrdStrategy<?, ?> findRrdStrategy() {
+	    return findRrdStrategy(m_rrdStrategy);
     }
 
     private static RrdStrategy<?, ?> findRrdStrategy(final RrdStrategy<?, ?> rrdStrategy) {

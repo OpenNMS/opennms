@@ -69,7 +69,6 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -80,7 +79,6 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +103,7 @@ public class LatencyStoringServiceMonitorAdaptorTest implements TemporaryDatabas
 
     private PollerConfig m_pollerConfig;
 
-    private RrdStrategy<Object,Object> m_rrdStrategy;
+    private RrdStrategy<Object, Object> m_rrdStrategy;
 
     private MockDatabase m_db;
 
@@ -133,9 +131,6 @@ public class LatencyStoringServiceMonitorAdaptorTest implements TemporaryDatabas
 
         MockLogAppender.setupLogging();
 
-        RrdUtils.setStrategy(new NullRrdStrategy());
-        RrdUtils.setStrategy(m_rrdStrategy);
-
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         PollOutagesConfigFactory.init();
         System.setProperty("opennms.home", previousOpennmsHome);
@@ -156,7 +151,7 @@ public class LatencyStoringServiceMonitorAdaptorTest implements TemporaryDatabas
         NumberFormat nf = NumberFormat.getInstance();
         Assert.assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
         
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package());
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package(), m_rrdStrategy);
         LinkedHashMap<String, Number> map = new LinkedHashMap<String, Number>();
         map.put("cheese", 1.5);
         
@@ -280,7 +275,7 @@ public class LatencyStoringServiceMonitorAdaptorTest implements TemporaryDatabas
         m_db.populate(network);
         
         m_mocks.replayAll();
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_rrdStrategy);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         adaptor.poll(svc, parameters);

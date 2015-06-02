@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 public abstract class CollectorTestUtils {
@@ -68,39 +68,39 @@ public abstract class CollectorTestUtils {
         return spec;
     }
 
-    public static void persistCollectionSet(CollectionSpecification spec, CollectionSet collectionSet) {
+    public static void persistCollectionSet(RrdStrategy<?, ?> rrdStrategy, CollectionSpecification spec, CollectionSet collectionSet) {
         RrdRepository repository=spec.getRrdRepository("default");
         System.err.println("repository = " + repository);
         ServiceParameters params = spec.getServiceParameters();
         System.err.println("service parameters = " + params);
         BasePersister persister;
         if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
-            persister=new GroupPersister(params, repository);
+            persister=new GroupPersister(params, repository, rrdStrategy);
         } else {
-            persister=new OneToOnePersister(params, repository);
+            persister=new OneToOnePersister(params, repository, rrdStrategy);
         }
         System.err.println("persister = " + persister);
         collectionSet.visit(persister);
     }
 
-    public static void collectNTimes(CollectionSpecification spec, CollectionAgent agent, int numUpdates)
+    public static void collectNTimes(RrdStrategy<?, ?> rrdStrategy, CollectionSpecification spec, CollectionAgent agent, int numUpdates)
     throws InterruptedException, CollectionException {
         for(int i = 0; i < numUpdates; i++) {
-    
+
             // now do the actual collection
             CollectionSet collectionSet = spec.collect(agent);
             assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-            
-            persistCollectionSet(spec, collectionSet);
-        
+
+            persistCollectionSet(rrdStrategy, spec, collectionSet);
+
             System.err.println("COLLECTION "+i+" FINISHED");
-        
+
             //need a one second time elapse to update the RRD
             Thread.sleep(1010);
         }
     }
 
-    public static void failToCollectNTimes(CollectionSpecification spec, CollectionAgent agent, int numUpdates)
+    public static void failToCollectNTimes(RrdStrategy<?, ?> rrdStrategy, CollectionSpecification spec, CollectionAgent agent, int numUpdates)
     throws InterruptedException, CollectionException {
         for(int i = 0; i < numUpdates; i++) {
 
@@ -108,7 +108,7 @@ public abstract class CollectorTestUtils {
             CollectionSet collectionSet = spec.collect(agent);
             assertEquals("collection status", ServiceCollector.COLLECTION_FAILED, collectionSet.getStatus());
 
-            persistCollectionSet(spec, collectionSet);
+            persistCollectionSet(rrdStrategy, spec, collectionSet);
 
             System.err.println("COLLECTION "+i+" FINISHED");
 
@@ -126,7 +126,7 @@ public abstract class CollectorTestUtils {
         return parent;
     }
 
-    public static String rrd(String file) {
-        return file + RrdUtils.getExtension();
+    public static String rrd(RrdStrategy<Object, Object> rrdStrategy, String file) {
+        return file + rrdStrategy.getDefaultFileExtension();
     }
 }

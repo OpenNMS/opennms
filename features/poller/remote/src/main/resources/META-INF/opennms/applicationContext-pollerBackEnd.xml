@@ -54,7 +54,7 @@
     <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
     <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
   </bean>
-  
+
   <bean name="backend" class="org.opennms.netmgt.poller.remote.support.ExceptionProtectedPollerBackEnd">
     <property name="delegate" ref="daemon" />
   </bean>

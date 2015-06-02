@@ -44,8 +44,6 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.DefaultRrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -63,16 +61,14 @@ public class DefaultRrdDaoTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-        
+
         m_dao = new DefaultRrdDao();
         m_dao.setRrdStrategy(m_rrdStrategy);
         m_dao.setRrdBaseDirectory(new File(System.getProperty("java.io.tmpdir")));
         m_dao.setRrdBinaryPath("/bin/true");
         m_dao.afterPropertiesSet();
     }
-    
+
     public void testInit() {
         // Don't do anything... test that the setUp method works
     }
