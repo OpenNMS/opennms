@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -154,7 +155,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private synchronized SampleRepository getSampleRepository() {
         if (m_sampleRepository == null) {
-            throw new RuntimeException("Unsupported. Needs move to Spring.");
+            m_sampleRepository = BeanUtils.getBean("daoContext", "cassandraSampleRepository", SampleRepository.class);
         }
         return m_sampleRepository;
     }

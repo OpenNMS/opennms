@@ -26,10 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.rrd.newts;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -38,26 +36,18 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Conditionally loads the RRD specific beans.
- *
- * These are loaded conditionally since alternate persistence implementations i.e. Newts
- * may have different implementations.
+ * Conditionally loads the Newts specific beans.
  *
  * @author jwhite
  */
 @Configuration
-@Conditional(ConditionalRrdDaoContext.Condition.class)
-@ImportResource("/META-INF/opennms/component-dao-ext-rrd.xml")
-public class ConditionalRrdDaoContext {
+@Conditional(ConditionalNewtsDaoContext.Condition.class)
+@ImportResource("/META-INF/opennms/applicationContext-rrd-newts.xml")
+public class ConditionalNewtsDaoContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConditionalRrdDaoContext.class);
+    public static final String RRD_STRATEGY_CLASS_PROPERTY_NAME = "org.opennms.rrd.strategyClass";
 
-    private static final String RRD_STRATEGY_CLASS_PROPETERY_NAME = "org.opennms.rrd.strategyClass";
-
-    private static final String[] SUPPORTED_RRD_STRATEGY_CLASS_NAMES = new String[] {
-        "org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy",
-        "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
-    };
+    public static final String NEWTS_RRD_STRATEGY_CLASS_NAME = "org.opennms.netmgt.rrd.newts.NewtsRrdStrategy";
 
     static class Condition implements ConfigurationCondition {
          @Override
@@ -67,16 +57,8 @@ public class ConditionalRrdDaoContext {
 
          @Override
          public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-             final String rrdStrategyClass = System.getProperty(RRD_STRATEGY_CLASS_PROPETERY_NAME);
-             for (int k = 0; k < SUPPORTED_RRD_STRATEGY_CLASS_NAMES.length; k++) {
-                 if (SUPPORTED_RRD_STRATEGY_CLASS_NAMES.equals(rrdStrategyClass)) {
-                     return true;
-                 }
-             }
-
-             LOG.info("The RRD Stragegy class {} does not support any of the known RRD implementations. Context will not be loaded.",
-                     rrdStrategyClass);
-             return false;
+             final String rrdStrategyClass = System.getProperty(RRD_STRATEGY_CLASS_PROPERTY_NAME);
+             return NEWTS_RRD_STRATEGY_CLASS_NAME.equals(rrdStrategyClass);
          }
     }
 }

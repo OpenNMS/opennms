@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 
@@ -82,7 +83,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     private static final Pattern RESOURCE_ID_PATTERN = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
 
+    @Autowired
     private ResourceStorageDao m_resourceStorageDao;
+
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private IpInterfaceDao m_ipInterfaceDao;

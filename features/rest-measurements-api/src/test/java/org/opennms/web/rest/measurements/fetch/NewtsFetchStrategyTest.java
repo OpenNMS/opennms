@@ -3,7 +3,6 @@ package org.opennms.web.rest.measurements.fetch;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 import org.easymock.EasyMock;
@@ -14,7 +13,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.newts.NewtsUtils;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;

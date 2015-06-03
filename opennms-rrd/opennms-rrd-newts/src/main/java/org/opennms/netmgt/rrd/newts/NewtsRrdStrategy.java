@@ -43,9 +43,11 @@ import com.google.common.collect.Maps;
  */
 public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
-    protected static final String FILE_EXTENSION = ".newts";
-
     private static final Logger LOG = LoggerFactory.getLogger(NewtsRrdStrategy.class);
+
+    public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
+
+    protected static final String FILE_EXTENSION = ".newts";
 
     /////////
     // Newts

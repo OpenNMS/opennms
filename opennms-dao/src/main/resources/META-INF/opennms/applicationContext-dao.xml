@@ -493,13 +493,11 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
-  <!-- Conditionally include the beans required to work with RRD/JRB files
-       if the configured rrd.strategyClass is JniRrd or JRobin.
-  -->
-  <bean class="org.opennms.netmgt.dao.support.ConditionalRrdDaoContext" />
+  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
+    <property name="rrdDirectory" value="${rrd.base.dir}" />
+  </bean>
 
-  <!-- Extension point that can be used by altenative persistence strategies. -->
-  <import resource="classpath*:/META-INF/opennms/component-dao-ext.xml" />
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
@@ -507,7 +505,6 @@
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />
     <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
-    <property name="resourceStorageDao" ref="resourceStorageDao" />
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
