@@ -93,7 +93,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // These tests rely on JRobin to verify the values
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy",
+        "org.opennms.rrd.usequeue=false"
 })
 @JUnitTemporaryDatabase(reuseDatabase=false)
 @JUnitSnmpAgent(host = TcaCollectorTest.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
