@@ -49,6 +49,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.LatencyThresholdingSet;
 import org.opennms.netmgt.threshd.ThresholdingEventProxy;
@@ -73,7 +74,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     private ServiceMonitor m_serviceMonitor;
     private PollerConfig m_pollerConfig;
     private Package m_pkg;
-    
+    private final RrdStrategy<?, ?> m_rrdStrategy;
+
     private LatencyThresholdingSet m_thresholdingSet;
 
     /**
@@ -83,10 +85,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      * @param config a {@link org.opennms.netmgt.config.PollerConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
-    public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg) {
+    public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg, RrdStrategy<?, ?> rrdStrategy) {
         m_serviceMonitor = monitor;
         m_pollerConfig = config;
         m_pkg = pkg;
+        m_rrdStrategy = rrdStrategy;
     }
 
     /** {@inheritDoc} */
@@ -242,7 +245,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                     value.append(":");
                 }
             }
-            RrdUtils.updateRRD(hostAddress, path, rrdBaseName, value.toString());
+            RrdUtils.updateRRD(m_rrdStrategy, hostAddress, path, rrdBaseName, value.toString());
 
         } catch (RrdException e) {
             String msg = e.getMessage();
@@ -290,8 +293,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         final String hostAddress = InetAddressUtils.str(addr);
 		String path = repository + File.separator + hostAddress;
 
-        return RrdUtils.createRRD(hostAddress, path, rrdBaseName, m_pollerConfig.getStep(m_pkg), dsList, rraList);
-
+        return RrdUtils.createRRD(m_rrdStrategy, hostAddress, path, rrdBaseName, m_pollerConfig.getStep(m_pkg), dsList, rraList);
     }
 
     /**

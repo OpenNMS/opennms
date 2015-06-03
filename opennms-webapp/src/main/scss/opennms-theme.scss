@@ -672,6 +672,10 @@ $header-background-image: url("../images/headerbg.png") !default;
 .graph-aux-controls {
 	text-align: right;
 }
+.graph-container {
+        margin-left: auto;
+        margin-right: auto;
+}
 
 #footer {
 	clear: both;

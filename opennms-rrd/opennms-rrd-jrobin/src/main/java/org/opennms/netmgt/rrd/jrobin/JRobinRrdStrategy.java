@@ -159,7 +159,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + getDefaultFileExtension();
 
         if (new File(fileName).exists()) {
             LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
@@ -206,7 +206,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
 
-        String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
+        String filenameWithoutExtension = rrdDef.getPath().replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
 
         RrdUtils.createMetaDataFile(

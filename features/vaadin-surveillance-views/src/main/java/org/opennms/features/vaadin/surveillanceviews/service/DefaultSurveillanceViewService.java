@@ -67,10 +67,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -411,14 +409,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * {@inheritDoc}
      */
     @Override
-    public String imageUrlForGraph(String query, int width, int height) {
-        return imageUrlForGraph(query, width, height, Calendar.HOUR_OF_DAY, 1);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId) {
         return getResourceTypeMapForNodeId(String.valueOf(nodeId));
     }
@@ -460,7 +450,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 Map<String, String> graphResults = new TreeMap<String, String>();
 
                 for (PrefabGraph query : queries) {
-                    graphResults.put(query.getName(), "resourceId=" + resourceId + "&report=" + query.getName());
+                    graphResults.put(query.getName(), query.getName());
                 }
 
                 return graphResults;
@@ -686,24 +676,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         resource.setEntity(childResource.getEntity());
         resource.setLink(childResource.getLink());
         return resource;
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query         the parameter combination for this report graph
-     * @param width         the width
-     * @param height        the height
-     * @param calendarField the calendar field to substract from
-     * @param calendarDiff  the value to be substracted
-     * @return the url string
-     */
-    private static String imageUrlForGraph(String query, int width, int height, int calendarField, int calendarDiff) {
-        Calendar cal = new GregorianCalendar();
-        long end = cal.getTime().getTime();
-        cal.add(calendarField, -calendarDiff);
-        long start = cal.getTime().getTime();
-        return "/opennms/graph/graph.png?" + query + "&start=" + start + "&end=" + end + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
     }
 }
 

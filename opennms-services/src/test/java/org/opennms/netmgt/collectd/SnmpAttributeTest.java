@@ -57,7 +57,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -76,8 +75,6 @@ public class SnmpAttributeTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        RrdUtils.setStrategy(m_rrdStrategy);
     }
 
     @Override
@@ -162,7 +159,7 @@ public class SnmpAttributeTest extends TestCase {
         RrdRepository repository = new RrdRepository();
         repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
-        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
+        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository, m_rrdStrategy);
         persister.createBuilder(nodeInfo, "baz", attributeType);
         
         final AtomicInteger count = new AtomicInteger(0);

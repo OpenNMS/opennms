@@ -70,10 +70,12 @@ import com.google.common.collect.Maps;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-measurements-test-jrb.xml",
+        "classpath:/META-INF/opennms/applicationContext-measurements-test.xml",
         "classpath:/META-INF/opennms/applicationContext-jersey.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
+})
 @JUnitTemporaryDatabase
 public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyRestTestCase {
 

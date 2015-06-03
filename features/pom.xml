@@ -80,6 +80,9 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
+    <!-- Generic Vaadin components -->
+    <module>vaadin-components</module>
+
     <!-- Dashboard and dashlet UI elements -->
     <module>vaadin-dashboard</module>
     <module>vaadin-dashlets</module>

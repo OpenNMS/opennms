@@ -40,19 +40,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 
 public class FilesystemResourceStorageDaoTest {
 
     private FilesystemResourceStorageDao m_fsResourceStorageDao = new FilesystemResourceStorageDao();
 
+    private String m_rrdFileExtension;
+
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
+
         m_fsResourceStorageDao.setRrdDirectory(tempFolder.getRoot());
+        m_fsResourceStorageDao.setRrdStrategy(rrdStrategy);
     }
 
     @Test
@@ -69,13 +77,13 @@ public class FilesystemResourceStorageDaoTest {
         assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
 
         // Path exists when the sub-folder contains an RRD file
-        File rrd = new File(subFolder, "ds" + RrdUtils.getExtension());
+        File rrd = new File(subFolder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
         assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
         assertTrue(rrd.delete());
 
         // Path exists when the folder contains an RRD file
-        rrd = new File(folder, "ds" + RrdUtils.getExtension());
+        rrd = new File(folder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
         assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
     }
@@ -90,7 +98,7 @@ public class FilesystemResourceStorageDaoTest {
         assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
 
         // Children are empty when the folder only contains an RRD file
-        File rrd = new File(folder, "ds" + RrdUtils.getExtension());
+        File rrd = new File(folder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
         assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
         assertTrue(rrd.delete());
@@ -100,7 +108,7 @@ public class FilesystemResourceStorageDaoTest {
         assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
 
         // Child exists when the sub-folder contains an RRD file
-        rrd = new File(subFolder, "ds" + RrdUtils.getExtension());
+        rrd = new File(subFolder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
         Set<ResourcePath> children = m_fsResourceStorageDao.children(ResourcePath.get("a"));
         assertEquals(1, children.size());
@@ -114,5 +122,18 @@ public class FilesystemResourceStorageDaoTest {
         // No children when depth is 0
         assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a"), 0).size());
         assertTrue(rrd.delete());
+    }
+
+    @Test
+    public void getAttributes() throws IOException {
+        File subFolder = tempFolder.newFolder("a");
+        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+
+        File rrd = new File(subFolder, "ds" + m_rrdFileExtension);
+        rrd.createNewFile();
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+
+        Set<OnmsAttribute> attributes = m_fsResourceStorageDao.getAttributes(ResourcePath.get("a"));
+        assertEquals(1, attributes.size());
     }
 }

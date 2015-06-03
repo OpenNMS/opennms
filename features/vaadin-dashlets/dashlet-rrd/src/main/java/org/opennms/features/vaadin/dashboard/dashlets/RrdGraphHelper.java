@@ -40,6 +40,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -69,36 +71,6 @@ public class RrdGraphHelper {
      * Default constructor for instantiating new objects
      */
     public RrdGraphHelper() {
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query         the parameter combination for this report graph
-     * @param width         the width
-     * @param height        the height
-     * @param calendarField the calendar field to substract from
-     * @param calendarDiff  the value to be substracted
-     * @return the url string
-     */
-    public String imageUrlForGraph(String query, int width, int height, int calendarField, int calendarDiff) {
-        Calendar cal = new GregorianCalendar();
-        long end = cal.getTime().getTime();
-        cal.add(calendarField, -calendarDiff);
-        long start = cal.getTime().getTime();
-        return "/opennms/graph/graph.png?" + query + "&start=" + start + "&end=" + end + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query  the parameter combination for this report graph
-     * @param width  the width
-     * @param height the height
-     * @return the url string
-     */
-    public String imageUrlForGraph(String query, int width, int height) {
-        return imageUrlForGraph(query, width, height, Calendar.HOUR_OF_DAY, 1);
     }
 
     /**
@@ -227,6 +199,41 @@ public class RrdGraphHelper {
                 return onmsNodeList;
             }
         });
+    }
+
+    /**
+     * Parses the name of the graph from the given query string.
+     *
+     * This is used to preserve backwards compatibility with existing dashlets
+     * that store the graphUrl instead of the graphName.
+     */
+    public static String getGraphNameFromQuery(final String query) {
+        if (query == null) {
+            return null;
+        }
+
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            if (idx < 0) {
+                continue;
+            }
+
+            String key;
+            String value;
+            try {
+                key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                continue;
+            }
+
+            if ("report".equalsIgnoreCase(key)) {
+                return value;
+            }
+        }
+
+        return null;
     }
 
     /**
