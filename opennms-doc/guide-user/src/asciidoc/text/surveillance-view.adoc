@@ -24,6 +24,12 @@ At a glance, you want to know how many of my servers have an issue rather than h
 .Example of a configured _Surveillance View_
 image::surveillance-view/01_surveillance-view.png[]
 
+The visual indication for outages in the surveillance view cells is defined as the following:
+
+* No services down: green as normal
+* One (1) service down: yellow as warning
+* More than one (1) services down: red as critical
+
 This _Surveillance View_ model also builds the foundation of the <<user-guide-dashboard, Dashboard View>>.
 
 
