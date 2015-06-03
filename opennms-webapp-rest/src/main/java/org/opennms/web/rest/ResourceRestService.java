@@ -28,9 +28,7 @@
 
 package org.opennms.web.rest;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -40,19 +38,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -118,122 +108,5 @@ public class ResourceRestService extends OnmsRestService {
         }
 
         return new ResourceDTO(resource, depth);
-    }
-
-    @XmlRootElement(name = "resources")
-    public static final class ResourceDTOCollection extends JaxbListWrapper<ResourceDTO> {
-
-        private static final long serialVersionUID = 1L;
-
-        public ResourceDTOCollection() {
-            super();
-        }
-
-        public ResourceDTOCollection(Collection<? extends ResourceDTO> resources) {
-            super(resources);
-        }
-
-        @XmlElement(name = "resource")
-        public List<ResourceDTO> getObjects() {
-            return super.getObjects();
-        }
-    }
-
-    @XmlRootElement(name = "resource")
-    @XmlAccessorType(XmlAccessType.NONE)
-    public static final class ResourceDTO {
-
-        @XmlAttribute(name = "id")
-        private final String m_id;
-
-        @XmlAttribute(name = "label")
-        private final String m_label;
-
-        @XmlAttribute(name = "name")
-        private final String m_name;
-
-        @XmlAttribute(name = "link")
-        private final String m_link;
-
-        @XmlAttribute(name = "parentId")
-        private final String m_parentId;
-
-        @XmlElement(name="children")
-        private final ResourceDTOCollection m_children;
-
-        @XmlElementWrapper(name="stringPropertyAttributes")
-        private final Map<String, String> m_stringPropertyAttributes;
-
-        @XmlElementWrapper(name="externalValueAttributes")
-        private final Map<String, String> m_externalValueAttributes;
-
-        @XmlElementWrapper(name="rrdGraphAttributes")
-        private final Map<String, RrdGraphAttribute> m_rrdGraphAttributes;
-
-        @SuppressWarnings("unused")
-        private ResourceDTO() {
-            throw new UnsupportedOperationException("No-arg constructor for JAXB.");
-        }
-
-        public ResourceDTO(final OnmsResource resource) {
-            this(resource, -1);
-        }
-
-        public ResourceDTO(final OnmsResource resource, final int depth) {
-            m_id = resource.getId();
-            m_label = resource.getLabel();
-            m_name = resource.getName();
-            m_link = resource.getLink();
-            m_parentId = resource.getParent() == null ? null : resource.getParent().getId();
-            m_stringPropertyAttributes = resource.getStringPropertyAttributes();
-            m_externalValueAttributes = resource.getExternalValueAttributes();
-            m_rrdGraphAttributes = resource.getRrdGraphAttributes();
-
-            if (depth == 0) {
-                m_children = null;
-            } else {
-                List<ResourceDTO> children = Lists.newLinkedList();
-                for (final OnmsResource child : resource.getChildResources()) {
-                    children.add(new ResourceDTO(child, depth-1));
-                }
-                m_children = new ResourceDTOCollection(children);
-            }
-        }
-
-        public String getId() {
-            return m_id;
-        }
-
-        public String getLabel() {
-            return m_label;
-        }
-
-        public String getName() {
-            return m_name;
-        }
-
-        public String getLink() {
-            return m_link;
-        }
-
-        public String getParentId() {
-            return m_parentId;
-        }
-
-        public ResourceDTOCollection getChildren() {
-            return m_children;
-        }
-
-        public Map<String, String> getStringPropertyAttributes() {
-            return m_stringPropertyAttributes;
-        }
-
-        public Map<String, String> getExternalValueAttributes() {
-            return m_externalValueAttributes;
-        }
-
-        public Map<String, RrdGraphAttribute> getRrdGraphAttributes() {
-            return m_rrdGraphAttributes;
-        }
     }
 }
