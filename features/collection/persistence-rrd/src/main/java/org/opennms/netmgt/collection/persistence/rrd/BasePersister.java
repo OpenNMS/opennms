@@ -47,6 +47,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private RrdRepository m_repository;
     private final LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
     private PersistOperationBuilder m_builder;
+    private final RrdStrategy<?, ?> m_rrdStrategy;
 
     /**
      * <p>Constructor for BasePersister.</p>
@@ -72,12 +74,13 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public BasePersister(ServiceParameters params, RrdRepository repository) {
+    public BasePersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
         super();
         m_params = params;
         m_repository = repository;
+        m_rrdStrategy = rrdStrategy;
     }
-    
+
     /**
      * <p>commitBuilder</p>
      */
@@ -137,7 +140,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * @param attributeTypes a {@link java.util.Set} object.
      */
     protected void createBuilder(CollectionResource resource, String name, Set<CollectionAttributeType> attributeTypes) {
-        m_builder = new PersistOperationBuilder(getRepository(), resource, name);
+        m_builder = new PersistOperationBuilder(getRrdStrategy(), getRepository(), resource, name);
         if (resource.getTimeKeeper() != null) {
             m_builder.setTimeKeeper(resource.getTimeKeeper());
         }
@@ -165,6 +168,10 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      */
     public void setRepository(RrdRepository repository) {
         m_repository = repository;
+    }
+
+    public RrdStrategy<?, ?> getRrdStrategy() {
+        return m_rrdStrategy;
     }
 
     /** {@inheritDoc} */

@@ -46,7 +46,6 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -65,12 +64,11 @@ public class GenericIndexResourceTypeTest {
 
     @Before
     public void setUp() throws IOException {
-        RrdUtils.setStrategy(new NullRrdStrategy());
-
         m_fileAnticipator = new FileAnticipator();
         
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
+        m_resourceStorageDao.setRrdStrategy(new NullRrdStrategy());
     }
 
     @After

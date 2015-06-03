@@ -66,9 +66,11 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-measurements-test-rrd.xml"
+        "classpath:/META-INF/opennms/applicationContext-measurements-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy"
+})
 @JUnitTemporaryDatabase
 @Transactional
 @Ignore

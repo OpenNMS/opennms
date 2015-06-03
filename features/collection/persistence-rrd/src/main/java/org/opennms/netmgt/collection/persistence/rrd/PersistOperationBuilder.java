@@ -48,6 +48,7 @@ import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +61,15 @@ import org.slf4j.LoggerFactory;
  */
 public class PersistOperationBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(PersistOperationBuilder.class);
-    
+
+    private final RrdStrategy<?, ?> m_rrdStrategy;
     private final RrdRepository m_repository;
     private final String m_rrdName;
     private final ResourceIdentifier m_resource;
     private final Map<CollectionAttributeType, String> m_declarations = new TreeMap<CollectionAttributeType, String>(new ByNameComparator());
     private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
-    
+
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
      * currently supported.
@@ -80,14 +82,20 @@ public class PersistOperationBuilder {
     /**
      * <p>Constructor for PersistOperationBuilder.</p>
      *
+     * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param resource a {@link org.opennms.netmgt.collection.api.ResourceIdentifier} object.
      * @param rrdName a {@link java.lang.String} object.
      */
-    public PersistOperationBuilder(RrdRepository repository, ResourceIdentifier resource, String rrdName) {
+    public PersistOperationBuilder(RrdStrategy<?, ?> rrdStrategy, RrdRepository repository, ResourceIdentifier resource, String rrdName) {
+        m_rrdStrategy = rrdStrategy;
         m_repository = repository;
         m_resource = resource;
         m_rrdName = rrdName;
+    }
+
+    public RrdStrategy<?, ?> getRrdStrategy() {
+        return m_rrdStrategy;
     }
 
     /**
@@ -173,8 +181,8 @@ public class PersistOperationBuilder {
             final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
-                RrdUtils.createRRD(ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), getAttributeMappings());
-                RrdUtils.updateRRD(ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+                RrdUtils.createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), getAttributeMappings());
+                RrdUtils.updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
                 RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
             }
         } catch (FileNotFoundException e) {

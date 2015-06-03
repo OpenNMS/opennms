@@ -51,7 +51,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.dao.api.PathOutageManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockOutageConfig;
@@ -61,7 +60,6 @@ import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
@@ -90,7 +88,7 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 	private MockDatabase m_db;
 
 	private MockPollerConfig m_pollerConfig;
-	
+
 	@Autowired
 	private QueryManager m_queryManager;
 	
@@ -185,8 +183,6 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
-		
-		RrdUtils.setStrategy(new NullRrdStrategy());
 
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);

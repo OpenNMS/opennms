@@ -51,7 +51,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
@@ -67,15 +66,12 @@ public class ResourceTypeUtilsTest {
     @Before
     public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
-        
-        RrdUtils.setStrategy(new NullRrdStrategy());
     }
-    
+
     @After
     public void tearDown() throws Exception {
         m_fileAnticipator.tearDown();
     }
-    
 
     @Test
     public void testLoadPropertiesNullRrdDirectory() {
@@ -140,7 +136,7 @@ public class ResourceTypeUtilsTest {
     public void testGetAttributesAtRelativePathWithBogusDirectory() {
         File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
         assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
-        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist");
+        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist", ".rrd");
     }
 
     /*

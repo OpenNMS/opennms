@@ -63,7 +63,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -107,6 +107,9 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     @Autowired
     private Collectd m_collectd;
+
+    @Autowired
+    private RrdStrategy<Object, Object> m_rrdStrategy;
 
     private TestContext m_context;
 
@@ -190,7 +193,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -223,25 +226,25 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
-        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("documentCount"));
-        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd("someNumber"));
-        File greatAnswerRrdFile = new File(nodeDir, CollectorTestUtils.rrd("greatAnswer"));
+        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "documentCount"));
+        File someNumberRrdFile = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "someNumber"));
+        File greatAnswerRrdFile = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "greatAnswer"));
 
         // This is the value of documentCount from the first test page
         // documentCount = Gauge32: 5
-        assertEquals("documentCount", Double.valueOf(5.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("documentCount", Double.valueOf(5.0), m_rrdStrategy.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "documentCount", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value of documentType from the first test page
         // someNumber = Gauge32: 17
-        assertEquals("documentType", Double.valueOf(17.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("documentType", Double.valueOf(17.0), m_rrdStrategy.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "someNumber", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value of greatAnswer from the second test page
         //someNumber = Gauge32: 42
-        assertEquals("greatAnswer", Double.valueOf(42.0), RrdUtils.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("greatAnswer", Double.valueOf(42.0), m_rrdStrategy.fetchLastValueInRange(greatAnswerRrdFile.getAbsolutePath(), "greatAnswer", stepSizeInMillis, rangeSizeInMillis));
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -275,23 +278,23 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
 
-        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
-        File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
-        File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
+        File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "TotalAccesses"));
+        File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "IdleWorkers"));
+        File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "CPULoad"));
 
         // Total Accesses: 175483
-        assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("TotalAccesses", Double.valueOf(175483.0), m_rrdStrategy.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
 
         // IdleWorkers: 12
-        assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("IdleWorkers", Double.valueOf(12.0), m_rrdStrategy.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
 
         // CPU Load: .497069
-        assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals("CPULoad", Double.valueOf(0.497069), m_rrdStrategy.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
         m_collectionSpecification.release(m_collectionAgent);
     }
 
@@ -306,7 +309,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.failToCollectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.failToCollectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -354,23 +357,23 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
             m_collectionSpecification.initialize(m_collectionAgent);
 
-            CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+            CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
             // node level collection
             File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
 
-            File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd("TotalAccesses"));
-            File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd("IdleWorkers"));
-            File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd("CPULoad"));
+            File documentCountRrdFile = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "TotalAccesses"));
+            File someNumberRrdFile    = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "IdleWorkers"));
+            File cpuLoadRrdFile       = new File(nodeDir, CollectorTestUtils.rrd(m_rrdStrategy, "CPULoad"));
 
             // Total Accesses: 175483
-            assertEquals("TotalAccesses", Double.valueOf(175483.0), RrdUtils.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
+            assertEquals("TotalAccesses", Double.valueOf(175483.0), m_rrdStrategy.fetchLastValueInRange(documentCountRrdFile.getAbsolutePath(), "TotalAccesses", stepSizeInMillis, rangeSizeInMillis));
     
             // IdleWorkers: 12
-            assertEquals("IdleWorkers", Double.valueOf(12.0), RrdUtils.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
+            assertEquals("IdleWorkers", Double.valueOf(12.0), m_rrdStrategy.fetchLastValueInRange(someNumberRrdFile.getAbsolutePath(), "IdleWorkers", stepSizeInMillis, rangeSizeInMillis));
 
             // CPU Load: .497069
-            assertEquals("CPULoad", Double.valueOf(0.497069), RrdUtils.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
+            assertEquals("CPULoad", Double.valueOf(0.497069), m_rrdStrategy.fetchLastValueInRange(cpuLoadRrdFile.getAbsolutePath(), "CPULoad", stepSizeInMillis, rangeSizeInMillis));
             m_collectionSpecification.release(m_collectionAgent);
         } finally {
             Locale.setDefault(defaultLocale);
@@ -421,7 +424,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, collectionSpecification, collectionSet);
 
         collectionSpecification.release(m_collectionAgent);
     }

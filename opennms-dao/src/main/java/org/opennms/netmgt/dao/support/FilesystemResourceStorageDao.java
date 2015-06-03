@@ -41,13 +41,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Used in conjunction with RRD/JRB strategies that persist
@@ -55,15 +59,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class FilesystemResourceStorageDao implements ResourceStorageDao {
+public class FilesystemResourceStorageDao implements ResourceStorageDao, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemResourceStorageDao.class);
 
     private static final int INFINITE_DEPTH = -1;
 
-    private static String RRD_EXTENSION = RrdUtils.getExtension();
+    @Autowired
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
+    private static String RRD_EXTENSION = null;
 
     private File m_rrdDirectory;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        BeanUtils.assertAutowiring(this);
+        setRrdExtension(m_rrdStrategy.getDefaultFileExtension());
+    }
 
     @Override
     public boolean exists(ResourcePath path) {
@@ -100,7 +113,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        return ResourceTypeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path));
+        return ResourceTypeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path), RRD_EXTENSION);
     }
 
     @Override
@@ -163,6 +176,11 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao {
 
     public File getRrdDirectory() {
         return m_rrdDirectory;
+    }
+
+    public void setRrdStrategy(RrdStrategy<?, ?> rrdStrategy) {
+        m_rrdStrategy = rrdStrategy;
+        setRrdExtension(m_rrdStrategy.getDefaultFileExtension());
     }
 
     public void setRrdExtension(String rrdExtension) {

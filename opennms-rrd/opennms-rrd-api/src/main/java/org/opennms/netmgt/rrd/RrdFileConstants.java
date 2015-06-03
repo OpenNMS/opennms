@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  */
-public class RrdFileConstants extends Object {
+public class RrdFileConstants {
     private static final Pattern GRAPHING_ESCAPE_PATTERN;
     static {
         // IPv6: ':' and '%'
@@ -54,14 +54,6 @@ public class RrdFileConstants extends Object {
 	/** The longest an RRD filename can be, currently 1024 characters. */
     public static final int MAX_RRD_FILENAME_LENGTH = 1024;
 
-    /** Convenience filter that matches only RRD files. */
-    public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {
-        @Override
-        public boolean accept(final File file, final String name) {
-            return name.endsWith(getRrdSuffix());
-        }
-    };
-
     /**
      * Determines if the provided File object represents a valid RRD latency
      * directory.
@@ -69,13 +61,20 @@ public class RrdFileConstants extends Object {
      * @param file a {@link java.io.File} object.
      * @return a boolean.
      */
-    public static final boolean isValidRRDLatencyDir(final File file) {
+    public static final boolean isValidRRDLatencyDir(final File file, final String suffix) {
         if (!file.isDirectory()) {
             return false;
         }
 
+        FilenameFilter rrdFilenameFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(final File file, final String name) {
+                return name.endsWith(suffix);
+            }
+        };
+
         // if the directory contains RRDs, then it is queryable
-        final File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
+        final File[] nodeRRDs = file.listFiles(rrdFilenameFilter);
         if (nodeRRDs != null && nodeRRDs.length > 0) {
             return true;
         }
@@ -160,14 +159,5 @@ public class RrdFileConstants extends Object {
     	final Matcher matcher = GRAPHING_ESCAPE_PATTERN.matcher(path);
     	return matcher.replaceAll("\\\\$1");
     }
-    
-    /**
-     * <p>getRrdSuffix</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getRrdSuffix() {
-        return RrdUtils.getExtension();
-    }
-    
+
 }
