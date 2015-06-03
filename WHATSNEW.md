@@ -17,6 +17,15 @@ The legacy capability scanner, Capsd, has been removed from OpenNMS. It was depr
 OpenNMS 14 in favor of the provisioning systems of OpenNMS. The Capsd code has now been removed completely which will enable us to
 streamline the data access code of OpenNMS. This will make the system easier to maintain and may improve performance down the road.
 
+Linkd is Deprecated
+-------------------
+
+The original link scanning daemon, Linkd, has been superseded by Enhanced Linkd since it was introduced in OpenNMS 15. 
+Enhanced Linkd is a refactored replacement that is more efficient than the original Linkd code. 
+Linkd is disabled by default in OpenNMS 15 and 16 and we consider it deprecated. 
+The code for Linkd will be removed completely in OpenNMS 17. 
+All users should migrate over to using Enhanced Linkd as a replacement.
+
 API Changes
 -----------
 
@@ -42,6 +51,7 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * Spring Security has been upgraded from 3.1.7 to 3.2.7.
 * Drools has been upgraded from 5.1.1 to 6.0.1.
 * Apache Camel has been upgraded from 2.13.2 to 2.14.1.
+* Smack (used for XMPP notifications) has been upgraded from 3.0.4 to 4.0.6.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Smack (used for XMPP notifications) has been upgraded from 3.0.4 to 4.0.6.
 
