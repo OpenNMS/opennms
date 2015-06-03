@@ -809,6 +809,10 @@ span.NLdbid, span.NLfs, span.NLfid {
 	display: none;
 }
 
+div.NLnode {
+  line-height: 2em;
+}
+
 div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
 	display: inline;
 }
