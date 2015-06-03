@@ -4,7 +4,9 @@
 [releasenotes-changelog-16.0.0]
 ==== Release 16.0.0
 
-Release 16.0.0 is the latest stable release of OpenNMS. 
+Release 16.0.0 is the latest stable release of OpenNMS.  It is primarily a refactoring/cleanup release, but contains a number
+of other bug fixes and enhancements.  Note that as of OpenNMS 16.0.0, a Java 8 JDK is required.  A high-level overview of what's
+changed since 15.x is available in the https://github.com/OpenNMS/opennms/blob/release-16.0.0/WHATSNEW.md[What's New] document.
 
 The codename for 16.0.0 is _Daredevil_.
 
@@ -68,6 +70,7 @@ The codename for 16.0.0 is _Daredevil_.
 * The XSD for the SNMP Hardware Inventory Provisioning Adapter is not included on the RPM/DEB packages. (Issue http://issues.opennms.org/browse/NMS-7576[NMS-7576])
 * Search by foreignSource or severityLabel doesn't work on Geo Maps (Issue http://issues.opennms.org/browse/NMS-7577[NMS-7577])
 * List of service names in the requisition editor should be pulled from the poller conifguration instead of capsd (Issue http://issues.opennms.org/browse/NMS-7590[NMS-7590])
+* Tog depth for VmwareMonitor and VmwareCimMonitor is wront (Issue http://issues.opennms.org/browse/NMS-7597[NMS-7597])
 * Varbinddecodes are being ignored on Notifications (Issue http://issues.opennms.org/browse/NMS-7598[NMS-7598])
 * Some parameters logged out of order since slf4j conversion (Issue http://issues.opennms.org/browse/NMS-7603[NMS-7603])
 * Replace PermGen VM arguments with Metaspace equivalents (Issue http://issues.opennms.org/browse/NMS-7604[NMS-7604])
@@ -83,7 +86,7 @@ The codename for 16.0.0 is _Daredevil_.
 * Match event params for auto-ack of Notification (Issue http://issues.opennms.org/browse/NMS-7631[NMS-7631])
 * include-url doesn't work on poller packages (Issue http://issues.opennms.org/browse/NMS-7633[NMS-7633])
 * ClassCastException in BSFNotificationStrategy (Issue http://issues.opennms.org/browse/NMS-7634[NMS-7634])
-* Node resources are deleted when provisiond aborts a scan (Issue http://issues.opennms.org/browse/NMS-7634[NMS-7636])
+* Node resources are deleted when provisiond aborts a scan (Issue http://issues.opennms.org/browse/NMS-7636[NMS-7636])
 * Default date width in Database Reports is too small (Issue http://issues.opennms.org/browse/NMS-7637[NMS-7637])
 * Test failure: testImportAddrThenChangeAddr (Issue http://issues.opennms.org/browse/NMS-7640[NMS-7640])
 * The IP Interface page is blank. (Issue http://issues.opennms.org/browse/NMS-7641[NMS-7641])
@@ -111,8 +114,9 @@ The codename for 16.0.0 is _Daredevil_.
 * add Siemens HiPath 8000 / OpenScapeVoice event files (Issue http://issues.opennms.org/browse/NMS-7312[NMS-7312])
 * Move notification status indicator to header (Issue http://issues.opennms.org/browse/NMS-7318[NMS-7318])
 * Add pathOutageEnabled="false" to poller-configuration.xml by default (Issue http://issues.opennms.org/browse/NMS-7424[NMS-7424])
-* Change varchar to text for CDP and LLDP tables (Issue http://issues.opennms.org/browse/NMS-7441[NMS-7441])
+*  Change varchar to text for CDP and LLDP tables (Issue http://issues.opennms.org/browse/NMS-7441[NMS-7441])
 * Update Smack API (Issue http://issues.opennms.org/browse/NMS-7453[NMS-7453])
+* Update asciidoctor maven plugin from 1.5.0 to 1.5.2 (Issue http://issues.opennms.org/browse/NMS-7461[NMS-7461])
 * Remove Capsd from OpenNMS (Issue http://issues.opennms.org/browse/NMS-7473[NMS-7473])
 * Modify WebDetector/Monitor/Plugin/Client to expose ability to enable/disable certificate validation (Issue http://issues.opennms.org/browse/NMS-7474[NMS-7474])
 * Add support for gzip compression on REST APIs (Issue http://issues.opennms.org/browse/NMS-7476[NMS-7476])
@@ -120,9 +124,34 @@ The codename for 16.0.0 is _Daredevil_.
 * Make resource data accessible through ReST (Issue http://issues.opennms.org/browse/NMS-7480[NMS-7480])
 * The DefaultResourceDao loads all child resources when retrieving a specific resource by id (Issue http://issues.opennms.org/browse/NMS-7505[NMS-7505])
 * Use the default threshold definition as a template when adding TriggeredUEI/RearmedUEI on thresholds through the WebUI (Issue http://issues.opennms.org/browse/NMS-7528[NMS-7528])
+* Remove unnecessary output from opennms-doc module (Issue http://issues.opennms.org/browse/NMS-7579[NMS-7579])
 * BSFMonitor creates a new BSFManager every poll which makes caching script engines ineffective (Issue http://issues.opennms.org/browse/NMS-7593[NMS-7593])
 * SNMP interface RRD migrator should create and clean up backups interface-wise (Issue http://issues.opennms.org/browse/NMS-7595[NMS-7595])
 * Create a ReST API to expose the available detectors/policies/categories/assets/services required to manipulate foreign sources (Issue http://issues.opennms.org/browse/NMS-7609[NMS-7609])
 * Need upgrade task for collection strategy classes (Issue http://issues.opennms.org/browse/NMS-7612[NMS-7612])
 * Create opennms.properties option to choose between new and old dashboard (Issue http://issues.opennms.org/browse/NMS-7619[NMS-7619])
 * Deprecation of LinkD (Issue http://issues.opennms.org/browse/NMS-7632[NMS-7632])
+
+===== Story
+
+* Allow user to create and modify surveillance views (Issue http://issues.opennms.org/browse/NMS-7299[NMS-7299])
+* Migrate Surveillance view GWT UI component to Vaadin (Issue http://issues.opennms.org/browse/NMS-7303[NMS-7303])
+* Migrate Alarms GWT UI component to Vaadin (Issue http://issues.opennms.org/browse/NMS-7304[NMS-7304])
+* Migrate Notifications GWT UI component to Vaadin (Issue http://issues.opennms.org/browse/NMS-7305[NMS-7305])
+* Migrate Node Status component from GWT to Vaadin (Issue http://issues.opennms.org/browse/NMS-7306[NMS-7306])
+* Migrate Resource Graph Viewer component from GWT to Vaadin (Issue http://issues.opennms.org/browse/NMS-7307[NMS-7307])
+* Update user documentation (Issue http://issues.opennms.org/browse/NMS-7323[NMS-7323])
+* Allow user to select surveillance view in the Dashboard (Issue http://issues.opennms.org/browse/NMS-7325[NMS-7325])
+* Remove the GWT dashboard from the code base (Issue http://issues.opennms.org/browse/NMS-7326[NMS-7326])
+* Remove "report-category" attribute (Issue http://issues.opennms.org/browse/NMS-7429[NMS-7429])
+* Add surveillance view's name in the left header cell (Issue http://issues.opennms.org/browse/NMS-7430[NMS-7430])
+* Add an option to disable "refreshing" (Issue http://issues.opennms.org/browse/NMS-7431[NMS-7431])
+* Add preview window in config UI (Issue http://issues.opennms.org/browse/NMS-7469[NMS-7469])
+* Icons for alarms and notifications (Issue http://issues.opennms.org/browse/NMS-7489[NMS-7489])
+* Modal window to show node, alarm and notification details (Issue http://issues.opennms.org/browse/NMS-7490[NMS-7490])
+* Admin configuration panel shows dashboard instead of surveillance view (Issue http://issues.opennms.org/browse/NMS-7491[NMS-7491])
+* Allow to configure refresh time per surveillance view (Issue http://issues.opennms.org/browse/NMS-7492[NMS-7492])
+* Rename the surveillance config panel link in Admin menu (Issue http://issues.opennms.org/browse/NMS-7530[NMS-7530])
+* Dashboard Dashlet: Refresh indicator (Issue http://issues.opennms.org/browse/NMS-7540[NMS-7540])
+* Vaadin Dashboard: Alarm Dashlet should have severity sorting by default (Issue http://issues.opennms.org/browse/NMS-7542[NMS-7542])
+
