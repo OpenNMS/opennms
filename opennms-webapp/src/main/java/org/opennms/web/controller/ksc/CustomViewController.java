@@ -165,37 +165,17 @@ public class CustomViewController extends AbstractController implements Initiali
         }
         List<Graph> graphCollection = report.getGraphCollection();
         if (!graphCollection.isEmpty()) {
-            List<OnmsResource> resources = getKscReportService().getResourcesFromGraphs(graphCollection);
-            for (int i = 0; i < graphCollection.size(); i++) {
-                Graph graph = graphCollection.get(i);
-                OnmsResource resource = null;
-                try {
-                    resource = resources.get(i);
-                }catch(IndexOutOfBoundsException e) {
-                    LOG.debug("Resource List Index Out Of Bounds Caught ", e);
-                }
-                
+            for (Graph graph : graphCollection) {
+                final OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
                 resourceMap.put(graph.toString(), resource);
                 if (resource == null) {
                     LOG.debug("Could not get resource for graph {} in report {}", graph, report.getTitle());
                 } else {
                     prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
                 }
-                
-                
-            }
-      
-            // Get default graph type from first element of graph_options
-            // XXX Do we care about the tests on reportType?
-            if (("node".equals(reportType) || "nodeSource".equals(reportType) || "domain".equals(reportType))
-                    && overrideGraphType == null
-                    && !prefabGraphs.isEmpty()) {
-                // Get the name of the first item.  prefabGraphs is sorted.
-                overrideGraphType = prefabGraphs.iterator().next().getName();
-                    LOG.debug("custom_view: setting default graph type to {}", overrideGraphType);
             }
         }
-        
+
         List<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
         for (Graph graph : graphCollection) {
             OnmsResource resource = resourceMap.get(graph.toString());

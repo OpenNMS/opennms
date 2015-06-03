@@ -61,6 +61,7 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
 import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -112,6 +113,13 @@ public class Poller extends AbstractServiceDaemon {
 
     @Autowired
     private TransactionTemplate m_transactionTemplate;
+
+    @Autowired
+    private RrdStrategy<Object, Object> m_rrdStrategy;
+
+    public void setRrdStrategy(RrdStrategy<Object, Object> rrdStrategy) {
+        m_rrdStrategy = rrdStrategy;
+    }
 
     public void setOutageDao(OutageDao outageDao) {
         this.m_outageDao = outageDao;
@@ -545,7 +553,7 @@ public class Poller extends AbstractServiceDaemon {
         }
 
         PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, getScheduler());
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, getScheduler(), m_rrdStrategy);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

@@ -41,8 +41,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
@@ -72,8 +70,6 @@ public class OutageModelTest implements TemporaryDatabaseAware<MockDatabase> {
 		MockLogAppender.setupLogging();
 
 		DataSourceFactory.setInstance(m_db);
-
-		RrdUtils.setStrategy(new NullRrdStrategy());
 	}
 
 	@After

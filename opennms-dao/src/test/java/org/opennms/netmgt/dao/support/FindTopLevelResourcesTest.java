@@ -57,7 +57,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -76,6 +76,8 @@ public class FindTopLevelResourcesTest {
 
     private FilterDao m_filterDao;
 
+    private String m_rrdFileExtension;
+
     @Before
     public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
@@ -90,7 +92,11 @@ public class FindTopLevelResourcesTest {
 
         expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
 
+        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
+
         m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
+        m_resourceStorageDao.setRrdStrategy(rrdStrategy);
 
         m_easyMockUtils.replayAll();
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/collectdconfiguration-testdata.xml");
@@ -103,8 +109,6 @@ public class FindTopLevelResourcesTest {
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
-
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
     }
 
     @After
@@ -155,15 +159,15 @@ public class FindTopLevelResourcesTest {
 
         // RRD Directory for n1
         File nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan node
         File orphanDir = m_fileAnticipator.tempDir(snmpDir, "100");
-        m_fileAnticipator.tempFile(orphanDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(orphanDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -230,7 +234,7 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for n2
         if (storeByForeignSource) {
@@ -238,7 +242,7 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan node
         if (storeByForeignSource) {
@@ -246,11 +250,11 @@ public class FindTopLevelResourcesTest {
         } else {
             nodeDir = m_fileAnticipator.tempDir(snmpDir, "100");
         }
-        m_fileAnticipator.tempFile(nodeDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(nodeDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ipDir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         walkin(m_fileAnticipator.getTempDir());
         m_easyMockUtils.replayAll();
@@ -322,7 +326,7 @@ public class FindTopLevelResourcesTest {
         expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
-       expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
+        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n3.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n4.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -335,7 +339,7 @@ public class FindTopLevelResourcesTest {
 
         // RRD Directory for n1
         File node1Dir = m_fileAnticipator.tempDir(snmpDir, n1.getId().toString());
-        m_fileAnticipator.tempFile(node1Dir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(node1Dir, "data" + m_rrdFileExtension);
 
         // RRD Directory for n2
         File node2Dir = null;
@@ -344,10 +348,10 @@ public class FindTopLevelResourcesTest {
         } else {
             node2Dir = m_fileAnticipator.tempDir(snmpDir, n2.getId().toString());
         }
-        m_fileAnticipator.tempFile(node2Dir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(node2Dir, "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan discovered node
-        m_fileAnticipator.tempFile(m_fileAnticipator.tempDir(snmpDir, "100"), "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(m_fileAnticipator.tempDir(snmpDir, "100"), "data" + m_rrdFileExtension);
 
         // RRD Directory for an orphan requisitioned node
         File orphanDir = null;
@@ -356,15 +360,15 @@ public class FindTopLevelResourcesTest {
         } else {
             orphanDir = m_fileAnticipator.tempDir(snmpDir, "101");
         }
-        m_fileAnticipator.tempFile(orphanDir, "data" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(orphanDir, "data" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n1
         File ip1Dir = m_fileAnticipator.tempDir(responseDir, n1.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ip1Dir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ip1Dir, "icmp" + m_rrdFileExtension);
 
         // Response Time RRD Directory for n2
         File ip2Dir = m_fileAnticipator.tempDir(responseDir, n2.getIpInterfaces().iterator().next().getIpAddress().getHostAddress());
-        m_fileAnticipator.tempFile(ip2Dir, "icmp" + RrdUtils.getExtension());
+        m_fileAnticipator.tempFile(ip2Dir, "icmp" + m_rrdFileExtension);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();

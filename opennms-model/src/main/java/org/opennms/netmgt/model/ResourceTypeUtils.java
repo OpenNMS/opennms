@@ -30,6 +30,7 @@ package org.opennms.netmgt.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,8 +40,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.PropertiesCache;
-import org.opennms.netmgt.rrd.RrdFileConstants;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -106,11 +105,11 @@ public abstract class ResourceTypeUtils {
      * @param relativePath a {@link java.lang.String} object.
      * @return a {@link java.util.Set} object.
      */
-    public static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath) {
+    public static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath, String rrdFileSuffix) {
         
         Set<OnmsAttribute> attributes =  new HashSet<OnmsAttribute>();
 
-        loadRrdAttributes(rrdDirectory, relativePath, attributes);
+        loadRrdAttributes(rrdDirectory, relativePath, attributes, rrdFileSuffix);
         loadStringAttributes(rrdDirectory, relativePath, attributes);
         
         return attributes;
@@ -127,11 +126,18 @@ public abstract class ResourceTypeUtils {
         }
     }
 
-    private static void loadRrdAttributes(File rrdDirectory, String relativePath, Set<OnmsAttribute> attributes) {
-        int suffixLength = RrdFileConstants.getRrdSuffix().length();
+    private static void loadRrdAttributes(File rrdDirectory, String relativePath, Set<OnmsAttribute> attributes, final String rrdFileSuffix) {
+        int suffixLength = rrdFileSuffix.length();
         File resourceDir = new File(rrdDirectory, relativePath);
-        File[] files = resourceDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-        
+
+        FilenameFilter filter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(rrdFileSuffix);
+            }
+        };
+        File[] files = resourceDir.listFiles(filter);
+
         if (files == null) {
             return;
         }
@@ -177,7 +183,7 @@ public abstract class ResourceTypeUtils {
      * @param ds a {@link java.lang.String} object.
      * @return a {@link java.io.File} object.
      */
-    public static File getRrdFileForDs(File directory, String ds) {
+    public static File getRrdFileForDs(File directory, String ds, String extension) {
         String rrdBaseName = ds;
         if (isStoreByGroup()) {
             try {
@@ -187,7 +193,7 @@ public abstract class ResourceTypeUtils {
                 rrdBaseName = ds;
             }
         }
-        return new File(directory, rrdBaseName + RrdUtils.getExtension());
+        return new File(directory, rrdBaseName + extension);
     }
 
     /**

@@ -72,6 +72,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -173,6 +174,9 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @Autowired
     private volatile NodeDao m_nodeDao;
+
+    @Autowired
+    private RrdStrategy<?, ?> m_rrdStrategy;
 
     /**
      * Constructor.
@@ -506,7 +510,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     spec, 
                     getScheduler(),
                     m_schedulingCompletedFlag,
-                    m_transTemplate.getTransactionManager()
+                    m_transTemplate.getTransactionManager(),
+                    m_rrdStrategy
                 );
 
                 // Add new collectable service to the collectable service list.

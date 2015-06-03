@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -75,6 +76,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.xml.event.Event;
@@ -131,6 +133,8 @@ public class PollablesTest {
 
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
+
+    private RrdStrategy<?, ?> m_rrdStrategy = new NullRrdStrategy();
 
     private int m_lockCount = 0;
 
@@ -1497,7 +1501,7 @@ public class PollablesTest {
         //        m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1529,7 +1533,7 @@ public class PollablesTest {
 
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
-        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1707,7 +1711,7 @@ public class PollablesTest {
     public void testComputeScheduledOutageTime() {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2583,7 +2587,7 @@ public class PollablesTest {
 
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler, m_rrdStrategy);
         svc.setPollConfig(pollConfig);
         synchronized (svc) {
             if (svc.getSchedule() == null) {

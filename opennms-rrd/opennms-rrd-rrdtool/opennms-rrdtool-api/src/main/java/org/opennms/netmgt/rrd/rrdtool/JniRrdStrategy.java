@@ -133,8 +133,8 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
             }
         }
 
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
-        
+        String fileName = directory + File.separator + rrdName + getDefaultFileExtension();
+
         if (new File(fileName).exists()) {
             LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
             return null;
@@ -181,7 +181,7 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
         LOG.debug("Executing: rrdtool {}", createCommand.toString());
         Interface.launch(createCommand.toString());
         
-        String filenameWithoutExtension = createCommand.filename.replace(RrdUtils.getExtension(), "");
+        String filenameWithoutExtension = createCommand.filename.replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
         
         RrdUtils.createMetaDataFile(

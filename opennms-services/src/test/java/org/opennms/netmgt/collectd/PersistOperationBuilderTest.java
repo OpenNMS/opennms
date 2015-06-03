@@ -50,7 +50,8 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -70,10 +71,13 @@ public class PersistOperationBuilderTest {
     private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
 
     private IpInterfaceDao m_ifDao;
+    private RrdStrategy<?, ?> m_rrdStrategy; 
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         m_fileAnticipator = new FileAnticipator();
 
@@ -116,14 +120,14 @@ public class PersistOperationBuilderTest {
 
         CollectionResource resource = new NodeInfo(resourceType, agent);
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.commit();
     }
 
     @Test
     public void testCommitWithDeclaredAttribute() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + m_rrdStrategy.getDefaultFileExtension());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
 
         RrdRepository repository = createRrdRepository();
@@ -151,7 +155,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.commit();
     }
@@ -159,7 +163,7 @@ public class PersistOperationBuilderTest {
     @Test
     public void testCommitWithDeclaredAttributeAndValue() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + m_rrdStrategy.getDefaultFileExtension());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
 
         RrdRepository repository = createRrdRepository();
@@ -187,7 +191,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, "6.022E23");
         builder.commit();
@@ -222,7 +226,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, "THIS_IS_A_STRING");
         builder.commit();
