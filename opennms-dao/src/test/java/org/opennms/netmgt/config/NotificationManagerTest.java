@@ -117,7 +117,7 @@ public class NotificationManagerTest implements InitializingBean {
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
         
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         OnmsNode node;
         OnmsIpInterface ipInterface;
         OnmsMonitoredService service;

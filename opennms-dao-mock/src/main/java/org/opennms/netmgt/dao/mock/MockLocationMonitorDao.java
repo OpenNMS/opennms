@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -51,18 +51,18 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.util.Assert;
 
-public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
-    private AtomicInteger m_id = new AtomicInteger(0);
+public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, String> implements LocationMonitorDao {
+
     private Map<String,LocationDef> m_locationDefinitions = new HashMap<String,LocationDef>();
     private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
 
     @Override
     protected void generateId(final OnmsLocationMonitor mon) {
-        mon.setId(m_id.incrementAndGet());
+        mon.setId(UUID.randomUUID().toString());
     }
 
     @Override
-    protected Integer getId(final OnmsLocationMonitor loc) {
+    protected String getId(final OnmsLocationMonitor loc) {
         return loc.getId();
     }
 
@@ -70,7 +70,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     public Collection<OnmsLocationMonitor> findByLocationDefinition(final LocationDef locationDefinition) {
         final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
         for (final OnmsLocationMonitor mon : findAll()) {
-            if (mon.getDefinitionName().equals(locationDefinition.getLocationName())) {
+            if (mon.getLocation().equals(locationDefinition.getLocationName())) {
                 monitors.add(mon);
             }
         }
@@ -166,7 +166,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
             return result;
         }
 
-        private Integer getLocationMonitorId() {
+        private String getLocationMonitorId() {
             return m_status.getLocationMonitor().getId();
         }
 

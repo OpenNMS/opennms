@@ -94,7 +94,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public String getMonitorName(int locationMonitorId) {
+    public String getMonitorName(String locationMonitorId) {
         try {
             return m_delegate.getMonitorName(locationMonitorId);
         } catch (Throwable t) {
@@ -120,7 +120,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
+    public PollerConfiguration getPollerConfiguration(String locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
         } catch (Throwable t) {
@@ -142,7 +142,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(String locationMonitorId, Date currentConfigurationVersion) {
         try {
             return m_delegate.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
         } catch (Throwable t) {
@@ -153,7 +153,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
+    public boolean pollerStarting(String locationMonitorId, Map<String, String> pollerDetails) {
         try {
             return m_delegate.pollerStarting(locationMonitorId, pollerDetails);
         } catch (Throwable t) {
@@ -164,7 +164,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public void pollerStopping(int locationMonitorId) {
+    public void pollerStopping(String locationMonitorId) {
         try {
             m_delegate.pollerStopping(locationMonitorId);
         } catch (Throwable t) {
@@ -175,7 +175,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public int registerLocationMonitor(String monitoringLocationId) {
+    public String registerLocationMonitor(String monitoringLocationId) {
         try {
             return m_delegate.registerLocationMonitor(monitoringLocationId);
         } catch (Throwable t) {
@@ -186,7 +186,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public void reportResult(int locationMonitorID, int serviceId,
+    public void reportResult(String locationMonitorID, int serviceId,
             PollStatus status) {
         try {
             m_delegate.reportResult(locationMonitorID, serviceId, status);

@@ -701,18 +701,18 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public OnmsDistPoller createDistPollerIfNecessary(final String dpName, final String dpAddr) {
-        return createDistPollerIfNecessary(new OnmsDistPoller(dpName, dpAddr));
+        return createDistPollerIfNecessary(new OnmsDistPoller(dpName));
     }
 
     public OnmsDistPoller createDistPollerIfNecessary(OnmsDistPoller scannedDistPoller) {
 
-        final OnmsDistPoller distPoller = scannedDistPoller == null ? new OnmsDistPoller("localhost", "127.0.0.1") : scannedDistPoller;
+        final OnmsDistPoller distPoller = scannedDistPoller == null ? new OnmsDistPoller("localhost") : scannedDistPoller;
 
         return new CreateIfNecessaryTemplate<OnmsDistPoller, DistPollerDao>(m_transactionManager, m_distPollerDao) {
 
             @Override
             protected OnmsDistPoller query() {
-                return m_distPollerDao.get(distPoller.getName());
+                return m_distPollerDao.get(distPoller.getId());
             }
 
             @Override

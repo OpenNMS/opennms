@@ -237,7 +237,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             table.addCell(s.getMonitoredService().getIpInterface().getNode().getLabel(), 
                           getStyleForPollResult(s.getPollResult()),
                           "element/node.jsp?node=" + s.getMonitoredService().getIpInterface().getNode().getId());
-            table.addCell(s.getLocationMonitor().getDefinitionName() + "-"
+            table.addCell(s.getLocationMonitor().getLocation() + "-"
                           + s.getLocationMonitor().getId(),
                           "",
                           "distributed/locationMonitorDetails.htm?monitorId=" + s.getLocationMonitor().getId()); 
@@ -248,7 +248,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           "bright");
             table.addCell(getResponseText(s.getPollResult()), "");
             table.addCell(reDateify(s.getPollResult().getTimestamp()), "");
-            table.addCell(reDateify(s.getLocationMonitor().getLastCheckInTime()), "");
+            table.addCell(reDateify(s.getLocationMonitor().getLastUpdated()), "");
         }
         
         return table;

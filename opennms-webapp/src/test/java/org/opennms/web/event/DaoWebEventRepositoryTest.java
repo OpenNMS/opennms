@@ -114,7 +114,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
     private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
         OnmsDistPoller distPoller = m_dbPopulator.getDistPollerDao().get(localhost);
         if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost, localhostIp);
+            distPoller = new OnmsDistPoller(localhost);
             m_dbPopulator.getDistPollerDao().save(distPoller);
             m_dbPopulator.getDistPollerDao().flush();
         }

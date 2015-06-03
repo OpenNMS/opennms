@@ -110,7 +110,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     private TestContext m_context;
 
-    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost");
 
     private final String m_testHostName = "127.0.0.1";
 

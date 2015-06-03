@@ -102,9 +102,9 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
     	
     	OnmsLocationMonitor mon = new OnmsLocationMonitor();
     	mon.setStatus(MonitorStatus.STARTED);
-    	mon.setLastCheckInTime(new Date());
-    	mon.setDetails(pollerDetails);
-    	mon.setDefinitionName("RDU");
+    	mon.setLastUpdated(new Date());
+    	mon.setProperties(pollerDetails);
+    	mon.setLocation("RDU");
     	
     	m_locationMonitorDao.save(mon);
     	
@@ -114,9 +114,9 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
     	OnmsLocationMonitor mon2 = m_locationMonitorDao.get(mon.getId());
     	assertNotSame(mon, mon2);
     	assertEquals(mon.getStatus(), mon2.getStatus());
-    	assertEquals(mon.getLastCheckInTime(), mon2.getLastCheckInTime());
-    	assertEquals(mon.getDefinitionName(), mon2.getDefinitionName());
-    	assertEquals(mon.getDetails(), mon2.getDetails());
+    	assertEquals(mon.getLastUpdated(), mon2.getLastUpdated());
+    	assertEquals(mon.getLocation(), mon2.getLocation());
+    	assertEquals(mon.getProperties(), mon2.getProperties());
     }
     
     
@@ -182,11 +182,11 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
 		m_databasePopulator.populateDatabase();
 		
         OnmsLocationMonitor monitor1 = new OnmsLocationMonitor();
-        monitor1.setDefinitionName("Outer Space");
+        monitor1.setLocation("Outer Space");
         m_locationMonitorDao.save(monitor1);
 
         OnmsLocationMonitor monitor2 = new OnmsLocationMonitor();
-        monitor2.setDefinitionName("Really Outer Space");
+        monitor2.setLocation("Really Outer Space");
         m_locationMonitorDao.save(monitor2);
 
         OnmsNode node1 = m_nodeDao.get(1);

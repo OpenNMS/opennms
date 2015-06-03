@@ -120,8 +120,8 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         final Collection<LocationMonitorIpInterface> statuses = m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId());
 
         for (LocationMonitorIpInterface status : statuses) {
-            String definitionName = status.getLocationMonitor().getDefinitionName();
-            int id = status.getLocationMonitor().getId();
+            String definitionName = status.getLocationMonitor().getLocation();
+            String id = status.getLocationMonitor().getId();
             final OnmsIpInterface ipInterface = status.getIpInterface();
             String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
 
@@ -149,7 +149,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
 
     private OnmsResource createResource(String definitionName,
-            int locationMonitorId, String ipAddress) {
+            String locationMonitorId, String ipAddress) {
         String monitor = definitionName + "-" + locationMonitorId;
         String label = ipAddress + " from " + monitor;
 
@@ -159,15 +159,15 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         return new OnmsResource(getResourceName(locationMonitorId, ipAddress), label, this, set, path);
     }
 
-    protected static String getResourceName(int locationMonitorId, String ipAddress) {
+    protected static String getResourceName(String locationMonitorId, String ipAddress) {
         return String.format("%d%s%s", locationMonitorId, File.separator, ipAddress);
     }
 
-    private static ResourcePath getRelativeInterfacePath(int id, String ipAddr) {
+    private static ResourcePath getRelativeInterfacePath(String id, String ipAddr) {
         return new ResourcePath(
                 ResourceTypeUtils.RESPONSE_DIRECTORY,
                 DISTRIBUTED_DIRECTORY,
-                Integer.toString(id),
+                id,
                 ipAddr);
     }
 }

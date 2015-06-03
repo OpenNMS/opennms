@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer> {
+public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, String> {
     
     /**
      * <p>findByLocationDefinition</p>

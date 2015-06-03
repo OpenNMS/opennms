@@ -34,7 +34,7 @@ import java.util.Collection;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.MinionPropertyDao;
-import org.opennms.netmgt.model.minion.OnmsMinionProperty;
+import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -43,19 +43,19 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  * @author ranger
  * @version $Id: $
  */
-public class MinionPropertyDaoHibernate extends AbstractDaoHibernate<OnmsMinionProperty, Integer> implements MinionPropertyDao {
+public class MinionPropertyDaoHibernate extends AbstractDaoHibernate<OnmsMonitoringSystemProperty, Integer> implements MinionPropertyDao {
     public MinionPropertyDaoHibernate() {
-        super(OnmsMinionProperty.class);
+        super(OnmsMonitoringSystemProperty.class);
     }
 
     @Override
-    public Collection<OnmsMinionProperty> findAll(final Integer offset, final Integer limit) {
-        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsMinionProperty>>() {
+    public Collection<OnmsMonitoringSystemProperty> findAll(final Integer offset, final Integer limit) {
+        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsMonitoringSystemProperty>>() {
 
             @Override
             @SuppressWarnings("unchecked")
-            public Collection<OnmsMinionProperty> doInHibernate(Session session) throws HibernateException, SQLException {
-                return session.createCriteria(OnmsMinionProperty.class)
+            public Collection<OnmsMonitoringSystemProperty> doInHibernate(Session session) throws HibernateException, SQLException {
+                return session.createCriteria(OnmsMonitoringSystemProperty.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .list();
@@ -64,12 +64,12 @@ public class MinionPropertyDaoHibernate extends AbstractDaoHibernate<OnmsMinionP
     }
 
     @Override
-    public Collection<OnmsMinionProperty> findByMinionId(final String minionId) {
-        return find("FROM OnmsMinionProperty AS mp WHERE mp.minion.id = ?", minionId);
+    public Collection<OnmsMonitoringSystemProperty> findByMonitoringSystemId(final String systemId) {
+        return find("FROM OnmsMonitoringSystemProperty AS mp WHERE mp.system.id = ?", systemId);
     }
 
     @Override
-    public OnmsMinionProperty findByKey(final String minionId, final String key) {
-        return findUnique("FROM OnmsMinionProperty AS mp WHERE mp.minion.id = ? AND mp.key = ?", minionId, key);
+    public OnmsMonitoringSystemProperty findByKey(final String minionId, final String key) {
+        return findUnique("FROM OnmsMonitoringSystemProperty AS mp WHERE mp.system.id = ? AND mp.key = ?", minionId, key);
     }
 }

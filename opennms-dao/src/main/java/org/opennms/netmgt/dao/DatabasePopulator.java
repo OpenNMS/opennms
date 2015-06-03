@@ -600,7 +600,7 @@ public class DatabasePopulator {
     public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
     	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
         if (distPoller == null) {
-            final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
+            final OnmsDistPoller newDp = new OnmsDistPoller(localhost);
             getDistPollerDao().save(newDp);
             getDistPollerDao().flush();
             return newDp;

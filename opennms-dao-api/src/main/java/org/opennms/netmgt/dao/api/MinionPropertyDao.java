@@ -30,10 +30,10 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.minion.OnmsMinionProperty;
+import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 
-public interface MinionPropertyDao extends OnmsDao<OnmsMinionProperty, Integer> {
-    Collection<OnmsMinionProperty> findAll(Integer offset, Integer limit);
-    Collection<OnmsMinionProperty> findByMinionId(String minionId);
-    OnmsMinionProperty findByKey(String minionId, String key);
+public interface MinionPropertyDao extends OnmsDao<OnmsMonitoringSystemProperty, Integer> {
+    Collection<OnmsMonitoringSystemProperty> findAll(Integer offset, Integer limit);
+    Collection<OnmsMonitoringSystemProperty> findByMonitoringSystemId(String minionId);
+    OnmsMonitoringSystemProperty findByKey(String minionId, String key);
 }

@@ -58,7 +58,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         
         List<PolledService> polledServices = new ArrayList<PolledService>();
         
-        OnmsDistPoller distPoller = new OnmsDistPoller("locahost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("locahost");
         NetworkBuilder m_builder = new NetworkBuilder(distPoller);
         m_builder.addNode("Google").setId(1);
         m_builder.addInterface("64.233.161.99").setId(11);

@@ -43,8 +43,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.MinionPropertyDao;
+import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.netmgt.model.minion.OnmsMinionProperty;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -94,7 +94,7 @@ public class MinionDaoTest {
         
         final OnmsMinion a = new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now);
         final OnmsMinion b = new OnmsMinion(UUID.randomUUID().toString(), "OtherLocation", "Started", now);
-        a.setProperty("Yes", "No");
+        a.getProperties().put("Yes", "No");
         a.setProperty("Up", "Down");
         b.setProperty("Left", "Right");
         b.setProperty("Wrong",  "Right");
@@ -103,14 +103,14 @@ public class MinionDaoTest {
         m_minionDao.save(b);
         m_minionDao.flush();
         
-        Collection<OnmsMinionProperty> props = m_minionPropertyDao.findAll();
+        Collection<OnmsMonitoringSystemProperty> props = m_minionPropertyDao.findAll();
         assertEquals(4, props.size());
         
-        props = m_minionPropertyDao.findByMinionId(a.getId());
+        props = m_minionPropertyDao.findByMonitoringSystemId(a.getId());
         assertEquals(2, props.size());
-        assertEquals(a.getId(), props.iterator().next().getMinion().getId());
+        assertEquals(a.getId(), props.iterator().next().getMonitoringSystem().getId());
         
-        OnmsMinionProperty prop = m_minionPropertyDao.findByKey(a.getId(), "Left");
+        OnmsMonitoringSystemProperty prop = m_minionPropertyDao.findByKey(a.getId(), "Left");
         // a doesn't have that property, b does
         assertNull(prop);
         prop = m_minionPropertyDao.findByKey(b.getId(), "Left");

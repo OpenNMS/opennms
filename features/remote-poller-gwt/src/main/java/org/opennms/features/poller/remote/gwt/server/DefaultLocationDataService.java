@@ -99,7 +99,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         Map<String, List<OnmsLocationMonitor>> m_monitors = new HashMap<String, List<OnmsLocationMonitor>>();
         
         public void onMonitor(OnmsLocationMonitor locationMon) {
-            List<OnmsLocationMonitor> monitors = getMonitorList(locationMon.getDefinitionName());
+            List<OnmsLocationMonitor> monitors = getMonitorList(locationMon.getLocation());
             monitors.add(locationMon);
         }
         
@@ -331,7 +331,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             return null;
         }
 
-        final String definitionName = monitors.get(0).getDefinitionName();
+        final String definitionName = monitors.get(0).getLocation();
         final LocationDef def = m_locationDao.findMonitoringLocationDefinition(definitionName);
         if (def == null) {
             LOG.warn("unable to find monitoring location definition for '{}'", definitionName);
@@ -430,7 +430,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         
         for (final OnmsLocationMonitor monitor : m_locationDao.findByApplication(app)) {
             monitors.add(transformLocationMonitor(monitor));
-            for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getDefinitionName())) {
+            for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getLocation())) {
                 if (services.contains(locationSpecificStatus.getMonitoredService())) {
                     statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
                 }
@@ -461,7 +461,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         }
         
         for (final OnmsLocationMonitor mon : m_locationDao.findByApplication(app)) {
-            locationNames.add(mon.getDefinitionName());
+            locationNames.add(mon.getLocation());
         }
         
         final ApplicationInfo applicationInfo = new ApplicationInfo(app.getId(), app.getName(), services, locationNames, status);
@@ -569,7 +569,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         
         for (final OnmsLocationMonitor monitor : m_locationDao.findByApplication(app)) {
             monitors.add(transformLocationMonitor(monitor));
-            for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getDefinitionName())) {
+            for (final OnmsLocationSpecificStatus locationSpecificStatus : m_locationDao.getStatusChangesForLocationBetween(from, to, monitor.getLocation())) {
                 if (services.contains(locationSpecificStatus.getMonitoredService())) {
                     statuses.add(transformLocationSpecificStatus(locationSpecificStatus));
                 }
@@ -593,7 +593,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         // check for any monitors that have changed status
         for (LocationDef def : m_locationDao.findAllMonitoringLocationDefinitions()) {
             for (OnmsLocationMonitor mon : m_locationDao.findByLocationDefinition(def)) {
-                final MonitorStatus status = m_monitorStatuses.get(mon.getDefinitionName());
+                final MonitorStatus status = m_monitorStatuses.get(mon.getLocation());
                 if (status == null || !status.equals(mon.getStatus())) {
                     definitions.put(def.getLocationName(), def);
                     m_monitorStatuses.put(def.getLocationName(), mon.getStatus());
@@ -603,7 +603,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         // check for any definitions that have status updates
         for (final OnmsLocationSpecificStatus status : m_locationDao.getStatusChangesBetween(startDate, endDate)) {
-            final String definitionName = status.getLocationMonitor().getDefinitionName();
+            final String definitionName = status.getLocationMonitor().getLocation();
             if (!definitions.containsKey(definitionName)) {
                 definitions.put(definitionName, m_locationDao.findMonitoringLocationDefinition(definitionName));
             }
@@ -794,10 +794,10 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
     private static GWTLocationMonitor transformLocationMonitor(final OnmsLocationMonitor monitor) {
         final GWTLocationMonitor gMonitor = new GWTLocationMonitor();
         gMonitor.setId(monitor.getId());
-        gMonitor.setDefinitionName(monitor.getDefinitionName());
+        gMonitor.setDefinitionName(monitor.getLocation());
         gMonitor.setName(monitor.getName());
         gMonitor.setStatus(monitor.getStatus().toString());
-        gMonitor.setLastCheckInTime(monitor.getLastCheckInTime());
+        gMonitor.setLastCheckInTime(monitor.getLastUpdated());
         return gMonitor;
     }
 
@@ -827,7 +827,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         
         @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
-            String defName = status.getLocationMonitor().getDefinitionName();
+            String defName = status.getLocationMonitor().getLocation();
             
             MonitorStatusTracker t = getMonitorStatusTracker(defName);
             t.onStatus(status);
@@ -865,11 +865,11 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
-            if (status.getLocationMonitor().getDefinitionName().equals(m_locationName)) {
-                LOG.trace("(added) status code for {}/{} is {}", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+            if (status.getLocationMonitor().getLocation().equals(m_locationName)) {
+                LOG.trace("(added) status code for {}/{} is {}", status.getLocationMonitor().getLocation(), status.getMonitoredService().getServiceName(), status.getStatusCode());
                 m_statuses.put(status.getMonitoredService().getId(), status);
             } else {
-                LOG.trace("(skipped) status code for {}/{} is {}", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+                LOG.trace("(skipped) status code for {}/{} is {}", status.getLocationMonitor().getLocation(), status.getMonitoredService().getServiceName(), status.getStatusCode());
             }
         }
 
@@ -896,8 +896,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
         @Override
         public void onStatus(final OnmsLocationSpecificStatus status) {
-            if (status.getLocationMonitor().getDefinitionName().equals(m_name)) {
-                LOG.trace("(added) status code for {}/{} is {}", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+            if (status.getLocationMonitor().getLocation().equals(m_name)) {
+                LOG.trace("(added) status code for {}/{} is {}", status.getLocationMonitor().getLocation(), status.getMonitoredService().getServiceName(), status.getStatusCode());
                 for (OnmsApplication app : status.getMonitoredService().getApplications()) {
                     Collection<OnmsLocationSpecificStatus> statuses = m_statuses.get(app.getName());
                     if (statuses == null) {
@@ -907,7 +907,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
                     m_statuses.put(app.getName(), statuses);
                 }
             } else {
-                LOG.trace("(skipped) status code for {}/{} is {}", status.getLocationMonitor().getDefinitionName(), status.getMonitoredService().getServiceName(), status.getStatusCode());
+                LOG.trace("(skipped) status code for {}/{} is {}", status.getLocationMonitor().getLocation(), status.getMonitoredService().getServiceName(), status.getStatusCode());
             }
         }
 

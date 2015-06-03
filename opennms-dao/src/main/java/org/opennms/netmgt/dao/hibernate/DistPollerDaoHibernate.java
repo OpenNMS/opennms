@@ -43,7 +43,7 @@ public class DistPollerDaoHibernate extends AbstractCachingDaoHibernate<OnmsDist
     /** {@inheritDoc} */
     @Override
     protected String getKey(OnmsDistPoller t) {
-        return t.getName();
+        return t.getId();
     }
 
 

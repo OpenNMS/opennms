@@ -124,7 +124,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         @Override
         public void initialize() {
             try {
-                final Integer monitorId = doInitialize();
+                final String monitorId = doInitialize();
                 if (monitorId == null) {
                     setState(new Registering());
                 } else if (doPollerStart()) {
@@ -476,7 +476,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.Integer} object.
      */
-    private Integer doInitialize() {
+    private String doInitialize() {
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
@@ -524,7 +524,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     private void doRegister(final String location) {
 
-        int monitorId = m_backEnd.registerLocationMonitor(location);
+        String monitorId = m_backEnd.registerLocationMonitor(location);
         setMonitorId(monitorId);
 
         doPollerStart();
@@ -565,7 +565,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.Integer} object.
      */
-    private Integer getMonitorId() {
+    private String getMonitorId() {
         return m_pollerSettings.getMonitorId();
     }
 
@@ -696,7 +696,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @param monitorId a {@link java.lang.Integer} object.
      */
-    private void setMonitorId(final Integer monitorId) {
+    private void setMonitorId(final String monitorId) {
         m_pollerSettings.setMonitorId(monitorId);
     }
 

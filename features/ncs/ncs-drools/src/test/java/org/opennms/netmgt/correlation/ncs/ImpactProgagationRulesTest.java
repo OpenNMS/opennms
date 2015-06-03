@@ -80,7 +80,7 @@ public class ImpactProgagationRulesTest extends CorrelationRulesTestCase {
 	@Before
 	public void setUp() throws JAXBException, UnsupportedEncodingException {
 		
-		OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+		OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 		
 		m_distPollerDao.save(distPoller);
 		

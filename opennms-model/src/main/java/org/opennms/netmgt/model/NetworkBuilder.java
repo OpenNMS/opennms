@@ -87,7 +87,7 @@ public class NetworkBuilder {
      * @param ipAddress a {@link java.lang.String} object.
      */
     public NetworkBuilder(final String name, final String ipAddress) {
-        m_distPoller = new OnmsDistPoller(name, ipAddress);
+        m_distPoller = new OnmsDistPoller(name);
     }
 
     /**

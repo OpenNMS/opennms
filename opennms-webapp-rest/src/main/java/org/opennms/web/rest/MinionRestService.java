@@ -46,8 +46,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.MinionPropertyDao;
 import org.opennms.netmgt.model.OnmsMinionCollection;
+import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.opennms.netmgt.model.minion.OnmsMinionProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -92,7 +92,7 @@ public class MinionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{minionId}/{key}")
     @Transactional
-    public OnmsMinionProperty getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
+    public OnmsMonitoringSystemProperty getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
         readLock();
         try {
             return m_minionPropertyDao.findByKey(minionId, key);

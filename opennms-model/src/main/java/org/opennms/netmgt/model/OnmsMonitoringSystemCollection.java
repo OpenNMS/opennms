@@ -35,19 +35,20 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.netmgt.model.minion.OnmsMinion;
 
-@XmlRootElement(name="minions")
-public class OnmsMinionCollection extends JaxbListWrapper<OnmsMinion> {
-    private static final long serialVersionUID = 1L;
+@XmlRootElement(name="monitoringSystems")
+public class OnmsMonitoringSystemCollection extends JaxbListWrapper<OnmsMonitoringSystem> {
 
-    public OnmsMinionCollection() { super(); }
-    public OnmsMinionCollection(final Collection<? extends OnmsMinion> minion) {
-        super(minion);
+    private static final long serialVersionUID = -5250100085101434238L;
+
+    public OnmsMonitoringSystemCollection() { super(); }
+
+    public OnmsMonitoringSystemCollection(final Collection<? extends OnmsMonitoringSystem> objects) {
+        super(objects);
     }
 
-    @XmlElement(name="minion")
-    public List<OnmsMinion> getObjects() {
+    @XmlElement(name="monitoringSystem")
+    public List<OnmsMonitoringSystem> getObjects() {
         return super.getObjects();
     }
 }

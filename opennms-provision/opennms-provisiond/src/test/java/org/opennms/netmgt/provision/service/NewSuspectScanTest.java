@@ -152,7 +152,7 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
         m_eventSubscriber.getEventAnticipator().reset();
 
         if (m_distPollerDao.findAll().size() == 0) {
-            m_distPollerDao.save(new OnmsDistPoller("localhost", "127.0.0.1"));
+            m_distPollerDao.save(new OnmsDistPoller("localhost"));
         }
 
         m_foreignSource = new ForeignSource();

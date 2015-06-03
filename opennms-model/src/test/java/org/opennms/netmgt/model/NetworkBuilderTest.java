@@ -132,7 +132,7 @@ public class NetworkBuilderTest {
         assertEquals("imported:", node1.getForeignSource());
         assertEquals("1", node1.getForeignId());
         assertEquals(NodeType.ACTIVE, node1.getType());
-        assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
+        //assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
         assertNull(node1.getSysContact());
         assertEquals(4, node1.getSnmpInterfaces().size());
         assertEquals(4, node1.getIpInterfaces().size());

@@ -278,7 +278,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private static EventBuilder createEventBuilder(final OnmsLocationMonitor mon, final String uei) {
         final EventBuilder eventBuilder = new EventBuilder(uei, "PollerBackEnd")
             .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, mon.getId())
-            .addParam(EventConstants.PARM_LOCATION, mon.getDefinitionName());
+            .addParam(EventConstants.PARM_LOCATION, mon.getLocation());
         return eventBuilder;
     }
 
@@ -304,7 +304,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
     @Override
-    public String getMonitorName(final int locationMonitorId) {
+    public String getMonitorName(final String locationMonitorId) {
         final OnmsLocationMonitor locationMonitor = m_locMonDao.load(locationMonitorId);
         return locationMonitor.getName();
     }
@@ -325,7 +325,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
     @Override
-    public PollerConfiguration getPollerConfiguration(final int locationMonitorId) {
+    public PollerConfiguration getPollerConfiguration(final String locationMonitorId) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
 			if (mon == null) {
@@ -360,7 +360,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private SimplePollerConfiguration createPollerConfiguration(
             final OnmsLocationMonitor mon, String pollingPackageName) {
-        final Package pkg = getPollingPackage(pollingPackageName, mon.getDefinitionName());
+        final Package pkg = getPollingPackage(pollingPackageName, mon.getLocation());
         
         final ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
         final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
@@ -381,7 +381,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private Package getPollingPackageForMonitorAndService(final OnmsLocationMonitor mon, OnmsMonitoredService monSvc) {
         List<String> pollingPackageNames = getPackageName(mon);
-        String definitionName = mon.getDefinitionName();
+        String definitionName = mon.getLocation();
         for (String pollingPackageName : pollingPackageNames) {
             Package pkg = getPollingPackage(pollingPackageName, definitionName);
             if (m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg) != null) {
@@ -401,9 +401,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private List<String> getPackageName(final OnmsLocationMonitor mon) {
-        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
+        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(mon.getLocation());
         if (def == null) {
-            throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
+            throw new IllegalStateException("Location definition '" + mon.getLocation() + "' could not be found for location monitor ID " + mon.getId());
         }
         return def.getPollingPackageNames();
     }
@@ -437,7 +437,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Override
-    public MonitorStatus pollerCheckingIn(final int locationMonitorId, final Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(final String locationMonitorId, final Date currentConfigurationVersion) {
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
 			if (mon == null) {
@@ -454,13 +454,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Override
-    public boolean pollerStarting(final int locationMonitorId, final Map<String, String> pollerDetails) {
+    public boolean pollerStarting(final String locationMonitorId, final Map<String, String> pollerDetails) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
             return false;
         }
         mon.setStatus(MonitorStatus.STARTED);
-        mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        mon.setLastUpdated(m_timeKeeper.getCurrentDate());
 
         updateConnectionHostDetails(mon, pollerDetails);
 
@@ -498,7 +498,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
                 // In case there is an UnknownHostException
             }
         }
-        mon.setDetails(allDetails);
+        mon.setProperties(allDetails);
 
         if (oldConnectionHostAddress == null) {
             if (newConnectionHostAddress != null) {
@@ -520,7 +520,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Override
-    public void pollerStopping(final int locationMonitorId) {
+    public void pollerStopping(final String locationMonitorId) {
         final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
         if (mon == null) {
             LOG.info("pollerStopping was called for location monitor ID {} which does not exist", locationMonitorId);
@@ -531,7 +531,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         {
         	mon.setStatus(MonitorStatus.STOPPED);
         }
-        mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
+        mon.setLastUpdated(m_timeKeeper.getCurrentDate());
         m_locMonDao.update(mon);
 
         sendMonitorStoppedEvent(mon);
@@ -552,13 +552,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Override
-    public int registerLocationMonitor(final String monitoringLocationId) {
+    public String registerLocationMonitor(final String monitoringLocationId) {
         final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
         if (def == null) {
             throw new ObjectRetrievalFailureException(LocationDef.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }
         final OnmsLocationMonitor mon = new OnmsLocationMonitor();
-        mon.setDefinitionName(def.getLocationName());
+        mon.setLocation(def.getLocationName());
         mon.setStatus(MonitorStatus.REGISTERED);
 
         m_locMonDao.save(mon);
@@ -569,7 +569,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     /** {@inheritDoc} */
     @Override
-    public void reportResult(final int locationMonitorId, final int serviceId, final PollStatus pollResult) {
+    public void reportResult(final String locationMonitorId, final int serviceId, final PollStatus pollResult) {
         final OnmsLocationMonitor locationMonitor;
         try {
         	locationMonitor = m_locMonDao.get(locationMonitorId);
@@ -603,7 +603,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
 			if (newStatus.getPollResult().getResponseTime() != null) {
 			    final Package pkg = getPollingPackageForMonitorAndService(locationMonitor, monSvc);
-			    saveResponseTimeData(Integer.toString(locationMonitorId), monSvc, newStatus.getPollResult().getResponseTime(), pkg);
+			    saveResponseTimeData(locationMonitorId, monSvc, newStatus.getPollResult().getResponseTime(), pkg);
 			}
 		} catch (final Exception e) {
 			LOG.error("Unable to save response time data for location monitor ID {}, monitored service ID {}.", locationMonitorId, serviceId, e);
@@ -794,8 +794,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
             }
         } finally {
-            mon.setLastCheckInTime(m_timeKeeper.getCurrentDate());
-            updateConnectionHostDetails(mon, mon.getDetails());
+            mon.setLastUpdated(m_timeKeeper.getCurrentDate());
+            updateConnectionHostDetails(mon, mon.getProperties());
             m_locMonDao.update(mon);
         }
     }

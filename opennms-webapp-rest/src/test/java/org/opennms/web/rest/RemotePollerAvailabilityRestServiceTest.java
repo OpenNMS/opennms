@@ -239,8 +239,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
                 System.err.println("======= Starting createLocationMonitors() ======");
                 OnmsLocationMonitor locMon1 = new OnmsLocationMonitor();
-                locMon1.setDefinitionName("RDU");
-                locMon1.setLastCheckInTime(new Date());
+                locMon1.setLocation("RDU");
+                locMon1.setLastUpdated(new Date());
                 locMon1.setStatus(MonitorStatus.STARTED);
                 m_locationMonitorDao.save(locMon1);
 

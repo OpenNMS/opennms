@@ -43,7 +43,7 @@ public class OnmsAssetRecordTest {
     public void equalsSameObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -54,7 +54,7 @@ public class OnmsAssetRecordTest {
     public void equalsDiffObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -75,7 +75,7 @@ public class OnmsAssetRecordTest {
     public void notEquals() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -91,7 +91,7 @@ public class OnmsAssetRecordTest {
     public void testMergeEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         rec1.setGeolocation(new OnmsGeolocation());
@@ -118,7 +118,7 @@ public class OnmsAssetRecordTest {
     public void testMergeNotEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         String originalAddress1 = "220 Chatham Business Drive";

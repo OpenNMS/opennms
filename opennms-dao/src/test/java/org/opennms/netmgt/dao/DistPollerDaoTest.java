@@ -28,11 +28,8 @@
 
 package org.opennms.netmgt.dao;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,8 +68,7 @@ public class DistPollerDaoTest implements InitializingBean {
 	@Test
 	@Transactional
 	public void testCreate() {
-        OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   
-        distPoller.setLastEventPull(new Date(1000000));
+        OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller");
         getDistPollerDao().save(distPoller);
         
     }
@@ -86,8 +82,6 @@ public class DistPollerDaoTest implements InitializingBean {
         
         OnmsDistPoller distPoller = getDistPollerDao().get("otherpoller");
         assertNotNull(distPoller);
-        assertEquals(new Date(1000000), distPoller.getLastEventPull());
-        
     }
 
 	private DistPollerDao getDistPollerDao() {

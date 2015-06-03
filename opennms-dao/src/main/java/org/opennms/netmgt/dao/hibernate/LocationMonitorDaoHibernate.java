@@ -64,7 +64,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
+public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocationMonitor, String> implements LocationMonitorDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(LocationMonitorDaoHibernate.class);
 

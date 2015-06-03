@@ -79,7 +79,7 @@ public class PersistRegexSelectorStrategyTest {
     public void setUp() throws Exception {
         ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
         String localhost = InetAddress.getLocalHost().getHostAddress();
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", localhost);
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
         NetworkBuilder builder = new NetworkBuilder(distPoller);
         builder.addNode("myNode");
         builder.addInterface(localhost).setIsManaged("M").setIsSnmpPrimary("P");

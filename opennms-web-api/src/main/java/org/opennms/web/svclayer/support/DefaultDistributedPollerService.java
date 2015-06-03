@@ -71,7 +71,7 @@ public class DefaultDistributedPollerService implements
         
         LocationMonitorListModel model = new LocationMonitorListModel();
         for (OnmsLocationMonitor monitor : monitors) {
-            LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
+            LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getLocation());
             model.addLocationMonitor(new LocationMonitorModel(monitor, def));
         }
         
@@ -110,12 +110,12 @@ public class DefaultDistributedPollerService implements
             LocationDef def1 = null;
             LocationDef def2 = null;
             
-            if (o1.getDefinitionName() != null) {
-                def1 = m_locationMonitorDao.findMonitoringLocationDefinition(o1.getDefinitionName());
+            if (o1.getLocation() != null) {
+                def1 = m_locationMonitorDao.findMonitoringLocationDefinition(o1.getLocation());
             }
             
-            if (o2.getDefinitionName() != null) {
-                def2 = m_locationMonitorDao.findMonitoringLocationDefinition(o2.getDefinitionName());
+            if (o2.getLocation() != null) {
+                def2 = m_locationMonitorDao.findMonitoringLocationDefinition(o2.getLocation());
             }
             
             int diff;
@@ -130,7 +130,7 @@ public class DefaultDistributedPollerService implements
                 }
             }
 
-            if ((diff = o1.getDefinitionName().compareToIgnoreCase(o2.getDefinitionName())) != 0) {
+            if ((diff = o1.getLocation().compareToIgnoreCase(o2.getLocation())) != 0) {
                 return diff;
             }
             
@@ -149,7 +149,7 @@ public class DefaultDistributedPollerService implements
         }
         
         OnmsLocationMonitor monitor = m_locationMonitorDao.load(cmd.getMonitorId());
-        LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getDefinitionName());
+        LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitor.getLocation());
         model.addLocationMonitor(new LocationMonitorModel(monitor, def));
 
         return model;

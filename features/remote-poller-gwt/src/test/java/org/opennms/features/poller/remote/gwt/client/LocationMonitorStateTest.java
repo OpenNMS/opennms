@@ -297,7 +297,7 @@ public class LocationMonitorStateTest {
 	private GWTLocationMonitor getMonitor(String status) {
 		GWTLocationMonitor monitor = new GWTLocationMonitor();
 		monitor.setDefinitionName("RDU");
-		monitor.setId(count++);
+		monitor.setId(Integer.toString(count++));
 		monitor.setLastCheckInTime(new Date());
 		monitor.setStatus(status);
 		return monitor;

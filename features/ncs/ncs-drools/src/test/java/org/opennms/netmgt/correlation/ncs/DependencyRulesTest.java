@@ -85,7 +85,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
     @Before
     public void setUp() {
 
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 
         m_distPollerDao.save(distPoller);
 

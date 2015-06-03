@@ -124,7 +124,7 @@ public class AnnotationTest implements InitializingBean {
 
                         @Override
 			public void check(OnmsDistPoller entity) {
-				assertNotNull("name not should be null", entity.getName());
+				assertNotNull("name not should be null", entity.getId());
 			}
 
 		});
@@ -154,7 +154,7 @@ public class AnnotationTest implements InitializingBean {
 				assertNotNull("asset record should not be null", entity.getAssetRecord());
 				assertNotNull("asset record ID should not be null", entity.getAssetRecord().getId());
 				assertNotNull("dist poller should not be null", entity.getDistPoller());
-				assertNotNull("dist poller name should not be null", entity.getDistPoller().getName());
+				assertNotNull("dist poller name should not be null", entity.getDistPoller().getId());
 				assertNotNull("categories list should not be null", entity.getCategories());
 				entity.getCategories().size();
 				assertNotNull("ip interfaces list should not be null", entity.getIpInterfaces());
@@ -285,7 +285,7 @@ public class AnnotationTest implements InitializingBean {
 				assertNotNull("associated service regained outages list should not be null", entity.getAssociatedServiceRegainedOutages());
 				assertTrue("there should be zero or more associated service regained outages", entity.getAssociatedServiceRegainedOutages().size() >= 0);
 				assertNotNull("dist poller should not be null", entity.getDistPoller());
-				assertNotNull("dist poller name should not be null", entity.getDistPoller().getName());
+				assertNotNull("dist poller name should not be null", entity.getDistPoller().getId());
 				assertNotNull("notifications list should not be null", entity.getNotifications());
 				assertTrue("notifications list size should be greater than or equal to zero", entity.getNotifications().size() >= 0);
 			}
@@ -303,7 +303,7 @@ public class AnnotationTest implements InitializingBean {
 				assertNotNull("last event should not be null", entity.getLastEvent());
 				assertEquals("alarm UEI should match the last event UEI", entity.getUei(), entity.getLastEvent().getEventUei());
 				assertNotNull("dist poller should not be null", entity.getDistPoller());
-				assertNotNull("dist poller name should not be null", entity.getDistPoller().getName());
+				assertNotNull("dist poller name should not be null", entity.getDistPoller().getId());
 			}
 			
 		});

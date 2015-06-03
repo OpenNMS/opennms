@@ -150,7 +150,7 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
 
-        OnmsDistPoller dp = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller dp = new OnmsDistPoller("localhost");
         m_distPollerDao.saveOrUpdate(dp);
 
         OnmsNode localhostNode = new OnmsNode(dp);
@@ -172,14 +172,14 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         m_googleHttpService = createService(app, googleIpInterface, httpServiceType);
 
         m_rduMonitor1 = new OnmsLocationMonitor();
-        m_rduMonitor1.setDefinitionName("RDU");
-        m_rduMonitor1.setLastCheckInTime(m_pollingEnd);
+        m_rduMonitor1.setLocation("RDU");
+        m_rduMonitor1.setLastUpdated(m_pollingEnd);
         m_rduMonitor1.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor1);
 
         m_rduMonitor2 = new OnmsLocationMonitor();
-        m_rduMonitor2.setDefinitionName("RDU");
-        m_rduMonitor2.setLastCheckInTime(m_pollingEnd);
+        m_rduMonitor2.setLocation("RDU");
+        m_rduMonitor2.setLastUpdated(m_pollingEnd);
         m_rduMonitor2.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor2);
         

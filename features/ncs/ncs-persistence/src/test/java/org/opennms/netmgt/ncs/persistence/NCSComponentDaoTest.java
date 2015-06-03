@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.ncs.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -75,7 +78,7 @@ public class NCSComponentDaoTest {
 	@Before
 	public void setUp() {
 		
-		OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+		OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 		
 		m_distPollerDao.save(distPoller);
 		

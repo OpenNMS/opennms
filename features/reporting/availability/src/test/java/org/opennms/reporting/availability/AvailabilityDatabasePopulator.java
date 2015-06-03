@@ -33,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Assert;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -59,9 +58,9 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -284,7 +283,7 @@ public class AvailabilityDatabasePopulator {
     private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
         OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
         if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost, localhostIp);
+            distPoller = new OnmsDistPoller(localhost);
             getDistPollerDao().save(distPoller);
             getDistPollerDao().flush();
         }

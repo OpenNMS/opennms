@@ -105,7 +105,7 @@ public class AlarmRepositoryTest implements InitializingBean {
         
         assertEquals(1, alarm.getId().intValue());
         assertEquals("uei.opennms.org/test", alarm.getUei());
-        assertEquals("localhost", alarm.getDistPoller().getName());
+        assertEquals("localhost", alarm.getDistPoller().getId());
         assertEquals(1, alarm.getCounter().intValue());
         assertEquals(3, alarm.getSeverity().getId());
         

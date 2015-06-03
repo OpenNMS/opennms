@@ -34,21 +34,20 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.OnmsMapDao;
 import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -96,7 +95,7 @@ public class EasyMockDataPopulator {
     private OnmsNode m_node8;
     
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 
         final OnmsServiceType icmp = new OnmsServiceType("ICMP");
         final OnmsServiceType snmp = new OnmsServiceType("SNMP");

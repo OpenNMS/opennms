@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -79,6 +80,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 
 public class DefaultDistributedStatusServiceTest extends TestCase {
+
+    private static final String LOCATION_MONITOR_ID_A = UUID.randomUUID().toString();
+    private static final String LOCATION_MONITOR_ID_B = UUID.randomUUID().toString();
+    private static final String LOCATION_MONITOR_ID_C = UUID.randomUUID().toString();
+
     private DefaultDistributedStatusService m_service = new DefaultDistributedStatusService();
     
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
@@ -133,22 +139,22 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_application2.setName("Application 2");
 
         m_locationMonitor1_1 = new OnmsLocationMonitor();
-        m_locationMonitor1_1.setId(1);
-        m_locationMonitor1_1.setLastCheckInTime(new Date());
-        m_locationMonitor1_1.setDefinitionName("Raleigh");
+        m_locationMonitor1_1.setId(LOCATION_MONITOR_ID_A);
+        m_locationMonitor1_1.setLastUpdated(new Date());
+        m_locationMonitor1_1.setLocation("Raleigh");
         m_locationMonitor1_1.setStatus(MonitorStatus.STARTED);
         assertEquals("location monitor 1.1 status", MonitorStatus.STARTED, m_locationMonitor1_1.getStatus());
         
         m_locationMonitor2_1 = new OnmsLocationMonitor();
-        m_locationMonitor2_1.setId(2);
-        m_locationMonitor2_1.setLastCheckInTime(new Date());
-        m_locationMonitor2_1.setDefinitionName("Durham");
+        m_locationMonitor2_1.setId(LOCATION_MONITOR_ID_B);
+        m_locationMonitor2_1.setLastUpdated(new Date());
+        m_locationMonitor2_1.setLocation("Durham");
         m_locationMonitor2_1.setStatus(MonitorStatus.STARTED);
         assertEquals("location monitor 2.1 status", MonitorStatus.STARTED, m_locationMonitor2_1.getStatus());
         
         m_locationMonitor2_2 = new OnmsLocationMonitor();
-        m_locationMonitor2_2.setId(3);
-        m_locationMonitor2_2.setDefinitionName("Durham");
+        m_locationMonitor2_2.setId(LOCATION_MONITOR_ID_C);
+        m_locationMonitor2_2.setLocation("Durham");
         m_locationMonitor2_2.setStatus(MonitorStatus.STARTED);
         assertEquals("location monitor 2.2 status", MonitorStatus.STARTED, m_locationMonitor2_2.getStatus());
         
@@ -326,7 +332,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
@@ -335,7 +341,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
@@ -383,7 +389,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
@@ -392,7 +398,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-1", "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");

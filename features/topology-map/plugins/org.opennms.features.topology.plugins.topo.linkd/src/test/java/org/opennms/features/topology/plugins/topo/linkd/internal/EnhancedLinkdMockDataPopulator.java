@@ -99,7 +99,7 @@ public class EnhancedLinkdMockDataPopulator {
     private List<OspfLink> m_ospfLinks;
 
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 
         final String icmp = "ICMP";
         final String snmp = "SNMP";
