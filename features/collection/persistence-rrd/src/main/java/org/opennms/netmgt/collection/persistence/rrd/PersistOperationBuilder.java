@@ -181,9 +181,8 @@ public class PersistOperationBuilder {
             final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
-                RrdUtils.createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), getAttributeMappings());
+                RrdUtils.createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
                 RrdUtils.updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
-                RrdUtils.createMetaDataFile(absolutePath, m_rrdName, m_metaData);
             }
         } catch (FileNotFoundException e) {
             LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
@@ -207,10 +206,6 @@ public class PersistOperationBuilder {
         return values.toString();
     }
 
-    private Map<String, String> getAttributeMappings() {
-        return null;
-    }
-    
     private List<RrdDataSource> getDataSources() {
         List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
         for (CollectionAttributeType attrDef : m_declarations.keySet()) {
