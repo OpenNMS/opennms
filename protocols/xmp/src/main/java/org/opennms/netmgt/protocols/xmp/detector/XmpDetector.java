@@ -80,20 +80,20 @@ public class XmpDetector implements SyncServiceDetector
 	
         // set default config
         xmpPort = port;
-        xmpAuthenUser = new String("xmpUser"); 
+        xmpAuthenUser = "xmpUser";
         xmpTimeout = XMP_DEFAULT_TIMEOUT; /* millseconds */
         xmpRetries = XMP_DEFAULT_RETRIES;
 
         // get socket opts
         sockopts = new SocketOpts();
 
-        xmpServiceName = new String(serviceName);
+        xmpServiceName = serviceName;
 
 	// very important to set to null, not 0-len string
 	// as provisiond's ip range matching functionality
 	// will not correctly match if 0-len instead of null
-	
 	//m_ipMatch = new String("");
+	
 	m_ipMatch = null;  
 
 	createTimeDate = new Date();
@@ -121,7 +121,7 @@ public class XmpDetector implements SyncServiceDetector
     public void setServiceName(String newServiceName) 
     {
 	LOG.debug("XmpDetector: setServiceName to "+newServiceName);
-    	xmpServiceName = new String(newServiceName);         
+    	xmpServiceName = newServiceName;   
     }
 
     public void init() { onInit(); }
@@ -210,7 +210,7 @@ public class XmpDetector implements SyncServiceDetector
 	
         // try to establish session
         aSession = new XmpSession(sockopts,address,xmpPort,xmpAuthenUser);
-        if (aSession == null) {
+        if (aSession.isClosed()) {
 	   LOG.debug("XmpDetector: null session to "+address);
 	   return false;
         }
@@ -243,8 +243,6 @@ public class XmpDetector implements SyncServiceDetector
         LOG.debug("XmpDetector: isServiceDetected "+address+" reports "+
                    replyVars[0].getValue()+","+
                    replyVars[1].getValue());
-        LOG.debug("XmpDetector: isServiceDetected true for "+address);
-
         LOG.debug("XmpDetector: isServiceDetected true for "+address);
 	
 	return true;
