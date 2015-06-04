@@ -76,7 +76,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",

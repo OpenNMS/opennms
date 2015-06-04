@@ -42,12 +42,12 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MinionDao;
-import org.opennms.netmgt.dao.api.MinionPropertyDao;
-import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -64,9 +64,9 @@ import org.springframework.test.context.ContextConfiguration;
 public class MinionDaoTest {
     @Autowired
     private MinionDao m_minionDao;
-    
+
     @Autowired
-    private MinionPropertyDao m_minionPropertyDao;
+    private JdbcTemplate m_jdbcTemplate;
 
     @Before
     public void setUp() throws Exception {
@@ -89,6 +89,7 @@ public class MinionDaoTest {
     }
 
     @Test
+    @Transactional
     public void testProperties() throws Exception {
         final Date now = new Date();
         
@@ -103,18 +104,15 @@ public class MinionDaoTest {
         m_minionDao.save(b);
         m_minionDao.flush();
         
-        Collection<OnmsMonitoringSystemProperty> props = m_minionPropertyDao.findAll();
-        assertEquals(4, props.size());
-        
-        props = m_minionPropertyDao.findByMonitoringSystemId(a.getId());
-        assertEquals(2, props.size());
-        assertEquals(a.getId(), props.iterator().next().getMonitoringSystem().getId());
-        
-        OnmsMonitoringSystemProperty prop = m_minionPropertyDao.findByKey(a.getId(), "Left");
+        assertEquals(Integer.valueOf(4), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
+        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { a.getId() }, Integer.class));
+        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { b.getId() }, Integer.class));
+
+        String prop = m_minionDao.findById(a.getId()).getProperties().get("Left");
         // a doesn't have that property, b does
         assertNull(prop);
-        prop = m_minionPropertyDao.findByKey(b.getId(), "Left");
+        prop = m_minionDao.findById(b.getId()).getProperties().get("Left");
         assertNotNull(prop);
-        assertEquals("Right", prop.getValue());
+        assertEquals("Right", prop);
     }
 }

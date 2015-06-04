@@ -618,7 +618,7 @@ public class PollerBackEndTest extends TestCase {
         // TODO: make anticipate method
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "PollerBackEnd")
         .setMonitoredService(m_dnsService)
-        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
+        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
 
@@ -647,7 +647,7 @@ public class PollerBackEndTest extends TestCase {
         // TODO: make anticipate method
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "PollerBackEnd")
         .setMonitoredService(m_httpService)
-        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
+        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
 
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
@@ -697,7 +697,7 @@ public class PollerBackEndTest extends TestCase {
         // expect a status change if the node is now down and we didn't know before
         EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "PollerBackEnd")
         .setMonitoredService(m_dnsService)
-        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, "1");
+        .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
         m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
 

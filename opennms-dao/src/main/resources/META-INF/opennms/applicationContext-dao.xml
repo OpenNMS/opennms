@@ -271,12 +271,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionDao" ref="minionDao" />
 
-  <bean id="minionPropertyDao" class="org.opennms.netmgt.dao.hibernate.MinionPropertyDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionPropertyDao" ref="minionPropertyDao" />
-
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

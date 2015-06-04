@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,6 +102,7 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
     	pollerDetails.put("os.version", "sqrt(-1)");
     	
     	OnmsLocationMonitor mon = new OnmsLocationMonitor();
+    	mon.setId(UUID.randomUUID().toString());
     	mon.setStatus(MonitorStatus.STARTED);
     	mon.setLastUpdated(new Date());
     	mon.setProperties(pollerDetails);
@@ -182,10 +184,12 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
 		m_databasePopulator.populateDatabase();
 		
         OnmsLocationMonitor monitor1 = new OnmsLocationMonitor();
+        monitor1.setId(UUID.randomUUID().toString());
         monitor1.setLocation("Outer Space");
         m_locationMonitorDao.save(monitor1);
 
         OnmsLocationMonitor monitor2 = new OnmsLocationMonitor();
+        monitor2.setId(UUID.randomUUID().toString());
         monitor2.setLocation("Really Outer Space");
         m_locationMonitorDao.save(monitor2);
 

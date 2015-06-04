@@ -102,8 +102,10 @@ public class OnmsMonitoringSystem implements Serializable {
     //@XmlElement(name="ipAddress")
     //private InetAddress m_ipAddress;
 
+    /*
     @XmlElement(name="status")
     private String m_status;
+    */
 
     @XmlElement(name="date")
     private Date m_lastUpdated;
@@ -206,10 +208,11 @@ public class OnmsMonitoringSystem implements Serializable {
 
     /**
      * The timestamp of the last message passed from the remote system.
+     * TODO: Should this be nullable=false?
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="last_updated", nullable=false)
+    @Column(name="last_updated")
     @Temporal(TemporalType.TIMESTAMP)
     public final Date getLastUpdated() {
         return m_lastUpdated;

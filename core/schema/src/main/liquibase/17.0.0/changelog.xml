@@ -128,4 +128,77 @@
     <dropTable tableName="servermap" />
   </changeSet>
 
+
+  <!-- Change the datatype of distpoller.dpname to TEXT -->
+  <changeSet author="seth" id="17.0.0-change-distpoller-name-to-text">
+    <modifyDataType tableName="alarms" columnName="dpname" newDataType="TEXT"/>
+    <modifyDataType tableName="events" columnName="eventdpname" newDataType="TEXT"/>
+    <modifyDataType tableName="distpoller" columnName="dpname" newDataType="TEXT"/>
+    <modifyDataType tableName="node" columnName="dpname" newDataType="TEXT"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringsystems-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringsystems"/></not>
+    </preConditions> 
+
+    <createTable tableName="monitoringsystems">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="monitoringsystems_pkey" />
+      </column>
+      <column name="label" type="TEXT"/>
+      <column name="location" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="type" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="status" type="TEXT"/>
+      <column name="last_updated" type="DATETIME"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringsystemsproperties-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringsystemsproperties"/></not>
+    </preConditions> 
+
+    <createTable tableName="monitoringsystemsproperties">
+      <column name="monitoringsystemid" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <!-- TODO: Add foreignkey constraint with monitoringsystems.id -->
+      <column name="property" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="propertyValue" type="TEXT"/>
+    </createTable>
+  </changeSet>
+
+  <!-- TODO: Migrate data into monitoringsystems table. This is a biggie. :) -->
+  <!-- TODO: Migrate dpname, location_monitors foreign keys to point at the monitoringsystems table. -->
+
+  <!--
+  <changeSet author="seth" id="17.0.0-drop-distpoller-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="distpoller"/>
+    </preConditions> 
+    <dropTable tableName="distpoller" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-location-monitors-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="location_monitors"/>
+    </preConditions> 
+    <dropTable tableName="location_monitors" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-minions-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="minions"/>
+    </preConditions> 
+    <dropTable tableName="minions" />
+  </changeSet>
+  -->
+
 </databaseChangeLog>

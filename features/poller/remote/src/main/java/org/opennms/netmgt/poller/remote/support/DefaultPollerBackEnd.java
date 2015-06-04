@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -558,6 +559,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             throw new ObjectRetrievalFailureException(LocationDef.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }
         final OnmsLocationMonitor mon = new OnmsLocationMonitor();
+        mon.setId(UUID.randomUUID().toString());
         mon.setLocation(def.getLocationName());
         mon.setStatus(MonitorStatus.REGISTERED);
 

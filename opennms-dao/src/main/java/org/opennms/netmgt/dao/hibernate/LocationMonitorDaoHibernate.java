@@ -322,7 +322,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     	if (locationDefinition == null) {
     		throw new IllegalArgumentException("Location definition is null");
     	}
-    	return (Collection<OnmsLocationMonitor>)find("from OnmsLocationMonitor as mon where mon.definitionName = ?", locationDefinition.getLocationName());
+    	return (Collection<OnmsLocationMonitor>)find("from OnmsLocationMonitor as mon where mon.location = ?", locationDefinition.getLocationName());
     }
 
     /**
@@ -399,7 +399,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             "from OnmsLocationSpecificStatus as status " +
             "where ? <= status.pollResult.timestamp " +
             "and status.pollResult.timestamp < ? " +
-            "and status.locationMonitor.definitionName = ?",
+            "and status.locationMonitor.location = ?",
             startDate, endDate, locationName
         ));
         return statuses;
@@ -489,7 +489,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                            "    group by recentStatus.locationMonitor, recentStatus.monitoredService " +
                            "    having recentStatus.locationMonitor = status.locationMonitor " +
                            "    and recentStatus.monitoredService = status.monitoredService " +
-                           ") and l.definitionName = ?",
+                           ") and l.location = ?",
                            date, locationName); 
     }
 

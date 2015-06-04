@@ -35,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -172,12 +173,14 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         m_googleHttpService = createService(app, googleIpInterface, httpServiceType);
 
         m_rduMonitor1 = new OnmsLocationMonitor();
+        m_rduMonitor1.setId(UUID.randomUUID().toString());
         m_rduMonitor1.setLocation("RDU");
         m_rduMonitor1.setLastUpdated(m_pollingEnd);
         m_rduMonitor1.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor1);
 
         m_rduMonitor2 = new OnmsLocationMonitor();
+        m_rduMonitor2.setId(UUID.randomUUID().toString());
         m_rduMonitor2.setLocation("RDU");
         m_rduMonitor2.setLastUpdated(m_pollingEnd);
         m_rduMonitor2.setStatus(MonitorStatus.STARTED);

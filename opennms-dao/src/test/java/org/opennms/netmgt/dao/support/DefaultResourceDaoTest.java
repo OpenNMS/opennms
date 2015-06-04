@@ -352,7 +352,7 @@ public class DefaultResourceDaoTest {
 
         File response = m_fileAnticipator.tempDir("response");
         File distributed = m_fileAnticipator.tempDir(response, "distributed");
-        File monitor = m_fileAnticipator.tempDir(distributed, "1");
+        File monitor = m_fileAnticipator.tempDir(distributed, LOCATION_MONITOR_ID);
         File ipDir = m_fileAnticipator.tempDir(monitor, "192.168.1.1");
         m_fileAnticipator.tempFile(ipDir, "icmp" + RrdUtils.getExtension());
 

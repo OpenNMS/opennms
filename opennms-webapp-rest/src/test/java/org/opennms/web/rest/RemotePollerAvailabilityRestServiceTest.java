@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -239,6 +240,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
                 System.err.println("======= Starting createLocationMonitors() ======");
                 OnmsLocationMonitor locMon1 = new OnmsLocationMonitor();
+                locMon1.setId(UUID.randomUUID().toString());
                 locMon1.setLocation("RDU");
                 locMon1.setLastUpdated(new Date());
                 locMon1.setStatus(MonitorStatus.STARTED);

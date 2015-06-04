@@ -160,7 +160,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
     }
 
     protected static String getResourceName(String locationMonitorId, String ipAddress) {
-        return String.format("%d%s%s", locationMonitorId, File.separator, ipAddress);
+        return String.format("%s%s%s", locationMonitorId, File.separator, ipAddress);
     }
 
     private static ResourcePath getRelativeInterfacePath(String id, String ipAddr) {

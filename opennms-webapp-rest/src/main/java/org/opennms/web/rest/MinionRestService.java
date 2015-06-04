@@ -44,9 +44,7 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
-import org.opennms.netmgt.dao.api.MinionPropertyDao;
 import org.opennms.netmgt.model.OnmsMinionCollection;
-import org.opennms.netmgt.model.OnmsMonitoringSystemProperty;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,9 +60,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 public class MinionRestService extends OnmsRestService {
     @Autowired
     private MinionDao m_minionDao;
-
-    @Autowired
-    private MinionPropertyDao m_minionPropertyDao;
 
     @Context
     UriInfo m_uriInfo;
@@ -92,10 +87,10 @@ public class MinionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{minionId}/{key}")
     @Transactional
-    public OnmsMonitoringSystemProperty getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
+    public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
         readLock();
         try {
-            return m_minionPropertyDao.findByKey(minionId, key);
+            return m_minionDao.findById(minionId).getProperties().get(key);
         } finally {
             readUnlock();
         }
