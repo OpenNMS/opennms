@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -138,6 +137,10 @@ public class NodeDaoTest implements InitializingBean {
     @Transactional
     public void testSave() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        assertEquals("localhost", distPoller.getId());
+        assertEquals("localhost", distPoller.getLabel());
+        assertEquals("localhost", distPoller.getLocation());
+
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         getNodeDao().save(node);
@@ -149,6 +152,10 @@ public class NodeDaoTest implements InitializingBean {
     @Transactional
     public void testSaveWithPathElement() {
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        assertEquals("localhost", distPoller.getId());
+        assertEquals("localhost", distPoller.getLabel());
+        assertEquals("localhost", distPoller.getLocation());
+
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
@@ -179,16 +186,14 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        OnmsDistPoller distPoller = getDistPoller();
+        final OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
 
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
-        OnmsDistPoller dp = getDistPoller();
-        assertSame(distPoller, dp);
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
+        Collection<OnmsNode> nodes = getNodeDao().findNodes(distPoller);
         assertEquals(7, nodes.size());
         Integer nodeid = null;
         for (OnmsNode retrieved : nodes) {
@@ -261,7 +266,7 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testCreate() throws InterruptedException {
-        OnmsDistPoller distPoller = getDistPoller();
+        final OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
 
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
@@ -273,10 +278,7 @@ public class NodeDaoTest implements InitializingBean {
 
 
         System.out.println("BEFORE GET");
-        OnmsDistPoller dp = getDistPoller();
-        assertSame(distPoller, dp);
-        System.out.println("AFTER GET");
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
+        Collection<OnmsNode> nodes = getNodeDao().findNodes(distPoller);
         assertEquals(7, nodes.size());
         System.out.println("AFTER GETNODES");
         for (OnmsNode retrieved : nodes) {
@@ -528,7 +530,7 @@ public class NodeDaoTest implements InitializingBean {
 
     private static void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
         assertEquals("Unexpected nodeId", expected.getId(), actual.getId());
-        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.name", "sysContact", "sysName", "sysObjectId" };
+        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.label", "sysContact", "sysName", "sysObjectId" };
         assertPropertiesEqual(properties, expected, actual);
 
         assertInterfaceSetsEqual(expected.getIpInterfaces(), actual.getIpInterfaces());
@@ -630,11 +632,5 @@ public class NodeDaoTest implements InitializingBean {
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());
         assertEquals("category1", n.getAssetRecord().getDisplayCategory());
-    }
-
-    private OnmsDistPoller getDistPoller() {
-        OnmsDistPoller distPoller = getDistPollerDao().load("localhost");
-        assertNotNull(distPoller);
-        return distPoller;
     }
 }

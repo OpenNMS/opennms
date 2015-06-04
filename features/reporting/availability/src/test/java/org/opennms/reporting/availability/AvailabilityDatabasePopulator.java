@@ -57,6 +57,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -116,8 +117,7 @@ public class AvailabilityDatabasePopulator {
     private OnmsNode m_node1;
 
     public void populateDatabase() {
-        OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
-        
+
         OnmsCategory ac = getCategory("DEV_AC");
         OnmsCategory mid = getCategory("IMP_mid");
         OnmsCategory ops = getCategory("OPS_Online");
@@ -162,7 +162,7 @@ public class AvailabilityDatabasePopulator {
 //      m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
 //              + "(2,'192.168.100.3',1,'A', 3);");
         
-        NetworkBuilder builder = new NetworkBuilder(distPoller);
+        NetworkBuilder builder = new NetworkBuilder();
         
         setNode1(builder.addNode("test1.availability.opennms.org").
                  setId(1).
@@ -201,7 +201,7 @@ public class AvailabilityDatabasePopulator {
         
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(distPoller);
+        event.setDistPoller(builder.getDistPoller());
         event.setEventUei("uei.opennms.org/test");
         event.setEventTime(new Date());
         event.setEventSource("test");
@@ -278,16 +278,6 @@ public class AvailabilityDatabasePopulator {
             getCategoryDao().flush();
         }
         return cat;
-    }
-
-    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost);
-            getDistPollerDao().save(distPoller);
-            getDistPollerDao().flush();
-        }
-        return distPoller;
     }
 
     private OnmsServiceType getServiceType(String name) {

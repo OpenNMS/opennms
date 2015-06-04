@@ -718,11 +718,11 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * Distributed Poller responsible for this node
      *
-     * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @return a {@link OnmsDistPoller} object.
      */
     @XmlTransient
     @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="dpName")
     public OnmsDistPoller getDistPoller() {
         return m_distPoller;
@@ -731,9 +731,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * <p>setDistPoller</p>
      *
-     * @param distpoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @param distpoller a {@link OnmsDistPoller} object.
      */
-    public void setDistPoller(org.opennms.netmgt.model.OnmsDistPoller distpoller) {
+    public void setDistPoller(OnmsDistPoller distpoller) {
         m_distPoller = distpoller;
     }
 
@@ -1100,7 +1100,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
-        // retval.append("distPoller", m_distPoller);
+        retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);
         retval.append("sysName", m_sysName);
         retval.append("sysDescription", m_sysDescription);

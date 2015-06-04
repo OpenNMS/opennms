@@ -42,7 +42,6 @@ import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsNode;
@@ -95,13 +94,12 @@ public class EasyMockDataPopulator {
     private OnmsNode m_node8;
     
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
 
         final OnmsServiceType icmp = new OnmsServiceType("ICMP");
         final OnmsServiceType snmp = new OnmsServiceType("SNMP");
         final OnmsServiceType http = new OnmsServiceType("HTTP");
         
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());

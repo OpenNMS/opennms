@@ -33,10 +33,8 @@ import java.io.Serializable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import org.springframework.core.style.ToStringCreator;
-
 /**
- * Represents an OpenNMS Distributed Poller
+ * Represents an OpenNMS Distributed Poller.
  */
 @Entity
 @DiscriminatorValue(OnmsMonitoringSystem.TYPE_OPENNMS)
@@ -52,22 +50,9 @@ public class OnmsDistPoller extends OnmsMonitoringSystem implements Serializable
     /**
      * minimal constructor
      *
-     * @param name a {@link java.lang.String} object.
+     * @param id a {@link java.lang.String} object.
      */
-    public OnmsDistPoller(String name) {
-        super(name, "localhost");
-    }
-
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String toString() {
-        return new ToStringCreator(this)
-            .append("name", getId())
-            //.append("ipAddress", str(getIpAddress()))
-            .toString();
+    public OnmsDistPoller(String id) {
+        super(id, "localhost");
     }
 }

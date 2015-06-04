@@ -273,8 +273,10 @@ public class OnmsMonitoringSystem implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
-            .append("name", getId())
+            .append("id", getId())
+            .append("label", getLabel())
             .append("location", getLocation())
+            .append("type", getType())
             //.append("ipAddress", str(getIpAddress()))
             .toString();
     }

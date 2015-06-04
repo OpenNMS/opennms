@@ -70,6 +70,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -280,8 +281,7 @@ public class DatabasePopulator {
     private void doPopulateDatabase() {
         LOG.debug("==== DatabasePopulator Starting ====");
 
-        final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
         
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
@@ -312,7 +312,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         setNode6(node6);
         
-        final OnmsEvent event = buildEvent(distPoller);
+        final OnmsEvent event = buildEvent(builder.getDistPoller());
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -597,13 +597,15 @@ public class DatabasePopulator {
         return alarm;
     }
 
-    public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
-    	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
+    public OnmsDistPoller getDistPoller(final String distPollerId) {
+        OnmsDistPoller distPoller = getDistPollerDao().get(distPollerId);
         if (distPoller == null) {
-            final OnmsDistPoller newDp = new OnmsDistPoller(localhost);
-            getDistPollerDao().save(newDp);
+            distPoller = new OnmsDistPoller(distPollerId);
+            distPoller.setLabel("localhost");
+            distPoller.setLocation("localhost");
+            distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+            getDistPollerDao().save(distPoller);
             getDistPollerDao().flush();
-            return newDp;
         }
         return distPoller;
     }

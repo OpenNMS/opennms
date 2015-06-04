@@ -72,7 +72,7 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
             @Override
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
-                OnmsDistPoller distPoller = populator.getDistPoller("localhost", "127.0.0.1");
+                OnmsDistPoller distPoller = populator.getDistPoller("localhost");
                 outageEvent = populator.buildEvent(distPoller);
                 populator.getEventDao().save(outageEvent);
                 populator.getEventDao().flush();

@@ -59,7 +59,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -109,8 +108,6 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
 
     private TestContext m_context;
 
-    private final OnmsDistPoller m_distPoller = new OnmsDistPoller("localhost");
-
     private final String m_testHostName = "127.0.0.1";
 
     private HttpCollector m_collector;
@@ -144,7 +141,7 @@ public class HttpCollectorTest implements TestContextAware, InitializingBean {
         MockLogAppender.setupLogging();
 
         if (m_nodeDao.findByLabel("testnode").size() == 0) {
-            NetworkBuilder builder = new NetworkBuilder(m_distPoller);
+            NetworkBuilder builder = new NetworkBuilder();
             builder.addNode("testnode");
             builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(getServiceType("ICMP"));

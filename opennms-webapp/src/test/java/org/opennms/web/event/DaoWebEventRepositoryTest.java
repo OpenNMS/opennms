@@ -43,6 +43,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
@@ -87,7 +88,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
         m_dbPopulator.populateDatabase();
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getDistPoller("localhost", "127.0.0.1"));
+        event.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
         event.setEventUei("uei.opennms.org/test2");
         event.setEventTime(new Date());
         event.setEventSource("test");
@@ -99,7 +100,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
         m_dbPopulator.getEventDao().flush();
         
         OnmsEvent event2 = new OnmsEvent();
-        event2.setDistPoller(getDistPoller("localhost", "127.0.0.1"));
+        event2.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
         event2.setEventUei("uei.opennms.org/test3");
         event2.setEventTime(new Date());
         event2.setEventSource("test");
@@ -109,16 +110,6 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
         event2.setEventDisplay("N");
         m_dbPopulator.getEventDao().save(event2);
         m_dbPopulator.getEventDao().flush();
-    }
-    
-    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = m_dbPopulator.getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost);
-            m_dbPopulator.getDistPollerDao().save(distPoller);
-            m_dbPopulator.getDistPollerDao().flush();
-        }
-        return distPoller;
     }
 
     @Test

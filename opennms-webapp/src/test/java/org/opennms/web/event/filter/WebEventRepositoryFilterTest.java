@@ -44,6 +44,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.alarm.filter.AlarmIdFilter;
@@ -92,7 +93,7 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         m_dbPopulator.populateDatabase();
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getDistPoller("localhost", "127.0.0.1"));
+        event.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
         event.setAlarm(m_dbPopulator.getAlarmDao().get(1));
         event.setNode(m_dbPopulator.getNode1());
         event.setEventUei("uei.opennms.org/test2");
@@ -109,16 +110,6 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         event.setServiceType(m_dbPopulator.getServiceTypeDao().get(1));
         m_dbPopulator.getEventDao().save(event);
         m_dbPopulator.getEventDao().flush();
-    }
-    
-    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = m_dbPopulator.getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost);
-            m_dbPopulator.getDistPollerDao().save(distPoller);
-            m_dbPopulator.getDistPollerDao().flush();
-        }
-        return distPoller;
     }
     
     @Test

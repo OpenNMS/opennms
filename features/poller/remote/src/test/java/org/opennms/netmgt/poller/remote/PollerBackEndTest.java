@@ -72,7 +72,6 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -381,7 +380,7 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setId(LOCATION_MONITOR_ID);
         m_locationMonitor.setLocation(m_locationDefinition.getLocationName());
 
-        NetworkBuilder builder = new NetworkBuilder(new OnmsDistPoller("localhost"));
+        NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("testNode").setId(1);
         builder.addInterface("192.168.1.1").setId(1);
         m_httpService = builder.addService(new OnmsServiceType("HTTP"));

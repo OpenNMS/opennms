@@ -44,6 +44,9 @@ public class OnmsAssetRecordTest {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
+        distPoller.setLabel("localhost");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -55,6 +58,9 @@ public class OnmsAssetRecordTest {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
+        distPoller.setLabel("localhost");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -76,6 +82,9 @@ public class OnmsAssetRecordTest {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
+        distPoller.setLabel("localhost");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         
@@ -92,6 +101,9 @@ public class OnmsAssetRecordTest {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
+        distPoller.setLabel("localhost");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         rec1.setGeolocation(new OnmsGeolocation());
@@ -119,6 +131,9 @@ public class OnmsAssetRecordTest {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
+        distPoller.setLabel("localhost");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         rec1.setNode(new OnmsNode(distPoller));
         rec1.getNode().setId(1);
         String originalAddress1 = "220 Chatham Business Drive";
