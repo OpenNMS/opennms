@@ -22,8 +22,8 @@ import com.google.common.collect.Queues;
  * The NewtsPersistor is responsible for persisting samples gathered
  * by the NewtsRrdStrategy.
  *
- * This is not ideal and we should find a way of using the sample-storage-newts features from
- * Minion project instead.
+ * Samples are queued globally and persisted in batches
+ * using a Nagle inspired algorithm.
  *
  * @author jwhite
  */
@@ -73,9 +73,8 @@ public class NewtsPersistor implements Runnable {
                     m_queue.drainTo(samples);
 
                     // Flatten the samples into an immutable list
-                    // We use an immutable list, since the the collection
-                    // of samples may continue to be referenced by
-                    // one or more sample processors after insert() returns
+                    // We use an immutable list, since the collection of samples may continue
+                    // to be referenced by one or more sample processors after insert() returns
                     final Builder<Sample> builder = new ImmutableList.Builder<Sample>();
                     samples.stream().forEach(builder::addAll);
                     flattenedSamples = builder.build();
@@ -106,7 +105,7 @@ public class NewtsPersistor implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            LOG.warn("Interrupted.", e);
+            LOG.error("Interrupted.", e);
         }
     }
 
