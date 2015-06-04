@@ -60,7 +60,7 @@
 
   <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
 
-  <bean id="resourceMetadataCache" class="org.opennms.newts.cassandra.search.GuavaResourceMetadataCache" />
+  <bean id="resourceMetadataCache" class="org.opennms.netmgt.rrd.newts.support.GuavaSearchableResourceMetadataCache" />
 
   <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
 
