@@ -5,26 +5,53 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.rrd.newts.support.SearchableResourceMetadataCache;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
+import org.opennms.newts.cassandra.search.ResourceMetadata;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 
 public class NewtsResourceStorageDaoTest {
+
+    private SearchableResourceMetadataCache m_cache = new SearchableResourceMetadataCache() {
+        @Override
+        public void merge(Context context, Resource resource,
+                ResourceMetadata rMetadata) {
+            // pass
+        }
+
+        @Override
+        public Optional<ResourceMetadata> get(Context context,
+                Resource resource) {
+            return Optional.absent();
+        }
+
+        @Override
+        public List<String> getEntriesWithPrefix(Context context,
+                String resourceIdPrefix) {
+            return Collections.emptyList();
+        }
+    };
 
     @Test
     public void exists() throws IOException {
         CassandraSearcher searcher = EasyMock.createNiceMock(CassandraSearcher.class);
         NewtsResourceStorageDao nrs = new NewtsResourceStorageDao();
         nrs.setSearcher(searcher);
+        nrs.setSearchableCache(m_cache);
 
         // Path is missing when the resource does not exist
         SearchResults searchResults = new SearchResults();

@@ -11,6 +11,8 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
+import org.opennms.netmgt.rrd.newts.support.SearchableResourceMetadataCache;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.SearchResults;
@@ -41,9 +43,6 @@ import com.google.common.collect.Sets;
  * Relating this to .rrd file on disk, the bucket would
  * be the filename, and the resource path would be its folder.
  *
- * TODO:
- *  * Leverage the cache for calls to exist()
- *
  * @author jwhite
  */
 public class NewtsResourceStorageDao implements ResourceStorageDao {
@@ -58,6 +57,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @Autowired
     private MetricRegistry m_registry;
 
+    @Autowired
+    private SearchableResourceMetadataCache m_searchableCache;
+
     @Override
     public boolean exists(ResourcePath path) {
         return exists(path, INFINITE_DEPTH);
@@ -65,7 +67,11 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public boolean exists(ResourcePath path, int depth) {
-        return searchFor(path, depth).size() > 0;
+        if (!hasCachedEntry(path, depth)) {
+            return searchFor(path, depth).size() > 0;
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -128,6 +134,21 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
         return null;
+    }
+
+    private boolean hasCachedEntry(ResourcePath path, int depth) {
+        List<String> resourceIds = m_searchableCache.getEntriesWithPrefix(
+                Context.DEFAULT_CONTEXT, toResourceId(path));
+        for (String resourceId : resourceIds) {
+            Integer relativeDepth = getRelativeDepth(path, toResourcePath(resourceId));
+            if (relativeDepth == null) {
+                continue;
+            }
+            if(depth == INFINITE_DEPTH || relativeDepth <= depth) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Result> searchFor(ResourcePath path, int depth) {
@@ -216,6 +237,11 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         }
 
         return childEls.length - parentEls.length; 
+    }
+
+    @VisibleForTesting
+    protected void setSearchableCache(SearchableResourceMetadataCache searchableCache) {
+        m_searchableCache = searchableCache;
     }
 
     @VisibleForTesting
