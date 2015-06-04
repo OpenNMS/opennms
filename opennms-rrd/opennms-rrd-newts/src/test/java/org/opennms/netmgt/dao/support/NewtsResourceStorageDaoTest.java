@@ -2,6 +2,7 @@ package org.opennms.netmgt.dao.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.newts.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Resource;
@@ -182,13 +184,26 @@ public class NewtsResourceStorageDaoTest {
 
         // Metrics from all buckets should be present
         searchResults = new SearchResults();
-        searchResults.addResult(new Resource("a:bucket1"), Sets.newHashSet("metric1", "metric2"));
-        searchResults.addResult(new Resource("a:bucket2"), Sets.newHashSet("metric1", "metric2"));
+        searchResults.addResult(new Resource("a:bucket1"), Sets.newHashSet("metric11", "metric12"));
+        searchResults.addResult(new Resource("a:bucket2"), Sets.newHashSet("metric21", "metric22"));
         EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         Set<OnmsAttribute> attributes = nrs.getAttributes(ResourcePath.get("a"));
         assertEquals(4, attributes.size());
+
+        // Verify the properties of a specific attribute
+        RrdGraphAttribute metric11 = null;
+        for (OnmsAttribute attribute : attributes) {
+            if (attribute instanceof RrdGraphAttribute) {
+                RrdGraphAttribute graphAttribute = (RrdGraphAttribute)attribute;
+                if ("metric11".equals(graphAttribute.getName())) {
+                    metric11 = graphAttribute;
+                }
+            }
+        }
+        assertNotNull(metric11);
+
         EasyMock.verify(searcher);
         EasyMock.reset(searcher);
     }

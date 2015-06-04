@@ -9,6 +9,8 @@ import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.newts.api.Timestamp;
@@ -49,6 +51,9 @@ public class NewtsRrdStrategyITest {
     @Autowired
     private RrdStrategy<RrdDef, RrdDb> m_rrdStrategy;
 
+    @Autowired
+    private ResourceStorageDao m_resourceStorageDao;
+
     @Test
     public void createOpenUpdateCloseRead() throws Exception {
         String opennmsHome = System.getProperty("opennms.home");
@@ -61,7 +66,7 @@ public class NewtsRrdStrategyITest {
                 Lists.newArrayList("RRA:AVERAGE:0.5:1:1000"));
 
         Map<String, String> attributes = Maps.newHashMap();
-        attributes.put("key", "value");
+        attributes.put("!key!", "#value#");
         m_rrdStrategy.createFile(def, attributes);
 
         // Add metrics to the file we created above
@@ -81,5 +86,9 @@ public class NewtsRrdStrategyITest {
         double delta = 0.001;
         assertEquals(2.0, m_rrdStrategy.fetchLastValueInRange(fileName, "x", 1, 60*60*1000), delta);
         assertEquals(3.0, m_rrdStrategy.fetchLastValueInRange(fileName, "y", 1, 60*60*1000), delta);
+
+        ResourcePath resourcePath = ResourcePath.get("snmp", "1");
+        Map<String, String> metaDataAttributes = m_resourceStorageDao.getMetaData(resourcePath);
+        assertEquals("#value#", metaDataAttributes.get("!key!"));
     }
 }

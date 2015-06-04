@@ -3,14 +3,12 @@ package org.opennms.netmgt.dao.support;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.rrd.newts.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.search.BooleanQuery;
@@ -27,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -115,12 +114,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 attributes.add(new RrdGraphAttribute(metric, "", resourceId));
             }
 
-            final Map<String, String> resourceAttributes = result.getResource().getAttributes().orNull();
-            if (resourceAttributes != null) {
-                for (Entry<String, String> entry : resourceAttributes.entrySet()) {
-                    attributes.add(new StringPropertyAttribute(entry.getKey(), entry.getValue()));
-                }
-            }
+            // TODO: Add support for StringPropertyAttribute
         }
 
         return attributes;
@@ -133,7 +127,24 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return null;
+        Map<String, String> attributes = Maps.newHashMap();
+
+        List<Result> results = searchFor(path, 0);
+
+        for (Result result : results) {
+            final String resourceId = result.getResource().getId();
+            final ResourcePath resultPath = toResourcePath(resourceId);
+            if (!path.equals(resultPath)) {
+                continue;
+            }
+
+            final Map<String, String> resourceAttributes = result.getResource().getAttributes().orNull();
+            if (resourceAttributes != null) {
+                attributes.putAll(resourceAttributes);
+            }
+        }
+
+        return attributes;
     }
 
     private boolean hasCachedEntry(ResourcePath path, int depth) {

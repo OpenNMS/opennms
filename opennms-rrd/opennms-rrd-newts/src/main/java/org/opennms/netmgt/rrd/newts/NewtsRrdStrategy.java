@@ -108,9 +108,9 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     }
 
     @Override
-    public void createFile(RrdDef def, Map<String, String> attributeMappings) {
+    public void createFile(RrdDef def, Map<String, String> metaDataAttributes) {
         // Store the attributes
-        Map<String, String> attributes = attributeMappings;
+        Map<String, String> attributes = metaDataAttributes;
         if (attributes == null) {
             // The map may continue to be referenced by the indexer
             // after an insert()
@@ -119,6 +119,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
         NewtsUtils.addParentPathAttributes(def.getPath(), attributes);
 
+        LOG.debug("Creating resource at path {} with attributes: {}", def.getPath(), attributes);
         m_attrsByPath.put(def.getPath(), attributes);
     }
 
