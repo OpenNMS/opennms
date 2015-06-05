@@ -45,11 +45,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
+import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -72,6 +74,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      */
     @Override
     protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
         Document doc = getJsoupDocument(urlString, request);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using selector {}", group.getName(), group.getResourceXpath());
@@ -80,7 +83,13 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             LOG.debug("fillCollectionSet: {} => {}", group.getResourceXpath(), elements);
             String resourceName = getResourceName(elements, group);
             LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-            XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+            XmlCollectionResource collectionResource;
+            if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
+                collectionResource = nodeResource;
+            } else {
+                collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+            }
+            LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
             AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
             for (XmlObject object : group.getXmlObjects()) {
                 Elements el = elements.select(object.getXpath());
