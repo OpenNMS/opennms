@@ -185,11 +185,14 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public File getStorageDir() {
-        File dir = new File(String.valueOf(getIpInterface().getNode().getId()));
-        if(isStoreByForeignSource() && !(getIpInterface().getNode().getForeignSource() == null) && !(getIpInterface().getNode().getForeignId() == null)) {
-               File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, getIpInterface().getNode().getForeignSource());
-            dir = new File(fsDir, getIpInterface().getNode().getForeignId());
+        File dir = new File(String.valueOf(getNodeId()));
+        final String foreignSource = getForeignSource();
+        final String foreignId = getForeignId();
+        if(isStoreByForeignSource() && foreignSource != null && foreignId != null) {
+            File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, foreignSource);
+            dir = new File(fsDir, foreignId);
         }
+        LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), foreignSource, foreignId, dir);
         return dir;
     }
     
