@@ -34,6 +34,7 @@ import com.google.common.collect.Maps;
         "org.opennms.newts.config.hostname=" + NewtsRrdStrategyITest.CASSANDRA_HOST,
         "org.opennms.newts.config.port=" + NewtsRrdStrategyITest.CASSANDRA_PORT,
         "org.opennms.newts.config.keyspace=" + NewtsRrdStrategyITest.NEWTS_KEYSPACE,
+        "org.opennms.newts.config.max_batch_delay=0", // No delay
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.newts.NewtsRrdStrategy",
         "org.opennms.rrd.usequeue=false"
 })

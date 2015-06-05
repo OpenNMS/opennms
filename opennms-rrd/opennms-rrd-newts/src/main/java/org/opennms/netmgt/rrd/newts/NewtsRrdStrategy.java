@@ -4,11 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
@@ -23,21 +33,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
- * This is an attempt to use Newts as a data store using the
- * current RrdStrategy interface.
+ * Used to store metrics in Newts.
  *
- * The motivation is twofold:
- *  1) Start persisting OpenNMS metrics into Newts in order to identify
- *     any gaps with the current feature set, or issues with their
- *     current implementation.
+ * Updates made via the updateFile() are converted to Newts samples
+ * and pushed to the sample repository in batches.
  *
- *  2) Help identify changes we need to make to OpenNMS' persistence,
- *     resource naming, and metric retrieval code in order to fully
- *     support Newts as a data store.
+ * Resources IDs have a one-to-one correspondence with the
+ * file system paths used by corresponding .rrd or .jrb archives.
+ * See {@link org.opennms.netmgt.rrd.newts.NewtsUtils#getResourceIdFromPath()} for details.
  *
  * @author jwhite
  */
@@ -49,20 +60,16 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
     protected static final String FILE_EXTENSION = ".newts";
 
+    private final int m_maxBatchSize;
+
+    private final int m_maxBatchDelayInMs;
+
     /////////
     // Newts
     /////////
 
     @Autowired
-    private NewtsPersistor m_persistor;
-
-    @Autowired
     private SampleRepository m_sampleRepository;
-
-    private Thread m_persistorThread = null;
-
-    // Number of seconds to keep samples for
-    private int m_ttl;
 
     // Keep track of the definitions used by file system path
     private final Map<String, RrdDef> m_defByPath = Maps.newConcurrentMap();
@@ -70,32 +77,122 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     // Keep track of the attributes set by file system path
     private final Map<String, Map<String, String>> m_attrsByPath = Maps.newConcurrentMap();
 
-    @Override
-    public synchronized void setConfigurationProperties(Properties props) {
-        m_ttl = Integer.valueOf((String)props.getOrDefault(NewtsUtils.TTL_PROPERTY, NewtsUtils.DEFAULT_TTL));
+    // Batch the samples up for insertion
+    private List<Sample> sampleBatch = Lists.newLinkedList();
 
-        LOG.info("Using ttl {}", m_ttl);
+    // Limit the amount of the time the samples spend in the batch
+    private long insertBatchAfterTimeMillis = 0;
 
-        if (m_persistorThread != null) {
-            LOG.warn("Persistor already started.");
-        } else {
-            LOG.info("Starting persistor thread.");
+    // Used to trigger a batch insert if the samples have been sitting in the
+    // batch for >= max_batch_delay
+    private Timer m_batchTimer = null;
 
-            m_persistorThread = new Thread(m_persistor);
-            m_persistorThread.setName("NewtsPersistor");
-            m_persistorThread.start();
-        }
-    }
+    @Inject
+    public NewtsRrdStrategy(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.max_batch_delay") Integer maxBatchDelayInMs)  {
+        Preconditions.checkArgument(maxBatchSize > 0, "max_batch_size must be strictly positive");
+        Preconditions.checkArgument(maxBatchDelayInMs >= 0, "max_batch_delay must be positive");
 
-    private void maybeStartPersistorThread() {
-        if (m_persistorThread != null) {
-            return;
-        }
-        setConfigurationProperties(System.getProperties());
+        m_maxBatchSize = maxBatchSize;
+        m_maxBatchDelayInMs = maxBatchDelayInMs;
+
+        LOG.debug("Using max_batch_size: {} and max_batch_delay: {}", maxBatchSize, m_maxBatchDelayInMs);
     }
 
     /////////
-    // Persistence
+    // Sample persistence
+    /////////
+
+    private synchronized void batch(Collection<Sample> samples) {
+        int remainingCapacity = m_maxBatchSize - sampleBatch.size();
+
+        if (samples.size() <= remainingCapacity) {
+            // Grab all of the samples
+            sampleBatch.addAll(samples);
+        } else {
+            // Grab as many samples as we can
+            int k = 0;
+            Iterator<Sample> it = samples.iterator();
+            for (; k < remainingCapacity && it.hasNext(); k++) {
+                sampleBatch.add(it.next());
+            }
+
+            // Insert the current batch
+            insertBatch();
+
+            // Process the remaining samples
+            batch(ImmutableList.copyOf(it));
+        }
+
+        // Don't process the batch if it's empty
+        if (sampleBatch.size() < 1) {
+            return;
+        }
+
+        // Start the timer if needed
+        maybeStartTimer();
+
+        // Push the batch if we're ready
+        if (samples.size() >= m_maxBatchSize
+                || m_maxBatchDelayInMs < 1
+                || System.currentTimeMillis() >= insertBatchAfterTimeMillis) {
+            insertBatch();
+        }
+    }
+
+    private void insertBatch() {
+        try {
+            LOG.debug("Inserting {} samples", sampleBatch.size());
+            m_sampleRepository.insert(sampleBatch);
+        } catch (Throwable t) {
+            LOG.error("An error occurred while inserting the samples. They will be lost.", t);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            String uniqueResourceIds = sampleBatch.stream()
+                .map(s -> s.getResource().getId())
+                .distinct()
+                .collect(Collectors.joining(", "));
+            LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
+        }
+
+        sampleBatch = Lists.newLinkedList();
+        insertBatchAfterTimeMillis = System.currentTimeMillis() + m_maxBatchDelayInMs;
+    }
+
+    private void maybeStartTimer() {
+        if (m_maxBatchDelayInMs < 1 || m_batchTimer != null) {
+            return;
+        }
+
+        // We'd expect the logs from this thread to be in collectd.log
+        try {
+            Logging.withPrefix("collectd", new Callable<Void>(){
+                @Override
+                public Void call() throws Exception {
+                    m_batchTimer = new Timer("NewtsRrdStrategy-BatchTimer");
+                    m_batchTimer.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            batch(Collections.emptyList());
+                        }
+                    }, 0, m_maxBatchDelayInMs);
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Failed to schedule batch timer. Samples may remain queued for a full collection interval.", e);
+        }
+    }
+
+    @Override
+    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+        // Push the current batch
+        insertBatchAfterTimeMillis = 0;
+        batch(Collections.emptyList());
+    }
+
+    /////////
+    // RRD -> Newts
     /////////
 
     @Override
@@ -144,13 +241,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         LOG.debug("Persisting data at path {} using definition: {}", db.getPath(), def);
 
         final Map<String, String> attributes = m_attrsByPath.get(db.getPath());
-        final List<Sample> samples = NewtsUtils.getSamplesFromRrdUpdateString(def, data, attributes);
-        LOG.debug("Adding {} samples to the queue.", samples.size());
-        if (!m_persistor.getQueue().offer(samples)) {
-            LOG.warn("The queue rejected {} samples. These will be lost.", samples.size());
-        }
-
-        maybeStartPersistorThread();
+        batch(NewtsUtils.getSamplesFromRrdUpdateString(def, data, attributes));
     }
 
     /////////
@@ -243,16 +334,21 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         return FILE_EXTENSION;
     }
 
-    @Override
-    public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
-        // pass
-    }
-
     /**
      * This implementation does not track any stats.
      */
     @Override
     public String getStats() {
         return "";
+    }
+
+    @Override
+    public void setConfigurationProperties(Properties props) {
+        // pass
+    }
+
+    @VisibleForTesting
+    public void setSampleRepository(SampleRepository sampleRepository) {
+        m_sampleRepository = sampleRepository;
     }
 }

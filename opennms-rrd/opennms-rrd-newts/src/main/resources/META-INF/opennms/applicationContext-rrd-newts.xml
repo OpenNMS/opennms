@@ -12,6 +12,14 @@
 
   <context:annotation-config />
 
+  <bean id="newts.max_batch_size" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_batch_size:2048}" />
+  </bean>
+
+  <bean id="newts.max_batch_delay" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_batch_delay:5000}" />
+  </bean>
+
   <bean id="cassandra.keyspace" class="java.lang.String">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.keyspace:newts}" />
   </bean>
@@ -76,8 +84,6 @@
   </bean>
 
   <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
-
-  <bean id="newtsPersistor" class="org.opennms.netmgt.rrd.newts.NewtsPersistor" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
 
