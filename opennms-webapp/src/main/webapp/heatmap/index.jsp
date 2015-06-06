@@ -35,6 +35,6 @@
     <jsp:param name="title" value="Heatmap"/>
 </jsp:include>
 
-<jsp:include page="heatmap.jsp" flush="false"/>
+<jsp:include page="heatmap-box.jsp" flush="false"/>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

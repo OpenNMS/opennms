@@ -30,9 +30,8 @@
 --%>
 
 <%--
-  This page is included by other JSPs to create a box containing a tree of
-  service level availability information for the interfaces and services of
-  a given node.
+  This page is included by other JSPs to create a box containing a treemap/heatmap of
+  outages grouped by nodes, foreignSources or categories.
 
   It expects that a <base> tag has been set in the including page
   that directs all URLs to be relative to the servlet context.
