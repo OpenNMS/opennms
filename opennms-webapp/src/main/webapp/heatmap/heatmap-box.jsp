@@ -46,7 +46,7 @@
 
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Availability</h3>
+        <h3 class="panel-title"><a href="heatmap/index.jsp">Heatmap</a></h3>
     </div>
 
     <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
@@ -65,8 +65,9 @@
 
           if (request.getParameterMap().containsKey("heatmap")) {
             heatmap = request.getParameter("heatmap");
-            url += heatmap + "/";
           }
+
+          url += heatmap + "/";
 
           if ("nodesByForeignSource".equals(heatmap)) {
             foreignSource = request.getParameter("foreignSource");
@@ -95,10 +96,10 @@
             location.href = "<%=request.getRequestURI()%>?heatmap=nodesByCategory&category=" + nodes[0].id;
             <%
               }
-              
+
               if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
             %>
-            location.href = "/opennms/element/node.jsp?node="+nodes[0].nodeId
+            location.href = "/opennms/element/node.jsp?node=" + nodes[0].nodeId
             <%
               }
             %>
@@ -129,4 +130,23 @@
         });
     </script>
 </div>
-[<a href="<%=request.getRequestURI()%>?heatmap=foreignSources">foreingSources</a>] &nbsp; [<a href="<%=request.getRequestURI()%>?heatmap=categories">categories</a>]
+<div align="right">
+    [<a href="<%=request.getRequestURI()%>?heatmap=foreignSources">Outages by Foreign Sources</a>]&nbsp;[<a
+        href="<%=request.getRequestURI()%>?heatmap=categories">Outages by Categories</a>]&nbsp;
+    <%
+        if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
+    %>
+    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;no outages
+    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;one or more
+    outages
+    <%
+    } else {
+    %>
+    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;no outages
+    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;one outage
+    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;two or more
+    outages
+    <%
+        }
+    %>
+</div>
