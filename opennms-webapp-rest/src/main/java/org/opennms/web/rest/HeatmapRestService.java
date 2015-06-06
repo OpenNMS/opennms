@@ -221,7 +221,7 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("foreignsources")
+    @Path("foreignSources")
     public Response foreignsources() throws IOException {
         /**
          * the item list
@@ -348,10 +348,11 @@ public class HeatMapRestService extends OnmsRestService {
         int interfacesTotal = 0;
 
         for (OnmsNode onmsNode : onmsNodeList) {
-            if (onmsNode.getIpInterfaces().size()>0) {
+            if (onmsNode.getIpInterfaces().size() > 0) {
                 Map<String, Object> item = new HashMap<>();
 
                 item.put("id", onmsNode.getLabel());
+                item.put("nodeId", onmsNode.getId());
                 item.put("color", Lists.newArrayList(nodeIds.contains(onmsNode.getId()) ? 1.0 : 0.0));
 
                 interfaceCounts.put(onmsNode.getLabel(), onmsNode.getIpInterfaces().size());

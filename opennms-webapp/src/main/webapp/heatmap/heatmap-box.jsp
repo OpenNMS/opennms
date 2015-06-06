@@ -40,7 +40,6 @@
 <%@page language="java"
         contentType="text/html"
         session="true"
-        import="org.opennms.core.utils.WebSecurityUtils, java.util.*, org.springframework.util.Assert, org.opennms.web.servlet.MissingParameterException, org.opennms.core.utils.WebSecurityUtils,org.opennms.web.outage.*,java.util.*"
         %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -57,23 +56,62 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
+        <%
+          String heatmap = "foreignSources";
+          String foreignSource = null;
+          String category = null;
+
+          String url = "/opennms/rest/heatmap/";
+
+          if (request.getParameterMap().containsKey("heatmap")) {
+            heatmap = request.getParameter("heatmap");
+            url += heatmap + "/";
+          }
+
+          if ("nodesByForeignSource".equals(heatmap)) {
+            foreignSource = request.getParameter("foreignSource");
+            url += foreignSource;
+          }
+
+          if ("nodesByCategory".equals(heatmap)) {
+            category = request.getParameter("category");
+            url += category;
+          }
+
+        %>
+
         var mouseclickHandler = function (e, data) {
             var nodes = data.nodes;
             var ids = data.ids;
-            alert('you clicked node with id ' + nodes[0].id);
+            <%
+              if ("foreignSources".equals(heatmap)) {
+            %>
+            location.href = "<%=request.getRequestURI()%>?heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
+            <%
+              }
+
+              if ("categories".equals(heatmap)) {
+            %>
+            location.href = "<%=request.getRequestURI()%>?heatmap=nodesByCategory&category=" + nodes[0].id;
+            <%
+              }
+              
+              if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
+            %>
+            location.href = "/opennms/element/node.jsp?node="+nodes[0].nodeId
+            <%
+              }
+            %>
         };
 
-        var url = "/opennms/rest/heatmap/nodesByForeignSource/My-Foreign-Source-1";
+        var url = "<%=url%>";
 
         $.getJSON(url, function (data) {
-            console.log(data);
-
             $(document).ready(function () {
-                console.log($(document).width());
                 $("#treemap").treemap({
                     "dimensions": [
                         $("#treemap").width(),
-                        $(document).height()-220
+                        $(document).height() - 220
                     ],
                     "colorStops": [
                         {"val": 1.0, "color": "#CC0000"},
@@ -82,7 +120,7 @@
                     ],
                     "labelsEnabled": true,
                     "nodeData": {
-                        "id": "2fc414e2",
+                        "id": "<%=heatmap%>",
                         "children": data.children
                     }
 
