@@ -84,6 +84,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private String m_sysObjId = null;
     private String m_foreignSource = null;
     private String m_foreignId = null;
+    private File m_storageDir = null;
     
     private CollectionAgentService m_agentService;
     private Set<SnmpIfData> m_snmpIfData;
@@ -212,13 +213,10 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
      */
     @Override
     public File getStorageDir() {
-       File dir = new File(String.valueOf(getNodeId()));
-       if(isStoreByForeignSource() && !(getForeignSource() == null) && !(getForeignId() == null)) {
-               File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, m_foreignSource);
-               dir = new File(fsDir, m_foreignId);
-       }
-        LOG.debug("getStorageDir: isStoreByForeignSource = {}, foreignSource = {}, foreignId = {}, dir = {}", isStoreByForeignSource(), m_foreignSource, m_foreignId, dir);
-       return dir;
+        if (m_storageDir == null) {
+            m_storageDir = m_agentService.getStorageDir();
+        }
+        return m_storageDir;
     }
     
     private int getIfIndex() {
