@@ -99,7 +99,7 @@
 
               if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
             %>
-            location.href = "/opennms/element/node.jsp?node=" + nodes[0].nodeId
+            location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
             <%
               }
             %>

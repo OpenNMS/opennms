@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
@@ -86,4 +87,23 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public List<HeatMapElement> getHeatMapItemsByCategories() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<HeatMapElement> getHeatMapItemsByForeignSources() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<HeatMapElement> getHeatMapItemsForCategory(String category) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<HeatMapElement> getHeatMapItemsForForeignSource(String foreignSource) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

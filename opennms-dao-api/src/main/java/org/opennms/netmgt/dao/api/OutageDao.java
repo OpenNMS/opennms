@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.util.Collection;
-import java.util.List;
-
+import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -69,7 +70,7 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector);
-    
+
     /**
      * <p>findAll</p>
      *
@@ -93,4 +94,31 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      */
     List<OutageSummary> getNodeOutageSummaries(int rows);
 
+    /**
+     * Retrieves the heatmap element based on categories.
+     *
+     * @return the list of heatmap elements
+     */
+    public List<HeatMapElement> getHeatMapItemsByCategories();
+
+    /**
+     * Retrieves the heatmap element based on foreign sources.
+     *
+     * @return the list of heatmap elements
+     */
+    public List<HeatMapElement> getHeatMapItemsByForeignSources();
+
+    /**
+     * Retrieves heatmap elements for a given category.
+     * @param category the category to be used
+     * @return the list of heatmap elements
+     */
+    List<HeatMapElement> getHeatMapItemsForCategory(String category);
+
+    /**
+     * Retrieves heatmap elements for a given foreignSource.
+     * @param foreignSource the foreignSource to be used
+     * @return the list of heatmap elements
+     */
+    List<HeatMapElement> getHeatMapItemsForForeignSource(String foreignSource);
 }

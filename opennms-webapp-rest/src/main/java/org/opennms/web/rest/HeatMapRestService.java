@@ -31,18 +31,8 @@ package org.opennms.web.rest;
 import com.google.common.collect.Lists;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.json.JSONObject;
-import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.provision.persist.ForeignSourceService;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.web.svclayer.ManualProvisioningService;
+import org.opennms.netmgt.model.HeatMapElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +51,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Component
 @PerRequest
@@ -73,43 +61,78 @@ public class HeatMapRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(HeatMapRestService.class);
 
     @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
     private OutageDao m_outageDao;
-
-    @Autowired
-    private CategoryDao m_categoryDao;
-
-    @Autowired
-    private ManualProvisioningService m_provisioningService;
-
-    @Autowired
-    private ForeignSourceService m_foreignSourceService;
-
+    
     /**
-     * Returns the node ids of the nodes with outages.
+     * Transforms a list of heatmap elements to a json map.
      *
-     * @return the set of node ids
+     * @param heatMapElements the list of heatmap elements
+     * @return the map for the json response
      */
-    private Set<Integer> getOutagesNodeIds() {
-        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
-        criteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.LEFT_JOIN);
-        criteriaBuilder.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.LEFT_JOIN);
-        criteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.LEFT_JOIN);
-        criteriaBuilder.alias("ipInterface.snmpInterface", "snmpInterface", Alias.JoinType.LEFT_JOIN);
-        criteriaBuilder.alias("monitoredService.serviceType", "serviceType", Alias.JoinType.LEFT_JOIN);
-        criteriaBuilder.isNull("ifRegainedService");
+    private Map<String, List<Map<String, Object>>> transformResults(List<HeatMapElement> heatMapElements) {
+        /**
+         * the item list
+         */
+        final List<Map<String, Object>> itemList = new ArrayList<>();
 
-        List<OnmsOutage> onmsOutages = m_outageDao.findMatching(criteriaBuilder.toCriteria());
+        /**
+         * Helper field for sizes
+         */
+        HashMap<String, Integer> elementSizes = new HashMap<>();
 
-        Set<Integer> nodeIds = new TreeSet<>();
+        /**
+         * counter for total of services
+         */
+        int totalServices = 0;
 
-        for (OnmsOutage onmsOutage : onmsOutages) {
-            nodeIds.add(onmsOutage.getNodeId());
+        /**
+         * iterate over the heatmap elements and increase the total
+         * number of services. This is later used to compute the sizes
+         * for the heatmap boxes...
+         */
+        for (HeatMapElement heatMapElement : heatMapElements) {
+            if (heatMapElement.getServicesTotal() > 0) {
+
+                Double color = 0.0;
+
+                if (heatMapElement.getServicesDown() == 1 && heatMapElement.getServicesTotal() > heatMapElement.getServicesDown()) {
+                    color = 0.5;
+                } else {
+                    if (heatMapElement.getServicesDown() > 1 || heatMapElement.getServicesTotal() == heatMapElement.getServicesDown()) {
+                        color = 1.0;
+                    }
+                }
+
+                elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
+
+                Map<String, Object> item = new HashMap<>();
+                item.put("id", heatMapElement.getName());
+                item.put("elementId", heatMapElement.getId());
+                item.put("color", Lists.newArrayList(color));
+
+                itemList.add(item);
+
+                totalServices += heatMapElement.getServicesTotal();
+            }
         }
 
-        return nodeIds;
+        /**
+         * now iterate over the results and set the size attribute for
+         * each entry...
+         */
+        for (Map<String, Object> map : itemList) {
+            int nodesInCategory = elementSizes.get(map.get("id"));
+            double size = (double) nodesInCategory / (double) totalServices;
+            map.put("size", Lists.newArrayList(Double.valueOf(size)));
+        }
+
+        /**
+         * create the "outer" map and add the list to it...
+         */
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
+        map.put("children", itemList);
+
+        return map;
     }
 
     @GET
@@ -117,105 +140,9 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("categories")
     public Response categories() throws IOException {
-        /**
-         * the item list
-         */
-        final List<Map<String, Object>> itemList = new ArrayList<>();
-
-        /**
-         * retrieve the node ids for nodes with outages
-         */
-        Set<Integer> nodeIds = getOutagesNodeIds();
-
-        /**
-         * Helper field for sizes
-         */
-        HashMap<String, Integer> categorySizes = new HashMap<>();
-
-        /**
-         * counter for total of nodes
-         */
-        int nodesTotal = 0;
-
-        /**
-         * create data based on categories
-         */
-        List<OnmsCategory> categoryList = m_categoryDao.findAll();
-
-        for (OnmsCategory onmsCategory : categoryList) {
-            CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
-
-            criteriaBuilder.alias("categories", "category");
-            criteriaBuilder.eq("category.id", onmsCategory.getId());
-
-            int nodesInCategory = m_nodeDao.countMatching(criteriaBuilder.toCriteria());
-
-            int nodesWithOutages = 0;
-
-            if (nodeIds.size() > 0) {
-                criteriaBuilder.in("id", nodeIds);
-                nodesWithOutages = m_nodeDao.countMatching(criteriaBuilder.toCriteria());
-            }
-
-            System.out.println(onmsCategory.getName() + " -> Nodes: " + nodesWithOutages + "/" + nodesInCategory);
-
-            if (nodesInCategory > 0) {
-
-                Double color = 0.0;
-
-                if (nodesWithOutages == 1 && nodesInCategory > nodesWithOutages) {
-                    color = 0.5;
-                } else {
-                    if (nodesWithOutages > 1 || nodesInCategory == nodesWithOutages) {
-                        color = 1.0;
-                    }
-                }
-
-                categorySizes.put(onmsCategory.getName(), nodesInCategory);
-
-                Map<String, Object> item = new HashMap<>();
-                item.put("id", onmsCategory.getName());
-                item.put("color", Lists.newArrayList(color));
-
-                itemList.add(item);
-
-                nodesTotal += nodesInCategory;
-            }
-        }
-
-        for (Map<String, Object> map : itemList) {
-            int nodesInCategory = categorySizes.get(map.get("id"));
-            double size = (double) nodesInCategory / (double) nodesTotal;
-            map.put("size", Lists.newArrayList(Double.valueOf(size)));
-        }
-
-        Map<String, List<Map<String, Object>>> map = new HashMap<>();
-        map.put("children", itemList);
-        final JSONObject jo = new JSONObject(map);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsByCategories();
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
-    }
-
-    /**
-     * Retrieves the defined foreignSource names.
-     *
-     * @return the set of foreignSource names
-     */
-    private Set<String> getForeignSourceNames() {
-        Set<String> foreignSourceNames = new TreeSet<String>();
-
-        for (Requisition requisition : m_provisioningService.getAllGroups()) {
-            if (requisition != null) {
-                foreignSourceNames.add(requisition.getForeignSource());
-            }
-        }
-
-        for (ForeignSource foreignSource : m_foreignSourceService.getAllForeignSources()) {
-            if (!foreignSource.isDefault()) {
-                foreignSourceNames.add(foreignSource.getName());
-            }
-        }
-
-        return foreignSourceNames;
     }
 
     @GET
@@ -223,80 +150,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("foreignSources")
     public Response foreignsources() throws IOException {
-        /**
-         * the item list
-         */
-        final List<Map<String, Object>> itemList = new ArrayList<>();
-
-        /**
-         * retrieve the node ids for nodes with outages
-         */
-        Set<Integer> nodeIds = getOutagesNodeIds();
-
-        /**
-         * Helper field for sizes
-         */
-        HashMap<String, Integer> foreignSourceSizes = new HashMap<>();
-
-        /**
-         * counter for total of nodes
-         */
-        int nodesTotal = 0;
-
-        /**
-         * create data based on foreignSource names
-         */
-        Set<String> foreignSourceNames = getForeignSourceNames();
-
-        for (String foreignSourceName : foreignSourceNames) {
-            int nodesInForeignSource = m_nodeDao.getNodeCountForForeignSource(foreignSourceName);
-
-            int nodesWithOutages = 0;
-
-            if (nodeIds.size() > 0) {
-                CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
-
-                criteriaBuilder.eq("foreignSource", foreignSourceName);
-                criteriaBuilder.in("id", nodeIds);
-
-                nodesWithOutages = m_nodeDao.countMatching(criteriaBuilder.toCriteria());
-            }
-
-            System.out.println(foreignSourceName + " -> Nodes: " + nodesWithOutages + "/" + nodesInForeignSource);
-
-            if (nodesInForeignSource > 0) {
-
-                Double color = 0.0;
-
-                if (nodesWithOutages == 1 && nodesInForeignSource > nodesWithOutages) {
-                    color = 0.5;
-                } else {
-                    if (nodesWithOutages > 1 || nodesInForeignSource == nodesWithOutages) {
-                        color = 1.0;
-                    }
-                }
-
-                foreignSourceSizes.put(foreignSourceName, nodesInForeignSource);
-
-                Map<String, Object> item = new HashMap<>();
-                item.put("id", foreignSourceName);
-                item.put("color", Lists.newArrayList(color));
-
-                itemList.add(item);
-
-                nodesTotal += nodesInForeignSource;
-            }
-        }
-
-        for (Map<String, Object> map : itemList) {
-            int nodesInForeignSource = foreignSourceSizes.get(map.get("id"));
-            double size = (double) nodesInForeignSource / (double) nodesTotal;
-            map.put("size", Lists.newArrayList(Double.valueOf(size)));
-        }
-
-        Map<String, List<Map<String, Object>>> map = new HashMap<>();
-        map.put("children", itemList);
-        final JSONObject jo = new JSONObject(map);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsByForeignSources();
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -305,11 +160,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("nodesByCategory/{category}")
     public Response nodesByCategory(@PathParam("category") final String category) throws IOException {
-        List<Map<String, Object>> itemList = getNodeItemData(m_nodeDao.findByCategory(m_categoryDao.findByName(category)));
-
-        Map<String, List<Map<String, Object>>> map = new HashMap<>();
-        map.put("children", itemList);
-        final JSONObject jo = new JSONObject(map);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForCategory(category);
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -318,57 +170,9 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("nodesByForeignSource/{foreignSource}")
     public Response nodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
-        List<Map<String, Object>> itemList = getNodeItemData(m_nodeDao.findByForeignSource(foreignSource));
-
-        Map<String, List<Map<String, Object>>> map = new HashMap<>();
-        map.put("children", itemList);
-        final JSONObject jo = new JSONObject(map);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForForeignSource(foreignSource);
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
-    }
-
-    private List<Map<String, Object>> getNodeItemData(List<OnmsNode> onmsNodeList) {
-        /**
-         * the item list
-         */
-        final List<Map<String, Object>> itemList = new ArrayList<>();
-
-        /**
-         * retrieve the node ids for nodes with outages
-         */
-        Set<Integer> nodeIds = getOutagesNodeIds();
-
-        /**
-         * Helper field for sizes
-         */
-        HashMap<String, Integer> interfaceCounts = new HashMap<>();
-
-        /**
-         * counter for total of nodes
-         */
-        int interfacesTotal = 0;
-
-        for (OnmsNode onmsNode : onmsNodeList) {
-            if (onmsNode.getIpInterfaces().size() > 0) {
-                Map<String, Object> item = new HashMap<>();
-
-                item.put("id", onmsNode.getLabel());
-                item.put("nodeId", onmsNode.getId());
-                item.put("color", Lists.newArrayList(nodeIds.contains(onmsNode.getId()) ? 1.0 : 0.0));
-
-                interfaceCounts.put(onmsNode.getLabel(), onmsNode.getIpInterfaces().size());
-                interfacesTotal += onmsNode.getIpInterfaces().size();
-
-                itemList.add(item);
-            }
-        }
-
-        for (Map<String, Object> map : itemList) {
-            int nodeInterfaceCount = interfaceCounts.get(map.get("id"));
-            double size = (double) nodeInterfaceCount / (double) interfacesTotal;
-            map.put("size", Lists.newArrayList(Double.valueOf(size)));
-        }
-
-        return itemList;
     }
 }
 
