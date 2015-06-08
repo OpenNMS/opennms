@@ -392,13 +392,13 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
-                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.LEFT_JOIN);
                 serviceCriteriaBuilder.eq("status", "A");
                 serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
                 serviceCriteriaBuilder.ne("node.type", "D");
 
-                // Restrict on OnmsNode.nodeId
-                serviceCriteriaBuilder.sql(createQuery("node.nodeId", rowCategories, colCategories));
+                // HACK: Hibernate aliases 'node' as 'node2_' so we need to use this for the statement.
+                serviceCriteriaBuilder.sql(createQuery("node2_.nodeId", rowCategories, colCategories));
 
                 return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
             }
