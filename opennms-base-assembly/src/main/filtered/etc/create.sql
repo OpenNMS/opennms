@@ -297,7 +297,6 @@ INSERT INTO monitoringsystems (id, label, location, type, status, last_updated) 
 
 create table node (
 	nodeID		integer not null,
-	dpName		text,
 	nodeCreateTime	timestamp with time zone not null,
 	nodeParentID	integer,
 	nodeType	char(1),
@@ -315,13 +314,11 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 
-	constraint pk_nodeID primary key (nodeID),
-	constraint fk_dpName foreign key (dpName) references monitoringsystems (id) on delete cascade
+	constraint pk_nodeID primary key (nodeID)
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
-create index node_dpname_idx on node(dpName);
 create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 
 --#########################################################################
@@ -639,7 +636,7 @@ create table events (
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
 	ipAddr			text,
-	eventDpName		varchar(12) not null,
+	systemId		TEXT not null,
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
@@ -672,6 +669,7 @@ create table events (
 );
 
 create index events_uei_idx on events(eventUei);
+create index events_systemid_idx on events(systemId);
 create index events_nodeid_idx on events(nodeID);
 create index events_ipaddr_idx on events(ipaddr);
 create index events_serviceid_idx on events(serviceID);
@@ -864,7 +862,7 @@ create table memos (
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
     eventUei                VARCHAR(256) NOT NULL,
-    dpName                  VARCHAR(12) NOT NULL,
+    systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
@@ -872,7 +870,7 @@ create table alarms (
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
-    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
+    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID) REFERENCES events (eventID) ON DELETE CASCADE,
     firstEventTime          timestamp with time zone,
     lastEventTime           timestamp with time zone,
     firstAutomationTime     timestamp with time zone,
@@ -905,7 +903,7 @@ CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_clearkey_idx ON alarms(clearKey);
-CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
+CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 CREATE INDEX alarm_eventid_idx ON alarms(lastEventID);
