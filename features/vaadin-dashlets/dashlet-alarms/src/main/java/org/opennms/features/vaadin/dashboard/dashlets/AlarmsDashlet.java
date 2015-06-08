@@ -29,7 +29,11 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
@@ -39,10 +43,17 @@ import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This class represents a Alert Dashlet with minimum details.
@@ -216,9 +227,25 @@ public class AlarmsDashlet extends AbstractDashlet {
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
-        alarmCb.distinct();
+        /**
+         * due to restrictions in the criteria api it's quite hard
+         * to use distinct and orderBy together, so I apply a workaround
+         * to avoid alarmCb.distinct();
+         */
 
-        return m_alarmDao.findMatching(alarmCb.toCriteria());
+        List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
+
+        List<OnmsAlarm> distinctOnmsAlarmList = new LinkedList<>();
+        Set<Integer> onmsAlarmIdSet = new TreeSet<>();
+
+        for (OnmsAlarm onmsAlarm : onmsAlarmList) {
+            if (!onmsAlarmIdSet.contains(onmsAlarm.getId())) {
+                distinctOnmsAlarmList.add(onmsAlarm);
+                onmsAlarmIdSet.add(onmsAlarm.getId());
+            }
+        }
+
+        return distinctOnmsAlarmList;
     }
 
     /**
