@@ -1177,7 +1177,7 @@ public class Installer {
         }
 
         if (jrrd2_path != null && jrrd2_path.length() != 0) {
-            libraryProps.put("opennms.library.jrrd2", jrrd_path);
+            libraryProps.put("opennms.library.jrrd2", jrrd2_path);
         }
 
         File f = null;
