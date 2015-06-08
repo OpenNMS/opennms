@@ -34,6 +34,7 @@ import org.opennms.netmgt.rrd.QueuingRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ public class MeasurementFetchStrategyFactory {
 			return new RrdtoolXportFetchStrategy(m_resourceDao);
         } else if (strategy instanceof JRobinRrdStrategy) {
             return new JrobinFetchStrategy(m_resourceDao);
+        } else if (strategy instanceof MultithreadedJniRrdStrategy) {
+            return new JRrd2FetchStrategy(m_resourceDao);
         } else {
             LOG.error("Unsupported RRD strategy: {}. Defaulting to NoOpStrategy.", strategy.getClass());
             return new NoOpStrategy();
