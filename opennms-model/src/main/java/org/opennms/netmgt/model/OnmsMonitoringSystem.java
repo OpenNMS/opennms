@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 
+import org.hibernate.annotations.DiscriminatorOptions;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -66,6 +67,9 @@ import org.springframework.core.style.ToStringCreator;
  * <li>OpenNMS Minion</li>
  * </ul>
  * 
+ * <p>CAUTION: Don't add final modifiers to methods here because they need to be
+ * proxyable to the child classes and Javassist doesn't override final methods.
+ * 
  * @author Seth
  */
 @Entity
@@ -76,6 +80,8 @@ import org.springframework.core.style.ToStringCreator;
     discriminatorType=DiscriminatorType.STRING
 )
 @DiscriminatorValue("System")
+// Require all objects to have a discriminator type
+@DiscriminatorOptions(force=true)
 public class OnmsMonitoringSystem implements Serializable {
 
     private static final long serialVersionUID = -5095710111103727832L;
@@ -138,7 +144,7 @@ public class OnmsMonitoringSystem implements Serializable {
      */
     @Id 
     @Column(name="id", nullable=false)
-    public final String getId() {
+    public String getId() {
         return m_id;
     }
 
@@ -147,7 +153,7 @@ public class OnmsMonitoringSystem implements Serializable {
      *
      * @param id a {@link java.lang.String} object.
      */
-    public final void setId(String id) {
+    public void setId(String id) {
         m_id = id;
     }
 
@@ -158,14 +164,14 @@ public class OnmsMonitoringSystem implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="label")
-    public final String getLabel() {
+    public String getLabel() {
         return m_label;
     }
 
     /**
      * @param label a {@link java.lang.String} object.
      */
-    public final void setLabel(String label) {
+    public void setLabel(String label) {
         m_label = label;
     }
 
@@ -175,7 +181,7 @@ public class OnmsMonitoringSystem implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="location", nullable=false)
-    public final String getLocation() {
+    public String getLocation() {
         return m_location;
     }
 
@@ -183,7 +189,7 @@ public class OnmsMonitoringSystem implements Serializable {
      *
      * @param location a {@link java.lang.String} object.
      */
-    public final void setLocation(String location) {
+    public void setLocation(String location) {
         m_location = location;
     }
 
@@ -194,7 +200,7 @@ public class OnmsMonitoringSystem implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Column(name="type", nullable=false, insertable=false, updatable=false)
-    public final String getType() {
+    public String getType() {
         return m_type;
     }
 
@@ -202,7 +208,7 @@ public class OnmsMonitoringSystem implements Serializable {
      *
      * @param type a {@link java.lang.String} object.
      */
-    public final void setType(String type) {
+    public void setType(String type) {
         m_type = type;
     }
 
@@ -214,11 +220,11 @@ public class OnmsMonitoringSystem implements Serializable {
      */
     @Column(name="last_updated")
     @Temporal(TemporalType.TIMESTAMP)
-    public final Date getLastUpdated() {
+    public Date getLastUpdated() {
         return m_lastUpdated;
     }
 
-    public final void setLastUpdated(final Date lastUpdated) {
+    public void setLastUpdated(final Date lastUpdated) {
         m_lastUpdated = lastUpdated;
     }
 
@@ -250,18 +256,18 @@ public class OnmsMonitoringSystem implements Serializable {
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))
     @MapKeyColumn(name="property")
     @Column(name="propertyValue", nullable=false)
-    public final Map<String, String> getProperties() {
+    public Map<String, String> getProperties() {
         return m_properties;
     }
 
     /**
      * @param properties a {@link java.util.Map} object.
      */
-    public final void setProperties(Map<String, String> properties) {
+    public void setProperties(Map<String, String> properties) {
         m_properties = properties;
     }
 
-    public final void setProperty(String property, String value) {
+    public void setProperty(String property, String value) {
         m_properties.put(property, value);
     }
 
