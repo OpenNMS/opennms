@@ -152,133 +152,41 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     }
 
     @Override
-    public List<HeatMapElement> getHeatMapItemsByCategories() {
-        return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
-            @Override
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
-                        "select c.categoryname, c.categoryid, " +
-                                "count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as servicesDown, " +
-                                "count(distinct case when monSvc.status = 'A' then monSvc.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as nodesUp, " +
-                                "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node join category_node cn using (nodeid) " +
-                                "join categories c using (categoryid) " +
-                                "left outer join ipinterface ip using (nodeid) " +
-                                "left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id) " +
-                                "left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null) " +
-                                "where nodeType <> 'D' " +
-                                "group by c.categoryname,c.categoryid")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
+    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns) {
 
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4], (Number) tuple[5]);
-                            }
+        String grouping = "";
 
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
+        if (groupByColumns != null && groupByColumns.length > 0) {
+            for (String groupByColumn : groupByColumns) {
+                if (!"".equals(grouping)) {
+                    grouping += ", ";
+                }
+
+                grouping += groupByColumn;
             }
-        });
-    }
+        } else {
+            grouping = entityNameColumn + ", " + entityIdColumn;
+        }
 
-    @Override
-    public List<HeatMapElement> getHeatMapItemsByForeignSources() {
+        final String groupByClause = grouping;
+
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
                 return (List<HeatMapElement>) session.createSQLQuery(
-                        "select foreignsource, 0, " +
-                                "count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as servicesDown, " +
-                                "count(distinct case when monSvc.status = 'A' then monSvc.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as nodesUp, " +
+                        "select " + entityNameColumn + ", " + entityIdColumn + ", " +
+                                "count(distinct case when outages.outageid is not null and ifservices.status = 'A' then ifservices.id else null end) as servicesDown, " +
+                                "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
+                                "count(distinct case when outages.outageid is null and ifservices.status = 'A' then node.nodeid else null end) as nodesUp, " +
                                 "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node join category_node cn using (nodeid) " +
-                                "join categories c using (categoryid) " +
-                                "left outer join ipinterface ip using (nodeid) " +
-                                "left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id) " +
-                                "left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null) " +
+                                "from node join category_node using (nodeid) " +
+                                "join categories using (categoryid) " +
+                                "left outer join ipinterface using (nodeid) " +
+                                "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                                "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
                                 "where nodeType <> 'D' " +
-                                "group by foreignsource")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
-
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4], (Number) tuple[5]);
-                            }
-
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
-            }
-        });
-    }
-
-    @Override
-    public List<HeatMapElement> getHeatMapItemsForForeignSource(String foreignSource) {
-        return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
-            @Override
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
-                        "select node.nodelabel, node.nodeid, " +
-                                "count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as servicesDown, " +
-                                "count(distinct case when monSvc.status = 'A' then monSvc.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as nodesUp, " +
-                                "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node join category_node cn using (nodeid) " +
-                                "join categories c using (categoryid) " +
-                                "left outer join ipinterface ip using (nodeid) " +
-                                "left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id) " +
-                                "left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null) " +
-                                "where nodeType <> 'D' " +
-                                "and node.foreignsource = '" + foreignSource + "' " +
-                                "group by node.nodelabel, node.nodeid")
-                        .setResultTransformer(new ResultTransformer() {
-                            private static final long serialVersionUID = 5152094813503430377L;
-
-                            @Override
-                            public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new HeatMapElement((String) tuple[0], (Number) tuple[1], (Number) tuple[2], (Number) tuple[3], (Number) tuple[4], (Number) tuple[5]);
-                            }
-
-                            @SuppressWarnings("rawtypes")
-                            @Override
-                            public List transformList(List collection) {
-                                return collection;
-                            }
-                        }).list();
-            }
-        });
-    }
-
-    @Override
-    public List<HeatMapElement> getHeatMapItemsForCategory(String category) {
-        return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
-            @Override
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<HeatMapElement>) session.createSQLQuery(
-                        "select node.nodelabel, node.nodeid, " +
-                                "count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as servicesDown, " +
-                                "count(distinct case when monSvc.status = 'A' then monSvc.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as nodesUp, " +
-                                "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node join category_node cn using (nodeid) " +
-                                "join categories c using (categoryid) " +
-                                "left outer join ipinterface ip using (nodeid) " +
-                                "left outer join ifservices monsvc on (monsvc.ipinterfaceid = ip.id) " +
-                                "left outer join outages on (outages.ifserviceid = monsvc.id and outages.ifregainedservice is null) " +
-                                "where nodeType <> 'D' " +
-                                "and c.categoryname = '" + category + "' " +
-                                "group by node.nodelabel, node.nodeid")
+                                (restrictionColumn != null ? "and " + restrictionColumn + "='" + restrictionValue + "' " : "") +
+                                "group by " + groupByClause)
                         .setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;
 

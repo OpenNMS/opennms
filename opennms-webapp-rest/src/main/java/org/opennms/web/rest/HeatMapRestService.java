@@ -62,7 +62,7 @@ public class HeatMapRestService extends OnmsRestService {
 
     @Autowired
     private OutageDao m_outageDao;
-    
+
     /**
      * Transforms a list of heatmap elements to a json map.
      *
@@ -140,7 +140,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("categories")
     public Response categories() throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsByCategories();
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -150,7 +150,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("foreignSources")
     public Response foreignsources() throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsByForeignSources();
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -160,7 +160,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("nodesByCategory/{category}")
     public Response nodesByCategory(@PathParam("category") final String category) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForCategory(category);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -170,7 +170,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("nodesByForeignSource/{foreignSource}")
     public Response nodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForForeignSource(foreignSource);
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }

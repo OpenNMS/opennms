@@ -133,20 +133,8 @@
 <div align="right">
     [<a href="<%=request.getRequestURI()%>?heatmap=foreignSources">Outages by Foreign Sources</a>]&nbsp;[<a
         href="<%=request.getRequestURI()%>?heatmap=categories">Outages by Categories</a>]&nbsp;
-    <%
-        if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
-    %>
-    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;no outages
-    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;one or more
-    outages
-    <%
-    } else {
-    %>
     <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;no outages
     <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;one outage
     <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;two or more
     outages
-    <%
-        }
-    %>
 </div>

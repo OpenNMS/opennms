@@ -95,30 +95,14 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
     List<OutageSummary> getNodeOutageSummaries(int rows);
 
     /**
-     * Retrieves the heatmap element based on categories.
+     * Retrieves heatmap elements for a given combination of database columns.
      *
-     * @return the list of heatmap elements
+     * @param entityNameColumn the entity's name column
+     * @param entityIdColumn the entity's id column
+     * @param restrictionColumn a column used for a restriction of the results
+     * @param restrictionValue the value that must match against the restrictionColumn
+     * @param groupByColumns columns used for the SQL group-by clause
+     * @return the heatmap elements for this query
      */
-    public List<HeatMapElement> getHeatMapItemsByCategories();
-
-    /**
-     * Retrieves the heatmap element based on foreign sources.
-     *
-     * @return the list of heatmap elements
-     */
-    public List<HeatMapElement> getHeatMapItemsByForeignSources();
-
-    /**
-     * Retrieves heatmap elements for a given category.
-     * @param category the category to be used
-     * @return the list of heatmap elements
-     */
-    List<HeatMapElement> getHeatMapItemsForCategory(String category);
-
-    /**
-     * Retrieves heatmap elements for a given foreignSource.
-     * @param foreignSource the foreignSource to be used
-     * @return the list of heatmap elements
-     */
-    List<HeatMapElement> getHeatMapItemsForForeignSource(String foreignSource);
+    List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns);
 }
