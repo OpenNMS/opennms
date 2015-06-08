@@ -217,9 +217,10 @@ public class Installer {
             String icmp_path = findLibrary("jicmp", m_library_search_path, false);
             String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path);
+            String jrrd2_path = findLibrary("jrrd2", m_library_search_path, false);
+            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path, jrrd2_path);
         }
-        
+
         /*
          * Everything needs to use the administrative data source until we
          * verify that the opennms database is created below (and where we
@@ -1159,7 +1160,7 @@ public class Installer {
      * @param jrrd_path a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path)
+    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path, final String jrrd2_path)
             throws IOException {
         Properties libraryProps = new Properties();
 
@@ -1173,6 +1174,10 @@ public class Installer {
 
         if (jrrd_path != null && jrrd_path.length() != 0) {
             libraryProps.put("opennms.library.jrrd", jrrd_path);
+        }
+
+        if (jrrd2_path != null && jrrd2_path.length() != 0) {
+            libraryProps.put("opennms.library.jrrd2", jrrd_path);
         }
 
         File f = null;
