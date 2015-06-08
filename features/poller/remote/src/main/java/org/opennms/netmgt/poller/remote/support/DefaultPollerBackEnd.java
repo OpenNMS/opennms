@@ -226,8 +226,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
             final Criteria criteria = new Criteria(OnmsLocationMonitor.class);
             criteria.addRestriction(new EqRestriction("status", MonitorStatus.STARTED));
-            criteria.addRestriction(new NotNullRestriction("lastCheckInTime"));
-            criteria.addRestriction(new LtRestriction("lastCheckInTime", earliestAcceptable));
+            criteria.addRestriction(new NotNullRestriction("lastUpdated"));
+            criteria.addRestriction(new LtRestriction("lastUpdated", earliestAcceptable));
             // Lock all of the records for update since we will be marking them as DISCONNECTED
             criteria.setLockType(LockType.PESSIMISTIC_READ);
 
