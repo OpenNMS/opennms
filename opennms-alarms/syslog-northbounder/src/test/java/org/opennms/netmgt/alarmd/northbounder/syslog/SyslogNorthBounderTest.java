@@ -205,7 +205,7 @@ public class SyslogNorthBounderTest {
         distPoller.setLocation("localhost");
         distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
 
-        OnmsNode node = new OnmsNode(distPoller, "p-brane");
+        OnmsNode node = new OnmsNode("p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(TEST_NODE_ID);

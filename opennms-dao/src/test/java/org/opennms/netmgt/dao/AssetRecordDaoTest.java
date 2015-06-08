@@ -101,8 +101,7 @@ public class AssetRecordDaoTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testCreateAndGets() {
-        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-        onmsNode.setLabel("myNode");
+        OnmsNode onmsNode = new OnmsNode("myNode");
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -121,8 +120,7 @@ public class AssetRecordDaoTest implements InitializingBean {
     @Test
     @Transactional
 	public void testAddUserName() {
-        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-        onmsNode.setLabel("myNode");
+        OnmsNode onmsNode = new OnmsNode("myNode");
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -146,8 +144,7 @@ public class AssetRecordDaoTest implements InitializingBean {
 	@Test
     @Transactional
     public void testAddAutoenable() {
-        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-        onmsNode.setLabel("myNode");
+        OnmsNode onmsNode = new OnmsNode("myNode");
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -171,8 +168,7 @@ public class AssetRecordDaoTest implements InitializingBean {
         @Test
         @Transactional
     public void testFindByNodeId() {
-        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-        onmsNode.setLabel("myNode");
+        OnmsNode onmsNode = new OnmsNode("myNode");
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -187,8 +183,7 @@ public class AssetRecordDaoTest implements InitializingBean {
         @Test
         @Transactional
         public void testGeolocation() {
-            OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-            onmsNode.setLabel("myNode");
+            OnmsNode onmsNode = new OnmsNode("myNode");
             m_nodeDao.save(onmsNode);
             OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
             OnmsGeolocation geo = assetRecord.getGeolocation();

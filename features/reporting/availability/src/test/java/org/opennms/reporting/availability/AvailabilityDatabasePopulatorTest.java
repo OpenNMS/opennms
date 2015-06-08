@@ -109,7 +109,6 @@ public class AvailabilityDatabasePopulatorTest implements InitializingBean {
 		List<OnmsNode> nodes = m_nodeDao.findAll();
 		for (OnmsNode node : nodes) {
 			m_nodeDao.initialize(node);
-			m_nodeDao.initialize(node.getDistPoller());
 		}
 		for (OnmsNode node : nodes) {
 			System.err.println("NODE "+ node.toString());

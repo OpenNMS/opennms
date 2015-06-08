@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -85,6 +86,20 @@ public interface ProvisionService {
      */
     @Transactional
     OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr);
+
+    /**
+     * Lookup a monitoring location in the database, creating it if necessary. This
+     * method looks up the {@link LocationDef} object with the ID 'locationId' in the
+     * database and returns it. If there is no {@link LocationDef} with that name then
+     * one is created using the name provided, saved in the database, and returned.
+     *
+     * @param locationId
+     *            The ID of the {@link LocationDef} that is needed
+     * @return a new {@link LocationDef} that will be saved to the database when the
+     *         transaction is committed.
+     */
+    @Transactional
+    LocationDef createLocationIfNecessary(String locationId);
 
     /**
      * Update the database entry for the given node. The node supplied is used

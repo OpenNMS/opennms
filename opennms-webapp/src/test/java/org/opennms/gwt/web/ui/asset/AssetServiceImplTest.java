@@ -172,8 +172,7 @@ public class AssetServiceImplTest implements InitializingBean {
 
 	@Test
 	public void testCreateAndGets() {
-		OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("myNode");
+		OnmsNode onmsNode = new OnmsNode("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 7");
@@ -190,8 +189,7 @@ public class AssetServiceImplTest implements InitializingBean {
 
 	@Test
 	public void testAssetServiceImpl() {
-		OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("myNode");
+        OnmsNode onmsNode = new OnmsNode("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
@@ -201,13 +199,12 @@ public class AssetServiceImplTest implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("myNode2");
+		onmsNode = new OnmsNode("myNode2");
 		m_nodeDao.save(onmsNode);
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 23");
 		assetRecord.setAdmin("mediummario");
-                assetRecord.getGeolocation().setAddress1("youraddress");
+		assetRecord.getGeolocation().setAddress1("youraddress");
 		assetRecord.getGeolocation().setZip("yourzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
@@ -252,8 +249,7 @@ public class AssetServiceImplTest implements InitializingBean {
 	
 	@Test
 	public void testSaveOrUpdate() {
-		OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("myNode");
+		OnmsNode onmsNode = new OnmsNode("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: " + onmsNode.getId());
@@ -293,8 +289,7 @@ public class AssetServiceImplTest implements InitializingBean {
 
 	@Test
 	public void testAssetSuggestion() {
-		OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("your Node");
+	OnmsNode onmsNode = new OnmsNode("your Node");
 		onmsNode.setSysObjectId("mySysOid");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
@@ -305,8 +300,7 @@ public class AssetServiceImplTest implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
-		onmsNode.setLabel("his Node");
+		onmsNode = new OnmsNode("his Node");
 		m_nodeDao.save(onmsNode);
 		assetRecord = onmsNode.getAssetRecord();
 		assetRecord.setAssetNumber("imported-id: 999");

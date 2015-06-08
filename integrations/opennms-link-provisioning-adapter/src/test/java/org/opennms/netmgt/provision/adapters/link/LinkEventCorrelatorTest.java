@@ -99,7 +99,7 @@ public class LinkEventCorrelatorTest {
         distPoller.setLocation("localhost");
         distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
 
-        final OnmsNode node = new OnmsNode(distPoller, "pittsboro-2");
+        final OnmsNode node = new OnmsNode("pittsboro-2");
         node.setId(2);
         final Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
         m_dataLinkInterface = new DataLinkInterface(node, 1, 1, 1, StatusType.UNKNOWN, new Date());

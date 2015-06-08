@@ -125,6 +125,10 @@ public class AnnotationTest implements InitializingBean {
 			@Override
 			public void check(OnmsDistPoller entity) {
 				assertNotNull("id should not be null: " + entity.toString(), entity.getId());
+				assertNotNull("label should not be null: " + entity.toString(), entity.getLabel());
+				assertNotNull("location should not be null: " + entity.toString(), entity.getLocation());
+				assertNotNull("lastUpdated should not be null: " + entity.toString(), entity.getLastUpdated());
+				assertNotNull("type should not be null: " + entity.toString(), entity.getType());
 			}
 
 		});

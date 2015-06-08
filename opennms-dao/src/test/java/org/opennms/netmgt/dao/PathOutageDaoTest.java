@@ -127,8 +127,7 @@ public class PathOutageDaoTest implements InitializingBean {
         assertNotNull(serviceType);
 
         // This will be our router with one IP address
-        OnmsNode router = new OnmsNode(getLocalHostDistPoller());
-        router.setLabel("router");
+        OnmsNode router = new OnmsNode("router");
         m_nodeDao.save(router);
         OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
         routerIpInterface.setIsManaged("M");
@@ -136,8 +135,7 @@ public class PathOutageDaoTest implements InitializingBean {
         routerService.setStatus("A");
 
         // Add a node that will be routed through the router
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("localhost");
+        OnmsNode node = new OnmsNode("localhost");
         m_nodeDao.save(node);
         OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
         nodeIpInterface.setIsManaged("M");
@@ -145,8 +143,7 @@ public class PathOutageDaoTest implements InitializingBean {
         nodeMonitoredService.setStatus("A");
 
         // Make another node with an interface that is initially marked as deleted
-        OnmsNode newNode = new OnmsNode(getLocalHostDistPoller());
-        newNode.setLabel("newnode");
+        OnmsNode newNode = new OnmsNode("newnode");
         m_nodeDao.save(newNode);
         OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
         newIpInterface.setIsManaged("D");
@@ -201,9 +198,5 @@ public class PathOutageDaoTest implements InitializingBean {
         assertTrue(nodes.contains(newNode.getId()));
 
         assertEquals(2, m_pathOutageDao.countAll());
-    }
-    
-    private OnmsDistPoller getLocalHostDistPoller() {
-        return m_distPollerDao.load("localhost");
     }
 }

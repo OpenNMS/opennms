@@ -205,7 +205,7 @@ public class DefaultAckServiceTest implements InitializingBean {
 
     private OnmsEvent getEvent(OnmsNode node) {
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(node.getDistPoller());
+        event.setDistPoller(m_populator.getDistPoller("localhost"));
         event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
         event.setEventTime(new Date());
         event.setEventSource("test");

@@ -122,7 +122,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public void writeNode(MockNode node) {
         LOG.info("Inserting node \"{}\" into database with ID {}", node.getLabel(), node.getNodeId());
         Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
-        update("insert into node (dpName, nodeID, nodeLabel, nodeCreateTime, nodeType) values ('localhost', ?, ?, ?, ?);", values);
+        // TODO: Add location column
+        update("insert into node (nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?);", values);
     }
 
     public void writeInterface(MockInterface iface) {
@@ -290,7 +291,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         e.setDbid(eventId.intValue());
         update("insert into events (" +
                 "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
-                "nodeId, ipAddr, serviceId, eventDpName, " +
+                "nodeId, ipAddr, serviceId, systemId, " +
                 "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms, eventlogmsg) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }

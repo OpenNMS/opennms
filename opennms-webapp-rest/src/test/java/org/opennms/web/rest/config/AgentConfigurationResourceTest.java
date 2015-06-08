@@ -98,7 +98,7 @@ public class AgentConfigurationResourceTest {
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);
 
-        final OnmsNode node = new OnmsNode(null, "foo");
+        final OnmsNode node = new OnmsNode("foo");
         node.setId(1);
         node.setForeignSource("foo");
         node.setForeignId("bar");

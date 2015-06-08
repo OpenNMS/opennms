@@ -214,7 +214,7 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
     @Test
     @Transactional
     public void testReportResults() throws InterruptedException {
-        final OnmsNode node = new OnmsNode(m_distPollerDao.findAll().get(0), "foo");
+        final OnmsNode node = new OnmsNode("foo");
         final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr("192.168.1.1"), node);
         OnmsServiceType serviceType = m_serviceTypeDao.findByName("HTTP");
         if (serviceType == null) {

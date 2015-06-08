@@ -49,9 +49,11 @@ import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
@@ -135,6 +137,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Autowired
+    private LocationMonitorDao m_locationMonitorDao;
+
+    @Autowired
     private DistPollerDao m_distPollerDao;
 
     @Autowired
@@ -210,7 +215,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public void insertNode(final OnmsNode node) {
 
-        node.setDistPoller(createDistPollerIfNecessary("localhost", "127.0.0.1"));
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -698,7 +702,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_nodeDao.flush();
     }
 
-    /** {@inheritDoc} */
     @Override
     public OnmsDistPoller createDistPollerIfNecessary(final String dpName, final String dpAddr) {
         return createDistPollerIfNecessary(new OnmsDistPoller(dpName));
@@ -706,7 +709,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public OnmsDistPoller createDistPollerIfNecessary(OnmsDistPoller scannedDistPoller) {
 
-        final OnmsDistPoller distPoller = scannedDistPoller == null ? new OnmsDistPoller("localhost") : scannedDistPoller;
+        final OnmsDistPoller distPoller;
+        if (scannedDistPoller == null) {
+            distPoller = new OnmsDistPoller("localhost");
+        } else {
+            distPoller = scannedDistPoller;
+        }
 
         return new CreateIfNecessaryTemplate<OnmsDistPoller, DistPollerDao>(m_transactionManager, m_distPollerDao) {
 
@@ -725,6 +733,47 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     }
 
+    @Override
+    public LocationDef createLocationIfNecessary(final String locationName) {
+        LocationDef location = new LocationDef();
+        location.setLocationName(locationName);
+        return createLocationIfNecessary(location);
+    }
+
+    public LocationDef createLocationIfNecessary(LocationDef scannedLocation) {
+
+        final LocationDef location;
+        if (scannedLocation == null) {
+            location = new LocationDef();
+            location.setLocationName("localhost");
+        } else {
+            location = scannedLocation;
+        }
+
+        /**
+         * TODO: Divide {@link LocationMonitorDao} into two classes and use MonitoringLocationDao here
+         */
+        /*
+        return new CreateIfNecessaryTemplate<LocationDef, LocationMonitorDao>(m_transactionManager, m_locationMonitorDao) {
+
+            @Override
+            protected LocationDef query() {
+                return m_locationMonitorDao.findMonitoringLocationDefinition(location.getLocationName());
+            }
+
+            @Override
+            public LocationDef doInsert() {
+                m_locationMonitorDao.saveMonitoringLocationDefinition(location);
+                m_locationMonitorDao.flush();
+                return location;
+            }
+        }.execute();
+        */
+
+        m_locationMonitorDao.saveMonitoringLocationDefinition(location);
+        m_locationMonitorDao.flush();
+        return location;
+    }
 
 
     /** {@inheritDoc} */
@@ -1109,7 +1158,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setDistPoller(createDistPollerIfNecessary(node.getDistPoller()));
+                node.setLocation(createLocationIfNecessary(node.getLocation()).getLocationName());
                 return saveOrUpdate(node);
             }
         }.execute();
@@ -1343,7 +1392,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                final OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
+                createLocationIfNecessary("localhost");
+                // TODO: Associate location with node if necessary
+                final OnmsNode node = new OnmsNode();
 
                 final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
@@ -1439,7 +1490,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public OnmsNode getDbNodeInitCat(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
         m_nodeDao.initialize(node.getCategories());
-        m_nodeDao.initialize(node.getDistPoller());
         return node;
     }
 

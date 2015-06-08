@@ -141,8 +141,7 @@ public class NodeDaoTest implements InitializingBean {
         assertEquals("localhost", distPoller.getLabel());
         assertEquals("localhost", distPoller.getLocation());
 
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -156,8 +155,7 @@ public class NodeDaoTest implements InitializingBean {
         assertEquals("localhost", distPoller.getLabel());
         assertEquals("localhost", distPoller.getLocation());
 
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -168,9 +166,7 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -186,14 +182,11 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        final OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstLldpNode");
+        OnmsNode node = new OnmsNode("MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(distPoller);
+        Collection<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(7, nodes.size());
         Integer nodeid = null;
         for (OnmsNode retrieved : nodes) {
@@ -266,10 +259,8 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testCreate() throws InterruptedException {
-        final OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
 
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -278,7 +269,7 @@ public class NodeDaoTest implements InitializingBean {
 
 
         System.out.println("BEFORE GET");
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(distPoller);
+        Collection<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(7, nodes.size());
         System.out.println("AFTER GETNODES");
         for (OnmsNode retrieved : nodes) {
@@ -530,7 +521,7 @@ public class NodeDaoTest implements InitializingBean {
 
     private static void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
         assertEquals("Unexpected nodeId", expected.getId(), actual.getId());
-        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.label", "sysContact", "sysName", "sysObjectId" };
+        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "location", "sysContact", "sysName", "sysObjectId" };
         assertPropertiesEqual(properties, expected, actual);
 
         assertInterfaceSetsEqual(expected.getIpInterfaces(), actual.getIpInterfaces());
