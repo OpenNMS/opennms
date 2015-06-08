@@ -190,16 +190,16 @@ public final class HibernateEventWriter implements EventWriter {
         	ovent.setIfIndex(null);
         }
 
-        // eventDpName
-        String dpName = event.getDistPoller();
+        // systemId
+        String systemId = event.getDistPoller();
         if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName())) {
-            dpName = EventDatabaseConstants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE);
+            systemId = eventHeader.getDpName();
         } else if (event.getDistPoller() != null && !"".equals(event.getDistPoller())) {
-            dpName = EventDatabaseConstants.format(event.getDistPoller(), EVENT_DPNAME_FIELD_SIZE);
+            systemId = event.getDistPoller();
         } else {
-            dpName = "localhost";
+            systemId = "localhost";
         }
-        ovent.setDistPoller(distPollerDao.get(dpName));
+        ovent.setDistPoller(distPollerDao.get(systemId));
 
         // eventSnmpHost
         ovent.setEventSnmpHost(EventDatabaseConstants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
