@@ -44,9 +44,45 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<%
+    String subTitle = "";
+    String heatmap = "foreignSources";
+    String foreignSource = null;
+    String category = null;
+
+    String url = "/opennms/rest/heatmap/";
+
+    if (request.getParameterMap().containsKey("heatmap")) {
+        heatmap = request.getParameter("heatmap");
+    }
+
+    url += heatmap + "/";
+
+    if ("nodesByForeignSource".equals(heatmap)) {
+        foreignSource = request.getParameter("foreignSource");
+        url += foreignSource;
+        subTitle = " (Nodes by ForeignSource '" + foreignSource + "')";
+    }
+
+    if ("nodesByCategory".equals(heatmap)) {
+        category = request.getParameter("category");
+        url += category;
+        subTitle = " (Nodes by Category '" + category + "')";
+    }
+
+    if ("foreignSources".equals(heatmap)) {
+        subTitle = " (by ForeignSources)";
+    }
+
+    if ("categories".equals(heatmap)) {
+        subTitle = " (by Categories)";
+    }
+%>
+
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp">Heatmap</a></h3>
+        <h3 class="panel-title"><a href="heatmap/index.jsp">Heatmap<%=subTitle%>
+        </a></h3>
     </div>
 
     <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
@@ -56,30 +92,7 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
-        <%
-          String heatmap = "foreignSources";
-          String foreignSource = null;
-          String category = null;
 
-          String url = "/opennms/rest/heatmap/";
-
-          if (request.getParameterMap().containsKey("heatmap")) {
-            heatmap = request.getParameter("heatmap");
-          }
-
-          url += heatmap + "/";
-
-          if ("nodesByForeignSource".equals(heatmap)) {
-            foreignSource = request.getParameter("foreignSource");
-            url += foreignSource;
-          }
-
-          if ("nodesByCategory".equals(heatmap)) {
-            category = request.getParameter("category");
-            url += category;
-          }
-
-        %>
 
         var mouseclickHandler = function (e, data) {
             var nodes = data.nodes;

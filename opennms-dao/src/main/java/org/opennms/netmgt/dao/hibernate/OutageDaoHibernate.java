@@ -174,18 +174,19 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
                 return (List<HeatMapElement>) session.createSQLQuery(
-                        "select " + entityNameColumn + ", " + entityIdColumn + ", " +
+                        "select COALESCE(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                                 "count(distinct case when outages.outageid is not null and ifservices.status = 'A' then ifservices.id else null end) as servicesDown, " +
                                 "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct case when outages.outageid is null and ifservices.status = 'A' then node.nodeid else null end) as nodesUp, " +
                                 "count(distinct node.nodeid) as nodeTotalCount " +
-                                "from node join category_node using (nodeid) " +
-                                "join categories using (categoryid) " +
+                                "from node " +
+                                "left join category_node using (nodeid) " +
+                                "left join categories using (categoryid) " +
                                 "left outer join ipinterface using (nodeid) " +
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
                                 "where nodeType <> 'D' " +
-                                (restrictionColumn != null ? "and " + restrictionColumn + "='" + restrictionValue + "' " : "") +
+                                (restrictionColumn != null ? "and COALESCE(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
                                 "group by " + groupByClause)
                         .setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;

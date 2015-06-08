@@ -9,8 +9,8 @@ public class HeatMapElement {
     private int servicesTotal;
 
     public HeatMapElement(String name, Number id, Number servicesDown, Number servicesTotal, Number nodesUp, Number nodesTotal) {
-        this.name = name;
-        this.id = id == null ? 0 : id.intValue();
+        this.name = name == null ? "Uncategorized" : name;
+        this.id = id == null ? -1 : id.intValue();
         this.servicesDown = servicesDown == null ? 0 : servicesDown.intValue();
         this.servicesTotal = servicesTotal == null ? 0 : servicesTotal.intValue();
         this.nodesUp = nodesUp == null ? 0 : nodesUp.intValue();
