@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import com.google.common.collect.Lists;
 import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
@@ -50,8 +51,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -234,18 +237,15 @@ public class AlarmsDashlet extends AbstractDashlet {
          */
 
         List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
-
-        List<OnmsAlarm> distinctOnmsAlarmList = new LinkedList<>();
-        Set<Integer> onmsAlarmIdSet = new TreeSet<>();
+        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
 
         for (OnmsAlarm onmsAlarm : onmsAlarmList) {
-            if (!onmsAlarmIdSet.contains(onmsAlarm.getId())) {
-                distinctOnmsAlarmList.add(onmsAlarm);
-                onmsAlarmIdSet.add(onmsAlarm.getId());
+            if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {
+                onmsAlarmMap.put(onmsAlarm.getId(), onmsAlarm);
             }
         }
 
-        return distinctOnmsAlarmList;
+        return Lists.newArrayList(onmsAlarmMap.values());
     }
 
     /**
