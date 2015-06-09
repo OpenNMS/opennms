@@ -46,7 +46,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -737,16 +736,6 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 }
             }
         }
-        
-        int monitorIdInt = -1;
-        
-        if (monitorId != null && monitorId.length() > 0) {
-            try {
-                monitorIdInt = WebSecurityUtils.safeParseInt(monitorId);
-            } catch (NumberFormatException e) {
-                errors.add("Monitor ID '" + monitorId + "' is not an integer");
-            }
-        }
 
         OnmsApplication application = new OnmsApplication();
         if (applicationName == null) {
@@ -768,9 +757,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Collections.sort(sortedMonitors);
 
         OnmsLocationMonitor monitor = null;
-        if (monitorIdInt != -1 && location.getLocationName().equals(previousLocationName)) {
+        if (monitorId != null && !"".equals(monitorId.trim()) && location.getLocationName().equals(previousLocationName)) {
             for (OnmsLocationMonitor m : sortedMonitors) {
-                if (m.getId().equals(monitorIdInt)) {
+                if (m.getId().equals(monitorId)) {
                     monitor = m;
                     break;
                 }
@@ -784,7 +773,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(timeSpan);
         
         /*
-         * Initialize the heirarchy under the service so that we don't get
+         * Initialize the hierarchy under the service so that we don't get
          * a LazyInitializationException later when the JSP page is pulling
          * data out of the model object.
          */

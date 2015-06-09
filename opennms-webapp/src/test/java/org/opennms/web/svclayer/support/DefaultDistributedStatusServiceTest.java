@@ -44,11 +44,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -81,9 +81,21 @@ import org.springframework.validation.ObjectError;
 
 public class DefaultDistributedStatusServiceTest extends TestCase {
 
+    /*
     private static final String LOCATION_MONITOR_ID_A = UUID.randomUUID().toString();
     private static final String LOCATION_MONITOR_ID_B = UUID.randomUUID().toString();
     private static final String LOCATION_MONITOR_ID_C = UUID.randomUUID().toString();
+    */
+
+    /**
+     *  We need to make sure that these UUIDs are in sorted order because 
+     *  {@link DefaultDistributedStatusService#createHistoryModel(String, String, String, String, String)
+     *  pulls the first entry from the list of {@link LocationMonitorDao#findByLocationDefinition(LocationDef)}
+     *  and we need to be able to verify mock calls reliably.
+     */
+    private static final String LOCATION_MONITOR_ID_A = "00000000-0000-0000-0000-000000000001";
+    private static final String LOCATION_MONITOR_ID_B = "00000000-0000-0000-0000-000000000002";
+    private static final String LOCATION_MONITOR_ID_C = "00000000-0000-0000-0000-000000000003";
 
     private DefaultDistributedStatusService m_service = new DefaultDistributedStatusService();
     
@@ -107,7 +119,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     private Collection<OnmsMonitoredService> m_services;
     private OnmsNode m_node;
 
-    private String m_ip;
+    private InetAddress m_ip;
 
     private Set<OnmsMonitoredService> m_applicationServices1;
 
@@ -166,7 +178,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         Collections.shuffle(serviceNames); // shuffle to test sorting
         
         m_node = new OnmsNode();
-        m_ip = "1.1.1.1";
+        m_ip = InetAddressUtils.addr("1.1.1.1");
         m_node.setLabel("Node 1");
         m_node.setId(1);
         
@@ -332,7 +344,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=" + LOCATION_MONITOR_ID_A);
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
@@ -341,7 +353,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=" + LOCATION_MONITOR_ID_A);
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
@@ -389,7 +401,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Normal", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=" + LOCATION_MONITOR_ID_A);
         expectedTable.addCell("HTTPS", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Up", "bright");
         expectedTable.addCell("", "");
@@ -398,7 +410,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         
         expectedTable.newRow();
         expectedTable.addCell("Node 1", "Indeterminate", "element/node.jsp?node=1");
-        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=1");
+        expectedTable.addCell("Raleigh-" + LOCATION_MONITOR_ID_A, "", "distributed/locationMonitorDetails.htm?monitorId=" + LOCATION_MONITOR_ID_A);
         expectedTable.addCell("HTTP", "", "element/service.jsp?ifserviceid=null");
         expectedTable.addCell("Unknown", "bright");
         expectedTable.addCell("No status recorded for this service from this location", "");
