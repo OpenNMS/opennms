@@ -34,6 +34,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -49,6 +50,7 @@ import org.springframework.core.style.ToStringCreator;
  */
 @Entity
 @DiscriminatorValue(OnmsMonitoringSystem.TYPE_REMOTE_POLLER)
+@XmlRootElement(name="locationMonitor")
 public class OnmsLocationMonitor extends OnmsMonitoringSystem implements Comparable<OnmsLocationMonitor> {
 
     private static final long serialVersionUID = 7923969022838262552L;

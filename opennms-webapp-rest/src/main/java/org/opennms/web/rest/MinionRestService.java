@@ -84,7 +84,7 @@ public class MinionRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("{minionId}/{key}")
     @Transactional
     public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
@@ -128,8 +128,8 @@ public class MinionRestService extends OnmsRestService {
 
     private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
-        builder.alias("minionProperties", "property", JoinType.LEFT_JOIN);
-        builder.alias("properties", "property", JoinType.LEFT_JOIN);
+        //builder.alias("minionProperties", "property", JoinType.LEFT_JOIN);
+        //builder.alias("properties", "property", JoinType.LEFT_JOIN);
         applyQueryFilters(params, builder);
         return builder;
     }

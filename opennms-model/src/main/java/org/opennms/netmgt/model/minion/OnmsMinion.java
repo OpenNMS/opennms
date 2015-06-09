@@ -33,7 +33,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
@@ -42,11 +43,12 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
  */
 @Entity
 @DiscriminatorValue(OnmsMonitoringSystem.TYPE_MINION)
+@XmlRootElement(name="minion")
 public class OnmsMinion extends OnmsMonitoringSystem {
 
     private static final long serialVersionUID = 7512728871301272703L;
 
-    @XmlElement(name="status")
+    @XmlAttribute(name="status")
     private String m_status;
 
     public OnmsMinion() {

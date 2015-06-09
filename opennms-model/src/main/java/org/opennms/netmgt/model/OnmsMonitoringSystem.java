@@ -48,6 +48,8 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -82,6 +84,7 @@ import org.springframework.core.style.ToStringCreator;
 @DiscriminatorValue("System")
 // Require all objects to have a discriminator type
 @DiscriminatorOptions(force=true)
+@XmlAccessorType(XmlAccessType.NONE)
 public class OnmsMonitoringSystem implements Serializable {
 
     private static final long serialVersionUID = -5095710111103727832L;
@@ -94,14 +97,13 @@ public class OnmsMonitoringSystem implements Serializable {
     @XmlAttribute(name="id")
     private String m_id;
 
-    @XmlID
     @XmlAttribute(name="label")
     private String m_label;
 
-    @XmlElement(name="location")
+    @XmlAttribute(name="location")
     private String m_location;
 
-    @XmlElement(name="type")
+    @XmlAttribute(name="type")
     private String m_type;
 
     // TODO: Add type converter
@@ -113,7 +115,7 @@ public class OnmsMonitoringSystem implements Serializable {
     private String m_status;
     */
 
-    @XmlElement(name="date")
+    @XmlAttribute(name="date")
     private Date m_lastUpdated;
 
     @XmlElementWrapper(name="properties")

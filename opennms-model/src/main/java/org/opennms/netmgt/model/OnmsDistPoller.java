@@ -32,12 +32,14 @@ import java.io.Serializable;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents an OpenNMS Distributed Poller.
  */
 @Entity
 @DiscriminatorValue(OnmsMonitoringSystem.TYPE_OPENNMS)
+@XmlRootElement(name="distPoller")
 public class OnmsDistPoller extends OnmsMonitoringSystem implements Serializable {
 
     private static final long serialVersionUID = -1094353783612066524L;
