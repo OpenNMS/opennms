@@ -32,8 +32,26 @@ import java.util.List;
 
 import org.opennms.web.rest.measurements.model.Source;
 
+/**
+ * Used as a fall-back when no known implementations are available.
+ *
+ * @author Jesse White <jesse@opennms.org>
+ */
 public class NullFetchStrategy implements MeasurementFetchStrategy {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean supportsRrdStrategy(String rrdStrategyClass) {
+        // Technically we support any strategy, but we don't want the
+        // factory to automatically choose this one
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
             List<Source> sources) throws Exception {
