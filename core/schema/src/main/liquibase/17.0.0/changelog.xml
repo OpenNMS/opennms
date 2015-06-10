@@ -129,14 +129,6 @@
   </changeSet>
 
 
-  <!-- Change the datatype of distpoller.dpname to TEXT -->
-  <changeSet author="seth" id="17.0.0-change-distpoller-name-to-text">
-    <modifyDataType tableName="alarms" columnName="dpname" newDataType="TEXT"/>
-    <modifyDataType tableName="events" columnName="eventdpname" newDataType="TEXT"/>
-    <modifyDataType tableName="distpoller" columnName="dpname" newDataType="TEXT"/>
-    <modifyDataType tableName="node" columnName="dpname" newDataType="TEXT"/>
-  </changeSet>
-
   <changeSet author="seth" id="17.0.0-create-monitoringsystems-table">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="monitoringsystems"/></not>
@@ -161,29 +153,101 @@
   <changeSet author="seth" id="17.0.0-create-monitoringsystemsproperties-table">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="monitoringsystemsproperties"/></not>
-    </preConditions> 
+    </preConditions>
 
     <createTable tableName="monitoringsystemsproperties">
       <column name="monitoringsystemid" type="TEXT">
-        <constraints nullable="false" />
+        <constraints nullable="false" foreignKeyName="monitoringsystemsproperties_fkey" references="monitoringsystems(id)" deleteCascade="true"/>
       </column>
-      <!-- TODO: Add foreignkey constraint with monitoringsystems.id -->
       <column name="property" type="TEXT">
         <constraints nullable="false" />
       </column>
       <column name="propertyValue" type="TEXT"/>
     </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringsystemsproperties_id_idx on monitoringsystemsproperties(monitoringsystemid);
+      CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsystemsproperties(monitoringsystemid, property);
+    </sql>
   </changeSet>
 
-  <!-- TODO: Migrate data into monitoringsystems table. This is a biggie. :) -->
-  <!-- TODO: Migrate dpname, location_monitors foreign keys to point at the monitoringsystems table. -->
+  <changeSet author="seth" id="17.0.0-insert-default-monitoringsystem">
+    <insert tableName="monitoringsystems">
+      <column name="id" value="00000000-0000-0000-0000-000000000000"/>
+      <column name="label" value="localhost"/>
+      <column name="location" value="localhost"/>
+      <column name="type" value="OpenNMS"/>
+    </insert>
+  </changeSet>
 
-  <!--
+  <changeSet author="seth" id="17.0.0-disassociate-node-from-distpoller">
+    <dropColumn tableName="node" columnName="dpname"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-reassociate-alarms-with-monitoringsystems">
+    <dropColumn tableName="alarms" columnName="dpname"/>
+    <addColumn tableName="alarms">
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000">
+        <constraints nullable="false" foreignKeyName="fk_alarms_systemid" references="monitoringsystems(id)" deleteCascade="true"/>
+      </column>
+    </addColumn>
+    <!-- Recreate related indices -->
+    <sql>
+      CREATE INDEX alarm_reduction_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-reassociate-events-with-monitoringsystems">
+    <dropColumn tableName="events" columnName="eventdpname"/>
+    <addColumn tableName="events">
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <!-- TODO: Migrate location_monitors data into monitoringsystems table. This is a biggie. :) -->
+
+  <changeSet author="seth" id="17.0.0-reassociate-loc_spec_status_changes-with-systems">
+    <!-- Add the systemId column with no constraints -->
+    <addColumn tableName="location_specific_status_changes">
+      <column name="systemid" type="TEXT">
+        <!-- 
+        <constraints nullable="false" foreignKeyName="location_specific_status_changes_systemid_fkey" references="monitoringsystems(id)" deleteCascade="true"/>
+        -->
+      </column>
+    </addColumn>
+
+    <!-- Copy the locationMonitorId into systemId and then add the NOT NULL and foreign key constraints -->
+    <sql>
+      UPDATE location_specific_status_changes SET systemid = locationmonitorid;
+    </sql>
+    <addNotNullConstraint tableName="location_specific_status_changes" columnName="systemid"/>
+    <addForeignKeyConstraint constraintName="location_specific_status_changes_systemid_fkey" baseTableName="location_specific_status_changes" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
+    <!-- Recreate related indices -->
+    <sql>
+      CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
+      CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
+      CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
+    </sql>
+
+    <!-- Drop the old locationmonitorid column -->
+    <dropColumn tableName="location_specific_status_changes" columnName="locationmonitorid"/>
+  </changeSet>
+
   <changeSet author="seth" id="17.0.0-drop-distpoller-table">
     <preConditions onFail="MARK_RAN">
       <tableExists tableName="distpoller"/>
     </preConditions> 
     <dropTable tableName="distpoller" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-location-monitor-details-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="location_monitor_details"/>
+    </preConditions> 
+    <dropTable tableName="location_monitor_details" />
   </changeSet>
 
   <changeSet author="seth" id="17.0.0-drop-location-monitors-table">
@@ -193,12 +257,18 @@
     <dropTable tableName="location_monitors" />
   </changeSet>
 
+  <changeSet author="seth" id="17.0.0-drop-minions-properties-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="minions_properties"/>
+    </preConditions> 
+    <dropTable tableName="minions_properties" />
+  </changeSet>
+
   <changeSet author="seth" id="17.0.0-drop-minions-table">
     <preConditions onFail="MARK_RAN">
       <tableExists tableName="minions"/>
     </preConditions> 
     <dropTable tableName="minions" />
   </changeSet>
-  -->
 
 </databaseChangeLog>

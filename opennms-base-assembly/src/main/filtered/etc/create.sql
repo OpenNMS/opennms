@@ -50,6 +50,7 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
+drop table monitoringsystems cascade;
 drop table events cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
@@ -251,7 +252,7 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# The following command adds the initial localhost poller entry to
 --# the 'monitoringsystems' table.
 --##################################################################
-INSERT INTO monitoringsystems (id, label, location, type, status, last_updated) values ('localhost', 'localhost', 'localhost', 'OpenNMS', null, now());
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
 
 
 --########################################################################
@@ -1252,7 +1253,7 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 --#############################################################################
 CREATE TABLE location_specific_status_changes (
     id INTEGER,
-    locationMonitorId TEXT NOT NULL,
+    systemId TEXT NOT NULL,
     ifServiceId INTEGER NOT NULL,
     statusCode INTEGER NOT NULL,
     statusTime timestamp with time zone NOT NULL,
@@ -1260,14 +1261,14 @@ CREATE TABLE location_specific_status_changes (
     responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT location_monitor_fkey2 FOREIGN KEY (locationMonitorId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
+    CONSTRAINT location_specific_status_changes_systemid_fkey FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
-create index location_specific_status_changes_locationmonitorid on location_specific_status_changes(locationmonitorid);
-create index location_specific_status_changes_locationmonitorid_ifserviceid on location_specific_status_changes(locationmonitorid, ifserviceid);
-create index location_specific_status_changes_locationmonitorid_loc_if_time on location_specific_status_changes(locationmonitorid, ifserviceid, statustime);
+CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
+CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
+CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
 create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
 
 
