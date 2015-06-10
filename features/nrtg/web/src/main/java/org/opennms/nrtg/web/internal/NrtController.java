@@ -28,7 +28,6 @@
 
 package org.opennms.nrtg.web.internal;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -50,7 +49,6 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
@@ -322,10 +320,7 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            final String rrdRelativePath = attr.getRrdRelativePath();
-            final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
-
-            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(ResourcePath.get(rrdName.split(File.separator))).entrySet();
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(attr.getResource().getPath()).entrySet();
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();

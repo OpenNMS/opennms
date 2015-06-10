@@ -40,6 +40,16 @@ import org.opennms.web.rest.measurements.model.Source;
 public interface MeasurementFetchStrategy {
 
     /**
+     * Determines whether or not this fetch strategy supports
+     * retrieving measurements for metrics persisted by
+     * the given RRDStrategy.
+     *
+     * @param rrdStrategyClass canonical name of the RRDStrategy implementation
+     * @return true if the given RRDStrategy is supported, false otherwise
+     */
+    public boolean supportsRrdStrategy(String rrdStrategyClass);
+
+    /**
      * Fetches the measurements for the given sources.
      *
      * @param start      timestamp in milliseconds

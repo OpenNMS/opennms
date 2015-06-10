@@ -40,6 +40,7 @@ import org.opennms.web.rest.measurements.Utils;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 
@@ -52,11 +53,8 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractRrdBasedFetchStrategy.class);
 
-    private final ResourceDao m_resourceDao;
-
-    public AbstractRrdBasedFetchStrategy(final ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
-    }
+    @Autowired
+    private ResourceDao m_resourceDao;
 
     /**
      * {@inheritDoc}
