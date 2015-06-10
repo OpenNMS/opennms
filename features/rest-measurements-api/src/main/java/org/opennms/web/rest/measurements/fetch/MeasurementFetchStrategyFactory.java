@@ -63,8 +63,8 @@ public class MeasurementFetchStrategyFactory {
         } else if (strategy instanceof JRobinRrdStrategy) {
             return new JrobinFetchStrategy(m_resourceDao);
         } else {
-            LOG.error("Unsupported RRD strategy: {}. Defaulting to NoOpStrategy.", strategy.getClass());
-            return new NoOpStrategy();
+            LOG.error("Unsupported RRD strategy: {}. Defaulting to NullFetchStrategy.", strategy.getClass());
+            return new NullFetchStrategy();
         }
 	}
 

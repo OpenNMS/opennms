@@ -32,12 +32,12 @@ import java.util.List;
 
 import org.opennms.web.rest.measurements.model.Source;
 
-public class NoOpStrategy implements MeasurementFetchStrategy {
+public class NullFetchStrategy implements MeasurementFetchStrategy {
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
             List<Source> sources) throws Exception {
-        throw new Exception("NoOpStrategy cannot fetch.");
+        return null;
     }
 
 }
