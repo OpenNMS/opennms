@@ -14,6 +14,7 @@
     <description>Official documentation</description>
     <modules>
         <module>guide-doc</module>
+        <module>guide-concepts</module>
         <module>guide-install</module>
         <module>guide-user</module>
         <module>guide-development</module>
