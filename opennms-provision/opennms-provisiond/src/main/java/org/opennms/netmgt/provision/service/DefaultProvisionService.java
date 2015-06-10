@@ -1169,16 +1169,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public List<ServiceDetector> getDetectorsForForeignSource(final String foreignSourceName) {
+
         final ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
 
         final List<PluginConfig> detectorConfigs = foreignSource.getDetectors();
         if (detectorConfigs == null) {
-            return new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
+	    ArrayList aList;
+	    aList = new ArrayList<ServiceDetector>(m_pluginRegistry.getAllPlugins(ServiceDetector.class));
+
+	    return aList;
         }
 
         final List<ServiceDetector> detectors = new ArrayList<ServiceDetector>(detectorConfigs.size());
+
         for(final PluginConfig detectorConfig : detectorConfigs) {
+
+	    
             final ServiceDetector detector = m_pluginRegistry.getPluginInstance(ServiceDetector.class, detectorConfig);
             if (detector == null) {
                 LOG.error("Configured plugin does not exist: {}", detectorConfig);
