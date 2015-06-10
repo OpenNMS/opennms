@@ -13,9 +13,18 @@
 
   <context:annotation-config />
 
-  <bean id="measurementFetchStrategyFactory" class="org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategyFactory" />
+  <!-- Extension point for additional MeasurementFetchStrategy implementations -->
+  <import resource="classpath*:/META-INF/opennms/component-measurements-ext.xml" />
 
-  <bean id="measurementFetchStrategy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+  <bean id="jrobinFetchStrategy" class="org.opennms.web.rest.measurements.fetch.JrobinFetchStrategy"/>
+
+  <bean id="rrdtoolXportFetchStrategy" class="org.opennms.web.rest.measurements.fetch.RrdtoolXportFetchStrategy"/>
+
+  <bean id="jrrd2FetchStrategy" class="org.opennms.web.rest.measurements.fetch.JRrd2FetchStrategy"/>
+
+  <bean id="measurementFetchStrategyFactory" class="org.opennms.web.rest.measurements.fetch.MeasurementFetchStrategyFactory"/>
+
+  <bean id="measurementFetchStrategy" primary="true" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="measurementFetchStrategyFactory"/>
     <property name="targetMethod" value="getFetchStrategy"/>
   </bean>

@@ -10,6 +10,9 @@
 
     <context:annotation-config />
 
+    <!-- Extension point for RRD strategies that may require additional beans -->
+    <import resource="classpath*:/META-INF/opennms/applicationContext-rrd-ext.xml"/>
+
     <bean id="rrdConfigurationPropertiesDefaults" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <props>

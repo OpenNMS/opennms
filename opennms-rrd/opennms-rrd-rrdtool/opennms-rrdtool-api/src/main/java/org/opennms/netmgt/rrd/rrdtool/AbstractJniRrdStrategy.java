@@ -108,36 +108,6 @@ public abstract class AbstractJniRrdStrategy<D extends Object,F extends Object> 
     }
 
     /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return 0;
-    }
-    
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return 0;
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return 0;
-    }
-
-    /**
      * <p>getDefaultFileExtension</p>
      *
      * @return a {@link java.lang.String} object.

@@ -28,16 +28,10 @@
 
 package org.opennms.web.rest.measurements.fetch;
 
-import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.rrd.MultiOutputRrdStrategy;
-import org.opennms.netmgt.rrd.QueuingRrdStrategy;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
-import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
-import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Used to instantiate a fetch strategy based on the
@@ -46,54 +40,28 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
-public class MeasurementFetchStrategyFactory {
+public class MeasurementFetchStrategyFactory implements ApplicationContextAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementFetchStrategyFactory.class);
 
-    @Autowired
-    private ResourceDao m_resourceDao;
+    private static final String RRD_STRATEGY_CLASS_PROPERTY = "org.opennms.rrd.strategyClass";
 
-    @Autowired
-    private RrdStrategy<?, ?> m_rrdStrategy;
+    private ApplicationContext m_context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) {
+        m_context = context;
+    }
 
 	public MeasurementFetchStrategy getFetchStrategy() {
-		RrdStrategy<?, ?> strategy = findRrdStrategy();
+	    final String rrdStrategyClass = System.getProperty(RRD_STRATEGY_CLASS_PROPERTY);
+	    for (MeasurementFetchStrategy fetchStrategy : m_context.getBeansOfType(MeasurementFetchStrategy.class).values()) {
+	        if (fetchStrategy.supportsRrdStrategy(rrdStrategyClass)) {
+	            return fetchStrategy;
+	        }
+	    }
 
-		if (strategy instanceof JniRrdStrategy) {
-			return new RrdtoolXportFetchStrategy(m_resourceDao);
-        } else if (strategy instanceof JRobinRrdStrategy) {
-            return new JrobinFetchStrategy(m_resourceDao);
-        } else if (strategy instanceof MultithreadedJniRrdStrategy) {
-            return new JRrd2FetchStrategy(m_resourceDao);
-        } else {
-            LOG.error("Unsupported RRD strategy: {}. Defaulting to NoOpStrategy.", strategy.getClass());
-            return new NoOpStrategy();
-        }
+        LOG.error("No supported fetch strategy found for {}. Defaulting to NullFetchStrategy.", rrdStrategyClass);
+        return new NullFetchStrategy();
 	}
-
-	private RrdStrategy<?, ?> findRrdStrategy() {
-	    return findRrdStrategy(m_rrdStrategy);
-    }
-
-    private static RrdStrategy<?, ?> findRrdStrategy(final RrdStrategy<?, ?> rrdStrategy) {
-        if (rrdStrategy instanceof JniRrdStrategy || rrdStrategy instanceof JRobinRrdStrategy) {
-            return rrdStrategy;
-        }
-
-        if (rrdStrategy instanceof QueuingRrdStrategy) {
-            return findRrdStrategy(((QueuingRrdStrategy) rrdStrategy).getDelegate());
-        }
-
-        if (rrdStrategy instanceof MultiOutputRrdStrategy) {
-            for (final RrdStrategy<?, ?> delegate : ((MultiOutputRrdStrategy) rrdStrategy).getDelegates()) {
-                RrdStrategy<?, ?> x = findRrdStrategy(delegate);
-
-                if (x instanceof JniRrdStrategy || x instanceof JRobinRrdStrategy) {
-                    return x;
-                }
-            }
-        }
-
-        return rrdStrategy;
-    }
 }
