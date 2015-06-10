@@ -155,56 +155,6 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs) {
-        Assert.notNull(graphs, "graph argument cannot be null");
-        List<OnmsResource> resources = new LinkedList<OnmsResource>();
-        HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
-        for(Graph graph : graphs) {
-            String resourceId = getResourceIdForGraph(graph);
-
-            if (resourceId != null) {
-                String[] resourceParts = DefaultGraphResultsService.parseResourceId(resourceId);
-                if (resourceParts == null) {
-                    LOG.warn("getResourcesFromGraphs: unparsable resourceId, skipping: {}", resourceId);
-                    continue;
-                }
-
-                String parent = resourceParts[0];
-                String childType = resourceParts[1];
-                String childName = resourceParts[2];
-
-                List<OnmsResource> resourcesForParent = resourcesMap.get(parent);
-                if (resourcesForParent == null) {
-                    try {
-                        resourcesForParent = getResourceService().getResourceListById(resourceId);
-                        if (resourcesForParent == null) {
-                            LOG.warn("getResourcesFromGraphs: no resources found for parent {}", parent);
-                            continue;
-                        } else {
-                            resourcesMap.put(parent, resourcesForParent);
-                            LOG.debug("getResourcesFromGraphs: add resourceList to map for {}", parent);
-                        }
-                    } catch (Throwable e) {
-                        LOG.warn("getResourcesFromGraphs: unexpected exception thrown while fetching resource list for \"{}\", skipping resource", parent, e);
-                        continue;
-                    }
-                }
-
-                for (OnmsResource r : resourcesForParent) {
-                    if (childType.equals(r.getResourceType().getName()) && childName.equals(r.getName())) {
-                        resources.add(r);
-                        LOG.debug("getResourcesFromGraphs: found resource in map{}", r.toString());
-                        break;
-                    }
-                }
-            }
-        }
-        return resources;
-    }
-
-
     private void initTimeSpans() {
         for (String timeSpan : KSC_PerformanceReportFactory.TIMESPAN_OPTIONS) {
             s_timeSpans.put(timeSpan, timeSpan);
