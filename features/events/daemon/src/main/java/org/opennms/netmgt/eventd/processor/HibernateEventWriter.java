@@ -191,15 +191,19 @@ public final class HibernateEventWriter implements EventWriter {
         }
 
         // systemId
-        String systemId = event.getDistPoller();
-        if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName())) {
-            systemId = eventHeader.getDpName();
-        } else if (event.getDistPoller() != null && !"".equals(event.getDistPoller())) {
-            systemId = event.getDistPoller();
-        } else {
-            systemId = "localhost";
+
+        // If available, use the header's distPoller
+        if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
-        ovent.setDistPoller(distPollerDao.get(systemId));
+        // Otherwise, use the event's distPoller
+        if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
+            ovent.setDistPoller(distPollerDao.get(event.getDistPoller()));
+        } 
+        // And if both are unavailable, use the local system as the event's source system
+        if (ovent.getDistPoller() == null) {
+            ovent.setDistPoller(distPollerDao.whoami());
+        }
 
         // eventSnmpHost
         ovent.setEventSnmpHost(EventDatabaseConstants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
