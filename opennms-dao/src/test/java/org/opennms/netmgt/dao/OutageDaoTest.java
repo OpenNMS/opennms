@@ -276,7 +276,7 @@ public class OutageDaoTest implements InitializingBean {
     }
 
     private OnmsDistPoller getLocalHostDistPoller() {
-        return m_distPollerDao.load("localhost");
+        return m_distPollerDao.whoami();
     }
     
     private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName, OnmsNode node) {

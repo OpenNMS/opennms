@@ -54,7 +54,6 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -136,10 +135,6 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        assertEquals("localhost", distPoller.getId());
-        assertEquals("localhost", distPoller.getLabel());
-        assertEquals("localhost", distPoller.getLocation());
 
         OnmsNode node = new OnmsNode("MyFirstNode");
         getNodeDao().save(node);
@@ -150,10 +145,6 @@ public class NodeDaoTest implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithPathElement() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        assertEquals("localhost", distPoller.getId());
-        assertEquals("localhost", distPoller.getLabel());
-        assertEquals("localhost", distPoller.getLocation());
 
         OnmsNode node = new OnmsNode("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");

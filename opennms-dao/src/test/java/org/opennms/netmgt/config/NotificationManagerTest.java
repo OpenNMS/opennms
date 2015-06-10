@@ -56,10 +56,8 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -117,11 +115,6 @@ public class NotificationManagerTest implements InitializingBean {
 
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
-        
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost");
-        distPoller.setLabel("localhost");
-        distPoller.setLocation("localhost");
-        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
 
         OnmsNode node;
         OnmsIpInterface ipInterface;

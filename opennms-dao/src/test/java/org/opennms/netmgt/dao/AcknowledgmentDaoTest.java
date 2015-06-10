@@ -146,7 +146,7 @@ public class AcknowledgmentDaoTest implements InitializingBean {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(m_distPollerDao.load("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -163,7 +163,7 @@ public class AcknowledgmentDaoTest implements InitializingBean {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(new Integer(1));
-        alarm.setDistPoller(m_distPollerDao.load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setAlarmAckTime(new Date());
         alarm.setAlarmAckUser("not-admin");
         

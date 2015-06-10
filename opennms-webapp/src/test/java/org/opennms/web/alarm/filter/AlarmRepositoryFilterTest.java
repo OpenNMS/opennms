@@ -319,9 +319,8 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         assertNotNull(events);
         OnmsEvent event = events.get(0);
         
-        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
-        assertNotNull(pollers);
-        OnmsDistPoller poller = pollers.get(0);
+        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+        assertNotNull(poller);
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
@@ -361,9 +360,8 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         assertNotNull(events);
         OnmsEvent event = events.get(0);
         
-        List<OnmsDistPoller> pollers = m_dbPopulator.getDistPollerDao().findAll();
-        assertNotNull(pollers);
-        OnmsDistPoller poller = pollers.get(0);
+        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
+        assertNotNull(poller);
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");

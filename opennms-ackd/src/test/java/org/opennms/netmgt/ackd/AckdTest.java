@@ -308,7 +308,7 @@ public class AckdTest implements InitializingBean {
         vo.m_nodeId = node.getId();
                 
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_populator.getDistPoller("localhost"));
+        event.setDistPoller(m_populator.getDistPollerDao().whoami());
         event.setNode(node);
         
         event.setEventCreateTime(time);

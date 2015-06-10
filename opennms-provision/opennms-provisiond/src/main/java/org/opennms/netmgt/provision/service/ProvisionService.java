@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -68,24 +67,6 @@ public interface ProvisionService {
      * node's data again. This is needed only to help memory performance.
      */
     void clearCache();
-
-    /**
-     * Lookup a distPoller in the database, creating it if necessary. This
-     * method looks up the OnmsDistPoller object with the name 'dpName' in the
-     * database and returns it. If there is not distPoller with that name that
-     * one is created using the name and the address provided, saved in the
-     * database, and returned.
-     *
-     * @param dpName
-     *            The name of the distPoller that is needed
-     * @param dpAddr
-     *            The address to give the new distPoller if it is necessary to
-     *            create one
-     * @return a new distPoller that will be saved to the database when the
-     *         transaction is committed.
-     */
-    @Transactional
-    OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr);
 
     /**
      * Lookup a monitoring location in the database, creating it if necessary. This

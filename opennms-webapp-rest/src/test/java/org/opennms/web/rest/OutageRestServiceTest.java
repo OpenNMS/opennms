@@ -1,5 +1,9 @@
 package org.opennms.web.rest;
 
+import java.util.Date;
+
+import javax.ws.rs.core.MediaType;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,9 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import javax.ws.rs.core.MediaType;
-import java.util.Date;
 
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -72,7 +73,7 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
             @Override
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
-                OnmsDistPoller distPoller = populator.getDistPoller("localhost");
+                OnmsDistPoller distPoller = populator.getDistPollerDao().whoami();
                 outageEvent = populator.buildEvent(distPoller);
                 populator.getEventDao().save(outageEvent);
                 populator.getEventDao().flush();

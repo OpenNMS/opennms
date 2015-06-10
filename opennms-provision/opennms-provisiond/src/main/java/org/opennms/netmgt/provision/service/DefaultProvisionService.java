@@ -66,7 +66,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -700,37 +699,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     public void clearCache() {
         m_nodeDao.clear();
         m_nodeDao.flush();
-    }
-
-    @Override
-    public OnmsDistPoller createDistPollerIfNecessary(final String dpName, final String dpAddr) {
-        return createDistPollerIfNecessary(new OnmsDistPoller(dpName));
-    }
-
-    public OnmsDistPoller createDistPollerIfNecessary(OnmsDistPoller scannedDistPoller) {
-
-        final OnmsDistPoller distPoller;
-        if (scannedDistPoller == null) {
-            distPoller = new OnmsDistPoller("localhost");
-        } else {
-            distPoller = scannedDistPoller;
-        }
-
-        return new CreateIfNecessaryTemplate<OnmsDistPoller, DistPollerDao>(m_transactionManager, m_distPollerDao) {
-
-            @Override
-            protected OnmsDistPoller query() {
-                return m_distPollerDao.get(distPoller.getId());
-            }
-
-            @Override
-            public OnmsDistPoller doInsert() {
-                m_distPollerDao.save(distPoller);
-                m_distPollerDao.flush();
-                return distPoller;
-            }
-        }.execute();
-
     }
 
     @Override

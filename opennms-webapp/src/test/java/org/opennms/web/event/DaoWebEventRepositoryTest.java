@@ -88,7 +88,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
         m_dbPopulator.populateDatabase();
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
+        event.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
         event.setEventUei("uei.opennms.org/test2");
         event.setEventTime(new Date());
         event.setEventSource("test");
@@ -100,7 +100,7 @@ public class DaoWebEventRepositoryTest implements InitializingBean {
         m_dbPopulator.getEventDao().flush();
         
         OnmsEvent event2 = new OnmsEvent();
-        event2.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
+        event2.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
         event2.setEventUei("uei.opennms.org/test3");
         event2.setEventTime(new Date());
         event2.setEventSource("test");

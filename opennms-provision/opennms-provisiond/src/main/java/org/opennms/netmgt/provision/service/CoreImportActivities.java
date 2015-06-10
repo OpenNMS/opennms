@@ -92,9 +92,6 @@ public class CoreImportActivities {
 
         info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
 
-        // @ipv6
-        m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
-        
         final String foreignSource = specFile.getForeignSource();
         final Map<String, Integer> foreignIdsToNodes = m_provisionService.getForeignIdToNodeIdMap(foreignSource);
 

@@ -70,7 +70,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -583,7 +582,7 @@ public class DatabasePopulator {
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_node1);
@@ -595,19 +594,6 @@ public class DatabasePopulator {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         return alarm;
-    }
-
-    public OnmsDistPoller getDistPoller(final String distPollerId) {
-        OnmsDistPoller distPoller = getDistPollerDao().get(distPollerId);
-        if (distPoller == null) {
-            distPoller = new OnmsDistPoller(distPollerId);
-            distPoller.setLabel("localhost");
-            distPoller.setLocation("localhost");
-            distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
-            getDistPollerDao().save(distPoller);
-            getDistPollerDao().flush();
-        }
-        return distPoller;
     }
 
     public AlarmDao getAlarmDao() {

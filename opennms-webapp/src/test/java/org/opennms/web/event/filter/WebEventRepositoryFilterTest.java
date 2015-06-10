@@ -93,7 +93,7 @@ public class WebEventRepositoryFilterTest implements InitializingBean {
         m_dbPopulator.populateDatabase();
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_dbPopulator.getDistPoller("localhost"));
+        event.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
         event.setAlarm(m_dbPopulator.getAlarmDao().get(1));
         event.setNode(m_dbPopulator.getNode1());
         event.setEventUei("uei.opennms.org/test2");

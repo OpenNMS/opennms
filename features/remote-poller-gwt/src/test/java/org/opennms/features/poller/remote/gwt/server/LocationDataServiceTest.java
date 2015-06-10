@@ -28,9 +28,9 @@
 
 package org.opennms.features.poller.remote.gwt.server;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Date;
 import java.util.Properties;
@@ -64,7 +64,6 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -150,9 +149,6 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         OnmsApplication app = new OnmsApplication();
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
-
-        OnmsDistPoller dp = new OnmsDistPoller("localhost");
-        m_distPollerDao.saveOrUpdate(dp);
 
         OnmsNode localhostNode = new OnmsNode("localhost");
         m_nodeDao.saveOrUpdate(localhostNode);
