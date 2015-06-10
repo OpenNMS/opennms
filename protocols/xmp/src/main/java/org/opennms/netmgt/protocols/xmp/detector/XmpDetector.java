@@ -13,8 +13,27 @@
 * http://www.krupczak.org/
 */
 
+
+package org.opennms.netmgt.protocols.xmp.detector;
+
+import java.net.InetAddress;
+import java.util.Date;
+
+import org.krupczak.xmp.SocketOpts;
+import org.krupczak.xmp.Xmp;
+import org.krupczak.xmp.XmpMessage;
+import org.krupczak.xmp.XmpSession;
+import org.krupczak.xmp.XmpVar;
+import org.opennms.netmgt.provision.SyncServiceDetector;
+import org.opennms.netmgt.config.xmpConfig.XmpConfig;
+import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
- * OpenNMS XMP Detector allows for discovery of service/protocols via 
+ * OpenNMS XMP Detector allows for discovery of service/protocols via
  * provisiond.  Our detector is pretty simple right now.  All it does is
  * attempt to establish an XmpSession with a system and if it succeeds,
  * it queries a few core MIB variables and returns success.
@@ -22,66 +41,37 @@
  * supported MIBs, modules/plugins, and various dependencies to
  * determine if something is a server for some service (noted by an
  * inbound dependency relationship).
- */
-
-package org.opennms.protocols.xmp.detector;
-
-import java.net.InetAddress;
-import java.util.Date;
-import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.AbstractDetector;
-import org.opennms.netmgt.provision.ServiceDetector;
-import org.opennms.netmgt.provision.SyncServiceDetector;
-import org.krupczak.xmp.*;
-import org.opennms.netmgt.config.xmpConfig.XmpConfig;    
-import org.opennms.netmgt.protocols.xmp.config.XmpConfigFactory;
-import org.opennms.netmgt.protocols.xmp.collector.XmpCollector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-@Component
-/**
- * XmpDetector class
+ *
  * @author rdk <rdk@krupczak.org>
  * @version $Id: $
- *
  */
+@Component
 @Scope("prototype")
-public class XmpDetector implements SyncServiceDetector
-{
-    // class variables
-
+public class XmpDetector implements SyncServiceDetector {
     private static final String DEFAULT_SERVICE_NAME = "XMP";
+    private static final String XMP_DEFAULT_AUTH_USER = "xmpUser";
     private static final Logger LOG = LoggerFactory.getLogger(XmpDetector.class);
-    private static int XMP_DEFAULT_TIMEOUT = 3000;
+    private static int XMP_DEFAULT_TIMEOUT = 3000; /* millseconds */
     private static int XMP_DEFAULT_RETRIES = 1;
-    
-    // instance variables
-    SocketOpts sockopts;
-    XmpConfig protoConfig;
-    int xmpPort;
-    int xmpTimeout;
-    int xmpRetries;
-    String xmpAuthenUser;
-    String xmpServiceName; 
-    String m_ipMatch;
-    Date createTimeDate;
 
-    /* 
+    private SocketOpts sockopts;
+    private int xmpPort;
+    private int xmpTimeout;
+    private int xmpRetries;
+    private String xmpAuthenUser;
+    private String xmpServiceName;
+    private String ipMatch;
+    private Date createTimeDate;
+
+    /**
      * @param serviceName a {@link java.lang.String} object
-     * @param port an int specifying tcp port number
+     * @param port        an int specifying tcp port number
      */
-    
-    public XmpDetector(String serviceName, int port)
-    {
-	//super(serviceName,port,XMP_DEFAULT_TIMEOUT,XMP_DEFAULT_RETRIES);
-	
+    public XmpDetector(String serviceName, int port) {
         // set default config
         xmpPort = port;
-        xmpAuthenUser = "xmpUser";
-        xmpTimeout = XMP_DEFAULT_TIMEOUT; /* millseconds */
+        xmpAuthenUser = XMP_DEFAULT_AUTH_USER;
+        xmpTimeout = XMP_DEFAULT_TIMEOUT;
         xmpRetries = XMP_DEFAULT_RETRIES;
 
         // get socket opts
@@ -89,163 +79,150 @@ public class XmpDetector implements SyncServiceDetector
 
         xmpServiceName = serviceName;
 
-	// very important to set to null, not 0-len string
-	// as provisiond's ip range matching functionality
-	// will not correctly match if 0-len instead of null
-	//m_ipMatch = new String("");
-	
-	m_ipMatch = null;  
+        // very important to set to null, not 0-len string
+        // as provisiond's ip range matching functionality
+        // will not correctly match if 0-len instead of null
+        //ipMatch = new String("");
 
-	createTimeDate = new Date();
-
-	if (LOG == null) {
-	   System.out.println("XmpDetector created, but null LOG");
-	}
-	else {
-	    LOG.debug("XmpDetector created, service "+xmpServiceName+" at "+createTimeDate);
-	}
-
+        ipMatch = null;
+        createTimeDate = new Date();
+        LOG.debug("XmpDetector created, service " + xmpServiceName + " at " + createTimeDate);
     } /* XmpDetector */
 
-    public XmpDetector()
-    {
-	this(DEFAULT_SERVICE_NAME,Xmp.XMP_PORT);
-        
+    public XmpDetector() {
+        this(DEFAULT_SERVICE_NAME, Xmp.XMP_PORT);
     } /* XmpDetector */
 
+    @Override
     public String getServiceName() {
-	LOG.debug("XmpDetector: getServiceName");
-	return xmpServiceName;
-    }
-  
-    public void setServiceName(String newServiceName) 
-    {
-	LOG.debug("XmpDetector: setServiceName to "+newServiceName);
-    	xmpServiceName = newServiceName;   
+        LOG.debug("XmpDetector: getServiceName");
+        return xmpServiceName;
     }
 
-    public void init() { onInit(); }
+    @Override
+    public void setServiceName(String newServiceName) {
+        LOG.debug("XmpDetector: setServiceName to " + newServiceName);
+        xmpServiceName = newServiceName;
+    }
 
-    public void onInit()
-    {
+    @Override
+    public void init() {
+        onInit();
+    }
+
+    public void onInit() {
         LOG.debug("XmpDetector: onInit starting");
-	
+
         // try to get configuration
-        try { 
+        try {
             XmpConfig protoConfig;
 
-	    XmpConfigFactory.init();
+            XmpConfigFactory.init();
             protoConfig = XmpConfigFactory.getInstance().getXmpConfig();
             if (protoConfig.hasPort())
-               xmpPort = protoConfig.getPort();
+                xmpPort = protoConfig.getPort();
             if (protoConfig.hasTimeout())
-               xmpTimeout = protoConfig.getTimeout();
+                xmpTimeout = protoConfig.getTimeout();
             if (protoConfig.getAuthenUser() != null)
-               xmpAuthenUser = protoConfig.getAuthenUser();
+                xmpAuthenUser = protoConfig.getAuthenUser();
 
-            sockopts.setConnectTimeout(xmpTimeout);	    
+            sockopts.setConnectTimeout(xmpTimeout);
 
         } catch (Throwable e) {
-            if (LOG != null)
-               LOG.error("XmpDetector: no config factory, using defaults");   
-            else
-	       System.out.println("XmpDetector: null LOG");
+            LOG.error("XmpDetector: no config factory, using defaults");
         }
     }
 
-    public int getPort()
-    {
-        LOG.debug("XmpDetector: getPort");
-	return xmpPort;
+    @Override
+    public int getPort() {
+        LOG.trace("XmpDetector: getPort");
+        return xmpPort;
     }
 
-    public void setPort(int newPort)
-    {
-        LOG.debug("XmpDetector: setPort to "+newPort);
-	xmpPort = newPort;
+    @Override
+    public void setPort(int newPort) {
+        LOG.trace("XmpDetector: setPort to " + newPort);
+        xmpPort = newPort;
     }
 
-    public void setIpMatch(String ipMatch)
-    {
-	LOG.debug("XmpDetector: setIpMatch to "+ipMatch);
-	
-	m_ipMatch = ipMatch;
+    @Override
+    public void setIpMatch(String newIpMatch) {
+        LOG.trace("XmpDetector: setIpMatch to " + newIpMatch);
+        ipMatch = newIpMatch;
     }
 
-    public String getIpMatch()
-    {
-        LOG.debug("XmpDetector: getIpMatch returning '"+m_ipMatch+"'");
-	return m_ipMatch;
+    @Override
+    public String getIpMatch() {
+        LOG.trace("XmpDetector: getIpMatch returning '" + ipMatch + "'");
+        return ipMatch;
     }
 
-    public int getTimeout()
-    {
-        LOG.debug("XmpDetector: getTimeout returning "+xmpTimeout);
-	return xmpTimeout;
+    @Override
+    public int getTimeout() {
+        LOG.trace("XmpDetector: getTimeout returning " + xmpTimeout);
+        return xmpTimeout;
     }
 
-    public void setTimeout(int newTimeout) 
-    {
-        LOG.debug("XmpDetector: setTimeout to "+newTimeout);
-        xmpTimeout = newTimeout; 
+    @Override
+    public void setTimeout(int newTimeout) {
+        LOG.trace("XmpDetector: setTimeout to " + newTimeout);
+        xmpTimeout = newTimeout;
         sockopts.setConnectTimeout(xmpTimeout);
     }
 
-    public void dispose()
-    {
-	LOG.debug("XmpDetector: dispose invoked");
-	
-	// dispose of anything like sessions, etc.
+    @Override
+    public void dispose() {
+        LOG.debug("XmpDetector: dispose invoked");
+        // dispose of anything like sessions, etc.
         // no need to dispose SocketOpts
     }
 
     @Override
-    public final boolean isServiceDetected(InetAddress address)
-    {
+    public final boolean isServiceDetected(InetAddress address) {
         XmpSession aSession;
         XmpMessage aReply;
-        XmpVar[] vars,replyVars;
+        XmpVar[] vars, replyVars;
 
-	LOG.debug("XmpDetector: isServiceDetected starting to query "+address);
-	
+        LOG.debug("XmpDetector: isServiceDetected starting to query " + address);
+
         // try to establish session
-        aSession = new XmpSession(sockopts,address,xmpPort,xmpAuthenUser);
+        aSession = new XmpSession(sockopts, address, xmpPort, xmpAuthenUser);
         if (aSession.isClosed()) {
-	   LOG.debug("XmpDetector: null session to "+address);
-	   return false;
+            LOG.debug("XmpDetector: null session to " + address);
+            return false;
         }
 
-        LOG.debug("XmpDetector: isServiceDetected session established with "+address);
+        LOG.debug("XmpDetector: isServiceDetected session established with " + address);
         // query for core.sysName, core.sysDescr, 
         // core.sysUpTime, core.xmpdVersion
-        vars = new XmpVar[] {
-	    new XmpVar("core","sysName","","",Xmp.SYNTAX_NULLSYNTAX),
-	    new XmpVar("core","sysDescr","","",Xmp.SYNTAX_NULLSYNTAX),
-	    new XmpVar("core","sysUpTime","","",Xmp.SYNTAX_NULLSYNTAX),
-	    new XmpVar("core","xmpdVersion","","",Xmp.SYNTAX_NULLSYNTAX),
+        vars = new XmpVar[]{
+                new XmpVar("core", "sysName", "", "", Xmp.SYNTAX_NULLSYNTAX),
+                new XmpVar("core", "sysDescr", "", "", Xmp.SYNTAX_NULLSYNTAX),
+                new XmpVar("core", "sysUpTime", "", "", Xmp.SYNTAX_NULLSYNTAX),
+                new XmpVar("core", "xmpdVersion", "", "", Xmp.SYNTAX_NULLSYNTAX),
         };
-      
+
         if ((aReply = aSession.queryVars(vars)) == null) {
-            LOG.debug("XmpDetector: isServiceDetected no vars from "+address);
-	    aSession.closeSession();
+            LOG.debug("XmpDetector: isServiceDetected no vars from " + address);
+            aSession.closeSession();
             return false;
         }
 
         aSession.closeSession();
 
-	// log what we retrieved
+        // log what we retrieved
         if ((replyVars = aReply.getMIBVars()) == null) {
-            LOG.debug("XmpDetector: isServiceDetected no replyVars for "+address);
+            LOG.debug("XmpDetector: isServiceDetected no replyVars for " + address);
             return false;
 
         } /* if replyVars == null */
 
-        LOG.debug("XmpDetector: isServiceDetected "+address+" reports "+
-                   replyVars[0].getValue()+","+
-                   replyVars[1].getValue());
-        LOG.debug("XmpDetector: isServiceDetected true for "+address);
-	
-	return true;
+        LOG.debug("XmpDetector: isServiceDetected " + address + " reports " +
+                replyVars[0].getValue() + "," +
+                replyVars[1].getValue());
+        LOG.debug("XmpDetector: isServiceDetected true for " + address);
+
+        return true;
 
     } /* isServiceDetected */
 
