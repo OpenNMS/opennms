@@ -86,8 +86,10 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -214,6 +216,14 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     @Before
     public void setUp() throws Exception {
+        if (m_distPollerDao.findAll().size() == 0) {
+            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            distPoller.setLabel("localhost");
+            distPoller.setLocation("localhost");
+            distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+            m_distPollerDao.save(distPoller);
+        }
+
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
 

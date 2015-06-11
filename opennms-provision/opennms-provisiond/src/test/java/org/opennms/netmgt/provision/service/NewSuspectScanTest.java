@@ -59,7 +59,9 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -149,6 +151,14 @@ public class NewSuspectScanTest extends ProvisioningTestCase implements Initiali
     @Before
     public void setUp() throws Exception {
         m_eventSubscriber.getEventAnticipator().reset();
+
+        if (m_distPollerDao.findAll().size() == 0) {
+            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            distPoller.setLabel("localhost");
+            distPoller.setLocation("localhost");
+            distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+            m_distPollerDao.save(distPoller);
+        }
 
         m_foreignSource = new ForeignSource();
         m_foreignSource.setName("imported:");
