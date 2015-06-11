@@ -17,7 +17,7 @@
         <property name="properties">
             <props>
                 <!-- General configuration -->
-                <prop key="org.opennms.rrd.strategyClass">org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</prop>
+                <prop key="org.opennms.rrd.strategyClass">#{ T(org.opennms.netmgt.rrd.RrdConfig).DEFAULT_RRD_STRATEGY_CLASS }</prop>
                 <prop key="org.opennms.rrd.usequeue">true</prop>
                 <prop key="org.opennms.rrd.usetcp">false</prop>
                 <prop key="org.opennms.rrd.fileExtension" />

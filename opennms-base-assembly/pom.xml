@@ -552,8 +552,8 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.rest-measurements-api</artifactId>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.rest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
