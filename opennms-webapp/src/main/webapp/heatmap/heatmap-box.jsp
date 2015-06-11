@@ -129,7 +129,9 @@
                     ],
                     "colorStops": [
                         {"val": 1.0, "color": "#CC0000"},
-                        {"val": 0.5, "color": "#FFCC00"},
+                        {"val": 0.4, "color": "#FF3300"},
+                        {"val": 0.2, "color": "#FF9900"},
+                        {"val": 0.1, "color": "#FFCC00"},
                         {"val": 0.0, "color": "#336600"}
                     ],
                     "labelsEnabled": true,
@@ -146,8 +148,9 @@
 <div align="right">
     [<a href="<%=request.getRequestURI()%>?heatmap=foreignSources">Outages by Foreign Sources</a>]&nbsp;[<a
         href="<%=request.getRequestURI()%>?heatmap=categories">Outages by Categories</a>]&nbsp;
-    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;no outages
-    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;one outage
-    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;two or more
-    outages
+    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;0% down
+    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;10% down
+    <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;20% down
+    <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
+    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
 </div>

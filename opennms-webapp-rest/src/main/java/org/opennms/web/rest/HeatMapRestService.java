@@ -93,14 +93,12 @@ public class HeatMapRestService extends OnmsRestService {
         for (HeatMapElement heatMapElement : heatMapElements) {
             if (heatMapElement.getServicesTotal() > 0) {
 
-                Double color = 0.0;
+                Double color;
 
-                if (heatMapElement.getServicesDown() == 1 && heatMapElement.getServicesTotal() > heatMapElement.getServicesDown()) {
-                    color = 0.5;
+                if (heatMapElement.getServicesTotal()==0) {
+                    color = 0.0;
                 } else {
-                    if (heatMapElement.getServicesDown() > 1 || heatMapElement.getServicesTotal() == heatMapElement.getServicesDown()) {
-                        color = 1.0;
-                    }
+                    color = (double) heatMapElement.getServicesDown() / (double) heatMapElement.getServicesTotal();
                 }
 
                 elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
