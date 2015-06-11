@@ -145,10 +145,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
 
-        graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
-        graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
-        graphResults.setGraphRightOffset(m_rrdDao.getGraphRightOffset());
-
         return graphResults;
     }
 

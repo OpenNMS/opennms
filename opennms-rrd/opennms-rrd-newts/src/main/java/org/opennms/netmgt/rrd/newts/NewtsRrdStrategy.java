@@ -310,21 +310,6 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         throw new RrdException("createGraph() unsupported.");
     }
 
-    @Override
-    public int getGraphLeftOffset() {
-        return 0;
-    }
-
-    @Override
-    public int getGraphRightOffset() {
-        return 0;
-    }
-
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return 0;
-    }
-
     /////////
     // Misc.
     /////////

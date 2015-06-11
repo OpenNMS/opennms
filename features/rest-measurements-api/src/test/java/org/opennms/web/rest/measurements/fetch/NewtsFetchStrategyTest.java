@@ -51,7 +51,8 @@ public class NewtsFetchStrategyTest {
 
         EasyMock.replay(resourceDao, sampleRepository);
 
-        NewtsFetchStrategy nfs = new NewtsFetchStrategy(resourceDao);
+        NewtsFetchStrategy nfs = new NewtsFetchStrategy();
+        nfs.setResourceDao(resourceDao);
         nfs.setSampleRepository(sampleRepository);
 
         Source source = new Source();

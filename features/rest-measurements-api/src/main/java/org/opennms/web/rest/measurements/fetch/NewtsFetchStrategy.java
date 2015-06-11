@@ -9,6 +9,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.newts.NewtsRrdStrategy;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -22,6 +23,7 @@ import org.opennms.newts.api.query.StandardAggregationFunctions;
 import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -39,12 +41,14 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final int STEP_LOWER_BOUND_IN_MS = 120 * 1000;
 
-    private final ResourceDao m_resourceDao;
+    @Autowired
+    private ResourceDao m_resourceDao;
 
     private SampleRepository m_sampleRepository = null;
 
-    public NewtsFetchStrategy(ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
+    @Override
+    public boolean supportsRrdStrategy(String rrdStrategyClass) {
+        return NewtsRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass);
     }
 
     @Override
@@ -173,8 +177,12 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     }
 
     @VisibleForTesting
+    protected void setResourceDao(ResourceDao resourceDao) {
+        m_resourceDao = resourceDao;
+    }
+
+    @VisibleForTesting
     protected void setSampleRepository(SampleRepository sampleRepository) {
         m_sampleRepository = sampleRepository;
     }
-
 }
