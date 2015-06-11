@@ -273,7 +273,6 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         Object[] values = {
                 eventId,
                 e.getSource(),
-                e.getDistPoller(),
                 e.getUei(),
                 new Timestamp(e.getCreationTime().getTime()),
                 new Timestamp(e.getTime().getTime()),
@@ -281,7 +280,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
                 getServiceID(e.getService()),
-                "localhost",
+                e.getDistPoller() == null ? "00000000-0000-0000-0000-000000000000" : e.getDistPoller(),
                 "Y",
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
@@ -291,10 +290,10 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         };
         e.setDbid(eventId.intValue());
         update("insert into events (" +
-                "eventId, eventSource, systemId, eventUei, eventCreateTime, eventTime, eventSeverity, " +
+                "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
                 "nodeId, ipAddr, serviceId, systemId, " +
                 "eventLog, eventDisplay, eventtticket, eventtticketstate, eventparms, eventlogmsg) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
