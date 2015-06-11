@@ -256,8 +256,8 @@ public class OnmsMonitoringSystem implements Serializable {
 
     @ElementCollection
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))
-    @MapKeyColumn(name="property")
-    @Column(name="propertyValue", nullable=false)
+    @MapKeyColumn(name="property", nullable=false)
+    @Column(name="propertyValue")
     public Map<String, String> getProperties() {
         return m_properties;
     }

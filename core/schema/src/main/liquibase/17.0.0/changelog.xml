@@ -162,7 +162,7 @@
       <column name="property" type="TEXT">
         <constraints nullable="false" />
       </column>
-      <column name="propertyValue" type="TEXT"/>
+      <column name="propertyvalue" type="TEXT"/>
     </createTable>
 
     <!-- Create indices -->
@@ -188,10 +188,10 @@
   <changeSet author="seth" id="17.0.0-reassociate-alarms-with-monitoringsystems">
     <dropColumn tableName="alarms" columnName="dpname"/>
     <addColumn tableName="alarms">
-      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000">
-        <constraints nullable="false" foreignKeyName="fk_alarms_systemid" references="monitoringsystems(id)" deleteCascade="true"/>
-      </column>
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000"/>
     </addColumn>
+    <addNotNullConstraint tableName="alarms" columnName="systemid"/>
+    <addForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
     <!-- Recreate related indices -->
     <sql>
       CREATE INDEX alarm_reduction_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
@@ -201,10 +201,9 @@
   <changeSet author="seth" id="17.0.0-reassociate-events-with-monitoringsystems">
     <dropColumn tableName="events" columnName="eventdpname"/>
     <addColumn tableName="events">
-      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000">
-        <constraints nullable="false"/>
-      </column>
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000"/>
     </addColumn>
+    <addNotNullConstraint tableName="events" columnName="systemid"/>
   </changeSet>
 
   <!-- TODO: Migrate location_monitors data into monitoringsystems table. This is a biggie. :) -->

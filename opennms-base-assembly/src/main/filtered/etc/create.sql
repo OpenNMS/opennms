@@ -240,7 +240,7 @@ CREATE TABLE monitoringsystems (
 CREATE TABLE monitoringsystemsproperties (
     monitoringsystemid TEXT NOT NULL,
     property TEXT NOT NULL,
-    propertyValue TEXT,
+    propertyvalue TEXT,
 
     CONSTRAINT monitoringsystemsproperties_fkey FOREIGN KEY (monitoringsystemid) REFERENCES monitoringsystems (id) ON DELETE CASCADE
 );
