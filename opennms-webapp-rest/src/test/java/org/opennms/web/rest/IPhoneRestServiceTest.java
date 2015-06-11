@@ -194,7 +194,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
         node.setId(1);
 
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.get("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventUei("uei.opennms.org/test");
         event.setEventTime(new Date());
         event.setEventSource("test");

@@ -302,7 +302,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         final OnmsEvent event = getEventDao().findAll().get(0);
 
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_databasePopulator.getNode1());
