@@ -180,7 +180,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                                 "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct node.nodeid) as nodeTotalCount, " +
-                                "max(distinct case when alarms.severity is null or alarms.alarmacktime is null then 3 else alarms.severity end) as maxSeverity " +
+                                "max(distinct case when alarms.severity is null or alarms.alarmacktime is not null then 3 else alarms.severity end) as maxSeverity " +
                                 "from node " +
                                 "left join category_node using (nodeid) " +
                                 "left join categories using (categoryid) " +
