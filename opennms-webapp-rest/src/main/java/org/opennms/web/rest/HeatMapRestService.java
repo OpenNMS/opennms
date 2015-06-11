@@ -31,6 +31,7 @@ package org.opennms.web.rest;
 import com.google.common.collect.Lists;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.json.JSONObject;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.slf4j.Logger;
@@ -63,6 +64,9 @@ public class HeatMapRestService extends OnmsRestService {
     @Autowired
     private OutageDao m_outageDao;
 
+    @Autowired
+    private AlarmDao m_alarmDao;
+
     /**
      * Transforms a list of heatmap elements to a json map.
      *
@@ -92,22 +96,12 @@ public class HeatMapRestService extends OnmsRestService {
          */
         for (HeatMapElement heatMapElement : heatMapElements) {
             if (heatMapElement.getServicesTotal() > 0) {
-
-                Double color;
-
-                if (heatMapElement.getServicesTotal()==0) {
-                    color = 0.0;
-                } else {
-                    color = (double) heatMapElement.getServicesDown() / (double) heatMapElement.getServicesTotal();
-                }
-
                 elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
 
                 Map<String, Object> item = new HashMap<>();
                 item.put("id", heatMapElement.getName());
                 item.put("elementId", heatMapElement.getId());
-                item.put("color", Lists.newArrayList(color));
-
+                item.put("color", Lists.newArrayList(heatMapElement.getColor()));
                 itemList.add(item);
 
                 totalServices += heatMapElement.getServicesTotal();
@@ -136,8 +130,8 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("categories")
-    public Response categories() throws IOException {
+    @Path("outages/categories")
+    public Response outagesByCategories() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
@@ -146,8 +140,8 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("foreignSources")
-    public Response foreignsources() throws IOException {
+    @Path("outages/foreignSources")
+    public Response outagesByForeignsources() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
@@ -156,8 +150,8 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("nodesByCategory/{category}")
-    public Response nodesByCategory(@PathParam("category") final String category) throws IOException {
+    @Path("outages/nodesByCategory/{category}")
+    public Response outagesOfNodesByCategory(@PathParam("category") final String category) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
@@ -166,9 +160,49 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("nodesByForeignSource/{foreignSource}")
-    public Response nodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
+    @Path("outages/nodesByForeignSource/{foreignSource}")
+    public Response outagesOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Path("alarms/categories")
+    public Response alarmsBycategories() throws IOException {
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Path("alarms/foreignSources")
+    public Response alarmsByForeignsources() throws IOException {
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Path("alarms/nodesByCategory/{category}")
+    public Response alarmsOfNodesByCategory(@PathParam("category") final String category) throws IOException {
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Path("alarms/nodesByForeignSource/{foreignSource}")
+    public Response alarmsOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }

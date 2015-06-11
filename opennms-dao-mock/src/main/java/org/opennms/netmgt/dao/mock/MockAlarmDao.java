@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
@@ -85,6 +86,11 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
 
     @Override
     public List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }

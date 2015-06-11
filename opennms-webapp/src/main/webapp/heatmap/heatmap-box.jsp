@@ -45,43 +45,54 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
-    String subTitle = "";
+    String mode = "outages";
+    String title = "";
     String heatmap = "foreignSources";
     String foreignSource = null;
     String category = null;
 
     String url = "/opennms/rest/heatmap/";
 
+    if (request.getParameterMap().containsKey("mode")) {
+        mode = request.getParameter("mode");
+    }
+
     if (request.getParameterMap().containsKey("heatmap")) {
         heatmap = request.getParameter("heatmap");
     }
 
-    url += heatmap + "/";
+    if ("alarms".equals(mode)) {
+        title = "Alarm Heatmap ";
+    } else {
+        title = "Outage Heatmap ";
+    }
+
+    url += mode + "/" + heatmap + "/";
 
     if ("nodesByForeignSource".equals(heatmap)) {
         foreignSource = request.getParameter("foreignSource");
         url += foreignSource;
-        subTitle = " (Nodes by ForeignSource '" + foreignSource + "')";
+        title += " (Nodes by ForeignSource '" + foreignSource + "')";
     }
 
     if ("nodesByCategory".equals(heatmap)) {
         category = request.getParameter("category");
         url += category;
-        subTitle = " (Nodes by Category '" + category + "')";
+        title += " (Nodes by Category '" + category + "')";
     }
 
     if ("foreignSources".equals(heatmap)) {
-        subTitle = " (by ForeignSources)";
+        title += " (by ForeignSources)";
     }
 
     if ("categories".equals(heatmap)) {
-        subTitle = " (by Categories)";
+        title += " (by Categories)";
     }
 %>
 
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp">Heatmap<%=subTitle%>
+        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&heatmap=<%=heatmap%>&foreignSource=<%=foreignSource%>&category=<%=category%>"><%=title%>
         </a></h3>
     </div>
 
@@ -100,13 +111,13 @@
             <%
               if ("foreignSources".equals(heatmap)) {
             %>
-            location.href = "<%=request.getRequestURI()%>?heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
+            location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
             <%
               }
 
               if ("categories".equals(heatmap)) {
             %>
-            location.href = "<%=request.getRequestURI()%>?heatmap=nodesByCategory&category=" + nodes[0].id;
+            location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
             <%
               }
 
@@ -146,11 +157,27 @@
     </script>
 </div>
 <div align="right">
-    [<a href="<%=request.getRequestURI()%>?heatmap=foreignSources">Outages by Foreign Sources</a>]&nbsp;[<a
-        href="<%=request.getRequestURI()%>?heatmap=categories">Outages by Categories</a>]&nbsp;
+    [<a href="<%=request.getRequestURI()%>?mode=outages&heatmap=foreignSources">Outages by Foreign Sources</a> /
+    <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=categories">Outages by Categories</a>]&nbsp;
+    [<a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=foreignSources">Alarms by Foreign Sources</a> /
+    <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=categories">Alarms by Categories</a>]&nbsp;
+    <%
+        if ("outages".equals(mode)) {
+    %>
     <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;0% down
     <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;10% down
     <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;20% down
     <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
     <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
+    <%
+    } else {
+    %>
+    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Normal
+    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Warning
+    <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Minor
+    <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Major
+    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Critical
+    <%
+        }
+    %>
 </div>
