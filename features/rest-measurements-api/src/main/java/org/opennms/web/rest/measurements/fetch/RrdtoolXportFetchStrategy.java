@@ -44,9 +44,9 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.jrobin.core.RrdException;
-import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
+import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 import org.opennms.web.rest.measurements.model.Source;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -73,8 +73,12 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
      */
     public static final long XPORT_TIMEOUT_MS = 120000;
 
-    public RrdtoolXportFetchStrategy(final ResourceDao resourceDao) {
-        super(resourceDao);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean supportsRrdStrategy(String rrdStrategyClass) {
+        return JniRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass);
     }
 
     /**

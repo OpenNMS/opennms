@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.jrobin.core.RrdException;
 import org.jrobin.data.DataProcessor;
-import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.web.rest.measurements.model.Source;
 
 import com.google.common.collect.Maps;
@@ -46,8 +46,12 @@ import com.google.common.collect.Maps;
  */
 public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
-    public JrobinFetchStrategy(final ResourceDao resourceDao) {
-        super(resourceDao);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean supportsRrdStrategy(String rrdStrategyClass) {
+        return JRobinRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass);
     }
 
     /**
