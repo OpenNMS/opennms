@@ -56,11 +56,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
-@PerRequest
-@Scope("prototype")
-@Path("acks")
-
 /**
  * ReST service for Acknowledgments of alarms/notifications.
  *
@@ -68,6 +63,10 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component
+@PerRequest
+@Scope("prototype")
+@Path("acks")
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
     private AcknowledgmentDao m_ackDao;

@@ -57,7 +57,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>OnmsMapRestService class.</p>
  *
@@ -65,6 +64,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component
 @PerRequest
 @Scope("prototype")
 @Path("maps")

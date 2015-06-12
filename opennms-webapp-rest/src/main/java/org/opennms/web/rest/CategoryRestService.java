@@ -59,7 +59,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 import java.util.ArrayList;
 
-@Component
 /**
  * <p>CategoryRestService class.</p>
  *
@@ -67,6 +66,7 @@ import java.util.ArrayList;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component
 @PerRequest
 @Scope("prototype")
 @Path("categories")
