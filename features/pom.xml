@@ -60,8 +60,8 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
-    <!-- REST -->
-    <module>rest-measurements-api</module>
+    <!-- Measurements API -->
+    <module>measurements</module>
 
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
