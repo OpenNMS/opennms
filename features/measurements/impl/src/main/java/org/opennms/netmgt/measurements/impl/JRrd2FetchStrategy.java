@@ -26,39 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.measurements.fetch;
+package org.opennms.netmgt.measurements.impl;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.jrobin.core.RrdException;
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
 import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;
-import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
-import org.opennms.web.rest.measurements.model.Source;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
 
-    private JRrd2 jrrd2 = null;
-
-    @Override
-    public boolean supportsRrdStrategy(String rrdStrategyClass) {
-        return MultithreadedJniRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass);
-    }
+    private JRrd2 jrrd2 = new JRrd2Jni();
 
     @Override
     protected FetchResults fetchMeasurements(long start, long end, long step,
             int maxrows, Map<Source, String> rrdsBySource,
             Map<String, Object> constants) throws RrdException {
-
-        if (jrrd2 == null) {
-            jrrd2 = new JRrd2Jni();
-        }
 
         final long startInSeconds = (long) Math.floor(start / 1000);
         final long endInSeconds = (long) Math.floor(end / 1000);
