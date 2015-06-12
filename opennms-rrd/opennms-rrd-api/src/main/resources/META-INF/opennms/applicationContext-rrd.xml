@@ -62,6 +62,10 @@
         </property>
     </bean>
 
+    <bean id="rrdFileExtension" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.fileExtension}" />
+    </bean>
+
     <bean id="useQueue" class="java.lang.Boolean">
         <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usequeue}" />
     </bean>
