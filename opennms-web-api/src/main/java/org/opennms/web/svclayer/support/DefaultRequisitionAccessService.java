@@ -41,6 +41,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
+import javax.ws.rs.core.MultivaluedMap;
+
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
@@ -66,8 +68,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessResourceFailureException;
-
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class DefaultRequisitionAccessService implements RequisitionAccessService {
 	
@@ -217,7 +217,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             }
         }
 
-        void updateRequisition(final MultivaluedMapImpl params) {
+        void updateRequisition(final MultivaluedMap<String,String> params) {
             final String foreignSource = m_foreignSource;
             LOG.debug("updateRequisition: Updating requisition with foreign source {}", foreignSource);
             if (params.isEmpty()) return;
@@ -230,7 +230,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             }
         }
 
-        void updateNode(final String foreignId, final MultivaluedMapImpl params) {
+        void updateNode(final String foreignId, final MultivaluedMap<String,String> params) {
             final String foreignSource = m_foreignSource;
             LOG.debug("updateNode: Updating node with foreign source {} and foreign id {}", foreignSource, foreignId);
             if (params.isEmpty()) return;
@@ -246,7 +246,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             }
         }
 
-        void updateInterface(final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
+        void updateInterface(final String foreignId, final String ipAddress, final MultivaluedMap<String,String> params) {
             final String foreignSource = m_foreignSource;
             LOG.debug("updateInterface: Updating interface {} on node {}/{}", ipAddress, foreignSource, foreignId);
             if (params.isEmpty()) return;
@@ -746,7 +746,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
     }
 
     @Override
-    public void updateRequisition(final String foreignSource, final MultivaluedMapImpl params) {
+    public void updateRequisition(final String foreignSource, final MultivaluedMap<String,String> params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
                 getAccessor(foreignSource).updateRequisition(params);
@@ -755,7 +755,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
     }
 
     @Override
-    public void updateNode(final String foreignSource, final String foreignId, final MultivaluedMapImpl params) {
+    public void updateNode(final String foreignSource, final String foreignId, final MultivaluedMap<String,String> params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
                 getAccessor(foreignSource).updateNode(foreignId, params);
@@ -764,7 +764,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
     }
 
     @Override
-    public void updateInterface(final String foreignSource, final String foreignId, final String ipAddress, final MultivaluedMapImpl params) {
+    public void updateInterface(final String foreignSource, final String foreignId, final String ipAddress, final MultivaluedMap<String,String> params) {
         submitWriteOp(new Runnable() {
             @Override public void run() {
                 getAccessor(foreignSource).updateInterface(foreignId, ipAddress, params);
