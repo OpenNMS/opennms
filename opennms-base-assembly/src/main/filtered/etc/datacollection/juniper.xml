@@ -12,6 +12,14 @@
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="jnxJsSPUMonitoringObjectsTable" label="Juniper SRX SPU Monitoring" resourceLabel="${juniSPUMonNodeDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="juniSPUMonNodeDescr"/>
+      </storageStrategy>
+    </resourceType>
+
+
       <!-- Juniper MIBs -->
       <group name="juniper-router" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.6.1.0"  instance="0" alias="juniperCpuFeb"     type="gauge32" />
@@ -42,6 +50,12 @@
       <group name="juniper-erx-temperature" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.3" instance="juniSystemTempIndex" alias="juniSTValue"         type="integer" />
         <mibObj oid=".1.3.6.1.4.1.4874.2.2.2.1.9.4.1.4" instance="juniSystemTempIndex" alias="juniSTPhysicalIndex" type="string" />
+      </group>
+
+      <group name="juniper-srx-router" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.11" instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMonNodeDescr"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.6"  instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMonCurrFlow"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2636.3.39.1.12.1.1.1.7"  instance="jnxJsSPUMonitoringObjectsTable" alias="juniSPUMonMaxFlow"      type="Gauge32" />
       </group>
 
       <group name="juniper-jrouter" ifType="ignore">
@@ -141,6 +155,13 @@
           <includeGroup>juniper-erx-temperature</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
           <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Juniper SRX-Routers">
+        <sysoidMask>.1.3.6.1.4.1.2636.1.1.1.2.39</sysoidMask>
+        <collect>
+          <includeGroup>juniper-srx-router</includeGroup>
         </collect>
       </systemDef>
 
