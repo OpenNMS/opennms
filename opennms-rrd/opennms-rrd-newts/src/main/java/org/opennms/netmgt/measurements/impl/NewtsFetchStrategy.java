@@ -1,15 +1,44 @@
-package org.opennms.web.rest.measurements.fetch;
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.measurements.impl;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.newts.NewtsRrdStrategy;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -20,7 +49,6 @@ import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.AggregationFunction;
 import org.opennms.newts.api.query.ResultDescriptor;
 import org.opennms.newts.api.query.StandardAggregationFunctions;
-import org.opennms.web.rest.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +72,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     @Autowired
     private ResourceDao m_resourceDao;
 
-    private SampleRepository m_sampleRepository = null;
-
-    @Override
-    public boolean supportsRrdStrategy(String rrdStrategyClass) {
-        return NewtsRrdStrategy.class.getCanonicalName().equals(rrdStrategyClass);
-    }
+    @Autowired
+    private SampleRepository m_sampleRepository;
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
@@ -119,7 +143,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             }
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
-            Results<Measurement> results = getSampleRepository().select(new Resource(newtsResourceId), startTs, endTs, resultDescriptor, Duration.millis(RESOLUTION_MULTIPLIER*step));
+            Results<Measurement> results = m_sampleRepository.select(new Resource(newtsResourceId), startTs, endTs, resultDescriptor, Duration.millis(RESOLUTION_MULTIPLIER*step));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
@@ -155,13 +179,6 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         LOG.debug("Fetch results: {}", fetchResults);
 
         return fetchResults;
-    }
-
-    private synchronized SampleRepository getSampleRepository() {
-        if (m_sampleRepository == null) {
-            m_sampleRepository = BeanUtils.getBean("daoContext", "cassandraSampleRepository", SampleRepository.class);
-        }
-        return m_sampleRepository;
     }
 
     private static AggregationFunction toAggregationFunction(String fn) {

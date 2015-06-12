@@ -40,6 +40,15 @@
       <artifactId>newts-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+
+    <!-- Measurements API -->
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Testing -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
