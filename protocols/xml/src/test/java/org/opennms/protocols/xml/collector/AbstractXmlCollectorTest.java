@@ -75,6 +75,7 @@ public abstract class AbstractXmlCollectorTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    /** The RRD strategy. */
     private RrdStrategy<?, ?> m_rrdStrategy;
 
     /**

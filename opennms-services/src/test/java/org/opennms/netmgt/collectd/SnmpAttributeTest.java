@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.isNull;
 import static org.easymock.EasyMock.matches;
 
 import java.util.Collections;
@@ -126,12 +125,12 @@ public class SnmpAttributeTest extends TestCase {
         ipInterface.setNode(node);
         ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
 
-        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
+        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(7); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
 
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
 
-        m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) isNull());
+        m_rrdStrategy.createFile(isA(Object.class), isA(Map.class));
 
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));

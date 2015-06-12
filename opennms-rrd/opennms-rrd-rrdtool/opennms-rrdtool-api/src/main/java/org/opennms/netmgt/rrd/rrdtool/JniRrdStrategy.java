@@ -463,37 +463,6 @@ public class JniRrdStrategy implements RrdStrategy<JniRrdStrategy.CreateCommand 
     public String getStats() {
         return "";
     }
-    
-    // These offsets work perfectly for ranger@ with rrdtool 1.2.23 and Firefox
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphLeftOffset() {
-        return 65;
-    }
-    
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphRightOffset() {
-        return -30;
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-        @Override
-    public int getGraphTopOffsetWithText() {
-        return -75;
-    }
 
     /**
      * <p>getDefaultFileExtension</p>
