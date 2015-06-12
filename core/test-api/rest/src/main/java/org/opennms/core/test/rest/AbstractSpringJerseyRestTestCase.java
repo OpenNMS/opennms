@@ -56,6 +56,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -81,7 +82,6 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 /**
@@ -100,7 +100,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
 
-    private ServletContainer dispatcher;
+    private HttpServlet dispatcher;
     private MockServletConfig servletConfig;
 
     @Autowired
@@ -131,20 +131,29 @@ public abstract class AbstractSpringJerseyRestTestCase {
         DataSourceFactory.setInstance(db);
         XADataSourceFactory.setInstance(db);
 
-        setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));    
-        getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
-        getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
-        getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
-        getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
 
         try {
 
             MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
-            setFilter(new OpenSessionInViewFilter());        
+            setFilter(new OpenSessionInViewFilter());
             getFilter().init(filterConfig);
 
+            // Jersey
+            setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));
+            getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+            getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
+            getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
+            getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
             setDispatcher(new SpringServlet());
             getDispatcher().init(getServletConfig());
+
+            // Apache CXF
+            /*
+            setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));
+            getServletConfig().addInitParameter("config-location", "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml");
+            setDispatcher(new CXFServlet());
+            getDispatcher().init(getServletConfig());
+            */
 
         } catch (ServletException se) {
             throw se.getRootCause();
@@ -603,11 +612,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return filter;
     }
 
-    public void setDispatcher(ServletContainer dispatcher) {
+    public void setDispatcher(HttpServlet dispatcher) {
         this.dispatcher = dispatcher;
     }
 
-    public ServletContainer getDispatcher() {
+    public HttpServlet getDispatcher() {
         return dispatcher;
     }
 }
