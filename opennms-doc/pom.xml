@@ -68,8 +68,12 @@
                         <artifactId>asciidoctorj</artifactId>
                         <version>${asciidoctorjVersion}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby</artifactId>
+                        <version>${jrubyVersion}</version>
+                    </dependency>
                 </dependencies>
-
                 <executions>
                     <execution>
                         <id>output-html</id>
