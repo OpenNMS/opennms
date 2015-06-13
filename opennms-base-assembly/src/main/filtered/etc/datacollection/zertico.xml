@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <datacollection-group name="Zertico">
     <resourceType name="intSenAnId" label="Zertico Internal Sensors Analog" resourceLabel="${intSenAnName}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
         <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <group name="internalSensorsAnalog" ifType="all">
