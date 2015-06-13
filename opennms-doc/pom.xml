@@ -70,7 +70,7 @@
                     </dependency>
                     <dependency>
                         <groupId>org.jruby</groupId>
-                        <artifactId>jruby</artifactId>
+                        <artifactId>jruby-complete</artifactId>
                         <version>${jrubyVersion}</version>
                     </dependency>
                 </dependencies>
