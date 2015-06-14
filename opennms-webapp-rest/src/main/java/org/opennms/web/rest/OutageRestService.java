@@ -72,7 +72,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@Component
+@Component("outageRestService")
 @PerRequest
 @Scope("prototype")
 @Path("outages")
@@ -80,9 +80,6 @@ public class OutageRestService extends OnmsRestService {
 
     @Autowired
     private OutageDao m_outageDao;
-    
-    @Context 
-    UriInfo m_uriInfo;
 
     @Context
     SecurityContext m_securityContext;
@@ -100,11 +97,11 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{outageId}")
     @Transactional
-    public Response getOutage(@PathParam("outageId") final String outageId) {
+    public Response getOutage(@Context UriInfo uriInfo, @PathParam("outageId") final String outageId) {
         readLock();
         try {
             if ("summaries".equals(outageId)) {
-                final MultivaluedMap<String,String> parms = m_uriInfo.getQueryParameters(true);
+                final MultivaluedMap<String,String> parms = uriInfo.getQueryParameters(true);
                 int limit = 10;
                 if (parms.containsKey("limit")) {
                     limit = Integer.parseInt(parms.getFirst("limit"));
@@ -144,7 +141,7 @@ public class OutageRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsOutageCollection getOutages() {
+    public OnmsOutageCollection getOutages(@Context UriInfo uriInfo) {
         readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
@@ -154,7 +151,7 @@ public class OutageRestService extends OnmsRestService {
             builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
             builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            applyQueryFilters(uriInfo.getQueryParameters(), builder);
     
             final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
     
@@ -177,7 +174,7 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     @Path("forNode/{nodeId}")
-    public OnmsOutageCollection forNodeId(@PathParam("nodeId") final int nodeId) {
+    public OnmsOutageCollection forNodeId(@Context UriInfo uriInfo, @PathParam("nodeId") final int nodeId) {
         readLock();
         
         try {
@@ -191,7 +188,7 @@ public class OutageRestService extends OnmsRestService {
             builder.alias("monitoredService.ipInterface.node", "node");
             builder.alias("monitoredService.serviceType", "serviceType");
     
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            applyQueryFilters(uriInfo.getQueryParameters(), builder);
     
             builder.orderBy("id").desc();
     

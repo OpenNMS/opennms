@@ -98,8 +98,8 @@ public class CategoryRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{categoryName}/nodes/{nodeCriteria}/")
-    public Response addCategoryToNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(NodeRestService.class).addCategoryToNode(nodeCriteria, categoryName);
+    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+        return m_context.getResource(NodeRestService.class).addCategoryToNode(uriInfo, nodeCriteria, categoryName);
     }
 
     @PUT
