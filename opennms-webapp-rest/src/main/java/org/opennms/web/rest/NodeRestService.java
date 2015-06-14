@@ -83,7 +83,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@Component
+@Component("nodeRestService")
 @PerRequest
 @Scope("prototype")
 @Path("nodes")
@@ -101,9 +101,6 @@ public class NodeRestService extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
-    @Context 
-    UriInfo m_uriInfo;
-    
     @Context
     ResourceContext m_context;
 
@@ -114,11 +111,11 @@ public class NodeRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public OnmsNodeList getNodes() {
+    public OnmsNodeList getNodes(@Context UriInfo uriInfo) {
         readLock();
         
         try {
-            final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
+            final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
             final String type = params.getFirst("type");
 
             final CriteriaBuilder builder = getCriteriaBuilder(params);
@@ -189,7 +186,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addNode(final OnmsNode node) {
+    public Response addNode(@Context UriInfo uriInfo, final OnmsNode node) {
         writeLock();
         
         try {
@@ -200,7 +197,7 @@ public class NodeRestService extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(m_uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
+            return Response.seeOther(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
         }
@@ -216,7 +213,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
-    public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -239,7 +236,7 @@ public class NodeRestService extends OnmsRestService {
     
             LOG.debug("updateNode: node {} updated", node);
             m_nodeDao.saveOrUpdate(node);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
             // return Response.ok(node).build();
         } finally {
             writeUnlock();
@@ -350,14 +347,14 @@ public class NodeRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Path("/{nodeCriteria}/categories")
-    public Response addCategoryToNode(@PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
+    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
         if (category == null) throw getException(Status.BAD_REQUEST, "Category must not be null.");
-        return addCategoryToNode(nodeCriteria,  category.getName());
+        return addCategoryToNode(uriInfo, nodeCriteria,  category.getName());
     }
     
     @PUT
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response addCategoryToNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
         writeLock();
 
         try {
@@ -373,7 +370,7 @@ public class NodeRestService extends OnmsRestService {
                 LOG.debug("addCategory: Adding category {} to node {}", found, nodeCriteria);
                 node.addCategory(found);
                 m_nodeDao.save(node);
-                return Response.seeOther(getRedirectUri(m_uriInfo, categoryName)).build();
+                return Response.seeOther(getRedirectUri(uriInfo, categoryName)).build();
             } else {
                 throw getException(Status.BAD_REQUEST, "addCategory: Category '{}' already added to node '{}'", categoryName, nodeCriteria);
             }
@@ -385,7 +382,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response updateCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
+    public Response updateCategoryForNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
         writeLock();
 
         try {
@@ -408,7 +405,7 @@ public class NodeRestService extends OnmsRestService {
             }
             LOG.debug("updateCategory: category {} updated", category);
             m_nodeDao.saveOrUpdate(node);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

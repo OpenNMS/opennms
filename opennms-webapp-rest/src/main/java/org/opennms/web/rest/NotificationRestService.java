@@ -56,7 +56,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>NotificationRestService class.</p>
  *
@@ -64,6 +63,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("notificationRestService")
 @PerRequest
 @Scope("prototype")
 @Path("notifications")
@@ -71,9 +71,6 @@ public class NotificationRestService extends OnmsRestService {
     @Autowired
     private NotificationDao m_notifDao;
     
-    @Context 
-    UriInfo m_uriInfo;
-
     @Context
     SecurityContext m_securityContext;
     
@@ -122,11 +119,11 @@ public class NotificationRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public OnmsNotificationCollection getNotifications() {
+    public OnmsNotificationCollection getNotifications(@Context UriInfo uriInfo) {
         readLock();
         
         try {
-            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters());
+            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
             builder.orderBy("notifyId").desc();
     
             OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
@@ -149,7 +146,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
+    public Response updateNotification(@Context UriInfo uriInfo, @PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
         writeLock();
         
         try {
@@ -158,7 +155,7 @@ public class NotificationRestService extends OnmsRestService {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(notif,ack);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
+            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
         } finally {
             writeUnlock();
         }
@@ -172,7 +169,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotifications(final MultivaluedMapImpl params) {
+    public Response updateNotifications(@Context UriInfo uriInfo, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -187,7 +184,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(notif, ack);
             }
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
+            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
         } finally {
             writeUnlock();
         }

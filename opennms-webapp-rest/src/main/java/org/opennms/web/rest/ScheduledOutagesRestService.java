@@ -91,7 +91,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@Component
+@Component("scheduledOutagesRestService")
 @PerRequest
 @Scope("prototype")
 @Path("sched-outages")
@@ -101,9 +101,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
 
     private enum ConfigAction { ADD, REMOVE, REMOVE_FROM_ALL };
-    
-    @Context 
-    UriInfo m_uriInfo;
     
     @Autowired
     protected PollOutagesConfigFactory m_pollOutagesConfigFactory;
@@ -144,7 +141,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response saveOrUpdateOutage(final Outage newOutage) {
+    public Response saveOrUpdateOutage(@Context UriInfo uriInfo, final Outage newOutage) {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
@@ -158,7 +155,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             }
             m_pollOutagesConfigFactory.saveCurrent();
             sendConfigChangedEvent();
-            return Response.seeOther(getRedirectUri(m_uriInfo, newOutage.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, newOutage.getName())).build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage " + newOutage.getName() + " because, " + e.getMessage());
         } finally {
@@ -189,12 +186,12 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/collectd/{packageName}")
-    public Response addOutageToCollector(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToCollector(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to collector package " + packageName + ", because: " + e.getMessage());
         } finally {
@@ -219,12 +216,12 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/pollerd/{packageName}")
-    public Response addOutageToPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToPoller(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
             // return Response.ok().build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to poller package " + packageName  + ", because: " + e.getMessage());
@@ -250,12 +247,12 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/threshd/{packageName}")
-    public Response addOutageToThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToThresholder(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to threshold package " + packageName + ", because: " + e.getMessage());
         } finally {
@@ -280,12 +277,12 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/notifd")
-    public Response addOutageToNotifications(@PathParam("outageName") String outageName) {
+    public Response addOutageToNotifications(@Context UriInfo uriInfo, @PathParam("outageName") String outageName) {
         writeLock();
         try {
             updateNotifd(ConfigAction.ADD, outageName);
             sendConfigChangedEvent();
-            return Response.seeOther(getRedirectUri(m_uriInfo, outageName)).build();
+            return Response.seeOther(getRedirectUri(uriInfo, outageName)).build();
         } catch (Exception e) {
             throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to notifications because: " + e.getMessage());
         } finally {

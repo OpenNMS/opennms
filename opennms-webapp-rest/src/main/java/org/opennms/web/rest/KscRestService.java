@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("kscRestService")
 @PerRequest
 @Scope("prototype")
 @Path("ksc")
@@ -85,9 +85,6 @@ public class KscRestService extends OnmsRestService {
 
     @Autowired
     private KSC_PerformanceReportFactory m_kscReportFactory;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     HttpHeaders m_headers;
@@ -145,7 +142,7 @@ public class KscRestService extends OnmsRestService {
     @PUT
     @Path("{kscReportId}")
     @Transactional
-    public Response addGraph(@PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
+    public Response addGraph(@Context UriInfo uriInfo, @PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
         writeLock();
 
         try {
@@ -184,7 +181,7 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -192,7 +189,7 @@ public class KscRestService extends OnmsRestService {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addKscReport(final KscReport kscReport) {
+    public Response addKscReport(@Context UriInfo uriInfo, final KscReport kscReport) {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
@@ -225,7 +222,7 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
