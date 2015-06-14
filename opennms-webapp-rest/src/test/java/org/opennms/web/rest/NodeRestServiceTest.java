@@ -45,6 +45,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
@@ -64,6 +65,7 @@ import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -94,6 +96,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceTest.class);
 
     private static int m_nodeCounter = 0;
+
+    @Autowired
+    private ServletContext m_context;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -181,7 +186,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testNodeJson() throws Exception {
         createSnmpInterface();
 
-        final MockHttpServletRequest req = createRequest(getServletContext(), GET, "/nodes");
+        final MockHttpServletRequest req = createRequest(m_context, GET, "/nodes");
         req.addHeader("Accept", "application/json");
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
@@ -300,7 +305,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createIpInterface();
         String url = "/nodes/1/ipinterfaces";
 
-        final MockHttpServletRequest req = createRequest(getServletContext(), GET, url);
+        final MockHttpServletRequest req = createRequest(m_context, GET, url);
         req.addHeader("Accept", "application/json");
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
@@ -372,7 +377,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createSnmpInterface();
         String url = "/nodes/1/snmpinterfaces";
 
-        final MockHttpServletRequest req = createRequest(getServletContext(), GET, url);
+        final MockHttpServletRequest req = createRequest(m_context, GET, url);
         req.addHeader("Accept", "application/json");
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
@@ -441,7 +446,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testNodeComboQuery() throws Exception {
         String url = "/nodes";
-        MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
+        MockHttpServletRequest request = createRequest(m_context, GET, url);
         request.addParameter("_dc", "1235761409572");
         request.addParameter("start", "0");
         request.addParameter("limit", "10");
