@@ -127,7 +127,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@Component
+@Component("foreignSourceRestService")
 @PerRequest
 @Scope("prototype")
 @Path("foreignSources")
@@ -143,9 +143,6 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Autowired
     @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     HttpHeaders m_headers;
@@ -359,12 +356,12 @@ public class ForeignSourceRestService extends OnmsRestService {
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addForeignSource(ForeignSource foreignSource) {
+    public Response addForeignSource(@Context UriInfo uriInfo, ForeignSource foreignSource) {
         writeLock();
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.seeOther(getRedirectUri(m_uriInfo, foreignSource.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -381,7 +378,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/detectors")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addDetector(@PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
+    public Response addDetector(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, DetectorWrapper detector) {
         writeLock();
         try {
             LOG.debug("addDetector: Adding detector {}", detector.getName());
@@ -389,7 +386,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(m_uriInfo, detector.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, detector.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -406,7 +403,7 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}/policies")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addPolicy(@PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
+    public Response addPolicy(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, PolicyWrapper policy) {
         writeLock();
         try {
             LOG.debug("addPolicy: Adding policy {}", policy.getName());
@@ -414,7 +411,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(m_uriInfo, policy.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, policy.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -431,13 +428,13 @@ public class ForeignSourceRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateForeignSource(@PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
+    public Response updateForeignSource(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, MultivaluedMapImpl params) {
         writeLock();
         try {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             LOG.debug("updateForeignSource: updating foreign source {}", foreignSource);
             
-            if (params.isEmpty()) return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            if (params.isEmpty()) return Response.seeOther(getRedirectUri(uriInfo)).build();
 
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
@@ -452,7 +449,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
             fs.updateDateStamp();
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

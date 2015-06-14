@@ -41,7 +41,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.MinionPropertyDao;
@@ -55,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("minionRestService")
 @PerRequest
 @Scope("prototype")
 @Path("minions")
@@ -65,9 +64,6 @@ public class MinionRestService extends OnmsRestService {
 
     @Autowired
     private MinionPropertyDao m_minionPropertyDao;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     HttpHeaders m_headers;
@@ -117,11 +113,11 @@ public class MinionRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsMinionCollection getMinions() throws ParseException {
+    public OnmsMinionCollection getMinions(@Context UriInfo uriInfo) throws ParseException {
         readLock();
 
         try {
-            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters());
+            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
             final OnmsMinionCollection coll = new OnmsMinionCollection(m_minionDao.findMatching(builder.toCriteria()));
             coll.setTotalCount(m_minionDao.countMatching(builder.clearOrder().toCriteria()));
 
