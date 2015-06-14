@@ -2,6 +2,7 @@ package org.opennms.web.rest;
 
 import java.util.Date;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.After;
@@ -50,6 +51,9 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DatabasePopulator populator;
+
+    @Autowired
+    private ServletContext m_context;
 
     @Before
     @Override
@@ -120,7 +124,7 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testGetAllOutages() throws Exception {
         String xml = sendRequest(GET, "/outages", 200);
 
-        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, "/outages");
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(jsonRequest, 200);
 

@@ -34,6 +34,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Before;
@@ -83,6 +84,9 @@ public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyR
     @Autowired
     protected NodeDao m_nodeDao;
 
+    @Autowired
+    private ServletContext m_context;
+
     protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
     @Before
@@ -125,7 +129,7 @@ public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyR
         parameters.put("start", Long.toString(1414602000000L));
         parameters.put("end", Long.toString(1417046400000L));
 
-        final MockHttpServletRequest request = createRequest(getServletContext(), GET, url);
+        final MockHttpServletRequest request = createRequest(m_context, GET, url);
         request.setParameters(parameters);
         String xml = sendRequest(request, 200);
 

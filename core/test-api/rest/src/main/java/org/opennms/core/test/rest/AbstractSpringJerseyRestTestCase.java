@@ -131,12 +131,12 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         try {
 
-            MockFilterConfig filterConfig = new MockFilterConfig(getServletContext(), "openSessionInViewFilter");
+            MockFilterConfig filterConfig = new MockFilterConfig(servletContext, "openSessionInViewFilter");
             setFilter(new OpenSessionInViewFilter());
             getFilter().init(filterConfig);
 
             // Jersey
-            setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));
+            setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
             getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
             getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
             getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
@@ -146,7 +146,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
             // Apache CXF
             /*
-            setServletConfig(new MockServletConfig(getServletContext(), "dispatcher"));
+            setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
             getServletConfig().addInitParameter("config-location", "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml");
             setDispatcher(new CXFServlet());
             getDispatcher().init(getServletConfig());
@@ -167,10 +167,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
             	LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
             }
         }
-    }
-
-    protected ServletContext getServletContext() {
-        return servletContext;
     }
 
     /**
@@ -355,7 +351,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param statusCode
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
+        MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         request.setContentType(contentType);
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
@@ -412,7 +408,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
-        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
+        final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
@@ -451,7 +447,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected String sendRequest(String requestType, String url, int expectedStatus) throws Exception {
-        final MockHttpServletRequest request = createRequest(getServletContext(), requestType, url, getUser(), getUserRoles());
+        final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         return sendRequest(request, expectedStatus);
     }
 
@@ -480,7 +476,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(getServletContext(), GET, url, getUser(), getUserRoles());
+        MockHttpServletRequest request = createRequest(servletContext, GET, url, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
@@ -503,7 +499,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         marshaller.marshal(object, out);
         final byte[] content = out.toByteArray();
 
-        final MockHttpServletRequest request = createRequest(getServletContext(), PUT, url, getUser(), getUserRoles());
+        final MockHttpServletRequest request = createRequest(servletContext, PUT, url, getUser(), getUserRoles());
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
         final MockHttpServletResponse response = createResponse();
