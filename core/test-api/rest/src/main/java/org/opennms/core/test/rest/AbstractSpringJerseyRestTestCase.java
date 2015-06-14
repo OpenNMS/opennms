@@ -227,15 +227,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
-        final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
-
-            @Override
-            // FIXME: remove when we update to Spring 3.1
-            public void setContentType(final String contentType) {
-                super.setContentType(contentType);
-            }
-
-        };
+        final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath);
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
         MockUserPrincipal.setName(username);
