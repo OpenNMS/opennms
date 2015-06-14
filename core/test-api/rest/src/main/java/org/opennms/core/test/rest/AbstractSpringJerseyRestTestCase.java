@@ -78,8 +78,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
@@ -108,7 +106,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     private ContextLoaderListener contextListener;
     private Filter filter;
-    private WebApplicationContext m_webAppContext;
 
     // Use thread locals for the authentication information so that if
     // multithreaded tests change it, they only change their copy of it.
@@ -150,7 +147,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
             throw se.getRootCause();
         }
 
-        setWebAppContext(WebApplicationContextUtils.getWebApplicationContext(getServletContext()));
         afterServletStart();
         System.err.println("------------------------------------------------------------------------------");
     }
@@ -565,18 +561,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "<description>Core Routers</description>" +
                 "</category>";
         sendPost("/categories", service, 303, "/categories/Routers");
-    }
-
-    public void setWebAppContext(WebApplicationContext webAppContext) {
-        m_webAppContext = webAppContext;
-    }
-
-    public WebApplicationContext getWebAppContext() {
-        return m_webAppContext;
-    }
-
-    public <T> T getBean(String name, Class<T> beanClass) {
-        return m_webAppContext.getBean(name, beanClass);
     }
 
     public void setContextListener(ContextLoaderListener contextListener) {
