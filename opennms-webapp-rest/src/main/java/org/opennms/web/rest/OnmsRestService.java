@@ -46,8 +46,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.InetAddressTypeEditor;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
@@ -64,7 +64,6 @@ import org.springframework.beans.BeanWrapperImpl;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * <p>OnmsRestService class.</p>
@@ -289,7 +288,7 @@ public class OnmsRestService {
      * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
      * @param req a {@link java.lang.Object} object.
      */
-	protected void setProperties(final org.opennms.web.rest.MultivaluedMapImpl params, final Object req) {
+	protected void setProperties(final MultivaluedMapImpl params, final Object req) {
         RestUtils.setBeanProperties(req, params);
     }
 
