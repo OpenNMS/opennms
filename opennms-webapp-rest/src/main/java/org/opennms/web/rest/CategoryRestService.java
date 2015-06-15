@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -42,7 +44,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.core.ResourceContext;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
@@ -55,11 +56,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
-import java.util.ArrayList;
-
-@Component
 /**
  * <p>CategoryRestService class.</p>
  *
@@ -67,6 +66,7 @@ import java.util.ArrayList;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("categoryRestService")
 @PerRequest
 @Scope("prototype")
 @Path("categories")
@@ -77,9 +77,6 @@ public class CategoryRestService extends OnmsRestService {
 
     @Autowired
     private CategoryDao m_categoryDao;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     ResourceContext m_context;
@@ -101,14 +98,14 @@ public class CategoryRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{categoryName}/nodes/{nodeCriteria}/")
-    public Response addCategoryToNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(NodeRestService.class).addCategoryToNode(nodeCriteria, categoryName);
+    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+        return m_context.getResource(NodeRestService.class).addCategoryToNode(uriInfo, nodeCriteria, categoryName);
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{categoryName}")
-    public Response updateCategory(@PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
+    public Response updateCategory(@Context UriInfo uriInfo, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsCategory category = m_categoryDao.findByName(categoryName);
@@ -126,7 +123,7 @@ public class CategoryRestService extends OnmsRestService {
             }
             LOG.debug("updateCategory: category {} updated", category);
             m_categoryDao.saveOrUpdate(category);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -148,12 +145,12 @@ public class CategoryRestService extends OnmsRestService {
     
     @POST
     @Path("/")
-    public Response createCategory(final OnmsCategory category) {
+    public Response createCategory(@Context UriInfo uriInfo, final OnmsCategory category) {
         if (category == null) throw getException(Response.Status.BAD_REQUEST, "Category must not be null.");
         boolean exists = m_categoryDao.findByName(category.getName()) != null;
         if (!exists) {
             m_categoryDao.save(category);
-            return Response.seeOther(getRedirectUri(m_uriInfo, category.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, category.getName())).build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' already exists.", category.getName());
     }
@@ -166,11 +163,11 @@ public class CategoryRestService extends OnmsRestService {
 
     @DELETE
     @Path("/{categoryName}")
-    public Response deleteCategory(@PathParam("categoryName") final String categoryName) {
+    public Response deleteCategory(@Context UriInfo uriInfo, @PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
             m_categoryDao.delete(category);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' does not exist.", categoryName);
     }

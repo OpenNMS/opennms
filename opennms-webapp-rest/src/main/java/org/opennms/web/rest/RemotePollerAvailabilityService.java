@@ -72,7 +72,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("remotePollerAvailabilityService")
 @PerRequest
 @Path("remotelocations")
 @Transactional
@@ -93,9 +93,6 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     
     @Autowired
     TransactionTemplate m_transactionTemplate;
-    
-    @Context
-    UriInfo m_uriInfo;
     
     OnmsLocationAvailDefinitionList m_defList = null;
     
@@ -160,12 +157,12 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability")
-    public OnmsLocationAvailDefinitionList getAvailability() throws InterruptedException {
+    public OnmsLocationAvailDefinitionList getAvailability(@Context UriInfo uriInfo) throws InterruptedException {
         readLock();
         
         try {
             if(m_timer == null) {
-                MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
+                MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
                 m_defList =  getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedNodes(queryParameters));
                 
                 TimerTask task = new TimerTask() {
@@ -197,10 +194,10 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability/{location}")
-    public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@PathParam("location") String location) {
+    public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@Context UriInfo uriInfo, @PathParam("location") String location) {
         readLock();
         try {
-            MultivaluedMap<String, String> queryParameters = m_uriInfo.getQueryParameters();
+            MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
             
             OnmsMonitoringLocationDefinition locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
             if (locationDefinition == null) {

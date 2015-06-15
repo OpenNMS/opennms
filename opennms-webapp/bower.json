@@ -3,7 +3,6 @@
   "dependencies": {
     "bootstrap": "~3.3.1",
     "bootstrap-sass-official": "~3.3.1",
-    "rsvp": "~3.0.18",
-    "c3": "https://github.com/masayuki0812/c3.git#ae26e98ed9496"
+    "c3": "https://github.com/masayuki0812/c3.git#v0.4.11-rc1"
   }
 }

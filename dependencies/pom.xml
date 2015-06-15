@@ -37,6 +37,7 @@
     <module>jradius</module>
     <module>jrobin</module>
     <module>jrrd</module>
+    <module>jrrd2</module>
     <module>karaf</module>
     <module>liquibase</module>
     <module>mina</module>

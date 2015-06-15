@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -74,6 +75,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
     private static final String PASSWORD = "21232F297A57A5A743894A0E4A801FC3";
+
+    @Autowired
+    UserManager m_userManager;
 
     @Test
     public void testUser() throws Exception {
@@ -109,7 +113,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
         xml = sendRequest(GET, "/users/test", 200); 
         OnmsUser testUser = JaxbUtils.unmarshal(OnmsUser.class,  xml);
         // ... but in xml-file
-        User castorUser = getWebAppContext().getBean(UserManager.class).getUser("test");
+        User castorUser = m_userManager.getUser("test");
         assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
 
         // validate change of email
@@ -177,7 +181,7 @@ public class UserRestServiceTest extends AbstractSpringJerseyRestTestCase  {
 
             // validate change of password
             eachUser = JaxbUtils.unmarshal(OnmsUser.class, sendRequest(GET, "/users/test" + i, 200));
-            User castorUser = getWebAppContext().getBean(UserManager.class).getUser("test" + i);
+            User castorUser = m_userManager.getUser("test" + i);
             assertEquals(castorUser.getPassword().getContent(), "MONKEYS");
 
             // validate change of email

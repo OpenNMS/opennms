@@ -31,6 +31,12 @@
       <artifactId>org.opennms.features.measurements.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
 
     <!-- Newts -->
     <dependency>

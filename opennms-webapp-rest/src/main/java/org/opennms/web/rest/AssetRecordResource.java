@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("assetRecordResource")
 @PerRequest
 @Scope("prototype")
 @Path("assetRecord")
@@ -68,9 +68,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 public class AssetRecordResource extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AssetRecordResource.class);
-
-    @Context 
-    UriInfo m_uriInfo;
 
     @Autowired
     private NodeDao m_nodeDao;    
@@ -109,7 +106,7 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
+    public Response updateAssetRecord(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -144,7 +141,7 @@ public class AssetRecordResource extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
             
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

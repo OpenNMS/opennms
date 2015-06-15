@@ -122,7 +122,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@Component
+@Component("requisitionRestService")
 @PerRequest
 @Scope("prototype")
 @Path("requisitions")
@@ -136,9 +136,6 @@ public class RequisitionRestService extends OnmsRestService {
 
     @Autowired
     private ForeignSourceRepositoryFactory m_foreignSourceRepositoryFactory;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     HttpHeaders m_headers;
@@ -449,7 +446,7 @@ public class RequisitionRestService extends OnmsRestService {
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceRequisition(final Requisition requisition) {
+    public Response addOrReplaceRequisition(@Context UriInfo uriInfo, final Requisition requisition) {
         try {
             requisition.validate();
         } catch (final ValidationException e) {
@@ -459,7 +456,7 @@ public class RequisitionRestService extends OnmsRestService {
 
         debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
         m_accessService.addOrReplaceRequisition(requisition);
-        return Response.seeOther(getRedirectUri(m_uriInfo, requisition.getForeignSource())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, requisition.getForeignSource())).build();
 
     }
 
@@ -474,10 +471,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNode(@PathParam("foreignSource") String foreignSource, RequisitionNode node) {
+    public Response addOrReplaceNode(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, RequisitionNode node) {
         debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
         m_accessService.addOrReplaceNode(foreignSource, node);
-        return Response.seeOther(getRedirectUri(m_uriInfo, node.getForeignId())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, node.getForeignId())).build();
     }
 
     /**
@@ -492,10 +489,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceInterface(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
+    public Response addOrReplaceInterface(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
         debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
         m_accessService.addOrReplaceInterface(foreignSource, foreignId, iface);
-        return Response.seeOther(getRedirectUri(m_uriInfo, iface.getIpAddr())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, iface.getIpAddr())).build();
     }
 
     /**
@@ -511,10 +508,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceService(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
+    public Response addOrReplaceService(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
         debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
         m_accessService.addOrReplaceService(foreignSource, foreignId, ipAddress, service);
-        return Response.seeOther(getRedirectUri(m_uriInfo, service.getServiceName())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, service.getServiceName())).build();
     }
 
     /**
@@ -529,10 +526,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/categories")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNodeCategory(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
+    public Response addOrReplaceNodeCategory(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
         debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeCategory(foreignSource, foreignId, category);
-        return Response.seeOther(getRedirectUri(m_uriInfo, category.getName())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, category.getName())).build();
     }
 
     /**
@@ -547,10 +544,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/assets")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public Response addOrReplaceNodeAssetParameter(@PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
+    public Response addOrReplaceNodeAssetParameter(@Context UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
         debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeAssetParameter(foreignSource, foreignId, asset);
-        return Response.seeOther(getRedirectUri(m_uriInfo, asset.getName())).build();
+        return Response.seeOther(getRedirectUri(uriInfo, asset.getName())).build();
     }
 
     /**
@@ -562,10 +559,10 @@ public class RequisitionRestService extends OnmsRestService {
     @PUT
     @Path("{foreignSource}/import")
     @Transactional
-    public Response importRequisition(@PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
+    public Response importRequisition(@Context UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @QueryParam("rescanExisting") final String rescanExisting) {
         debug("importRequisition: Importing requisition for foreign source %s", foreignSource);
         m_accessService.importRequisition(foreignSource, rescanExisting);
-        return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
+        return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
     }
 
     /**
@@ -579,9 +576,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateRequisition(@PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
+    public Response updateRequisition(@Context UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, final MultivaluedMapImpl params) {
         m_accessService.updateRequisition(foreignSource, params);
-        return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
     /**
@@ -596,9 +593,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
+    public Response updateNode(@Context UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, final MultivaluedMapImpl params) {
         m_accessService.updateNode(foreignSource, foreignId, params);
-        return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
     /**
@@ -614,9 +611,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateInterface(@Context UriInfo uriInfo, @PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         m_accessService.updateInterface(foreignSource, foreignId, ipAddress, params);
-        return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
     /**
