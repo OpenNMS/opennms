@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
+    <jmx-collection name="anyservice">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="java.lang.GarbageCollector" objectname="java.lang:type=GarbageCollector,name=PS MarkSweep">
+                <attrib name="CollectionCount" alias="1CollectionCnt" type="gauge"/>
+                <attrib name="CollectionTime" alias="1CollectionTime" type="gauge"/>
+                <comp-attrib name="LastGcInfo" alias="LastGcInfo" type="Composite">
+                    <comp-member name="GcThreadCount" alias="1LasGcInfoGcThreCnt" type="gauge"/>
+                    <comp-member name="duration" alias="1LastGcInfoDuration" type="gauge"/>
+                    <comp-member name="endTime" alias="1LastGcInfoEndTime" type="gauge"/>
+                    <comp-member name="id" alias="1LastGcInfoId" type="gauge"/>
+                    <comp-member name="startTime" alias="1LastGcInfoStarTime" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>
