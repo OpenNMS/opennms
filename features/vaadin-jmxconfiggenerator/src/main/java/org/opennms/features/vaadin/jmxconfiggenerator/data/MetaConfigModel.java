@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
+/**
+ * Meta interface to address all properties of an ConfigModel bean in vaadin
+ * framework. In this way we do not need use strings!
+ * 
+ * @author Markus von Rüden
+ * @see ServiceConfig
+ */
+public interface MetaConfigModel {
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	String SERVICE_NAME = "serviceName";
+	String JMXMP = "jmxmp";
+	String HOST = "host";
+	String PASSWORD = "password";
+	String PORT = "port";
+	String AUTHENTICATE = "authenticate";
+	String USER = "user";
+	String SKIP_DEFAULT_VM = "skipDefaultVM";
+	String RUN_WRITABLE_MBEANS = "runWritableMBeans";
 }

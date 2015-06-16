@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
+import java.util.List;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+/**
+ * Interface to collect all Alias from CompMembers and Attribs
+ * to identify ambiguous aliases.
+ *
+ * @author Markus von Rüden
+ */
+public interface NameProvider {
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	/** List of alias/names to validate */
+	List<String> getNames();
+
+	/**
+	 * Maps a Attrib/CompMember to a certain Vaadin field value. We need this, because we need the possibility to validate
+	 * the uniqueness of the Atrrib's/CompMember's aliases. Wile editing the final alias has not yet been written to the underlying
+	 * bean and therefore need to be considered by the name provider. This field is optional and may be empty, but not null.
+	 * For example at the initial validation phase the map may be empty, but while validating the input of the alias
+	 * of an Attribute in the Attributes tables the map shoult not be empty.
+	 */
+	interface FieldValueProvider {
+
+		String getFieldValue(Object input);
+	}
 }

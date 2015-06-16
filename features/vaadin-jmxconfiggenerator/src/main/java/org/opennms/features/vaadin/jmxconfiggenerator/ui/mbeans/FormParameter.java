@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
+/**
+ * Is used to configure the {@link NameEditForm}.
+ * 
+ * @author Markus von Rüden
+ * @see NameEditForm
+ */
+public interface FormParameter {
+	/**
+	 * Defines the caption for the {@link NameEditForm}.
+	 * 
+	 * @return the caption of the {@link NameEditForm}.
+	 */
+	String getCaption();
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+	/**
+	 * Returns the name of the property which is editable.
+	 * 
+	 * @return the property name which is editable.
+	 */
+	String getEditablePropertyName();
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	/**
+	 * Returns the property name which is not editable.
+	 * 
+	 * @return the property name which is not editable.
+	 */
+	String getNonEditablePropertyName();
+
+	String getEditablePropertyCaption();
+
+	String getNonEditablePropertyCaption();
 }

@@ -26,21 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
+import com.vaadin.data.validator.RegexpValidator;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+/**
+ *
+ * @author Markus von Rüden
+ */
+public class NameValidator extends RegexpValidator {
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	protected static final String ERROR_MESSAGE = "You must specify a valid name. Allowed characters: (a-z, A-Z, 0-9,. , _)";
+
+	public NameValidator() {
+		super("[a-zA-Z0-9_]+([\\.-][a-zA-Z0-9_]+)*", true, ERROR_MESSAGE);
+	}
+
 }

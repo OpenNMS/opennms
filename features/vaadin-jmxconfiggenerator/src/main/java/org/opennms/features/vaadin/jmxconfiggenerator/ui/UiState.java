@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+public enum UiState {
+	ServiceConfigurationView("Service Configuration", true), 
+	MbeansDetection("Determine MBeans information", false), 
+	MbeansView("MBeans Configuration", true), 
+	ResultConfigGeneration("Generate OpenNMS Configuration snippets", false), 
+	ResultView("OpenNMS Configuration", true);
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+	private final String description;
+	private boolean ui;
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	UiState(String description, boolean ui) {
+		this.description = description;
+		this.ui = ui;
+	}
+
+	boolean hasUi() {
+		return ui;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
 }
