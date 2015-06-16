@@ -392,7 +392,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
-                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.LEFT_JOIN);
                 serviceCriteriaBuilder.eq("status", "A");
                 serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
                 serviceCriteriaBuilder.ne("node.type", "D");
