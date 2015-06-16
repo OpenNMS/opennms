@@ -140,23 +140,34 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     }
 
     private void insertBatch() {
+        // We'd expect the logs from this thread to be in collectd.log
         try {
-            LOG.debug("Inserting {} samples", sampleBatch.size());
-            m_sampleRepository.insert(sampleBatch);
-        } catch (Throwable t) {
-            LOG.error("An error occurred while inserting the samples. They will be lost.", t);
-        }
+            Logging.withPrefix("collectd", new Callable<Void>(){
+                @Override
+                public Void call() throws Exception {
+                    try {
+                        LOG.debug("Inserting {} samples", sampleBatch.size());
+                        m_sampleRepository.insert(sampleBatch);
+                    } catch (Throwable t) {
+                        LOG.error("An error occurred while inserting the samples. They will be lost.", t);
+                    }
 
-        if (LOG.isDebugEnabled()) {
-            String uniqueResourceIds = sampleBatch.stream()
-                .map(s -> s.getResource().getId())
-                .distinct()
-                .collect(Collectors.joining(", "));
-            LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
-        }
+                    if (LOG.isDebugEnabled()) {
+                        String uniqueResourceIds = sampleBatch.stream()
+                            .map(s -> s.getResource().getId())
+                            .distinct()
+                            .collect(Collectors.joining(", "));
+                        LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
+                    }
 
-        sampleBatch = Lists.newLinkedList();
-        insertBatchAfterTimeMillis = System.currentTimeMillis() + m_maxBatchDelayInMs;
+                    sampleBatch = Lists.newLinkedList();
+                    insertBatchAfterTimeMillis = System.currentTimeMillis() + m_maxBatchDelayInMs;
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            LOG.error("Failed to insert one or more samples.", e);
+        }
     }
 
     private void maybeStartTimer() {
@@ -164,24 +175,13 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
             return;
         }
 
-        // We'd expect the logs from this thread to be in collectd.log
-        try {
-            Logging.withPrefix("collectd", new Callable<Void>(){
-                @Override
-                public Void call() throws Exception {
-                    m_batchTimer = new Timer("NewtsRrdStrategy-BatchTimer");
-                    m_batchTimer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            batch(Collections.emptyList());
-                        }
-                    }, 0, m_maxBatchDelayInMs);
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-            LOG.error("Failed to schedule batch timer. Samples may remain queued for a full collection interval.", e);
-        }
+        m_batchTimer = new Timer("NewtsRrdStrategy-BatchTimer");
+        m_batchTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                batch(Collections.emptyList());
+            }
+        }, 0, m_maxBatchDelayInMs);
     }
 
     @Override
