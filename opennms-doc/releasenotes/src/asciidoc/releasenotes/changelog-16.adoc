@@ -1,8 +1,12 @@
 [releasenotes-16]
 === OpenNMS 16
 
-[releasenotes-changelog-16.0.1]
-==== Release 16.0.1
+[releasenotes-changelog-16.0.2]
+==== Release 16.0.2
+
+Release 16.0.2 is the latest stable release of OpenNMS.  It is a repack of 16.0.1 with a missing bugfix included.
+
+The codename for 16.0.2 is **__still__** _Bananaman_.  It'll be our secret.
 
 [releasenotes-changelog-16.0.1]
 ==== Release 16.0.1

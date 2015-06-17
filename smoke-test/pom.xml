@@ -4,7 +4,7 @@
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
-  <version>16.0.1</version>
+  <version>16.0.2</version>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
