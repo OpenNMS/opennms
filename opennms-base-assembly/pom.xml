@@ -86,14 +86,14 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-OPENNMS-20150402-1</version>
+        <groupId>com.alexnederlof</groupId>
+        <artifactId>jasperreports-plugin</artifactId>
+        <version>1.9</version>
         <executions>
           <execution>
             <phase>compile</phase>
             <goals>
-              <goal>compile-reports</goal>
+              <goal>jasper</goal>
             </goals>
           </execution>
         </executions>
@@ -101,7 +101,6 @@
           <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
           <outputDirectory>${project.build.directory}/jasper</outputDirectory>
           <xmlValidation>true</xmlValidation>
-          <forceCompile>false</forceCompile>
           <additionalProperties>
             <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
           </additionalProperties>
