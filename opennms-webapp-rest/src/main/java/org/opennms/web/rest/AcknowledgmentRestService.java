@@ -37,7 +37,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -56,11 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
-@PerRequest
-@Scope("prototype")
-@Path("acks")
-
 /**
  * ReST service for Acknowledgments of alarms/notifications.
  *
@@ -68,6 +62,10 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("acknowledgmentRestService")
+@PerRequest
+@Scope("prototype")
+@Path("acks")
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
     private AcknowledgmentDao m_ackDao;
@@ -77,12 +75,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
     
     @Autowired
     private NotificationDao m_notificationDao;
-    
-    @Context 
-    UriInfo m_uriInfo;
-
-    @Context
-    SecurityContext m_securityContext;
     
     /**
      * <p>getAcknowledgment</p>
@@ -129,11 +121,11 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsAcknowledgmentCollection getAcks() {
+    public OnmsAcknowledgmentCollection getAcks(@Context UriInfo uriInfo) {
         readLock();
         
         try {
-            final CriteriaBuilder builder = getQueryFilters(m_uriInfo.getQueryParameters());
+            final CriteriaBuilder builder = getQueryFilters(uriInfo.getQueryParameters());
             OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(builder.toCriteria()));
     
             //For getting totalCount

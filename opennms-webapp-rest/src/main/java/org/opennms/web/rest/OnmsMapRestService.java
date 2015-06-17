@@ -57,7 +57,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>OnmsMapRestService class.</p>
  *
@@ -65,6 +64,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("onmsMapRestService")
 @PerRequest
 @Scope("prototype")
 @Path("maps")
@@ -77,9 +77,6 @@ public class OnmsMapRestService extends OnmsRestService {
     private OnmsMapDao m_mapDao;
 
     @Context
-    UriInfo m_uriInfo;
-
-    @Context
     ResourceContext m_context;
 
     /**
@@ -89,12 +86,12 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsMapList getMaps() {
+    public OnmsMapList getMaps(@Context UriInfo uriInfo) {
         readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            applyQueryFilters(uriInfo.getQueryParameters(), builder);
             builder.orderBy("lastModifiedTime").desc();
             return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
         } finally {
@@ -128,12 +125,12 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addMap(final OnmsMap map) {
+    public Response addMap(@Context UriInfo uriInfo, final OnmsMap map) {
         writeLock();
         try {
             LOG.debug("addMap: Adding map {}", map);
             m_mapDao.save(map);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(map.getId())).build();
+            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(map.getId())).build();
             // return Response.ok(map).build();
         } finally {
             writeUnlock();
@@ -171,7 +168,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
-    public Response updateMap(@PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
+    public Response updateMap(@Context UriInfo uriInfo, @PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -191,7 +188,7 @@ public class OnmsMapRestService extends OnmsRestService {
     
             LOG.debug("updateMap: map {} updated", map);
             m_mapDao.saveOrUpdate(map);
-            return Response.seeOther(m_uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(mapId)).build();
+            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getMap").build(mapId)).build();
             // return Response.ok(map).build();
         } finally {
             writeUnlock();

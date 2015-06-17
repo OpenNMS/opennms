@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("eventRestService")
 @PerRequest
 @Scope("prototype")
 @Path("events")
@@ -70,9 +70,6 @@ public class EventRestService extends OnmsRestService {
 
     @Autowired
     private EventDao m_eventDao;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     HttpHeaders m_headers;
@@ -131,11 +128,11 @@ public class EventRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsEventCollection getEvents() throws ParseException {
+    public OnmsEventCollection getEvents(@Context UriInfo uriInfo) throws ParseException {
         readLock();
 
         try {
-            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters());
+            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
             builder.orderBy("eventTime").asc();
 
             final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
@@ -159,11 +156,11 @@ public class EventRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     @Transactional
-    public OnmsEventCollection getEventsBetween() throws ParseException {
+    public OnmsEventCollection getEventsBetween(@Context UriInfo uriInfo) throws ParseException {
         readLock();
 
         try {
-            final MultivaluedMap<String, String> params = m_uriInfo.getQueryParameters();
+            final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
             final String column;
             if (params.containsKey("column")) {
@@ -226,7 +223,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
@@ -235,7 +232,7 @@ public class EventRestService extends OnmsRestService {
                 throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(event, ack);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -252,7 +249,7 @@ public class EventRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvents(final MultivaluedMapImpl formProperties) {
+    public Response updateEvents(@Context UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -268,7 +265,7 @@ public class EventRestService extends OnmsRestService {
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
                 processEventAck(event, ack);
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

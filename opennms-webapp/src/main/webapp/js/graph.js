@@ -10,6 +10,18 @@ GraphContainers = (function () {
   "use strict";
 
   var $j = jQuery.noConflict(); // Avoid conflicts with prototype.js used by graph/cropper/zoom.js
+  jQuery.cachedScript = function( url, options ) {
+    // Allow user to set any option except for dataType, cache, and url
+    options = $j.extend( options || {}, {
+      dataType: "script",
+      cache: true,
+      url: url
+    });
+
+    // Use $.ajax() since it is more flexible than $.getScript
+    // Return the jqXHR object so we can chain callbacks
+    return jQuery.ajax( options );
+  };
 
   var librariesLoaded = {};
   var dependenciesResolved = false;
@@ -30,7 +42,7 @@ GraphContainers = (function () {
   };
 
   var loadJS = function(src) {
-    return $j.getScript(window.onmsGraphContainers.baseHref+src);
+    return $j.cachedScript(window.onmsGraphContainers.baseHref+src);
   };
 
   /**
@@ -84,7 +96,6 @@ GraphContainers = (function () {
       loadJS("js/holder.min.js")
         .then(loadJS("lib/d3/d3.min.js"))
         .then(loadJS("lib/c3/c3.min.js"))
-        .then(loadJS("lib/rsvp/rsvp.min.js"))
         .then(loadJS("js/backshift.onms.min.js"))
         .then(waitForLibraries(["holder", "d3", "c3", "rsvp", "backshift"], dfd));
     } else {

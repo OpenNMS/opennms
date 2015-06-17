@@ -73,7 +73,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 1.9.93
  */
-@Component
+@Component("groupRestService")
 @PerRequest
 @Scope("prototype")
 @Path("groups")
@@ -84,9 +84,6 @@ public class GroupRestService extends OnmsRestService {
 
     @Autowired
     GroupService groupService;
-    
-    @Context 
-    UriInfo m_uriInfo;
     
     @Context
     ResourceContext m_context;
@@ -134,13 +131,13 @@ public class GroupRestService extends OnmsRestService {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addGroup(final OnmsGroup group) {
+    public Response addGroup(@Context UriInfo uriInfo, final OnmsGroup group) {
         writeLock();
         
         try {
             LOG.debug("addGroup: Adding group {}", group);
             groupService.saveGroup(group);
-            return Response.seeOther(getRedirectUri(m_uriInfo, group.getName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, group.getName())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -151,7 +148,7 @@ public class GroupRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
-    public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
+    public Response updateGroup(@Context UriInfo uriInfo, @PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -177,7 +174,7 @@ public class GroupRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -201,13 +198,13 @@ public class GroupRestService extends OnmsRestService {
 
     @PUT
     @Path("{groupName}/users/{userName}")
-    public Response addUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
+    public Response addUser(@Context UriInfo uriInfo, @PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
         writeLock();
         try {
             getOnmsGroup(groupName); // just ensure that group exists
             boolean success = groupService.addUser(groupName, userName);
             if (success) {
-                return Response.seeOther(getRedirectUri(m_uriInfo)).build();    
+                return Response.seeOther(getRedirectUri(uriInfo)).build();    
             }
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);

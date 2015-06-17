@@ -69,7 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>OnmsSnmpInterfaceResource class.</p>
  *
@@ -77,6 +76,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("onmsSnmpInterfaceResource")
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -95,9 +95,6 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
-    @Context 
-    UriInfo m_uriInfo;
-    
     /**
      * <p>getSnmpInterfaces</p>
      *
@@ -106,12 +103,12 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsSnmpInterfaceList getSnmpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
+    public OnmsSnmpInterfaceList getSnmpInterfaces(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
         readLock();
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             
-            final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+            final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
             
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
             builder.ne("collect", "D");
@@ -157,7 +154,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
+    public Response addSnmpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
         writeLock();
         
         try {
@@ -174,7 +171,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             }
             m_snmpInterfaceDao.save(snmpInterface);
             final Integer ifIndex = snmpInterface.getIfIndex();
-            return Response.seeOther(getRedirectUri(m_uriInfo, ifIndex)).build();
+            return Response.seeOther(getRedirectUri(uriInfo, ifIndex)).build();
         } finally {
             writeUnlock();
         }
@@ -220,7 +217,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
-    public Response updateSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
+    public Response updateSnmpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -273,7 +270,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
                 }
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
