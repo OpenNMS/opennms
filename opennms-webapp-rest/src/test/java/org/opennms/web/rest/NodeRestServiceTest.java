@@ -46,6 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
@@ -187,7 +188,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         createSnmpInterface();
 
         final MockHttpServletRequest req = createRequest(m_context, GET, "/nodes");
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
         JSONObject jo = new JSONObject(json);
@@ -306,7 +307,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes/1/ipinterfaces";
 
         final MockHttpServletRequest req = createRequest(m_context, GET, url);
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
         assertNotNull(json);
@@ -378,7 +379,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes/1/snmpinterfaces";
 
         final MockHttpServletRequest req = createRequest(m_context, GET, url);
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
         assertNotNull(json);

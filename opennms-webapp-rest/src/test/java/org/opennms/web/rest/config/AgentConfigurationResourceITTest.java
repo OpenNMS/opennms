@@ -31,6 +31,7 @@ package org.opennms.web.rest.config;
 import static org.junit.Assert.assertTrue;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +95,7 @@ public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTe
     @Test
     public void testJsonResponse() throws Exception {
         final MockHttpServletRequest req = createRequest(m_context, GET, "/config/agents/example1/SNMP");
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(req, 200);
         assertTrue(json.contains("\"address\":\"192.168.1.1\""));
     }
