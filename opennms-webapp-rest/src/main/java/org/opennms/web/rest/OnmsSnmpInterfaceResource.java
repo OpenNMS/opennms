@@ -121,12 +121,12 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
      *
      * @param nodeCriteria a {@link java.lang.String} object.
      * @param ifIndex a int.
-     * @return a {@link org.opennms.netmgt.model.OnmsEntity} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
-    public OnmsEntity getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
+    public OnmsSnmpInterface getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
         return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
     }
     
