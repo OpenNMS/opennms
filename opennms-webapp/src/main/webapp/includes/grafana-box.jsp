@@ -47,8 +47,8 @@
                 org.apache.http.impl.client.DefaultHttpClient,
                 org.apache.http.params.HttpConnectionParams,
                 org.apache.http.params.HttpParams,
-                org.apache.http.util.EntityUtils,
-                java.net.UnknownHostException" %>
+                java.net.UnknownHostException,
+                java.net.ConnectException" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -59,7 +59,9 @@
     String grafanaHostname = System.getProperty("org.opennms.grafanaBox.hostname", "localhost");
     String grafanaTag = System.getProperty("org.opennms.grafanaBox.tag", "");
     int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
-
+    int grafanaConnectionTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.connectionTimeout", "500"));
+    int grafanaSoTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.soTimeout", "500"));
+    String errorMessage = null;
     String responseString = null;
 
     if (!"".equals(grafanaApiKey)
@@ -73,18 +75,22 @@
              * Setting the timeouts to assure that the landing page will be loaded. Making the
              * call via JS isn't possible due to CORS-related problems with the Grafana server.
              */
-            HttpConnectionParams.setConnectionTimeout(httpParams, 500);
-            HttpConnectionParams.setSoTimeout(httpParams, 500);
+            HttpConnectionParams.setConnectionTimeout(httpParams, grafanaConnectionTimeout);
+            HttpConnectionParams.setSoTimeout(httpParams, grafanaSoTimeout);
             HttpHost httpHost = new HttpHost(grafanaHostname, grafanaPort, grafanaProtocol);
             HttpGet httpGet = new HttpGet("/api/search/");
             httpGet.setHeader("Authorization", "Bearer " + grafanaApiKey);
             HttpResponse httpResponse = httpClient.execute(httpHost, httpGet);
             responseString = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
         } catch (UnknownHostException e) {
-            // do nothing
+            errorMessage = "Host unknown";
         } catch (ConnectTimeoutException e) {
-            // do nothing
+            errorMessage = "Connection timeout";
+        } catch (ConnectException e) {
+            errorMessage = "Connection refused";
         }
+    } else {
+        errorMessage = "Invalid configuration";
     }
 %>
 
@@ -122,7 +128,7 @@
         <%
             } else {
         %>
-        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>&nbsp;Invalid configuration<br/>
+        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>&nbsp;<%=errorMessage%><br/>
         <%
             }
         %>
