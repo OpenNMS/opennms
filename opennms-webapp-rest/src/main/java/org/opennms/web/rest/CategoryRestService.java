@@ -73,32 +73,25 @@ public class CategoryRestService extends OnmsRestService {
     @Autowired
     private CategoryDao m_categoryDao;
 
-    private ResourceContext m_context;
-
-    @Context
-    public void setResourceContext(ResourceContext context) {
-        m_context = context;
-    }
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("/nodes/{nodeCriteria}")
-    public OnmsCategoryCollection getCategoriesForNode(@PathParam("nodeCriteria") String nodeCriteria) {
-        return m_context.getResource(NodeRestService.class).getCategoriesForNode(nodeCriteria);
+    public OnmsCategoryCollection getCategoriesForNode(@Context final ResourceContext context, @PathParam("nodeCriteria") String nodeCriteria) {
+        return context.getResource(NodeRestService.class).getCategoriesForNode(nodeCriteria);
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{categoryName}/nodes/{nodeCriteria}")
-    public OnmsCategory getCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(NodeRestService.class).getCategoryForNode(nodeCriteria, categoryName);
+    public OnmsCategory getCategoryForNode(@Context final ResourceContext context, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+        return context.getResource(NodeRestService.class).getCategoryForNode(nodeCriteria, categoryName);
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{categoryName}/nodes/{nodeCriteria}/")
-    public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(NodeRestService.class).addCategoryToNode(uriInfo, nodeCriteria, categoryName);
+    public Response addCategoryToNode(@Context final ResourceContext context, @Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+        return context.getResource(NodeRestService.class).addCategoryToNode(uriInfo, nodeCriteria, categoryName);
     }
 
     @PUT
@@ -130,8 +123,8 @@ public class CategoryRestService extends OnmsRestService {
 
     @DELETE
     @Path("/{categoryName}/nodes/{nodeCriteria}/")
-    public Response removeCategoryFromNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        return m_context.getResource(NodeRestService.class).removeCategoryFromNode(nodeCriteria, categoryName);
+    public Response removeCategoryFromNode(@Context final ResourceContext context, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
+        return context.getResource(NodeRestService.class).removeCategoryFromNode(nodeCriteria, categoryName);
     }
 
     @GET
@@ -174,19 +167,19 @@ public class CategoryRestService extends OnmsRestService {
 
     @PUT
     @Path("/{categoryName}/groups/{groupName}")
-    public OnmsCategory addCategoryToGroup(@PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
+    public OnmsCategory addCategoryToGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
+        return context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
     }
 
     @DELETE
     @Path("/{categoryName}/groups/{groupName}")
-    public Response removeCategoryFromGroup(@PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
-        return m_context.getResource(GroupRestService.class).removeCategory(groupName, categoryName);
+    public Response removeCategoryFromGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
+        return context.getResource(GroupRestService.class).removeCategory(groupName, categoryName);
     }
 
     @GET
     @Path("/groups/{groupName}")
-    public OnmsCategoryCollection listCategoriesForGroup(@PathParam("groupName") final String groupName) {
-        return m_context.getResource(GroupRestService.class).listCategories(groupName);
+    public OnmsCategoryCollection listCategoriesForGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName) {
+        return context.getResource(GroupRestService.class).listCategories(groupName);
     }
 }

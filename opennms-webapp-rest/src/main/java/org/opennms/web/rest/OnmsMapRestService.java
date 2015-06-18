@@ -71,13 +71,6 @@ public class OnmsMapRestService extends OnmsRestService {
     @Autowired
     private OnmsMapDao m_mapDao;
 
-    private ResourceContext m_context;
-
-    @Context
-    public void setResourceContext(ResourceContext context) {
-        m_context = context;
-    }
-
     /**
      * <p>getMaps</p>
      *
@@ -189,7 +182,7 @@ public class OnmsMapRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsMapElementResource} object.
      */
     @Path("{mapId}/mapElements")
-    public OnmsMapElementResource getMapElementResource() {
-        return m_context.getResource(OnmsMapElementResource.class);
+    public OnmsMapElementResource getMapElementResource(@Context final ResourceContext context) {
+        return context.getResource(OnmsMapElementResource.class);
     }
 }

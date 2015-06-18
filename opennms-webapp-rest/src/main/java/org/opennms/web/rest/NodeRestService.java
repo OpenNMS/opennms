@@ -96,13 +96,6 @@ public class NodeRestService extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
-    private ResourceContext m_context;
-
-    @Context
-    public void setResourceContext(ResourceContext context) {
-        m_context = context;
-    }
-
     /**
      * <p>getNodes</p>
      *
@@ -265,8 +258,8 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsIpInterfaceResource} object.
      */
     @Path("{nodeCriteria}/ipinterfaces")
-    public OnmsIpInterfaceResource getIpInterfaceResource() {
-        return m_context.getResource(OnmsIpInterfaceResource.class);
+    public OnmsIpInterfaceResource getIpInterfaceResource(@Context final ResourceContext context) {
+        return context.getResource(OnmsIpInterfaceResource.class);
     }
 
     /**
@@ -275,8 +268,8 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsSnmpInterfaceResource} object.
      */
     @Path("{nodeCriteria}/snmpinterfaces")
-    public OnmsSnmpInterfaceResource getSnmpInterfaceResource() {
-        return m_context.getResource(OnmsSnmpInterfaceResource.class);
+    public OnmsSnmpInterfaceResource getSnmpInterfaceResource(@Context final ResourceContext context) {
+        return context.getResource(OnmsSnmpInterfaceResource.class);
     }
 
     /**
@@ -285,8 +278,8 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.AssetRecordResource} object.
      */
     @Path("{nodeCriteria}/assetRecord")
-    public AssetRecordResource getAssetRecordResource() {
-        return m_context.getResource(AssetRecordResource.class);
+    public AssetRecordResource getAssetRecordResource(@Context final ResourceContext context) {
+        return context.getResource(AssetRecordResource.class);
     }
 
     /**
@@ -295,8 +288,8 @@ public class NodeRestService extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.HardwareInventoryResource} object.
      */
     @Path("{nodeCriteria}/hardwareInventory")
-    public HardwareInventoryResource getHardwareInventoryResource() {
-        return m_context.getResource(HardwareInventoryResource.class);
+    public HardwareInventoryResource getHardwareInventoryResource(@Context final ResourceContext context) {
+        return context.getResource(HardwareInventoryResource.class);
     }
 
     @GET

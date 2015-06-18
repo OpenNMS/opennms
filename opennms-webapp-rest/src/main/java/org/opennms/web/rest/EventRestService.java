@@ -65,13 +65,6 @@ public class EventRestService extends OnmsRestService {
     @Autowired
     private EventDao m_eventDao;
 
-    private SecurityContext m_securityContext;
-
-    @Context
-    public void setSecurityContext(SecurityContext securityContext) {
-        m_securityContext = securityContext;
-    }
-
     /**
      * <p>
      * getEvent
@@ -196,7 +189,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context final UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
@@ -204,7 +197,7 @@ public class EventRestService extends OnmsRestService {
             if (ack == null) {
                 throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
-            processEventAck(event, ack);
+            processEventAck(securityContext, event, ack);
             return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
@@ -222,7 +215,7 @@ public class EventRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvents(@Context final UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
+    public Response updateEvents(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -236,7 +229,7 @@ public class EventRestService extends OnmsRestService {
             builder.orderBy("eventTime").desc();
 
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
-                processEventAck(event, ack);
+                processEventAck(securityContext, event, ack);
             }
             return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
@@ -244,10 +237,10 @@ public class EventRestService extends OnmsRestService {
         }
     }
 
-    private void processEventAck(final OnmsEvent event, final Boolean ack) {
+    private void processEventAck(final SecurityContext securityContext, final OnmsEvent event, final Boolean ack) {
         if (ack) {
             event.setEventAckTime(new Date());
-            event.setEventAckUser(m_securityContext.getUserPrincipal().getName());
+            event.setEventAckUser(securityContext.getUserPrincipal().getName());
         } else {
             event.setEventAckTime(null);
             event.setEventAckUser(null);
@@ -255,7 +248,7 @@ public class EventRestService extends OnmsRestService {
         m_eventDao.save(event);
     }
 
-    private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
+    private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);

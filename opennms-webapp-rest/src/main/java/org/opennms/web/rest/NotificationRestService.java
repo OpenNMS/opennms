@@ -66,13 +66,6 @@ public class NotificationRestService extends OnmsRestService {
     @Autowired
     private NotificationDao m_notifDao;
 
-    private SecurityContext m_securityContext;
-
-    @Context
-    public void setSecurityContext(SecurityContext securityContext) {
-        m_securityContext = securityContext;
-    }
-
     /**
      * <p>getNotification</p>
      *
@@ -129,7 +122,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@Context final UriInfo uriInfo, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
+    public Response updateNotification(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
         writeLock();
         
         try {
@@ -137,7 +130,7 @@ public class NotificationRestService extends OnmsRestService {
             if(ack==null) {
                 throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
-            processNotifAck(notif,ack);
+            processNotifAck(securityContext, notif,ack);
             return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
         } finally {
             writeUnlock();
@@ -152,7 +145,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotifications(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
+    public Response updateNotifications(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -165,7 +158,7 @@ public class NotificationRestService extends OnmsRestService {
             final CriteriaBuilder builder = getCriteriaBuilder(params);
             
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
-                processNotifAck(notif, ack);
+                processNotifAck(securityContext, notif, ack);
             }
             return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
         } finally {
@@ -173,10 +166,10 @@ public class NotificationRestService extends OnmsRestService {
         }
     }
 
-    private void processNotifAck(final OnmsNotification notif, final Boolean ack) {
+    private void processNotifAck(final SecurityContext securityContext, final OnmsNotification notif, final Boolean ack) {
         if(ack) {
             notif.setRespondTime(new Date());
-            notif.setAnsweredBy(m_securityContext.getUserPrincipal().getName());
+            notif.setAnsweredBy(securityContext.getUserPrincipal().getName());
         } else {
             notif.setRespondTime(null);
             notif.setAnsweredBy(null);

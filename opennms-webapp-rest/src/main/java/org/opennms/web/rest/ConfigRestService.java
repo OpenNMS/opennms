@@ -49,40 +49,33 @@ import org.springframework.stereotype.Component;
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
 
-    private ResourceContext m_context;
-
-    @Context
-    public void setResourceContext(ResourceContext context) {
-        m_context = context;
-    }
-
     @Path("{location}/polling")
-    public PollerConfigurationResource getPollerConfiguration() {
-        return m_context.getResource(PollerConfigurationResource.class);
+    public PollerConfigurationResource getPollerConfiguration(@Context final ResourceContext context) {
+        return context.getResource(PollerConfigurationResource.class);
     }
 
     @Path("{location}/collection")
-    public CollectionConfigurationResource getCollectionConfigurationResource() throws ConfigurationResourceException {
-        return m_context.getResource(CollectionConfigurationResource.class);
+    public CollectionConfigurationResource getCollectionConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(CollectionConfigurationResource.class);
     }
 
     @Path("datacollection")
-    public DataCollectionConfigResource getDatacollectionConfigurationResource() throws ConfigurationResourceException {
-        return m_context.getResource(DataCollectionConfigResource.class);
+    public DataCollectionConfigResource getDatacollectionConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(DataCollectionConfigResource.class);
     }
 
     @Path("agents")
-    public AgentConfigurationResource getAgentConfigurationResource() throws ConfigurationResourceException {
-        return m_context.getResource(AgentConfigurationResource.class);
+    public AgentConfigurationResource getAgentConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(AgentConfigurationResource.class);
     }
 
     @Path("snmp")
-    public SnmpConfigurationResource getSnmpConfigurationResource() throws ConfigurationResourceException {
-        return m_context.getResource(SnmpConfigurationResource.class);
+    public SnmpConfigurationResource getSnmpConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(SnmpConfigurationResource.class);
     }
 
     @Path("jmx")
-    public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource() throws ConfigurationResourceException {
-        return m_context.getResource(JmxDataCollectionConfigResource.class);
+    public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(JmxDataCollectionConfigResource.class);
     }
 }

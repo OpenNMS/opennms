@@ -84,13 +84,6 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
-    private ResourceContext m_context;
-
-    @Context
-    public void setResourceContext(ResourceContext context) {
-        m_context = context;
-    }
-
     /**
      * <p>getIpInterfaces</p>
      *
@@ -275,8 +268,8 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsMonitoredServiceResource} object.
      */
     @Path("{ipAddress}/services")
-    public OnmsMonitoredServiceResource getServices() {
-        return m_context.getResource(OnmsMonitoredServiceResource.class);
+    public OnmsMonitoredServiceResource getServices(@Context final ResourceContext context) {
+        return context.getResource(OnmsMonitoredServiceResource.class);
     }
 
 }
