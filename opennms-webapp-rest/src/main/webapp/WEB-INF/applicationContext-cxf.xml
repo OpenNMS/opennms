@@ -22,7 +22,10 @@
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
     <!-- Serialization @Provider classes -->
+    <!--
     <bean id="jaxbProvider"          class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
+    -->
+    <bean id="jaxbProvider"          class="org.opennms.web.rest.ValidatingMessageBodyReader"/>
     <!--
     <bean id="jsonProvider"          class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
     -->
