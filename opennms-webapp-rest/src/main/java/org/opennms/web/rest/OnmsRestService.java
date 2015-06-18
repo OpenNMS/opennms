@@ -76,6 +76,7 @@ public class OnmsRestService {
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestService.class);
 
 	private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
+	private final Lock m_readLock = m_globalLock.updateLock();
 	private final Lock m_writeLock = m_globalLock.writeLock();
 
 	protected static final int DEFAULT_LIMIT = 10;
@@ -87,6 +88,14 @@ public class OnmsRestService {
 	 */
 	public OnmsRestService() {
 		super();
+	}
+
+	protected void readLock() {
+	    m_readLock.lock();
+	}
+	
+	protected void readUnlock() {
+	    m_readLock.unlock();
 	}
 
 	protected void writeLock() {
