@@ -19,20 +19,19 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
-@PerRequest
-@Scope("prototype")
+@Component("infoRestService")
 @Path("info")
 @Transactional
 public class InfoRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(InfoRestService.class);
 
-    private static final String m_displayVersion = System.getProperty("version.display");
+    private static final String m_displayVersion;
     private static final String m_version;
     static {
+        m_displayVersion = System.getProperty("version.display", "");
         final Pattern versionPattern = Pattern.compile("^(\\d+\\.\\d+\\.\\d+).*?$");
         final Matcher m = versionPattern.matcher(m_displayVersion);
         if (m.matches()) {

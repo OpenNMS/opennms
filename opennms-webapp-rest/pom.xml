@@ -164,12 +164,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-dependencies</artifactId>
-      <type>pom</type>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>

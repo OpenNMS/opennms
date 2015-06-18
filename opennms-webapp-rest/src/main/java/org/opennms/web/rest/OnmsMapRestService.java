@@ -36,6 +36,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,12 +51,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>OnmsMapRestService class.</p>
@@ -65,8 +62,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("onmsMapRestService")
-@PerRequest
-@Scope("prototype")
 @Path("maps")
 @Transactional
 public class OnmsMapRestService extends OnmsRestService {
@@ -76,8 +71,12 @@ public class OnmsMapRestService extends OnmsRestService {
     @Autowired
     private OnmsMapDao m_mapDao;
 
+    private ResourceContext m_context;
+
     @Context
-    ResourceContext m_context;
+    public void setResourceContext(ResourceContext context) {
+        m_context = context;
+    }
 
     /**
      * <p>getMaps</p>
@@ -86,17 +85,11 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsMapList getMaps(@Context UriInfo uriInfo) {
-        readLock();
-        
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
-            applyQueryFilters(uriInfo.getQueryParameters(), builder);
-            builder.orderBy("lastModifiedTime").desc();
-            return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+    public OnmsMapList getMaps(@Context final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsMap.class);
+        applyQueryFilters(uriInfo.getQueryParameters(), builder);
+        builder.orderBy("lastModifiedTime").desc();
+        return new OnmsMapList(m_mapDao.findMatching(builder.toCriteria()));
     }
 
     /**
@@ -109,12 +102,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{mapId}")
     public OnmsMap getMap(@PathParam("mapId") final int mapId) {
-        readLock();
-        try {
-            return m_mapDao.get(mapId);
-        } finally {
-            readUnlock();
-        }
+        return m_mapDao.get(mapId);
     }
 
     /**
@@ -125,7 +113,7 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addMap(@Context UriInfo uriInfo, final OnmsMap map) {
+    public Response addMap(@Context final UriInfo uriInfo, final OnmsMap map) {
         writeLock();
         try {
             LOG.debug("addMap: Adding map {}", map);
@@ -168,7 +156,7 @@ public class OnmsMapRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{mapId}")
-    public Response updateMap(@Context UriInfo uriInfo, @PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
+    public Response updateMap(@Context final UriInfo uriInfo, @PathParam("mapId") final int mapId, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -202,11 +190,6 @@ public class OnmsMapRestService extends OnmsRestService {
      */
     @Path("{mapId}/mapElements")
     public OnmsMapElementResource getMapElementResource() {
-        readLock();
-        try {
-            return m_context.getResource(OnmsMapElementResource.class);
-        } finally {
-            readUnlock();
-        }
+        return m_context.getResource(OnmsMapElementResource.class);
     }
 }

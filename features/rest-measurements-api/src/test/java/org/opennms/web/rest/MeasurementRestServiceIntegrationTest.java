@@ -72,7 +72,7 @@ import com.google.common.collect.Maps;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-test-jrb.xml",
-        "classpath:/META-INF/opennms/applicationContext-jersey.xml"
+        "classpath:/META-INF/opennms/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

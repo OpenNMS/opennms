@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -69,12 +70,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Basic Web Service using REST for OnmsNode entity
@@ -84,8 +81,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("nodeRestService")
-@PerRequest
-@Scope("prototype")
 @Path("nodes")
 @Transactional
 public class NodeRestService extends OnmsRestService {
@@ -96,13 +91,17 @@ public class NodeRestService extends OnmsRestService {
 
     @Autowired
     private CategoryDao m_categoryDao;
-    
+
     @Autowired
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
-    
+
+    private ResourceContext m_context;
+
     @Context
-    ResourceContext m_context;
+    public void setResourceContext(ResourceContext context) {
+        m_context = context;
+    }
 
     /**
      * <p>getNodes</p>
@@ -111,53 +110,47 @@ public class NodeRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public OnmsNodeList getNodes(@Context UriInfo uriInfo) {
-        readLock();
-        
-        try {
-            final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-            final String type = params.getFirst("type");
+    public OnmsNodeList getNodes(@Context final UriInfo uriInfo) {
+        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+        final String type = params.getFirst("type");
 
-            final CriteriaBuilder builder = getCriteriaBuilder(params);
-            Criteria crit = null;
+        final CriteriaBuilder builder = getCriteriaBuilder(params);
+        Criteria crit = null;
 
-            if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
-                // we've been specifically asked for a list of nodes by ID
+        if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
+            // we've been specifically asked for a list of nodes by ID
 
-                final List<Integer> nodeIds = new ArrayList<Integer>();
-                for (final String id : params.getFirst("nodeId").split(",")) {
-                    nodeIds.add(Integer.valueOf(id));
-                }
-                builder.ne("type", "D");
-                builder.in("id", nodeIds);
-                builder.distinct();
-
-                crit = builder.toCriteria();
-            } else {
-                applyQueryFilters(params, builder);
-                builder.orderBy("label").asc();
-
-                crit = builder.toCriteria();
-
-                if (type == null) {
-                    final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-                    restrictions.add(Restrictions.ne("type", "D"));
-                    crit.setRestrictions(restrictions);
-                }
+            final List<Integer> nodeIds = new ArrayList<Integer>();
+            for (final String id : params.getFirst("nodeId").split(",")) {
+                nodeIds.add(Integer.valueOf(id));
             }
+            builder.ne("type", "D");
+            builder.in("id", nodeIds);
+            builder.distinct();
 
-            final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
-            
-            crit.setLimit(null);
-            crit.setOffset(null);
-            crit.setOrders(new ArrayList<Order>());
-    
-            coll.setTotalCount(m_nodeDao.countMatching(crit));
-    
-            return coll;
-        } finally {
-            readUnlock();
+            crit = builder.toCriteria();
+        } else {
+            applyQueryFilters(params, builder);
+            builder.orderBy("label").asc();
+
+            crit = builder.toCriteria();
+
+            if (type == null) {
+                final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
+                restrictions.add(Restrictions.ne("type", "D"));
+                crit.setRestrictions(restrictions);
+            }
         }
+
+        final OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(crit));
+        
+        crit.setLimit(null);
+        crit.setOffset(null);
+        crit.setOrders(new ArrayList<Order>());
+
+        coll.setTotalCount(m_nodeDao.countMatching(crit));
+
+        return coll;
     }
 
     /**
@@ -170,12 +163,7 @@ public class NodeRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{nodeCriteria}")
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
-        readLock();
-        try {
-            return m_nodeDao.get(nodeCriteria);
-        } finally {
-            readUnlock();
-        }
+        return m_nodeDao.get(nodeCriteria);
     }
 
     /**
@@ -186,7 +174,7 @@ public class NodeRestService extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addNode(@Context UriInfo uriInfo, final OnmsNode node) {
+    public Response addNode(@Context final UriInfo uriInfo, final OnmsNode node) {
         writeLock();
         
         try {
@@ -213,7 +201,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
-    public Response updateNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -315,46 +303,34 @@ public class NodeRestService extends OnmsRestService {
     @Path("/{nodeCriteria}/categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsCategoryCollection getCategoriesForNode(@PathParam("nodeCriteria") String nodeCriteria) {
-        readLock();
-
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
-            }
-            return new OnmsCategoryCollection(node.getCategories());
-        } finally {
-            readUnlock();
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
         }
+        return new OnmsCategoryCollection(node.getCategories());
     }
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("/{nodeCriteria}/categories/{categoryName}")
     public OnmsCategory getCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
-        readLock();
-
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
-            }
-            return getCategory(node, categoryName);
-        } finally {
-            readUnlock();
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
         }
+        return getCategory(node, categoryName);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Path("/{nodeCriteria}/categories")
-    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
+    public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, OnmsCategory category) {
         if (category == null) throw getException(Status.BAD_REQUEST, "Category must not be null.");
         return addCategoryToNode(uriInfo, nodeCriteria,  category.getName());
     }
     
     @PUT
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response addCategoryToNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
+    public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
         writeLock();
 
         try {
@@ -382,7 +358,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response updateCategoryForNode(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName, MultivaluedMapImpl params) {
+    public Response updateCategoryForNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
         writeLock();
 
         try {
@@ -434,7 +410,7 @@ public class NodeRestService extends OnmsRestService {
         }
     }
 
-    private OnmsCategory getCategory(OnmsNode node, String categoryName) {
+    private static OnmsCategory getCategory(OnmsNode node, String categoryName) {
         for (OnmsCategory category : node.getCategories()) {
             if (category.getName().equals(categoryName)) {
                 return category;
@@ -450,7 +426,7 @@ public class NodeRestService extends OnmsRestService {
         m_eventProxy.send(bldr.getEvent());
     }
 
-    private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
+    private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
         builder.alias("snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);

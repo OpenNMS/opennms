@@ -45,8 +45,13 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {
-    @Context
+
     private HttpServletRequest m_httpServletRequest;
+
+    @Context
+    public void setHttpServletRequest(HttpServletRequest request) {
+        m_httpServletRequest = request;
+    }
 
     /** {@inheritDoc} */
     @Override

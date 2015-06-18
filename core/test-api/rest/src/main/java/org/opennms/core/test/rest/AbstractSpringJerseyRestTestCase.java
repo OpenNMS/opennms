@@ -54,6 +54,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -63,6 +64,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
@@ -79,8 +81,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
-
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * 
@@ -104,8 +105,42 @@ public abstract class AbstractSpringJerseyRestTestCase {
     @Autowired
     protected ServletContext servletContext;
 
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
+
     private ContextLoaderListener contextListener;
     private Filter filter;
+
+    /**
+     * Apache CXF is throwing an exception because {@link MockHttpServletRequest#getInputStream()}
+     * is returning null if there is no message body on the incoming request. This appears to be
+     * a grey area in the Servlet spec. :/  So we're going to subclass {@link MockHttpServletRequest}
+     * so that it will return an empty {@link ServletInputStream} instead.
+     */
+    private static class MockHttpServletRequestThatWorks extends MockHttpServletRequest {
+        public MockHttpServletRequestThatWorks(ServletContext context, String requestType, String string) {
+            super(context, requestType, string);
+        }
+
+        /**
+         * Return an empty {@link ServletInputStream} that immediately
+         * returns -1 on read() (EOF) instead of returning null.
+         */
+        @Override
+        public ServletInputStream getInputStream() {
+            ServletInputStream retval = super.getInputStream();
+            if (retval == null) {
+                return new ServletInputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return -1;
+                    }
+                };
+            } else {
+                return retval;
+            }
+        }
+    }
 
     // Use thread locals for the authentication information so that if
     // multithreaded tests change it, they only change their copy of it.
@@ -136,6 +171,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
             getFilter().init(filterConfig);
 
             // Jersey
+            /*
             setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
             getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
             getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
@@ -143,14 +179,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
             getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
             setDispatcher(new SpringServlet());
             getDispatcher().init(getServletConfig());
+            */
 
             // Apache CXF
-            /*
             setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
             getServletConfig().addInitParameter("config-location", "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml");
-            setDispatcher(new CXFServlet());
+            CXFServlet servlet = new CXFServlet();
+            setDispatcher(servlet);
             getDispatcher().init(getServletConfig());
-            */
 
         } catch (ServletException se) {
             throw se.getRootCause();
@@ -164,7 +200,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
         while (fileIterator.hasNext()) {
             if(!fileIterator.next().delete()) {
-            	LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
+                LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
             }
         }
     }
@@ -227,7 +263,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
-        final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath);
+        final MockHttpServletRequest request = new MockHttpServletRequestThatWorks(context, requestType, contextPath + urlPath);
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
         MockUserPrincipal.setName(username);
@@ -401,6 +437,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
+        request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);

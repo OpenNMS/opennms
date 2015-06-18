@@ -28,41 +28,12 @@
 
 package org.opennms.web.rest;
 
-import java.util.List;
-
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 
 /**
  * <p>MultivaluedMapImpl class.</p>
  */
-public class MultivaluedMapImpl extends com.sun.jersey.core.util.MultivaluedMapImpl implements MultivaluedMap<String, String> {
-
-    private static final long serialVersionUID = -8207595047998783102L;
-
-    // Add methods for JAX-RS 2.0
-
-    @Override
-    public void addAll(String key, List<String> values) {
-        for (String value : values) {
-            addFirst(key, value);
-        }
-    }
-
-    @Override
-    public void addAll(String key, String...values) {
-        for (String value : values) {
-            addFirst(key, value);
-        }
-    }
-
-    @Override
-    public boolean equalsIgnoreValueOrder(MultivaluedMap<java.lang.String,java.lang.String> other) {
-        for (String key : this.keySet()) {
-            if (!this.get(key).equals(other.get(key))) {
-                return false;
-            }
-        }
-        return true;
-    }
+public class MultivaluedMapImpl extends MultivaluedHashMap<String,String> implements MultivaluedMap<String, String> {
 }

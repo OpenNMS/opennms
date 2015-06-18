@@ -87,7 +87,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -413,7 +413,7 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testCategory() throws Exception {
         createNode();
         // add category to node 
-        sendRequest(PUT, "/nodes/1/categories/Routers", 303);         
+        sendRequest(PUT, "/nodes/1/categories/Routers", 303);
         String xml = sendRequest(GET, "/nodes/1/categories", 200);
         assertTrue(xml.contains("name=\"Routers\""));
         

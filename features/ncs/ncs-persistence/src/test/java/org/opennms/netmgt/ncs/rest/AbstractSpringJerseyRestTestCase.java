@@ -267,6 +267,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected String sendRequest(String requestType, String url, Map<?,?> parameters, int expectedStatus) throws Exception {
         final MockHttpServletRequest request = createRequest(requestType, url);
+        request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus);

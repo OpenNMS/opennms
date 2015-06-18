@@ -70,10 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("remotePollerAvailabilityService")
-@PerRequest
 @Path("remotelocations")
 @Transactional
 public class RemotePollerAvailabilityService extends OnmsRestService {
@@ -104,7 +101,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     }
     
     
-    protected TimeChunker getTimeChunkerFromMidnight() {
+    protected static TimeChunker getTimeChunkerFromMidnight() {
         Calendar calendar = Calendar.getInstance();
         Date startTime = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0,0).getTime();
         return new TimeChunker(TimeChunker.MINUTE, startTime, new Date(System.currentTimeMillis()));
@@ -114,13 +111,8 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
-        readLock();
-        try {
-            List<LocationDef> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
-            return new OnmsMonitoringLocationDefinitionList(monitors);
-        } finally {
-            readUnlock();
-        }
+        List<LocationDef> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        return new OnmsMonitoringLocationDefinitionList(monitors);
     }
     
     /**
@@ -131,86 +123,72 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("participants")
     public String getParticipants(){
-        readLock();
-        try {
-            List<OnmsNode> nodes = m_nodeDao.findAll();
-            StringBuffer retVal = new StringBuffer();
-            
-            retVal.append("{\"participants\":[");
-            for(int i  = 0; i < nodes.size(); i++) {
-                OnmsNode node = nodes.get(i);
-                if(i == 0) {
-                    retVal.append("{\"name\":\"" + node.getLabel() + "\"}");
-                }else {
-                    retVal.append(",{\"name\":\"" + node.getLabel() + "\"}");
-                }
-            }
-            retVal.append("]}");
+        List<OnmsNode> nodes = m_nodeDao.findAll();
+        StringBuffer retVal = new StringBuffer();
         
-            return retVal.toString();
-        } finally {
-            readUnlock();
+        retVal.append("{\"participants\":[");
+        for(int i  = 0; i < nodes.size(); i++) {
+            OnmsNode node = nodes.get(i);
+            if(i == 0) {
+                retVal.append("{\"name\":\"" + node.getLabel() + "\"}");
+            }else {
+                retVal.append(",{\"name\":\"" + node.getLabel() + "\"}");
+            }
         }
+        retVal.append("]}");
+    
+        return retVal.toString();
     }
     
     
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability")
-    public OnmsLocationAvailDefinitionList getAvailability(@Context UriInfo uriInfo) throws InterruptedException {
-        readLock();
-        
-        try {
-            if(m_timer == null) {
-                MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-                m_defList =  getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedNodes(queryParameters));
-                
-                TimerTask task = new TimerTask() {
-    
-                    @Override
-                    public void run() {
-                        m_defList = m_transactionTemplate.execute(new TransactionCallback<OnmsLocationAvailDefinitionList>() {
-    
-                            @Override
-                            public OnmsLocationAvailDefinitionList doInTransaction(TransactionStatus status) {
-                                return getAvailabilityList(getTimeChunkerFromMidnight(), getSortedApplications(), null, null);
-                            }
-                            
-                        });
-                    }
-                };
-                
-                m_timer = new Timer("AvailCalculator-Timer");
-                m_timer.scheduleAtFixedRate(task, TimeChunker.MINUTE, TimeChunker.MINUTE);
-            }
+    public OnmsLocationAvailDefinitionList getAvailability(@Context final UriInfo uriInfo) throws InterruptedException {
+
+        if(m_timer == null) {
+            final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+            m_defList =  getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), null, getSelectedNodes(queryParameters));
             
-            return m_defList;
-        } finally {
-            readUnlock();
+            TimerTask task = new TimerTask() {
+
+                @Override
+                public void run() {
+                    m_defList = m_transactionTemplate.execute(new TransactionCallback<OnmsLocationAvailDefinitionList>() {
+
+                        @Override
+                        public OnmsLocationAvailDefinitionList doInTransaction(TransactionStatus status) {
+                            return getAvailabilityList(getTimeChunkerFromMidnight(), getSortedApplications(), null, null);
+                        }
+                        
+                    });
+                }
+            };
+            
+            m_timer = new Timer("AvailCalculator-Timer");
+            m_timer.scheduleAtFixedRate(task, TimeChunker.MINUTE, TimeChunker.MINUTE);
         }
+        
+        return m_defList;
     }
     
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Path("availability/{location}")
-    public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@Context UriInfo uriInfo, @PathParam("location") String location) {
-        readLock();
-        try {
-            MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
-            
-            LocationDef locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
-            if (locationDefinition == null) {
-                throw new IllegalArgumentException("Cannot find location definition: " + location);
-            }
-            Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
-            
-            OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, null);
-            
-            return availList;
-        } finally {
-            readUnlock();
+    public OnmsLocationAvailDefinitionList getAvailabilityByLocation(@Context final UriInfo uriInfo, @PathParam("location") String location) {
+
+        final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
+        
+        LocationDef locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
+        if (locationDefinition == null) {
+            throw new IllegalArgumentException("Cannot find location definition: " + location);
         }
+        Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
+        
+        OnmsLocationAvailDefinitionList availList = getAvailabilityList(createTimeChunker(queryParameters), getSortedApplications(), monitors, null);
+        
+        return availList;
     }
     
     
@@ -267,7 +245,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     
     
 
-    private void removeUnneededServices(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsNode> selectedNodes) {
+    private static void removeUnneededServices(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsNode> selectedNodes) {
         if(selectedNodes != null) {
             Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<OnmsLocationSpecificStatus>();
             
@@ -284,7 +262,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         }
     }
 
-    private void removeUnneededMonitors(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsLocationMonitor> selectedMonitors) {
+    private static void removeUnneededMonitors(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsLocationMonitor> selectedMonitors) {
         if(selectedMonitors != null) {
             Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<OnmsLocationSpecificStatus>();
             
@@ -301,7 +279,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         }
     }
 
-    private int getResolution(MultivaluedMap<String, String> params) {
+    private static int getResolution(MultivaluedMap<String, String> params) {
         if(params.containsKey("resolution")) {
             String resolution = params.getFirst("resolution");
             if(resolution.equalsIgnoreCase("minute")) {
@@ -320,7 +298,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         
     }
 
-    private Date getEndTime(MultivaluedMap<String, String> params) {
+    private static Date getEndTime(MultivaluedMap<String, String> params) {
         if(params.containsKey("endTime")) {
             String value = params.getFirst("endTime");
             return new Date(Long.valueOf(value));
@@ -330,7 +308,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         }
     }
     
-    private Date getStartTime(MultivaluedMap<String, String> params) {
+    private static Date getStartTime(MultivaluedMap<String, String> params) {
         if(params.containsKey("startTime")) {
             String startTime = params.getFirst("startTime");
             return new Date(Long.valueOf(startTime));
@@ -364,7 +342,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         }
     }
     
-    private TimeChunker createTimeChunker(MultivaluedMap<String, String> params) {
+    private static TimeChunker createTimeChunker(MultivaluedMap<String, String> params) {
         TimeChunker timeChunker;
         Date start = getStartTime(params);
         Date end = getEndTime(params);

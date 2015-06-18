@@ -29,6 +29,7 @@
 package org.opennms.web.rest;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
@@ -38,24 +39,22 @@ import org.opennms.web.rest.config.DataCollectionConfigResource;
 import org.opennms.web.rest.config.JmxDataCollectionConfigResource;
 import org.opennms.web.rest.config.PollerConfigurationResource;
 import org.opennms.web.rest.config.SnmpConfigurationResource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * ReST service for (JAXB) ConfigurationResource files.
  */
 
 @Component("configRestService")
-@PerRequest
-@Scope("prototype")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
 
-    @Context
     private ResourceContext m_context;
+
+    @Context
+    public void setResourceContext(ResourceContext context) {
+        m_context = context;
+    }
 
     @Path("{location}/polling")
     public PollerConfigurationResource getPollerConfiguration() {

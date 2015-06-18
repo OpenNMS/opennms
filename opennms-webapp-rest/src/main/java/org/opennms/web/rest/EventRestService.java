@@ -39,7 +39,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -54,15 +53,10 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("eventRestService")
-@PerRequest
-@Scope("prototype")
 @Path("events")
 public class EventRestService extends OnmsRestService {
     private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
@@ -71,11 +65,12 @@ public class EventRestService extends OnmsRestService {
     @Autowired
     private EventDao m_eventDao;
 
-    @Context
-    HttpHeaders m_headers;
+    private SecurityContext m_securityContext;
 
     @Context
-    SecurityContext m_securityContext;
+    public void setSecurityContext(SecurityContext securityContext) {
+        m_securityContext = securityContext;
+    }
 
     /**
      * <p>
@@ -91,12 +86,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Transactional
     public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
-        readLock();
-        try {
-            return m_eventDao.get(Integer.valueOf(eventId));
-        } finally {
-            readUnlock();
-        }
+        return m_eventDao.get(Integer.valueOf(eventId));
     }
 
     /**
@@ -109,12 +99,7 @@ public class EventRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_eventDao.countAll());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_eventDao.countAll());
     }
 
     /**
@@ -128,20 +113,14 @@ public class EventRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsEventCollection getEvents(@Context UriInfo uriInfo) throws ParseException {
-        readLock();
+    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) throws ParseException {
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
+        builder.orderBy("eventTime").asc();
 
-        try {
-            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
-            builder.orderBy("eventTime").asc();
+        final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+        coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
 
-            final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-            coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
-
-            return coll;
-        } finally {
-            readUnlock();
-        }
+        return coll;
     }
 
     /**
@@ -156,57 +135,51 @@ public class EventRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     @Transactional
-    public OnmsEventCollection getEventsBetween(@Context UriInfo uriInfo) throws ParseException {
-        readLock();
+    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) throws ParseException {
+        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
-        try {
-            final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
-
-            final String column;
-            if (params.containsKey("column")) {
-                column = params.getFirst("column");
-                params.remove("column");
-            } else {
-                column = "eventTime";
-            }
-            Date begin;
-            if (params.containsKey("begin")) {
-                try {
-                    begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
-                } catch (final Throwable t) {
-                    begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
-                }
-                params.remove("begin");
-            } else {
-                begin = new Date(0);
-            }
-            Date end;
-            if (params.containsKey("end")) {
-                try {
-                    end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
-                } catch (final Throwable t) {
-                    end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
-                }
-                params.remove("end");
-            } else {
-                end = new Date();
-            }
-
-            final CriteriaBuilder builder = getCriteriaBuilder(params);
-            builder.match("all");
-            try {
-                builder.between(column, begin, end);
-            } catch (final Throwable t) {
-                throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
-            }
-
-            final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-            coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
-
-            return coll;
-        } finally {
-            readUnlock();
+        final String column;
+        if (params.containsKey("column")) {
+            column = params.getFirst("column");
+            params.remove("column");
+        } else {
+            column = "eventTime";
         }
+        Date begin;
+        if (params.containsKey("begin")) {
+            try {
+                begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
+            } catch (final Throwable t) {
+                begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
+            }
+            params.remove("begin");
+        } else {
+            begin = new Date(0);
+        }
+        Date end;
+        if (params.containsKey("end")) {
+            try {
+                end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
+            } catch (final Throwable t) {
+                end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
+            }
+            params.remove("end");
+        } else {
+            end = new Date();
+        }
+
+        final CriteriaBuilder builder = getCriteriaBuilder(params);
+        builder.match("all");
+        try {
+            builder.between(column, begin, end);
+        } catch (final Throwable t) {
+            throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
+        }
+
+        final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
+        coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
+
+        return coll;
     }
 
     /**
@@ -223,7 +196,7 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
@@ -249,7 +222,7 @@ public class EventRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvents(@Context UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
+    public Response updateEvents(@Context final UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {

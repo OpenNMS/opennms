@@ -35,10 +35,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -46,37 +44,21 @@ import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.model.OnmsMinionCollection;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("minionRestService")
-@PerRequest
-@Scope("prototype")
 @Path("minions")
 public class MinionRestService extends OnmsRestService {
     @Autowired
     private MinionDao m_minionDao;
-
-    @Context
-    HttpHeaders m_headers;
-
-    @Context
-    SecurityContext m_securityContext;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{minionId}")
     @Transactional
     public OnmsMinion getMinion(@PathParam("minionId") final String minionId) {
-        readLock();
-        try {
-            return m_minionDao.get(minionId);
-        } finally {
-            readUnlock();
-        }
+        return m_minionDao.get(minionId);
     }
 
     @GET
@@ -84,12 +66,7 @@ public class MinionRestService extends OnmsRestService {
     @Path("{minionId}/{key}")
     @Transactional
     public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
-        readLock();
-        try {
-            return m_minionDao.findById(minionId).getProperties().get(key);
-        } finally {
-            readUnlock();
-        }
+        return m_minionDao.findById(minionId).getProperties().get(key);
     }
 
     @GET
@@ -97,29 +74,18 @@ public class MinionRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_minionDao.countAll());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_minionDao.countAll());
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsMinionCollection getMinions(@Context UriInfo uriInfo) throws ParseException {
-        readLock();
+    public OnmsMinionCollection getMinions(@Context final UriInfo uriInfo) throws ParseException {
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
+        final OnmsMinionCollection coll = new OnmsMinionCollection(m_minionDao.findMatching(builder.toCriteria()));
+        coll.setTotalCount(m_minionDao.countMatching(builder.clearOrder().toCriteria()));
 
-        try {
-            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
-            final OnmsMinionCollection coll = new OnmsMinionCollection(m_minionDao.findMatching(builder.toCriteria()));
-            coll.setTotalCount(m_minionDao.countMatching(builder.clearOrder().toCriteria()));
-
-            return coll;
-        } finally {
-            readUnlock();
-        }
+        return coll;
     }
 
     private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {

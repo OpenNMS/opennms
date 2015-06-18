@@ -57,12 +57,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Basic Web Service using REST for OnmsUser entity
@@ -70,9 +66,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 1.9.93
  */
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("userRestService")
 @Path("users")
 @Transactional
 public class UserRestService extends OnmsRestService {
@@ -86,56 +80,41 @@ public class UserRestService extends OnmsRestService {
     @Autowired
     private UserManager m_userManager;
 
-    @Context 
-    UriInfo m_uriInfo;
-    
-    @Context
-    ResourceContext m_context;
-
-    @Context
-    SecurityContext m_securityContext;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public OnmsUserList getUsers() {
-        readLock();
+    public OnmsUserList getUsers(@Context final SecurityContext securityContext) {
         try {
-            return filterUserPasswords(m_userManager.getOnmsUserList());
+            return filterUserPasswords(securityContext, m_userManager.getOnmsUserList());
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
-        } finally {
-            readUnlock();
         }
     }
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
-    public OnmsUser getUser(@PathParam("username") final String username) {
-        readLock();
+    public OnmsUser getUser(@Context final SecurityContext securityContext, @PathParam("username") final String username) {
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
-            if (user != null) return filterUserPassword(user);
+            if (user != null) return filterUserPassword(securityContext, user);
             throw getException(Status.NOT_FOUND, username + " does not exist");
         } catch (final Throwable t) {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
-        } finally {
-            readUnlock();
         }
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addUser(final OnmsUser user) {
+    public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user) {
         writeLock();
         try {
-            if (!hasEditRights()) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            if (!hasEditRights(securityContext)) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
             }
             LOG.debug("addUser: Adding user {}", user);
             m_userManager.save(user);
-            return Response.seeOther(getRedirectUri(m_uriInfo, user.getUsername())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, user.getUsername())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -146,12 +125,12 @@ public class UserRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{userCriteria}")
-    public Response updateUser(@PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
+    public Response updateUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         OnmsUser user = null;
         writeLock();
         try {
-            if (!hasEditRights()) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            if (!hasEditRights(securityContext)) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
             }
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
@@ -174,7 +153,7 @@ public class UserRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -182,11 +161,11 @@ public class UserRestService extends OnmsRestService {
     
     @DELETE
     @Path("{userCriteria}")
-    public Response deleteUser(@PathParam("userCriteria") final String userCriteria) {
+    public Response deleteUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria) {
         writeLock();
         try {
-            if (!hasEditRights()) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(m_securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+            if (!hasEditRights(securityContext)) {
+                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
             }
             OnmsUser user = null;
             try {
@@ -207,24 +186,25 @@ public class UserRestService extends OnmsRestService {
         }
     }
 
-    private boolean hasEditRights() {
-        if (m_securityContext.isUserInRole(Authentication.ROLE_ADMIN) || m_securityContext.isUserInRole(Authentication.ROLE_REST)) {
+    private static boolean hasEditRights(SecurityContext securityContext) {
+        if (securityContext.isUserInRole(Authentication.ROLE_ADMIN) || securityContext.isUserInRole(Authentication.ROLE_REST)) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
-    private OnmsUserList filterUserPasswords(final OnmsUserList users) {
+    private static OnmsUserList filterUserPasswords(final SecurityContext securityContext, final OnmsUserList users) {
         Collections.sort(users.getUsers(), USER_COMPARATOR);
         for (final OnmsUser user : users) {
-            filterUserPassword(user);
+            filterUserPassword(securityContext, user);
         }
         return users;
     }
 
-    private OnmsUser filterUserPassword(final OnmsUser user) {
-        if (!hasEditRights()) {
-            final Principal principal = m_securityContext.getUserPrincipal();
+    private static OnmsUser filterUserPassword(final SecurityContext securityContext, final OnmsUser user) {
+        if (!hasEditRights(securityContext)) {
+            final Principal principal = securityContext.getUserPrincipal();
             // users may see their own password hash  :)
             if (!user.getUsername().equals(principal.getName())) {
                 user.setPassword("xxxxxxxx");

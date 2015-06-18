@@ -60,7 +60,7 @@ import com.google.common.collect.Lists;
  *
  * @author jwhite
  */
-@Component
+@Component("graphRestService")
 @Scope("prototype")
 @Path("graphs")
 public class GraphRestService extends OnmsRestService {

@@ -39,10 +39,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
@@ -55,15 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("monitoringLocationsRestService")
-@PerRequest
-@Scope("prototype")
 @Path("monitoringLocations")
 public class MonitoringLocationsRestService extends OnmsRestService {
 
@@ -72,64 +65,37 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Autowired
 	private LocationMonitorDao m_locationMonitorDao;
 
-	@Context
-	HttpHeaders m_headers;
-
-	@Context
-	SecurityContext m_securityContext;
-
 	@GET
 	@Path("default")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public LocationDef getDefaultMonitoringLocation() throws ParseException {
-		readLock();
-		try {
-			return m_locationMonitorDao.findAllMonitoringLocationDefinitions().get(0);
-		} finally {
-			readUnlock();
-		}
+		return m_locationMonitorDao.findAllMonitoringLocationDefinitions().get(0);
 	}
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public OnmsMonitoringLocationDefinitionList getForeignSources() throws ParseException {
-		readLock();
-
-		try {
-			return new OnmsMonitoringLocationDefinitionList(m_locationMonitorDao.findAllMonitoringLocationDefinitions());
-		} finally {
-			readUnlock();
-		}
+		return new OnmsMonitoringLocationDefinitionList(m_locationMonitorDao.findAllMonitoringLocationDefinitions());
 	}
 
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getTotalCount() throws ParseException {
-		readLock();
-		try {
-			return Integer.toString(m_locationMonitorDao.findAllMonitoringLocationDefinitions().size());
-		} finally {
-			readUnlock();
-		}
+		return Integer.toString(m_locationMonitorDao.findAllMonitoringLocationDefinitions().size());
 	}
 
 	@GET
 	@Path("{monitoringLocation}")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public LocationDef getMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation) {
-		readLock();
-		try {
-			return m_locationMonitorDao.findMonitoringLocationDefinition(monitoringLocation);
-		} finally {
-			readUnlock();
-		}
+		return m_locationMonitorDao.findMonitoringLocationDefinition(monitoringLocation);
 	}
 
 	@POST
 	@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	@Transactional
-	public Response addMonitoringLocation(@Context UriInfo uriInfo, LocationDef monitoringLocation) {
+	public Response addMonitoringLocation(@Context final UriInfo uriInfo, LocationDef monitoringLocation) {
 		writeLock();
 		try {
 			LOG.debug("addMonitoringLocation: Adding monitoringLocation {}", monitoringLocation.getLocationName());
@@ -144,7 +110,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Path("{monitoringLocation}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public Response updateMonitoringLocation(@Context UriInfo uriInfo, @PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
+	public Response updateMonitoringLocation(@Context final UriInfo uriInfo, @PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
 		writeLock();
 		try {
 			LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitoringLocation);

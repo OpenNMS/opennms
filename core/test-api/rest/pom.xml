@@ -66,12 +66,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-dependencies</artifactId>
+      <artifactId>servlet-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
+      <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

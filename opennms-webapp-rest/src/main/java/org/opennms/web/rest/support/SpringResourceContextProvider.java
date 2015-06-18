@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.config;
+package org.opennms.web.rest.support;
 
-import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.apache.cxf.jaxrs.ext.ResourceContextProvider;
+import org.apache.cxf.jaxrs.lifecycle.ResourceProvider;
+import org.apache.cxf.jaxrs.spring.SpringResourceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
-import org.opennms.core.config.api.ConfigurationResource;
-import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+public class SpringResourceContextProvider implements ResourceContextProvider {
 
-@Component("snmpConfigurationResource")
-public class SnmpConfigurationResource {
-    @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResource.class);
+	@Autowired
+	ApplicationContext m_applicationContext;
 
-    @Resource(name="snmp-config.xml")
-    ConfigurationResource<SnmpConfig> m_snmpConfigResource;
-    
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSnmpConfiguration() throws ConfigurationResourceException {
-        return Response.ok(m_snmpConfigResource.get()).build();
-    }
+	@Override
+	public ResourceProvider getResourceProvider(Class<?> cls) {
+		SpringResourceFactory retval = new SpringResourceFactory();
+		retval.setBeanId(m_applicationContext.getBeanNamesForType(cls)[0]);
+		retval.setApplicationContext(m_applicationContext);
+		return retval;
+	}
 }

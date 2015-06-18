@@ -63,7 +63,7 @@ import com.google.common.io.Files;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

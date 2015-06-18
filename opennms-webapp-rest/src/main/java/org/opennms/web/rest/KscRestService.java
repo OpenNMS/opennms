@@ -45,11 +45,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -66,15 +64,10 @@ import org.opennms.web.svclayer.api.KscReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("kscRestService")
-@PerRequest
-@Scope("prototype")
 @Path("ksc")
 public class KscRestService extends OnmsRestService {
 
@@ -86,25 +79,13 @@ public class KscRestService extends OnmsRestService {
     @Autowired
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
-    @Context
-    HttpHeaders m_headers;
-
-    @Context
-    SecurityContext m_securityContext;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public KscReportCollection getReports() throws ParseException {
-        readLock();
-
-        try {
-            final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
-            reports.setTotalCount(reports.size());
-            return reports;
-        } finally {
-            readUnlock();
-        }
+        final KscReportCollection reports = new KscReportCollection(m_kscReportService.getReportMap(), true);
+        reports.setTotalCount(reports.size());
+        return reports;
     }
 
     @GET
@@ -112,18 +93,12 @@ public class KscRestService extends OnmsRestService {
     @Path("{reportId}")
     @Transactional
     public KscReport getReport(@PathParam("reportId") final Integer reportId) {
-        readLock();
-
-        try {
-            final Map<Integer, Report> reportList = m_kscReportService.getReportMap();
-            final Report report = reportList.get(reportId);
-            if (report == null) {
-                throw getException(Status.NOT_FOUND, "No such report id " + reportId);
-            }
-            return new KscReport(report);
-        } finally {
-            readUnlock();
+        final Map<Integer, Report> reportList = m_kscReportService.getReportMap();
+        final Report report = reportList.get(reportId);
+        if (report == null) {
+            throw getException(Status.NOT_FOUND, "No such report id " + reportId);
         }
+        return new KscReport(report);
     }
 
     @GET
@@ -131,18 +106,13 @@ public class KscRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_kscReportService.getReportList().size());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_kscReportService.getReportList().size());
     }
 
     @PUT
     @Path("{kscReportId}")
     @Transactional
-    public Response addGraph(@Context UriInfo uriInfo, @PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
+    public Response addGraph(@Context final UriInfo uriInfo, @PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
         writeLock();
 
         try {
@@ -189,7 +159,7 @@ public class KscRestService extends OnmsRestService {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addKscReport(@Context UriInfo uriInfo, final KscReport kscReport) {
+    public Response addKscReport(@Context final UriInfo uriInfo, final KscReport kscReport) {
         writeLock();
         try {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);

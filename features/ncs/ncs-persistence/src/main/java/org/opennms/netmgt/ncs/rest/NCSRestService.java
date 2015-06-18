@@ -60,16 +60,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 /**
  * Basic Web Service using REST for NCS Components
  *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
 @Component("ncsRestService")
-@PerRequest
-@Scope("prototype")
 @Path("NCS")
 @Transactional
 public class NCSRestService {

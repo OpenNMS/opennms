@@ -50,11 +50,8 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>NotificationRestService class.</p>
@@ -64,16 +61,18 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("notificationRestService")
-@PerRequest
-@Scope("prototype")
 @Path("notifications")
 public class NotificationRestService extends OnmsRestService {
     @Autowired
     private NotificationDao m_notifDao;
-    
+
+    private SecurityContext m_securityContext;
+
     @Context
-    SecurityContext m_securityContext;
-    
+    public void setSecurityContext(SecurityContext securityContext) {
+        m_securityContext = securityContext;
+    }
+
     /**
      * <p>getNotification</p>
      *
@@ -84,13 +83,8 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{notifId}")
     @Transactional
-    public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
-        readLock();
-        try {
-            return m_notifDao.get(Integer.valueOf(notifId));
-        } finally {
-            readUnlock();
-        }
+    public OnmsNotification getNotification(@PathParam("notifId") int notifId) {
+        return m_notifDao.get(notifId);
     }
     
     /**
@@ -103,12 +97,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_notifDao.countAll());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_notifDao.countAll());
     }
 
     /**
@@ -119,21 +108,15 @@ public class NotificationRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
-    public OnmsNotificationCollection getNotifications(@Context UriInfo uriInfo) {
-        readLock();
-        
-        try {
-            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
-            builder.orderBy("notifyId").desc();
-    
-            OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
-    
-            coll.setTotalCount(m_notifDao.countMatching(builder.count().toCriteria()));
-    
-            return coll;
-        } finally {
-            readUnlock();
-        }
+    public OnmsNotificationCollection getNotifications(@Context final UriInfo uriInfo) {
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
+        builder.orderBy("notifyId").desc();
+
+        OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(builder.toCriteria()));
+
+        coll.setTotalCount(m_notifDao.countMatching(builder.count().toCriteria()));
+
+        return coll;
     }
     
     /**
@@ -146,7 +129,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@Context UriInfo uriInfo, @PathParam("notifId") String notifId, @FormParam("ack") Boolean ack) {
+    public Response updateNotification(@Context final UriInfo uriInfo, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
         writeLock();
         
         try {
@@ -169,7 +152,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotifications(@Context UriInfo uriInfo, final MultivaluedMapImpl params) {
+    public Response updateNotifications(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -201,7 +184,7 @@ public class NotificationRestService extends OnmsRestService {
         m_notifDao.save(notif);
     }
 
-    private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
+    private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);

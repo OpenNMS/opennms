@@ -76,7 +76,6 @@ public class OnmsRestService {
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestService.class);
 
 	private final ReadWriteUpdateLock m_globalLock = new ReentrantReadWriteUpdateLock();
-	private final Lock m_readLock = m_globalLock.updateLock();
 	private final Lock m_writeLock = m_globalLock.writeLock();
 
 	protected static final int DEFAULT_LIMIT = 10;
@@ -90,14 +89,6 @@ public class OnmsRestService {
 		super();
 	}
 
-	protected void readLock() {
-	    m_readLock.lock();
-	}
-	
-	protected void readUnlock() {
-	    m_readLock.unlock();
-	}
-
 	protected void writeLock() {
 	    m_writeLock.lock();
 	}
@@ -107,11 +98,11 @@ public class OnmsRestService {
 	}
 
 
-	protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
-		this.applyQueryFilters(p, builder, DEFAULT_LIMIT);
+	protected static void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder) {
+		applyQueryFilters(p, builder, DEFAULT_LIMIT);
 	}
 
-	protected void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
+	protected static void applyQueryFilters(final MultivaluedMap<String,String> p, final CriteriaBuilder builder, final Integer defaultLimit) {
 
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 	    params.putAll(p);
@@ -212,7 +203,7 @@ public class OnmsRestService {
 		}
     }
 
-	protected BeanWrapper getBeanWrapperForClass(final Class<?> criteriaClass) {
+	protected static BeanWrapper getBeanWrapperForClass(final Class<?> criteriaClass) {
 		final BeanWrapper wrapper = new BeanWrapperImpl(criteriaClass);
 		wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 		wrapper.registerCustomEditor(java.util.Date.class, new ISO8601DateEditor());
@@ -224,7 +215,7 @@ public class OnmsRestService {
 	}
 
 
-    protected String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key) {
+    protected static String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key) {
     	if (params.containsKey(key)) {
     		final String value = params.getFirst(key);
     		params.remove(key);
@@ -234,7 +225,7 @@ public class OnmsRestService {
     	}
     }
     
-    protected String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key, final String defaultValue) {
+    protected static String removeParameter(final MultivaluedMap<java.lang.String, java.lang.String> params, final String key, final String defaultValue) {
     	final String value = removeParameter(params, key);
     	if (value == null) {
     		return defaultValue;
@@ -251,28 +242,28 @@ public class OnmsRestService {
      * @param <T> a T object.
      * @return a T object.
      */
-    protected <T> WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+    protected static <T> WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
-    protected <T> WebApplicationException getException(Status status, Throwable t) throws WebApplicationException {
+    protected static <T> WebApplicationException getException(Status status, Throwable t) throws WebApplicationException {
         LOG.error(t.getMessage(), t);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
     }
 
 
-    protected static URI getRedirectUri(final UriInfo m_uriInfo, final Object... pathComponents) {
+    protected static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
         if (pathComponents != null && pathComponents.length == 0) {
-            final URI requestUri = m_uriInfo.getRequestUri();
+            final URI requestUri = uriInfo.getRequestUri();
             try {
                 return new URI(requestUri.getScheme(), requestUri.getUserInfo(), requestUri.getHost(), requestUri.getPort(), requestUri.getPath().replaceAll("/$", ""), null, null);
             } catch (final URISyntaxException e) {
                 return requestUri;
             }
         } else {
-            UriBuilder builder = m_uriInfo.getRequestUriBuilder();
+            UriBuilder builder = uriInfo.getRequestUriBuilder();
             for (final Object component : pathComponents) {
                 if (component != null) {
                     builder = builder.path(component.toString());
@@ -288,7 +279,7 @@ public class OnmsRestService {
      * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
      * @param req a {@link java.lang.Object} object.
      */
-	protected void setProperties(final MultivaluedMapImpl params, final Object req) {
+	protected static void setProperties(final MultivaluedMapImpl params, final Object req) {
         RestUtils.setBeanProperties(req, params);
     }
 

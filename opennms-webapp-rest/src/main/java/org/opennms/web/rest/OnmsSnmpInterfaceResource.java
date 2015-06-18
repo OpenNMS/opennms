@@ -63,11 +63,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>OnmsSnmpInterfaceResource class.</p>
@@ -77,8 +74,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("onmsSnmpInterfaceResource")
-@PerRequest
-@Scope("prototype")
 @Transactional
 public class OnmsSnmpInterfaceResource extends OnmsRestService {
 	
@@ -103,27 +98,22 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsSnmpInterfaceList getSnmpInterfaces(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
-        readLock();
-        try {
-            final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            
-            final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
-            
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
-            builder.ne("collect", "D");
-            builder.limit(20);
-            applyQueryFilters(params, builder);
-            builder.eq("node.id", node.getId());
-            
-            final OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(builder.toCriteria()));
-            
-            snmpList.setTotalCount(m_snmpInterfaceDao.countMatching(builder.count().toCriteria()));
-    
-            return snmpList;
-        } finally {
-            readUnlock();
-        }
+    public OnmsSnmpInterfaceList getSnmpInterfaces(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        
+        final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
+        
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsSnmpInterface.class);
+        builder.ne("collect", "D");
+        builder.limit(20);
+        applyQueryFilters(params, builder);
+        builder.eq("node.id", node.getId());
+        
+        final OnmsSnmpInterfaceList snmpList = new OnmsSnmpInterfaceList(m_snmpInterfaceDao.findMatching(builder.toCriteria()));
+        
+        snmpList.setTotalCount(m_snmpInterfaceDao.countMatching(builder.count().toCriteria()));
+
+        return snmpList;
     }
 
     /**
@@ -137,12 +127,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
     public OnmsEntity getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        readLock();
-        try {
-            return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
-        } finally {
-            readUnlock();
-        }
+        return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
     }
     
     /**
@@ -154,7 +139,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addSnmpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
+    public Response addSnmpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsSnmpInterface snmpInterface) {
         writeLock();
         
         try {
@@ -217,7 +202,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
-    public Response updateSnmpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
+    public Response updateSnmpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
         writeLock();
         
         try {

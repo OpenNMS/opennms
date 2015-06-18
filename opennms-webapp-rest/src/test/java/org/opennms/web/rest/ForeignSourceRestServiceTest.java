@@ -53,7 +53,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -88,13 +88,13 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
 
         String url = "/foreignSources/test/detectors";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<detectors "));
-        assertTrue(xml.contains("<detector "));
-        assertTrue(xml.contains("name=\"ICMP\""));
+        assertTrue(xml, xml.contains("<detectors "));
+        assertTrue(xml, xml.contains("<detector "));
+        assertTrue(xml, xml.contains("name=\"ICMP\""));
         
         url = "/foreignSources/test/detectors/HTTP";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
+        assertTrue(xml, xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
@@ -106,14 +106,14 @@ public class ForeignSourceRestServiceTest extends AbstractSpringJerseyRestTestCa
 
         String url = "/foreignSources/test/policies";
         String xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("<policies "));
-        assertTrue(xml.contains("<policy "));
-        assertTrue(xml.contains("name=\"lower-case-node\""));
-        assertTrue(xml.contains("value=\"Lower-Case-Nodes\""));
+        assertTrue(xml, xml.contains("<policies "));
+        assertTrue(xml, xml.contains("<policy "));
+        assertTrue(xml, xml.contains("name=\"lower-case-node\""));
+        assertTrue(xml, xml.contains("value=\"Lower-Case-Nodes\""));
         
         url = "/foreignSources/test/policies/all-ipinterfaces";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
+        assertTrue(xml, xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
         xml = sendRequest(DELETE, url, 200);
         xml = sendRequest(GET, url, 204);
