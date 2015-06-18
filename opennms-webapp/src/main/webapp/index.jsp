@@ -67,7 +67,7 @@
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
 
-		<% String showGrafanaBox = System.getProperty("opennms.grafanaBox.show", "false");
+		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>
 		<jsp:include page="/includes/grafana-box.jsp" flush="false" />
 		<% } %>

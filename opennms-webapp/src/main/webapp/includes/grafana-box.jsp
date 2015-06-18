@@ -45,7 +45,7 @@
                 org.apache.http.HttpResponse,
                 org.apache.http.client.methods.HttpGet,
                 org.apache.http.impl.client.DefaultHttpClient,
-                org.apache.http.util.EntityUtils"%>
+                org.apache.http.util.EntityUtils" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -54,6 +54,7 @@
     String grafanaApiKey = System.getProperty("org.opennms.grafanaBox.apiKey", "");
     String grafanaProtocol = System.getProperty("org.opennms.grafanaBox.protocol", "http");
     String grafanaHostname = System.getProperty("org.opennms.grafanaBox.hostname", "localhost");
+    String grafanaTag = System.getProperty("org.opennms.grafanaBox.tag", "");
     int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
 
     String responseString = null;
@@ -94,22 +95,38 @@
     <div class="panel-body">
         <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
         <script type="text/javascript" src="/opennms/js/jquery/ui/jquery-ui-1.8.2.custom.js"></script>
-            <%
-                if (responseString != null) {
-            %>
-            <script type="text/javascript">
-                var obj = <%=responseString%>;
+        <%
+            if (responseString != null) {
+        %>
+        <script type="text/javascript">
+            var grafanaTag = '<%=grafanaTag%>';
+            var obj = <%=responseString%>;
 
-                jQuery.each(obj['dashboards'], function(i, val) {
-                    document.write('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/db/'+val['slug']+'"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;'+ val['title'] + "</a><br />");
-                });
-            </script>
-            <%
-                } else {
-            %>
-                Invalid configuration
-            <%
+            jQuery.each(obj['dashboards'], function (i, val) {
+                var showDashboard = true;
+
+                if (grafanaTag != '') {
+                    showDashboard = false;
+                    for (var index in val['tags']) {
+                        console.log(val['tags'][index]);
+                        if (grafanaTag == val['tags'][index]) {
+                            showDashboard = true;
+                            break;
+                        }
+                    }
                 }
-            %>
+
+                if (showDashboard) {
+                    document.write('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/db/' + val['slug'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br />");
+                }
+            });
+        </script>
+        <%
+            } else {
+        %>
+        Invalid configuration
+        <%
+            }
+        %>
     </div>
 </div>
