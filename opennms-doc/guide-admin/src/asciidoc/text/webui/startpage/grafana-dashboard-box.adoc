@@ -5,10 +5,10 @@
 
 link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _OpenNMS_.
 The _Grafana Dashboard Box_ on the start page shows dashboards related to _OpenNMS_.
-To filter relevant dashboards, you can use a _Tag_ for dashboards and make them accessible.
+To filter relevant dashboards, you can use a _tag_ for dashboards and make them accessible.
 If no _tag_ is provided all dashboards from _Grafana_ will be shown.
 
-The feature is by default deactivated and is configured through the `opennms.properties`.
+The feature is by default deactivated and is configured through `opennms.properties`.
 
 .Quick access to Grafana dashboards from the OpenNMS start page
 image:webui/startpage/01_grafana-box.png[]
@@ -24,8 +24,8 @@ image:webui/startpage/01_grafana-box.png[]
                                                            the _Grafana_ server                                         | `localhost`
 | `org.opennms.grafanaBox.port`              | _Integer_ | The port of the _Grafana_ server ReST API                    | `3000`
 | `org.opennms.grafanaBox.apiKey`            | _String_  | The API key is needed for the ReST calls to work             |
-| `org.opennms.grafanaBox.tag`               | _String_  | When a tag is specified only dashboards with this given _tag_
-                                                           will be displayed. When no tag is given all dashboards will
+| `org.opennms.grafanaBox.tag`               | _String_  | When a _tag_ is specified only dashboards with this given _tag_
+                                                           will be displayed. When no _tag_ is given all dashboards will
                                                            be displayed                                                 |
 | `org.opennms.grafanaBox.protocol`          | _String_  | The protocol for the ReST call can also be specified         | `http`
 | `org.opennms.grafanaBox.connectionTimeout` | _Integer_ | Timeout in milliseconds for getting information from the
@@ -34,7 +34,7 @@ image:webui/startpage/01_grafana-box.png[]
 |===
 
 TIP: If you have _Grafana_ behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
-     This host name is used to generate the links to the _Grafana_ dashboards.
+     This host name is used to generate links to the _Grafana_ dashboards.
 
 .Generating a Grafana API Key
 You have to login to _Grafana_ as `admin` go to your organization and select _API Keys_.
