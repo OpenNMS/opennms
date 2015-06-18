@@ -30,8 +30,7 @@
 --%>
 
 <%--
-  This page is included by other JSPs to create a box containing a treemap/heatmap of
-  outages grouped by nodes, foreignSources or categories.
+  This page is included by other JSPs to create a box containing a list of grafana dashboards.
 
   It expects that a <base> tag has been set in the including page
   that directs all URLs to be relative to the servlet context.
@@ -44,8 +43,12 @@
                 org.apache.http.HttpHost,
                 org.apache.http.HttpResponse,
                 org.apache.http.client.methods.HttpGet,
+                org.apache.http.conn.ConnectTimeoutException,
                 org.apache.http.impl.client.DefaultHttpClient,
-                org.apache.http.util.EntityUtils" %>
+                org.apache.http.params.HttpConnectionParams,
+                org.apache.http.params.HttpParams,
+                org.apache.http.util.EntityUtils,
+                java.net.UnknownHostException" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -63,38 +66,34 @@
             && !"".equals(grafanaHostname)
             && !"".equals(grafanaProtocol)
             && ("http".equals(grafanaProtocol) || "https".equals(grafanaProtocol))) {
-        /**
-         * Creating the Http client instance...
-         */
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-        HttpHost httpHost = new HttpHost(grafanaHostname, grafanaPort, grafanaProtocol);
-
-        /**
-         * ...using the search API url.
-         */
-        HttpGet httpGet = new HttpGet("/api/search/");
-        httpGet.setHeader("Authorization", "Bearer " + grafanaApiKey);
-
-        /**
-         * Invoke the request to the Grafana host.
-         */
-        HttpResponse httpResponse = httpclient.execute(httpHost, httpGet);
-
-        /**
-         * Convert the complete response into a string...
-         */
-        responseString = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
+        try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpParams httpParams = httpClient.getParams();
+            /**
+             * Setting the timeouts to assure that the landing page will be loaded. Making the
+             * call via JS isn't possible due to CORS-related problems with the Grafana server.
+             */
+            HttpConnectionParams.setConnectionTimeout(httpParams, 500);
+            HttpConnectionParams.setSoTimeout(httpParams, 500);
+            HttpHost httpHost = new HttpHost(grafanaHostname, grafanaPort, grafanaProtocol);
+            HttpGet httpGet = new HttpGet("/api/search/");
+            httpGet.setHeader("Authorization", "Bearer " + grafanaApiKey);
+            HttpResponse httpResponse = httpClient.execute(httpHost, httpGet);
+            responseString = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
+        } catch (UnknownHostException e) {
+            // do nothing
+        } catch (ConnectTimeoutException e) {
+            // do nothing
+        }
     }
 %>
 
-<div id="heatmap-box" class="panel panel-default">
+<div id="grafana-box" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Grafana Dashboards</h3>
     </div>
-    <div class="panel-body">
-        <script type="text/javascript" src="/opennms/js/jquery/jquery-1.8.2.min.js"></script>
-        <script type="text/javascript" src="/opennms/js/jquery/ui/jquery-ui-1.8.2.custom.js"></script>
+
+    <div id="dashboardlist" class="panel-body">
         <%
             if (responseString != null) {
         %>
@@ -107,24 +106,23 @@
 
                 if (grafanaTag != '') {
                     showDashboard = false;
+
                     for (var index in val['tags']) {
-                        console.log(val['tags'][index]);
                         if (grafanaTag == val['tags'][index]) {
                             showDashboard = true;
                             break;
                         }
                     }
                 }
-
                 if (showDashboard) {
-                    document.write('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/db/' + val['slug'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br />");
+                    $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/db/' + val['slug'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                 }
             });
         </script>
         <%
             } else {
         %>
-        Invalid configuration
+        <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>&nbsp;Invalid configuration<br/>
         <%
             }
         %>
