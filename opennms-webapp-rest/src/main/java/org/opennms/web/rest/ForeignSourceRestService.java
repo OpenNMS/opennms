@@ -168,7 +168,9 @@ public class ForeignSourceRestService extends OnmsRestService {
         readLock();
         try {
             m_deployedForeignSourceRepository.flush();
-            return new ForeignSourceCollection(m_deployedForeignSourceRepository.getForeignSources());
+            ForeignSourceCollection retval = new ForeignSourceCollection();
+            retval.getForeignSources().addAll(m_deployedForeignSourceRepository.getForeignSources());
+            return retval;
         } finally {
             readUnlock();
         }
@@ -208,7 +210,9 @@ public class ForeignSourceRestService extends OnmsRestService {
             for (final String fsName : getActiveForeignSourceNames()) {
                 foreignSources.add(getActiveForeignSource(fsName));
             }
-            return new ForeignSourceCollection(foreignSources);
+            ForeignSourceCollection retval = new ForeignSourceCollection();
+            retval.getForeignSources().addAll(foreignSources);
+            return retval;
         } finally {
             readUnlock();
         }
@@ -262,7 +266,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     public DetectorCollection getDetectors(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
-            return new DetectorCollection(getActiveForeignSource(foreignSource).getDetectors());
+            DetectorCollection retval = new DetectorCollection();
+            retval.getDetectors().addAll(getActiveForeignSource(foreignSource).getDetectors());
+            return retval;
         } finally {
             readUnlock();
         }
@@ -304,7 +310,9 @@ public class ForeignSourceRestService extends OnmsRestService {
     public PolicyCollection getPolicies(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
-            return new PolicyCollection(getActiveForeignSource(foreignSource).getPolicies());
+            PolicyCollection retval = new PolicyCollection();
+            retval.getPolicies().addAll(getActiveForeignSource(foreignSource).getPolicies());
+            return retval;
         } finally {
             readUnlock();
         }
