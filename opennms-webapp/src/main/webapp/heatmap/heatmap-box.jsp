@@ -45,7 +45,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
-    String mode = "outages";
+    String mode = "alarms";
     String title = "";
     String heatmap = "foreignSources";
     String foreignSource = null;
@@ -104,7 +104,6 @@
 
     <script type="text/javascript">
 
-
         var mouseclickHandler = function (e, data) {
             var nodes = data.nodes;
             var ids = data.ids;
@@ -156,11 +155,38 @@
         });
     </script>
 </div>
-<div align="right">
-    [<a href="<%=request.getRequestURI()%>?mode=outages&heatmap=foreignSources">Outages by Foreign Sources</a> /
-    <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=categories">Outages by Categories</a>]&nbsp;
-    [<a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=foreignSources">Alarms by Foreign Sources</a> /
-    <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=categories">Alarms by Categories</a>]&nbsp;
+<div style="float:left;">
+
+    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+
+    <%
+        if ("outages".equals(mode)) {
+    %>
+    <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Alarms</a> / <b>Outages</b>
+    <%
+        } else {
+    %>
+    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Outages</a>
+    <%
+        }
+    %>
+    &nbsp;<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+    <%
+        if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
+    %>
+    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <b>Foreign Sources</b>
+    <%
+        } else {
+    %>
+    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a>
+    <%
+        }
+    %>
+
+</div>
+
+<div style="float:right;">
+
     <%
         if ("outages".equals(mode)) {
     %>
@@ -170,7 +196,7 @@
     <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
     <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
     <%
-    } else {
+        } else {
     %>
     <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Normal
     <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Warning
@@ -180,4 +206,5 @@
     <%
         }
     %>
+
 </div>
