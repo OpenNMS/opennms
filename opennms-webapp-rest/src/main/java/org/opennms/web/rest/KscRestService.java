@@ -56,6 +56,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -202,6 +204,7 @@ public class KscRestService extends OnmsRestService {
 
     @Entity
     @XmlRootElement(name = "kscReports")
+    @JsonRootName("kscReports")
     public static final class KscReportCollection extends JaxbListWrapper<KscReport> {
 
         private static final long serialVersionUID = 1L;
@@ -226,6 +229,7 @@ public class KscRestService extends OnmsRestService {
         }
 
         @XmlElement(name = "kscReport")
+        @JsonProperty("kscReport")
         public List<KscReport> getObjects() {
             return super.getObjects();
         }

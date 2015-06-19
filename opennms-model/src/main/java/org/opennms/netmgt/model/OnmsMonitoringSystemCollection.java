@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="monitoringSystems")
+@JsonRootName("monitoringSystems")
 public class OnmsMonitoringSystemCollection extends JaxbListWrapper<OnmsMonitoringSystem> {
 
     private static final long serialVersionUID = -5250100085101434238L;
@@ -48,6 +51,7 @@ public class OnmsMonitoringSystemCollection extends JaxbListWrapper<OnmsMonitori
     }
 
     @XmlElement(name="monitoringSystem")
+    @JsonProperty("monitoringSystem")
     public List<OnmsMonitoringSystem> getObjects() {
         return super.getObjects();
     }

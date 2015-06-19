@@ -47,6 +47,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -121,6 +123,7 @@ public class ResourceRestService extends OnmsRestService {
     }
 
     @XmlRootElement(name = "resources")
+    @JsonRootName("resources")
     public static final class ResourceDTOCollection extends JaxbListWrapper<ResourceDTO> {
 
         private static final long serialVersionUID = 1L;
@@ -134,6 +137,7 @@ public class ResourceRestService extends OnmsRestService {
         }
 
         @XmlElement(name = "resource")
+        @JsonProperty("resource")
         public List<ResourceDTO> getObjects() {
             return super.getObjects();
         }

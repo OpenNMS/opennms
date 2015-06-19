@@ -894,6 +894,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @return a {@link java.util.Set} object.
      */
+    @XmlTransient
+    @JsonIgnore
     @OneToMany(mappedBy="node",orphanRemoval=true)
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<LldpLink> getLldpLinks() {
@@ -1153,6 +1155,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @Transient
+    @JsonIgnore
     public OnmsSnmpInterface getSnmpInterfaceWithIfIndex(int ifIndex) {
         for (OnmsSnmpInterface dbSnmpIface : getSnmpInterfaces()) {
             if (dbSnmpIface.getIfIndex().equals(ifIndex)) {

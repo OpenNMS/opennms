@@ -41,6 +41,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -116,6 +118,7 @@ public class GraphRestService extends OnmsRestService {
     }
 
     @XmlRootElement(name = "names")
+    @JsonRootName("names")
     public static final class GraphNameCollection extends JaxbListWrapper<String> {
 
         private static final long serialVersionUID = 1L;
@@ -129,6 +132,7 @@ public class GraphRestService extends OnmsRestService {
         }
 
         @XmlElement(name = "name")
+        @JsonProperty("name")
         public List<String> getObjects() {
             return super.getObjects();
         }

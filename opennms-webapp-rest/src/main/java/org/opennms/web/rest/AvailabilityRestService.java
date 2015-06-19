@@ -50,6 +50,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
@@ -244,6 +246,7 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @XmlRootElement(name="categories")
+    @JsonRootName("categories")
     private static final class CategoryRestList extends JaxbListWrapper<Category> {
         private static final long serialVersionUID = 1L;
 
@@ -253,6 +256,7 @@ public class AvailabilityRestService extends OnmsRestService {
         }
 
         @XmlElement(name="category")
+        @JsonProperty("category")
         public List<Category> getObjects() {
             return super.getObjects();
         }
