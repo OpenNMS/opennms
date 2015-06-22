@@ -95,7 +95,7 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(30, Sizeable.Unit.PERCENTAGE);
-        setHeight(50, Sizeable.Unit.PERCENTAGE);
+        setHeight(400, Unit.PIXELS);
 
         /**
          * Title and refresh seconds
@@ -136,8 +136,9 @@ public class SurveillanceViewConfigurationCategoryWindow extends Window {
          * Categories table
          */
         final Table categoriesTable = new Table();
-        categoriesTable.setCaption("Categories");
         categoriesTable.setSizeFull();
+        categoriesTable.setHeight(250.0f, Unit.PIXELS);
+        categoriesTable.setCaption("Categories");
         categoriesTable.setSortEnabled(true);
         categoriesTable.addContainerProperty("name", String.class, "");
         categoriesTable.setColumnHeader("name", "Category");

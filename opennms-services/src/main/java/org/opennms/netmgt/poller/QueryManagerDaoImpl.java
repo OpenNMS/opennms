@@ -175,36 +175,6 @@ public class QueryManagerDaoImpl implements QueryManager {
         m_outageDao.saveOrUpdate(outage);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        try {
-            LOG.info("reparenting outages for {}:{} to new node {}", oldNodeId, ipAddr, newNodeId);
-
-            Criteria criteria = new Criteria(OnmsOutage.class);
-            criteria.setAliases(Arrays.asList(new Alias[] {
-                new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
-                new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN),
-            }));
-            criteria.addRestriction(new EqRestriction("node.id", oldNodeId));
-            criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
-            List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
-
-            for (OnmsOutage outage : outages) {
-                OnmsMonitoredService service = m_monitoredServiceDao.get(newNodeId, addr(ipAddr), outage.getServiceId());
-                if (service == null) {
-                    LOG.warn(" Cannot find monitored service to reparent outage from {}:{} to {}", oldNodeId, ipAddr, newNodeId);
-                } else {
-                    outage.setMonitoredService(service);
-                    m_outageDao.save(outage);
-                }
-            }
-        } catch (Throwable e) {
-            LOG.error(" Error reparenting outage for {}:{} to {}", oldNodeId, ipAddr, newNodeId, e);
-        }
-        
-    }
-
     @Override
     public List<String[]> getNodeServices(int nodeId){
         final LinkedList<String[]> servicemap = new LinkedList<String[]>();

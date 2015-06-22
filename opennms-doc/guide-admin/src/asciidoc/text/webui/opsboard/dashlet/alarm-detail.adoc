@@ -7,12 +7,12 @@ This _Alarm-Details Dashlet_ shows a table with alarms and some detailed informa
 [options="header, autowidth"]
 |===
 | Field             | Description
-| 'Alarm ID'        | OpenNMS ID for the alarm
-| 'Severity'        | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
-| 'Node label'      | Node label of the node where the alarm occurred
-| 'Alarm count'     | Alarm count based on reduction key for deduplication
-| 'Last Event Time' | Last time the alarm occurred
-| 'Log Message'     | Reason and detailed log message of the alarm
+| _Alarm ID_        | OpenNMS ID for the alarm
+| _Severity_        | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
+| _Node label_      | Node label of the node where the alarm occurred
+| _Alarm count_     | Alarm count based on reduction key for deduplication
+| _Last Event Time_ | Last time the alarm occurred
+| _Log Message_     | Reason and detailed log message of the alarm
 |===
 
 The _Alarm Details Dashlet_ can be configured with the following parameters.

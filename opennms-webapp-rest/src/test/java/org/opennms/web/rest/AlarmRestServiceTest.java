@@ -30,7 +30,6 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathDoesNotMatch;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
@@ -65,8 +64,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -85,16 +82,16 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    @Autowired
-    TransactionTemplate m_template;
 
+    @Autowired
+    private TransactionTemplate m_template;
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_template.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -337,7 +334,7 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testAlarmClearAsUser() throws Exception {
         setUser("ranger", new String[]{ "ROLE_USER" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
-        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 403);
+        sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 303);
     }
 
     @Test

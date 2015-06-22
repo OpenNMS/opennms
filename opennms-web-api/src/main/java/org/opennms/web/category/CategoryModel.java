@@ -412,18 +412,15 @@ public class CategoryModel extends Object {
             Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and ifservices.nodeid = node.nodeid and node.nodetype='A' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(ifservices.id, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipInterfaceId = ipinterface.id and ipInterface.nodeid = node.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and node.nodeid=? and ipInterface.ipaddr=? and ifServices.serviceid=?");
             d.watch(stmt);
             
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setInt(3, serviceId);
             // yes, these are supposed to be backwards, the end time first
-            stmt.setTimestamp(4, new Timestamp(end.getTime()));
-            stmt.setTimestamp(5, new Timestamp(start.getTime()));
-            stmt.setInt(6, nodeId);
-            stmt.setString(7, ipAddr);
-            stmt.setInt(8, serviceId);
+            stmt.setTimestamp(1, new Timestamp(end.getTime()));
+            stmt.setTimestamp(2, new Timestamp(start.getTime()));
+            stmt.setInt(3, nodeId);
+            stmt.setString(4, ipAddr);
+            stmt.setInt(5, serviceId);
 
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);

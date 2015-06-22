@@ -105,7 +105,7 @@ public class RTCCategory extends Category {
      *            the node ID to delete
      */
     public void deleteNode(int nodeid) {
-        m_nodes.remove(nodeid);
+        m_nodes.remove(Integer.valueOf(nodeid));
     }
 
     /**

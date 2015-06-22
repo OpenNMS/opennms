@@ -28,7 +28,6 @@
 
 package org.opennms.web.svclayer.api;
 
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.kscReports.Graph;
@@ -73,13 +72,6 @@ public interface KscReportService {
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     public OnmsResource getResourceFromGraph(Graph graph);
-    /**
-     * <p>getResourcesFromGraphs</p>
-     *
-     * @param graphs a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
-     */
-    public List<OnmsResource> getResourcesFromGraphs(List<Graph> graphs);
     /**
      * <p>getTimeSpans</p>
      *

@@ -59,7 +59,7 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
     @Override
     protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
         final Document doc = getXmlDocument(urlString, request);
-        LOG.debug("collect: parsed document for source url '{}' collection", source.getUrl());
+        LOG.debug("fillCollectionSet: parsed document for source url '{}' collection", urlString);
         fillCollectionSet(agent, collectionSet, source, doc);
     }
 

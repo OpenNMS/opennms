@@ -117,10 +117,12 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
         
         m_statusTable = new HashMap<PassiveStatusKey, PollStatus>();
         
-        String sql = "select node.nodeLabel AS nodeLabel, outages.ipAddr AS ipAddr, service.serviceName AS serviceName " +
+        String sql = "select node.nodeLabel AS nodeLabel, ipInterface.ipAddr AS ipAddr, service.serviceName AS serviceName " +
                 "FROM outages " +
-                "JOIN node ON outages.nodeId = node.nodeId " +
-                "JOIN service ON outages.serviceId = service.serviceId " +
+                "JOIN ifServices ON outages.ifServiceId = ifServices.id " +
+                "JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id " +
+                "JOIN node ON ipInterface.nodeId = node.nodeId " +
+                "JOIN service ON ifServices.serviceId = service.serviceId " +
                 "WHERE outages.ifRegainedService is NULL";
         
         Querier querier = new Querier(m_dataSource, sql) {

@@ -71,7 +71,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>OnmsMonitoredServiceResource class.</p>
  *
@@ -79,16 +78,13 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
+@Component("onmsMonitoredServiceResource")
 @PerRequest
 @Scope("prototype")
 @Transactional
 public class OnmsMonitoredServiceResource extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsMonitoredServiceResource.class);
-
-    
-    @Context 
-    UriInfo m_uriInfo;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -159,7 +155,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addService(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
+    public Response addService(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
         writeLock();
         
         try {
@@ -198,7 +194,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo, service.getServiceName())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, service.getServiceName())).build();
         } finally {
             writeUnlock();
         }
@@ -216,7 +212,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
-    public Response updateService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
+    public Response updateService(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -250,7 +246,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             LOG.debug("updateSservice: service {} updated", service);
             m_serviceDao.saveOrUpdate(service);
             // If the status is changed, we should send the proper event to notify Pollerd
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

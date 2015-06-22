@@ -30,15 +30,6 @@
      <constructor-arg ref="daoContext" />
    </bean>
    
-   <bean id="provisionerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-provisioner.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-   
    <bean id="snmpinterfacepollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>

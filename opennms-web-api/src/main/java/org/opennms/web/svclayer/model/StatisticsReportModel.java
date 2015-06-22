@@ -58,7 +58,7 @@ public class StatisticsReportModel {
          * @param rs a {@link org.opennms.netmgt.model.OnmsResource} object.
          */
         public PrettyOnmsResource(OnmsResource rs) {
-            super(rs.getName(), rs.getLabel(), rs.getResourceType(), rs.getAttributes(), rs.getChildResources());
+            super(rs.getName(), rs.getLabel(), rs.getResourceType(), rs.getAttributes(), rs.getChildResources(), rs.getPath());
         }
 
         /**

@@ -40,7 +40,7 @@ public class VmwareMultiInstanceCollectionResource extends VmwareCollectionResou
     /**
      * logging for VMware data collection
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareMultiInstanceCollectionResource.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareMultiInstanceCollectionResource.class);
 
     private final String m_inst;
     private final String m_name;

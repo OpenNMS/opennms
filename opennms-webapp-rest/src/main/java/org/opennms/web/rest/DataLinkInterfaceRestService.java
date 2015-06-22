@@ -56,13 +56,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
 /**
  * <p>DataLinkInterfaceRestService class.</p>
  *
  * @author antonio
  * @since 1.11.1
  */
+@Component("dataLinkInterfaceRestService")
 @PerRequest
 @Scope("prototype")
 @Path("links")
@@ -78,20 +78,17 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     private NodeDao m_nodeDao;
 
     @Context
-    UriInfo m_uriInfo;
-
-    @Context
     ResourceContext m_context;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
-    public DataLinkInterfaceList getLinks() {
+    public DataLinkInterfaceList getLinks(@Context UriInfo uriInfo) {
         readLock();
         
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            applyQueryFilters(uriInfo.getQueryParameters(), builder);
             builder.orderBy("lastPollTime").desc();
             return new DataLinkInterfaceList(m_dataLinkInterfaceDao.findMatching(builder.toCriteria()));
         } finally {
@@ -116,7 +113,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @Path("{linkId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateDataLinkInterface(@PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
+    public Response updateDataLinkInterface(@Context UriInfo uriInfo, @PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
         writeLock();
         try {
             LOG.debug("updateDataLinkInterface: Updating DataLinkInterface with ID {}", linkId);
@@ -125,7 +122,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
                 setProperties(params, iface);
                 LOG.debug("updateDataLinkInterface: DataLinkInterface with ID {} updated", linkId);
                 m_dataLinkInterfaceDao.saveOrUpdate(iface);
-                return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
             }
             return Response.notModified(linkId.toString()).build();
         } finally {
@@ -136,7 +133,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
-    public Response addOrReplaceDataLinkInterface(final DataLinkInterface iface) {
+    public Response addOrReplaceDataLinkInterface(@Context UriInfo uriInfo, final DataLinkInterface iface) {
         writeLock();
         try {
             if (iface.getNode() == null && iface.getNodeId() != null) {
@@ -147,7 +144,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
             }
             LOG.debug("addOrReplaceDataLinkInterface: Adding data link interface {}", iface);
             m_dataLinkInterfaceDao.saveOrUpdate(iface);
-            return Response.seeOther(getRedirectUri(m_uriInfo, iface.getId())).build();
+            return Response.seeOther(getRedirectUri(uriInfo, iface.getId())).build();
         } finally {
             writeUnlock();
         }

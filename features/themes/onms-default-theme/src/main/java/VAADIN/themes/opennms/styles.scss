@@ -205,6 +205,11 @@ $header-background-image: url("images/headerbg.png") !default;
     :: Surveillance View styles
     -------------------------------------------------- */
 
+td.v-table-cell-content.v-table-cell-content-marked {
+  background: gray;
+  opacity: 0.5 !important;
+}
+
 .surveillance-view .v-table-cell-content {
   padding: 0px 0px 0px 0px;
   background-color: #ffffff;

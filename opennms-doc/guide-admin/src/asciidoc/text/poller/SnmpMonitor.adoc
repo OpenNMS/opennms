@@ -67,10 +67,10 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                             and the monitored value is non-null.                                                       | optional | `-`
 | `operator`        | The operator to be used for comparing the monitored object against the `operand` parameter.
                       Must be one of the following symbolic operators: +
-                      `&lt;` (<): Less than. Both operand and observed object value must be numeric. +
-                      `&gt;` (>): Greater than. Both operand and observed object value must be numeric. +
-                      `&lt;=` (<=): Less than or equal to. Both operand and observed object value must be numeric. +
-                      `&gt;=` (>=): Greater than or equal to. Both operand and observed object value must be numeric. +
+                      `&amp;lt;` (<): Less than. Both operand and observed object value must be numeric. +
+                      `&amp;gt;` (>): Greater than. Both operand and observed object value must be numeric. +
+                      `&amp;lt;=` (<=): Less than or equal to. Both operand and observed object value must be numeric. +
+                      `&amp;gt;=` (>=): Greater than or equal to. Both operand and observed object value must be numeric. +
                       `=`: Equal to. Applied in numeric context if both operand and observed object value are numeric,
                            otherwise in string context as a case-sensitive exact match. +
                       `!=`: Not equal to. Applied in numeric context if both operand and observed object value are
@@ -78,16 +78,16 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
                       `~`:  Regular expression match. Always applied in string context. +
                       Note: Comparison will always succeed if either the `operand` or `operator` parameter isn't set
                             and the monitored value is non-null.
-                      Keep in mind that you need to escape all < and > characters as XML entities (`&lt;` and `&gt;`
+                      Keep in mind that you need to escape all < and > characters as XML entities (`&amp;lt;` and `&amp;gt;`
                       respectively)                                                                                    | optional | `-`
-| `port`            | Destination port where the SNMP requests shall be sent.                                          | optional | from 'snmp-config.xml'
+| `port`            | Destination port where the SNMP requests shall be sent.                                          | optional | from `snmp-config.xml`
 | `reason-template` | A user-provided template used for the monitor's reason code if the service is unvailable.
                       Defaults to a reasonable value if unset.
                       See below for an explanation of the possible template parameters.                                | optional | depends on operation mode
 
-| `retry`           | Number of polls to attempt.                                                                      | optional | from 'snmp-config.xml'
-| `retries`         | *Deprecated* Same as `retry`. Parameter `retry` takes precedence if both are set.              | optional | from 'snmp-config.xml'
-| `timeout`         | Timeout in milliseconds for retrieving the object's value.                                       | optional | from 'snmp-config.xml'
+| `retry`           | Number of polls to attempt.                                                                      | optional | from `snmp-config.xml`
+| `retries`         | *Deprecated* Same as `retry`. Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
+| `timeout`         | Timeout in milliseconds for retrieving the object's value.                                       | optional | from `snmp-config.xml`
 | `walk`            | `false`: Sets the monitor to poll for a scalar object unless if the `match-all` parameter is set
                       to `count`, in which case the `match-all` parameter takes precedence. +
                       `true`: Sets the monitor to poll for a tabular object where the `match-all` parameter defines how

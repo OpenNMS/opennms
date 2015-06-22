@@ -54,6 +54,21 @@
 	m_category_list = new CategoryList();
     }
 
+	// Creates a link to the rtc/category.jsp according to the selected outagesType.
+	public String createCategoriesOutageLink(HttpServletResponse response, Category category, String outagesType, String linkTitle, String linkText) {
+		if (category.getLastUpdated() != null) {
+			if (linkTitle == null) {
+				return String.format("<a href=\"%s\">%s</a>",
+						response.encodeURL("rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+						linkText);
+			}
+			return String.format("<a href=\"%s\" title=\"%s\">%s</a>",
+					response.encodeURL("rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+					linkTitle,
+					linkText);
+		}
+		return linkText;
+	}
 %>
 
 <%
@@ -95,26 +110,20 @@
 
 	    for (Iterator<Category> j = categories.iterator(); j.hasNext(); ) {
 		Category category = j.next();
-		String categoryName = category.getName();
 %>
 	<tr>
 		<td>
-          <% if (category.getLastUpdated() != null) { %>
-		    <a href="<%= response.encodeURL("rtc/category.jsp?category=" + Util.encode(categoryName)) %>"
-		       title="<%= category.getTitle() %>">
-              <%= categoryName %>
-            </a>
-          <% } else { %>
-            <%= categoryName %>
-          <% } %>
+			<%=createCategoriesOutageLink(response, category, "all", category.getTitle(), category.getName())%>
 		</td>
 		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toLowerCase()) %> bright divider"
 	        align="right"
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
+		    title="Updated: <%= category.getLastUpdated() %>">
+			<%=createCategoriesOutageLink(response, category, "outages", null, category.getOutageText())%>
 		</td>
 		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toLowerCase()) %> bright divider"
 		    align="right" 
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
+		    title="Updated: <%= category.getLastUpdated() %>">
+			<%=createCategoriesOutageLink(response, category, "avail", null, category.getAvailText())%>
 		</td>
 	</tr>
 	

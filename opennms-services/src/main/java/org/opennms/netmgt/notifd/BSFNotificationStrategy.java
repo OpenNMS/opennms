@@ -43,6 +43,10 @@ import org.apache.bsf.BSFManager;
 import org.apache.bsf.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -162,7 +166,9 @@ public class BSFNotificationStrategy implements NotificationStrategy {
     }
 
     private static void declareBeans(BSFNotificationStrategy obj) throws BSFException {
-        NodeDao nodeDao = BeanUtils.getFactory("notifdContext", NodeDao.class);
+        // Retrieve the parameters before accessing them
+        obj.retrieveParams();
+
         Integer nodeId;
         try {
             nodeId = Integer.valueOf(obj.m_notifParams.get(NotificationManager.PARAM_NODE));
@@ -172,25 +178,48 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
         OnmsNode node = null;
         OnmsAssetRecord assets = null;
-        List<String> categories = new ArrayList<String>();
+        final List<String> categories = new ArrayList<String>();
         String nodeLabel = null;
         String foreignSource = null;
         String foreignId = null;
 
         if (nodeId != null) {
-            node = nodeDao.get(nodeId);
-            nodeLabel = node.getLabel();
-            assets = node.getAssetRecord();
-            for (OnmsCategory cat : node.getCategories()) {
-                categories.add(cat.getName());
+            final BeanFactoryReference bf = BeanUtils.getBeanFactory("notifdContext");
+            final NodeDao nodeDao = BeanUtils.getBean(bf, "nodeDao", NodeDao.class);
+            final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate", TransactionTemplate.class);
+
+            try {
+                // Redeclare the node id as final
+                final int theNodeId = nodeId;
+                node = transTemplate.execute(new TransactionCallback<OnmsNode>() {
+                    @Override
+                    public OnmsNode doInTransaction(final TransactionStatus status) {
+                        final OnmsNode node = nodeDao.get(theNodeId);
+                        // Retrieve the categories in the context of the transaction
+                        if (node != null) {
+                            for (OnmsCategory cat : node.getCategories()) {
+                                categories.add(cat.getName());
+                            }
+                        }
+                        return  node;
+                    }
+                });
+
+                if (node == null) {
+                    LOG.error("Could not find a node with id: {}", theNodeId);
+                } else {
+                    nodeLabel = node.getLabel();
+                    assets = node.getAssetRecord();
+                    foreignSource = node.getForeignSource();
+                    foreignId = node.getForeignId();
+                }
+            } catch (final RuntimeException e) {
+                LOG.error("Error while retrieving node with id {}", nodeId, e);
             }
-            foreignSource = node.getForeignSource();
-            foreignId = node.getForeignId();
         }
 
         s_bsfManager.declareBean("bsf_notif_strategy", obj, BSFNotificationStrategy.class);
-        
-        obj.retrieveParams();
+
         s_bsfManager.declareBean("logger", LOG, Logger.class);
         s_bsfManager.declareBean("notif_params", obj.m_notifParams, Map.class);
 
@@ -220,7 +249,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
             if (NotificationManager.PARAM_MICROBLOG_USERNAME.equals(arg.getSwitch())) s_bsfManager.declareBean("microblog_username", arg.getValue(), String.class);
         }
     }
-    
+
     private static void undeclareBean( String beanName){
         try{
             s_bsfManager.undeclareBean(beanName);

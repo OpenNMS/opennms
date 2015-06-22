@@ -30,6 +30,8 @@ package org.opennms.web.rest.config;
 
 import static org.junit.Assert.assertTrue;
 
+import javax.servlet.ServletContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -66,7 +68,10 @@ public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTe
     private static final Logger LOG = LoggerFactory.getLogger(AgentConfigurationResourceITTest.class);
 
     @Autowired
-    DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private ServletContext m_context;
 
     @Override
     protected void beforeServletStart() throws Exception {
@@ -88,7 +93,7 @@ public class AgentConfigurationResourceITTest extends AbstractSpringJerseyRestTe
 
     @Test
     public void testJsonResponse() throws Exception {
-        final MockHttpServletRequest req = createRequest(getServletContext(), GET, "/config/agents/example1/SNMP");
+        final MockHttpServletRequest req = createRequest(m_context, GET, "/config/agents/example1/SNMP");
         req.addHeader("Accept", "application/json");
         String json = sendRequest(req, 200);
         assertTrue(json.contains("\"address\":\"192.168.1.1\""));

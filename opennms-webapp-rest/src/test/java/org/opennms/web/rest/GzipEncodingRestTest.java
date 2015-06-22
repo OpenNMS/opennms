@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 
+import javax.servlet.ServletContext;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,6 +87,9 @@ public class GzipEncodingRestTest extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private DatabasePopulator populator;
 
+    @Autowired
+    private ServletContext m_context;
+
     @Before
     @Override
     public void setUp() throws Throwable {
@@ -105,7 +110,7 @@ public class GzipEncodingRestTest extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testGzippedEncodedReponse() throws Exception {
         // Retrieve the results of request without any encoding headers set
-        final MockHttpServletRequest request = createRequest(getServletContext(), GET, "/nodes");
+        final MockHttpServletRequest request = createRequest(m_context, GET, "/nodes");
         String xml = sendRequest(request, 200);
 
         // Now set the header, and re-issue that same request

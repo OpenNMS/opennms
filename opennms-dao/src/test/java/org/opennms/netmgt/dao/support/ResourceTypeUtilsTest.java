@@ -48,9 +48,9 @@ import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
@@ -66,15 +66,12 @@ public class ResourceTypeUtilsTest {
     @Before
     public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
-        
-        RrdUtils.setStrategy(new NullRrdStrategy());
     }
-    
+
     @After
     public void tearDown() throws Exception {
         m_fileAnticipator.tearDown();
     }
-    
 
     @Test
     public void testLoadPropertiesNullRrdDirectory() {
@@ -139,7 +136,7 @@ public class ResourceTypeUtilsTest {
     public void testGetAttributesAtRelativePathWithBogusDirectory() {
         File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
         assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
-        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist");
+        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist", ".rrd");
     }
 
     /*
@@ -172,10 +169,10 @@ public class ResourceTypeUtilsTest {
 
 
     private OnmsResource createResource() {
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
         Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(1);
         attributes.add(new RrdGraphAttribute("foo", "1/eth0", "foo.jrb"));
-        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes, new ResourcePath("foo"));
         childResource.setParent(topResource);
         return childResource;
     }

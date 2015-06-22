@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>16.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -60,8 +60,8 @@
     <!-- webapps -->
     <module>root-webapp</module>
 
-    <!-- REST -->
-    <module>rest-measurements-api</module>
+    <!-- Measurements API -->
+    <module>measurements</module>
 
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
@@ -83,6 +83,9 @@
     <module>correlator</module>	
   
     <!-- OpenNMS Vaadin Dashboard -->
+    <!-- Generic Vaadin components -->
+    <module>vaadin-components</module>
+
     <!-- Dashboard and dashlet UI elements -->
     <module>vaadin-dashboard</module>
     <module>vaadin-dashlets</module>

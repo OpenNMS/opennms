@@ -45,8 +45,6 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
 
@@ -86,7 +84,6 @@ public class CollectorConfigDaoImplTest extends TestCase {
 
     private void initialize() throws IOException, MarshalException, ValidationException, Exception {
         System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
 
         InputStream stream = null;
 

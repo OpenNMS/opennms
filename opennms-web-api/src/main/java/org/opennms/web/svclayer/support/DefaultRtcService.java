@@ -140,7 +140,11 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     }
 
     /**
-     * <p>createOutageCriteria</p>
+     * <p>Create a {@link OnmsCriteria} that will select {@link OnmsOutage} objects.</p>
+     * 
+     * <p>CAUTION: This criteria must contain a JOIN alias to the node table called 'node' so that the
+     * {@link org.opennms.dashboard.server.CriteriaAddingVisitor.addCriteriaForCategories(OnmsCriteria, String...)}
+     * function can add a category-based restriction on matching node IDs to the criteria.</p>
      *
      * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      */
@@ -152,6 +156,8 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         outageCriteria.add(Restrictions.eq("monitoredService.status", "A"));
         outageCriteria.createAlias("monitoredService.ipInterface", "ipInterface", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
+        // Required for {@link org.opennms.dashboard.server.CriteriaAddingVisitor.addCriteriaForCategories(OnmsCriteria, String...)}
+        // to work properly.
         outageCriteria.createAlias("monitoredService.ipInterface.node", "node", OnmsCriteria.INNER_JOIN);
         outageCriteria.add(Restrictions.ne("node.type", "D"));
         
@@ -159,7 +165,11 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     }
 
     /**
-     * <p>createServiceCriteria</p>
+     * <p>Create a {@link OnmsCriteria} that will select {@link OnmsMonitoredService} objects.</p>
+     * 
+     * <p>CAUTION: This criteria must contain a JOIN alias to the node table called 'node' so that the
+     * {@link org.opennms.dashboard.server.CriteriaAddingVisitor.addCriteriaForCategories(OnmsCriteria, String...)}
+     * function can add a category-based restriction on matching node IDs to the criteria.</p>
      *
      * @return a {@link org.opennms.netmgt.model.OnmsCriteria} object.
      */
@@ -170,6 +180,8 @@ public class DefaultRtcService implements RtcService, InitializingBean {
         serviceCriteria.add(Restrictions.eq("monitoredService.status", "A"));
         serviceCriteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.INNER_JOIN);
         serviceCriteria.add(Restrictions.ne("ipInterface.isManaged", "D"));
+        // Required for {@link org.opennms.dashboard.server.CriteriaAddingVisitor.addCriteriaForCategories(OnmsCriteria, String...)}
+        // to work properly.
         serviceCriteria.createAlias("ipInterface.node", "node", OnmsCriteria.INNER_JOIN);
         serviceCriteria.add(Restrictions.ne("node.type", "D"));
         serviceCriteria.createAlias("serviceType", "serviceType", OnmsCriteria.INNER_JOIN);

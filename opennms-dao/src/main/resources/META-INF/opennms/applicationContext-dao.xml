@@ -493,18 +493,24 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
+  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
+    <property name="rrdDirectory" value="${rrd.base.dir}" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />
     <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
-    <property name="rrdDirectory" value="${rrd.base.dir}" />
+    <property name="resourceStorageDao" ref="resourceStorageDao" />
   </bean>
-  
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
 
-  <bean id="rrdStrategy" class="org.opennms.netmgt.rrd.RrdUtils" factory-method="getStrategy"/>
+  <import resource="classpath*:/META-INF/opennms/applicationContext-rrd.xml"/>
 
   <bean id="rrdDao" class="org.opennms.netmgt.dao.support.DefaultRrdDao">
     <property name="rrdStrategy" ref="rrdStrategy" />

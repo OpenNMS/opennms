@@ -49,7 +49,7 @@ import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
@@ -75,6 +75,9 @@ public abstract class AbstractXmlCollectorTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    /** The RRD strategy. */
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     /**
      * Sets the up.
      *
@@ -85,9 +88,7 @@ public abstract class AbstractXmlCollectorTest {
         FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        initializeRrdStrategy();
+        m_rrdStrategy = getRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -104,22 +105,8 @@ public abstract class AbstractXmlCollectorTest {
         EasyMock.replay(m_collectionAgent, m_eventProxy);
     }
 
-    /**
-     * Initialize RRD strategy.
-     *
-     * @throws Exception the exception
-     */
-    protected void initializeRrdStrategy() throws Exception {
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-    }
-
-    /**
-     * Gets the RRD extension.
-     *
-     * @return the RRD extension
-     */
-    protected String getRrdExtension() {
-        return "jrb";
+    protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
+        return new JRobinRrdStrategy();
     }
 
     /**
@@ -173,10 +160,10 @@ public abstract class AbstractXmlCollectorTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { getRrdExtension() }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { m_rrdStrategy.getDefaultFileExtension().substring(1) }, true).size());
         return collectionSet;
     }
 

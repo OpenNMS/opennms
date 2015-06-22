@@ -80,21 +80,21 @@ OpenNMS Packages (RPM & Debian)
 Described below is where the various packages built from the GitFlow
 branches are located:
 
-* stable: latest `master` release (`14.0.0`)
-* testing: latest `master` branch snapshot (`14.0.0`)
-* snapshot: latest `develop` branch snapshot (`15.0.0-SNAPSHOT`)
+* stable: latest `master` release (`16.0.0`)
+* testing: latest `master` release (`16.0.0`)
+* snapshot: latest `develop` branch snapshot (`17.0.0-SNAPSHOT`)
 
 Future Release Cycle
 --------------------
 
-When it is time to make a `15.0.0` release, we will branch `develop` to a
-new `release-15.0.0` branch.  At that point, the repositories will change
+When it is time to make a `17.0.0` release, we will branch `develop` to a
+new `release-17.0.0` branch.  At that point, the repositories will change
 slightly to include the release branch in addition to the normal `develop`
 snapshots:
 
-* stable: latest `master` release (`14.0.0`)
-* testing: latest `release-15.0.0` branch snapshot (`15.0.0-SNAPSHOT`)
-* snapshot: latest `develop` branch snapshot (`16.0.0-SNAPSHOT`)
+* stable: latest `master` release (`16.0.0`)
+* testing: latest `release-17.0.0` branch snapshot (`17.0.0-SNAPSHOT`)
+* snapshot: latest `develop` branch snapshot (`18.0.0-SNAPSHOT`)
 
 [GitFlow]: http://nvie.com/posts/a-successful-git-branching-model/ "GitFlow"
 [OCA]: http://www.opennms.org/wiki/OCA "OpenNMS Contributor Agreement"

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,22 +28,22 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -51,33 +51,34 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 /**
- * FIXME Note: We should remove any graphs from the list that have external
- * values.  See bug #1703.
+ * Interface SNMP resources are stored in paths like:
+ *   snmp/1/${IfName}/ds.rrd
+ *
  */
 public class InterfaceSnmpResourceType implements OnmsResourceType {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceSnmpResourceType.class);
 
-    private ResourceDao m_resourceDao;
-    private NodeDao m_nodeDao;
+    private final ResourceStorageDao m_resourceStorageDao;
 
     /**
      * <p>Constructor for InterfaceSnmpResourceType.</p>
      *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
-     * @param nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao} object.
+     * @param resourceStorageDao a {@link org.opennms.netmgt.dao.api.ResourceStorageDao} object.
      */
-    public InterfaceSnmpResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
-        m_resourceDao = resourceDao;
-        m_nodeDao = nodeDao;
+    public InterfaceSnmpResourceType(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
     }
 
     /**
@@ -89,7 +90,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     public String getName() {
         return "interfaceSnmp";
     }
-    
+
     /**
      * <p>getLabel</p>
      *
@@ -99,52 +100,38 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     public String getLabel() {
         return "SNMP Interface Data";
     }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean isResourceTypeOnNode(int nodeId) {
-        return isResourceTypeOnParentResource(Integer.toString(nodeId));
-    }
-    
-    private boolean isResourceTypeOnParentResource(String parentResource) {
-        File parent = getParentResourceDirectory(parentResource, false);
-        if (!parent.isDirectory()) {
-            return false;
-        }
-        
-        return parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER).length > 0; 
-    }
-    
-    private File getParentResourceDirectory(String parentResource, boolean verify) {
-        File snmp = new File(m_resourceDao.getRrdDirectory(verify), ResourceTypeUtils.SNMP_DIRECTORY);
-        
-        File parent = new File(snmp, parentResource);
-        if (verify && !parent.isDirectory()) {
-            throw new ObjectRetrievalFailureException(File.class, "No parent resource directory exists for " + parentResource + ": " + parent);
-        }
-        
-        return parent;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsResource> getResourcesForNode(int nodeId) {
-        OnmsNode node = m_nodeDao.get(nodeId);
-        if (node == null) {
-            throw new ObjectRetrievalFailureException(OnmsNode.class, Integer.toString(nodeId), "Could not find node with node ID " + nodeId, null);
-        }
 
-        File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
-        return OnmsResource.sortIntoResourceList(populateResourceList(parent, null, node, false));
+    /** {@inheritDoc} */
+    @Override
+    public String getLinkForResource(OnmsResource resource) {
+        return null;
+    }
+
+    @Override
+    public boolean isResourceTypeOnParent(OnmsResource parent) {
+        return getQueryableInterfaces(parent).size() > 0;
+    }
+
+    @Override
+    public List<OnmsResource> getResourcesForParent(OnmsResource parent) {
+        final Set<String> ifaces = getQueryableInterfaces(parent);
+        if (NodeResourceType.isNode(parent)) {
+            OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+            return getNodeResources(parent.getPath(), ifaces, node);
+        } else if (DomainResourceType.isDomain(parent)) {
+            return getDomainResources(parent.getPath(), ifaces);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public OnmsResource getChildByName(final OnmsResource parent, final String name) {
-        if (parent.getResourceType() instanceof DomainResourceType) {
+        if (DomainResourceType.isDomain(parent)) {
             // Load all of the resources and search when dealing with domains.
             // This is not efficient, but resources of this type should be sparse.
-            for (final OnmsResource resource : getResourcesForDomain(parent.getName())) {
+            for (final OnmsResource resource : getResourcesForParent(parent)) {
                 if (resource.getName().equals(name)) {
                     return resource;
                 }
@@ -155,26 +142,14 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         // Grab the node entity
         final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
 
-        // Determine the parent folder
-        File parentFolder = null;
-        File relPath = null;
-        Boolean isForeign = ResourceTypeUtils.isStoreByForeignSource();
-
-        if (isForeign) {
-            relPath = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, node.getForeignSource() + File.separator + node.getForeignId());
-            parentFolder = getParentResourceDirectory(relPath.toString(), true);;
-        } else {
-            parentFolder = getParentResourceDirectory(Integer.toString(node.getId()), true);
-        }
-
         // Verify that the requested resource exists
-        final File resourceFolder = new File(parentFolder, name);
-        if (!resourceFolder.isDirectory()) {
+        final ResourcePath resourcePath = new ResourcePath(parent.getPath(), name);
+        if (!m_resourceStorageDao.exists(resourcePath, 0)) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No resource with name '" + name + "' found.");
         }
 
         // Leverage the existing function for retrieving the resource list
-        final List<OnmsResource> resources = populateResourceList(parentFolder, relPath, new File[] {resourceFolder}, node, isForeign);
+        final List<OnmsResource> resources = getNodeResources(parent.getPath(), Sets.newHashSet(name), node);
         if (resources.size() != 1) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No resource with name '" + name + "' found.");
         }
@@ -184,12 +159,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resource;
     }
 
-    private List<OnmsResource> populateResourceList(File parent, File relPath, OnmsNode node, Boolean isForeign) {
-        final File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
-        return populateResourceList(parent, relPath, intfDirs, node, isForeign);
-    }
-
-    private List<OnmsResource> populateResourceList(File parent, File relPath, File[] intfDirs, OnmsNode node, Boolean isForeign) {
+    private List<OnmsResource> getNodeResources(ResourcePath parent, Set<String> intfNames, OnmsNode node) {
             
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
 
@@ -227,20 +197,18 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             }
         }
 
-        for (File intfDir : intfDirs) {
-            String name = intfDir.getName();
-            
-            String desc = name;
+        for (String intfName : intfNames) {
+            String desc = intfName;
             String mac = "";
 
             // Strip off the MAC address from the end, if there is one
-            int dashIndex = name.lastIndexOf('-');
+            int dashIndex = intfName.lastIndexOf('-');
 
             if (dashIndex >= 0) {
-                desc = name.substring(0, dashIndex);
-                mac = name.substring(dashIndex + 1, name.length());
+                desc = intfName.substring(0, dashIndex);
+                mac = intfName.substring(dashIndex + 1, intfName.length());
             }
-            
+
             String key = desc + "-" + mac; 
             OnmsSnmpInterface snmpInterface = intfMap.get(key);
             
@@ -248,7 +216,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             Long ifSpeed = null;
             String ifSpeedFriendly = null;
             if (snmpInterface == null) {
-                label = name + " (*)";
+                label = intfName + " (*)";
             } else {
                 StringBuffer descr = new StringBuffer();
                 StringBuffer parenString = new StringBuffer();
@@ -284,7 +252,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                      * Should never reach this point, since ifLabel is based on
                      * the values of ifName and ifDescr but better safe than sorry.
                      */
-                    descr.append(name);
+                    descr.append(intfName);
                 }
 
                 /* Add the extended information in parenthesis after the ifLabel,
@@ -299,12 +267,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 label = descr.toString();
             }
 
-            OnmsResource resource = null;
-            if (isForeign) {
-               resource = getResourceByNodeSourceAndInterface(relPath.toString(), intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
-            } else {
-               resource = getResourceByNodeAndInterface(node.getId(), intfDir.getName(), label, ifSpeed, ifSpeedFriendly);
-            }
+            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName, label, ifSpeed, ifSpeedFriendly);
             if (snmpInterface != null) {
                 Set<OnmsIpInterface> ipInterfaces = snmpInterface.getIpInterfaces();
                 if (ipInterfaces.size() > 0) {
@@ -328,32 +291,60 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resources; 
     }
 
-    private OnmsResource getResourceByNodeAndInterface(int nodeId, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
-        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(Integer.toString(nodeId), intf, ifSpeed, ifSpeedFriendly));
-        return new OnmsResource(intf, label, this, set);
+    private List<OnmsResource> getDomainResources(ResourcePath parent, Set<String> intfNames) {
+        final List<OnmsResource> resources = Lists.newLinkedList();
+        for (String intfName : intfNames) {
+            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName); 
+            try {
+                resource.setLink("element/nodeList.htm?listInterfaces=true&snmpParm=ifAlias&snmpParmMatchType=contains&snmpParmValue=" + URLEncoder.encode(intfName, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("URLEncoder.encode complained about UTF-8. " + e, e);
+            }
+            resources.add(resource);
+        }
+        return resources;
     }
 
-    private OnmsResource getResourceByNodeSourceAndInterface(String relPath, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
-        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(relPath, intf, ifSpeed, ifSpeedFriendly));
-        return new OnmsResource(intf, label, this, set);
-    }
-    
-    public class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
-        private String m_parent;
-        private String m_resource;
-        private Long m_ifSpeed;
-        private String m_ifSpeedFriendly;
+    private Set<String> getQueryableInterfaces(OnmsResource parent) {
+        if (!NodeResourceType.isNode(parent) && !DomainResourceType.isDomain(parent)) {
+            return Collections.emptySet();
+        }
 
-        public AttributeLoader(String parent, String resource, Long ifSpeed, String ifSpeedFriendly) {
-            m_parent = parent;
-            m_resource = resource;
+        return m_resourceStorageDao.children(parent.getPath(), 1).stream()
+                .map(rp -> rp.getName())
+                .collect(Collectors.toSet());
+    }
+
+    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf) {
+        final ResourcePath path = ResourcePath.get(parent, intf);
+        final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(m_resourceStorageDao, path);
+        final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
+        return new OnmsResource(intf, intf, this, set, path);
+    }
+
+    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
+        final ResourcePath path = ResourcePath.get(parent, intf);
+        final AttributeLoader loader = new AttributeLoader(m_resourceStorageDao, path, ifSpeed, ifSpeedFriendly);
+        final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
+        return new OnmsResource(intf, label, this, set, path);
+    }
+
+    private static class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
+        private final ResourceStorageDao m_resourceStorageDao;
+        private final ResourcePath m_path;
+        private final Long m_ifSpeed;
+        private final String m_ifSpeedFriendly;
+
+        public AttributeLoader(ResourceStorageDao resourceStorageDao, ResourcePath path, Long ifSpeed, String ifSpeedFriendly) {
+            m_resourceStorageDao = resourceStorageDao;
+            m_path = path;
             m_ifSpeed = ifSpeed;
             m_ifSpeedFriendly = ifSpeedFriendly;
         }
 
         @Override
         public Set<OnmsAttribute> load() {
-            Set<OnmsAttribute> attributes = ResourceTypeUtils.getAttributesAtRelativePath(m_resourceDao.getRrdDirectory(), getRelativePathForResource(m_parent, m_resource));
+            Set<OnmsAttribute> attributes = m_resourceStorageDao.getAttributes(m_path);
             if (m_ifSpeed != null) {
                 attributes.add(new ExternalValueAttribute("ifSpeed", m_ifSpeed.toString()));
             }
@@ -362,100 +353,5 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             }
             return attributes;
         }
-        
     }
-    
-    private String getRelativePathForResource(String parent, String resource) {
-        return ResourceTypeUtils.SNMP_DIRECTORY
-            + File.separator + parent 
-            + File.separator + resource;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * This resource type is never available for domains.
-     * Only the interface resource type is available for domains.
-     */
-    @Override
-    public boolean isResourceTypeOnDomain(String domain) {
-        return getQueryableInterfacesForDomain(domain).size() > 0;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsResource> getResourcesForDomain(String domain) {
-        ArrayList<OnmsResource> resources =
-            new ArrayList<OnmsResource>();
-
-        List<String> ifaces = getQueryableInterfacesForDomain(domain);
-        for (String iface : ifaces) {
-            OnmsResource resource = getResourceByDomainAndInterface(domain, iface); 
-            try {
-                resource.setLink("element/nodeList.htm?listInterfaces=true&snmpParm=ifAlias&snmpParmMatchType=contains&snmpParmValue=" + URLEncoder.encode(iface, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                throw new IllegalStateException("URLEncoder.encode complained about UTF-8. " + e, e);
-            }
-            resources.add(resource);
-        }
-
-        return OnmsResource.sortIntoResourceList(resources);
-    }
-    
-    private List<String> getQueryableInterfacesForDomain(String domain) {
-        if (domain == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        ArrayList<String> intfs = new ArrayList<String>();
-        File snmp = new File(m_resourceDao.getRrdDirectory(), ResourceTypeUtils.SNMP_DIRECTORY);
-        File domainDir = new File(snmp, domain);
-
-        if (!domainDir.exists() || !domainDir.isDirectory()) {
-            throw new IllegalArgumentException("No such directory: " + domainDir);
-        }
-
-        File[] intfDirs = domainDir.listFiles(RrdFileConstants.DOMAIN_INTERFACE_DIRECTORY_FILTER);
-
-        if (intfDirs != null && intfDirs.length > 0) {
-            intfs.ensureCapacity(intfDirs.length);
-            for (int i = 0; i < intfDirs.length; i++) {
-                intfs.add(intfDirs[i].getName());
-            }
-        }
-
-        return intfs;
-    }
-
-    private OnmsResource getResourceByDomainAndInterface(String domain, String intf) {
-        Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(new AttributeLoader(domain, intf, null, null));
-        return new OnmsResource(intf, intf, this, set);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getLinkForResource(OnmsResource resource) {
-        return null;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public boolean isResourceTypeOnNodeSource(String nodeSource, int nodeId) {
-        File parent = ResourceTypeUtils.getRelativeNodeSourceDirectory(nodeSource);
-        return isResourceTypeOnParentResource(parent.toString());
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public List<OnmsResource> getResourcesForNodeSource(String nodeSource, int nodeId) {
-        String[] ident = nodeSource.split(":");
-        OnmsNode node = m_nodeDao.findByForeignId(ident[0], ident[1]);
-        if (node == null) {
-            throw new ObjectRetrievalFailureException(OnmsNode.class, nodeSource, "Could not find node with nodeSource " + nodeSource, null);
-        }
-        File relPath = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, ident[0] + File.separator + ident[1]);
-        File parent = getParentResourceDirectory(relPath.toString(), true);
-        return OnmsResource.sortIntoResourceList(populateResourceList(parent, relPath, node, true));
-    }
-
 }

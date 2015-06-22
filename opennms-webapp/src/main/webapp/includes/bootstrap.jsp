@@ -111,6 +111,16 @@
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
     </c:if>
 
+    <c:if test="${param.renderGraphs == 'true'}">
+      <!-- Graphing -->
+      <script type="text/javascript">
+        // Global scope
+        window.onmsGraphContainers = {'engine': '<%= System.getProperty("org.opennms.web.graphs.engine") %>'};
+        window.onmsGraphContainers.baseHref = '<%= baseHref %>';
+      </script>
+      <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
+    </c:if>
+
 <c:forEach var="script" items="${paramValues.script}">
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>

@@ -51,12 +51,16 @@ import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.google.common.base.Throwables;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -67,11 +71,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class NodeLabelChangeServlet extends HttpServlet {
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = -7766362068448931124L;
+    private final static Logger LOG = LoggerFactory.getLogger(NodeLabelChangeServlet.class);
     protected EventProxy proxy;
 
     /**
@@ -142,7 +143,20 @@ public class NodeLabelChangeServlet extends HttpServlet {
             if (managedByProvisiond) {
                 response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + node.getForeignSource()));
             } else {
-                nodeLabel.assignLabel(nodeId, newLabel);
+                final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+                final TransactionTemplate transactionTemplate = context.getBean(TransactionTemplate.class);
+                final NodeLabel newLabelFinal = newLabel;
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+                        try {
+                            nodeLabel.assignLabel(nodeId, newLabelFinal);
+                        } catch (SQLException e) {
+                            LOG.error("Failed to change label on node with id: {} to: {}", nodeId, newLabelFinal, e);
+                            throw Throwables.propagate(e);
+                        }
+                    }
+                });
                 response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
             }
         } catch (SQLException e) {

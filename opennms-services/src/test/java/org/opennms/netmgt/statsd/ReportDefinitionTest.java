@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.ExternalValueAttribute;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -119,7 +120,7 @@ public class ReportDefinitionTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
 
         EasyMock.expect(m_resourceDao.findTopLevelResources()).andReturn(Collections.singletonList(resource));
         
@@ -145,7 +146,7 @@ public class ReportDefinitionTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes);
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, attributes, ResourcePath.get("foo"));
 
         EasyMock.expect(m_resourceDao.findTopLevelResources()).andReturn(Collections.singletonList(resource));
         
@@ -176,7 +177,7 @@ public class ReportDefinitionTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, Collections.singleton(attribute));
+        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
 
         ReportDefinition def = createReportDefinition();
         def.getReport().getPackage().setFilter("");
@@ -213,7 +214,7 @@ public class ReportDefinitionTest extends TestCase {
         
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
-        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, attributes);
+        OnmsResource resource = new OnmsResource(node.getId().toString(), node.getLabel(), resourceType, attributes, ResourcePath.get("foo"));
 
         ReportDefinition def = createReportDefinition();
         def.getReport().getPackage().setFilter("");

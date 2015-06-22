@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -85,8 +86,6 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -349,15 +348,14 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.setTimeKeeper(m_timeKeeper);
         m_backEnd.setEventIpcManager(m_eventIpcManager);
         m_backEnd.setDisconnectedTimeout(DISCONNECTED_TIMEOUT);
+        m_backEnd.setRrdStrategy(new NullRrdStrategy());
 
-        
         m_startTime = new Date(System.currentTimeMillis() - 600000);
         expect(m_timeKeeper.getCurrentDate()).andReturn(m_startTime);
         replay(m_timeKeeper);
         m_backEnd.afterPropertiesSet();
         verify(m_timeKeeper);
         reset(m_timeKeeper);
-
 
         // set up some objects that can be used to mock up the tests
 
@@ -809,10 +807,6 @@ public class PollerBackEndTest extends TestCase {
     }
 
     public void testSaveResponseTimeDataWithLocaleThatUsesCommasForDecimals() throws Exception {
-        @SuppressWarnings("unchecked")
-        RrdStrategy<Object,Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
-        RrdUtils.setStrategy(m_rrdStrategy);
-
         Properties p = new Properties();
         p.setProperty("org.opennms.netmgt.ConfigFileConstants", "ERROR");
         MockLogAppender.setupLogging(p);
@@ -841,9 +835,7 @@ public class PollerBackEndTest extends TestCase {
         rrd.setStep(300);
         rrd.addRra("bogusRRA");
         pkg.setRrd(rrd);
-        
-        expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".rrd").anyTimes();
-        
+
         // TODO: Figure out why these mock calls aren't being invoked
         //expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
         //m_rrdStrategy.createFile(isA(Object.class));
@@ -864,10 +856,5 @@ public class PollerBackEndTest extends TestCase {
         param.setValue(value);
         pkgService.addParameter(param);
     }
-    
-    @SuppressWarnings("unchecked")
-    private static <T> List<T> isAList(Class<T> clazz) {
-        return isA(List.class);
-    }
-    
+
 }

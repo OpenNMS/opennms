@@ -32,7 +32,7 @@ package org.opennms.netmgt.trapd;
 import org.junit.BeforeClass;
 
 /**
- * JoeSnmpTrapHandlerTest
+ * Snmp4JTrapHandlerTest
  *
  * @author brozow
  */

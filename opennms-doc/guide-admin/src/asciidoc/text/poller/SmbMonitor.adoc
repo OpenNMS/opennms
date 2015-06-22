@@ -34,7 +34,7 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 
 ===== Examples
 
-Some example configuration how to configure the monitor in the 'poller-configuration.xml'.
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]
 ----

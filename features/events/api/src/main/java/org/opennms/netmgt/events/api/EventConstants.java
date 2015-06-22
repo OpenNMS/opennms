@@ -187,11 +187,6 @@ public abstract class EventConstants {
     public static final String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
 
     /**
-     * The change service event UEI.
-     */
-    public static final String XMLRPC_NOTIFICATION_EVENT_UEI = "uei.opennms.org/internal/capsd/xmlrpcNotification";
-
-    /**
      * The node added event UEI.
      */
     public static final String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
@@ -946,21 +941,6 @@ public abstract class EventConstants {
     public static final String PARM_TRANSACTION_NO = "txno";
 
     /**
-     * The UEI of a source event to report to external xmlrpc server.
-     */
-    public static final String PARM_SOURCE_EVENT_UEI = "sourceUei";
-
-    /**
-     * The message to explain a source event.
-     */
-    public static final String PARM_SOURCE_EVENT_MESSAGE = "eventMessage";
-
-    /**
-     * The status to indicate which kind of external xmlrpc command to invoke.
-     */
-    public static final String PARM_SOURCE_EVENT_STATUS = "eventStatus";
-    
-    /**
      * Used for retaining the reason from a monitor determines SERVICE_UNAVAILABLE
      */
     public static final String PARM_LOSTSERVICE_REASON = "eventReason";
@@ -1037,18 +1017,6 @@ public abstract class EventConstants {
     //
     // End event parms
     //
-
-    /**
-     * Status code used to indicate which external xmlrpc command to invoke to
-     * report the occurrence of selected events.
-     */
-    public static final int XMLRPC_NOTIFY_RECEIVED = 0;
-
-    /** Constant <code>XMLRPC_NOTIFY_SUCCESS=1</code> */
-    public static final int XMLRPC_NOTIFY_SUCCESS = 1;
-
-    /** Constant <code>XMLRPC_NOTIFY_FAILURE=2</code> */
-    public static final int XMLRPC_NOTIFY_FAILURE = 2;
 
     /**
      * Enumerated value for the state(tticket and forward) when entry is active.

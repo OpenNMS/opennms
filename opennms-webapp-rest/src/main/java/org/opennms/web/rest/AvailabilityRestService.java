@@ -46,7 +46,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -85,7 +84,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 15.0.2
  */
-@Component
+@Component("availabilityRestService")
 @PerRequest
 @Scope("prototype")
 @Path("availability")
@@ -111,9 +110,6 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @Autowired
     MonitoredServiceDao m_monitoredServiceDao;
-
-    @Context 
-    UriInfo m_uriInfo;
 
     @Context
     ResourceContext m_context;
@@ -208,7 +204,6 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     AvailabilityNode getAvailabilityNode(final int id) throws Exception {
-        final CategoryModel categoryModel = CategoryModel.getInstance();
 
         final OnmsNode dbNode = m_nodeDao.get(id);
         initialize(dbNode);
@@ -216,14 +211,14 @@ public class AvailabilityRestService extends OnmsRestService {
         if (dbNode == null) {
             return null;
         }
-        final double nodeAvail = categoryModel.getNodeAvailability(id);
+        final double nodeAvail = CategoryModel.getNodeAvailability(id);
 
         final AvailabilityNode node = new AvailabilityNode(dbNode, nodeAvail);
         for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
-            final double ifaceAvail = categoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
+            final double ifaceAvail = CategoryModel.getInterfaceAvailability(id, str(iface.getIpAddress()));
             final AvailabilityIpInterface ai = new AvailabilityIpInterface(iface, ifaceAvail);
             for (final OnmsMonitoredService svc : iface.getMonitoredServices()) {
-                final double serviceAvail = categoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
+                final double serviceAvail = CategoryModel.getServiceAvailability(id, str(iface.getIpAddress()), svc.getServiceId());
                 final AvailabilityMonitoredService ams = new AvailabilityMonitoredService(svc, serviceAvail);
                 ai.addService(ams);
             }
