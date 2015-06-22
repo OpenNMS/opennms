@@ -91,6 +91,8 @@ import org.springframework.web.context.WebApplicationContext;
 public abstract class AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestTestCase.class);
 
+    private static final String DEFAULT_CXF_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml";
+
     public static String GET = "GET";
     public static String POST = "POST";
     public static String DELETE = "DELETE";
@@ -98,6 +100,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
+
+    private final String m_cxfContextPath;
 
     private HttpServlet dispatcher;
     private MockServletConfig servletConfig;
@@ -110,6 +114,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     private ContextLoaderListener contextListener;
     private Filter filter;
+
+    public AbstractSpringJerseyRestTestCase() {
+        this(DEFAULT_CXF_CONTEXT_PATH);
+    }
+
+    public AbstractSpringJerseyRestTestCase(String cxfContextPath) {
+        m_cxfContextPath = cxfContextPath;
+    }
 
     /**
      * Apache CXF is throwing an exception because {@link MockHttpServletRequest#getInputStream()}
@@ -183,7 +195,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
             // Apache CXF
             setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
-            getServletConfig().addInitParameter("config-location", "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml");
+            getServletConfig().addInitParameter("config-location", m_cxfContextPath);
             CXFServlet servlet = new CXFServlet();
             setDispatcher(servlet);
             getDispatcher().init(getServletConfig());
