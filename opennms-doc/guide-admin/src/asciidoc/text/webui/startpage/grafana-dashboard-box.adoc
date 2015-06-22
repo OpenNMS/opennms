@@ -36,13 +36,5 @@ image:webui/startpage/01_grafana-box.png[]
 TIP: If you have _Grafana_ behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
      This host name is used to generate links to the _Grafana_ dashboards.
 
-.Generating a Grafana API Key
-You have to login to _Grafana_ as `admin` go to your organization and select _API Keys_.
-Add a role for _OpenNMS_ as _Viewer_ and click on _Add_.
+The process to generate an _Grafana API Key_ can be found in the link:http://docs.grafana.org/reference/http_api/#create-api-token[HTTP API documentation].
 Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.
-
-.Create a key in the Organization for OpenNMS as Viewer
-image::webui/startpage/02_generate-grafana-api-key.png[]
-
-.Copy the generated API key to the opennms.properties
-image::webui/startpage/03_grafana-api-key.png[]
