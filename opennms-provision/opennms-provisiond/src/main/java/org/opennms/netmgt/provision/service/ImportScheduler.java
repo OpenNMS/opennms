@@ -225,7 +225,8 @@ public class ImportScheduler implements InitializingBean {
                 
                 try {
                     detail = new JobDetail(def.getImportName(), JOB_GROUP, ImportJob.class, false, false, false);
-                    detail.getJobDataMap().put(ImportJob.KEY, def.getImportUrlResource());
+                    detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource());
+                    detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
                     
                     trigger = new CronTrigger(def.getImportName(), JOB_GROUP, def.getCronSchedule());
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
@@ -302,10 +303,11 @@ public class ImportScheduler implements InitializingBean {
             while (it.hasNext()) {
                 String triggerName = it.next();
                 CronTrigger t = (CronTrigger) getScheduler().getTrigger(triggerName, JOB_GROUP);
-                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, next fire time: {}, time zone: {}, priority: {}",
+                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, rescanExisting: {}, next fire time: {}, time zone: {}, priority: {}",
                          triggerName, t.getCalendarName(),
                          t.getCronExpression(),
-                         t.getJobDataMap().get(ImportJob.KEY),
+                         t.getJobDataMap().get(ImportJob.URL),
+                         t.getJobDataMap().get(ImportJob.RESCAN_EXISTING),
                          t.getNextFireTime(), t.getPreviousFireTime(),
                          t.getTimeZone(), t.getPriority());
             }
