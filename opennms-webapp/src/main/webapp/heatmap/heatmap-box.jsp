@@ -45,9 +45,9 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
-    String mode = "alarms";
+    String mode = System.getProperty("org.opennms.heatmap.defaultMode", "alarms");
     String title = "";
-    String heatmap = "foreignSources";
+    String heatmap = System.getProperty("org.opennms.heatmap.defaultHeatmap", "categories");
     String foreignSource = null;
     String category = null;
 
@@ -154,57 +154,51 @@
             });
         });
     </script>
-</div>
-<div style="float:left;">
-
-    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
-
-    <%
-        if ("outages".equals(mode)) {
-    %>
-    <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Alarms</a> / <b>Outages</b>
-    <%
-        } else {
-    %>
-    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Outages</a>
-    <%
-        }
-    %>
-    &nbsp;<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
-    <%
-        if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
-    %>
-    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <b>Foreign Sources</b>
-    <%
-        } else {
-    %>
-    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a>
-    <%
-        }
-    %>
-
-</div>
-
-<div style="float:right;">
-
-    <%
-        if ("outages".equals(mode)) {
-    %>
-    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;0% down
-    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;10% down
-    <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;20% down
-    <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
-    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
-    <%
-        } else {
-    %>
-    <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Normal
-    <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Warning
-    <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Minor
-    <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Major
-    <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Critical
-    <%
-        }
-    %>
-
+    <div class="panel-footer">
+        <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+        <%
+            if ("outages".equals(mode)) {
+        %>
+        <a href="<%=request.getRequestURI()%>?mode=alarms&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Alarms</a> / <b>Outages</b>
+        <%
+            } else {
+        %>
+        <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&heatmap=<%=heatmap%>&category=<%=category%>&foreignSource=<%=foreignSource%>">Outages</a>
+        <%
+            }
+        %>
+        &nbsp;<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>&nbsp;
+        <%
+            if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
+        %>
+        <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=categories">Categories</a> / <b>Foreign Sources</b>
+        <%
+            } else {
+        %>
+        <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=foreignSources">Foreign Sources</a>
+        <%
+            }
+        %>
+        <div style="float:right;">
+            <%
+                if ("outages".equals(mode)) {
+            %>
+            <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;0% down
+            <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;10% down
+            <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;20% down
+            <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;40% down
+            <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;100% down
+            <%
+                } else {
+            %>
+            <font color="#336600"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Normal
+            <font color="#FFCC00"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Warning
+            <font color="#FF9900"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Minor
+            <font color="#FF3300"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Major
+            <font color="#CC0000"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></font>&nbsp;Critical
+            <%
+                }
+            %>
+        </div>
+    </div>
 </div>
