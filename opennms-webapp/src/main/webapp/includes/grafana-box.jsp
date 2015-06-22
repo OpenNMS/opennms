@@ -82,12 +82,8 @@
             httpGet.setHeader("Authorization", "Bearer " + grafanaApiKey);
             HttpResponse httpResponse = httpClient.execute(httpHost, httpGet);
             responseString = IOUtils.toString(httpResponse.getEntity().getContent(), "UTF-8");
-        } catch (UnknownHostException e) {
-            errorMessage = "Host unknown";
-        } catch (ConnectTimeoutException e) {
-            errorMessage = "Connection timeout";
-        } catch (ConnectException e) {
-            errorMessage = "Connection refused";
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
         }
     } else {
         errorMessage = "Invalid configuration";
