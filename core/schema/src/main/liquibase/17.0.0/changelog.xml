@@ -206,7 +206,12 @@
     <addNotNullConstraint tableName="events" columnName="systemid"/>
   </changeSet>
 
-  <!-- TODO: Migrate location_monitors data into monitoringsystems table. This is a biggie. :) -->
+  <changeSet author="seth" id="17.0.0-copy-location_monitors-into-monitoringsystems">
+    <sql>
+      INSERT INTO monitoringsystems (id, label, location, type, status, last_updated) SELECT lm.id, lm.id, lm.definitionname, 'Remote Poller', lm.status, lm.lastcheckintime FROM location_monitors AS lm;
+      INSERT INTO monitoringsystemsproperties (monitoringsystemid, property, propertyvalue) SELECT lmd.locationmonitorid, lmd.property, lmd.propertyvalue FROM location_monitor_details AS lmd;
+    </sql>
+  </changeSet>
 
   <changeSet author="seth" id="17.0.0-reassociate-loc_spec_status_changes-with-systems">
     <!-- Add the systemId column with no constraints -->
