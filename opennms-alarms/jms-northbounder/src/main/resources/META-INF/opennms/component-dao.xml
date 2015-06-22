@@ -6,10 +6,20 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
 	">
-
-	<bean name="jmsNorthbounder" class="org.opennms.netmgt.alarmd.northbounder.jms.HttpNorthbounder" />
-	
-	<onmsgi:service ref="jmsNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder" />
-
+<!-- 	<bean name="jmsNorthbounder" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounder" /> -->
+	<bean name="jmsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao">
+      <property name="configResource" value="file:${opennms.home}/etc/jms-northbounder-configuration.xml" />
+    </bean>
+	<!-- <onmsgi:service ref="jmsNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder" /> -->
+	<bean name="jmsNorthbounderManager" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderManager" />
+	<bean name="jmsNorthbounderConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL">
+					<value>vm://localhost</value>
+				</property>
+			</bean>
+		</property>
+	</bean>
 </beans>
 

@@ -33,9 +33,23 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.opennms.dependencies</groupId>
+    	<artifactId>spring-dependencies</artifactId>
+    	<type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.http</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

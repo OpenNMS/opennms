@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
-import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,6 +35,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.netmgt.alarmd.api.Destination;
+ 
 /**
  * Configuration for the various Syslog hosts to receive alarms via Syslog\
  * 
@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name="syslog-destination")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SyslogDestination implements Serializable {
+public class SyslogDestination implements Destination {
 	
     /**
 	 * 
