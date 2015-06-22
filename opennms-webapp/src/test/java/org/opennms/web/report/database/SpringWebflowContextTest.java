@@ -53,7 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
         "classpath:/META-INF/opennms/applicationContext-reporting.xml",

@@ -97,7 +97,6 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     private ServiceTypeDao m_serviceTypeDao;
     
     @Autowired
-    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     /**
