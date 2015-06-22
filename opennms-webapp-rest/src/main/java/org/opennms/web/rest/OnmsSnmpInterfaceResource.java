@@ -92,7 +92,6 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     private SnmpInterfaceDao m_snmpInterfaceDao;
     
     @Autowired
-    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     /**

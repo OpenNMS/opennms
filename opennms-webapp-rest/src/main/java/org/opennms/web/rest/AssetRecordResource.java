@@ -73,7 +73,6 @@ public class AssetRecordResource extends OnmsRestService {
     private NodeDao m_nodeDao;    
     
     @Autowired
-    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     /**

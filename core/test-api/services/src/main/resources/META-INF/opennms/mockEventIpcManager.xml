@@ -20,6 +20,8 @@
     <qualifier value="mock" />
   </bean>
 
+  <alias name="mockEventIpcManager" alias="eventProxy"/>
+
   <onmsgi:service ref="mockEventIpcManager">
     <onmsgi:interfaces>
       <value>org.opennms.netmgt.events.api.EventForwarder</value>
