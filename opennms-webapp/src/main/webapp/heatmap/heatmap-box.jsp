@@ -135,7 +135,7 @@
                 $("#treemap").treemap({
                     "dimensions": [
                         $("#treemap").width(),
-                        $(document).height() - 220
+                        Math.min($(document).height() - 220, $("#treemap").width())
                     ],
                     "colorStops": [
                         {"val": 1.0, "color": "#CC0000"},
