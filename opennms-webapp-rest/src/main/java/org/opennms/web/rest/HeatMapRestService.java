@@ -58,6 +58,16 @@ import java.util.Map;
 @Scope("prototype")
 @Path("heatmap")
 public class HeatMapRestService extends OnmsRestService {
+    /**
+     * Property and default value for category filtering
+     */
+    private static final String CATEGORY_FILTER_PROPERTY_KEY = "org.opennms.heatmap.categoryFilter";
+    private static final String CATEGORY_FILTER_PROPERTY_DEFAULT = ".*";
+    /**
+     * Property and default value for foreign source filtering
+     */
+    private static final String FOREIGNSOURCE_FILTER_PROPERTY_KEY = "org.opennms.heatmap.foreignSourceFilter";
+    private static final String FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT = ".*";
 
     private static final Logger LOG = LoggerFactory.getLogger(HeatMapRestService.class);
 
@@ -73,7 +83,7 @@ public class HeatMapRestService extends OnmsRestService {
      * @param heatMapElements the list of heatmap elements
      * @return the map for the json response
      */
-    private Map<String, List<Map<String, Object>>> transformResults(List<HeatMapElement> heatMapElements) {
+    private Map<String, List<Map<String, Object>>> transformResults(List<HeatMapElement> heatMapElements, String filter) {
         /**
          * the item list
          */
@@ -96,15 +106,20 @@ public class HeatMapRestService extends OnmsRestService {
          */
         for (HeatMapElement heatMapElement : heatMapElements) {
             if (heatMapElement.getServicesTotal() > 0) {
-                elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
+                /**
+                 * Apply filter here if not null
+                 */
+                if (filter == null || heatMapElement.getName().matches(filter)) {
+                    elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
 
-                Map<String, Object> item = new HashMap<>();
-                item.put("id", heatMapElement.getName());
-                item.put("elementId", heatMapElement.getId());
-                item.put("color", Lists.newArrayList(heatMapElement.getColor()));
-                itemList.add(item);
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("id", heatMapElement.getName());
+                    item.put("elementId", heatMapElement.getId());
+                    item.put("color", Lists.newArrayList(heatMapElement.getColor()));
+                    itemList.add(item);
 
-                totalServices += heatMapElement.getServicesTotal();
+                    totalServices += heatMapElement.getServicesTotal();
+                }
             }
         }
 
@@ -113,8 +128,8 @@ public class HeatMapRestService extends OnmsRestService {
          * each entry...
          */
         for (Map<String, Object> map : itemList) {
-            int nodesInCategory = elementSizes.get(map.get("id"));
-            double size = (double) nodesInCategory / (double) totalServices;
+            int nodesInEntity = elementSizes.get(map.get("id"));
+            double size = (double) nodesInEntity / (double) totalServices;
             map.put("size", Lists.newArrayList(Double.valueOf(size)));
         }
 
@@ -133,7 +148,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("outages/categories")
     public Response outagesByCategories() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -143,7 +158,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("outages/foreignSources")
     public Response outagesByForeignsources() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -153,7 +168,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("outages/nodesByCategory/{category}")
     public Response outagesOfNodesByCategory(@PathParam("category") final String category) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -163,7 +178,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("outages/nodesByForeignSource/{foreignSource}")
     public Response outagesOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -173,7 +188,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/categories")
     public Response alarmsBycategories() throws IOException {
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -183,7 +198,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/foreignSources")
     public Response alarmsByForeignsources() throws IOException {
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -193,7 +208,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/nodesByCategory/{category}")
     public Response alarmsOfNodesByCategory(@PathParam("category") final String category) throws IOException {
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 
@@ -203,7 +218,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("alarms/nodesByForeignSource/{foreignSource}")
     public Response alarmsOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements));
+        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
 }
