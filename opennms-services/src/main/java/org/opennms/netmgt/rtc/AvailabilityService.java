@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
+import org.opennms.netmgt.xml.rtc.EuiLevel;
 
 /**
  * This interface contains all of the methods that RTC needs to fetch availability
@@ -40,74 +40,18 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
  * @author Seth
  */
 public interface AvailabilityService {
-    
-    /**
-     * Get the value(uptime) for the category in the last 'rollingWindow'
-     * starting at current time
-     *
-     * @param catLabel
-     *            the category to which the node should belong to
-     * @param curTime
-     *            the current time
-     * @param rollingWindow
-     *            the window for which value is to be calculated
-     * @return the value(uptime) for the category in the last 'rollingWindow'
-     *         starting at current time
-     */
-    double getValue(RTCCategory category, long curTime, long rollingWindow);
 
     /**
-     * Get the value(uptime) for the nodeid in the last 'rollingWindow' starting
-     * at current time in the context of the passed category
-     *
-     * @param nodeid
-     *            the node for which value is to be calculated
-     * @param catLabel
-     *            the category to which the node should belong to
-     * @param curTime
-     *            the current time
-     * @param rollingWindow
-     *            the window for which value is to be calculated
-     * @return the value(uptime) for the node in the last 'rollingWindow'
-     *         starting at current time in the context of the passed category
-     */
-    double getValue(int nodeid, RTCCategory category, long curTime, long rollingWindow);
-
-    /**
-     * Get the service count for the nodeid in the context of the passed
-     * category
-     *
-     * @param nodeid
-     *            the node for which service count is to be calculated
-     * @param catLabel
-     *            the category to which the node should belong to
-     * @return the service count for the nodeid in the context of the passed
-     *         category
-     */
-    int getServiceCount(int nodeid, RTCCategory category);
-
-    /**
-     * Get the service down count for the nodeid in the context of the passed
-     * category
-     *
-     * @param nodeid
-     *            the node for which service down count is to be calculated
-     * @param catLabel
-     *            the category to which the node should belong to
-     * @return the service down count for the nodeid in the context of the
-     *         passed category
-     */
-    int getServiceDownCount(int nodeid, RTCCategory category);
-
-    /**
-     * <p>getCategories</p>
+     * Builds a map of configured categories, keyed by label.
      *
      * @return the categories
      */
     Map<String, RTCCategory> getCategories();
 
     /**
-     * 
+     * Retrieves the availability statistics for the given category
+     *
+     * @return a {@link org.opennms.netmgt.xml.rtc.EuiLevel} object.
      */
-    Collection<Integer> getNodes(RTCCategory rtcCat);
+    EuiLevel getEuiLevel(RTCCategory category);
 }

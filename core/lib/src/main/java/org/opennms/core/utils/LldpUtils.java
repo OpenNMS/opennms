@@ -20,10 +20,14 @@ package org.opennms.core.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.omg.PortableInterceptor.INACTIVE;
 import org.opennms.core.network.IPAddress;
 
 public abstract class LldpUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(LldpUtils.class);
 
     public enum LldpChassisIdSubType {
         /*
@@ -488,7 +492,13 @@ public abstract class LldpUtils {
         if (networkAddress == null) {
             throw new IllegalArgumentException("Cannot decode null IANA Family address");
         }
-        return Integer.decode("0x" + networkAddress.split(":")[0]);
+        try {
+            return Integer.decode("0x" + networkAddress.split(":")[0]);
+        } catch (final NumberFormatException e) {
+            final String message = "Cannot decode invalid IANA Family address: " + networkAddress;
+            LOG.debug(message, e);
+            throw new IllegalArgumentException(message, e);
+        }
     }
     
     public static byte[] IanaFamilyAddressStringToBytes(String networkAddress) {
@@ -501,7 +511,13 @@ public abstract class LldpUtils {
         // Decode each MAC address digit into a hexadecimal byte value
         for (int i = 1; i < digits.length; i++) {
             // Prefix the value with "0x" so that Integer.decode() knows which base to use
-            contents[i-1] = Integer.decode("0x" + digits[i]).byteValue();
+            try {
+                contents[i-1] = Integer.decode("0x" + digits[i]).byteValue();
+            } catch (final NumberFormatException e) {
+                final String message = "Cannot decode invalid IANA Family address: " + networkAddress;
+                LOG.debug(message, e);
+                throw new IllegalArgumentException(message, e);
+            }
         }
         return contents;
     }

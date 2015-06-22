@@ -28,14 +28,26 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import com.google.common.collect.Lists;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.plugins.browsers.*;
+import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
+import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
+import org.opennms.features.topology.plugins.browsers.AlarmTable;
+import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
+import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
+import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -44,12 +56,18 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents a Alert Dashlet with some details.
@@ -217,7 +235,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 public void refresh() {
                     List<OnmsAlarm> alarms = getAlarms();
 
-                    if (alarms.size()>0) {
+                    if (alarms.size() > 0) {
                         List<Integer> alarmIds = new LinkedList<Integer>();
 
                         for (OnmsAlarm onmsAlarm : alarms) {
@@ -227,7 +245,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                         List<Restriction> restrictions = new LinkedList<Restriction>();
                         restrictions.add(new InRestriction("id", alarmIds));
 
-                        ((OnmsDaoContainer<?,?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+                        ((OnmsDaoContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
                     }
 
                     setBoosted(checkBoosted(alarms));
@@ -274,9 +292,22 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
-        alarmCb.distinct();
+        /**
+         * due to restrictions in the criteria api it's quite hard
+         * to use distinct and orderBy together, so I apply a workaround
+         * to avoid alarmCb.distinct();
+         */
 
-        return m_alarmDao.findMatching(alarmCb.toCriteria());
+        List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
+        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
+
+        for (OnmsAlarm onmsAlarm : onmsAlarmList) {
+            if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {
+                onmsAlarmMap.put(onmsAlarm.getId(), onmsAlarm);
+            }
+        }
+
+        return Lists.newArrayList(onmsAlarmMap.values());
     }
 
     /**

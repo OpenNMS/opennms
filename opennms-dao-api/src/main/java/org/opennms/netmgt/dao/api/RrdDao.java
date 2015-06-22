@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -73,28 +72,7 @@ public interface RrdDao {
      * @param workDir RRD files are relative to this directory
      * @return PNG graph image
      */
-    public InputStream createGraph(String command, File workDir);
-
-    /**
-     * Gets the offset of the top of the graph box from the top of the image.
-     *
-     * @return offset in pixels
-     */
-    public int getGraphTopOffsetWithText();
-
-    /**
-     * Gets the offset of the left side of the graph box from the left side of the image.
-     *
-     * @return offset in pixels
-     */
-    public int getGraphLeftOffset();
-
-    /**
-     * Gets the offset of the right side of the graph box from the right side of the image.
-     *
-     * @return offset in pixels
-     */
-    public int getGraphRightOffset();
+    public InputStream createGraph(String command);
 
     /**
      * This method issues an round robin fetch command to retrieve the last

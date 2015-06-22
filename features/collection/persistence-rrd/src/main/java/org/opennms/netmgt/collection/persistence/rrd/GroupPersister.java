@@ -37,6 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 
 /**
  * <p>GroupPersister class.</p>
@@ -52,8 +53,8 @@ public class GroupPersister extends BasePersister {
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public GroupPersister(ServiceParameters params, RrdRepository repository) {
-        super(params, repository);
+    public GroupPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
+        super(params, repository, rrdStrategy);
 
     }
 

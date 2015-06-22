@@ -37,6 +37,7 @@ import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
@@ -99,7 +100,7 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("interfaceSnmp");
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "something", "something else");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, Collections.singleton(attribute), ResourcePath.get("foo"));
         m_attributeVisitor.visit(attribute);
 
         m_mocks.replayAll();
@@ -115,7 +116,7 @@ public class AttributeMatchingResourceVisitorTest extends TestCase {
 
         MockResourceType resourceType = new MockResourceType();
         resourceType.setName("something other than interfaceSnmp");
-        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0));
+        OnmsResource resource = new OnmsResource("1", "Node One", resourceType, new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));
 
         m_mocks.replayAll();
         resourceVisitor.visit(resource);

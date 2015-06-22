@@ -28,9 +28,9 @@
 
 package org.opennms.web.controller.statisticsReports;
 
-import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.StatisticsReportService;
-import org.opennms.web.svclayer.support.StatisticsReportModel;
+import org.opennms.web.svclayer.model.StatisticsReportCommand;
+import org.opennms.web.svclayer.model.StatisticsReportModel;
 import org.opennms.web.validator.StatisticsReportCommandValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

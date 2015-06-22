@@ -68,7 +68,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
-@Component
+@Component("alarmStatsRestService")
 @PerRequest
 @Scope("prototype")
 @Path("stats/alarms")
@@ -83,15 +83,12 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @Autowired
     AlarmStatisticsService m_statisticsService;
 
-    @Context 
-    UriInfo m_uriInfo;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public AlarmStatistics getStats() {
+    public AlarmStatistics getStats(@Context UriInfo uriInfo) {
         readLock();
         try {
-            return getStats(null);
+            return getStats(uriInfo, null);
         } finally {
             readUnlock();
         }
@@ -100,7 +97,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
     @GET
     @Path("/by-severity")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public AlarmStatisticsBySeverity getStatsForEachSeverity(@QueryParam("severities") final String severitiesString) {
+    public AlarmStatisticsBySeverity getStatsForEachSeverity(@Context UriInfo uriInfo, @QueryParam("severities") final String severitiesString) {
         readLock();
 
         try {
@@ -114,7 +111,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
             for (final String severityName : severities) {
                 final OnmsSeverity severity = OnmsSeverity.get(severityName);
     
-                final AlarmStatistics stat = getStats(severity);
+                final AlarmStatistics stat = getStats(uriInfo, severity);
                 stat.setSeverity(severity);
                 stats.add(stat);
             }
@@ -125,10 +122,10 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         }
     }
     
-    protected AlarmStatistics getStats(final OnmsSeverity severity) {
+    protected AlarmStatistics getStats(final UriInfo uriInfo, final OnmsSeverity severity) {
         final AlarmStatistics stats = new AlarmStatistics();
 
-        final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
+        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters(), false);
 
         // note: this is just the *total count* criteria, so no ordering, and count everything
         builder.count();

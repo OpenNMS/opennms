@@ -38,22 +38,22 @@ _BSFMonitor_ also grants access to a selection of _OpenNMS_ internal methods and
 .Beans which can be used in the script
 [options="header, autowidth"]
 |===
-| Variable      | Type                          | Description
-| `map`         | Map<String, Object>           | The _map_ contains all various parameters passed to the monitor
-                                                  from the service definition it the 'poller-configuration.xml' file.
-| `ip_addr`     | String                        | The IP address that is currently being polled.
-| `node_id`     | int                           | The Node ID of the node the `ip_addr` belongs to.
-| `node_label`  | String                        | The Node Label of the node the `ip_addr` and service belongs to.
-| `svc_name`    | String                        | The name of the service that is being polled.
+| Variable      | Type                            | Description
+| `map`         | _Map<String, Object>_           | The _map_ contains all various parameters passed to the monitor
+                                                    from the service definition it the `poller-configuration.xml` file.
+| `ip_addr`     | _String_                        | The IP address that is currently being polled.
+| `node_id`     | _int_                           | The Node ID of the node the `ip_addr` belongs to.
+| `node_label`  | _String_                        | The Node Label of the node the `ip_addr` and service belongs to.
+| `svc_name`    | _String_                        | The name of the service that is being polled.
 | `bsf_monitor` | _BSFMonitor_                    | The instance of the _BSFMonitor_ object calling the script.
-                                                  Useful for logging via its +log(String sev, String fmt, Object... args)+ method.
-| `results`     | HashMap<String, String>       | The script is expected to put its results into this object.
-                                                  The status indication should be set into the entry with key `status`.
-                                                  If the status is not `OK`, a key `reason` should contain a description of the problem.
-| `times`       | LinkedHashMap<String, Number> | The script is expected to put one or more response times into this object.
+                                                    Useful for logging via its +log(String sev, String fmt, Object... args)+ method.
+| `results`     | _HashMap<String, String>_       | The script is expected to put its results into this object.
+                                                    The status indication should be set into the entry with key `status`.
+                                                    If the status is not `OK`, a key `reason` should contain a description of the problem.
+| `times`       | _LinkedHashMap<String, Number>_ | The script is expected to put one or more response times into this object.
 |===
 
-Additionally every parameter added to the service definition in 'poller-configuration.xml' is available as a _String_ object in the script.
+Additionally every parameter added to the service definition in `poller-configuration.xml` is available as a _String_ object in the script.
 The key attribute of the parameter represents the name of the _String_ object and the value attribute represents the value of the _String_ object.
 
 NOTE: Please keep in mind, that these parameters are also accessible via the _map_ bean.
@@ -69,10 +69,10 @@ The following status codes are defined:
 [options="header, autowidth"]
 |===
 | Code  | Description
-| `OK`  | Service is available
-| `UNK` | Service status unknown
-| `UNR` | Service is unresponsive
-| `NOK` | Service is unavailable
+| _OK_  | Service is available
+| _UNK_ | Service status unknown
+| _UNR_ | Service is unresponsive
+| _NOK_ | Service is unavailable
 |===
 
 ===== Response time tracking
@@ -80,7 +80,7 @@ The following status codes are defined:
 By default the _BSFMonitor_ tracks the whole time the script file consumes as the response time.
 If the response time should be persisted the response time add the following parameters:
 
-.RRD response time tracking for this service in 'poller-configuration.xml'
+.RRD response time tracking for this service in `poller-configuration.xml`
 [source, xml]
 ----
 <!-- where in the filesystem response times are stored -->
@@ -129,7 +129,7 @@ The _BSF_ supports many languages, the following table provides the required set
 
 ===== Example Bean Shell
 
-._BeanShell_ example 'poller-configuration.xml'
+._BeanShell_ example `poller-configuration.xml`
 [source, xml]
 ----
 <service name="MinimalBeanShell" interval="300000" user-defined="true" status="on">
@@ -140,7 +140,7 @@ The _BSF_ supports many languages, the following table provides the required set
 <monitor service="MinimalBeanShell" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-.BeanShell example 'MinimalBeanShell.bsh' script file
+.BeanShell example `MinimalBeanShell.bsh` script file
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalBeanShell.bsf", null);
@@ -156,10 +156,10 @@ if (testFile.exists()) {
 ===== Example Groovy
 
 To use the Groovy language an additional library is required.
-Copy a compatible +groovy-all.jar+ into to 'opennms/lib' folder and restart _OpenNMS_.
+Copy a compatible +groovy-all.jar+ into to `opennms/lib` folder and restart _OpenNMS_.
 That makes _Groovy_ available for the _BSFMonitor_.
 
-._Groovy_ example 'poller-configuration.xml' with default `run-type` set to `eval`
+._Groovy_ example `poller-configuration.xml` with default `run-type` set to `eval`
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="300000" user-defined="true" status="on">
@@ -170,7 +170,7 @@ That makes _Groovy_ available for the _BSFMonitor_.
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Groovy_ example 'MinimalGroovy.groovy' script file for `run-type` `eval`
+._Groovy_ example `MinimalGroovy.groovy` script file for `run-type` `eval`
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy.groovy", null);
@@ -183,7 +183,7 @@ if (testFile.exists()) {
 }
 ----
 
-.Groovy example 'poller-configuration.xml' with `run-type` set to `exec`
+.Groovy example `poller-configuration.xml` with `run-type` set to `exec`
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="300000" user-defined="true" status="on">
@@ -195,7 +195,7 @@ if (testFile.exists()) {
 <monitor service="MinimalGroovy" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Groovy_ example 'MinimalGroovy.groovy' script file for `run-type` set to `exec`
+._Groovy_ example `MinimalGroovy.groovy` script file for `run-type` set to `exec`
 [source, java]
 ----
 bsf_monitor.log("ERROR", "Starting MinimalGroovy", null);
@@ -211,10 +211,10 @@ if (testFile.exists()) {
 ===== Example Jython
 
 To use the _Jython_ (_Java_ implementation of _Python_) language an additional library is required.
-Copy a compatible `jython-x.y.z.jar` into the 'opennms/lib' folder and restart _OpenNMS_.
+Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart _OpenNMS_.
 That makes _Jython_ available for the _BSFMonitor_.
 
-.Jython example 'poller-configuration.xml' with `run-type` `exec`
+.Jython example `poller-configuration.xml` with `run-type` `exec`
 [source, xml]
 ----
 <service name="MinimalJython" interval="300000" user-defined="true" status="on">
@@ -226,7 +226,7 @@ That makes _Jython_ available for the _BSFMonitor_.
 <monitor service="MinimalJython" class-name="org.opennms.netmgt.poller.monitors.BSFMonitor" />
 ----
 
-._Jython_ example 'MinimalJython.py' script file for `run-type` set to `exec`
+._Jython_ example `MinimalJython.py` script file for `run-type` set to `exec`
 [source, python]
 ----
 from java.io import File
@@ -247,7 +247,7 @@ NOTE: As profit that this is really _Python_, notice the substitution of _Python
 
 The following example references all beans that are exposed to the script, including a custom parameter.
 
-._Groovy_ example 'poller-configuration.xml'
+._Groovy_ example `poller-configuration.xml`
 [source, xml]
 ----
 <service name="MinimalGroovy" interval="30000" user-defined="true" status="on">

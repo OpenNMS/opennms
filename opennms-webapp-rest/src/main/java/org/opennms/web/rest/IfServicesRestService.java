@@ -89,7 +89,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Component
+@Component("ifServicesRestService")
 @PerRequest
 @Scope("prototype")
 @Path("ifservices")
@@ -105,15 +105,12 @@ public class IfServicesRestService extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
-    @Context 
-    private UriInfo m_uriInfo;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public OnmsMonitoredServiceDetailList getServices() {
+    public OnmsMonitoredServiceDetailList getServices(@Context UriInfo uriInfo) {
         readLock();
         try {
-            final Criteria c = getCriteria(m_uriInfo.getQueryParameters());
+            final Criteria c = getCriteria(uriInfo.getQueryParameters());
             final OnmsMonitoredServiceDetailList servicesList = new OnmsMonitoredServiceDetailList();
             final List<OnmsMonitoredService> services = m_serviceDao.findMatching(c);
             for (OnmsMonitoredService svc : services) {
@@ -130,7 +127,7 @@ public class IfServicesRestService extends OnmsRestService {
     }
 
     @PUT
-    public Response updateServices(MultivaluedMapImpl params) {
+    public Response updateServices(@Context UriInfo uriInfo, MultivaluedMapImpl params) {
         readLock();
         try {
             final String status = params.getFirst("status");
@@ -144,12 +141,12 @@ public class IfServicesRestService extends OnmsRestService {
                     serviceList.add(s);
                 }
             }
-            final Criteria c = getCriteria(m_uriInfo.getQueryParameters());
+            final Criteria c = getCriteria(uriInfo.getQueryParameters());
             c.setLimit(null);
             c.setOffset(null);
             final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
             if (services.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided criteria: " + m_uriInfo.getQueryParameters());
+                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided criteria: " + uriInfo.getQueryParameters());
             }
             boolean modified = false;
             for (OnmsMonitoredService svc : services) {
@@ -178,12 +175,12 @@ public class IfServicesRestService extends OnmsRestService {
                 }
             }
             if (!modified && !serviceList.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + m_uriInfo.getQueryParameters());
+                throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
             }
         } finally {
             readUnlock();
         }
-        return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+        return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
     private Criteria getCriteria(MultivaluedMap<String, String> params) {

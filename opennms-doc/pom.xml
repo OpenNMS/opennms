@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>16.0.0-SNAPSHOT</version>
+        <version>17.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -14,6 +14,7 @@
     <description>Official documentation</description>
     <modules>
         <module>guide-doc</module>
+        <module>guide-concepts</module>
         <module>guide-install</module>
         <module>guide-user</module>
         <module>guide-development</module>
@@ -68,8 +69,12 @@
                         <artifactId>asciidoctorj</artifactId>
                         <version>${asciidoctorjVersion}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-complete</artifactId>
+                        <version>${jrubyVersion}</version>
+                    </dependency>
                 </dependencies>
-
                 <executions>
                     <execution>
                         <id>output-html</id>

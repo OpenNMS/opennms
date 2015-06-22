@@ -74,15 +74,6 @@ public interface QueryManager {
     void updateResolvedOutageWithEventId(int outageId, int regainedEventId);
 
     /**
-     * <p>reparentOutages</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param oldNodeId a int.
-     * @param newNodeId a int.
-     */
-    void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
-
-    /**
      * @param nodeId
      * @return
      */

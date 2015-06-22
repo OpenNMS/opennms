@@ -27,11 +27,11 @@ CAUTION: The information for the status of a virtual machine is collected from t
 | Parameter       | Description                                                                        | Required | Default value
 | `retry`         | Number of retries before the service is marked as _down_.                          | optional | `0`
 | `timeout`       | Time in milliseconds to wait for the _vCenter_ to get the power state information. | optional | `3000`
-| `ignoreStandBy` | Treat power state _standBy_ as _up_.                                               | optional | `false` 
+| `ignoreStandBy` | Treat power state _standBy_ as _up_.                                               | optional | `false`
 |===
 
 ===== Examples
-Some example configuration how to configure the monitor in the _poller-configuration.xml_.
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]
 ----

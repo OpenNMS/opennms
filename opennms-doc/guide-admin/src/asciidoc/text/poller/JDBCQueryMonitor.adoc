@@ -50,11 +50,11 @@ NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter with the IP
 |===
 | Parameter | XML entity to use in XML configs
 | `=`       | `=`
-| `<`       | `&lt;`
-| `>`       | `&gt;`
+| `<`       | `&amp;lt;`
+| `>`       | `&amp;gt;`
 | `!=`      | `!=`
-| `<=`      | `&lt;=`
-| `>=`      | `&gt;=`
+| `<=`      | `&amp;lt;=`
+| `>=`      | `&amp;gt;=`
 |===
 
 ===== Evaluating the action - operator - operand

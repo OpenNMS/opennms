@@ -28,6 +28,13 @@
 
 package org.opennms.features.reporting.repository.local;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.dao.LocalReportsDao;
 import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
@@ -36,15 +43,7 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportDefinit
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * <p>LegacyLocalReportRepository class.</p>
@@ -56,15 +55,12 @@ import java.util.logging.Level;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {
-        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
-        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalReportRepository implements ReportRepository {
 
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalReportRepository.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalReportRepository.class);
 
     /**
      * Data access to database-reports.xml

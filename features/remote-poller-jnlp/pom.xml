@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>16.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -154,6 +154,8 @@
           <outputJarVersions>false</outputJarVersions>
           <verbose>false</verbose>
           <verifyjar>true</verifyjar>
+          <canUnsign>true</canUnsign>
+          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
           <sign>
             <keystore>${webstart.keystore}</keystore>
             <keypass>${webstart.keypass}</keypass>
@@ -161,6 +163,7 @@
             <alias>${webstart.keyalias}</alias>
             <dnameCn>${webstart.dnameCn}</dnameCn>
             <dnameCn>${webstart.dnameCn}</dnameCn>
+            <verify>true</verify>
           </sign>
           <updateManifestEntries>
             <Permissions>all-permissions</Permissions>

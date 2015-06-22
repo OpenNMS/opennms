@@ -84,7 +84,7 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.web.svclayer.AggregateStatus;
+import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -1100,34 +1100,40 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     		
         return new LinkInterface(dliface, isParent, iface, linkedIface);
     }
-	
+
     private Interface getInterfaceForLink(int nodeid, int ifindex) {
-	Interface iface = null;
-	if (ifindex > 0 ) {
-	    iface = getSnmpInterface(nodeid, ifindex);	
-	    OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class); 
-	    criteria.add(Restrictions.sqlRestriction("nodeid = " + nodeid + " and ifindex = " + ifindex ));
-	    List<String> addresses = new ArrayList<String>();
-			
-	    for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
-	        addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
-	    }
-			
-	    if (addresses.size() > 0 ) {
-		if (iface ==  null) {
-		    iface = new Interface();
-		    iface.m_nodeId = nodeid;
-		    iface.m_ifIndex = ifindex;
-		}
-		iface.setIpaddresses(addresses);
-	    } else {
-	        if (iface != null)
-	            iface.setIpaddresses(addresses);					
-	    }
-	} 
-	return iface;
+        Interface iface = null;
+        if (ifindex > 0 ) {
+            iface = getSnmpInterface(nodeid, ifindex);
+            final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsIpInterface.class)
+            .setAliases(Arrays.asList(new Alias[] {
+                    new Alias("node", "node", JoinType.LEFT_JOIN),
+                    new Alias("snmpInterface", "snmpInterface", JoinType.LEFT_JOIN)
+            }))
+            .addRestriction(new EqRestriction("node.id", nodeid))
+            .addRestriction(new EqRestriction("snmpInterface.ifIndex", ifindex));
+            List<String> addresses = new ArrayList<String>();
+
+            for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
+                addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
+            }
+
+            if (addresses.size() > 0 ) {
+                if (iface ==  null) {
+                    iface = new Interface();
+                    iface.m_nodeId = nodeid;
+                    iface.m_ifIndex = ifindex;
+                }
+                iface.setIpaddresses(addresses);
+            } else {
+                if (iface != null) {
+                    iface.setIpaddresses(addresses);
+                }
+            }
+        } 
+        return iface;
     }
-    
+
     /**
      * <p>getVlansOnNode</p>
      *

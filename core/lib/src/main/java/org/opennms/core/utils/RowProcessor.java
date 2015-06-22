@@ -34,6 +34,8 @@ import java.sql.SQLException;
 /**
  * Represents a RowProcessor
  *
+ * @deprecated Use Hibernate instead of plain JDBC
+ *
  * @author brozow
  * @version $Id: $
  */

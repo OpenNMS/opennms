@@ -42,8 +42,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -86,7 +86,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Component
+@Component("hardwareInventoryResource")
 @PerRequest
 @Scope("prototype")
 @Path("hardwareInventory")
@@ -105,10 +105,6 @@ public class HardwareInventoryResource extends OnmsRestService {
     /** The hardware entity attribute type DAO. */
     @Autowired
     private HwEntityAttributeTypeDao m_hwEntityAttribTypeDao;
-
-    /** The UEI info. */
-    @Context 
-    private UriInfo m_uriInfo;
 
     /**
      * Gets the hardware inventory.
@@ -161,7 +157,7 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
+    public Response setHardwareInventory(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
         if (!entity.isRoot()) {
             throw getException(Status.BAD_REQUEST, "setHardwareInventory: The OnmsHwEntity is not a root entity " + entity);
         }
@@ -178,7 +174,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             m_hwEntityDao.save(entity);
 
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -195,7 +191,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addOrReplaceChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+    public Response addOrReplaceChild(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -213,7 +209,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             parent.addChildEntity(child);
             LOG.debug("addOrReplaceChild: updating entity {}", child);
             m_hwEntityDao.save(parent);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -230,7 +226,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @PUT
     @Path("{entPhysicalIndex}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
+    public Response updateHwEntity(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -253,7 +249,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             m_hwEntityDao.save(entity);
 
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -268,13 +264,13 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @DELETE
     @Path("{entPhysicalIndex}")
-    public Response deleteHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+    public Response deleteHwEntity(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
             OnmsHwEntity entity = getHwEntity(node.getId(), entPhysicalIndex);
             m_hwEntityDao.delete(entity);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

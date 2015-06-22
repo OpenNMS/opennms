@@ -65,11 +65,6 @@ public final class Notifd extends AbstractServiceDaemon {
     private static final String LOG4J_CATEGORY = "notifd";
 
     /**
-     * The singleton instance.
-     */
-    private static final Notifd m_singleton = new Notifd();
-
-    /**
      * The map for holding different notice queues
      */
     private final Map<String, NoticeQueue> m_noticeQueues = new HashMap<String, NoticeQueue>();
@@ -219,16 +214,6 @@ public final class Notifd extends AbstractServiceDaemon {
         for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
             curHandler.resume();
         }
-    }
-
-    /**
-     * Returns the singular instance of the Notifd daemon. There can be only
-     * one instance of this service per virtual machine.
-     *
-     * @return a {@link org.opennms.netmgt.notifd.Notifd} object.
-     */
-    public static Notifd getInstance() {
-        return m_singleton;
     }
 
     public static String getLoggingCategory() {

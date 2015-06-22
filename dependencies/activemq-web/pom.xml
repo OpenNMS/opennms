@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>16.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -58,6 +58,10 @@
           <artifactId>spring-webmvc</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>jetty</artifactId>
         </exclusion>
@@ -95,6 +99,12 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
       <scope>compile</scope>
+    </dependency>
+    <!-- Use an OSGi-compatible jdom bundle -->
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
+      <version>1.1_4</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

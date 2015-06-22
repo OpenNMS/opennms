@@ -93,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * org.opennms.rrd.queuing.modulus: (default 10000) the number of updates the
  * get enqueued between statistics output
  *
- * org.opennms.rrd.queuing.category: (default "OpenNMS.Queued") the log category
+ * org.opennms.rrd.queuing.category: (default "queued") the log routing prefix
  * to place the statistics output in
  *
  *
@@ -974,7 +974,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     /** {@inheritDoc} */
     @Override
     public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + m_delegate.getDefaultFileExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
     }
@@ -1250,36 +1250,6 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
         final double seconds = (newLap - lastLap) / 1000.0;
         lastLap = newLap;
         return "[" + seconds + " sec]";
-    }
-
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return m_delegate.getGraphLeftOffset();
-    }
-
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return m_delegate.getGraphRightOffset();
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return m_delegate.getGraphTopOffsetWithText();
     }
 
     /**

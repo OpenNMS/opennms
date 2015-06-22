@@ -63,7 +63,7 @@ public class MockQueryManager implements QueryManager {
             @Override
             public void visitService(MockService s) {
                 if (ipaddr.equals(s.getInterface().getIpAddr())) {
-                    serviceIds.add(Integer.valueOf(s.getId()));
+                    serviceIds.add(Integer.valueOf(s.getSvcId()));
                 }
             }
 
@@ -131,12 +131,6 @@ public class MockQueryManager implements QueryManager {
     public void updateResolvedOutageWithEventId(int outageId,
             int regainedEventId) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

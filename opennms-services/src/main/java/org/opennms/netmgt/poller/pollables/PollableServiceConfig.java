@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
 import org.slf4j.Logger;
@@ -62,6 +63,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Timer m_timer;
     private Service m_configService;
     private ServiceMonitor m_serviceMonitor;
+    private final RrdStrategy<?, ?> m_rrdStrategy;
 
     /**
      * <p>Constructor for PollableServiceConfig.</p>
@@ -72,13 +74,14 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
-    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer) {
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, RrdStrategy<?, ?> rrdStrategy) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;
         m_pkg = pkg;
         m_timer = timer;
         m_configService = findService(pkg);
+        m_rrdStrategy = rrdStrategy;
 
         ServiceMonitor monitor = getServiceMonitor();
         monitor.initialize(m_service);
@@ -112,9 +115,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
         try {
             ServiceMonitor monitor = getServiceMonitor();
-            LOG.debug("Polling {} using pkg {}", packageName, m_service);
+            LOG.debug("Polling {} using pkg {}", m_service, packageName);
             PollStatus result = monitor.poll(m_service, getParameters());
-            LOG.debug("Finish polling {} using pkg {} result = {}", result, m_service, packageName);
+            LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
             return result;
         } catch (Throwable e) {
             LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
@@ -125,7 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private synchronized ServiceMonitor getServiceMonitor() {
         if (m_serviceMonitor == null) {
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
+            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg, m_rrdStrategy);
 
         }
         return m_serviceMonitor;

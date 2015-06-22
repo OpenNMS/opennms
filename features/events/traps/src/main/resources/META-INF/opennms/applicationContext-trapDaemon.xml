@@ -24,13 +24,6 @@
     <property name="backlogQ" ref="trapdBacklogQ"/>
   </bean>
   
-  
-  <!--
-  <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.JdbcTrapdIpMgr">
-    <property name="dataSource" ref="dataSource"/>
-  </bean>
-  -->
-  
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr"/>
   
   <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">

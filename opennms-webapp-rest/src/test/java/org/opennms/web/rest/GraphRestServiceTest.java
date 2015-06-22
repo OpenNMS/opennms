@@ -45,6 +45,7 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -79,6 +80,8 @@ public class GraphRestServiceTest extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private DefaultResourceDao m_resourceDao;
 
+    private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
 
@@ -90,7 +93,8 @@ public class GraphRestServiceTest extends AbstractSpringJerseyRestTestCase {
         m_dbPopulator.populateDatabase();
 
         // Point to our temporary directory
-        m_resourceDao.setRrdDirectory(m_tempFolder.getRoot());
+        m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
+        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
 
         // Add some blank .jrb files
         File nodeSnmp1 = m_tempFolder.newFolder("snmp", "1");
@@ -122,5 +126,11 @@ public class GraphRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // 404 on invalid resource
         url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", "UTF-8");
         sendRequest(GET, url, 404);
+
+        url = "/graphs/fornode/1";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("netsnmp.swapinout"));
+        assertTrue(xml.contains("Node-level Performance Data"));
     }
+
 }

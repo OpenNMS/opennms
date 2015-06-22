@@ -3,13 +3,13 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>16.0.0-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>smoke-test</artifactId>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.44.0</seleniumVersion>
+    <seleniumVersion>2.45.0</seleniumVersion>
   </properties>
   <dependencies>
     <dependency>

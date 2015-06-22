@@ -53,7 +53,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.api.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
 
 public class DemandPollServiceTest extends TestCase {

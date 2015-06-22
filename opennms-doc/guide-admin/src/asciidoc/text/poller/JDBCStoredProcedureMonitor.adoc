@@ -30,7 +30,7 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `schema`           | Name of the database schema in which the stored procedure is       | optional | `test`
 |===
 
-NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter the IP or resolved hostname of the interface the monitored service is assigned to.
+NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
 
 ===== Provide the database driver
@@ -48,7 +48,7 @@ This may be tricky or impossible when using the _Java Webstart Remote Poller_, b
 The following example checks a stored procedure added to the _PostgreSQL_ database used by OpenNMS.
 The stored procedure returns true as long as less than 250000 events are in the events table of OpenNMS.
 
-Stored procedure
+.Stored procedure which is used in the monitor
 [source, sql]
 ----
 CREATE OR REPLACE FUNCTION eventlimit_sp() RETURNS boolean AS

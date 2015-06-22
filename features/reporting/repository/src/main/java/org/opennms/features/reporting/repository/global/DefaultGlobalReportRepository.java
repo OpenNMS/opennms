@@ -56,7 +56,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Logging
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultGlobalReportRepository.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
     /**
      * Configuration DAO to get configured remote-repositories.

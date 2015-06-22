@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("alarmRestService")
 @PerRequest
 @Scope("prototype")
 @Path("alarms")
@@ -71,9 +71,6 @@ public class AlarmRestService extends AlarmRestServiceBase {
 
     @Autowired
     private AcknowledgmentDao m_ackDao;
-
-    @Context
-    UriInfo m_uriInfo;
 
     @Context
     SecurityContext m_securityContext;
@@ -136,12 +133,12 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsAlarmCollection getAlarms() {
+    public OnmsAlarmCollection getAlarms(@Context UriInfo uriInfo) {
         readLock();
 
         try {
             assertUserReadCredentials();
-            final CriteriaBuilder builder = getCriteriaBuilder(m_uriInfo.getQueryParameters(), false);
+            final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters(), false);
             builder.distinct();
             final OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(builder.toCriteria()));
 
@@ -168,7 +165,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateAlarm(@PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarm(@Context UriInfo uriInfo, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -213,7 +210,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackDao.processAck(acknowledgement);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
@@ -230,7 +227,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @PUT
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAlarms(final MultivaluedMapImpl formProperties) {
+    public Response updateAlarms(@Context UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -275,9 +272,9 @@ public class AlarmRestService extends AlarmRestServiceBase {
             }
 
             if (alarms.size() == 1) {
-                return Response.seeOther(getRedirectUri(m_uriInfo, alarms.get(0).getId())).build();
+                return Response.seeOther(getRedirectUri(uriInfo, alarms.get(0).getId())).build();
             } else {
-                return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
             }
         } finally {
             writeUnlock();
@@ -292,6 +289,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             return;
         }
         if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
             return;
         }
@@ -311,6 +309,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is a read-only user!"), Status.FORBIDDEN);
         }
         if (m_securityContext.isUserInRole(Authentication.ROLE_REST) ||
+                m_securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 m_securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
             if (ackUser.equals(currentUser)) {
                 // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the

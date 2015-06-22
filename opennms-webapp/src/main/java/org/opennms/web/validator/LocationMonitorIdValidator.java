@@ -30,7 +30,7 @@ package org.opennms.web.validator;
 
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.web.command.LocationMonitorIdCommand;
+import org.opennms.web.svclayer.model.LocationMonitorIdCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;

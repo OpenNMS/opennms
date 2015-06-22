@@ -1,6 +1,76 @@
 [releasenotes-15]
 === OpenNMS 15
 
+[releasenotes-changelog-15.0.2]
+==== Release 15.0.2
+
+Release 15.0.2 is the latest stable release of OpenNMS.  It consists of a large number of bugfixes and other small changes included in Meridian 2015.1.0.
+
+The codename for 15.0.1 is _Psychonauts_.
+
+===== Sub-task
+* Enhance documentation for VmwareCimMonitor (Issue http://issues.opennms.org/browse/NMS-7214[NMS-7214])
+* Enhance VmwareCimMonitor (Issue http://issues.opennms.org/browse/NMS-7215[NMS-7215])
+* Test the feature in Test environment (Issue http://issues.opennms.org/browse/NMS-7216[NMS-7216])
+* Merge feature in develop for release (Issue http://issues.opennms.org/browse/NMS-7217[NMS-7217])
+
+===== Bug
+* "24hr Avail" went negative (Issue http://issues.opennms.org/browse/NMS-863[NMS-863])
+* The Stp interface box page throws an exception (Issue http://issues.opennms.org/browse/NMS-6100[NMS-6100])
+* When displaying Linkd link info on node, ifAlias data in interface columns missing opening quote (Issue http://issues.opennms.org/browse/NMS-6158[NMS-6158])
+* EnLinkD IS-IS Link discovery fails on Cisco routers (Issue http://issues.opennms.org/browse/NMS-6802[NMS-6802])
+* lldpchassisid not properly decoded for DragonWave in Enhanced Linkd Lldp node discovery (Issue http://issues.opennms.org/browse/NMS-6912[NMS-6912])
+* IpNetToMedia Table: Manage duplicated ip address  (Issue http://issues.opennms.org/browse/NMS-7090[NMS-7090])
+* LLdp link discovery: lldpRemLocalPortNum value 0  (Issue http://issues.opennms.org/browse/NMS-7183[NMS-7183])
+* LldpHelper decode exception (Issue http://issues.opennms.org/browse/NMS-7184[NMS-7184])
+* Enhanced Linkd inserts wrong Local Port bridge number (Issue http://issues.opennms.org/browse/NMS-7294[NMS-7294])
+* Java environment in Debian has to be configured twice (Issue http://issues.opennms.org/browse/NMS-7320[NMS-7320])
+* No CDP neighbors on a topological map (Issue http://issues.opennms.org/browse/NMS-7362[NMS-7362])
+* 1.12.9-2 rpm install broken (Issue http://issues.opennms.org/browse/NMS-7398[NMS-7398])
+* KSC Reports with non-existing resources generate exceptions on the WebUI  (Issue http://issues.opennms.org/browse/NMS-7400[NMS-7400])
+* Double footer in resource graph page (Issue http://issues.opennms.org/browse/NMS-7412[NMS-7412])
+* JRB to RRD converter no longer compiles (Issue http://issues.opennms.org/browse/NMS-7456[NMS-7456])
+* opennms-remoting webapp fails due to org.opennms.core.soa classloader issue (Issue http://issues.opennms.org/browse/NMS-7464[NMS-7464])
+* Reload Collectd and Pollerd Configuration without restart OpenNMS (Issue http://issues.opennms.org/browse/NMS-7466[NMS-7466])
+* Path Outage severity is not indicated in Web UI (Issue http://issues.opennms.org/browse/NMS-7467[NMS-7467])
+* DrayTek Vigor2820 Series agent bug: zero-length IpAddress instance ID (Issue http://issues.opennms.org/browse/NMS-7481[NMS-7481])
+* Semantic Zoom problems in Topology Map (Issue http://issues.opennms.org/browse/NMS-7483[NMS-7483])
+* When adding a new escalation to an existing destination path, the default value for initial delay is null (Issue http://issues.opennms.org/browse/NMS-7502[NMS-7502])
+* PageSequenceMonitor HTTP 1.1 traffic is missing host header (Issue http://issues.opennms.org/browse/NMS-7503[NMS-7503])
+* OpenNMS should fall back to HTTP/1.0 if virtual-host is not configured. (Issue http://issues.opennms.org/browse/NMS-7506[NMS-7506])
+* Timeline renders very slowly with a couple hundred outages (Issue http://issues.opennms.org/browse/NMS-7511[NMS-7511])
+* Outages are not getting created (Issue http://issues.opennms.org/browse/NMS-7519[NMS-7519])
+* JRobin: Unrecognized graph argument  (Issue http://issues.opennms.org/browse/NMS-7522[NMS-7522])
+* The 404 handler in the ROOT web-app generates a 500 error (Issue http://issues.opennms.org/browse/NMS-7527[NMS-7527])
+* Event replacement items that contain '%' characters in result in broken notification text sometimes (Issue http://issues.opennms.org/browse/NMS-7529[NMS-7529])
+* NullPointerException in Notifd JMX Attributes (Issue http://issues.opennms.org/browse/NMS-7546[NMS-7546])
+* NPE on admin/notification/noticeWizard/chooseUeis.jsp (Issue http://issues.opennms.org/browse/NMS-7549[NMS-7549])
+* linkd topology up/down status inconsistent (Issue http://issues.opennms.org/browse/NMS-7550[NMS-7550])
+* DiskUsageMonitor never fails with a non existing disk (Issue http://issues.opennms.org/browse/NMS-7551[NMS-7551])
+* Ops Board Configuration "create new board" button stops working. (Issue http://issues.opennms.org/browse/NMS-7560[NMS-7560])
+* gui and maps does not display lldp and cdp links (Issue http://issues.opennms.org/browse/NMS-7563[NMS-7563])
+* Blank login page in Debian (Issue http://issues.opennms.org/browse/NMS-7565[NMS-7565])
+* send-event.pl event datestamp fails to parse where system locale is not English (Issue http://issues.opennms.org/browse/NMS-7566[NMS-7566])
+* Lower collectd log severity (Issue http://issues.opennms.org/browse/NMS-7575[NMS-7575])
+* Search by foreignSource or severityLabel doesn't work on Geo Maps (Issue http://issues.opennms.org/browse/NMS-7577[NMS-7577])
+* Pollerd attempts to create duplicate outages (Issue http://issues.opennms.org/browse/NMS-7585[NMS-7585])
+* CORS should be disabled by default (Issue http://issues.opennms.org/browse/NMS-7591[NMS-7591])
+* @JUnitTemporaryDatabase tests do not use connection pooling (Issue http://issues.opennms.org/browse/NMS-7594[NMS-7594])
+* Print style regression (Issue http://issues.opennms.org/browse/NMS-7596[NMS-7596])
+* Varbinddecodes are being ignored on Notifications (Issue http://issues.opennms.org/browse/NMS-7598[NMS-7598])
+* Node ReST service cannot update geolocation information (Issue http://issues.opennms.org/browse/NMS-7599[NMS-7599])
+* Remote Poller throws ClassNotFound Exception when loading config (Issue http://issues.opennms.org/browse/NMS-7610[NMS-7610])
+* Compass can't make a POST request from FILE URLs in some cases (Issue http://issues.opennms.org/browse/NMS-7616[NMS-7616])
+
+===== Enhancement
+
+* Trapd is not able to process SNMPv3 INFORMs (Issue http://issues.opennms.org/browse/NMS-2995[NMS-2995])
+* VMware CIM monitor should be configurable to allow DPM (Issue http://issues.opennms.org/browse/NMS-7213[NMS-7213])
+* Update ticket.id after creating a new JIRA issue (Issue http://issues.opennms.org/browse/NMS-7470[NMS-7470])
+* Make availability (RTC) data accessible through ReST (Issue http://issues.opennms.org/browse/NMS-7478[NMS-7478])
+* Notification wizard client-side filtering of event list   (Issue http://issues.opennms.org/browse/NMS-7507[NMS-7507])
+* Use the default threshold definition as a template when adding TriggeredUEI/RearmedUEI on thresholds through the WebUI (Issue http://issues.opennms.org/browse/NMS-7528[NMS-7528])
+
 [releasenotes-changelog-15.0.1]
 ==== Release 15.0.1
 

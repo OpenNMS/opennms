@@ -136,7 +136,7 @@ public class SurveillanceViewNodeRtcTable extends SurveillanceViewDetailTable {
             @Override
             public Object generateCell(Table table, final Object itemId, Object columnId) {
                 SurveillanceViewService.NodeRtc nodeRtc = (SurveillanceViewService.NodeRtc) itemId;
-                return getImageSeverityLayout(nodeRtc.getDownServiceCount() + " of " + nodeRtc.getDownServiceCount());
+                return getImageSeverityLayout(nodeRtc.getDownServiceCount() + " of " + nodeRtc.getServiceCount());
             }
         });
 

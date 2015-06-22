@@ -85,7 +85,7 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      */
     private String parseNumber(String number) throws Exception {
         Double d = Double.parseDouble(number); // This covers negative and scientific notation numbers.
-        if (m_attribType.getType().toLowerCase().startsWith("counter")) {
+        if (getAttributeType().getType().toLowerCase().startsWith("counter")) {
             return Long.toString(d.longValue()); // Counter values must be integers
         }
         return d.toString();
@@ -104,16 +104,32 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
      */
     @Override
     public String toString() {
-        return "XmlCollectionAttribute " + getName() + "=" + getStringValue();
+        return "XmlCollectionAttribute(" + getName() + "=" + getStringValue() + ")@" + getResource();
     }
 
-    /**
-     * Log.
-     *
-     * @return the thread category
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof XmlCollectionAttribute) {
+            XmlCollectionAttribute attr = (XmlCollectionAttribute) obj;
+            return (getResource().equals(attr.getResource()) && getAttributeType().equals(attr.getAttributeType()));
+        }
+        return false;
+    }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return (getResource().hashCode() ^ getAttributeType().hashCode());
+    }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collection.api.CollectionAttribute#getMetricIdentifier()
+     */
     @Override
     public String getMetricIdentifier() {
         return "Not supported yet._" + "XML_" + getName();

@@ -67,10 +67,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -263,15 +261,15 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * Creates a SQL query string for filtering on categories.
      *
      * @param rowCategories the row categories
-     * @param colCategories the column catgories
+     * @param colCategories the column categories
      * @return the SQL query string
      */
-    private String createQuery(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
+    private static String createQuery(final String nodeIdProperty, final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories) {
         StringBuffer stringBuffer = new StringBuffer();
 
         boolean first = true;
 
-        stringBuffer.append("{alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
+        stringBuffer.append(nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
         for (OnmsCategory onmsCategory : rowCategories) {
 
@@ -290,7 +288,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         first = true;
 
-        stringBuffer.append("and {alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
+        stringBuffer.append("and " + nodeIdProperty + " in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (");
 
         for (OnmsCategory onmsCategory : colCategories) {
 
@@ -319,7 +317,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
             @Override
             public List<OnmsNode> doInTransaction(TransactionStatus transactionStatus) {
                 CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNode.class);
-                criteriaBuilder.sql(createQuery(rowCategories, colCategories));
+                // Restrict on OnmsNode.nodeId
+                criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
                 return m_nodeDao.findMatching(criteriaBuilder.toCriteria());
             }
         });
@@ -341,7 +340,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 criteriaBuilder.limit(100);
                 criteriaBuilder.distinct();
 
-                criteriaBuilder.sql(createQuery(rowCategories, colCategories));
+                // Restrict on OnmsAlarm.nodeId
+                criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
 
                 return m_alarmDao.findMatching(criteriaBuilder.toCriteria());
             }
@@ -392,24 +392,17 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 serviceCriteriaBuilder.alias("ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
                 serviceCriteriaBuilder.alias("serviceType", "serviceType", Alias.JoinType.INNER_JOIN);
-                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.INNER_JOIN);
+                serviceCriteriaBuilder.alias("currentOutages", "currentOutages", Alias.JoinType.LEFT_JOIN);
                 serviceCriteriaBuilder.eq("status", "A");
                 serviceCriteriaBuilder.ne("ipInterface.isManaged", "D");
                 serviceCriteriaBuilder.ne("node.type", "D");
 
-                serviceCriteriaBuilder.sql(createQuery(rowCategories, colCategories));
+                // HACK: Hibernate aliases 'node' as 'node2_' so we need to use this for the statement.
+                serviceCriteriaBuilder.sql(createQuery("node2_.nodeId", rowCategories, colCategories));
 
                 return getNodeListForCriteria(serviceCriteriaBuilder.toCriteria(), outageCriteriaBuilder.toCriteria());
             }
         });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String imageUrlForGraph(String query, int width, int height) {
-        return imageUrlForGraph(query, width, height, Calendar.HOUR_OF_DAY, 1);
     }
 
     /**
@@ -457,7 +450,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 Map<String, String> graphResults = new TreeMap<String, String>();
 
                 for (PrefabGraph query : queries) {
-                    graphResults.put(query.getName(), "resourceId=" + resourceId + "&report=" + query.getName());
+                    graphResults.put(query.getName(), query.getName());
                 }
 
                 return graphResults;
@@ -526,7 +519,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @return the computed availability
      */
 
-    private Double calculateAvailability(int serviceCount, long downMillisCount) {
+    private static Double calculateAvailability(int serviceCount, long downMillisCount) {
         long upMillis = ((long) serviceCount * (24L * 60L * 60L * 1000L)) - downMillisCount;
 
         return ((double) upMillis / (double) (serviceCount * (24 * 60 * 60 * 1000)));
@@ -540,7 +533,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @param outages     the outages encountered
      * @return a mapping of service/downtime
      */
-    private Map<OnmsMonitoredService, Long> calculateServiceDownTime(Date periodEnd, Date periodStart, List<OnmsOutage> outages) {
+    private static Map<OnmsMonitoredService, Long> calculateServiceDownTime(Date periodEnd, Date periodStart, List<OnmsOutage> outages) {
         Map<OnmsMonitoredService, Long> map = new HashMap<OnmsMonitoredService, Long>();
         for (OnmsOutage outage : outages) {
             if (map.get(outage.getMonitoredService()) == null) {
@@ -650,7 +643,8 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
 
         criteriaBuilder.alias("node", "node");
-        criteriaBuilder.sql(createQuery(rowCategories, colCategories));
+        // Restrict on OnmsNotification.nodeId
+        criteriaBuilder.sql(createQuery("{alias}.nodeId", rowCategories, colCategories));
         criteriaBuilder.ne("node.type", "D");
         criteriaBuilder.orderBy("pageTime", false);
 
@@ -675,31 +669,13 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      * @param childResource the resource to check
      * @return a new constructed resource instance
      */
-    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+    private static OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         String lbl = Util.convertToJsSafeString(childResource.getLabel());
-        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes(), childResource.getPath());
         resource.setParent(childResource.getParent());
         resource.setEntity(childResource.getEntity());
         resource.setLink(childResource.getLink());
         return resource;
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query         the parameter combination for this report graph
-     * @param width         the width
-     * @param height        the height
-     * @param calendarField the calendar field to substract from
-     * @param calendarDiff  the value to be substracted
-     * @return the url string
-     */
-    private String imageUrlForGraph(String query, int width, int height, int calendarField, int calendarDiff) {
-        Calendar cal = new GregorianCalendar();
-        long end = cal.getTime().getTime();
-        cal.add(calendarField, -calendarDiff);
-        long start = cal.getTime().getTime();
-        return "/opennms/graph/graph.png?" + query + "&start=" + start + "&end=" + end + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
     }
 }
 

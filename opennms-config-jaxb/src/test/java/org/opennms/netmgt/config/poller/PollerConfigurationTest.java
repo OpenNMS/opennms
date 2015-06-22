@@ -83,7 +83,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return Arrays.asList(new Object[][] {
                 {
                     getMinimalPollerConfiguration(),
-                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" xmlrpc=\"false\" pathOutageEnabled=\"false\">"
+                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" pathOutageEnabled=\"false\">"
                     + "   <node-outage status=\"on\" pollAllIfNoCriticalServiceDefined=\"true\"/>"
                     + "   <package name=\"test\">"
                     + "      <filter>abc</filter>"
@@ -152,7 +152,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");
@@ -202,7 +201,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");

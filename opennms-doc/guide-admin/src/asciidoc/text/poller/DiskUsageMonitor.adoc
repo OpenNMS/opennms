@@ -31,18 +31,18 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | `disk`       | A pattern that a storage's description (_hrStorageDescr_) must match to be taken into account.     | required | `-`
 | `free`       | The minimum amount of free space that storages matching the criteria must have available.
                  This parameter is evaluated as a percent of the storage's reported maximum capacity.               | optional | `15`
-| `match-type` | The way how the pattern specified by the `disk` parameter must be compared to storages' description
+| `match-type` | The way how the pattern specified by the `disk` parameter must be compared to storages description
                  Must be one of the following symbolic operators: +
                  `endswith`   : The `disk` parameter's value is evaluated as a string that storages' description
                                 must end with; +
-                 `exact`      : The disk` parameter's value is evaluated as a string that storages" description
+                 `exact`      : The `disk` parameter's value is evaluated as a string that storages" description
                                 must exactly match; +
                  `regex`      : The `disk` parameter's value is evaluated as a regular expression that storages'
                                 description must match; +
                  `startswith` : The `disk` parameter's value is evaluated as a string that storages' description
                                 must start with. +
                  Note: Comparisons are case-sensitive                                                               | optional | `exact`
-| `port`       | Destination port where the SNMP requests shall be sent.                                            | optional | `from snmp-config.xml'
+| `port`       | Destination port where the SNMP requests shall be sent.                                            | optional | `from snmp-config.xml`
 | `retries`    | Deprecated.
                  Same as `retry`.
                  Parameter `retry` takes precedence when both are set.                                              | optional | `from snmp-config.xml`

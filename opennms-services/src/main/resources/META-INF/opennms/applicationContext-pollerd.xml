@@ -40,7 +40,4 @@
       <property name="eventIpcManager" ref="eventIpcManager"/>
     </bean>
     
-    <bean name="pathOutageManager" class="org.opennms.netmgt.poller.PathOutageManagerDaoImpl"/>
-    
-    
 </beans>

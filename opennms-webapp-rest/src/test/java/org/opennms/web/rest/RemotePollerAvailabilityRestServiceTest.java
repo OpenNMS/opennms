@@ -97,17 +97,14 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
     @Autowired
     DatabasePopulator m_databasePopulator;
 
+    @Autowired
+    TransactionTemplate m_transactionTemplate;
+
     public static final String BASE_REST_URL = "/remotelocations/availability";
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging();
-
-        m_databasePopulator = getBean("databasePopulator", DatabasePopulator.class);
-
-        m_applicationDao = getBean("applicationDao", ApplicationDao.class);
-        m_locationMonitorDao = getBean("locationMonitorDao", LocationMonitorDao.class);
-        m_monServiceDao = getBean("monitoredServiceDao", MonitoredServiceDao.class);
 
         m_databasePopulator.populateDatabase();
 
@@ -124,8 +121,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         final long startMillis = endMillis - 12000;
         final long totalTime = endMillis - startMillis;
 
-        TransactionTemplate txTemplate = getBean("transactionTemplate", TransactionTemplate.class);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -231,8 +227,8 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
 
     private void createLocationMonitors() throws InterruptedException {
-        TransactionTemplate txTemplate = getBean("transactionTemplate", TransactionTemplate.class);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -282,7 +278,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
         Thread.sleep(2000L);
 
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -302,7 +298,7 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
 
         Thread.sleep(2000L);
 
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {

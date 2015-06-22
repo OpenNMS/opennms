@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -75,6 +76,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.xml.event.Event;
@@ -131,6 +133,8 @@ public class PollablesTest {
 
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
+
+    private RrdStrategy<?, ?> m_rrdStrategy = new NullRrdStrategy();
 
     private int m_lockCount = 0;
 
@@ -267,15 +271,14 @@ public class PollablesTest {
 
         final PollableNetwork pNetwork = new PollableNetwork(pollContext);
 
-        String sql = "select ifServices.nodeId as nodeId, node.nodeLabel as nodeLabel, ifServices.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
+        String sql = "select node.nodeId as nodeId, node.nodeLabel as nodeLabel, ipInterface.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
                 "from ifServices " +
-                "join node on ifServices.nodeId = node.nodeId " +
+                "join ipInterface on ifServices.ipInterfaceId = ipInterface.id " +
+                "join node on ipInterface.nodeId = node.nodeId " +
                 "join service on ifServices.serviceId = service.serviceId " +
                 "left outer join outages on " +
-                "ifServices.nodeId = outages.nodeId and " +
-                "ifServices.ipAddr = outages.ipAddr and " +
-                "ifServices.serviceId = outages.serviceId and " +
-                "ifRegainedService is null " +
+                    "ifServices.id = outages.ifServiceId and " +
+                    "ifRegainedService is null " +
                 "left outer join events on outages.svcLostEventId = events.eventid " +
                 "where ifServices.status = 'A'";
 
@@ -614,8 +617,8 @@ public class PollablesTest {
         pDot1Icmp.doPoll();
         m_network.processStatusChange(new Date());
 
-        final String ifOutageOnNode1 = "select * from outages where nodeId = 1 and ipAddr = '192.168.1.1'";
-        final String ifOutageOnNode2 = "select * from outages where nodeId = 2 and ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
 
         m_eventMgr.finishProcessingEvents();
 
@@ -1498,7 +1501,7 @@ public class PollablesTest {
         //        m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1530,7 +1533,7 @@ public class PollablesTest {
 
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
-        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1708,7 +1711,7 @@ public class PollablesTest {
     public void testComputeScheduledOutageTime() {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2016,7 +2019,7 @@ public class PollablesTest {
 
     @Test
     public void testAddDownServiceToUpNodeHasNoCritSvc() throws Exception {
-        testAddDownServiceToUpNode(3, "Firewal", "192.168.1.4", "SMTP", "SNMP");
+        testAddDownServiceToUpNode(3, "Firewall", "192.168.1.4", "SMTP", "SNMP");
     }
 
     private void testAddDownServiceToUpNode(int nodeId, String nodeLabel,
@@ -2435,6 +2438,7 @@ public class PollablesTest {
         MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 
+        m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
@@ -2583,7 +2587,7 @@ public class PollablesTest {
 
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler, m_rrdStrategy);
         svc.setPollConfig(pollConfig);
         synchronized (svc) {
             if (svc.getSchedule() == null) {

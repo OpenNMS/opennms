@@ -135,16 +135,6 @@ public interface SurveillanceViewService {
     Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId);
 
     /**
-     * Returns the image url for a given graph query string.
-     *
-     * @param query  the graph query string
-     * @param width  the width to be used
-     * @param height the height to be used
-     * @return the image url
-     */
-    String imageUrlForGraph(String query, int width, int height);
-
-    /**
      * Returns the default view for a given username.
      * <p/>
      * 1. If a view which name equals the username exists it will be returned

@@ -20,8 +20,6 @@
     <context:annotation-config />
 
     <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
-    
-    <bean name="pathOutageManagerDaoImpl" class="org.opennms.netmgt.poller.PathOutageManagerDaoImpl" />
 
     <!--
     <bean name="pollContext" class="org.opennms.netmgt.poller.DefaultPollContext">

@@ -213,45 +213,12 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.api.RrdDao#createGraph(java.lang.String, java.io.File)
      */
     @Override
-    public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
+    public InputStream createGraph(String command) throws DataRetrievalFailureException {
        try {
-           return m_rrdStrategy.createGraph(command, workDir);
+           return m_rrdStrategy.createGraph(command, m_rrdBaseDirectory);
        } catch (Throwable e) {
            throw new DataRetrievalFailureException("Could not create graph: " + e, e);
        }
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphTopOffsetWithText()
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return m_rrdStrategy.getGraphTopOffsetWithText();
-    }
-
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphLeftOffset()
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return m_rrdStrategy.getGraphLeftOffset();
-    }
-
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphRightOffset()
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return m_rrdStrategy.getGraphRightOffset();
     }
 
     /** {@inheritDoc} */
@@ -288,4 +255,5 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }
     }
+
 }

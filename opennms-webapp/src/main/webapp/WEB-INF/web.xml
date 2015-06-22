@@ -27,20 +27,27 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
+        <!-- From opennms-webapp -->
         /WEB-INF/applicationContext-common.xml
-        classpath:/META-INF/opennms/applicationContext-commonConfigs.xml
-        classpath:/META-INF/opennms/applicationContext-reportingRepository.xml
-        classpath:/META-INF/opennms/applicationContext-reportingDao.xml
-        classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
-        classpath*:/META-INF/opennms/component-service.xml
-        classpath:/META-INF/opennms/applicationContext-systemReport.xml
-        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
-        classpath*:/META-INF/opennms/component-reporting.xml
-
-        classpath:/META-INF/opennms/applicationContext-reporting.xml
-        /WEB-INF/spring-security.d/*.xml
         /WEB-INF/applicationContext-spring-security.xml
         /WEB-INF/applicationContext-spring-webflow.xml
+        /WEB-INF/spring-security.d/*.xml
+        classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml
+
+        <!-- From opennms-reporting -->
+        classpath:/META-INF/opennms/applicationContext-reporting.xml
+        <!-- From org.opennms.features.reporting.core -->
+        classpath:/META-INF/opennms/applicationContext-reportingCore.xml
+        <!-- From org.opennms.features.reporting.dao -->
+        classpath:/META-INF/opennms/applicationContext-reportingDao.xml
+        <!-- From org.opennms.features.reporting.repository -->
+        classpath:/META-INF/opennms/applicationContext-reportingRepository.xml
+        <!-- From org.opennms.features.system-report -->
+        classpath:/META-INF/opennms/applicationContext-systemReport.xml
+
+        classpath*:/META-INF/opennms/component-service.xml
+        classpath*:/META-INF/opennms/component-reporting.xml
+
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
   </context-param>
@@ -66,6 +73,13 @@
     <!--  note the name of this filter is important and is used in the app contexts -->
     <filter-name>springSecurityFilterChain</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <!-- filter out invalid file:// Origin: header to avoid CORS issues with Compass -->
+  <filter>
+    <description>Filter out invalid file:// Origin: header to avoid CORS issues with Compass</description>
+    <filter-name>Origin Filter</filter-name>
+    <filter-class>org.opennms.web.api.OriginHeaderFilter</filter-class>
   </filter>
 
   <!-- NOTE, this filter is not mapped to anything by default.  To enable CORS for ReST,
@@ -167,6 +181,11 @@
   <filter-mapping>
     <filter-name>openSessionInViewFilter</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>Origin Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
   <!--

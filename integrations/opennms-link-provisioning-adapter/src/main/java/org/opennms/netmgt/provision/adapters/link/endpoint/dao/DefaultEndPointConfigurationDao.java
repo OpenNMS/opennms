@@ -42,17 +42,16 @@ import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
-import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
 import org.opennms.netmgt.provision.adapters.link.endpoint.AndEndPointValidationExpression;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointType;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.MatchingSnmpEndPointValidationExpression;
 import org.opennms.netmgt.provision.adapters.link.endpoint.OrEndPointValidationExpression;
 import org.opennms.netmgt.provision.adapters.link.endpoint.PingEndPointValidationExpression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
@@ -195,7 +194,6 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
     
             m_marshaller = m_context.createMarshaller();
             m_marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            m_marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper("http://xmlns.opennms.org/xsd/config/endpoint-types"));
             
             m_unmarshaller = m_context.createUnmarshaller();
             m_unmarshaller.setSchema(null);

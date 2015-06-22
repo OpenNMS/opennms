@@ -28,7 +28,6 @@
 
 package org.opennms.web.admin.nodeManagement;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,12 +45,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
-import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -64,26 +64,18 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class DeleteNodesServlet extends HttpServlet {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(DeleteNodesServlet.class);
 
     private static final long serialVersionUID = 573510937493956121L;
 
-    private File m_snmpRrdDirectory;
-
-    private File m_rtRrdDirectory;
+    private ResourceStorageDao m_resourceStorageDao;
 
     /** {@inheritDoc} */
     @Override
     public void init() throws ServletException {
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        ResourceService resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
-
-        m_snmpRrdDirectory = new File(resourceService.getRrdDirectory(), ResourceTypeUtils.SNMP_DIRECTORY);
-        LOG.debug("SNMP RRD directory: {}", m_snmpRrdDirectory);
-
-        m_rtRrdDirectory = new File(resourceService.getRrdDirectory(), ResourceTypeUtils.RESPONSE_DIRECTORY);
-        LOG.debug("Response time RRD directory: {}", m_rtRrdDirectory);
+        m_resourceStorageDao = (ResourceStorageDao) webAppContext.getBean("resourceStorageDao", ResourceStorageDao.class);
     }
 
     /** {@inheritDoc} */
@@ -96,28 +88,33 @@ public class DeleteNodesServlet extends HttpServlet {
             // Get a list of response time IP address lists
             List<String> ipAddrs = getIpAddrsForNode(nodeId);
 
-            // SNMP RRD directory
-            File nodeDir = new File(m_snmpRrdDirectory, nodeId.toString());
+            ResourcePath nodeSnmpPath = new ResourcePath(
+                    ResourceTypeUtils.SNMP_DIRECTORY,
+                    Integer.toString(nodeId)
+            );
 
-            if (nodeDir.exists() && nodeDir.isDirectory()) {
-                LOG.debug("Attempting to delete node data directory: {}", nodeDir.getAbsolutePath());
-                if (deleteDir(nodeDir)) {
-                    LOG.info("Node SNMP data directory deleted successfully: {}", nodeDir.getAbsolutePath());
+            if (m_resourceStorageDao.exists(nodeSnmpPath)) {
+                LOG.debug("Attempting to delete node data directory: {}", nodeSnmpPath);
+                if (m_resourceStorageDao.delete(nodeSnmpPath)) {
+                    LOG.info("Node SNMP data directory deleted successfully: {}", nodeSnmpPath);
                 } else {
-                    LOG.warn("Node SNMP data directory *not* deleted successfully: {}", nodeDir.getAbsolutePath());
+                    LOG.warn("Node SNMP data directory *not* deleted successfully: {}", nodeSnmpPath);
                 }
             }
-            
+
             // Response time RRD directories
             for (String ipAddr : ipAddrs) {
-                File intfDir = new File(m_rtRrdDirectory, ipAddr);
+                ResourcePath ifResponseTimePath = new ResourcePath(
+                        ResourceTypeUtils.RESPONSE_DIRECTORY,
+                        ipAddr
+                );
 
-                if (intfDir.exists() && intfDir.isDirectory()) {
-                    LOG.debug("Attempting to delete node response time data directory: {}", intfDir.getAbsolutePath());
-                    if (deleteDir(intfDir)) {
-                        LOG.info("Node response time data directory deleted successfully: {}", intfDir.getAbsolutePath());
+                if (m_resourceStorageDao.exists(ifResponseTimePath)) {
+                    LOG.debug("Attempting to delete node response time data directory: {}", ifResponseTimePath);
+                    if (m_resourceStorageDao.delete(ifResponseTimePath)) {
+                        LOG.info("Node response time data directory deleted successfully: {}", ifResponseTimePath);
                     } else {
-                        LOG.warn("Node response time data directory *not* deleted successfully: {}", intfDir.getAbsolutePath());
+                        LOG.warn("Node response time data directory *not* deleted successfully: {}", ifResponseTimePath);
                     }
                 }
             }
@@ -186,31 +183,6 @@ public class DeleteNodesServlet extends HttpServlet {
             list.add(WebSecurityUtils.safeParseInt(a));
         }
         return list;
-    }
-
-    /**
-     * Deletes all files and sub-directories under the specified directory
-     * If a deletion fails, the method stops attempting to delete and returns
-     * false.
-     * 
-     * @return true if all deletions were successful, false otherwise.
-     */
-    private boolean deleteDir(File file) {
-        // If this file is a directory, delete all of its children
-        if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
-                if (!deleteDir(child)) {
-                    return false;
-                }
-            }
-        }
-
-        // Delete the file/directory itself
-        boolean successful = file.delete();
-        if (!successful) {
-            LOG.warn("Failed to delete file: {}", file.getAbsolutePath());
-        }
-        return successful;
     }
 
 }

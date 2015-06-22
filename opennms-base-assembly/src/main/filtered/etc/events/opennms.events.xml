@@ -290,22 +290,6 @@
     <severity>Normal</severity>
   </event>
   <event>
-    <uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
-    <event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
-    <descr>
-      &lt;p&gt;This event will be produced by capsd to carry the process status
-                        information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
-                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
-                        status, %parm[status]%.&lt;/p&gt;
-    </descr>
-    <logmsg dest="logndisplay">
-      &lt;p&gt;A request has been made to xmlrpcd to report status for 
-      %parm[srcUei]%.&lt;/p&gt;
-    </logmsg>
-    <severity>Normal</severity>
-  </event>
-  <event>
     <uei>uei.opennms.org/internal/discovery/newSuspect</uei>
     <event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
     <descr>
@@ -1938,5 +1922,16 @@
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
                 clear-key="uei.opennms.org/internal/discovery/hardwareInventoryFailed:%dpname%:%nodeid%:%interface%"/>
     -->
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/kscReportUpdated</uei>
+    <event-label>OpenNMS-defined internal event: KSC report updated</event-label>
+    <descr>&lt;p&gt;The KSC Report '%parm[reportTitle]%' has been updated (remaining graphs: %parm[graphCount]%).&lt;/p&gt;
+      &lt;p&gt;Some graphs defined on the report have been removed, due to an invalid resource or chart.&lt;/p&gt;
+      &lt;p&gt;A resource is not valid on any of the following situations: the nodeId (or nodeSource) doesn't exist, the resource type 
+      is not valid or doesn't exist on the node, the resource name is not valid or doesn't exist on the node.&lt;/p&gt;
+      &lt;p&gt;Check the logs for more details.&lt;/p&gt;</descr>
+    <logmsg dest="logndisplay">The KSC Report %parm[reportTitle]% has been updated.</logmsg>
+    <severity>Warning</severity>
   </event>
 </events>

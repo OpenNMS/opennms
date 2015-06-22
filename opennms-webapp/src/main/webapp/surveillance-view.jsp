@@ -29,28 +29,61 @@
 
 --%>
 
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        %>
+<%@page language="java" contentType="text/html;charset=UTF-8" session="true" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Vaadin Surveillance Views" />
-    <jsp:param name="headTitle" value="Vaadin Surveillance Views" />
-    <jsp:param name="location" value="surveillance-view" />
-    <jsp:param name="vaadinEmbeddedStyles" value="true" />
-    <jsp:param name="breadcrumb" value="Vaadin Surveillance Views" />
-</jsp:include>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+
+<%--
+/*******************************************************************************
+ * Check org.opennms.dashboard.implementation for selected implementation      *
+ *******************************************************************************/
+--%>
 
 <%
-    String viewName = "";
+    String dashboardImplementation = System.getProperty("org.opennms.dashboard.implementation", "vaadin").trim();
 
-    if (request.getParameterMap().containsKey("viewName")) {
-        viewName = "&viewName=" + request.getParameter("viewName");
-    }
+    if (!"gwt".equals(dashboardImplementation)) {
 %>
 
+    <%--
+    /*******************************************************************************
+     * Include VAADIN implementation                                               *
+     *******************************************************************************/
+    --%>
 
-<iframe id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
-<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
+    <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+        <jsp:param name="title" value="Surveillance View" />
+        <jsp:param name="headTitle" value="Surveillance" />
+        <jsp:param name="location" value="surveillance-view" />
+        <jsp:param name="vaadinEmbeddedStyles" value="true" />
+        <jsp:param name="breadcrumb" value="Surveillance" />
+    </jsp:include>
+
+    <%
+        String viewName = "";
+
+        if (request.getParameterMap().containsKey("viewName")) {
+            viewName = "&viewName=" + request.getParameter("viewName");
+        }
+    %>
+
+    <iframe id="surveillance-view-ui" src="osgi/vaadin-surveillance-views?dashboard=false<%= viewName %>" frameborder="0" style="height:100%; width:100%;"></iframe>
+
+    <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
+
+<% } else { %>
+
+    <%--
+    /*******************************************************************************
+     * Include GWT implementation                                                  *
+     *******************************************************************************/
+    --%>
+
+    <c:redirect url="surveillanceView.htm"/>
+
+<% } %>
+
 

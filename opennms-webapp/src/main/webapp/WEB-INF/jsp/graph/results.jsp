@@ -47,6 +47,7 @@
     <c:param name="breadcrumb" value="Results" />
     <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
+    <c:param name="renderGraphs" value="true" />
 </c:import>
 
 <div id="graph-results">
@@ -202,70 +203,18 @@
         </script>
 
         <c:choose>
-            <c:when test="${param.zoom == 'true'}">
-                <c:url var="graphUrl" value="graph/graph.png">
-                    <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                    <c:param name="report" value="${resultSet.graphs[0].name}"/>
-                    <c:param name="start" value="${results.start.time}"/>
-                    <c:param name="end" value="${results.end.time}"/>
-                    <c:if test="${resultSet.graphs[0].graphWidth != null && resultSet.graphs[0].graphHeight != null}">
-                        <c:param name="width" value="${resultSet.graphs[0].graphWidth}"/>
-                        <c:param name="height" value="${resultSet.graphs[0].graphHeight}"/>
-                    </c:if>
-                </c:url>
-
-                <script type="text/javascript">
-                    var zoomGraphLeftOffset  = ${results.graphLeftOffset};
-                    var zoomGraphRightOffset = ${results.graphRightOffset};
-                    var zoomGraphStart       = ${results.start.time};
-                    var zoomGraphEnd         = ${results.end.time};
-                </script>
-
-
-                <div align="center">
-                    <div>
-                    <div id="auxControls" class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.graphs[0].name}">
-                    <opennms-addKscReport id="${resultSet.resource.id}.${resultSet.graphs[0].name}" reportName="${resultSet.graphs[0].name}" resourceId="${resultSet.resource.id}" graphTitle="${resultSet.graphs[0].title}" timespan="${results.relativeTime}" onclick="document.getElementById('auxControls').style.height = '120px';"></opennms-addKscReport>
-                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
-                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${resultSet.graphs[0].name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
-                        </c:if>
-                    </c:if>
-                    </div> <!-- graph-aux-controls -->
-                    <img id="zoomImage" class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${resultSet.graphs[0].title} (drag to zoom)" />
-                    </div>
-                </div>
-            </c:when>
-
             <c:when test="${!empty resultSet.graphs}"> 
                 <c:forEach var="graph" items="${resultSet.graphs}">
-                    <c:url var="zoomUrl" value="${requestScope.relativeRequestPath}">
-                        <c:param name="zoom" value="true"/>
-                        <c:param name="relativetime" value="custom"/>
-                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                        <c:param name="reports" value="${graph.name}"/>
-                        <c:param name="start" value="${results.start.time}"/>
-                        <c:param name="end" value="${results.end.time}"/>
-                    </c:url>
-
-                    <c:url var="graphUrl" value="graph/graph.png">
-                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                        <c:param name="report" value="${graph.name}"/>
-                        <c:param name="start" value="${results.start.time}"/>
-                        <c:param name="end" value="${results.end.time}"/>
-                    </c:url>
-
                     <div>
-
-                    <div class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
-                    <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
-                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
-                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
-                        </c:if>
-                    </c:if>
-                    </div> <!-- graph-aux-controls -->
-                    <a href="${zoomUrl}"><img class="graphImg" data-imgsrc="${graphUrl}" src="#" alt="Resource graph: ${graph.title} (click to zoom)" /></a>
+	                    <div class="graph-aux-controls" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
+		                    <opennms-addKscReport id="${resultSet.resource.id}.${graph.name}" reportName="${graph.name}" resourceId="${resultSet.resource.id}" graphTitle="${graph.title}" timespan="${results.relativeTime}"></opennms-addKscReport>
+		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
+		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
+		                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
+		                        </c:if>
+		                    </c:if>
+	                    </div> <!-- graph-aux-controls -->
+	                    <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                     </div>
                     <br/><br/>
                 </c:forEach>
@@ -301,31 +250,7 @@
     </div>
 
 </div> <!-- row -->
-
 </div> <!-- graph-results -->
-
-<script type="text/javascript">
-var e = $('#graph-results');
-var imgs = e.find('img');
-for (var i=0; i < imgs.length; i++) {
-  var img = $(imgs[i]);
-  var container = img.closest('div');
-  var w = Math.round(container.width() * 0.8);
-  var h = Math.round(w * 0.3);
-  var imgsrc = img.data('imgsrc');
-  if (imgsrc.indexOf("width=") > -1) {
-    imgsrc = imgsrc.replace(/width=\d+/, "width=" + w);
-  } else {
-    imgsrc += "&width=" + w;
-  }
-  if (imgsrc.indexOf("height=") > -1) {
-    imgsrc = imgsrc.replace(/height=\d+/, "height=" + h);
-  } else {
-    imgsrc += "&height=" + h;
-  }
-  img.attr('src', imgsrc);
-}
-</script>
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
     <c:forEach var="resultSet" items="${results.graphResultSets}">
@@ -360,7 +285,6 @@ for (var i=0; i < imgs.length; i++) {
     }
 </script>
 
-
 <c:if test="${param.zoom == 'true'}">
     <c:url var="zoomReloadUrl" value="${requestScope.relativeRequestPath}">
         <c:param name="zoom" value="true"/>
@@ -370,6 +294,13 @@ for (var i=0; i < imgs.length; i++) {
         </c:forEach>
         <c:param name="reports" value="${results.reports[0]}"/>
     </c:url>
+
+	<script type="text/javascript">
+		var zoomGraphLeftOffset  = ${results.graphLeftOffset};
+		var zoomGraphRightOffset = ${results.graphRightOffset};
+		var zoomGraphStart       = ${results.start.time};
+		var zoomGraphEnd         = ${results.end.time};
+	</script>
 
     <script type="text/javascript">
         /*
@@ -387,20 +318,18 @@ for (var i=0; i < imgs.length; i++) {
     <script src="graph/cropper/zoom.js" type="text/javascript"></script>
 
     <script type="text/javascript">
-        Event.observe(
-        window,
-        'load',
-        function() {
-            myCropper = new Cropper.Img(
+    var myCropper; // zoom.js expects this global
+    var $j = jQuery.noConflict(); // Avoid conflicts with prototype.js used by graph/cropper/zoom.js
+    $j(document).on("graphLoaded", {}, function(event, width, height) {
+        myCropper = new Cropper.Img(
             'zoomImage',
             {
-                minHeight: $('zoomImage').getDimensions().height,
-                maxHeight: $('zoomImage').getDimensions().height,
+                minHeight: width,
+                maxHeight: height,
                 onEndCrop: changeRRDImage
             }
-        )
-        }
-    );
+        );
+    });
     </script>
 
 </c:if>

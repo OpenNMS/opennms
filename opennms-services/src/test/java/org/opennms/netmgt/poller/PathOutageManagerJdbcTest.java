@@ -50,7 +50,7 @@ import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockOutageConfig;
@@ -60,7 +60,6 @@ import org.opennms.netmgt.mock.MockService.SvcMgmtStatus;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
@@ -83,20 +82,13 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDatabase> {
-    private static final String CAPSD_CONFIG = "\n"
-            + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
-            + "   delete-propagation-enabled=\"true\">\n"
-            + "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "</capsd-configuration>\n";
 
 	private MockNetwork m_network;
 
 	private MockDatabase m_db;
 
 	private MockPollerConfig m_pollerConfig;
-	
+
 	@Autowired
 	private QueryManager m_queryManager;
 	
@@ -191,8 +183,6 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
-		
-		RrdUtils.setStrategy(new NullRrdStrategy());
 
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);
@@ -338,7 +328,7 @@ public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDat
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
 			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs

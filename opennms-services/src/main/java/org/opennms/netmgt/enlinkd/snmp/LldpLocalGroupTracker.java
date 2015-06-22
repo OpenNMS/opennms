@@ -87,16 +87,27 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
     
     public static final String LLDP_LOC_OID = ".1.0.8802.1.1.2.1.3";
 
-    public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
-        if (lldpLocChassisidSubType == null) {
-            if (lldpchassisid.isDisplayable())
-                return lldpchassisid.toDisplayString();
-            else 
-                return lldpchassisid.toHexString();
-        }
+    public static String getDisplayable(final SnmpValue snmpValue) {
+        String decodedsnmpValue = snmpValue.toHexString();
         try {
-            LldpChassisIdSubType type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
-        
+            if (snmpValue.isDisplayable())
+                decodedsnmpValue = snmpValue.toDisplayString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decodedsnmpValue;
+    }
+    
+    public static String decodeLldpChassisId(final SnmpValue lldpchassisid, Integer lldpLocChassisidSubType) {
+        if (lldpLocChassisidSubType == null) 
+            return getDisplayable(lldpchassisid);
+        LldpChassisIdSubType type = null;
+        try {
+            type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
+        }  catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
+            return getDisplayable(lldpchassisid);
+        }
         /*
          *  If the associated LldpChassisIdSubtype object has a value of
          *  'chassisComponent(1)', then the octet string identifies
@@ -144,7 +155,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
          * 
          * 
          */
-            switch (type) {
+         switch (type) {
         /*
          *  entPhysicalAlias          SnmpAdminString
          *
@@ -210,22 +221,16 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
              case LLDP_CHASSISID_SUBTYPE_INTERFACEALIAS:
              case LLDP_CHASSISID_SUBTYPE_INTERFACENAME:  
              case LLDP_CHASSISID_SUBTYPE_LOCAL:
-                 if (lldpchassisid.isDisplayable())
-                     return lldpchassisid.toDisplayString();
-                 else 
-                     return lldpchassisid.toHexString();
+                 return getDisplayable(lldpchassisid);
              case LLDP_CHASSISID_SUBTYPE_MACADDRESS:
                  return lldpchassisid.toHexString();
              case LLDP_CHASSISID_SUBTYPE_NETWORKADDRESS:
-                 LldpUtils.decodeNetworkAddress(lldpchassisid.toDisplayString());
+                 try {
+                     return LldpUtils.decodeNetworkAddress(getDisplayable(lldpchassisid));
+                 } catch (Exception e) {
+                     e.printStackTrace();
+                 }
             }
-        } catch (IllegalArgumentException iae) {
-            iae.printStackTrace();
-        } catch (IndexOutOfBoundsException ioe) {
-            ioe.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return lldpchassisid.toHexString();
     }
 
