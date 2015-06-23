@@ -103,7 +103,6 @@
     <div id="treemap"></div>
 
     <script type="text/javascript">
-
         var mouseclickHandler = function (e, data) {
             var nodes = data.nodes;
             var ids = data.ids;
@@ -129,28 +128,37 @@
         };
 
         var url = "<%=url%>";
+        var children;
 
-        $.getJSON(url, function (data) {
-            $(document).ready(function () {
-                $("#treemap").treemap({
-                    "dimensions": [
-                        $("#treemap").width(),
-                        Math.min($(document).height() - 220, $("#treemap").width())
-                    ],
-                    "colorStops": [
-                        {"val": 1.0, "color": "#CC0000"},
-                        {"val": 0.4, "color": "#FF3300"},
-                        {"val": 0.2, "color": "#FF9900"},
-                        {"val": 0.1, "color": "#FFCC00"},
-                        {"val": 0.0, "color": "#336600"}
-                    ],
-                    "labelsEnabled": true,
-                    "nodeData": {
-                        "id": "<%=heatmap%>",
-                        "children": data.children
-                    }
+        function refresh() {
+            $("#treemap").treemap({
+                "dimensions": [
+                    $("#treemap").width(),
+                    Math.min($(window).height() - 230, $("#treemap").width())
+                ],
+                "colorStops": [
+                    {"val": 1.0, "color": "#CC0000"},
+                    {"val": 0.4, "color": "#FF3300"},
+                    {"val": 0.2, "color": "#FF9900"},
+                    {"val": 0.1, "color": "#FFCC00"},
+                    {"val": 0.0, "color": "#336600"}
+                ],
+                "labelsEnabled": true,
+                "nodeData": {
+                    "id": "<%=heatmap%>",
+                    "children": children
+                }
+            }).bind('treemapclick', mouseclickHandler);
+        }
 
-                }).bind('treemapclick', mouseclickHandler);
+        $( window ).resize(function() {
+            refresh();
+        });
+
+        $(document).ready(function () {
+            $.getJSON(url, function (data) {
+                children = data.children;
+                refresh();
             });
         });
     </script>
