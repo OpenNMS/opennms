@@ -70,7 +70,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 
 @RunWith(Parameterized.class)
-public class BrocadeMibTest  {
+public class BrocadeMibIT  {
 	
     @Parameters
     public static Collection<Object[]> versions() {
@@ -86,7 +86,7 @@ public class BrocadeMibTest  {
 	private ArrayList<AnticipatedRequest> m_requestedVarbinds;
 	private int m_version;
 	
-	public BrocadeMibTest(int version) {
+	public BrocadeMibIT(int version) {
 		m_version = version;
 	}
 	

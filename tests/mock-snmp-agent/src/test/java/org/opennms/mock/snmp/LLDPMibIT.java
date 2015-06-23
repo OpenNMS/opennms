@@ -70,7 +70,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 
 @RunWith(Parameterized.class)
-public class LLDPMibTest  {
+public class LLDPMibIT  {
 	
     @Parameters
     public static Collection<Object[]> versions() {
@@ -87,7 +87,7 @@ public class LLDPMibTest  {
 	private int m_version;
 	private long m_timeout = -1; // -1 means use the default
 	
-	public LLDPMibTest(int version) {
+	public LLDPMibIT(int version) {
 		m_version = version;
 	}
 	

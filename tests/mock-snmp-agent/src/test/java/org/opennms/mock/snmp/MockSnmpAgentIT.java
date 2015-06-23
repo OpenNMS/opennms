@@ -74,7 +74,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 
 @RunWith(Parameterized.class)
-public class MockSnmpAgentTest  {
+public class MockSnmpAgentIT  {
 
     @Parameters
     public static Collection<Object[]> versions() {
@@ -92,7 +92,7 @@ public class MockSnmpAgentTest  {
 
     private static long DEFAULT_TIMEOUT = 5000;
 
-    public MockSnmpAgentTest(int version) {
+    public MockSnmpAgentIT(int version) {
         m_version = version;
     }
 
