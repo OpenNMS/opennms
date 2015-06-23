@@ -67,7 +67,7 @@ import org.springframework.web.servlet.ModelAndView;
 		"classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-reporting.xml",
 		"classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
 		"file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
