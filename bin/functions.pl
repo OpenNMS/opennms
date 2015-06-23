@@ -25,6 +25,7 @@ use vars qw(
 	$MAVEN_OPTS
 	$PATHSEP
 	$PREFIX
+	$INTEGRATIONTESTS
 	$TESTS
 	$VERBOSE
 	@ARGS
@@ -85,7 +86,8 @@ if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
-	"enable-tests|tests|test|t" => \$TESTS,
+	"enable-tests|tests|test|t" => \$TESTS,	# no-op
+	"enable-it"                 => \$INTEGRATIONTESTS,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
 	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
@@ -174,13 +176,17 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
-if (defined $TESTS) {
-	debug("tests are enabled");
-	unshift(@ARGS, '-DfailIfNoTests=false');
-} else {
-	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
-	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
+# This might not be needed anymore
+#if (defined $TESTS) {
+#	debug("tests are enabled");
+#	unshift(@ARGS, '-DfailIfNoTests=false');
+#}
+
+if (defined $INTEGRATIONTESTS) {
+	debug("integration tests are enabled");
+	unshift(@ARGS, '-DskipITs=false');
 }
+
 unshift(@ARGS, '-Djava.awt.headless=true');
 
 if (not grep { $_ =~ /^-Dmaven.metadata.legacy/ } @ARGS) {
