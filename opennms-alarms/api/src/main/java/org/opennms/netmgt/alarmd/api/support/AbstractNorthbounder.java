@@ -265,7 +265,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         return defaultString;
     }
 
-    protected void buildParmMappings(final NorthboundAlarm alarm,
+    private void buildParmMappings(final NorthboundAlarm alarm,
             final Map<String, Object> mapping) {
         List<EventParm<?>> parmCollection = new LinkedList<EventParm<?>>();
         String parms = alarm.getEventParms();
@@ -298,7 +298,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         }
     }
 
-    protected static class EventParm<T extends Object> {
+    private static class EventParm<T extends Object> {
         private String m_parmName;
         private T m_parmValue;
 
