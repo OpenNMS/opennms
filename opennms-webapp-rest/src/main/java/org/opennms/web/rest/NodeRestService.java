@@ -321,7 +321,7 @@ public class NodeRestService extends OnmsRestService {
         return addCategoryToNode(uriInfo, nodeCriteria,  category.getName());
     }
     
-    @PUT
+    @POST
     @Path("/{nodeCriteria}/categories/{categoryName}")
     public Response addCategoryToNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") final String categoryName) {
         writeLock();
@@ -365,15 +365,21 @@ public class NodeRestService extends OnmsRestService {
             }
             LOG.debug("updateCategory: updating category {}", category);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
+            boolean updated = false;
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    updated = true;
                 }
             }
-            LOG.debug("updateCategory: category {} updated", category);
-            m_nodeDao.saveOrUpdate(node);
+            if (updated) {
+                LOG.debug("updateCategory: category {} updated", category);
+                m_categoryDao.saveOrUpdate(category);
+            } else {
+                LOG.debug("updateCategory: no fields updated in category {}", category);
+            }
             return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
