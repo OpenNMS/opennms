@@ -330,7 +330,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
-            assertNotNull(header);
+            assertNotNull("Location header is null", header);
             final String location = URLDecoder.decode(header.toString(), "UTF-8");
             final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
             assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
