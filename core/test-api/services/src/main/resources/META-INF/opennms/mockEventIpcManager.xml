@@ -17,7 +17,7 @@
 ">
 
   <bean name="mockEventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager">
-    <qualifier value="mock" />
+    <qualifier value="eventProxy" />
   </bean>
 
   <alias name="mockEventIpcManager" alias="eventProxy"/>

@@ -98,6 +98,7 @@ public class NodeRestService extends OnmsRestService {
     private CategoryDao m_categoryDao;
     
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
     
     @Context
