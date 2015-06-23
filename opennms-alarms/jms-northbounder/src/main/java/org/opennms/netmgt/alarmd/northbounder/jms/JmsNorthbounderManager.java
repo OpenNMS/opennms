@@ -30,7 +30,7 @@ package org.opennms.netmgt.alarmd.northbounder.jms;
 
 import java.util.List;
 
-import javax.jms.Destination;
+import javax.jms.ConnectionFactory;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
@@ -47,6 +47,9 @@ public class JmsNorthbounderManager implements InitializingBean, DisposableBean 
 	@Autowired
 	private ServiceRegistry m_serviceRegistry;
 
+	@Autowired
+	private ConnectionFactory m_jmsNorthbounderConnectionFactory;
+	
 	@Autowired
 	private JmsNorthbounderConfigDao m_configDao;
 	
@@ -65,7 +68,10 @@ public class JmsNorthbounderManager implements InitializingBean, DisposableBean 
 		JmsNorthbounderConfig config = m_configDao.getConfig();
 		List<JmsDestination> destinations = config.getDestinations();
 		for(JmsDestination jmsDestination : destinations) {
-		    JmsNorthbounder nbi = new JmsNorthbounder(config, jmsDestination);
+            JmsNorthbounder nbi = new JmsNorthbounder(
+                                                      config,
+                                                      m_jmsNorthbounderConnectionFactory,
+                                                      jmsDestination);
 		    nbi.afterPropertiesSet();
 		    m_registration = m_serviceRegistry.register(nbi, Northbounder.class);
 		}
