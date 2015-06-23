@@ -297,6 +297,12 @@ final class CollectableService implements ReadyRunnable {
 
             @Override
             public void run() {
+                Logging.addContext("package", m_spec.getPackageName());
+                Logging.addContext("service", m_spec.getServiceName());
+                Logging.addContext("ipAddress", m_agent.getAddress().getHostAddress());
+                Logging.addContext("nodeId", Integer.toString(m_agent.getNodeId()));
+                Logging.addContext("foreignSource", m_agent.getForeignSource());
+                Logging.addContext("foreignId", m_agent.getForeignId());
                 doRun();
             }
             
