@@ -23,15 +23,18 @@ image:webui/heatmap/heatmap.png[]
                                                                                                                         | `alarms`
 | `org.opennms.heatmap.defaultHeatmap`       | _String_  | This option defines which _Heatmap_ is displayed by default.
                                                            The two valid options are `categories` or `foreignSources`   | `categories`
-| `org.opennms.heatmap.categoryFilter`       | _String_ |  The following option is used to filter for categories to be
+| `org.opennms.heatmap.categoryFilter`       | _String_  | The following option is used to filter for categories to be
                                                            displayed in the _Heatmap_. This option uses the Java regular
                                                            expression syntax. The default is `.*` so all categories will
                                                            be displayed.                                                | `.*`
-| `org.opennms.heatmap.foreignSourceFilter`  | _String_ |  The following option is used to filter for foreign sources
+| `org.opennms.heatmap.foreignSourceFilter`  | _String_  | The following option is used to filter for foreign sources
                                                            to be displayed in the _Heatmap_. This option uses the Java
                                                            regular expression syntax. The default is `.*` so all foreign
                                                            sources will be displayed.                                   | `.*`
-| `org.opennms.web.console.centerUrl`        | _String_ |  You can also place the _Heatmap_ on the landing page by
+| `org.opennms.heatmap.onlyUnacknowledged`   | _Boolean_ | This option configures whether only unacknowledged alarms
+                                                           will be taken into account when generating the alarm-based
+                                                           version of the _Heatmap_.                                    | `false`
+| `org.opennms.web.console.centerUrl`        | _String_  |  You can also place the _Heatmap_ on the landing page by
                                                            setting this option to `/heatmap/heatmap-box.jsp`.           | `/surveillance-box.jsp`
 |===
 
