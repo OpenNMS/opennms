@@ -25,12 +25,12 @@
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
-  <resourceType name="fgWebfilterStatsEntry" label="Fortigate Webfilter Statistics"
+  <resourceType name="fgWebfilterStatsEnt" label="Fortigate Webfilter Statistics"
                 resourceLabel="Virtual Domain: ${fgVdEntName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
-  <resourceType name="fgFortiGuardStatsEntry" label="Fortigate FortiGuard Statistics"
+  <resourceType name="fgFgStatsEntry" label="Fortigate FortiGuard Statistics"
                 resourceLabel="Virtual Domain: ${fgVdEntName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -40,7 +40,7 @@
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
-  <resourceType name="fgApSMTPtatsEntry" label="Fortigate SMTP Proxy Statistics"
+  <resourceType name="fgApSMTPStatsEntry" label="Fortigate SMTP Proxy Statistics"
                 resourceLabel="Virtual Domain: ${fgVdEntName}">
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
@@ -104,103 +104,103 @@
   </group>
   <group name="fgAvStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgVdEntIndexAV" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.1" instance="fgVdEntIndexAV" alias="fgAvVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.2" instance="fgVdEntIndexAV" alias="fgAvVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.3" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.4" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.5" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.6" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.7" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.8" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.9" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.10" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.11" instance="fgVdEntIndexAV" alias="fgAvFTPVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.12" instance="fgVdEntIndexAV" alias="fgAvFTPVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.13" instance="fgVdEntIndexAV" alias="fgAvIMVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.14" instance="fgVdEntIndexAV" alias="fgAvIMVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.15" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.16" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.17" instance="fgVdEntIndexAV" alias="fgAvOversizedDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.18" instance="fgVdEntIndexAV" alias="fgAvOversizedBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.1" instance="fgVdEntIndexAV" alias="fgAvVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.2" instance="fgVdEntIndexAV" alias="fgAvVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.3" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.4" instance="fgVdEntIndexAV" alias="fgAvHTTPVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.5" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.6" instance="fgVdEntIndexAV" alias="fgAvSMTPVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.7" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.8" instance="fgVdEntIndexAV" alias="fgAvPOP3VirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.9" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.10" instance="fgVdEntIndexAV" alias="fgAvIMAPVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.11" instance="fgVdEntIndexAV" alias="fgAvFTPVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.12" instance="fgVdEntIndexAV" alias="fgAvFTPVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.13" instance="fgVdEntIndexAV" alias="fgAvIMVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.14" instance="fgVdEntIndexAV" alias="fgAvIMVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.15" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.16" instance="fgVdEntIndexAV" alias="fgAvNNTPVirusBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.17" instance="fgVdEntIndexAV" alias="fgAvOversizedDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.8.2.1.1.18" instance="fgVdEntIndexAV" alias="fgAvOversizedBlock" type="Counter32" />
   </group>
   <group name="fgIpsStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgVdEntIndexIPS" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.1" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionsDetected" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.2" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionsBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.3" instance="fgVdEntIndexIPS" alias="fgIpsCritSevDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.4" instance="fgVdEntIndexIPS" alias="fgIpsHighSevDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.5" instance="fgVdEntIndexIPS" alias="fgIpsMedSevDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.6" instance="fgVdEntIndexIPS" alias="fgIpsLowSevDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.7" instance="fgVdEntIndexIPS" alias="fgIpsInfoSevDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.8" instance="fgVdEntIndexIPS" alias="fgIpsSignatureDetections" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.9" instance="fgVdEntIndexIPS" alias="fgIpsAnomalyDetections" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.1" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionDetec" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.2" instance="fgVdEntIndexIPS" alias="fgIpsIntrusionBlock" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.3" instance="fgVdEntIndexIPS" alias="fgIpsCritSevDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.4" instance="fgVdEntIndexIPS" alias="fgIpsHighSevDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.5" instance="fgVdEntIndexIPS" alias="fgIpsMedSevDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.6" instance="fgVdEntIndexIPS" alias="fgIpsLowSevDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.7" instance="fgVdEntIndexIPS" alias="fgIpsInfoSevDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.8" instance="fgVdEntIndexIPS" alias="fgIpsSignatureDetect" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.9.2.1.1.9" instance="fgVdEntIndexIPS" alias="fgIpsAnomalyDetect" type="Counter32" />
   </group>
   <group name="fgWebfilterStatsTable" ifType="all">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgWebfilterStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.1" instance="fgWebfilterStatsEntry" alias="fgWfHTTPBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.2" instance="fgWebfilterStatsEntry" alias="fgWfHTTPSBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.3" instance="fgWebfilterStatsEntry" alias="fgWfHTTPURLBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.4" instance="fgWebfilterStatsEntry" alias="fgWfHTTPSURLBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.5" instance="fgWebfilterStatsEntry" alias="fgWfActiveXBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.6" instance="fgWebfilterStatsEntry" alias="fgWfCookieBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.7" instance="fgWebfilterStatsEntry" alias="fgWfAppletBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgWebfilterStatsEnt" alias="fgVdEntName" type="String" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.1" instance="fgWebfilterStatsEnt" alias="fgWfHTTPBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.2" instance="fgWebfilterStatsEnt" alias="fgWfHTTPSBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.3" instance="fgWebfilterStatsEnt" alias="fgWfHTTPURLBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.4" instance="fgWebfilterStatsEnt" alias="fgWfHTTPSURLBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.5" instance="fgWebfilterStatsEnt" alias="fgWfActiveXBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.6" instance="fgWebfilterStatsEnt" alias="fgWfCookieBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.1.1.7" instance="fgWebfilterStatsEnt" alias="fgWfAppletBlocked" type="Counter32" />
   </group>
   <group name="fgFortiGuardStatsTable" ifType="all">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgFortiGuardStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.1" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPExamined" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.2" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPSExamined" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.3" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPAllowed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.4" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPSAllowed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.5" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.6" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPSBlocked" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.7" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPLogged" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.8" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPSLogged" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.9" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPOverridden" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.10" instance="fgFortiGuardStatsEntry" alias="fgFgWfHTTPSOverridden" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgFgStatsEntry" alias="fgVdEntName" type="String" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.1" instance="fgFgStatsEntry" alias="fgFgWfHTTPExamined" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.2" instance="fgFgStatsEntry" alias="fgFgWfHTTPSExamined" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.3" instance="fgFgStatsEntry" alias="fgFgWfHTTPAllowed" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.4" instance="fgFgStatsEntry" alias="fgFgWfHTTPSAllowed" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.5" instance="fgFgStatsEntry" alias="fgFgWfHTTPBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.6" instance="fgFgStatsEntry" alias="fgFgWfHTTPSBlocked" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.7" instance="fgFgStatsEntry" alias="fgFgWfHTTPLogged" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.8" instance="fgFgStatsEntry" alias="fgFgWfHTTPSLogged" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.9" instance="fgFgStatsEntry" alias="fgFgWfHTTPOverride" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.1.2.2.1.10" instance="fgFgStatsEntry" alias="fgFgWfHTTPSOverride" type="Counter32" />
   </group>
   <group name="fgApHTTPStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApHTTPStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.3.1.1" instance="fgApHTTPStatsEntry" alias="fgApHTTPReqProcessed" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.3.1.1" instance="fgApHTTPStatsEntry" alias="fgApHTTPReqProc" type="Counter32" />
   </group>
   <group name="fgApHTTPConnections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.4.0" instance="0" alias="fgApHTTPConnections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.5.0" instance="0" alias="fgApHTTPMaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.4.0" instance="0" alias="fgApHTTPConn" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.5.0" instance="0" alias="fgApHTTPMaxConn" type="Integer32" />
   </group>
   <group name="fgApSMTPStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1" instance="fgApSMTPStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.1" instance="fgApSMTPStatsEntry" alias="fgApSMTPReqProcessed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.2" instance="fgApSMTPStatsEntry" alias="fgApSMTPSpamDetected" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.1" instance="fgApSMTPStatsEntry" alias="fgApSMTPReqProc" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.2" instance="fgApSMTPStatsEntry" alias="fgApSMTPSpamDetect" type="Counter32" />
   </group>
   <group name="fgApSMPTConnections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.4.0" instance="0" alias="fgApSMTPConnections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.5.0" instance="0" alias="fgApSMTPMaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.4.0" instance="0" alias="fgApSMTPConn" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.5.0" instance="0" alias="fgApSMTPMaxConn" type="Integer32" />
   </group>
   <group name="fgApPOP3StatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1" instance="fgApPOP3StatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.1" instance="fgApPOP3StatsEntry" alias="fgApPOP3ReqProcessed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.2" instance="fgApPOP3StatsEntry" alias="fgApPOP3SpamDetected" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.1" instance="fgApPOP3StatsEntry" alias="fgApPOP3ReqProc" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.2" instance="fgApPOP3StatsEntry" alias="fgApPOP3SpamDetect" type="Counter32" />
   </group>
   <group name="fgApPOP3Connections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.4.0" instance="0" alias="fgApPOP3Connections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.5.0" instance="0" alias="fgApPOP3MaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.4.0" instance="0" alias="fgApPOP3Conn" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.5.0" instance="0" alias="fgApPOP3MaxConn" type="Integer32" />
   </group>
   <group name="fgApIMAPStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1" instance="fgApIMAPStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.1" instance="fgApIMAPStatsEntry" alias="fgApIMAPReqProcessed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.2" instance="fgApIMAPStatsEntry" alias="fgApIMAPSpamDetected" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.1" instance="fgApIMAPStatsEntry" alias="fgApIMAPReqProc" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.2" instance="fgApIMAPStatsEntry" alias="fgApIMAPSpamDetect" type="Counter32" />
   </group>
   <group name="fgApIMAPConnections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.4.0" instance="0" alias="fgApIMAPConnections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.5.0" instance="0" alias="fgApIMAPMaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.4.0" instance="0" alias="fgApIMAPConn" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.5.0" instance="0" alias="fgApIMAPMaxConn" type="Integer32" />
   </group>
   <group name="fgApNNTPStatsTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1" instance="fgApNNTPStatsEntry" alias="fgVdEntName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.1" instance="fgApNNTPStatsEntry" alias="fgApNNTPReqProcessed" type="Counter32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.2" instance="fgApNNTPStatsEntry" alias="fgApNNTPSpamDetected" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.1" instance="fgApNNTPStatsEntry" alias="fgApNNTPReqProc" type="Counter32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.2" instance="fgApNNTPStatsEntry" alias="fgApNNTPSpamDetect" type="Counter32" />
   </group>
   <group name="fgApNNTPConnections" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.4.0" instance="0" alias="fgApNNTPConnections" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.5.0" instance="0" alias="fgApNNTPMaxConnections" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.4.0" instance="0" alias="fgApNNTPConn" type="Integer32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.5.0" instance="0" alias="fgApNNTPMaxConn" type="Integer32" />
   </group>
 
   <systemDef name="Fortinet-FGT-v5.2">
