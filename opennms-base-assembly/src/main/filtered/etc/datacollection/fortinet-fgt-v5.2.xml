@@ -60,6 +60,12 @@
     <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
     <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
   </resourceType>
+  <resourceType name="fgApIMStatsEntry" label="Fortigate IM Proxy Statistics"
+                resourceLabel="Virtual Domain: ${fgVdEntName}">
+    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+  </resourceType>
+
   <group name="fgSysteminfo" ifType="ignore">
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.3" instance="0" alias="fgSysCpuUsage" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.4" instance="0" alias="fgSysMemUsage" type="Gauge32" />
@@ -202,7 +208,10 @@
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.4.0" instance="0" alias="fgApNNTPConn" type="Integer32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.5.0" instance="0" alias="fgApNNTPMaxConn" type="Integer32" />
   </group>
-
+  <group name="fgApIMStatsTable" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApIMStatsEntry" alias="fgVdEntName" type="String" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.10.105.3.1.1" instance="fgApIMStatsEntry" alias="fgApIMReqProc" type="Counter32" />
+  </group>
   <systemDef name="Fortinet-FGT-v5.2">
     <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
     <collect>
@@ -224,6 +233,8 @@
       <includeGroup>fgApIMAPConnections</includeGroup>
       <includeGroup>fgApNNTPStatsTable</includeGroup>
       <includeGroup>fgApNNTPConnections</includeGroup>
+      <includeGroup>fgApIMStatsTable</includeGroup>
+
     </collect>
   </systemDef>
 </datacollection-group>
