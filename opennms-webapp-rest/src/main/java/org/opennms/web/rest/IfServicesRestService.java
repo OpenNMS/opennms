@@ -97,6 +97,7 @@ public class IfServicesRestService extends OnmsRestService {
     private MonitoredServiceDao m_serviceDao;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     @GET

@@ -81,6 +81,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     private IpInterfaceDao m_ipInterfaceDao;
 
     @Autowired
+    @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
     /**

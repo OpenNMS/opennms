@@ -104,6 +104,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     protected CollectdConfigFactory m_collectdConfigFactory;
 
     @Autowired
+    @Qualifier("eventProxy")
     protected EventProxy m_eventProxy;
 
     @GET
