@@ -44,18 +44,21 @@ public class ImportJob implements Job {
     private Provisioner m_provisioner;
 
     /** Constant <code>KEY="url"</code> */
-    protected static final String KEY = "url";
+    protected static final String URL = "url";
     
+    protected static final String RESCAN_EXISTING = "rescan-existing";
     
     /** {@inheritDoc} */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
         try {
-            String url = (String) context.getJobDetail().getJobDataMap().get(KEY);
+            String url = (String) context.getJobDetail().getJobDataMap().get(URL);
             Assert.notNull(url);
+            String rescanExisting = (String) context.getJobDetail().getJobDataMap().get(RESCAN_EXISTING);
+            Assert.notNull(rescanExisting);
 
-            getProvisioner().doImport(url, Boolean.TRUE.toString());
+            getProvisioner().doImport(url, rescanExisting);
             
         } catch (Throwable t) {
             throw new JobExecutionException(t);

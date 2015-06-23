@@ -46,6 +46,7 @@
       </sequence>
       <attribute name="import-url-resource" type="this:supported-protocols" use="required" />
       <attribute name="import-name" type="string" use="required" />
+      <attribute name="rescan-existing" type="this:supported-rescan-existing" use="optional" default="true" />
     </complexType>
   </element>
   
@@ -59,6 +60,19 @@
     </annotation>
     <restriction base="string" >
       <pattern value="(dns|file|http|https|vmware)://.*">
+      </pattern>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="supported-rescan-existing" >
+    <annotation>
+      <documentation>
+        This type specifies how the import/scan process will be executed.
+        Currently values: true, false, dbonly
+      </documentation>
+    </annotation>
+    <restriction base="string" >
+      <pattern value="(true|false|dbonly)">
       </pattern>
     </restriction>
   </simpleType>
