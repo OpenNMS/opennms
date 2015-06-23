@@ -68,6 +68,11 @@ public class HeatMapRestService extends OnmsRestService {
      */
     private static final String FOREIGNSOURCE_FILTER_PROPERTY_KEY = "org.opennms.heatmap.foreignSourceFilter";
     private static final String FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT = ".*";
+    /**
+     * Property and default value for handling only unacknowledged alarms
+     */
+    private static final String ONLY_UNACKNOWLEDGED_PROPERTY_KEY = "org.opennms.heatmap.onlyUnacknowledged";
+    private static final String ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT = "false";
 
     private static final Logger LOG = LoggerFactory.getLogger(HeatMapRestService.class);
 
@@ -187,7 +192,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("alarms/categories")
     public Response alarmsBycategories() throws IOException {
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
+        boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", processAcknowledged, null, null);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -197,7 +203,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("alarms/foreignSources")
     public Response alarmsByForeignsources() throws IOException {
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
+        boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", processAcknowledged, null, null, "foreignsource");
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT)));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -207,7 +214,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("alarms/nodesByCategory/{category}")
     public Response alarmsOfNodesByCategory(@PathParam("category") final String category) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
+        boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "categories.categoryname", category);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -217,7 +225,8 @@ public class HeatMapRestService extends OnmsRestService {
     @Transactional
     @Path("alarms/nodesByForeignSource/{foreignSource}")
     public Response alarmsOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
+        boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "foreignsource", foreignSource);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }

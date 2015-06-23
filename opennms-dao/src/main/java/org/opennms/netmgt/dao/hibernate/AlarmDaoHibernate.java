@@ -155,7 +155,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     }
 
     @Override
-    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns) {
+    public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
 
         String grouping = "";
 
@@ -173,6 +173,8 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
 
         final String groupByClause = grouping;
 
+        final String maximumSeverityQuery = (processAcknowledgedAlarms ? "max(distinct greatest(alarms.severity,3)) as maxSeverity " : "max(distinct case when alarms.alarmacktime is not null then 3 else greatest(alarms.severity,3) end) as maxSeverity ");
+
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
@@ -180,7 +182,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
                                 "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct node.nodeid) as nodeTotalCount, " +
-                                "max(distinct case when alarms.severity is null or alarms.alarmacktime is not null then 3 else alarms.severity end) as maxSeverity " +
+                                maximumSeverityQuery +
                                 "from node " +
                                 "left join category_node using (nodeid) " +
                                 "left join categories using (categoryid) " +
