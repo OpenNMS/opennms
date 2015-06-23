@@ -63,6 +63,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     private final String m_name;
     private final AlarmQueue<NorthboundAlarm> m_queue;
     protected NodeDao m_nodeDao;
+    
     private volatile boolean m_stopped = true;
 
     private long m_retryInterval = 1000;
@@ -70,6 +71,14 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     protected AbstractNorthbounder(String name) {
         m_name = name;
         m_queue = new AlarmQueue<NorthboundAlarm>(this);
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
     @Override
@@ -211,6 +220,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
                     nullSafeToString(alarm.getLastOccurrence(), ""));
 
         if (alarm.getNodeId() != null) {
+            LOG.debug("Adding nodeId: " + alarm.getNodeId().toString());
             mapping.put("nodeId", alarm.getNodeId().toString());
             String nodeLabel = m_nodeDao.getLabelForId(alarm.getNodeId());
             mapping.put("nodeLabel", nodeLabel == null ? "?" : nodeLabel);

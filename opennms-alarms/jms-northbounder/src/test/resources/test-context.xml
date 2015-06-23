@@ -1,7 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+	<!-- <bean name="jmsNorthbounderConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL">
+					<value>vm://localhost?broker.persistent=false</value>
+				</property>
+			</bean>
+		</property>
+	</bean> -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties">
+			<props>
+				<prop key="opennms.alarms.northbound.jms.connectionFactoryPoolClass">org.springframework.jms.connection.CachingConnectionFactory</prop>
+				<prop key="opennms.alarms.northbound.jms.connectionFactoryImplRef">activemqConnectionFactory</prop>
+				<prop key="opennms.alarms.northbound.jms.activemq.brokerURL">vm://localhost?broker.persistent=false</prop>
+				<prop key="opennms.alarms.northbound.jms.activemq.userName"></prop>
+				<prop key="opennms.alarms.northbound.jms.activemq.password"></prop>
+			</props>
+		</property>
+	</bean>
+	<bean name="m_jmsNorthbounderConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="${opennms.alarms.northbound.jms.connectionFactoryImplRef}"></property>
+	</bean>
+	<bean name="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${opennms.alarms.northbound.jms.activemq.brokerURL}"/>
+		<property name="userName" value="${opennms.alarms.northbound.jms.activemq.userName}"/>
+		<property name="password" value="${opennms.alarms.northbound.jms.activemq.password}"/>
+	</bean>
 </beans>

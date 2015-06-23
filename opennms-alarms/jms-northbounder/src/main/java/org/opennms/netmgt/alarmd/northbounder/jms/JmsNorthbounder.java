@@ -43,11 +43,9 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsDestination.DestinationType;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -64,21 +62,19 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
 
     public static final String NBI_NAME = "JmsNorthbounder";
 
-    @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
     private JmsNorthbounderConfig m_config;
 
     private JmsDestination m_jmsDestination;
 
-    private NodeDao m_nodeDao;
-
     private JmsTemplate m_template;
 
-    public JmsNorthbounder(JmsNorthbounderConfig config,
+    public JmsNorthbounder(JmsNorthbounderConfig config, ConnectionFactory jmsNorthbounderConnectionFactory,
             JmsDestination destination) {
         super(NBI_NAME + ":" + destination);
         m_config = config;
+        m_jmsNorthbounderConnectionFactory = jmsNorthbounderConnectionFactory;
         m_jmsDestination = destination;
     }
 
@@ -106,6 +102,11 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+        LOG.debug("creating new JmsTemplate with connection to " + m_jmsNorthbounderConnectionFactory);
+        m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
+        if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {
+            m_template.setPubSubDomain(true);
+        }
         setNaglesDelay(m_config.getNaglesDelay());
         setMaxBatchSize(m_config.getBatchSize());
         setMaxPreservedAlarms(m_config.getQueueSize());
@@ -121,7 +122,9 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         } else {
             Map<Integer, Map<String, Object>> alarmMappings = new HashMap<Integer, Map<String, Object>>();
             for (final NorthboundAlarm alarm : alarms) {
-
+                LOG.debug("Attempting to send a message to "
+                        + m_jmsDestination.getJmsDestination() + " of type "
+                        + m_jmsDestination.getDestinationType());
                 m_template.send(m_jmsDestination.getJmsDestination(),
                                 new MessageCreator() {
 
@@ -164,18 +167,6 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         return alarmXml;
     }
 
-    @Override
-    public void onPreStart() throws NorthbounderException {
-        m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
-        if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {
-            m_template.setPubSubDomain(true);
-        }
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
     public JmsDestination getDestination() {
         return m_jmsDestination;
     }
@@ -184,4 +175,13 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         return m_config;
     }
 
+    public ConnectionFactory getJmsNorthbounderConnectionFactory() {
+        return m_jmsNorthbounderConnectionFactory;
+    }
+
+    public void setJmsNorthbounderConnectionFactory(
+            ConnectionFactory jmsNorthbounderConnectionFactory) {
+        m_jmsNorthbounderConnectionFactory = jmsNorthbounderConnectionFactory;
+    }
+    
 }
