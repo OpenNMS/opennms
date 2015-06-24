@@ -1,0 +1,68 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="none">
+    <cm:default-properties>
+      <cm:property name="elasticsearchUri" value="elasticsearch://opennms?operation=INDEX&amp;indexType=mmsg&amp;ip=127.0.0.1"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <!-- TODO: Fetch EventIpcManager using service registry? -->
+  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
+
+  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init">
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+  <bean id="foreignSourceForeignIdHeaderProcessor" class="org.opennms.features.elasticsearch.eventforwarder.ForeignSourceForeignIdHeaderProcessor">
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+
+  <!-- Camel marshalling processor -->
+  <!--<bean id="marshaller" class="org.opennms.features.elasticsearch.eventforwarder.JaxbUtilsMarshalProcessor"/>-->
+
+  <!-- Event listener that connects the EventIpcManager to this Camel context -->
+  <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
+    <argument value="seda:forwardEvent"/>
+  </bean>
+
+  <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders"/>
+
+  <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
+    <!--<constructor-arg name="dateFormat" value="yyyy.MM"/>-->
+  </bean>
+
+  <camelContext id="elasticsearchEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+    <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
+
+    <route id="forwardEvent">
+      <from uri="seda:forwardEvent"/>
+      <bean ref="elasticsearchHeaders" method="process"/>
+      <log message="es-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
+      <!-- Send to ES -->
+      <to uri="${elasticsearchUri}?operation=INDEX&amp;indexName={{index:opennms}}"/>
+    </route>
+  </camelContext>
+
+</blueprint>
