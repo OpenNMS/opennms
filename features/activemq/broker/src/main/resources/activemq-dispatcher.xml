@@ -90,7 +90,7 @@
             http://activemq.apache.org/persistence.html
         -->
         <persistenceAdapter>
-            <kahaDB directory="${data}/kahadb"/>
+            <kahaDB directory="${data}/kahadb-${broker-name}"/>
         </persistenceAdapter>
 
 
