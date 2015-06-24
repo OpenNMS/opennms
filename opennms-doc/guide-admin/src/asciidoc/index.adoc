@@ -36,6 +36,9 @@ include::text/webui/opsboard/dashlet/url.adoc[]
 include::text/webui/opsboard/dashlet/boosting-behavior.adoc[]
 include::text/webui/opsboard/dashlet/criteria-builder.adoc[]
 
+== Heatmap
+include::text/webui/heatmap/introduction.adoc[]
+
 // Include monitor documentation here
 == Service Assurance
 
