@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -65,10 +65,15 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class PropertiesGraphDaoTest {
     private static final Map<String, Resource> s_emptyMap = new HashMap<String, Resource>();
-    
+    private static final String s_colors = "colors.graph="
+            + "27AAE1,8DC63F,EF343B,FFB238,8F5AA8,A5A9AA,"
+            + "227BB6,4D9C2D,B42A24,DEA02D,6A3D97,8C8F92,"
+            + "1A5D89,3B7622,891E13,896B1A,380C5B,4B4C4C\n";
+
     final static String s_prefab =
             "command.prefix=foo\n"
             + "output.mime=foo\n"
+            + s_colors
             + "\n"
             + "reports=mib2.HCbits, mib2.bits, mib2.discards\n"
             + "\n"
@@ -134,6 +139,7 @@ public class PropertiesGraphDaoTest {
     private static final String s_adhoc =
         "command.prefix=${install.rrdtool.bin} graph - --imgformat PNG --start {1} --end {2}\n"
         + "output.mime=image/png\n"
+        + s_colors
         + "adhoc.command.title=--title=\"{3}\"\n"
         + "adhoc.command.ds=DEF:{4}={0}:{5}:{6}\n"
         + "adhoc.command.graphline={7}:{4}#{8}:\"{9}\"\n";
@@ -141,6 +147,7 @@ public class PropertiesGraphDaoTest {
     private static final String s_responsePrefab =
         "command.prefix=foo\n"
         + "output.mime=foo\n"
+        + s_colors
         + "\n"
         + "reports=icmp\n"
         + "\n"
@@ -159,6 +166,7 @@ public class PropertiesGraphDaoTest {
     private static final String s_baseIncludePrefab = 
         "command.prefix=foo\n" +
         "output.mime=image/png\n" +
+        s_colors +
         "reports=\n" + //Empty for a simple base prefab, with only graphs included from the sub directory
         "include.directory=snmp-graph.properties.d\n" +
         "include.directory.rescan=1000\n"; //1 second rescan time, for efficient testing
@@ -222,6 +230,7 @@ public class PropertiesGraphDaoTest {
     private static final String s_mib2bitsBasePrefab = 
         "command.prefix=foo\n"
         + "output.mime=image/png\n" 
+        + s_colors
         + "include.directory=snmp-graph.properties.d\n"
         + "reports=mib2.bits\n"
         + "report.mib2.bits.name=Wrong Name\n"
@@ -238,6 +247,7 @@ public class PropertiesGraphDaoTest {
     final static String s_partlyBorkedPrefab =
         "command.prefix=foo\n"
         + "output.mime=foo\n"
+        + s_colors
         + "\n"
         + "reports=mib2.HCbits, mib2.bits, mib2.discards\n"
         + "\n"
@@ -422,7 +432,7 @@ public class PropertiesGraphDaoTest {
 
     @Test
     public void testGetDescription() {
-        PrefabGraph bits = m_graphs.get("mib2.bits").getObject();;
+        PrefabGraph bits = m_graphs.get("mib2.bits").getObject();
         assertEquals("getDescription", null, bits.getDescription());
     }
 
