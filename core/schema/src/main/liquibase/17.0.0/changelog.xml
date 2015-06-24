@@ -275,4 +275,86 @@
     <dropTable tableName="minions" />
   </changeSet>
 
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocations-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocations"/></not>
+    </preConditions> 
+
+    <createTable tableName="monitoringlocations">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="monitoringlocations_pkey" />
+      </column>
+      <column name="monitoringarea" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="geolocation" type="TEXT"/>
+      <column name="coordinates" type="TEXT"/>
+      <column name="priority" type="INTEGER"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationspollingpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationspollingpackages"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationspollingpackages">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationspollingpackages_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="packagename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationscollectionpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationscollectionpackages"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationscollectionpackages">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationscollectionpackages_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="packagename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationstags-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationstags"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationstags">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationstags_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="tag" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>

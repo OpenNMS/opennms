@@ -34,6 +34,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -62,6 +70,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * The collection package name is used to associate with a collection
  * configuration found in the collectd-configuration.xml file.
  */
+@Entity
+@Table(name="monitoringLocations")
 @XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
 public class LocationDef implements Serializable {
@@ -155,6 +165,8 @@ public class LocationDef implements Serializable {
         }
     }
 
+    @Id 
+    @Column(name="id", nullable=false)
     public String getLocationName() {
         return m_locationName;
     }
@@ -163,6 +175,7 @@ public class LocationDef implements Serializable {
         m_locationName = locationName;
     }
 
+    @Column(name="monitoringArea", nullable=false)
     public String getMonitoringArea() {
         return m_monitoringArea;
     }
@@ -171,6 +184,7 @@ public class LocationDef implements Serializable {
         m_monitoringArea = monitoringArea;
     }
 
+    @Transient
     public List<String> getForeignSourceNames() {
         return m_foreignSourceNames;
     }
@@ -179,6 +193,9 @@ public class LocationDef implements Serializable {
         m_foreignSourceNames = foreignSourceNames;
     }
 
+    @ElementCollection
+    @JoinTable(name="monitoringLocationsPollingPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
+    @Column(name="packageName")
     public List<String> getPollingPackageNames() {
         return m_pollingPackageNames;
     }
@@ -187,6 +204,9 @@ public class LocationDef implements Serializable {
         m_pollingPackageNames = pollingPackageNames;
     }
 
+    @ElementCollection
+    @JoinTable(name="monitoringLocationsCollectionPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
+    @Column(name="packageName")
     public List<String> getCollectionPackageNames() {
         return m_collectionPackageNames;
     }
@@ -195,6 +215,7 @@ public class LocationDef implements Serializable {
         m_collectionPackageNames = collectionPackageNames;
     }
 
+    @Column(name="geolocation")
     public String getGeolocation() {
         return m_geolocation;
     }
@@ -203,6 +224,7 @@ public class LocationDef implements Serializable {
         m_geolocation = geolocation;
     }
 
+    @Column(name="coordinates")
     public String getCoordinates() {
         return m_coordinates;
     }
@@ -211,6 +233,7 @@ public class LocationDef implements Serializable {
         m_coordinates = coordinates;
     }
 
+    @Column(name="priority")
     public Long getPriority() {
         return m_priority == null ? 100L : m_priority;
     }
@@ -219,6 +242,9 @@ public class LocationDef implements Serializable {
         m_priority = priority;
     }
 
+    @ElementCollection
+    @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
+    @Column(name="tag")
     public List<Tag> getTags() {
         if (m_tags == null) {
             return null;

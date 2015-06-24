@@ -252,6 +252,9 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        for (final LocationDef location : m_monitoringLocationDao.findAll()) {
+            m_monitoringLocationDao.delete(location);
+        }
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {

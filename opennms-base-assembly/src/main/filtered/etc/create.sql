@@ -50,6 +50,10 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
+drop table monitoringlocations cascade;
+drop table monitoringlocationspollingpackages cascade;
+drop table monitoringlocationscollectionpackages cascade;
+drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
 drop table pathOutage cascade;
@@ -208,6 +212,65 @@ CREATE TABLE accessLocks (
     lockName varchar(40) not null,
     constraint pk_accessLocks PRIMARY KEY (lockName)
 );
+
+
+--#####################################################
+--# monitoringlocations Table - Contains a list of network locations
+--#   that are being monitored by OpenNMS systems in this cluster
+--#
+--# This table contains the following information:
+--#
+--# id            : The unique name of the location
+--# monitoringarea: The monitoring location associated with the system
+--# geolocation   : Address used for geolocating the location
+--# coordinates   : Latitude/longitude coordinates determined by geolocating
+--#                 the value of 'geolocation'
+--# priority      : Integer priority used to layer items in the UI
+--#
+--#####################################################
+
+CREATE TABLE monitoringlocations (
+    id TEXT NOT NULL,
+    monitoringarea TEXT NOT NULL,
+    geolocation TEXT,
+    coordinates TEXT,
+    priority INTEGER,
+
+    CONSTRAINT monitoringlocations_pkey PRIMARY KEY (id)
+);
+
+
+CREATE TABLE monitoringlocationspollingpackages (
+    monitoringlocationid TEXT NOT NULL,
+    packagename TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
+
+
+CREATE TABLE monitoringlocationscollectionpackages (
+    monitoringlocationid TEXT NOT NULL,
+    packagename TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
+
+
+CREATE TABLE monitoringlocationstags (
+    monitoringlocationid TEXT NOT NULL,
+    tag TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
 
 
 --#####################################################
