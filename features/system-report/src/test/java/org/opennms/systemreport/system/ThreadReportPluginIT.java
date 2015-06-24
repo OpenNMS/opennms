@@ -40,11 +40,11 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.SystemReportPlugin;
 
-public class ThreadReportPluginIT extends ReportPluginITCase {
+public class ThreadReportPluginTest extends ReportPluginTestCase {
     @Resource(name="threadReportPlugin")
     private SystemReportPlugin m_threadReportPlugin;
 
-    public ThreadReportPluginIT() {
+    public ThreadReportPluginTest() {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 
