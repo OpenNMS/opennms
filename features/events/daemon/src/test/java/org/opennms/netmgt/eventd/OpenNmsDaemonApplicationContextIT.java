@@ -51,7 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class OpenNmsDaemonApplicationContextTest implements InitializingBean {
+public class OpenNmsDaemonApplicationContextIT implements InitializingBean {
     @Autowired
     private EventIpcManager m_eventIpcManager;
 

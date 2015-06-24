@@ -37,11 +37,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.ByteArrayResource;
 
-public class SystemReportPluginTest {
+public class SystemReportPluginIT {
     private SystemReportPlugin m_javaReportPlugin = new JavaReportPlugin();
     private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
 
-    public SystemReportPluginTest() {
+    public SystemReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 

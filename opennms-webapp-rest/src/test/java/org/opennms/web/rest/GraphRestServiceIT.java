@@ -69,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class GraphRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private NodeDao m_nodeDao;

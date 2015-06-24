@@ -67,7 +67,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	@Autowired
 	private TransactionTemplate m_template;
 

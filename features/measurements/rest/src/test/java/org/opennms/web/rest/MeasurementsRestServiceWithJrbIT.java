@@ -69,7 +69,7 @@ import com.google.common.collect.Lists;
 })
 @JUnitTemporaryDatabase(reuseDatabase=false) // relies on setUp()
 @Transactional
-public class MeasurementsRestServiceWithJrbTest extends MeasurementsRestServiceTest {
+public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITCase {
 
     @Before
     public void setUp() {

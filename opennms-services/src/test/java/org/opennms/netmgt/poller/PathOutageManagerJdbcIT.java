@@ -81,7 +81,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class PathOutageManagerJdbcTest implements TemporaryDatabaseAware<MockDatabase> {
+public class PathOutageManagerJdbcIT implements TemporaryDatabaseAware<MockDatabase> {
 
 	private MockNetwork m_network;
 

@@ -67,7 +67,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class AvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     TransactionTemplate m_template;
 

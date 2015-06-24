@@ -42,11 +42,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.systemreport.ResourceLocator;
 import org.springframework.core.io.FileSystemResource;
 
-public class TopReportPluginTest {
+public class TopReportPluginIT {
     private ResourceLocator m_resourceLocator;
     private TopReportPlugin m_reportPlugin;
 
-    public TopReportPluginTest() {
+    public TopReportPluginIT() {
         final Properties props = new Properties();
         props.put("log4j.logger.org.opennms.systemreport.system", "DEBUG");
         MockLogAppender.setupLogging(true, "DEBUG", props);

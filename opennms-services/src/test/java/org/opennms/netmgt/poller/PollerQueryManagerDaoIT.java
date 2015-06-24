@@ -98,7 +98,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
+public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatabase> {
 
 	private Poller m_poller;
 

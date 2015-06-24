@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class OutageModelTest implements TemporaryDatabaseAware<MockDatabase> {
+public class OutageModelIT implements TemporaryDatabaseAware<MockDatabase> {
 
 	private MockDatabase m_db;
 

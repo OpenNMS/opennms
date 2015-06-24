@@ -62,7 +62,7 @@ import org.springframework.web.context.WebApplicationContext;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SpringWebflowContextIT extends TestCase {
+public class SpringWebflowContextIT {
     @Autowired
     private WebApplicationContext servletContext;
 

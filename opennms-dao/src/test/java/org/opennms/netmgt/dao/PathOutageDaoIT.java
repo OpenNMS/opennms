@@ -79,7 +79,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class PathOutageDaoTest implements InitializingBean {
+public class PathOutageDaoIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
     

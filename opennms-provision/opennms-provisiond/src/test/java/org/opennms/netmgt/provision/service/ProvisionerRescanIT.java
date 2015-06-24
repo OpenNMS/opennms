@@ -47,7 +47,7 @@ import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -194,7 +194,7 @@ public class ProvisionerRescanIT implements InitializingBean {
         System.err.println("Import Part 1");
         System.err.println("-------------------------------------------------------------------------");
 
-        importFromResource("classpath:/testNoRescanOnImport-part1.xml", true);
+        importFromResource("classpath:/testNoRescanOnImport-part1.xml", "true");
 
         final List<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(1, nodes.size());
@@ -209,7 +209,7 @@ public class ProvisionerRescanIT implements InitializingBean {
         setupLogging("DEBUG");
         m_eventAnticipator.reset();
         anticipateNoRescanSecondNodeEvents();
-        importFromResource("classpath:/testNoRescanOnImport-part2.xml", false);
+        importFromResource("classpath:/testNoRescanOnImport-part2.xml", "false");
         m_eventAnticipator.verifyAnticipated();
         setupLogging("INFO");
 
@@ -247,7 +247,7 @@ public class ProvisionerRescanIT implements InitializingBean {
         }
 	}
 
-	private void importFromResource(final String path, final Boolean rescanExisting) throws Exception {
+	private void importFromResource(final String path, final String rescanExisting) throws Exception {
         m_provisioner.importModelFromResource(m_resourceLoader.getResource(path), rescanExisting);
     }
     

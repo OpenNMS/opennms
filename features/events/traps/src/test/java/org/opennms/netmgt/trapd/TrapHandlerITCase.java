@@ -83,7 +83,7 @@ import org.springframework.test.context.ContextConfiguration;
 )
 @JUnitTemporaryDatabase
 @JUnitConfigurationEnvironment
-public class TrapHandlerTestCase implements InitializingBean {
+public class TrapHandlerITCase implements InitializingBean {
 
     @Autowired
     private Trapd m_trapd = null;

@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
  *
  * @author Jesse White <jesse@opennms.org>
  */
-public abstract class MeasurementsRestServiceTest {
+public abstract class MeasurementsRestServiceITCase {
 
     @Autowired
     protected MeasurementsRestService m_svc;

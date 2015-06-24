@@ -103,9 +103,9 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
-public class LatencyThresholdingSetTest implements TemporaryDatabaseAware<MockDatabase> {
+public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockDatabase> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LatencyThresholdingSetTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LatencyThresholdingSetIT.class);
 
     private EventAnticipator m_anticipator;
     private FileAnticipator m_fileAnticipator;

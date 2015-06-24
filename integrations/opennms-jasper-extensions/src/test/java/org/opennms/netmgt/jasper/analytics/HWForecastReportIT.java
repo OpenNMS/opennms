@@ -56,7 +56,7 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 
-public class HWForecastReportTest {
+public class HWForecastReportIT {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     

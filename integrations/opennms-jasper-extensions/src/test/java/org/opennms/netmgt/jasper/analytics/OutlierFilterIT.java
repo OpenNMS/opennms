@@ -37,7 +37,7 @@ import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class OutlierFilterTest {
+public class OutlierFilterIT {
     @Test
     public void canFilterOutliers() throws Exception {
         final String qs = "ANALYTICS:OutlierFilter=Y";

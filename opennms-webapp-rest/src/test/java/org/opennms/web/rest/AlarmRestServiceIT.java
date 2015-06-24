@@ -81,7 +81,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private TransactionTemplate m_template;

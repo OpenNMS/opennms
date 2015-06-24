@@ -50,8 +50,6 @@ import org.opennms.core.resource.Vault;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public abstract class ServletInitializer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
     /**
      * Private, empty constructor so that this class cannot be instantiated
      * outside of itself.

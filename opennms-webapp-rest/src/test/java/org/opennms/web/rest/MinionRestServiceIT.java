@@ -62,7 +62,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class MinionRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     MinionDao m_minionDao;

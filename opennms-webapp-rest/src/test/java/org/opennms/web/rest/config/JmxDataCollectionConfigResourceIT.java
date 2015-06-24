@@ -61,9 +61,9 @@ import static org.junit.Assert.assertNotNull;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class JmxDataCollectionConfigResourceTest extends AbstractSpringJerseyRestTestCase {
+public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestTestCase {
     @SuppressWarnings("unused")
-    private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationResourceTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationResourceIT.class);
 
     @Override
     protected void afterServletStart() throws Exception {

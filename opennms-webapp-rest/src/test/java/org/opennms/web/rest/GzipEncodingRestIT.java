@@ -79,7 +79,7 @@ import com.google.common.io.CharStreams;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class GzipEncodingRestTest extends AbstractSpringJerseyRestTestCase {
+public class GzipEncodingRestIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private ApplicationDao applicationDao;

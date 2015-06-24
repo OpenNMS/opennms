@@ -70,7 +70,7 @@ import com.google.common.collect.Lists;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class AvailabilityServiceTest implements TemporaryDatabaseAware<MockDatabase> {
+public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     private AvailabilityService m_availabilityService;

@@ -69,7 +69,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 
-public class Nms7563EnTest extends EnLinkdTestBuilder {
+public class Nms7563EnIT extends EnLinkdBuilderITCase {
 
 	Nms7563NetworkBuilder builder = new Nms7563NetworkBuilder();
 

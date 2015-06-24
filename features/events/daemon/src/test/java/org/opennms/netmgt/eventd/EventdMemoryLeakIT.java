@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
  *
  * @author brozow
  */
-public class EventdMemoryLeakTest {
+public class EventdMemoryLeakIT {
     
     private static final long MINS = 8*60*60*1000L;
 

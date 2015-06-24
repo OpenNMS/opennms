@@ -62,7 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class HwEntityAttributeTypeDaoTest implements InitializingBean {
+public class HwEntityAttributeTypeDaoIT implements InitializingBean {
 
     /** The m_hw entity attribute type dao. */
     @Autowired

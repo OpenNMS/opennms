@@ -60,7 +60,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -79,7 +78,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventdTest implements InitializingBean {
+public class EventdIT implements InitializingBean {
     private static final long SLEEP_TIME = 50;
 
     @Autowired

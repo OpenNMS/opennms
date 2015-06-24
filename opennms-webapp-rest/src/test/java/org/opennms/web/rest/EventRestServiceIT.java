@@ -42,8 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -62,7 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class EventRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DatabasePopulator m_databasePopulator;

@@ -40,7 +40,7 @@ import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms7777DWNetworkBuilder;
 
-public class Nms7777DWEnTest extends EnLinkdTestBuilder {
+public class Nms7777DWEnIT extends EnLinkdBuilderITCase {
 
 	Nms7777DWNetworkBuilder builder = new Nms7777DWNetworkBuilder();
 

@@ -44,7 +44,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private ApplicationDao applicationDao;

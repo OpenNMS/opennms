@@ -74,7 +74,7 @@ import com.google.common.collect.Lists;
 @JUnitTemporaryDatabase
 @Transactional
 @Ignore
-public class MeasurementsRestServiceWithRrdTest extends MeasurementsRestServiceTest {
+public class MeasurementsRestServiceWithRrdIT extends MeasurementsRestServiceITCase {
 
     @Before
     public void setUp() {

@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class HWForecastTest {
+public class HWForecastIT {
     @Test
     public void canForecastValues() throws Exception {
         final String qs = "ANALYTICS:HoltWinters=HW:X:12:1:0.95";

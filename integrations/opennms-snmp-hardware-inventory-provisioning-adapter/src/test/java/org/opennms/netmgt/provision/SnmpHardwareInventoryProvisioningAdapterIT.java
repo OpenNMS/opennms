@@ -86,7 +86,7 @@ import org.springframework.transaction.annotation.Transactional;
         @JUnitSnmpAgent(host="192.168.0.3", resource="entPhysicalTable-cisco-r3.properties"),
         @JUnitSnmpAgent(host="192.168.0.4", resource="entPhysicalTable-cisco-r4.properties")
 })
-public class SnmpHardwareInventoryProvisioningAdapterTest implements InitializingBean {
+public class SnmpHardwareInventoryProvisioningAdapterIT implements InitializingBean {
 
     /**
      * The Class TestOperation.

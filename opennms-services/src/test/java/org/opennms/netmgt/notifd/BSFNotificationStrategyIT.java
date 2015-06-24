@@ -39,7 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class BSFNotificationStrategyTest {
+public class BSFNotificationStrategyIT {
 
     private BSFNotificationStrategy bsfNotificationStrategy = new BSFNotificationStrategy();
 

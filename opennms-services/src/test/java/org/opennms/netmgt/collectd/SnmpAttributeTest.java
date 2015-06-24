@@ -83,8 +83,6 @@ public class SnmpAttributeTest extends TestCase {
         super.setUp();
 
         m_fileAnticipator = new FileAnticipator();
-
-        RrdUtils.setStrategy(m_rrdStrategy);
     }
 
     @Override

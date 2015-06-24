@@ -104,9 +104,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment
-public class EnLinkdSnmpTest extends NmsNetworkBuilder implements InitializingBean {
+public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean {
     
-	private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpTest.class);
+	private final static Logger LOG = LoggerFactory.getLogger(EnLinkdSnmpIT.class);
     
 	@Override
     public void afterPropertiesSet() throws Exception {

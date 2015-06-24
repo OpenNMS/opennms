@@ -62,7 +62,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml"})
 @JUnitConfigurationEnvironment
-public class SmtpMonitorTest {
+public class SmtpMonitorIT {
 
     private final SmtpMonitor m_monitor = new SmtpMonitor();
     private ServerSocket m_serverSocket = null;

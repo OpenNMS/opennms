@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class TrendLineTest {
+public class TrendLineIT {
     @Test
     public void canTrend() throws Exception {
         final String qs = "ANALYTICS:TrendLine=Z:Y:1:3";

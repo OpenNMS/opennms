@@ -48,7 +48,7 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
-public class Nms4930EnTest extends EnLinkdTestBuilder {
+public class Nms4930EnIT extends EnLinkdBuilderITCase {
 
 	Nms4930NetworkBuilder builder = new Nms4930NetworkBuilder();
     String[] macsonbbport = { 

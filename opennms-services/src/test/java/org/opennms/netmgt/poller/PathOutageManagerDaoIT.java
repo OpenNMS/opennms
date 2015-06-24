@@ -33,11 +33,10 @@ import java.sql.SQLException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.PathOutageManager;
-import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class PathOutageManagerDaoTest extends PathOutageManagerJdbcTest {
+public class PathOutageManagerDaoIT extends PathOutageManagerJdbcIT {
 
 	@Autowired
 	private PathOutageManager m_pathOutageManager;

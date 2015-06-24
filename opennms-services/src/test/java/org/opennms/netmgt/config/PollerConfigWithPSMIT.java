@@ -56,7 +56,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PollerConfigWithPSMTest {
+public class PollerConfigWithPSMIT {
 
     @Before
     public void setUp() throws Exception {

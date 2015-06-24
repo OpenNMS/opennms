@@ -68,7 +68,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     MockEventIpcManager m_eventProxy;

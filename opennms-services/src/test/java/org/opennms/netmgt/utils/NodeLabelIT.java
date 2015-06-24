@@ -61,7 +61,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class NodeLabelTest implements InitializingBean {
+public class NodeLabelIT implements InitializingBean {
 
     private final NodeLabel nodeLabelJdbcImpl = new NodeLabelJDBCImpl();
 

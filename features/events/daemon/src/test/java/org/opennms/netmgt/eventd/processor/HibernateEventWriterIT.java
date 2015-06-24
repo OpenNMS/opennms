@@ -69,7 +69,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class HibernateEventWriterTest {
+public class HibernateEventWriterIT {
 
     @Autowired
     private EventWriter m_jdbcEventWriter;

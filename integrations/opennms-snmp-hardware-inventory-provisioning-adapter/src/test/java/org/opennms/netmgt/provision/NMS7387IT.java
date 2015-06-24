@@ -78,7 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitSnmpAgents(value={
         @JUnitSnmpAgent(host="192.168.0.1", resource="NMS-7387-entPhysicalTable.properties")
 })
-public class NMS7387Test implements InitializingBean {
+public class NMS7387IT implements InitializingBean {
 
 
     /** The SNMP Hardware Provisioning Adapter. */

@@ -53,7 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * TODO: Merge with {@link org.opennms.netmgt.trapd.TrapHandlerTestCase}?
+ * TODO: Merge with {@link org.opennms.netmgt.trapd.TrapHandlerITCase}?
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -70,7 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class TrapdTest implements InitializingBean {
+public class TrapdIT implements InitializingBean {
     @Resource(name="snmpTrapPort")
     Integer m_snmpTrapPort;
 

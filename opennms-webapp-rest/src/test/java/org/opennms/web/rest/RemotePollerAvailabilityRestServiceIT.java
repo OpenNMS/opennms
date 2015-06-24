@@ -83,7 +83,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     ApplicationDao m_applicationDao;

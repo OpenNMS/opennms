@@ -63,7 +63,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
+public class CategoryModelIT implements TemporaryDatabaseAware<MockDatabase> {
 
 	private MockNetwork m_network;
 

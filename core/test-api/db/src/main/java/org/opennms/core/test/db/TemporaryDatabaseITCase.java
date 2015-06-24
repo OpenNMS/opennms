@@ -56,7 +56,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * 
  * @author djgregor
  */
-public class TemporaryDatabaseITCase extends TestCase {
+public class TemporaryDatabaseITCase {
     
     protected JdbcTemplate jdbcTemplate;
 

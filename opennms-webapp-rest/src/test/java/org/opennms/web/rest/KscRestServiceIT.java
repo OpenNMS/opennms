@@ -67,7 +67,7 @@ import com.google.common.io.Files;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
+public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private File m_configFile = new File("target/test-classes/ksc-performance-reports.xml");
 
     @Override

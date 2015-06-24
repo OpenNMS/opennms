@@ -77,8 +77,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceTest.class);
+public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestServiceIT.class);
 
     @Autowired
     private DatabasePopulator m_databasePopulator;

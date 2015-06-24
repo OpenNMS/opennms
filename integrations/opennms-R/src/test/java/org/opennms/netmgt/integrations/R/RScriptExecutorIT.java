@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class RScriptExecutorTest {
+public class RScriptExecutorIT {
     @Test
     public void canRunScriptInClasspath() throws RScriptException {
         int N = 8192;

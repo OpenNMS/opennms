@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class HwEntityDaoTest implements InitializingBean {
+public class HwEntityDaoIT implements InitializingBean {
 
     /** The node DAO. */
     @Autowired

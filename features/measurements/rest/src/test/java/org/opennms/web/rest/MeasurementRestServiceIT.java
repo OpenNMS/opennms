@@ -78,7 +78,7 @@ import com.google.common.collect.Maps;
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
 })
 @JUnitTemporaryDatabase
-public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyRestTestCase {
+public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     protected DefaultResourceDao m_resourceDao;

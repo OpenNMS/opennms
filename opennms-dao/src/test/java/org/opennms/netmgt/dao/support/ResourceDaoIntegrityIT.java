@@ -117,7 +117,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class ResourceDaoIntegrityTest implements InitializingBean {
+public class ResourceDaoIntegrityIT implements InitializingBean {
 
     private EasyMockUtils m_easyMockUtils;
     private FilterDao m_filterDao;

@@ -132,7 +132,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         } catch (Throwable t) {
             throw new Exception("Caught an exception while dropping the database at the end of the test: " + t, t);
         } finally {
-            testContext.markApplicationContextDirty();
+            testContext.markApplicationContextDirty(HierarchyMode.CURRENT_LEVEL);
             testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
         }
     }

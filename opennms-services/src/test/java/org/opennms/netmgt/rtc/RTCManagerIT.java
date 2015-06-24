@@ -48,7 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class RTCManagerTest {
+public class RTCManagerIT {
 
 	@Autowired
 	RTCManager rtc;
