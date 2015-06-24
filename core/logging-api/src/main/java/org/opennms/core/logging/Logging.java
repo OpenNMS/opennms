@@ -47,7 +47,7 @@ public abstract class Logging {
 
     }
 
-    public static void addContext(final String key, final String value) {
+    public static void putThreadContext(final String key, final String value) {
         MDC.put(key,  value);
     }
 

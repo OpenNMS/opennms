@@ -400,13 +400,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     private PollStatus doRun(int timeout) {
         final Map<String, String> mdc = Logging.getCopyOfContextMap();
         try {
-            Logging.addContext("service", m_svcName);
-            Logging.addContext("ipAddress", m_netInterface.getAddress().getHostAddress());
-            if (m_pollConfig instanceof PollableServiceConfig) {
-                final PollableServiceConfig cfg = (PollableServiceConfig) m_pollConfig;
-                Logging.addContext("service", cfg.getPackageName());
-                Logging.addContext("nodeId", Integer.toString(cfg.getNodeId()));
-            }
+            Logging.putThreadContext("service", m_svcName);
+            Logging.putThreadContext("ipAddress", m_netInterface.getAddress().getHostAddress());
+            Logging.putThreadContext("nodeId", Integer.toString(getNodeId()));
+            Logging.putThreadContext("nodeLabel", getNodeLabel());
             long startDate = System.currentTimeMillis();
             LOG.debug("Start Scheduled Poll of service {}", this);
             PollStatus status;
