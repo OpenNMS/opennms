@@ -329,6 +329,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
             t.setCommandPrefix(getProperty(properties, "command.prefix"));
             t.setOutputMimeType(getProperty(properties, "output.mime"));
+            t.setColors(getProperty(properties, "colors.graph"));
 
             t.setDefaultReport(properties.getProperty("default.report",
                                                       "none"));
@@ -473,6 +474,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
         t.setCommandPrefix(getProperty(properties, "command.prefix"));
         t.setOutputMimeType(getProperty(properties, "output.mime"));
+        t.setColors(getProperty(properties, "colors.graph"));
 
         t.setTitleTemplate(getProperty(properties, "adhoc.command.title"));
         t.setDataSourceTemplate(getProperty(properties, "adhoc.command.ds"));

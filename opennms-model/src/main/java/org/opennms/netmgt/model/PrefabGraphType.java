@@ -49,6 +49,8 @@ public class PrefabGraphType {
 
     private int m_includeRescanInterval;
 
+    private String m_colors;
+
     /**
      * <p>Constructor for PrefabGraphType.</p>
      */
@@ -195,5 +197,23 @@ public class PrefabGraphType {
      */
     public int getIncludeDirectoryRescanTimeout() {
         return m_includeRescanInterval;
+    }
+
+    /**
+     * <p>setColors</p>
+     *
+     * @param colors a {@link java.lang.String} object.
+     */
+    public void setColors(String colors) {
+        m_colors = colors;
+    }
+
+    /**
+     * <p>getColors</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getColors() {
+        return m_colors;
     }
 }

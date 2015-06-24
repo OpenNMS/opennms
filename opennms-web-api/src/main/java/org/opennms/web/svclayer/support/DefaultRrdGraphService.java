@@ -297,17 +297,17 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
      *
      * @param graph a {@link org.opennms.web.svclayer.model.Graph} object.
      * @param commandPrefix a {@link java.lang.String} object.
-     * @param workDir a {@link java.io.File} object.
      * @param reportName a {@link java.lang.String} object.
+     * @param width a {@link java.lang.Integer} object.
+     * @param height a {@link java.lang.Integer} object.
      * @return a {@link java.lang.String} object.
      */
-
     protected String createPrefabCommand(Graph graph, String commandPrefix, String reportName, Integer width, Integer height) {
         PrefabGraph prefabGraph = graph.getPrefabGraph();
 
         String[] rrds = getRrdNames(graph.getResource(), graph.getPrefabGraph().getColumns());
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(prefabGraph.getCommand());
@@ -330,6 +330,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
             translationMap.put(key, rrds[i]);
+        }
+
+        String[] colors = prefabGraph.getColors().trim().split("\\s*,\\s*");
+        for (int i = 0; i < colors.length; i++) {
+            String key = "{color" + (i + 1) + "}";
+            translationMap.put(key, colors[i]);
         }
 
         translationMap.put("{startTime}", startTimeString);
@@ -414,6 +420,12 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             } else {
                 command = command + " --height " + height;
             }
+        }
+
+        final Pattern reColors = Pattern.compile("(\\{color\\d+\\})");
+        final Matcher colorMatcher = reColors.matcher(command);
+        if (colorMatcher.matches()) {
+            throw new IllegalArgumentException("Graph contains an unmatched color entry: " + colorMatcher.group());
         }
 
         return command;

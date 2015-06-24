@@ -45,6 +45,8 @@ public class AdhocGraphType {
 
     private String m_graphLineTemplate;
 
+    private String m_colors;
+
     /**
      * <p>Constructor for AdhocGraphType.</p>
      */
@@ -160,4 +162,21 @@ public class AdhocGraphType {
         return m_titleTemplate;
     }
 
+    /**
+     * <p>setColors</p>
+     *
+     * @param colors a {@link java.lang.String} object.
+     */
+    public void setColors(String colors) {
+        m_colors = colors;
+    }
+
+    /**
+     * <p>getColors</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getColors() {
+        return m_colors;
+    }
 }

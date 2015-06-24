@@ -81,6 +81,9 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
     @XmlElement(name = "suppress")
     private String[] m_suppress;
 
+    @XmlElement(name = "colors")
+    private String m_colors;
+
     @SuppressWarnings("unused")
     private PrefabGraph() {
         throw new UnsupportedOperationException("No-arg constructor for JAXB.");
@@ -173,6 +176,15 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
      */
     public String getCommand() {
         return m_command;
+    }
+
+    /**
+     * <p>getColors</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getColors() {
+        return m_colors;
     }
 
     /**
