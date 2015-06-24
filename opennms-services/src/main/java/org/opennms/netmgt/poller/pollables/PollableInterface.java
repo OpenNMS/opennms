@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -259,6 +259,14 @@ public class PollableInterface extends PollableContainer {
         return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        throw new UnsupportedOperationException("No pollStatus event for the interface");
+    }
+
     /**
      * <p>toString</p>
      *

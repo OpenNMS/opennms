@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -80,11 +80,11 @@ public class MockMonitor implements ServiceMonitor {
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
-                LOG.info("Invalid Poll: {}{}", ipAddr, m_svcName);
+                LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
                 return PollStatus.unknown();
             } else {
-                LOG.info("Poll: [{}{}{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
+                LOG.info("Poll: [{}/{}/{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
                 PollStatus pollStatus = svc.poll();
                 return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
             }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -196,6 +196,7 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
 
 		m_anticipator = new EventAnticipator();
+    m_anticipator.ignoreEventUei(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI);
 		m_outageAnticipator = new OutageAnticipator(m_db);
 
 		m_eventMgr = new MockEventIpcManager();

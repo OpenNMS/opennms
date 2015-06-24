@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -175,6 +175,7 @@ public class PollablesTest {
 
 
         m_anticipator = new EventAnticipator();
+        m_anticipator.ignoreEventUei(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI);
         m_outageAnticipator = new OutageAnticipator(m_db);
 
 
@@ -2437,6 +2438,7 @@ public class PollablesTest {
         assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
         MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        MockEventUtil.printEvents("Ignored: ", m_anticipator.ignoredEvents());
 
         m_outageAnticipator.checkAnticipated();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());

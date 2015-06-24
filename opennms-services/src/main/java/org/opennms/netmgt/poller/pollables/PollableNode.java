@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,9 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,6 +277,18 @@ public class PollableNode extends PollableContainer {
         return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        Map<String, String> params = new HashMap<String,String>(4);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        params.put(EventConstants.PARM_POLLSTATUS_STATUSNAME, getStatus().getStatusName());
+        params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, getStatus().getResponseTime().toString());
+        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), null, null, date, params);
+    }
+
     /**
      * <p>toString</p>
      *

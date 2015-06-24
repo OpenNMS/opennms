@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -265,7 +265,20 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         return getContext().createEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * createPollStatusEvent
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    @Override
+    public Event createPollStatusEvent(Date date) {
+        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
@@ -289,6 +302,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /** {@inheritDoc} */
     @Override
     public void processStatusChange(Date date) {
+        getContext().sendEvent(createPollStatusEvent(new Date()));
         
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {

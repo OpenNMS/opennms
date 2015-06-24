@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -221,14 +221,14 @@ public class PollContextTest implements TemporaryDatabaseAware<MockDatabase> {
         assertNull(nodeEvent.getService());
         assertEquals("Unexpected time for event", date, nodeEvent.getTime());
         
-        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), null, date, null);
+        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), null, date, (String) null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
         assertEquals(Long.valueOf(1), ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
         assertNull(ifEvent.getService());
         assertEquals("Unexpected time for event", date, ifEvent.getTime());
         
-        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), "ICMP", date, null);
+        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), "ICMP", date, (String) null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
         assertEquals(Long.valueOf(1), svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());

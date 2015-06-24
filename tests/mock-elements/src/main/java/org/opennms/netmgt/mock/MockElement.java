@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -242,4 +242,23 @@ abstract public class MockElement {
      */
     public abstract Event createDeleteEvent();
 
+
+    /**
+     * <p>createPollStatusEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public abstract Event createPollStatusEvent();
+
+    /**
+     * createDownEvent
+     *
+     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public Event createPollStatusEvent(Date date) {
+        Event e = createPollStatusEvent();
+        MockEventUtil.setEventTime(e, date);
+        return e;
+    }
 }

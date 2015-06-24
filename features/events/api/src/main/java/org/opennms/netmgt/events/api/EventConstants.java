@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -230,6 +230,11 @@ public abstract class EventConstants {
      * The service unmanaged event UEI.
      */
     public static final String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
+
+    /**
+     * The service poller status event UEI.
+     */
+    public static final String SERVICE_POLLSTATUS_EVENT_UEI = "uei.opennms.org/internal/poller/servicePollStatus";
 
     /**
      * The interface down event UEI.
@@ -1058,6 +1063,11 @@ public abstract class EventConstants {
      * Used for indication the second endpoint to a map link.
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
+
+    /** Poller Status event parameters */
+    public static final String PARM_POLLSTATUS_REASON = "reason";
+    public static final String PARM_POLLSTATUS_STATUSNAME = "statusName";
+    public static final String PARM_POLLSTATUS_RESPONSETIME = "responseTime";
 
     //
     // for NCS service
