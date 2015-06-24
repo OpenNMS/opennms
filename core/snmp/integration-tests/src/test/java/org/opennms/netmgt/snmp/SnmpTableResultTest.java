@@ -63,6 +63,11 @@ public class SnmpTableResultTest {
             m_receivedRows.add(result);
             System.err.println("Received Row: "+result);
         }
+
+        public void reset() {
+            m_rowCount = 0;
+        }
+
     }
 
     public SnmpValue value(String val) {
