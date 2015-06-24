@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,48 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.netmgt.dao.hibernate;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * <p>DistributedStatusNavBarEntry class.</p>
+ * <p>LocationMonitorDaoHibernate class.</p>
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author Seth
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
+public class MonitoringLocationDaoHibernate extends AbstractDaoHibernate<LocationDef, String> implements MonitoringLocationDao {
 
-    private MonitoringLocationDao m_monitoringLocationDao;
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationDaoHibernate.class);
 
-    /** {@inheritDoc} */
-    @Override
-    public DisplayStatus evaluate(HttpServletRequest request) {
-        if (m_monitoringLocationDao.findAll().size() > 0) {
-            return super.evaluate(request);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
+    public MonitoringLocationDaoHibernate() {
+        super(LocationDef.class);
     }
 
-    /**
-     * <p>getMonitoringLocationDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.MonitoringLocationDao} object.
-     */
-    public MonitoringLocationDao getMonitoringLocationDao() {
-        return m_monitoringLocationDao;
-    }
-
-    /**
-     * <p>setLocationMonitorDao</p>
-     *
-     * @param monitoringLocationDao a {@link org.opennms.netmgt.dao.api.MonitoringLocationDao} object.
-     */
-    public void setLocationMonitorDao(MonitoringLocationDao monitoringLocationDao) {
-        m_monitoringLocationDao = monitoringLocationDao;
-    }
 }

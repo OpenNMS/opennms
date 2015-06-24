@@ -55,6 +55,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -134,6 +135,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             monSvc.setServiceType(dbType);
         }
     }
+
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
 
     @Autowired
     private LocationMonitorDao m_locationMonitorDao;
@@ -718,29 +722,20 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             location = scannedLocation;
         }
 
-        /**
-         * TODO: Divide {@link LocationMonitorDao} into two classes and use MonitoringLocationDao here
-         */
-        /*
-        return new CreateIfNecessaryTemplate<LocationDef, LocationMonitorDao>(m_transactionManager, m_locationMonitorDao) {
+        return new CreateIfNecessaryTemplate<LocationDef, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override
             protected LocationDef query() {
-                return m_locationMonitorDao.findMonitoringLocationDefinition(location.getLocationName());
+                return m_dao.get(location.getLocationName());
             }
 
             @Override
             public LocationDef doInsert() {
-                m_locationMonitorDao.saveMonitoringLocationDefinition(location);
-                m_locationMonitorDao.flush();
+                m_dao.save(location);
+                m_dao.flush();
                 return location;
             }
         }.execute();
-        */
-
-        m_locationMonitorDao.saveMonitoringLocationDefinition(location);
-        m_locationMonitorDao.flush();
-        return location;
     }
 
 

@@ -45,7 +45,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.web.rest.support.OnmsMonitoringLocationDefinitionList;
 import org.slf4j.Logger;
@@ -63,33 +63,33 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsRestService.class);
 
 	@Autowired
-	private LocationMonitorDao m_locationMonitorDao;
+	private MonitoringLocationDao m_monitoringLocationDao;
 
 	@GET
 	@Path("default")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public LocationDef getDefaultMonitoringLocation() throws ParseException {
-		return m_locationMonitorDao.findAllMonitoringLocationDefinitions().get(0);
+		return m_monitoringLocationDao.findAll().get(0);
 	}
 
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public OnmsMonitoringLocationDefinitionList getForeignSources() throws ParseException {
-		return new OnmsMonitoringLocationDefinitionList(m_locationMonitorDao.findAllMonitoringLocationDefinitions());
+		return new OnmsMonitoringLocationDefinitionList(m_monitoringLocationDao.findAll());
 	}
 
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getTotalCount() throws ParseException {
-		return Integer.toString(m_locationMonitorDao.findAllMonitoringLocationDefinitions().size());
+		return Integer.toString(m_monitoringLocationDao.findAll().size());
 	}
 
 	@GET
 	@Path("{monitoringLocation}")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public LocationDef getMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation) {
-		return m_locationMonitorDao.findMonitoringLocationDefinition(monitoringLocation);
+		return m_monitoringLocationDao.get(monitoringLocation);
 	}
 
 	@POST
@@ -99,7 +99,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		writeLock();
 		try {
 			LOG.debug("addMonitoringLocation: Adding monitoringLocation {}", monitoringLocation.getLocationName());
-			m_locationMonitorDao.saveMonitoringLocationDefinition(monitoringLocation);
+			m_monitoringLocationDao.save(monitoringLocation);
 			return Response.seeOther(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
 		} finally {
 			writeUnlock();
@@ -113,7 +113,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	public Response updateMonitoringLocation(@Context final UriInfo uriInfo, @PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
 		writeLock();
 		try {
-			LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition(monitoringLocation);
+			LocationDef def = m_monitoringLocationDao.get(monitoringLocation);
 			LOG.debug("updateMonitoringLocation: updating monitoring location {}", monitoringLocation);
 
 			if (params.isEmpty()) return Response.seeOther(getRedirectUri(uriInfo)).build();
@@ -129,7 +129,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 				}
 			}
 			LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
-			m_locationMonitorDao.saveMonitoringLocationDefinition(def);
+			m_monitoringLocationDao.save(def);
 			return Response.seeOther(getRedirectUri(uriInfo)).build();
 		} finally {
 			writeUnlock();
@@ -143,7 +143,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		writeLock();
 		try {
 			LOG.debug("deleteMonitoringLocation: deleting monitoring location {}", monitoringLocation);
-			m_locationMonitorDao.deleteMonitoringLocationDefinition(monitoringLocation);
+			m_monitoringLocationDao.delete(monitoringLocation);
 			return Response.ok().build();
 		} finally {
 			writeUnlock();

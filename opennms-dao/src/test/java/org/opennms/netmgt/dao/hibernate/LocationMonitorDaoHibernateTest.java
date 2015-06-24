@@ -44,26 +44,23 @@ import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +79,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class LocationMonitorDaoHibernateTest implements InitializingBean {
 	@Autowired
 	private LocationMonitorDao m_locationMonitorDao;
-	
+
+	@Autowired
+	private MonitoringLocationDao m_monitoringLocationDao;
+
 	@Autowired
 	private NodeDao m_nodeDao;
 
@@ -120,49 +120,14 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
     	assertEquals(mon.getLocation(), mon2.getLocation());
     	assertEquals(mon.getProperties(), mon2.getProperties());
     }
-    
-    
-    
-    @Test
-	@Transactional
-	public void testSetConfigResourceProduction() throws FileNotFoundException {
-        ((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("monitoring-locations.xml")));
-    }
-    
-	@Test
-	@Transactional
-    public void testSetConfigResourceExample() throws FileNotFoundException {
-    	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("examples/monitoring-locations.xml")));
-    }
-    
-	@Test
-	@Transactional
-    public void testSetConfigResourceNoLocations() throws FileNotFoundException {
-    	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new FileSystemResource("src/test/resources/monitoring-locations-no-locations.xml"));
-    }
-
-    
-	@Test
-	@Transactional
-    public void testBogusConfig() {
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new MarshallingResourceFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
-        try {
-        	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new FileSystemResource("some bogus filename"));
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
 
 	@Test
 	@Transactional
     public void testFindMonitoringLocationDefinitionNull() throws FileNotFoundException {
-    	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("monitoring-locations.xml")));
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException(ThrowableAnticipator.IGNORE_MESSAGE));
         try {
-            m_locationMonitorDao.findMonitoringLocationDefinition(null);
+            m_monitoringLocationDao.get(null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -172,10 +137,9 @@ public class LocationMonitorDaoHibernateTest implements InitializingBean {
 	@Test
 	@Transactional
     public void testFindMonitoringLocationDefinitionBogus() throws FileNotFoundException {
-    	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("monitoring-locations.xml")));
         assertNull("should not have found monitoring location definition--"
                    + "should have returned null",
-                   m_locationMonitorDao.findMonitoringLocationDefinition("bogus"));
+                   m_monitoringLocationDao.get("bogus"));
     }
     
 	@Test

@@ -65,6 +65,7 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -95,6 +96,9 @@ import de.novanic.eventservice.service.EventExecutorService;
 public class LocationDataManagerTest implements InitializingBean {
     
     private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+    
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
     
     @Autowired
     private LocationMonitorDao m_locationMonitorDao;
@@ -191,15 +195,15 @@ public class LocationDataManagerTest implements InitializingBean {
     }
     
     @Test
-    public void testGetSatusDetailsForLocation() {
+    public void testGetStatusDetailsForLocation() {
         
-        LocationDef def = m_locationMonitorDao.findMonitoringLocationDefinition("00002");
+        LocationDef def = m_monitoringLocationDao.get("00002");
         
         m_locationDataService.getStatusDetailsForLocation(def);
     }
     
     @Test
-    public void testGetSatusDetailsForApplication() {
+    public void testGetStatusDetailsForApplication() {
         String appName = "Domain Controllers";
 
         int count = 100;

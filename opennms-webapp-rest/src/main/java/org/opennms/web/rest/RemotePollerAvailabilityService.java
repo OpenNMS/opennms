@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationAvailDataPoint;
@@ -75,7 +76,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Transactional
 public class RemotePollerAvailabilityService extends OnmsRestService {
 
-
+    @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
+    
     @Autowired
     LocationMonitorDao m_locationMonitorDao;
     
@@ -111,7 +114,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public OnmsMonitoringLocationDefinitionList getRemoteLocationList(){
-        List<LocationDef> monitors = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        List<LocationDef> monitors = m_monitoringLocationDao.findAll();
         return new OnmsMonitoringLocationDefinitionList(monitors);
     }
     
@@ -180,7 +183,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
 
         final MultivaluedMap<String, String> queryParameters = uriInfo.getQueryParameters();
         
-        LocationDef locationDefinition = m_locationMonitorDao.findMonitoringLocationDefinition(location);
+        LocationDef locationDefinition = m_monitoringLocationDao.get(location);
         if (locationDefinition == null) {
             throw new IllegalArgumentException("Cannot find location definition: " + location);
         }

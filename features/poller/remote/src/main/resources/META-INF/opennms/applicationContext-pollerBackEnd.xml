@@ -40,6 +40,9 @@
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="monitoringLocationDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"/>
+    </property>
     <property name="locationMonitorDao">
       <onmsgi:reference interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
     </property>

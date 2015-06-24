@@ -64,37 +64,6 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, String>
     Collection<OnmsLocationMonitor> findByApplication(final OnmsApplication application);
 
     /**
-     * <p>findAllMonitoringLocationDefinitions</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    List<LocationDef> findAllMonitoringLocationDefinitions();
-    
-    /**
-     * <p>findMonitoringLocationDefinition</p>
-     *
-     * @param monitoringLocationDefinitionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
-     */
-    LocationDef findMonitoringLocationDefinition(final String monitoringLocationDefinitionName);
-
-    /**
-     * <p>saveMonitoringLocationDefinition</p>
-     *
-     * @param def a {@link org.opennms.netmgt.config.monitoringLocations.LocationDef} object.
-     */
-    void saveMonitoringLocationDefinition(final LocationDef def);
-
-    /**
-     * <p>saveMonitoringLocationDefinitions</p>
-     *
-     * @param defs a {@link java.util.Collection} object.
-     */
-    void saveMonitoringLocationDefinitions(final Collection<LocationDef> defs);
-
-    void deleteMonitoringLocationDefinition(String locationName);
-
-    /**
      * <p>saveStatusChange</p>
      *
      * @param status a {@link org.opennms.netmgt.model.OnmsLocationSpecificStatus} object.

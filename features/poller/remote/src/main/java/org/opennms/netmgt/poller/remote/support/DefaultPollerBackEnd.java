@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
@@ -163,6 +164,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             return m_serverTime;
         }
     }
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
     private EventIpcManager m_eventIpcManager;
@@ -299,7 +301,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     @Transactional(readOnly=true)
     @Override
     public Collection<LocationDef> getMonitoringLocations() {
-        return m_locMonDao.findAllMonitoringLocationDefinitions();
+        return m_monitoringLocationDao.findAll();
     }
 
     /** {@inheritDoc} */
@@ -402,7 +404,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private List<String> getPackageName(final OnmsLocationMonitor mon) {
-        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(mon.getLocation());
+        final LocationDef def = m_monitoringLocationDao.get(mon.getLocation());
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getLocation() + "' could not be found for location monitor ID " + mon.getId());
         }
@@ -554,7 +556,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /** {@inheritDoc} */
     @Override
     public String registerLocationMonitor(final String monitoringLocationId) {
-        final LocationDef def = m_locMonDao.findMonitoringLocationDefinition(monitoringLocationId);
+        final LocationDef def = m_monitoringLocationDao.get(monitoringLocationId);
         if (def == null) {
             throw new ObjectRetrievalFailureException(LocationDef.class, monitoringLocationId, "Location monitor definition with the id '" + monitoringLocationId + "' not found", null);
         }

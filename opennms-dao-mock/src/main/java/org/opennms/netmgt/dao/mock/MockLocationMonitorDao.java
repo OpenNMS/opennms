@@ -31,13 +31,11 @@ package org.opennms.netmgt.dao.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +51,6 @@ import org.springframework.util.Assert;
 
 public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, String> implements LocationMonitorDao {
 
-    private Map<String,LocationDef> m_locationDefinitions = new HashMap<String,LocationDef>();
     private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
 
     @Override
@@ -97,31 +94,6 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
             }
         }
         return monitors;
-    }
-
-    @Override
-    public List<LocationDef> findAllMonitoringLocationDefinitions() {
-        return new ArrayList<LocationDef>(m_locationDefinitions.values());
-    }
-
-    @Override
-    public LocationDef findMonitoringLocationDefinition(final String monitoringLocationDefinitionName) {
-        if (m_locationDefinitions.containsKey(monitoringLocationDefinitionName)) {
-            return m_locationDefinitions.get(monitoringLocationDefinitionName);
-        }
-        return null;
-    }
-
-    @Override
-    public void saveMonitoringLocationDefinition(final LocationDef def) {
-        m_locationDefinitions.put(def.getLocationName(), def);
-    }
-
-    @Override
-    public void saveMonitoringLocationDefinitions(final Collection<LocationDef> defs) {
-        for (final LocationDef def : defs) {
-           saveMonitoringLocationDefinition(def);
-        }
     }
 
     @Override
@@ -309,11 +281,6 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
         for (final OnmsLocationMonitor monitor : findAll()) {
             if (monitor.getStatus() == MonitorStatus.PAUSED) monitor.setStatus(MonitorStatus.STARTED);
         }
-    }
-
-    @Override
-    public void deleteMonitoringLocationDefinition(String locationName) {
-        m_locationDefinitions.remove(locationName);
     }
 
 }

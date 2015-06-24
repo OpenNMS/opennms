@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -165,6 +166,7 @@ public class PollerBackEndTest extends TestCase {
     // the class under test
     private DefaultPollerBackEnd m_backEnd = new DefaultPollerBackEnd();
     // mock objects that the class will call
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
@@ -339,6 +341,7 @@ public class PollerBackEndTest extends TestCase {
 
         System.setProperty("opennms.home", "src/test/test-configurations/PollerBackEndTest-home");
 
+        m_monitoringLocationDao = m_mocks.createMock(MonitoringLocationDao.class);
         m_locMonDao = m_mocks.createMock(LocationMonitorDao.class);
         m_monSvcDao = m_mocks.createMock(MonitoredServiceDao.class);
         m_pollerConfig = m_mocks.createMock(PollerConfig.class);
@@ -414,7 +417,7 @@ public class PollerBackEndTest extends TestCase {
 
         List<LocationDef> locations = Collections.singletonList(m_locationDefinition);
 
-        expect(m_locMonDao.findAllMonitoringLocationDefinitions()).andReturn(locations);
+        expect(m_monitoringLocationDao.findAll()).andReturn(locations);
 
         m_mocks.replayAll();
 
@@ -427,7 +430,7 @@ public class PollerBackEndTest extends TestCase {
     public void testGetPollerConfiguration() {
 
         expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
-        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
 
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
         expect(m_pollerConfig.getServiceSelectorForPackage(m_package)).andReturn(m_serviceSelector);
@@ -550,7 +553,7 @@ public class PollerBackEndTest extends TestCase {
 
     public void testRegisterLocationMonitor() {
 
-        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
 
         m_locMonDao.save(isA(OnmsLocationMonitor.class));
         expectLastCall().andAnswer(new IAnswer<Object>() {
@@ -604,7 +607,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_dnsService)).andReturn(m_dnsCurrentStatus);
 
         // called when saving performance data
-        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
 
         expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(3);
@@ -713,7 +716,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_dnsService)).andReturn(null);
 
         // called when saving performance data
-        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
 
         expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(3);
@@ -745,7 +748,7 @@ public class PollerBackEndTest extends TestCase {
         final PollStatus newStatus = PollStatus.available(1776.0);
 
         // called when saving performance data
-        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
 
         m_mocks.replayAll();
@@ -867,10 +870,5 @@ public class PollerBackEndTest extends TestCase {
         param.setValue(value);
         pkgService.addParameter(param);
     }
-    
-    @SuppressWarnings("unchecked")
-    private static <T> List<T> isAList(Class<T> clazz) {
-        return isA(List.class);
-    }
-    
+
 }

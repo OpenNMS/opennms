@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -152,6 +153,7 @@ public class DatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
@@ -384,7 +386,7 @@ public class DatabasePopulator {
         def.setGeolocation("Research Triangle Park, NC");
         def.setCoordinates("35.715751,-79.16262");
         def.setPriority(1L);
-        m_locationMonitorDao.saveMonitoringLocationDefinition(def);
+        m_monitoringLocationDao.save(def);
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
@@ -771,6 +773,14 @@ public class DatabasePopulator {
 
     private void setNode6(final OnmsNode node6) {
         m_node6 = node6;
+    }
+
+    public MonitoringLocationDao getMonitoringLocationDao() {
+        return m_monitoringLocationDao;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
     }
 
     public LocationMonitorDao getLocationMonitorDao() {

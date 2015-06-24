@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
@@ -88,6 +89,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultDistributedStatusService.class);
 
     private MonitoredServiceDao m_monitoredServiceDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
     private ResourceDao m_resourceDao;
@@ -312,7 +314,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         Assert.notNull(locationName, "location cannot be null");
         Assert.notNull(applicationName, "application cannot be null");
         
-        LocationDef location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+        LocationDef location = m_monitoringLocationDao.get(locationName);
         if (location == null) {
             throw new IllegalArgumentException("Could not find location for "
                                                + "location name \""
@@ -370,7 +372,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         SimpleWebTable table = new SimpleWebTable();
         
-        List<LocationDef> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        List<LocationDef> locationDefinitions = m_monitoringLocationDao.findAll();
 
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
         if (applications.size() == 0) {
@@ -714,7 +716,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
             String timeSpan, String previousLocationName) {
         List<String> errors = new LinkedList<String>();
         
-        List<LocationDef> locationDefinitions = m_locationMonitorDao.findAllMonitoringLocationDefinitions();
+        List<LocationDef> locationDefinitions = m_monitoringLocationDao.findAll();
 
         List<RelativeTimePeriod> periods = Arrays.asList(RelativeTimePeriod.getDefaultPeriods());
 
@@ -728,7 +730,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 location = locationDefinitions.get(0);
             }
         } else {
-            location = m_locationMonitorDao.findMonitoringLocationDefinition(locationName);
+            location = m_monitoringLocationDao.get(locationName);
             if (location == null) {
                 errors.add("Could not find location definition '" + locationName + "'");
                 if (!locationDefinitions.isEmpty()) {
@@ -868,6 +870,11 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      */
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
+        
+    }
+
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
         
     }
 
