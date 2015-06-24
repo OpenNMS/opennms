@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -91,39 +91,38 @@ public class AvailabilityCalculatorIT extends TestCase {
         m_db.update("insert into ipinterface (id, nodeid, ipaddr, ismanaged) values\n"
                 + "(3, 2,'192.168.100.3','M');");
 
-        m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
-                + "(1,'192.168.100.1',1,'A', 1);");
-        m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
-                + "(2,'192.168.100.2',1,'A', 2);");
+        m_db.update("insert into ifservices (id, serviceid, status, ipInterfaceId) values "
+                + "(1, 1,'A', 1);"); //1:192.168.100.1:1
+        m_db.update("insert into ifservices (id, serviceid, status, ipInterfaceId) values "
+                + "(2, 1,'A', 2);"); //2:192.168.100.2:1
         /*
-         * m_db.update("insert into ifservices (nodeid, ipaddr, serviceid,
-         * status, ipInterfaceId) values " + "(2,'192.168.100.2',2,'A', 2);");
+         * m_db.update("insert into ifservices (serviceid, status, ipInterfaceId) values " + "(2,'A', 2);"); //2:192.168.100.2:2
          */
-        m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
-                + "(2,'192.168.100.3',1,'A', 3);");
+        m_db.update("insert into ifservices (id, serviceid, status, ipInterfaceId) values "
+                + "(3, 1,'A', 3);"); //2:192.168.100.3:1
 
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(1,1,'192.168.100.1',1,'2005-05-01 09:00:00','2005-05-01 09:30:00');");
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(2,2,'192.168.100.2',1,'2005-05-01 10:00:00','2005-05-02 10:00:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(1,1,'2005-05-01 09:00:00','2005-05-01 09:30:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(2,2,'2005-05-01 10:00:00','2005-05-02 10:00:00');");
 
         // test data for LastMonthsDailyAvailability report
 
         // insert 30 minute outage on one node - 99.3056% availability
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(3,1,'192.168.100.1',1,'2005-04-02 10:00:00','2005-04-02 10:30:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(3,1,'2005-04-02 10:00:00','2005-04-02 10:30:00');");
         // insert 60 minute outage on one interface and 59 minute outages on
         // another - 97.2454
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(4,1,'192.168.100.1',1,'2005-04-03 11:30:00','2005-04-03 12:30:00');");
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(5,2,'192.168.100.2',1,'2005-04-03 23:00:00','2005-04-03 23:59:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(4,1,'2005-04-03 11:30:00','2005-04-03 12:30:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(5,2,'2005-04-03 23:00:00','2005-04-03 23:59:00');");
         // test an outage that spans 60 minutes across midnight - 99.3056% on
         // each day, well, not exactly
         // its 29 minutes 99.3059 on the fist day and 31 minutes 99.3052 on
         // the second.
-        m_db.update("insert into outages (outageid, nodeid, ipaddr, serviceid, ifLostService, ifRegainedService) values "
-                + "(6,2,'192.168.100.3',1,'2005-04-04 23:30:00','2005-04-05 00:30:00');");
+        m_db.update("insert into outages (outageid, ifServiceId, ifLostService, ifRegainedService) values "
+                + "(6,3,'2005-04-04 23:30:00','2005-04-05 00:30:00');");
 
     }
 

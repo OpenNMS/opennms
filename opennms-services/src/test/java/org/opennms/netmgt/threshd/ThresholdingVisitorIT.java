@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,7 +62,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
@@ -83,24 +82,26 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.datacollection.MibObject;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -272,7 +273,7 @@ public class ThresholdingVisitorIT {
      */
     @Test
     public void testResourceGaugeData() {
-        addHighThresholdEvent(1, 10000, 5000, 15000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 15000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 15000);
         verifyEvents(0);
@@ -281,7 +282,7 @@ public class ThresholdingVisitorIT {
     @Test
     public void testTriggersNodeResource() throws Exception {
         initFactories("/threshd-configuration.xml", "/test-thresholds-triggers.xml");
-        addHighThresholdEvent(3, 10000, 5000, 22000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(3, 10000, 5000, 22000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         
         // Trigger = 1
@@ -350,8 +351,8 @@ public class ThresholdingVisitorIT {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 10, 5, 15, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "node", "node", "myCounter", null, null);
 
         long baseDate = new Date().getTime();
         // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
@@ -390,8 +391,8 @@ public class ThresholdingVisitorIT {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 10, 5, 15, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 10, 5, 2, "Unknown", null, "myCounter", null, null);
+        addHighThresholdEvent(1, 10, 5, 15, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 10, 5, 2, "node", "node", "myCounter", null, null);
 
         long baseDate = new Date().getTime();
         // Step 0: Visit a CollectionSet with a timestamp, so that the thresholder knows how when the collection was held 
@@ -493,7 +494,7 @@ public class ThresholdingVisitorIT {
         ThresholdingVisitor visitor = createVisitor();
         
         // Step 1: No events
-        addHighThresholdEvent(1, 10000, 5000, 4500, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 4500, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(1);
         
@@ -503,7 +504,7 @@ public class ThresholdingVisitorIT {
         resetAnticipator();
         
         // Step 3: Trigger threshold with new configuration values
-        addHighThresholdEvent(1, 4000, 2000, 4500, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 4000, 2000, 4500, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 4500);
         verifyEvents(0);
     }
@@ -543,6 +544,8 @@ public class ThresholdingVisitorIT {
                 network.addService("HTTP"); // Adding HTTP on node 5
             }
         }
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
+
         MockDatabase db = new MockDatabase();
         db.populate(network);
         db.update("insert into categories (categoryid, categoryname) values (?, ?)", 10, "CAT1");
@@ -640,7 +643,7 @@ public class ThresholdingVisitorIT {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 50, 40, 60, "Unknown", null, "bug2746", null, null);
+        addHighThresholdEvent(1, 50, 40, 60, "node", "node", "bug2746", null, null);
 
         // Step 1 : Execute visitor
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
@@ -681,8 +684,8 @@ public class ThresholdingVisitorIT {
         ThresholdingVisitor visitor = createVisitor();
         
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, 1000, "node", "node", "freeMem", null, null);
         
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -711,10 +714,10 @@ public class ThresholdingVisitorIT {
         ThresholdingVisitor visitor = createVisitor();
 
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
-        addHighThresholdEvent(1, 4000, 2000, 5000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 4000, 2000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "node", "node", "freeMem", null, null);
+        addHighThresholdEvent(1, 4000, 2000, 5000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 4000, 2000, 1000, "node", "node", "freeMem", null, null);
 
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -749,8 +752,8 @@ public class ThresholdingVisitorIT {
         ThresholdingVisitor visitor = createVisitor();
 
         // Add Events
-        addHighThresholdEvent(1, 10000, 5000, 12000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 10000, 5000, Double.NaN, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 10000, 5000, 12000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 10000, 5000, Double.NaN, "node", "node", "freeMem", null, null);
 
         // Step 1: Trigger threshold
         runGaugeDataTest(visitor, 12000);
@@ -764,14 +767,14 @@ public class ThresholdingVisitorIT {
         
         // Step 4: New collected data is not above the new threshold value. No Events generated
         resetAnticipator();
-        addHighThresholdEvent(1, 15000, 14000, 13000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 15000, 14000, 13000, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 13000);
         verifyEvents(1);
         
         // Step 5: Trigger and rearm a threshold using new configuration
         resetAnticipator();
-        addHighThresholdEvent(1, 15000, 14000, 16000, "Unknown", null, "freeMem", null, null);
-        addHighRearmEvent(1, 15000, 14000, 1000, "Unknown", null, "freeMem", null, null);
+        addHighThresholdEvent(1, 15000, 14000, 16000, "node", "node", "freeMem", null, null);
+        addHighRearmEvent(1, 15000, 14000, 1000, "node", "node", "freeMem", null, null);
         runGaugeDataTest(visitor, 16000);
         runGaugeDataTest(visitor, 1000);
         verifyEvents(0);
@@ -832,10 +835,10 @@ public class ThresholdingVisitorIT {
         SnmpAttributeType attributeType = new NumericAttributeType(resourceType, "default", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
 
         // Add Events
-        addHighThresholdEvent(1, 100, 90, 110, "Unknown", null, "myCounter", null, null);
-        addHighThresholdEvent(1, 70, 60, 80, "Unknown", null, "myCounter - 30", null, null);
-        addHighRearmEvent(1, 100, 90, 40, "Unknown", null, "myCounter", null, null);
-        addHighRearmEvent(1, 70, 60, 10, "Unknown", null, "myCounter - 30", null, null);
+        addHighThresholdEvent(1, 100, 90, 110, "node", "node", "myCounter", null, null);
+        addHighThresholdEvent(1, 70, 60, 80, "node", "node", "myCounter - 30", null, null);
+        addHighRearmEvent(1, 100, 90, 40, "node", "node", "myCounter", null, null);
+        addHighRearmEvent(1, 70, 60, 10, "node", "node", "myCounter - 30", null, null);
         
         long baseDate = new Date().getTime();
         // Collect Step 1 : First Data: Last should be NaN
@@ -1069,7 +1072,7 @@ public class ThresholdingVisitorIT {
     public void testBug3748() throws Exception {
         initFactories("/threshd-configuration-bug3748.xml","/test-thresholds-bug3748.xml");
         // Absolute threshold evaluator doesn't show threshold and rearm levels on the event.
-        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 6.0, "node", "node", "freeMem", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 2); // Set initial value
         runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
@@ -1087,7 +1090,7 @@ public class ThresholdingVisitorIT {
     public void testNMS5115() throws Exception {
         initFactories("/threshd-configuration.xml","/test-thresholds-NMS5115.xml");
 
-        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "Unknown", null, "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
+        addEvent(EventConstants.LOW_THRESHOLD_EVENT_UEI, "127.0.0.1", "SNMP", 1, null, null, 5.0, "node", "node", "memAvailSwap / memTotalSwap * 100.0", null, null, m_anticipator, m_anticipatedEvents);
         ThresholdingVisitor visitor = createVisitor();
 
         SnmpCollectionAgent agent = createCollectionAgent();
@@ -1128,6 +1131,7 @@ public class ThresholdingVisitorIT {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
 
+
         for (int i=1; i<=numOfNodes; i++) {
             String ipAddress = baseIpAddress + i;
             network.addNode(i, "testNode-" + ipAddress);
@@ -1136,6 +1140,7 @@ public class ThresholdingVisitorIT {
             network.addService("ICMP");
             network.addService("SNMP");
         }
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
         MockDatabase db = new MockDatabase();
         db.populate(network);
@@ -1188,60 +1193,6 @@ public class ThresholdingVisitorIT {
     public void testBug3487() throws Exception {
         initFactories("/threshd-configuration-bug3487.xml","/test-thresholds.xml");
         assertNotNull(createVisitor());
-    }
-
-    /*
-     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing (Bug 3448)
-     */
-    @Test
-    public void testBug3488() throws Exception {
-        String ipAddress = "127.0.0.1";
-        setupSnmpInterfaceDatabase(ipAddress, null);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 200.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-
-        List<Event> triggerEvents = new ArrayList<Event>();
-        for (int i=0; i<5; i++)
-            triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
-        assertTrue(triggerEvents.size() == 1);
-
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
-    }
-
-    /*
-     * This test uses this files from src/test/resources:
-     * - threshd-configuration-bug3575.xml
-     * - test-thresholds-bug3575.xml
-     */
-    @Test
-    public void testBug3575() throws Exception {
-        initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
-        String ipAddress = "127.0.0.1";
-        String ifName = "eth0";
-        setupSnmpInterfaceDatabase(ipAddress, ifName);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository());
-        assertTrue(thresholdingSet.hasThresholds());
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        for (double i=1; i<21; i++)
-            attributes.put("ping" + i, 2 * i);
-        attributes.put("loss", 60.0);
-        attributes.put("response-time", 100.0);
-        attributes.put("median", 100.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes));
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
-        assertTrue(triggerEvents.size() == 1);
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null, m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
     }
 
     /*
@@ -1302,8 +1253,8 @@ public class ThresholdingVisitorIT {
         String ifAliasComment = "#";
 
         String label = domain + "/" + ifAlias;
-        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifOutOctets", label, ifIndex.toString());
-        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifInOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, "Unknown", "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, "Unknown", "ifInOctets", label, ifIndex.toString());
 
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
@@ -1472,118 +1423,6 @@ public class ThresholdingVisitorIT {
     }
 
     /*
-     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
-     * 
-     * This test validate that Bug 1582 has been fixed.
-     * ifLabel and ifIndex are set correctly based on Bug 2711
-     */
-    @Test    
-    public void testLatencyThresholdingSet() throws Exception {
-        Integer ifIndex = 1;
-        String ifName = "lo0";
-        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
-
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 90.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(triggerEvents.size() == 0);
-
-        // Test Trigger
-        attributes.put("http", 200.0);
-        for (int i = 1; i < 5; i++) {
-            LOG.debug("testLatencyThresholdingSet: run number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        if (thresholdingSet.hasThresholds(attributes)) {
-            LOG.debug("testLatencyThresholdingSet: run number 5");
-            triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(triggerEvents.size() == 1);
-        }
-        
-        // Test Rearm
-        List<Event> rearmEvents = null;
-        if (thresholdingSet.hasThresholds(attributes)) {
-            attributes.put("http", 40.0);
-            rearmEvents = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(rearmEvents.size() == 1);
-        }
-
-        // Validate Events
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
-        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.add(rearmEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
-    }
-
-    /*
-     * Testing counter reset.
-     * When a threshold condition increases the violation count, and before reach the trigger, the value of the variable is on rearm
-     * condition, the counter should be reinitialized and should start over again.
-     * 
-     * This test validate that Bug 1582 has been fixed.
-     */
-    @Test    
-    public void testCounterReset() throws Exception {
-        String ifName = "lo0";
-        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
-
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 90.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(triggerEvents.size() == 0);
-
-        // Testing trigger the threshold 3 times
-        attributes.put("http", 200.0);
-        for (int i = 1; i <= 3; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        assertTrue(triggerEvents.size() == 0);
-        
-        // This should reset the counter
-        attributes.put("http", 40.0);
-        LOG.debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
-        triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-
-        // Increase the counter again two times, no threshold should be generated
-        attributes.put("http", 300.0);
-        for (int i = 4; i <= 5; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        
-        // Increase 3 more times and now, the threshold event should be triggered.
-        for (int i = 6; i <= 8; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                if (i < 8)
-                    assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        
-        assertTrue(triggerEvents.size() == 1);
-    }
-
-    /*
      * This test uses this files from src/test/resources:
      * - threshd-configuration.xml
      * - test-thresholds.xml
@@ -1640,8 +1479,8 @@ public class ThresholdingVisitorIT {
         ThresholdingVisitor visitor = createVisitor();
         
         // Adding Expected Thresholds
-        addHighThresholdEvent(1, 30, 25, 50, "/home", null, "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
-        addHighThresholdEvent(1, 50, 45, 60, "/opt", null, "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 30, 25, 50, "/home", "node", "(hda1_hrStorageUsed/hda1_hrStorageSize)*100", null, null);
+        addHighThresholdEvent(1, 50, 45, 60, "/opt", "node", "(hda2_hrStorageUsed/hda2_hrStorageSize)*100", null, null);
 
         // Creating Node ResourceType
         SnmpCollectionAgent agent = createCollectionAgent();
@@ -1826,10 +1665,10 @@ public class ThresholdingVisitorIT {
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
         org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
-        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        strategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         type.setStorageStrategy(strategy);
         org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
-        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);
@@ -1983,6 +1822,7 @@ public class ThresholdingVisitorIT {
         network.addService("ICMP");
         network.addService("SNMP");
         network.addService("HTTP");
+        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         MockDatabase db = new MockDatabase();
         db.populate(network);
         if (ifName != null)

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,34 +48,34 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class GpDetectorTest implements InitializingBean {
-    
+
     @Autowired
     public GpDetector m_detector;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
-    
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorWired(){
         assertNotNull(m_detector);
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("hello\n");
         m_detector.onInit();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
-    
-    @Test(timeout=90000) 
+
+    @Test(timeout=20000) 
     public void testDetectorWrongBanner() throws UnknownHostException{
         m_detector.setScript(System.getProperty("user.dir") + "/src/test/resources/TestBashScript.sh");
         m_detector.setBanner("world");

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.MockLogger;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
@@ -69,7 +71,9 @@ public class PageSequenceMonitorIT {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
+        final Properties props = new Properties();
+        props.put(MockLogger.LOG_KEY_PREFIX + "org.apache.http.client.protocol.ResponseProcessCookies", "ERROR");
+        MockLogAppender.setupLogging(props);
 
         m_monitor = new PageSequenceMonitor();
         m_monitor.initialize(Collections.<String, Object>emptyMap());
@@ -113,7 +117,7 @@ public class PageSequenceMonitorIT {
     private void setPageSequenceParam(String virtualHost) {
         String virtualHostParam;
         if (virtualHost == null) {
-            virtualHostParam = "";
+            virtualHostParam = "http-version=\"1.0\"";
         } else {
             virtualHostParam = "virtual-host=\"" + virtualHost + "\"";
         }
@@ -223,6 +227,7 @@ public class PageSequenceMonitorIT {
     }
 
     @Test
+    @Ignore("This test doesn't work against the new version of the website")
     public void testVirtualHostBadBehaviorForWordpressPlugin() throws Exception {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
@@ -270,20 +275,20 @@ public class PageSequenceMonitorIT {
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
+            "  <!-- Pick out the letters w-i-t-h to try and log in, this will fail -->\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" locationMatch=\"/opennms/spring_security_login\\?login_error\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
-            "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\"  port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\">\n" +
-            "    <parameter key=\"login_error\" value=\"\"/>\n" + 
-            "  </page>\n" + 
+            "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\" query=\"login_error\" port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have failed but did not\" successMatch=\"Your login attempt was not successful\"/>\n" +
+            "  <!-- Pick out the letters d-e-m-o to try and log in, this will succeed -->\n" +
             "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
             "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
             "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
             "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
             "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
             "  </page>\n" +
-            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\"  response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
+            "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" response-range=\"300-399\" port=\"10342\" method=\"POST\">\n" +
             "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
             "  </page>\n" + 
@@ -399,7 +404,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
+            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv6=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
@@ -412,7 +417,7 @@ public class PageSequenceMonitorIT {
         m_params.put("page-sequence", "" +
             "<?xml version=\"1.0\"?>" +
             "<page-sequence>\n" + 
-            "  <page host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
+            "  <page host=\"localhost\" virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" requireIPv4=\"true\"/>\n" +
             "</page-sequence>\n");
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);

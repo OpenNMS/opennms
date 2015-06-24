@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,7 +37,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,14 +72,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
@@ -91,10 +91,7 @@ public class SyslogdIT implements InitializingBean {
 
     private Syslogd m_syslogd;
 
-    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
-            Executors.newFixedThreadPool(3),
-            Executors.newFixedThreadPool(3)
-    });
+    private final ExecutorService m_executorService = Executors.newFixedThreadPool(3);
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -170,7 +167,7 @@ public class SyslogdIT implements InitializingBean {
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
@@ -246,7 +243,7 @@ public class SyslogdIT implements InitializingBean {
             //Failures are for weenies
         }
 
-        ea.verifyAnticipated(5000, 0, 0, 0, 0);
+        ea.verifyAnticipated(10000, 0, 0, 0, 0);
     }
 
     @Test

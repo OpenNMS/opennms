@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -184,12 +184,13 @@ public abstract class SnmpWalker implements Closeable {
         m_signal.await();
     }
     
-    public void waitFor(long timeout) throws InterruptedException {
-        if (m_signal.await(timeout, TimeUnit.MILLISECONDS)) {
-            // Everything completed on time
-        } else {
-            handleTimeout("Timeout of " + timeout + " expired while waiting for " + getClass().getSimpleName() + " to finish");
-        }
+    public boolean waitFor(long timeout) throws InterruptedException {
+        return m_signal.await(timeout, TimeUnit.MILLISECONDS);
+        /*
+         * NOTE: It is wrong to call handleTimeout here (which someone added). A timeout waiting for an agent respond
+         * is NOT the same as deciding you want to wait a while to see if the walker has finished and then do something
+         * else and then come back and potentially wait for another few millis.
+         */ 
     }
     
     // processErrors returns true if we need to retry the request and false otherwise

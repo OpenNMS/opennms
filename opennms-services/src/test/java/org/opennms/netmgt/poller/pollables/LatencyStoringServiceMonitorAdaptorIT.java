@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,56 +55,84 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.db.DataSourceFactory;
+import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.test.context.ContextConfiguration;
 
-public class LatencyStoringServiceMonitorAdaptorIT {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
+public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseAware<MockDatabase> {
     private EasyMockUtils m_mocks;
 
     private PollerConfig m_pollerConfig;
 
-    private RrdStrategy<Object,Object> m_rrdStrategy;
+    private RrdStrategy<Object, Object> m_rrdStrategy;
+
+    private MockDatabase m_db;
+
+    @Autowired
+    private MockEventIpcManager m_eventIpcManager;
+
+    @Autowired
+    private ApplicationContext m_context;
+
+    @Override
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_db = database;
+    }
 
     @Before
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
+        BeanUtils.setStaticApplicationContext(m_context);
+
         m_mocks = new EasyMockUtils();
         m_pollerConfig = m_mocks.createMock(PollerConfig.class);
         m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
         MockLogAppender.setupLogging();
 
-        RrdUtils.setStrategy(new NullRrdStrategy());
-        RrdUtils.setStrategy(m_rrdStrategy);
-
-        System.setProperty("opennms.home", "src/test/resources");
+        String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         PollOutagesConfigFactory.init();
+        System.setProperty("opennms.home", previousOpennmsHome);
     }
 
     @After
@@ -122,7 +150,7 @@ public class LatencyStoringServiceMonitorAdaptorIT {
         NumberFormat nf = NumberFormat.getInstance();
         Assert.assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
         
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package());
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package(), m_rrdStrategy);
         LinkedHashMap<String, Number> map = new LinkedHashMap<String, Number>();
         map.put("cheese", 1.5);
         
@@ -143,6 +171,7 @@ public class LatencyStoringServiceMonitorAdaptorIT {
     }
     
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testThresholds() throws Exception {
         EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
@@ -157,6 +186,7 @@ public class LatencyStoringServiceMonitorAdaptorIT {
 
     // TODO: This test will fail if you have a default locale with >3 characters for month, e.g. Locale.FRENCH
     @Test
+    @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testThresholdsWithScheduledOutage() throws Exception {
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
@@ -191,8 +221,7 @@ public class LatencyStoringServiceMonitorAdaptorIT {
 
     @SuppressWarnings("unchecked")
     private void executeThresholdTest(EventAnticipator anticipator) throws Exception {
-        System.setProperty("opennms.home", "src/test/resources");
-        
+
         Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("rrd-repository", "/tmp");
         parameters.put("ds-name", "icmp");
@@ -233,11 +262,7 @@ public class LatencyStoringServiceMonitorAdaptorIT {
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), endsWith(":100"));
         m_rrdStrategy.closeFile(isA(Object.class));
 
-        MockEventIpcManager eventMgr = new MockEventIpcManager();
-        eventMgr.setEventAnticipator(anticipator);
-        eventMgr.setSynchronous(true);
-        EventIpcManager eventdIpcMgr = (EventIpcManager)eventMgr;
-        EventIpcManagerFactory.setIpcManager(eventdIpcMgr);
+        m_eventIpcManager.setEventAnticipator(anticipator);
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
@@ -246,14 +271,14 @@ public class LatencyStoringServiceMonitorAdaptorIT {
         network.setIfAlias("eth0");
         network.addService("ICMP");
         network.addService("SNMP");
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-        db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", "eth0", "eth0", 1);
-        DataSourceFactory.setInstance(db);
+        m_db.populate(network);
         
         m_mocks.replayAll();
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_rrdStrategy);
+        // Make sure that the ThresholdingSet initializes with test settings
+        String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         adaptor.poll(svc, parameters);
+        System.setProperty("opennms.home", previousOpennmsHome);
         m_mocks.verifyAll();
     }
 

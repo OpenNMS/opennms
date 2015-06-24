@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,8 +34,6 @@ import org.opennms.features.gwt.snmpselect.list.client.view.handler.SnmpSelectTa
 import org.opennms.features.gwt.tableresources.client.OnmsSimplePagerResources;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -44,7 +42,6 @@ import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 
@@ -58,9 +55,6 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
     }
 
     @UiField
-    LayoutPanel m_layoutPanel;
-    
-    @UiField
     SnmpSelectTable m_snmpSelectTable;
     
     @UiField
@@ -73,12 +67,7 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
 
     public SnmpSelectListViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
-        m_layoutPanel.setSize("100%", "500px");
-        m_layoutPanel.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
-        m_layoutPanel.getElement().getStyle().setBorderWidth(1, Unit.PX);
-        m_layoutPanel.getElement().getStyle().setBorderColor("#D0D0D0");
-        
-        m_snmpSelectTable.setWidth("100%");
+
         m_snmpSelectTable.setCollectUpdateHandler(new SnmpSelectTableCollectUpdateHandler() {
             
             @Override
@@ -94,7 +83,6 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
         
         m_dataList = new ListDataProvider<SnmpCellListItem>();
         m_dataList.addDataDisplay(m_snmpSelectTable);
-        
     }
 
     @Override
@@ -116,7 +104,4 @@ public class SnmpSelectListViewImpl extends Composite implements SnmpSelectListV
     public void showError(String message) {
         Window.alert("Error: " + message);
     }
-    
-    
-
 }

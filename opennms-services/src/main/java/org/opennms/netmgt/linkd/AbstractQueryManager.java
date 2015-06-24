@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,9 +34,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AtInterfaceDao;
@@ -62,6 +62,13 @@ import org.opennms.netmgt.linkd.snmp.Vlan;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.CdpInterface;
+import org.opennms.netmgt.model.topology.IsisISAdjInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
+import org.opennms.netmgt.model.topology.LldpRemInterface;
+import org.opennms.netmgt.model.topology.OspfNbrInterface;
+import org.opennms.netmgt.model.topology.RouterInterface;
 import org.opennms.netmgt.model.OnmsAtInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpRouteInterface;
@@ -284,7 +291,7 @@ public abstract class AbstractQueryManager implements QueryManager {
         }
 
         node.setIsisSysId(isisSysId);
-        Map<Integer, Integer> isisCircIndexIfIndexMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> isisCircIndexIfIndexMap = new TreeMap<Integer, Integer>();
         for (final IsisCircTableEntry circ : snmpcoll.getIsisCircTable()) {
             isisCircIndexIfIndexMap.put(circ.getIsisCircIndex(),
                                         circ.getIsisCircIfIndex());
@@ -430,7 +437,7 @@ public abstract class AbstractQueryManager implements QueryManager {
 
     private Map<Integer, LldpLocTableEntry> getLocalPortNumberToLocalTableEntryMap(
             SnmpCollection snmpcoll) {
-        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = new HashMap<Integer, LldpLocTableEntry>();
+        Map<Integer, LldpLocTableEntry> localPortNumberToLocTableEntryMap = new TreeMap<Integer, LldpLocTableEntry>();
         for (final LldpLocTableEntry lldpLocTableEntry: snmpcoll.getLldpLocTable()) {
             localPortNumberToLocTableEntryMap.put(lldpLocTableEntry.getLldpLocPortNum(), lldpLocTableEntry);
         }
@@ -547,7 +554,7 @@ public abstract class AbstractQueryManager implements QueryManager {
                 LOG.debug("processCdp: Zero CDP cache table entries for {}/{}", node.getNodeId(), str(node.getSnmpPrimaryIpAddr()));
             }
         }
-        Map<Integer, String> cdpifindextoIfnameMap = new HashMap<Integer, String>();
+        Map<Integer, String> cdpifindextoIfnameMap = new TreeMap<Integer, String>();
         if (snmpcoll.hasCdpInterfaceTable()) {
         for (final CdpInterfaceTableEntry cdpEntry: snmpcoll.getCdpInterfaceTable()) {
             LOG.debug("processCdp:adding interface table entries ifindex/ifname {}/{} for node {}", cdpEntry.getCdpInterfaceIfIndex(), cdpEntry.getCdpInterfaceName(), node.getNodeId());
@@ -851,9 +858,9 @@ public abstract class AbstractQueryManager implements QueryManager {
 	private void processDot1dBasePortAndStpPortTables(final OnmsNode onmsNode,
 			final LinkableNode node, final OnmsVlan vlan,
 			final SnmpVlanCollection snmpVlanColl, final Date scanTime) {
-		Map<Integer, OnmsStpInterface> stpinterfaces = new HashMap<Integer, OnmsStpInterface>(snmpVlanColl.getDot1dBasePortTable().size());        
+		Map<Integer, OnmsStpInterface> stpinterfaces = new TreeMap<Integer, OnmsStpInterface>();
 		stpinterfaces = processDot1DBasePortTable(onmsNode,node, scanTime, vlan, snmpVlanColl,stpinterfaces);
-		    
+
 		if (snmpVlanColl.hasDot1dStpPortTable()) {
 		    stpinterfaces = processDot1StpPortTable(node, scanTime, vlan, snmpVlanColl, stpinterfaces);
 		}
@@ -938,7 +945,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             final int curfdbstatus = dot1dfdbentry.getQBridgeDot1dTpFdbStatus();
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
             	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
@@ -949,10 +956,10 @@ public abstract class AbstractQueryManager implements QueryManager {
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                 LOG.debug("processQBridgeDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                LOG.debug("processQBridgeDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processQBridgeDot1DTpFdbTable: Unable to determine status. Skipping.");
@@ -989,7 +996,7 @@ public abstract class AbstractQueryManager implements QueryManager {
             LOG.debug("processDot1DTpFdbTable: MAC address ({}) found on bridge port {} on node {}", curMacAddress, fdbport, node.getNodeId());
 
             if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_LEARNED && vlan.getVlanId() != null) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                 LOG.debug("processDot1DTpFdbTable: Found learned status on bridge port.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_SELF) {
             	Integer ifIndex = node.getIfindexFromBridgePort(fdbport);
@@ -1000,10 +1007,10 @@ public abstract class AbstractQueryManager implements QueryManager {
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_INVALID) {
                 LOG.debug("processDot1DTpFdbTable: Found 'INVALID' status. Skipping.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_MGMT) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                 LOG.debug("processDot1DTpFdbTable: Found 'MGMT' status. Saving.");
             } else if (curfdbstatus == SNMP_DOT1D_FDB_STATUS_OTHER) {
-                node.addBridgeForwardingTableEntry(fdbport, curMacAddress, vlan.getVlanId());
+                node.addBridgeForwardingTableEntry(fdbport, curMacAddress);
                 LOG.debug("processDot1DTpFdbTable: Found 'OTHER' status. Saving.");
             } else if (curfdbstatus == -1) {
                 LOG.warn("processDot1DTpFdbTable: Unable to determine status. Skipping.");

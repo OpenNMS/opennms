@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,7 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -49,7 +49,9 @@ import org.opennms.core.resource.Vault;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class ServletInitializer extends Object {
+public abstract class ServletInitializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
     /**
      * Private, empty constructor so that this class cannot be instantiated
      * outside of itself.
@@ -116,24 +118,17 @@ public class ServletInitializer extends Object {
         	throw new ServletException("Could not load version.properties", e);
         }
 
-        for (Enumeration<Object> opennmsKeys = opennmsProperties.keys(); opennmsKeys.hasMoreElements(); ) {
-        	Object key = opennmsKeys.nextElement();
+        for (Object key : opennmsProperties.keySet()) {
         	if (!properties.containsKey(key)) {
         		properties.put(key, opennmsProperties.get(key));
         	}
         }
 
-        Enumeration<?> initParamNames = context.getInitParameterNames();
-        while (initParamNames.hasMoreElements()) {
-        	String name = (String) initParamNames.nextElement();
+        for (String name : Collections.list(context.getInitParameterNames())) {
         	properties.put(name, context.getInitParameter(name));
         }
 
         Vault.setProperties(properties);
-        Vault.setHomeDir(homeDir);
-
-        // This is done inside "Vault.getDataSource" to ensure that "Vault" could be used by "IfLabel" - See Bug 4117
-        // Vault.setDataSource(DataSourceFactory.getInstance());
     }
 
     private static void loadPropertiesFromFile(Properties opennmsProperties, String propertiesFile) throws FileNotFoundException, ServletException, IOException {
@@ -151,34 +146,4 @@ public class ServletInitializer extends Object {
             configurationStream.close();
         }
     }
-
-    /**
-     * Releases all shared resources on the first invocation of this method. All
-     * other invocations are ignored. This method is synchronized to ensure only
-     * the first invocation performs the destruction.
-     *
-     * <p>
-     * Call this method in the <code>destroy</code> method of your servlet or
-     * JSP.
-     * </p>
-     *
-     * @param context
-     *            the <code>ServletContext</code> instance in which your
-     *            servlet is running
-     * @throws javax.servlet.ServletException if any.
-     */
-    public static synchronized void destroy(ServletContext context) throws ServletException {
-    }
-
-    /**
-     * Return the absolute pathname of where OpenNMS's configuration can be
-     * found.
-     *
-     * @deprecated Use {@link Vault#getHomeDir Vault.getHomeDir}instead.
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getHomeDir() {
-        return (Vault.getHomeDir());
-    }
-
 }

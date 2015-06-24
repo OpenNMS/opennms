@@ -35,6 +35,7 @@
 
 drop table accessLocks cascade;
 drop table accesspoints cascade;
+drop table requisitioned_categories cascade;
 drop table category_node cascade;
 drop table categories cascade;
 drop table assets cascade;
@@ -50,10 +51,6 @@ drop table node cascade;
 drop table service cascade;
 drop table distPoller cascade;
 drop table events cascade;
-drop table vulnerabilities cascade;
-drop table vulnPlugins cascade;
-drop table serverMap cascade;
-drop table serviceMap cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -79,6 +76,11 @@ drop table group_user cascade;
 drop table category_user cascade;
 drop table category_group cascade;
 drop table filterfavorites cascade;
+drop table hwentity cascade;
+drop table hwentityattribute cascade;
+drop table hwentityattributetype cascade;
+drop table minions_properties cascade;
+drop table minions cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -91,7 +93,6 @@ drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
 drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
-drop sequence vulnNxtId;
 drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
@@ -172,11 +173,6 @@ create sequence outageNxtId minvalue 1;
 --# install: notifyNxtId notifyID notifications
 create sequence notifyNxtId minvalue 1;
 
---# Sequence for the vulnerabilityID column in the vulnerabilities table
---#          sequence, column,         table
---# install: vulnNxtId vulnerabilityID vulnerabilities
-create sequence vulnNxtId minvalue 1;
-
 --# Sequence for the id column in the categories table
 --#          sequence, column, table
 --# install: catNxtId categoryid   categories
@@ -218,41 +214,6 @@ CREATE TABLE accessLocks (
 
 --# 
 
-
---########################################################################
---# serverMap table - Contains a list of IP Addresses mapped to
---#                   OpenNMS servers
---#
---# This table contains the following fields:
---#
---#  ipAddr      : IP address of the device to be monitored
---#  serverName  : Text field to store the server name
---#
---########################################################################
-
-create table serverMap (
-	ipAddr			text not null,
-	serverName		varchar(64) not null );
-
-create index server_name_idx on serverMap(serverName);
-
---########################################################################
---# serviceMap table - Contains a list of IP Addresses mapped to
---#                    OpenNMS services
---#
---# This table contains the following fields:
---#
---#  ipAddr          : IP address of the device to be monitored
---#  serviceName     : Text field to store the service name
---#
---########################################################################
-
-create table serviceMap (
-	ipAddr			text not null,
-	serviceMapName		varchar(255) not null
-);
-create index servicemap_name_idx on serviceMap(serviceMapName);
-create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
 --########################################################################
 --# distPoller table - Contains information on Distributed Pollers
@@ -479,7 +440,6 @@ create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
 	ipAddr			text not null,
-	ifIndex			integer,
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
@@ -554,8 +514,6 @@ create unique index service_servicename_key on service (serviceid);
 
 create table ifServices (
     id				integer default nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer not null,
-	ipAddr			text not null,
 	ifIndex			integer,
 	serviceID		integer not null,
 	lastGood		timestamp with time zone,
@@ -568,16 +526,12 @@ create table ifServices (
 
 	CONSTRAINT ifservices_pkey PRIMARY KEY (id), 
 	CONSTRAINT ipinterface_fkey FOREIGN KEY (ipInterfaceId) REFERENCES ipInterface (id) ON DELETE CASCADE,
-	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
 
-create unique index ifservices_nodeid_ipaddr_svc_unique on ifservices(nodeID, ipAddr, serviceId);
-create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
-create index ifservices_nodeid_status on ifservices(nodeid, status);
-create index ifservices_nodeid_idx on ifservices(nodeID);
+create unique index ifservices_ipinterfaceid_svc_unique on ifservices(ipInterfaceId, serviceId);
+create index ifservices_ipinterfaceid_status on ifservices(ipInterfaceId, status);
 create index ifservices_serviceid_idx on ifservices(serviceID);
-create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 
 --##################################################################
@@ -740,9 +694,7 @@ create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, event
 --#                      a non-null value when a new outage is inserted
 --#                      but might be null in case of an opennms upgrade
 --#  svcRegainedEventID: ID of the event that cleared the outage
---#  nodeID            : Unique integer identifier for node
---#  ipAddr            : IP Address of node's interface
---#  serviceID         : Unique integer identifier of service/poller package
+--#  ifServiceId       : Unique integer identifier of service
 --#  ifLostService     : Time of lost service event
 --#  ifRegainedService : Time of regained service event
 --#  suppressTime 	   : Time to suppress the outage
@@ -754,9 +706,6 @@ create table outages (
 	outageID		integer not null,
 	svcLostEventID		integer,
 	svcRegainedEventID	integer,
-	nodeID			integer not null,
-	ipAddr			text not null,
-	serviceID		integer not null,
 	ifLostService		timestamp with time zone not null,
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
@@ -766,124 +715,14 @@ create table outages (
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
-	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
-	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey1 FOREIGN KEY (nodeId, ipAddr, serviceId) REFERENCES ifServices (nodeId, ipAddr, serviceId) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
 );
 
-create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
-create index outages_nodeid_idx on outages(nodeID);
-create index outages_serviceid_idx on outages(serviceID);
-create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
-create index outages_ifServivceId_idx on outages(ifServiceId);
-
---########################################################################
---#
---# vulnerabilities table -- This table maintains a record of vulnerabilites
---#                          that have been detected on target IP addresses.
---#
---# This table provides the following information:
---#
---#  vulnerabilityID   : Unique integer identifier for the outage
---#  nodeID            : Unique integer identifier for node
---#  ipAddr            : IP Address of node's interface
---#  serviceID         : Unique integer identifier of service/poller package
---#
---#  creationTime      : Initial creation time of the vulnerability
---#  lastAttemptTime   : Last time that an attempt was made to scan for
---#                      this vulnerability
---#  lastScanTime      : Most recent successful scan time
---#  resolvedTime      : Time after which the vulnerability was no longer
---#                      detected
---#
---#  severity          : Severity of the vulnerability (identical to event
---#                      severities
---#  pluginID          : ID number of the plugin that produced the vulnerability
---#  pluginSubID       : Specific vulnerability type generated by the plugin
---#  logmsg            : Terse description of vulnerability (usually
---#                      the plugin name plus short description)
---#  descr             : Verbose description of vulnerability
---#  port              : Port that the vulnerability affects
---#  protocol          : Network protocol of the attack (TCP, UDP, ICMP)
---#
---########################################################################
-
-create table vulnerabilities (
-	vulnerabilityID		integer not null,
-	nodeID			integer,
-	ipAddr			text,
-	serviceID		integer,
-	creationTime		timestamp with time zone not null,
-	lastAttemptTime		timestamp with time zone not null,
-	lastScanTime		timestamp with time zone not null,
-	resolvedTime		timestamp with time zone,
-	severity		integer not null,
-	pluginID		integer not null,
-	pluginSubID             integer not null,
-	logmsg                  text,
-	descr			text,
-	port			integer,
-	protocol		varchar(32),
-	cveEntry		varchar(255),
-
-	constraint pk_vulnerabilityID primary key (vulnerabilityID)
-);
-
-create index vulnerabilities_nodeid_idx on vulnerabilities(nodeID);
-create index vulnerabilities_ipaddr_idx on vulnerabilities(ipAddr);
-create index vulnerabilities_severity_idx on vulnerabilities(severity);
-create index vulnerabilities_port_idx on vulnerabilities(port);
-create index vulnerabilities_protocol_idx on vulnerabilities(protocol);
-
---########################################################################
---#
---# vulnPlugins table -- This table contains a list of information about
---#                      Nessus plugins that are in use by the nessusd
---#                      daemons that are being used by vulnscand.
---#
---# This table provides the following information:
---#
---#  pluginID          : Plugin ID number (from Nessus)
---#  pluginSubID       : Specific vulnerability type within the plugin
---#  name              : Short name of the plugin
---#  category          : Category of the plugin's behavior (scanner,
---#                      attack, etc)
---#  copyright         : Copyright notice for the plugin
---#  descr             : Verbose description of vulnerability
---#  summary           : Short description of plugin behavior
---#  family            : User-comprehensible type of attack (CGI abuses,
---#                      Backdoors, etc)
---#  version           : Version of the plugin code
---#  cveEntry          : CVE entry associated with the vulnerability
---#                      that this plugin tests
---#  md5               : 128-bit hex MD5 checksum of the plugin that
---#                      can be used to detect changes in the plugin code
---#
---########################################################################
-
-create table vulnPlugins (
-        pluginID                integer not null,
-        pluginSubID             integer not null,
-        name                    varchar(128),
-        category                varchar(32),
-        copyright               varchar(128),
-        descr                   text,
-        summary                 varchar(256),
-        family                  varchar(32),
-        version                 varchar(32),
-        cveEntry                varchar(255),
-        md5                     varchar(32)
-);
-
---#  This constraint not understood installer
---#        CONSTRAINT pk_vulnplugins PRIMARY KEY (pluginID,pluginSubID));
---#
-
-create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID);
+create index outages_ifServiceId_idx on outages(ifServiceId);
+create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding
@@ -1150,76 +989,76 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 create table assets (
         id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
         nodeID          integer,
-        category        varchar(64) not null,
-        manufacturer    varchar(64),
-        vendor          varchar(64),
-        modelNumber     varchar(64),
-        serialNumber    varchar(64),
-        description     varchar(128),
-        circuitId       varchar(64),
-        assetNumber     varchar(64),
-        operatingSystem varchar(64),
-        rack            varchar(64),
-        slot            varchar(64),
-        port            varchar(64),
-        region          varchar(64),
-        division        varchar(64),
-        department      varchar(64),
-        address1        varchar(256),
-        address2        varchar(256),
-        city            varchar(64),
-        state           varchar(64),
-        zip             varchar(64),
-        country         varchar(64),
-        building        varchar(64),
-        floor           varchar(64),
-        room            varchar(64),
-        vendorPhone     varchar(64),
-        vendorFax       varchar(64),
-        vendorAssetNumber varchar(64),
-        username		varchar(32),
-        password		varchar(32),
-        enable			varchar(32),
+        category        text not null,
+        manufacturer    text,
+        vendor          text,
+        modelNumber     text,
+        serialNumber    text,
+        description     text,
+        circuitId       text,
+        assetNumber     text,
+        operatingSystem text,
+        rack            text,
+        slot            text,
+        port            text,
+        region          text,
+        division        text,
+        department      text,
+        address1        text,
+        address2        text,
+        city            text,
+        state           text,
+        zip             text,
+        country         text,
+        building        text,
+        floor           text,
+        room            text,
+        vendorPhone     text,
+        vendorFax       text,
+        vendorAssetNumber text,
+        username		text,
+        password		text,
+        enable			text,
         autoenable		char(1),
         connection		varchar(32),
         userLastModified char(20) not null,
         lastModifiedDate timestamp with time zone not null,
         dateInstalled   varchar(64),
-        lease           varchar(64),
+        lease           text,
         leaseExpires    varchar(64),
-        supportPhone    varchar(64),
-        maintContract   varchar(64),
+        supportPhone    text,
+        maintContract   text,
         maintContractExpires varchar(64),
-        displayCategory   varchar(64),
-        notifyCategory   varchar(64),
-        pollerCategory   varchar(64),
-        thresholdCategory   varchar(64),
+        displayCategory   text,
+        notifyCategory   text,
+        pollerCategory   text,
+        thresholdCategory   text,
         comment         text,
-        managedObjectInstance varchar(512),
-        managedObjectType varchar(512),
-        cpu		varchar(32),
-        ram		varchar(10),
-        storagectrl	varchar(32),
-        hdd1		varchar(32),
-        hdd2		varchar(32),
-        hdd3		varchar(32),
-        hdd4		varchar(32),
-        hdd5		varchar(32),
-        hdd6		varchar(32),
+        managedObjectInstance text,
+        managedObjectType text,
+        cpu		text,
+        ram		text,
+        storagectrl	text,
+        hdd1		text,
+        hdd2		text,
+        hdd3		text,
+        hdd4		text,
+        hdd5		text,
+        hdd6		text,
         numpowersupplies		varchar(1),
         inputpower		varchar(6),
-        additionalhardware		varchar(64),
-        admin		varchar(32),
+        additionalhardware		text,
+        admin		text,
         snmpcommunity		varchar(32),
         rackunitheight		varchar(2),
         longitude		float,
         latitude		float,
-        vmwaremanagedobjectid	varchar(70),
-        vmwaremanagedentitytype	varchar(70),
-        vmwaremanagementserver	varchar(70),
+        vmwaremanagedobjectid	text,
+        vmwaremanagedentitytype	text,
+        vmwaremanagementserver	text,
         vmwaretopologyinfo	text,
-        vmwarestate	varchar(255),
-        
+        vmwarestate	text,
+
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
@@ -1285,6 +1124,28 @@ create table category_node (
 CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
 CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
+
+--########################################################################
+--# requisitioned_categories table - Many-to-Many mapping table of
+--# requisition categories to nodes
+--#
+--# This table contains the following fields:
+--#
+--# id           : The ID of the association
+--# categoryId   : The category ID from categories table
+--# nodeId       : The node ID from the node table.
+--########################################################################
+
+create table requisitioned_categories (
+                id                      integer default nextval('opennmsNxtId') not null,
+                categoryId              integer not null,
+                nodeId                  integer not null,
+
+                constraint requisitioned_nodeid_fkey foreign key (nodeId) references node ON DELETE CASCADE,
+                constraint requisitioned_categoryid_fkey foreign key (categoryId) references categories (categoryId) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX requisitioned_category_node_unique_idx on requisitioned_categories(nodeId, categoryId);
 
 --########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
@@ -2245,9 +2106,54 @@ CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
+--########################################################################
+--#
+--# minions - table for tracking remote minions
+--#
+--# id           : The ID of the minion
+--# location     : The monitoring location associated with the minion
+--# status       : The status of the minion
+--# last_updated : The last time the minion reported in
+--#
+--########################################################################
+
+create table minions (
+    id           varchar(36) not null,
+    location     text not null,
+    status       text,
+    last_updated timestamp with time zone default now(),
+
+    constraint pk_minions primary key (id)
+);
+
+--########################################################################
+--#
+--# minions_properties - arbitrary properties associated with a minion
+--#
+--# id        : The unique ID of the property entry
+--# minion_id : The ID of the minion
+--# key       : The property key
+--# value     : The property value
+--#
+--########################################################################
+
+create table minions_properties (
+    id        integer default nextval('opennmsnxtid') not null,
+    minion_id varchar(36) not null,
+    key       text not null,
+    value     text,
+
+    constraint pk_minions_properties_id primary key (id),
+    constraint fk_minions_properties foreign key (minion_id) references minions (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_id, key);
+
 --# Begin enlinkd table
 drop table lldpElement cascade;
 drop table lldpLink cascade;
+drop table cdpElement cascade;
+drop table cdpLink cascade;
 drop table ospfElement cascade;
 drop table ospfLink cascade;
 drop table isisElement cascade;
@@ -2261,9 +2167,9 @@ drop table bridgeStpLink cascade;
 create table lldpElement (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
-      lldpChassisId varchar(255) not null,
+      lldpChassisId text not null,
       lldpChassisIdSubType integer not null,
-      lldpSysname varchar(255) not null,
+      lldpSysname text not null,
       lldpNodeCreateTime	timestamp not null,
       lldpNodeLastPollTime	timestamp not null,
       constraint pk_lldpelement_id primary key (id),
@@ -2274,20 +2180,49 @@ create table lldpLink (
       id integer default nextval('opennmsnxtid') not null,
       nodeid          integer not null,
       lldpLocalPortNum integer not null,
-      lldpPortId varchar(255) not null,
+      lldpPortId text not null,
       lldpPortIdSubType integer not null,
-      lldpPortDescr varchar(255) not null,
+      lldpPortDescr text not null,
       lldpPortIfindex integer,
-      lldpRemChassisId varchar(255) not null,
+      lldpRemChassisId text not null,
       lldpRemChassisIdSubType integer not null,
-      lldpRemSysname varchar(255) not null,
-      lldpRemPortId varchar(255) not null,
+      lldpRemSysname text not null,
+      lldpRemPortId text not null,
       lldpRemPortIdSubType integer not null,
-      lldpRemPortDescr varchar(255) not null,
+      lldpRemPortDescr text not null,
       lldpLinkCreateTime	timestamp not null,
       lldpLinkLastPollTime	timestamp not null,
       constraint pk_lldplink_id primary key (id),
       constraint fk_nodeIDlldplink foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpElement (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpGlobalRun    integer not null,
+      cdpGlobalDeviceId text not null,
+      cdpNodeCreateTime	timestamp not null,
+      cdpNodeLastPollTime	timestamp not null,
+      constraint pk_cdpelement_id primary key (id),
+      constraint fk_nodeIDcdpelem foreign key (nodeid) references node ON DELETE CASCADE
+);
+
+create table cdpLink (
+      id integer default nextval('opennmsnxtid') not null,
+      nodeid          integer not null,
+      cdpCacheIfIndex integer not null,
+      cdpCacheDeviceIndex integer not null,
+      cdpInterfaceName text,
+      cdpCacheAddressType integer not null,
+      cdpCacheAddress text not null,
+      cdpCacheVersion text not null,
+      cdpCacheDeviceId text not null,
+      cdpCacheDevicePort text not null,
+      cdpCacheDevicePlatform text not null,
+      cdpLinkCreateTime	timestamp not null,
+      cdpLinkLastPollTime timestamp not null,
+      constraint pk_cdplink_id primary key (id),
+      constraint fk_nodeIDcdplink foreign key (nodeid) references node ON DELETE CASCADE
 );
 
 create table ospfElement (
@@ -2370,7 +2305,7 @@ create table bridgeElement (
     baseNumPorts             integer not null,
     basetype                 integer not null,
     vlan                     integer,
-    vlanname                 varchar(64),
+    vlanname                 text,
     stpProtocolSpecification integer,
     stpPriority              integer,
     stpdesignatedroot        varchar(16),
@@ -2387,9 +2322,9 @@ create table bridgeMacLink (
     nodeid              integer not null,
     bridgePort          integer not null,
     bridgePortIfIndex   integer,
-    bridgePortIfName    varchar(32),
+    bridgePortIfName    text,
     vlan                integer,
-    macAdreess          varchar(12) not null,
+    macAddress          varchar(12) not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),
@@ -2401,12 +2336,12 @@ create table bridgeBridgeLink (
     nodeid                  integer not null,
     bridgePort              integer,
     bridgePortIfIndex       integer,
-    bridgePortIfName        varchar(32),
+    bridgePortIfName        text,
     vlan                    integer,
     designatedNodeid        integer not null,
-    designatedPort          integer,
-    designatedPortIfIndex   integer,
-    designatedPortIfName    varchar(32),
+    designatedBridgePort    integer,
+    designatedBridgePortIfIndex   integer,
+    designatedBridgePortIfName    text,
     designatedVlan          integer,
     bridgeBridgeLinkCreateTime     timestamp not null,
     bridgeBridgeLinkLastPollTime   timestamp not null,
@@ -2424,7 +2359,7 @@ create table bridgeStpLink (
     stpPortEnable        integer not null,
     stpPortPathCost      integer not null,
     stpPortIfIndex       integer,
-    stpPortIfName        varchar(32),
+    stpPortIfName        text,
     vlan                 integer,
     designatedCost       integer not null,
     designatedRoot       varchar(16) not null,
@@ -2628,3 +2563,57 @@ CREATE TABLE filterfavorites (
   CONSTRAINT pk_filterid PRIMARY KEY (filterid)
 );
 CREATE INDEX filternamesidx ON filterfavorites (username, filtername, page);
+
+--##################################################################
+--# Hardware Inventory Tables
+--##################################################################
+
+create table hwEntity (
+    id                      integer default nextval('opennmsNxtId') not null,
+    parentId                integer,
+    nodeId                  integer,
+    entPhysicalIndex        integer not null,
+    entPhysicalParentRelPos integer,
+    entPhysicalName         varchar(128),
+    entPhysicalDescr        varchar(128),
+    entPhysicalAlias        varchar(128),
+    entPhysicalVendorType   varchar(128),
+    entPhysicalClass        varchar(128),
+    entPhysicalMfgName      varchar(128),
+    entPhysicalModelName    varchar(128),
+    entPhysicalHardwareRev  varchar(128),
+    entPhysicalFirmwareRev  varchar(128),
+    entPhysicalSoftwareRev  varchar(128),
+    entPhysicalSerialNum    varchar(128),
+    entPhysicalAssetID      varchar(128),
+    entPhysicalIsFRU        bool, 
+    entPhysicalMfgDate      timestamp,
+    entPhysicalUris         varchar(256),
+    constraint pk_hwEntity_id primary key (id),
+    constraint fk_hwEntity_parent foreign key (parentId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntity_node foreign key (nodeId) references node on delete cascade
+);
+create index hwEntity_nodeId_idx on hwEntity(nodeid);
+create index hwEntity_entPhysicalIndex_idx on hwEntity(entPhysicalIndex);
+
+create table hwEntityAttributeType (
+    id          integer default nextval('opennmsNxtId') not null,
+    attribName  varchar(128) not null,
+    attribOid   varchar(128) not null,
+    attribClass varchar(32) not null,
+    constraint  pk_hwEntity_attributeType_id primary key (id)
+);
+create unique index hwEntityAttributeType_unique_name_idx on hwEntityAttributeType(attribName);
+create unique index hwEntityAttributeType_unique_oid_idx on hwEntityAttributeType(attribOid);
+
+create table hwEntityAttribute (
+    id             integer default nextval('opennmsNxtId') not null,
+    hwEntityId     integer not null,
+    hwAttribTypeId integer not null,
+    attribValue    varchar(256) not null,
+    constraint pk_hwEntity_attribute_id primary key (id),
+    constraint fk_hwEntity_hwEntityAttribute foreign key (hwEntityId) references hwEntity (id) on delete cascade,
+    constraint fk_hwEntityAttribute_hwEntityAttributeType foreign key (hwAttribTypeId) references hwEntityAttributeType (id) on delete cascade
+);
+create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
+

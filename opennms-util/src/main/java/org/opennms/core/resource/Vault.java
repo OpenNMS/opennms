@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,12 +55,6 @@ public abstract class Vault {
      * Holds all the application configuration properties.
      */
     private static Properties properties = new Properties(System.getProperties());
-
-    /**
-     * Stores the directory where the OpenNMS configuration files can be found.
-     * The default is <em>/opt/OpenNMS</em>.
-     */
-    private static String homeDir = "/opt/opennms/";
 
     /**
      * Set the application configuration properties.
@@ -103,31 +97,6 @@ public abstract class Vault {
      */
     public static String getProperty(String key) {
         return properties.getProperty(key);
-    }
-
-    /**
-     * Set the directory so we will know where we can get the OpenNMS
-     * configuration files.
-     *
-     * @param homeDir a {@link java.lang.String} object.
-     */
-    public static void setHomeDir(String homeDir) {
-        if (homeDir == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        Vault.homeDir = homeDir;
-        Vault.properties.setProperty("opennms.home", homeDir);
-        System.setProperty("opennms.home", homeDir);
-    }
-
-    /**
-     * Get the directory that holds the OpenNMS configuration files.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getHomeDir() {
-        return homeDir;
     }
 
     /**

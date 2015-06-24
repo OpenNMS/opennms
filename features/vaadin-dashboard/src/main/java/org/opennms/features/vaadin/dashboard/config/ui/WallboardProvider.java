@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,13 +25,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.data.util.BeanItemContainer;
+
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.model.Wallboards;
 
 import javax.xml.bind.JAXB;
+
 import java.io.File;
 
 /**
@@ -50,10 +53,6 @@ public class WallboardProvider {
      * The configuration {@link File} to be used.
      */
     private File m_cfgFile = new File("etc/dashboard-config.xml");
-    /**
-     * The beancontainer this class uses.
-     */
-    private BeanItemContainer<Wallboard> m_beanItemContainer = new BeanItemContainer<Wallboard>(Wallboard.class);
 
     /**
      * Private default constructor used to instantiate this class.
@@ -68,7 +67,7 @@ public class WallboardProvider {
      * @return the {@link BeanItemContainer}
      */
     public BeanItemContainer<Wallboard> getBeanContainer() {
-        return m_beanItemContainer;
+        return new BeanItemContainer<Wallboard>(Wallboard.class, m_wallboards.getWallboards());
     }
 
     /**
@@ -99,18 +98,6 @@ public class WallboardProvider {
             m_wallboards = new Wallboards();
         } else {
             m_wallboards = JAXB.unmarshal(m_cfgFile, Wallboards.class);
-        }
-
-        updateBeanItemContainer();
-    }
-
-    /**
-     * This method updates the {@link BeanItemContainer} of this object.
-     */
-    private void updateBeanItemContainer() {
-        m_beanItemContainer.removeAllItems();
-        for (Wallboard wallboard : m_wallboards.getWallboards()) {
-            m_beanItemContainer.addItem(wallboard);
         }
     }
 
@@ -167,7 +154,6 @@ public class WallboardProvider {
         }
         m_wallboards.getWallboards().add(wallboard);
         save();
-        updateBeanItemContainer();
     }
 
     /**
@@ -181,6 +167,5 @@ public class WallboardProvider {
         }
         m_wallboards.getWallboards().remove(wallboard);
         save();
-        updateBeanItemContainer();
     }
 }

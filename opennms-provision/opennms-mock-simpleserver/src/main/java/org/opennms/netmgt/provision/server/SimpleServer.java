@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -85,6 +85,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private String m_banner;
     private int m_bannerDelay = 0;
     protected volatile boolean m_stopped = false;
+    private volatile SimpleServerRunnable m_runnable;
 
     /**
      * <p>setBanner</p>
@@ -172,10 +173,17 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @throws java.lang.Exception if any.
      */
-    public void startServer() throws Exception {
-        setServerThread(new Thread(getRunnable(), this.getClass().getSimpleName()));
+    public void startServer() throws IOException {
+        m_runnable = getRunnable();
+
+        setServerThread(new Thread(m_runnable, this.getClass().getSimpleName()));
         getServerThread().setDaemon(true);
         getServerThread().start();
+        try {
+            if (m_runnable != null) m_runnable.awaitStartup();
+        } catch (final InterruptedException e) {
+            LOG.debug("Interrupted while starting up.", e);
+        }
     }
     
     /**
@@ -186,20 +194,23 @@ public class SimpleServer extends SimpleConversationEndPoint {
     public void stopServer() throws IOException {
         if (!m_stopped) {
             m_stopped = true;
-            Thread t = getServerThread();
+            final Thread t = getServerThread();
+            setServerThread(null);
+            IOUtils.closeQuietly(getSocket());
+            IOUtils.closeQuietly(getServerSocket());
+            try {
+                Thread.sleep(200);
+            } catch (final InterruptedException e) {
+            }
+
             if(t != null && t.isAlive()) { 
                 t.interrupt();
-                try {
-                    Thread.sleep(20);
-                } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                if(getSocket() != null && !getSocket().isClosed()) {
-                   getSocket().close();  
-                }
             }
-            setServerThread(null);
-            getServerSocket().close();
+            try {
+                if (m_runnable != null) m_runnable.awaitShutdown();
+            } catch (final InterruptedException e) {
+                LOG.debug("Interrupted while shutting down.", e);
+            }
         }
     }
     
@@ -216,8 +227,8 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @return a {@link java.lang.Runnable} object.
      * @throws java.lang.Exception if any.
      */
-    protected Runnable getRunnable() throws Exception {
-        return new Runnable(){
+    protected SimpleServerRunnable getRunnable() throws IOException {
+        return new SimpleServerRunnable() {
             
             @Override
             public void run(){
@@ -228,6 +239,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
                     if (getTimeout() > 0) {
                         getServerSocket().setSoTimeout(getTimeout());
                     }
+                    ready();
                     while (!m_stopped && getServerThread() != null) {
                         long startTime = 0;
                         try {
@@ -256,9 +268,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
                             IOUtils.closeQuietly(in);
                             IOUtils.closeQuietly(isr);
                             IOUtils.closeQuietly(out);
-                            // TODO: Upgrade IOUtils so that we can use this function
-                            // IOUtils.closeQuietly(getSocket());
-                            getSocket().close();
+                            IOUtils.closeQuietly(getSocket());
                         }
                     }
                 } catch (final InterruptedException e) {
@@ -267,18 +277,18 @@ public class SimpleServer extends SimpleConversationEndPoint {
                     } else {
                         LOG.info("interrupted while listening", e);
                     }
-                    Thread.currentThread().interrupt();
-                } catch (final Exception e){
+                } catch (final Exception e) {
                     if (m_stopped) {
                         LOG.trace("error during conversation", e);
                     } else {
                         LOG.info("error during conversation", e);
                     }
                 } finally {
+                    finished();
                     try {
                         // just in case we're stopping because of an exception
                         stopServer();
-                    } catch (final IOException e) {
+                    } catch (final Exception e) {
                         LOG.info("error while stopping server", e);
                     }
                 }
@@ -360,7 +370,12 @@ public class SimpleServer extends SimpleConversationEndPoint {
             @Override
             public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", response).getBytes());
-                stopServer();
+                try {
+                    stopServer();
+                } catch (final Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             
         };

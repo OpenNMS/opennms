@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,24 +44,22 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang.StringUtils;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
+import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +84,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      */
     @SuppressWarnings("unchecked")
     protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, JSONObject json) throws ParseException {
+        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
         JXPathContext context = JXPathContext.newContext(json);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
@@ -94,13 +93,22 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             while (itr.hasNext()) {
                 JXPathContext relativeContext = context.getRelativeContext(itr.next());
                 String resourceName = getResourceName(relativeContext, group);
-                LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-                XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+                LOG.debug("fillCollectionSet: processing XML resource {} of type {}", resourceName, group.getResourceType());
+                XmlCollectionResource collectionResource;
+                if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
+                    collectionResource = nodeResource;
+                } else {
+                    collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+                }
+                LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
-                    String value = (String) relativeContext.getValue(object.getXpath());
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, value);
+                    Object obj = relativeContext.getValue(object.getXpath());
+                    if (obj != null) {
+                        String value = obj.toString();
+                        XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                        collectionResource.setAttributeValue(attribType, value);
+                    }
                 }
                 processXmlResource(collectionResource, attribGroupType);
                 collectionSet.getCollectionResources().add(collectionResource);
@@ -166,8 +174,9 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * @param urlString the URL string
      * @param request the request
      * @return the JSON object
+     * @throws Exception the exception
      */
-    protected JSONObject getJSONObject(String urlString, Request request) {
+    protected JSONObject getJSONObject(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -178,8 +187,6 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             IOUtils.copy(is, writer);
             final JSONObject jsonObject = JSONObject.fromObject(writer.toString());
             return jsonObject;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);

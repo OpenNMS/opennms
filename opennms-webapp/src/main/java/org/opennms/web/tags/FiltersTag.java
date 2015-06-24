@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,13 +44,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders the filter area for a given set of filters. It also considers if a favorite is there.
+ * Renders the filter area for a given set of filters.
  */
 public class FiltersTag extends TagSupport {
 
+    private static final long serialVersionUID = -8419211806241306127L;
+
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "<span class=\"filter\">{FILTER_DESCRIPTION} {REMOVE_FILTER_LINK}</span> ";
+    private static final String FILTER_TEMPLATE = "<span style=\"white-space:nowrap;\"><span class=\"label label-default\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK}</span> ";
 
     private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
 
@@ -177,9 +179,6 @@ public class FiltersTag extends TagSupport {
 
     private String getLeading() {
         StringBuffer leadingString = new StringBuffer();
-        if (favorite == null) {
-            leadingString.append("Search constraints: ");
-        }
         if (isShowAcknowledgeFilter()) {
             NormalizedQueryParameters params = new NormalizedQueryParameters(parameters);
             if (isAcknowledgeType()) {

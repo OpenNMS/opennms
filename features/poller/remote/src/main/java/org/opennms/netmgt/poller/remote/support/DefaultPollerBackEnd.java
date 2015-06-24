@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,7 +50,6 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -59,6 +58,8 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -66,7 +67,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -76,9 +76,11 @@ import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.RemoteHostThreadLocal;
 import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,10 +143,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private TimeKeeper m_timeKeeper;
     private int m_disconnectedTimeout;
 
+    @Autowired
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     private long m_minimumConfigurationReloadInterval;
     
-    AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
-    AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
+    private final AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
+    private final AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
 
     /**
      * <p>afterPropertiesSet</p>
@@ -152,14 +157,15 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.notNull(m_locMonDao, "The LocationMonitorDao must be set");
         Assert.notNull(m_monSvcDao, "The MonitoredServiceDao must be set");
         Assert.notNull(m_pollerConfig, "The PollerConfig must be set");
         Assert.notNull(m_timeKeeper, "The timeKeeper must be set");
         Assert.notNull(m_eventIpcManager, "The eventIpcManager must be set");
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
-        
+        Assert.notNull(m_rrdStrategy, "The rrdStrategy must be set");
+
         m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
         
         configurationUpdated();
@@ -171,7 +177,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void start() throws Exception {
+    public void start() {
         // Nothing to do: job scheduling and RMI export is done externally
     }
 
@@ -409,7 +415,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 			}
 
 			return updateMonitorState(mon, currentConfigurationVersion);
-		} catch (final Exception e) {
+		} catch (final Throwable e) {
 			LOG.warn("An error occurred while checking in.", e);
 			return MonitorStatus.DISCONNECTED;
 		}
@@ -436,7 +442,9 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     protected void updateConnectionHostDetails(final OnmsLocationMonitor mon, final Map<String, String> pollerDetails) {
         final Map<String,String> allDetails = new HashMap<String,String>();
-        if (pollerDetails != null) allDetails.putAll(pollerDetails);
+        if (pollerDetails != null) {
+            allDetails.putAll(pollerDetails);
+        }
 
         String oldConnectionHostAddress = allDetails.get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY);
         String newConnectionHostAddress = null;
@@ -606,14 +614,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
             final File rrdFile = new File(rrdDir, dsName);
             if (!rrdFile.exists()) {
-                RrdUtils.createRRD(locationMonitor, rrdDir, dsName, m_pollerConfig.getStep(pkg), "GAUGE", 600, "U", "U", m_pollerConfig.getRRAList(pkg));
+                RrdUtils.createRRD(m_rrdStrategy, locationMonitor, rrdDir, dsName, m_pollerConfig.getStep(pkg), "GAUGE", 600, "U", "U", m_pollerConfig.getRRAList(pkg));
             }
-            RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
+            RrdUtils.updateRRD(m_rrdStrategy, locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
         } catch (final RrdException e) {
             throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
         }
     }
-    
 
     private String getServiceParameter(final Service svc, final String key) {
         for(final Parameter parm : m_pollerConfig.parameters(svc)) {
@@ -687,7 +694,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
@@ -727,6 +734,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
      */
     public void setTimeKeeper(final TimeKeeper timeKeeper) {
         m_timeKeeper = timeKeeper;
+    }
+
+    public void setRrdStrategy(final RrdStrategy<?, ?> rrdStrategy) {
+        m_rrdStrategy = rrdStrategy;
     }
 
     private MonitorStatus updateMonitorState(final OnmsLocationMonitor mon, final Date currentConfigurationVersion) {

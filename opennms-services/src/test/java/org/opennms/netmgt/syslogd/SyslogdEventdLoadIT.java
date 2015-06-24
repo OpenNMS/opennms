@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,7 +40,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,23 +59,23 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.eventd.Eventd;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -85,14 +84,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/testEventProxy.xml"
 })
 @JUnitConfigurationEnvironment
@@ -117,10 +116,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     
     private Syslogd m_syslogd;
 
-    private final List<ExecutorService> m_executorServices = Arrays.asList(new ExecutorService[] {
-            Executors.newFixedThreadPool(3),
-            Executors.newFixedThreadPool(3)
-    });
+    private final ExecutorService m_executorService = Executors.newCachedThreadPool();
 
     static {
         UeiMatch ueiMatch;
@@ -214,7 +210,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+            WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
         }
 
         long mid = System.currentTimeMillis();
@@ -240,12 +236,12 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -266,12 +262,12 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
 
         m_eventCounter.waitForFinish(120000);
         

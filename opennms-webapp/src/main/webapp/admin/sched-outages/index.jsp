@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,8 +38,7 @@
 	org.opennms.netmgt.config.poller.outages.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
-	org.opennms.netmgt.model.OnmsNode.NodeType,
-	org.opennms.netmgt.EventConstants,
+	org.opennms.netmgt.model.OnmsNode.NodeType,org.opennms.netmgt.events.api.EventConstants,
 	org.opennms.netmgt.xml.event.Event,
 	org.opennms.web.api.Util,
 	java.net.*
@@ -55,7 +54,7 @@
 			event.setHost("unresolved.host");
 		}
 
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
+		event.setTime(new java.util.Date());
 		try {
 			Util.createEventProxy().send(event);
 		} catch (Throwable e) {
@@ -102,7 +101,7 @@
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Manage Scheduled Outages" />
 	<jsp:param name="headTitle" value="Scheduled Outages" />
 	<jsp:param name="headTitle" value="Admin" />
@@ -111,16 +110,18 @@
 		value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Scheduled Outages" />
 </jsp:include>
-<style type="text/css">
-div.nodeintbox {
-  white-space: nowrap;
-  max-height: 196px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-</style>
 
-<table id="outages" border="1" cellpadding="5">
+<div class="row">
+  <div class="col-md-4">
+    <form role="form" class="form-inline" action="admin/sched-outages/editoutage.jsp" method="post" >
+      <input type="hidden" name="addNew" value="true" />
+      <input type="text" class="form-control" value="New Name" size="40" name="newName" />
+      <input type="submit" class="btn btn-default" name="newOutage" value="Add new outage" />
+    </form>
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<table id="outages" class="table table-condensed severity top-buffer">
 	<tr>
 		<th colspan="4">&nbsp;</th>
 		<th colspan="4">Affects...</th>
@@ -180,18 +181,18 @@ div.nodeintbox {
 			
 					for (int i = 0; i < outages.length; i++) {
 						Outage thisOutage = outages[i];
-						String rowClass   = pollFactory.isCurTimeInOutage(thisOutage) ? "Critical" : "Cleared";
+						String rowClass   = pollFactory.isCurTimeInOutage(thisOutage) ? "severity-Critical" : "severity-Cleared";
 						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top" class="<%=rowClass%>">
 		<td><%=outageName%></td>
 		<td><%=pollFactory.getOutageType(outageName)%></td>
-		<td><div class="nodeintbox">
+		<td><ul class="list-unstyled">
 		<%
 		    org.opennms.netmgt.config.poller.outages.Node[] nodeList = pollFactory.getNodeIds(outageName);
 						for (int j = 0; j < nodeList.length; j++) {
 							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
-		%> <%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
+		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
 		<%
 		    }
 						org.opennms.netmgt.config.poller.outages.Interface[] interfaceList = pollFactory.getInterfaces(outageName);
@@ -205,32 +206,30 @@ div.nodeintbox {
 								List<Integer> nodeids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(rawAddress);
 								//org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
 								if (nodeids.size() == 0) {
-									display.append("Intfc: " + rawAddress + " Not Found<br/>");
+									display.append("Intfc: " + rawAddress + " Not Found");
 								}
 								for (Integer nodeid: nodeids) {
 									org.opennms.web.element.Interface thisInterface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodeid,rawAddress);
 									if (thisInterface.isManagedChar()=='D') {
-										display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found<br/>");
+										display.append("Intfc: " + thisInterface.getIpAddress() + " Not Found");
 									} else {
 										if (thisInterface.getHostname() != null && !thisInterface.getHostname().equals(thisInterface.getIpAddress())) {
 											display.append("Intfc: " + thisInterface.getIpAddress() + " " + thisInterface.getHostname());
 										} else {
 											display.append("Intfc: " + thisInterface.getIpAddress());
 										}
-										if (thisInterface.isManaged()) {
-											display.append("<br/>");
-										} else {
-											display.append(" (unmanaged)<br/>");
+										if (!thisInterface.isManaged()) {
+											display.append(" (unmanaged)");
 										}
 									}
 								}
 							}
-		%><%=display%>
+		%><li><%=display%></li>
 		<%
 			}
-		%></div>
+		%></ul>
 		</td>
-		<td><div class="nodeintbox">
+		<td><ul class="list-unstyled">
 		<%
 		    org.opennms.netmgt.config.poller.outages.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
 						for (int j = 0; j < outageTimes.length; j++) {
@@ -243,11 +242,10 @@ div.nodeintbox {
 								day = (rawDay == null) ? "" : (String) shortDayNames.get(rawDay);
 							if ("specific".equals(pollFactory.getOutageType(outageName)))
 								day = "";
-		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName)) ? "<br/>" : ""%>
-		<%=thisOutageTime.getEnds()%><br/>
+		%><li><%=day%> <%=thisOutageTime.getBegins()%> - <%=thisOutageTime.getEnds()%></li>
 		<%
 			}
-		%></div>
+		%></ul>
 		</td>
 		<td align="center"><img
 			src="<%=(notificationOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
@@ -271,10 +269,5 @@ div.nodeintbox {
 		}
 	%>
 </table>
-<form action="admin/sched-outages/editoutage.jsp" method="post" >
-  <input type="text" value="New Name" size="40" name="newName" /> 
-  <input type="hidden" name="addNew" value="true" /> 
-  <input type="submit" name="newOutage" value="Add new outage" />
-</form>
 
-<jsp:include page="/includes/footer.jsp" flush="true" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true" />

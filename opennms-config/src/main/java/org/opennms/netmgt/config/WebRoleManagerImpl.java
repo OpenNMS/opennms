@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -198,11 +198,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             return (ManagedRole) webRole;
         }
         
-        ManagedRole mgdRole = new ManagedRole();
-        mgdRole.setName(webRole.getName());
-        mgdRole.setDescription(webRole.getDescription());
-        mgdRole.setDefaultUser(webRole.getDefaultUser());
-        mgdRole.setMembershipGroup(webRole.getMembershipGroup());
+        ManagedRole mgdRole = new ManagedRole(webRole);
         
         return mgdRole;
     }
@@ -217,16 +213,17 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         return new ManagedRole();
     }
     
-    class ManagedRole extends WebRole {
+    private class ManagedRole extends WebRole {
         private static final int DESCR=0;
         private static final int USER=1;
         private static final int GROUP=2;
         private static final int NAME=3;
-        BitSet m_flags = new BitSet();
-        Role m_role;
-        ManagedRole(String roleName) {
-            this(getBackingRole(roleName));
+        private final BitSet m_flags = new BitSet();
+        private Role m_role;
+
+        ManagedRole() {
         }
+
         ManagedRole(Role role) {
            super(role.getName());
            m_role = role;
@@ -235,11 +232,13 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
            super.setMembershipGroup(getWebGroup(role.getMembershipGroup()));
         }
         
-        ManagedRole() {
-            super();
-            m_role = null;
-        }
-        
+        ManagedRole(WebRole webRole) {
+            super(webRole.getName());
+            super.setDescription(webRole.getDescription());
+            super.setDefaultUser(webRole.getDefaultUser());
+            super.setMembershipGroup(webRole.getMembershipGroup());
+         }
+         
         @Override
         public void setDescription(String description) {
             super.setDescription(description);
@@ -313,30 +312,15 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         public Time getTime(int schedIndex, int timeIndex) {
             return getSchedule(schedIndex).getTime(timeIndex);
         }
-        public void addEntry(String user, Date startDate, Date endDate) {
-            // TODO Auto-generated method stub
-            
-        }
-        
-        
     }
     
-    class ManagedUser extends WebUser {
-        User m_user;
-        ManagedUser(String userId) {
-            this(getBackingUser(userId));
-        }
+    private class ManagedUser extends WebUser {
         ManagedUser(User user) {
             super(user.getUserId());
-            m_user = user;
         }
     }
     
-    class ManagedGroup extends WebGroup {
-        Group m_group;
-        ManagedGroup(String groupName) {
-            this(getBackingGroup(groupName));
-        }
+    private class ManagedGroup extends WebGroup {
         ManagedGroup(Group group) {
             super(group.getName());
             
@@ -350,7 +334,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         private List<String> getUsers(Group group) {
             return group.getUserCollection();
         }
-        
     }
 
     /**

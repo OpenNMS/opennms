@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -59,17 +59,17 @@ import org.springframework.web.servlet.ModelAndView;
 @ContextConfiguration(locations={
 		"classpath:/org/opennms/web/rest/applicationContext-test.xml",
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
 		"classpath*:/META-INF/opennms/component-service.xml",
 		"classpath*:/META-INF/opennms/component-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-reportingCore.xml",
 		"classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
 		"classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-		"classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-reporting.xml",
 		"classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
 		"file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })

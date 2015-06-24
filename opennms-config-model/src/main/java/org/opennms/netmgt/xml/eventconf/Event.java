@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -52,13 +52,14 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.xml.eventconf.EventOrdering.EventOrderIndex;
 import org.xml.sax.ContentHandler;
 
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={})
-public class Event implements Serializable {
+public class Event implements Serializable, Comparable<Event> {
 	private static final long serialVersionUID = 565808183599950549L;
 
 	private static final Varbindsdecode[] EMPTY_VARBINDSDECODE_ARRAY = new Varbindsdecode[0];
@@ -67,6 +68,8 @@ public class Event implements Serializable {
 	private static final String[]         EMPTY_STRING_ARRAY = new String[0];
 	private static final Forward[]        EMPTY_FORWARD_ARRAY = new Forward[0];
 	private static final Autoaction[]     EMPTY_AUTOACTION_ARRAY = new Autoaction[0];
+	
+	
 
 	/**
      * The event mask which helps to uniquely identify an event
@@ -199,6 +202,21 @@ public class Event implements Serializable {
 
     @XmlTransient
 	private EventMatcher m_matcher;
+    
+    /**
+     * Index in the eventconf files used for ordering when searching for matching events.
+     * Set by the DefaultEventConfDao
+     */
+    @XmlTransient
+    private EventOrderIndex m_index;
+
+    public EventOrderIndex getIndex() {
+        return m_index;
+    }
+    
+    public void setIndex(EventOrderIndex index) {
+        m_index = index;
+    }
 
     public void addAutoaction(final Autoaction autoaction) throws IndexOutOfBoundsException {
         m_autoactions.add(autoaction);
@@ -890,12 +908,21 @@ public class Event implements Serializable {
 		return m_matcher.matches(matchingEvent);
 	}
 
-	public void initialize() {
+	public void initialize(EventOrderIndex eventOrderIndex) {
+		m_index = eventOrderIndex;
 		m_matcher = constructMatcher();
 	}
 	
 	public List<String> getMaskElementValues(String mename) {
 		return m_mask == null ? null : m_mask.getMaskElementValues(mename);
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Event o) {
+        return getIndex().compareTo(o.getIndex());
+    }
 
 }

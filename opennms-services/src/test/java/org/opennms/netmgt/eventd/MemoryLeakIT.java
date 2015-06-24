@@ -34,8 +34,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.mock.OpenNMSITCase;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 
 
 /**

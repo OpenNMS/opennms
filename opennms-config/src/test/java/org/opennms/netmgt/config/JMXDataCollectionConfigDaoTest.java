@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,21 +28,20 @@
 
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.test.ThrowableAnticipator;
-
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * The Class JMXDataCollectionConfigDaoTest.
@@ -128,8 +127,24 @@ public class JMXDataCollectionConfigDaoTest {
         dao.afterPropertiesSet();
         JmxDatacollectionConfig config = dao.getConfig();
         Assert.assertNotNull("JMX data collection should not be null", config);
-        Assert.assertEquals(8, config.getJmxCollection(0).getMbeans().getMbeanCount());
-        Assert.assertEquals(4, config.getJmxCollection(1).getMbeans().getMbeanCount());
+        Assert.assertEquals(8, config.getJmxCollection(0).getMbeanCount());
+        Assert.assertEquals(4, config.getJmxCollection(1).getMbeanCount());
+
+        // test access via name
+        Assert.assertEquals(8, config.getJmxCollection("jboss").getMbeanCount());
+        Assert.assertEquals(4, config.getJmxCollection("jsr160").getMbeanCount());
+    }
+
+    @Test
+    public void testLoadConfigFile() {
+        JMXDataCollectionConfigDao dao = new JMXDataCollectionConfigDao();
+        dao.setConfigResource(new FileSystemResource("src/test/resources/etc/jmx-datacollection-config.xml"));
+        dao.afterPropertiesSet();
+
+        JmxDatacollectionConfig config = dao.getConfig();
+        Assert.assertNotNull(config);
+        Assert.assertNotNull(config.getJmxCollectionList());
+        Assert.assertEquals(2, config.getJmxCollectionCount());
     }
 
 }

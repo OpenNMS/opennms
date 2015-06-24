@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceAvailabilityReport_subreport1" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="4.0"/>
-	<property name="ireport.x" value="1449"/>
+	<property name="ireport.zoom" value="2.2578957202151093"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Warning/Critical">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{avail_percent} < $P{AVAILABILITY_CRITICAL}]]></conditionExpression>
@@ -13,6 +14,10 @@
 			<style mode="Opaque" backcolor="#FF9900"/>
 		</conditionalStyle>
 	</style>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
 	<parameter name="NODE_ID" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[3]]></defaultValueExpression>
 	</parameter>
@@ -24,8 +29,11 @@
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
+	<parameter name="TIME_RANGE_NUMBER" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
+	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["7 days"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE_NUMBER} + " Days"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[98.0]]></defaultValueExpression>
@@ -102,88 +110,81 @@ GROUP BY
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="35" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="15" width="60" height="20"/>
-				<textElement/>
-				<text><![CDATA[ node label]]></text>
-			</staticText>
+		<band height="40" splitType="Stretch">
+			<rectangle radius="5">
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#F2F2F2" backcolor="#F2F2F2"/>
+			</rectangle>
 			<textField>
-				<reportElement x="60" y="15" width="239" height="20"/>
+				<reportElement style="Sub-header" x="0" y="0" width="555" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{NODE_LABEL}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Node " + $P{NODE_LABEL}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="299" y="15" width="50" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Top">
+				<reportElement x="333" y="20" width="72" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Outage (hours)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="189" y="20" width="72" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Outage Count]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="349" y="15" width="50" height="20"/>
-				<textElement textAlignment="Center">
+				<reportElement x="405" y="20" width="72" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Outage (%)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="20" width="78" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Availability (%)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="20" width="72" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[MTTR (hours)]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="399" y="15" width="50" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Outage Hours]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="449" y="15" width="50" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Outage Percent]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="499" y="15" width="56" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Availability Percent]]></text>
-			</staticText>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="24">
-			<staticText>
-				<reportElement style="Warning/Critical" x="0" y="2" width="100" height="20"/>
-				<textElement verticalAlignment="Middle"/>
-				<text><![CDATA[ interface:]]></text>
-			</staticText>
+		<band height="22">
 			<textField>
-				<reportElement style="Warning/Critical" x="100" y="2" width="199" height="20"/>
+				<reportElement style="Warning/Critical" x="0" y="2" width="189" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ipaddr}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Warning/Critical" x="299" y="2" width="50" height="20"/>
+				<reportElement style="Warning/Critical" x="189" y="2" width="72" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Long"><![CDATA[$F{outages_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="349" y="2" width="50" height="20"/>
+				<reportElement style="Warning/Critical" x="261" y="2" width="72" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="399" y="2" width="50" height="20"/>
+				<reportElement style="Warning/Critical" x="333" y="2" width="72" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="449" y="2" width="50" height="20"/>
+				<reportElement style="Warning/Critical" x="405" y="2" width="72" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_percent}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Warning/Critical" x="499" y="2" width="56" height="20"/>
+				<reportElement style="Warning/Critical" x="477" y="2" width="78" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{avail_percent}]]></textFieldExpression>
 			</textField>

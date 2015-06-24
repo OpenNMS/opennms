@@ -29,6 +29,7 @@
 package org.opennms.core.test.db;
 
 import junit.framework.AssertionFailedError;
+import static org.junit.Assert.assertEquals;
 
 import org.opennms.test.ThrowableAnticipator;
 

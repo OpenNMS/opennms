@@ -69,9 +69,10 @@ public class WebAppListener implements ServletContextListener {
             m_servletContext.log("Root: " + root);
             System.setProperty("karaf.home", root);
             System.setProperty("karaf.base", root);
-            System.setProperty("karaf.data", root + "/data");
-            System.setProperty("karaf.history", root + "/data/history.txt");
-            System.setProperty("karaf.instances", root + "/instances");
+            System.setProperty("karaf.data", root + File.separator + "data");
+            System.setProperty("karaf.etc", root + File.separator + "etc");
+            System.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
+            System.setProperty("karaf.instances", root + File.separator + "instances");
             System.setProperty("karaf.startLocalConsole", "false");
             System.setProperty("karaf.startRemoteShell", "true");
             System.setProperty("karaf.lock", "false");

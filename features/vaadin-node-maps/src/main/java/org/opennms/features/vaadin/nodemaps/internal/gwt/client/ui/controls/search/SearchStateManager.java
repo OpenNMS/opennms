@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,8 +30,8 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.sea
 
 import java.util.logging.Logger;
 
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
-import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.ComponentInitializedEvent;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.SearchStringSetEvent;
 
 import com.google.gwt.core.client.Scheduler;
@@ -47,12 +47,15 @@ public abstract class SearchStateManager {
     private ValueItem m_history;
 
     private OpenNMSEventManager m_eventManager;
+    private ComponentTracker m_componentTracker;
 
-    public SearchStateManager(final ValueItem valueItem, final ValueItem history, final OpenNMSEventManager eventManager) {
+    public SearchStateManager(final ValueItem valueItem, final ValueItem history, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
+        LOG.info("SearchStateManager initializing.");
         m_valueItem = valueItem;
         m_history = history;
 
         m_eventManager = eventManager;
+        m_componentTracker = componentTracker;
 
         final String valueSearchString = m_valueItem.getValue();
         final String historySearchString = getHistorySearchString();
@@ -65,7 +68,11 @@ public abstract class SearchStateManager {
             m_state = State.NOT_SEARCHING;
         }
         m_state.initialize(this);
-        m_eventManager.fireEvent(new ComponentInitializedEvent(SearchStateManager.class.getName()));
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override public void execute() {
+                m_componentTracker.ready(SearchStateManager.class);
+            }
+        });
     }
 
     SearchState getState() {

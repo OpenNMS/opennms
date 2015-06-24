@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -70,7 +70,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
@@ -120,7 +120,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */
@@ -131,7 +131,10 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
         if (StringAttributeType.supportsType(mibObj.getType())) {
             return new StringAttributeType(resourceType, collectionName, mibObj, groupType);
         }
-        
+        if (HexStringAttributeType.supportsType(mibObj.getType())) {
+            return new HexStringAttributeType(resourceType, collectionName, mibObj, groupType);
+        }
+
         throw new IllegalArgumentException("No support exists for AttributeType '" + mibObj.getType() + "' for MIB object: "+ mibObj);
     }
     

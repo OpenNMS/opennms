@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -27,37 +27,38 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.enlinkd;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DELHI_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BAGMANE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.BANGALORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DELHI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.J6350_42_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.MYSORE_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW1_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SPACE_EX_SW2_SNMP_RESOURCE_B;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SRX_100_SNMP_RESOURCE_B;
 
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;

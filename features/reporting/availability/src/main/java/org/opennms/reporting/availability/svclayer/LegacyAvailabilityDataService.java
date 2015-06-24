@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,7 +46,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.reporting.availability.AvailabilityConstants;
 import org.opennms.reporting.datablock.Node;
@@ -139,7 +139,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                         while (ipIter.hasNext()) {
                             ip = str(ipIter.next());
-                            LOG.debug("ecexuting {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
+                            LOG.debug("executing {} for {}", ip, AvailabilityConstants.DB_GET_INFO_FOR_IP);
 
                             // get node info for this ip
                             ipInfoGetStmt.setString(1, ip);
@@ -154,10 +154,8 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
 
                                 // get the services for this IP address
                                 ResultSet svcRS = null;
-                                servicesGetStmt.setLong(1, nodeid);
-                                servicesGetStmt.setString(2, ip);
-                                servicesGetStmt.setString(3, ip);
-                                servicesGetStmt.setLong(4, nodeid);
+                                servicesGetStmt.setString(1, ip);
+                                servicesGetStmt.setLong(2, nodeid);
                                 svcRS = servicesGetStmt.executeQuery();
                                 db.watch(svcRS);
 

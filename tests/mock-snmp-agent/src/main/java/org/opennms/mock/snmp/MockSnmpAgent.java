@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -43,15 +44,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.snmp4j.MessageDispatcherImpl;
+import org.snmp4j.Session;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
 import org.snmp4j.agent.DuplicateRegistrationException;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.io.ImportModes;
-import org.snmp4j.agent.mo.MOTableRow;
 import org.snmp4j.agent.mo.snmp.RowStatus;
 import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB;
+import org.snmp4j.agent.mo.snmp.SnmpCommunityMIB.SnmpCommunityEntryRow;
 import org.snmp4j.agent.mo.snmp.SnmpNotificationMIB;
 import org.snmp4j.agent.mo.snmp.SnmpTargetMIB;
 import org.snmp4j.agent.mo.snmp.StorageType;
@@ -92,6 +94,7 @@ import org.snmp4j.util.ThreadPool;
  * @author Jeff Gehlbach
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
+	
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
 
     // initialize Log4J logging
@@ -103,7 +106,23 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             LogFactory.setLogFactory(new ConsoleLogFactory());
         }
 
+        // Check to see if the pseudorandom byte generator device exists
+        if (new File("/dev/urandom").exists()) {
 
+            // If so, use it as the Java entropy gathering device so that we never
+            // block on entropy gathering. Don't use the exact string "file:/dev/urandom"
+            // because this is treated as a special value inside the JVM. Insert the
+            // "." into the path to force it to use the real /dev/urandom device.
+            //
+            // @see https://bugs.openjdk.java.net/browse/JDK-6202721
+            //
+            System.setProperty("java.security.egd", "file:/dev/./urandom");
+        }
+
+        // Allow us to override default security protocols
+        //SNMP4JSettings.setExtensibilityEnabled(true);
+        // Override the default security protocols
+        //System.setProperty(SecurityProtocols.SECURITY_PROTOCOLS_PROPERTIES, "/org/opennms/mock/snmp/SecurityProtocols.properties");
     }
 
     private static final LogAdapter s_log = LogFactory.getLogger(MockSnmpAgent.class);
@@ -124,7 +143,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         File bootCountFile;
         try {
             bootCountFile = File.createTempFile("mockSnmpAgent", "boot");
-            bootCountFile.createNewFile();
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(bootCountFile));
             out.writeInt(0);
             out.flush();
@@ -172,7 +190,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
         final MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), moFile, bindAddress);
-        Thread thread = new Thread(agent, agent.getClass().getSimpleName());
+        Thread thread = new Thread(agent, agent.getClass().getSimpleName() + '-' + agent.hashCode());
         thread.start();
 
         try {
@@ -181,6 +199,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             }
         } catch (final InterruptedException e) {
             s_log.warn("MockSnmpAgent: Agent interrupted while starting: " + e.getLocalizedMessage());
+            thread.interrupt();
             agent.shutDownAndWait();
             throw e;
         }
@@ -271,22 +290,93 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
 
 
-    /** {@inheritDoc} */
+    /**
+     * <p>
+     * Note that this method can hang if your system entropy is not high enough.
+     * Here is a stack trace from a test running on JDK 1.8u40:</p>
+     * 
+     * <pre> 
+     * Thread [MockSnmpAgent-1657048932] (Suspended)
+     * owns: SecureRandom  (id=26)
+     * owns: SecureRandom  (id=27)
+     * owns: SecurityProtocols  (id=28)
+     * FileInputStream.readBytes(byte[], int, int) line: not available [native method]
+     * FileInputStream.read(byte[], int, int) line: 255
+     * NativeSeedGenerator(SeedGenerator$URLSeedGenerator).getSeedBytes(byte[]) line: 539
+     * SeedGenerator.generateSeed(byte[]) line: 144
+     * SecureRandom$SeederHolder.<clinit>() line: 203 [local variables unavailable]
+     * SecureRandom.engineNextBytes(byte[]) line: 221
+     * SecureRandom.nextBytes(byte[]) line: 468
+     * Salt.<init>() line: 54
+     * Salt.getInstance() line: 79
+     * PrivDES.<init>() line: 57
+     * SecurityProtocols.addDefaultProtocols() line: 155
+     * MockSnmpAgent.initMessageDispatcher() line: 306
+     * MockSnmpAgent(BaseAgent).init() line: 145
+     * MockSnmpAgent.run() line: 380
+     * Thread.run() line: 745
+     * </pre>
+     */
     @Override
     protected void initMessageDispatcher() {
-        dispatcher = new MessageDispatcherImpl();
+        s_log.info("MockSnmpAgent: starting initMessageDispatcher()");
+        try {
+            dispatcher = new MessageDispatcherImpl();
+    
+            usm = new USM(SecurityProtocols.getInstance(),
+                          agent.getContextEngineID(),
+                          updateEngineBoots());
+    
+            mpv3 = new MPv3(usm);
+    
+            SecurityProtocols.getInstance().addDefaultProtocols();
+            dispatcher.addMessageProcessingModel(new MPv1());
+            dispatcher.addMessageProcessingModel(new MPv2c());
+            dispatcher.addMessageProcessingModel(mpv3);
+            initSnmpSession();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initMessageDispatcher()");
+        }
+    }
 
-        usm = new USM(SecurityProtocols.getInstance(),
-                      agent.getContextEngineID(),
-                      updateEngineBoots());
+    @Override
+    public void initSnmpSession() {
+        s_log.info("MockSnmpAgent: starting initTransportMappings()");
+        try {
+            super.initSnmpSession();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initTransportMappings()");
+        }
+    }
 
-        mpv3 = new MPv3(usm);
+    @Override
+    public void initConfigMIB() {
+        s_log.info("MockSnmpAgent: starting initConfigMIB()");
+        try {
+            super.initConfigMIB();
+        } finally {
+            s_log.info("MockSnmpAgent: finished initConfigMIB()");
+        }
+    }
 
-        SecurityProtocols.getInstance().addDefaultProtocols();
-        dispatcher.addMessageProcessingModel(new MPv1());
-        dispatcher.addMessageProcessingModel(new MPv2c());
-        dispatcher.addMessageProcessingModel(mpv3);
-        initSnmpSession();
+    @Override
+    public void setupDefaultProxyForwarder() {
+        s_log.info("MockSnmpAgent: starting setupDefaultProxyForwarder()");
+        try {
+            super.setupDefaultProxyForwarder();
+        } finally {
+            s_log.info("MockSnmpAgent: finished setupDefaultProxyForwarder()");
+        }
+    }
+
+    @Override
+    public void updateSession(Session session) {
+        s_log.info("MockSnmpAgent: starting updateSession()");
+        try {
+            super.updateSession(session);
+        } finally {
+            s_log.info("MockSnmpAgent: finished updateSession()");
+        }
     }
 
     public void shutDownAndWait() throws InterruptedException {
@@ -343,7 +433,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
 
 	s_log.info("MockSnmpAgent: Shutdown called stopping agent.");
-        for (final TransportMapping transportMapping : transportMappings) {
+        for (final TransportMapping<?> transportMapping : transportMappings) {
             try {
                 if (transportMapping != null) {
                 	transportMapping.close();
@@ -386,9 +476,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                 new Integer32(StorageType.nonVolatile), // storage type
                 new Integer32(RowStatus.active)         // row status
         };
-        MOTableRow row =
-                communityMIB.getSnmpCommunityEntry().createRow(
-                                                               new OctetString("public2public").toSubIndex(true), com2sec);
+        SnmpCommunityEntryRow row = communityMIB.getSnmpCommunityEntry().createRow(new OctetString("public2public").toSubIndex(true), com2sec);
         communityMIB.getSnmpCommunityEntry().addRow(row);
     }
 
@@ -550,19 +638,27 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void initTransportMappings() throws IOException {
+        s_log.info("MockSnmpAgent: starting initTransportMappings()");
         try {
             final MockUdpTransportMapping mapping = new MockUdpTransportMapping(new UdpAddress(m_address.get()), true);
             mapping.setThreadName("MockSnmpAgent-UDP-Transport");
             transportMappings = new TransportMapping[] { mapping };
         } catch (final IOException e) {
+            s_log.info("MockSnmpAgent: initTransportMappings() caught an IoException: " + e.getMessage());
             m_failure.set(e);
             throw e;
+        } finally {
+            s_log.info("MockSnmpAgent: finished initTransportMappings()");
         }
     }
-
+    
     public static final class MockUdpTransportMapping extends DefaultUdpTransportMapping {
         public MockUdpTransportMapping(final UdpAddress udpAddress, final boolean reuseAddress) throws IOException {
             super(udpAddress, reuseAddress);
+        }
+
+        public InetAddress getInetAddress() {
+            return socket.getLocalAddress();
         }
 
         public int getPort() {
@@ -570,8 +666,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
 
+    public InetAddress getInetAddress() {
+        final TransportMapping<?> mapping = transportMappings[0];
+        return ((MockUdpTransportMapping)mapping).getInetAddress();
+    }
+
     public int getPort() {
-        final TransportMapping mapping = transportMappings[0];
+        final TransportMapping<?> mapping = transportMappings[0];
         return ((MockUdpTransportMapping)mapping).getPort();
     }
 
@@ -579,7 +680,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /** {@inheritDoc} */
     @Override
     protected void registerSnmpMIBs() {
-        registerManagedObjects();
+        s_log.info("MockSnmpAgent: starting registerSnmpMIBs()");
+        try {
+            registerManagedObjects();
+        } finally {
+            s_log.info("MockSnmpAgent: finished registerSnmpMIBs()");
+        }
     }
 
 

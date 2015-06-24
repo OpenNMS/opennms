@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,35 +30,61 @@ package org.opennms.netmgt.model;
 
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.springframework.util.Assert;
 
 /**
  * <p>PrefabGraph class.</p>
  */
+@XmlRootElement(name = "prefab-graph")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
+
+    @XmlAttribute(name = "name")
     private String m_name;
 
+    @XmlAttribute(name = "title")
     private String m_title;
 
+    @XmlElement(name = "columns")
     private String[] m_columns;
-    
+
+    @XmlElement(name = "command")
     private String m_command;
 
+    @XmlElement(name = "externalValues")
     private String[] m_externalValues;
-    
+
+    @XmlElement(name = "propertiesValues")
     private String[] m_propertiesValues;
 
+    @XmlAttribute(name = "order")
     private int m_order;
 
+    @XmlElement(name = "types")
     private String[] m_types = new String[0];
 
+    @XmlAttribute(name = "description")
     private String m_description;
 
+    @XmlAttribute(name = "width")
     private Integer m_graphWidth;
 
+    @XmlAttribute(name = "height")
     private Integer m_graphHeight;
-    
+
+    @XmlElement(name = "suppress")
     private String[] m_suppress;
+
+    @SuppressWarnings("unused")
+    private PrefabGraph() {
+        throw new UnsupportedOperationException("No-arg constructor for JAXB.");
+    }
 
     /**
      * <p>Constructor for PrefabGraph.</p>

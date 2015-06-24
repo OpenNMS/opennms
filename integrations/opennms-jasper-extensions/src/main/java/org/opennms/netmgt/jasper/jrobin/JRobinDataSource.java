@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,13 +32,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.opennms.netmgt.jasper.jrobin.RrdXportCmd.XPort;
 
-public class JRobinDataSource implements JRDataSource {
+public class JRobinDataSource implements JRRewindableDataSource {
 
     private int m_currentRow = -1;
     private long[] m_timestamps;
@@ -49,6 +49,7 @@ public class JRobinDataSource implements JRDataSource {
         m_step = step;
         m_timestamps = Arrays.copyOf(timestamps, timestamps.length);
         m_xports = xports;
+        moveFirst();
     }
 
     @Override
@@ -88,4 +89,8 @@ public class JRobinDataSource implements JRDataSource {
         return m_currentRow < m_timestamps.length;
     }
 
+    @Override
+    public void moveFirst() {
+        m_currentRow = -1;
+    }
 }

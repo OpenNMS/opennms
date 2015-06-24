@@ -187,10 +187,10 @@
 		<argument value="nodeMapsApplication" />
 	</bean>
 
-	<service id="nodeMapsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="nodeMapsApplicationFactory">
+	<service id="nodeMapsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="nodeMapsApplicationFactory">
 		<service-properties>
 			<entry key="alias" value="/node-maps" />
-			<entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
+			<entry key="init.widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
 		</service-properties>
 	</service>
 

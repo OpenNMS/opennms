@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,9 +30,11 @@ package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,6 +64,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * Note that this test may have some issues inside Eclipse related to
+ * Spring's ability to classload the changelog.xml files by using the
+ * "classpath*:/changelog.xml" resource identifier. Run it outside Eclipse
+ * using mvn if you run into problems.
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/migratorTest.xml"
@@ -92,10 +100,15 @@ public class MigratorIT {
 
         Resource aResource = null;
         for (final Resource resource : getTestResources()) {
-            if (resource.getURI().toString().contains("test-api.schema.a")) {
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("file") && uri.toString().contains("test-api/schema/a")) {
+                aResource = resource;
+            }
+            if (uri.getScheme().equals("jar") && uri.toString().contains("test-api.schema.a")) {
                 aResource = resource;
             }
         }
+        assertNotNull("aResource must not be null", aResource);
 
         Set<String> tables = getTables();
         assertFalse("must not contain table 'schematest'", tables.contains("schematest"));
@@ -148,7 +161,9 @@ public class MigratorIT {
         // Add a resource accessor to the migration so that it will load multiple changelog.xml files
         // from the classpath
         for (final Resource resource : getTestResources()) {
-            if (!resource.getURI().toString().contains("test-api.schema")) continue;
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
+            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
             LOG.info("=== found resource: {} ===", resource);
             migration.setAccessor(new ExistingResourceAccessor(resource));
             m.migrate(migration);
@@ -159,6 +174,41 @@ public class MigratorIT {
         assertTrue(ids.size() > 0);
         assertEquals("test-api.schema.a", ids.get(0).getId());
         assertEquals("test-api.schema.b", ids.get(1).getId());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase(createSchema=false)
+    public void testRealChangelog() throws Exception {
+
+        assertFalse(changelogExists());
+
+        final Migration migration = new Migration();
+        migration.setAdminUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+        migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+        migration.setChangeLog("changelog.xml");
+
+        final Migrator m = new Migrator();
+        m.setDataSource(m_dataSource);
+        m.setAdminDataSource(m_dataSource);
+        m.setValidateDatabaseVersion(false);
+        m.setCreateUser(false);
+        m.setCreateDatabase(false);
+
+        // Add a resource accessor to the migration so that it will load multiple changelog.xml files
+        // from the classpath
+        for (final Resource resource : getRealChangelog()) {
+            LOG.info("=== found resource: {} ===", resource);
+            migration.setAccessor(new ExistingResourceAccessor(resource));
+            m.migrate(migration);
+        }
+
+        final List<ChangelogEntry> ids = getChangelogEntries();
+        assertTrue(ids.size() > 0);
+        // Check to make sure some of the changelogs ran
+        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-ipinterface-composite-key-fields".equals(id.getId())));
+        assertTrue(ids.stream().anyMatch(id -> "17.0.0-remove-legacy-outages-composite-key-fields".equals(id.getId())));
     }
 
     @Test
@@ -300,7 +350,21 @@ public class MigratorIT {
     private List<Resource> getTestResources() throws IOException {
         final List<Resource> resources = new ArrayList<Resource>();
         for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            if (!resource.getURI().toString().contains("test-api.schema")) continue;
+            URI uri = resource.getURI();
+            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
+            resources.add(resource);
+        }
+        return resources;
+    }
+
+    private List<Resource> getRealChangelog() throws IOException {
+        final List<Resource> resources = new ArrayList<Resource>();
+        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+            URI uri = resource.getURI();
+            System.err.println(uri.toString());
+            if (uri.getScheme().equals("file") && !uri.toString().contains("opennms/core/schema")) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains("opennms.core.schema")) continue;
             resources.add(resource);
         }
         return resources;

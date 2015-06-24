@@ -4,35 +4,27 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.4-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
   <name>OpenNMS Features System Report</name>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <properties>
     <skipITs>true</skipITs>
   </properties>
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
         <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.opennms.systemreport.SystemReport</mainClass>
-              <addClasspath>true</addClasspath>
-            </manifest>
-            <manifestEntries>
-              <Class-Path>opennms_bootstrap.jar</Class-Path>
-            </manifestEntries>
-          </archive>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
         </configuration>
       </plugin>
       <plugin>
@@ -54,10 +46,6 @@
     </plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-bootstrap</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
@@ -82,6 +70,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <!-- test dependencies -->
     <dependency>
@@ -109,18 +102,10 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
-    </dependencies>
-
-<!--
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
--->
-
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

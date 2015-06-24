@@ -28,6 +28,9 @@
 
 package org.opennms.core.test.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import junit.framework.AssertionFailedError;
 
 import org.opennms.test.ThrowableAnticipator;
@@ -47,7 +50,7 @@ public class TriggerSetSnmpInterfaceKeysOnUpdateIT extends
         PopulatedTemporaryDatabaseITCase {
     
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");

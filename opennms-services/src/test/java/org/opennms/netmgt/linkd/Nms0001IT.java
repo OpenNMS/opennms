@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,29 +30,32 @@ package org.opennms.netmgt.linkd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_ISIS_SYS_ID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_ISIS_SYS_ID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.opennms.netmgt.model.DataLinkInterface.DiscoveryProtocol;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
 public class Nms0001IT extends LinkdBuilderITCase {
@@ -120,8 +123,6 @@ public class Nms0001IT extends LinkdBuilderITCase {
         assertEquals(3,m_dataLinkInterfaceDao.countAll());
         final List<DataLinkInterface> datalinkinterfaces = m_dataLinkInterfaceDao.findAll();
 
-        int start=getStartPoint(datalinkinterfaces);
-
         /*
          * 
          * These are the links among the following nodes discovered using 
@@ -131,22 +132,12 @@ public class Nms0001IT extends LinkdBuilderITCase {
          * oedipus:ae0.0(575):10.1.0.10/30   <-->    siegfrie:ae0.0(533):10.1.0.9/30
          * 
          */
-        for (final DataLinkInterface datalinkinterface: datalinkinterfaces) {
-            
-            Integer linkid = datalinkinterface.getId();
-            if ( linkid == start) {
-                checkLink(froh, oedipus, 599, 578, datalinkinterface);
-            } else if (linkid == start+1 ) {
-                checkLink(froh, siegfrie, 600, 552, datalinkinterface);
-            } else if (linkid == start+2) {
-                checkLink(oedipus, siegfrie, 575, 533, datalinkinterface);
-            } else {
-                // error
-                checkLink(froh,froh,-1,-1,datalinkinterface);
-            } 
-            
-        }
-        
+        checkLinks(datalinkinterfaces,
+            new DataLinkTestMatcher(froh, oedipus, 599, 578, DiscoveryProtocol.isis),
+            new DataLinkTestMatcher(froh, siegfrie, 600, 552, DiscoveryProtocol.isis),
+            new DataLinkTestMatcher(oedipus, siegfrie, 575, 533, DiscoveryProtocol.isis)
+        );
+
         DataLinkInterface iface = m_dataLinkInterfaceDao.findByNodeIdAndIfIndex(froh.getId(), Integer.valueOf(599)).iterator().next();
         iface.setNodeParentId(oedipus.getId());
         iface.setParentIfIndex(578);

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,13 +31,16 @@ package org.opennms.netmgt.syslogd;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Callable;
 
-import org.opennms.core.concurrent.WaterfallCallable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>SyslogConnection class.</p>
@@ -46,7 +49,7 @@ import org.opennms.netmgt.config.syslogd.UeiList;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class SyslogConnection implements WaterfallCallable {
+public class SyslogConnection implements Callable<Callable<?>> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
     private final DatagramPacket _packet;
@@ -76,6 +79,16 @@ public class SyslogConnection implements WaterfallCallable {
      */
     public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
         _packet = copyPacket(packet);
+        _matchPattern = matchPattern;
+        _hostGroup = hostGroup;
+        _messageGroup = messageGroup;
+        _discardUei = discardUei;
+        _ueiList = ueiList;
+        _hideMessages = hideMessages;
+    }
+
+    public SyslogConnection(final InetSocketAddress source, final ByteBuffer buffer, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+        _packet = copyPacket(source, buffer);
         _matchPattern = matchPattern;
         _hostGroup = hostGroup;
         _messageGroup = messageGroup;
@@ -124,5 +137,22 @@ public class SyslogConnection implements WaterfallCallable {
             LOG.warn("unable to clone InetAddress object for {}", packet.getAddress());
         }
         return null;
+    }
+
+    private static DatagramPacket copyPacket(final InetSocketAddress source, final ByteBuffer buffer) {
+        byte[] message = new byte[0xffff];
+        int i = 0;
+        // Copy the buffer into the byte array
+        while (buffer.hasRemaining()) {
+            message[i++] = buffer.get();
+        }
+        DatagramPacket retPacket = new DatagramPacket(
+            message,
+            0,
+            i,
+            source.getAddress(),
+            source.getPort()
+        );
+        return retPacket;
     }
 }

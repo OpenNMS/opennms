@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.web.element;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,7 +84,7 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.web.svclayer.AggregateStatus;
+import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -463,6 +465,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
+
     
 
     /* (non-Javadoc)
@@ -589,30 +592,33 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         }
     }
 
+    @Override
+    public Interface[] getAllManagedIpInterfacesLike(String ipHost){
+        OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
+        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("node", "node");
+        criteria.add(Restrictions.ne("isManaged", "D"));
+        //criteria.add(Restrictions.ne("ipAddress", InetAddressUtils.addr("0.0.0.0")));
+        criteria.add(Restrictions.or(Restrictions.ilike("ipHostName", ipHost, MatchMode.ANYWHERE), Restrictions.ilike("ipAddress", ipHost, MatchMode.ANYWHERE)));
+        //criteria.add(Restrictions.isNotNull("ipAddress"));
+        criteria.addOrder(Order.asc("ipHostName"));
+        criteria.addOrder(Order.asc("node.id"));
+        criteria.addOrder(Order.asc("ipAddress"));
+
+        return getInterfaceArray(m_ipInterfaceDao.findMatching(criteria));
+    }
+
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getService(int, java.lang.String, int)
 	 */
     @Override
     public Service getService(int nodeId, String ipAddress, int serviceId) {
-        if (ipAddress == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+        try {
+            OnmsMonitoredService monSvc = m_monSvcDao.get(nodeId, InetAddress.getByName(ipAddress), serviceId);
+            return monSvc == null ? null : new Service(monSvc);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid ip address '" + ipAddress + "'", e);
         }
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
-        criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.snmpInterface", "snmpIface", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress)));
-        criteria.add(Restrictions.eq("serviceType.id", serviceId));
-        
-        List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
-        if(monSvcs.size() > 0) {
-            return new Service(monSvcs.get(0));
-        }else {
-            return null;
-        }
-        
     }
     
     /* (non-Javadoc)
@@ -620,22 +626,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     @Override
     public Service getService(int ifServiceId) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
-        criteria.createAlias("ipInterface", "ipInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("ipInterface.snmpInterface", "snmpIface",  OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("id", ifServiceId));
-        criteria.addOrder(Order.asc("status"));
-        
-        List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
-        
-        if(monSvcs.size() > 0) {
-            return new Service(monSvcs.get(0));
-        }else {
-            return null;
-        }
-        
-        
+        OnmsMonitoredService monSvc = m_monSvcDao.get(ifServiceId);
+        return monSvc == null ? null : new Service(monSvc);
     }
     
 
@@ -1108,34 +1100,40 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     		
         return new LinkInterface(dliface, isParent, iface, linkedIface);
     }
-	
+
     private Interface getInterfaceForLink(int nodeid, int ifindex) {
-	Interface iface = null;
-	if (ifindex > 0 ) {
-	    iface = getSnmpInterface(nodeid, ifindex);	
-	    OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class); 
-	    criteria.add(Restrictions.sqlRestriction("nodeid = " + nodeid + " and ifindex = " + ifindex ));
-	    List<String> addresses = new ArrayList<String>();
-			
-	    for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
-	        addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
-	    }
-			
-	    if (addresses.size() > 0 ) {
-		if (iface ==  null) {
-		    iface = new Interface();
-		    iface.m_nodeId = nodeid;
-		    iface.m_ifIndex = ifindex;
-		}
-		iface.setIpaddresses(addresses);
-	    } else {
-	        if (iface != null)
-	            iface.setIpaddresses(addresses);					
-	    }
-	} 
-	return iface;
+        Interface iface = null;
+        if (ifindex > 0 ) {
+            iface = getSnmpInterface(nodeid, ifindex);
+            final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsIpInterface.class)
+            .setAliases(Arrays.asList(new Alias[] {
+                    new Alias("node", "node", JoinType.LEFT_JOIN),
+                    new Alias("snmpInterface", "snmpInterface", JoinType.LEFT_JOIN)
+            }))
+            .addRestriction(new EqRestriction("node.id", nodeid))
+            .addRestriction(new EqRestriction("snmpInterface.ifIndex", ifindex));
+            List<String> addresses = new ArrayList<String>();
+
+            for (OnmsIpInterface onmsIpInterface : m_ipInterfaceDao.findMatching(criteria)) {
+                addresses.add(onmsIpInterface.getIpAddress().getHostAddress());
+            }
+
+            if (addresses.size() > 0 ) {
+                if (iface ==  null) {
+                    iface = new Interface();
+                    iface.m_nodeId = nodeid;
+                    iface.m_ifIndex = ifindex;
+                }
+                iface.setIpaddresses(addresses);
+            } else {
+                if (iface != null) {
+                    iface.setIpaddresses(addresses);
+                }
+            }
+        } 
+        return iface;
     }
-    
+
     /**
      * <p>getVlansOnNode</p>
      *
@@ -1256,12 +1254,18 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return nodes.toArray(new StpNode[nodes.size()]);
     }
 
-    private Integer getStpNodeFromStpRootIdentifier(String baseaddress) {
+    private Integer getStpNodeFromStpRootIdentifier(String rootaddress) {
 
-        if(!baseaddress.equals("")){
+        String baseaddress =null;
+        
+        if(rootaddress.length() == 16){
+            baseaddress = rootaddress.substring(5,16);
+        } else if (rootaddress.length() == 12) {
+            baseaddress = rootaddress;
+        }
+        if (baseaddress != null) {
             final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-            criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress.substring(5,16)));
-
+            criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress));
             List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
             if (stpnodes.size() == 1)
                 return stpnodes.get(0).getId();
@@ -1292,26 +1296,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         	}
         }
         return stpNode;
-    }
-
-    /**
-     * <p>getIpAddress</p>
-     *
-     * @param nodeid a int.
-     * @param ifindex a int.
-     * @return a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     */
-    @Transactional
-    private String getIpAddress(int nodeid, int ifindex)
-            {
-    	String retval = null;
-    	OnmsSnmpInterface snmpinterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, ifindex);
-    	for (OnmsIpInterface ipinterface: snmpinterface.getIpInterfaces() ) {
-    		retval = ipinterface.getIpAddress().getHostAddress();
-    	}
-
-        return retval;
     }
 
     /* (non-Javadoc)

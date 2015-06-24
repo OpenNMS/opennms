@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -261,6 +260,8 @@ public abstract class JaxbUtils {
 
         LOG.trace("namespace filter for class {}: {}", clazz, filter);
         final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
         filter.setParent(xmlReader);
         return filter;
     }
@@ -383,49 +384,10 @@ public abstract class JaxbUtils {
             final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
             context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
-            /*
-            if (useMoxy(clazz)) {
-                LOG.trace("Using MOXy for JAXB Context.");
-                context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
-            } else {
-                LOG.trace("Using built-in implementation for JAXB Context.");
-                context = JAXBContext.newInstance(allRelatedClasses.toArray(EMPTY_CLASS_LIST));
-            }
-            */
             LOG.trace("Context for {}: {}", allRelatedClasses, context);
             m_contexts.put(clazz, context);
         }
         return context;
-    }
-
-    @SuppressWarnings("unused")
-    private static boolean useMoxy(final Class<?> clazz) {
-        InputStream is = null;
-        try {
-            final URL url = clazz.getResource("jaxb.properties");
-            LOG.trace("Checking for jaxb.properties: {}", url);
-            if (url != null) {
-                is = url.openStream();
-                if (is != null) {
-                    final Properties props = new Properties();
-                    props.load(is);
-                    // javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory
-                    final String factory = props.getProperty("javax.xml.bind.context.factory");
-                    return "org.eclipse.persistence.jaxb.JAXBContextFactory".equals(factory);
-                }
-            }
-        } catch (final IOException e) {
-            // ignore any problems finding/reading jaxb.properties and just return false
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (final IOException e) {
-                    // ignore
-                }
-            }
-        }
-        return false;
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,6 @@
 package org.opennms.protocols.wmi;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -45,7 +44,7 @@ import org.apache.commons.cli.PosixParser;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
  */
-public class CheckWmi {
+public abstract class CheckWmi {
 
 	/**
 	 * <p>main</p>
@@ -69,7 +68,7 @@ public class CheckWmi {
 
 	    @SuppressWarnings("unchecked")
 		List<String> arguments = (List<String>)cmd.getArgList();
-		if (arguments.size() < 2) {
+		if (arguments.size() < 3) {
 			usage(options, cmd);
 			System.exit(1);
 		}
@@ -135,7 +134,7 @@ public class CheckWmi {
 
 		try {
 			// Hold the WMI objects from the results.
-			ArrayList<Object> wmiObjects;
+			List<Object> wmiObjects;
 			// Create the check parameters holder.
 			WmiParams clientParams;
             if(wmiWql == null || wmiWql.length() == 0)

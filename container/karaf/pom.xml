@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>container</artifactId>
-        <version>1.13.4-SNAPSHOT</version>
+        <version>17.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -16,6 +16,13 @@
     <name>OpenNMS OSGi Container - Embedded Karaf</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>standalone</artifactId>
+            <version>${project.version}</version>
+            <type>tar.gz</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>branding</artifactId>
@@ -42,14 +49,31 @@
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
               </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-asm</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+              </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.container</groupId>
-            <artifactId>standalone</artifactId>
-            <version>${project.version}</version>
-            <type>tar.gz</type>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -83,7 +107,7 @@
                 <executions>
                     <execution>
                         <id>karaf</id>
-                        <phase>process-resources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>

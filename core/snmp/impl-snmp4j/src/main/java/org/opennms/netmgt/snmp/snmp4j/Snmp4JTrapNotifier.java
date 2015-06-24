@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -277,38 +277,45 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
     @Override
     public void processPdu(CommandResponderEvent e) {
-    	PDU command = new PDU(e.getPDU());
-        IpAddress addr = ((IpAddress)e.getPeerAddress());
-        
+        PDU command = e.getPDU();
         if (command != null) {
-        	if (command.getType() == PDU.INFORM) {
-        		PDU response = new PDU(command);
-        		response.setErrorIndex(0);
-        		response.setErrorStatus(0);
-        		response.setType(PDU.RESPONSE);
-        		StatusInformation statusInformation = new StatusInformation();
-        		StateReference ref = e.getStateReference();
-        		try {
-        			e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
-        														e.getSecurityModel(),
-        														e.getSecurityName(),
-        														e.getSecurityLevel(),
-        														response,
-        														e.getMaxSizeResponsePDU(),
-        														ref,
-        														statusInformation);
-        			LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
-        		} catch (MessageException ex) {
-				LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID()
-				        );
-        		}
-        	}
-        }
-        
-        if (e.getPDU() instanceof PDUv1) {
-            m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
-        } else {
-            m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), e.getPDU(), m_trapProcessorFactory.createTrapProcessor()));
+            IpAddress addr = ((IpAddress)e.getPeerAddress());
+            if (command.getType() == PDU.INFORM) {
+                // Backing up original content
+                int errorIndex = command.getErrorIndex();
+                int errorStatus = command.getErrorStatus();
+                int type = command.getType();
+                // Prepare resopnse
+                command.setErrorIndex(0);
+                command.setErrorStatus(0);
+                command.setType(PDU.RESPONSE);
+                StatusInformation statusInformation = new StatusInformation();
+                StateReference ref = e.getStateReference();
+                // Send the response
+                try {
+                    e.getMessageDispatcher().returnResponsePdu(e.getMessageProcessingModel(),
+                                                               e.getSecurityModel(),
+                                                               e.getSecurityName(),
+                                                               e.getSecurityLevel(),
+                                                               command,
+                                                               e.getMaxSizeResponsePDU(),
+                                                               ref,
+                                                               statusInformation);
+                    LOG.debug("Sent RESPONSE PDU to peer {} acknowledging receipt of INFORM (reqId={})", addr, command.getRequestID());
+                } catch (MessageException ex) {
+                    LOG.error("Error while sending RESPONSE PDU to peer {}: {} acknowledging receipt of INFORM (reqId={})", addr, ex.getMessage(), command.getRequestID());
+                } finally {
+                    // Restoring original settings
+                    command.setErrorIndex(errorIndex);
+                    command.setErrorStatus(errorStatus);
+                    command.setType(type);
+                }
+            }
+            if (command instanceof PDUv1) {
+                m_listener.trapReceived(new Snmp4JV1TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), (PDUv1)command, m_trapProcessorFactory.createTrapProcessor()));
+            } else {
+                m_listener.trapReceived(new Snmp4JV2TrapInformation(addr.getInetAddress(), new String(e.getSecurityName()), command, m_trapProcessorFactory.createTrapProcessor()));
+            }
         }
     }
 }

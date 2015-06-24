@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -145,7 +145,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         final String hostAddress = InetAddressUtils.str(ipv4Addr);
-        LOG.debug("poll: address = {}, port = {}, {}", tracker, hostAddress, port);
+        LOG.debug("poll: address = {}, port = {}, {}", hostAddress, port, tracker);
 
         // Give it a whirl
         //
@@ -163,7 +163,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
-                LOG.debug("NrpeMonitor: connected to host: {} on port: {}", port, ipv4Addr);
+                LOG.debug("NrpeMonitor: connected to host: {} on port: {}", ipv4Addr, port);
                 
             	reason = "Perhaps check the value of 'usessl' for this monitor against the NRPE daemon configuration";
                 socket = wrapSocket(socket, useSsl);

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -235,34 +235,6 @@ public interface RrdStrategy<D extends Object,F extends Object> {
      *             if an RRD error occurs
      */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException;
-    
-    
-    /**
-     * Returns the number of pixels that the leftt-hand side of the graph is
-     * offset from the left side of the created image.  The offset should
-     * always be positive.
-     *
-     * @return offset in pixels.  Should always be positive.
-     */
-    public int getGraphLeftOffset();
-    
-    /**
-     * Returns the number of pixels that the right-hand side of the graph is
-     * offset from the right side of the created image.  The offset should
-     * always be negative.
-     *
-     * @return offset in pixels.  Should always be negative.
-     */
-    public int getGraphRightOffset();
-    
-    /**
-     * Returns the number of pixels that the top of the graph is offset from
-     * the top of the created image if there is single line of header text.
-     * The offset should always be negative.
-     *
-     * @return offset in pixels.  Should always be negative.
-     */
-    public int getGraphTopOffsetWithText();
 
     /**
      * Provides the round robin database an opportunity to contribute statistics

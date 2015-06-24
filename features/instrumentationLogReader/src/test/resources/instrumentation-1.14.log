@@ -1,0 +1,44 @@
+2014-10-06 10:43:12,656 INFO  [Collectd-Thread-2-of-50] collector.collect: begin:example1/35/10.0.1.8/SNMP
+2014-10-06 10:43:16,351 INFO  [Collectd-Thread-2-of-50] collector.collect: error: example1/35/10.0.1.8/SNMP: Timeout retrieving SnmpCollectors for 10.0.1.8 for /10.0.1.8: SnmpCollectors for 10.0.1.8: snmpTimeoutError for: /10.0.1.8
+2014-10-06 10:43:16,351 INFO  [Collectd-Thread-2-of-50] collector.collect: end:example1/35/10.0.1.8/SNMP
+2014-10-06 10:43:47,312 INFO  [Collectd-Thread-3-of-50] collector.collect: begin:example1/35/10.0.1.8/SNMP
+2014-10-06 10:43:50,951 INFO  [Collectd-Thread-3-of-50] collector.collect: error: example1/35/10.0.1.8/SNMP: Timeout retrieving SnmpCollectors for 10.0.1.8 for /10.0.1.8: SnmpCollectors for 10.0.1.8: snmpTimeoutError for: /10.0.1.8
+2014-10-06 10:43:50,951 INFO  [Collectd-Thread-3-of-50] collector.collect: end:example1/35/10.0.1.8/SNMP
+2014-10-06 10:44:20,965 INFO  [Collectd-Thread-4-of-50] collector.collect: begin:example1/35/10.0.1.8/SNMP
+2014-10-06 10:44:24,593 INFO  [Collectd-Thread-4-of-50] collector.collect: error: example1/35/10.0.1.8/SNMP: Timeout retrieving SnmpCollectors for 10.0.1.8 for /10.0.1.8: SnmpCollectors for 10.0.1.8: snmpTimeoutError for: /10.0.1.8
+2014-10-06 10:44:24,593 INFO  [Collectd-Thread-4-of-50] collector.collect: end:example1/35/10.0.1.8/SNMP
+2014-10-06 10:44:39,600 INFO  [Collectd-Thread-5-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:44:43,257 INFO  [Collectd-Thread-5-of-50] collector.collect: error: example1/35/192.0.2.101/SNMP: Timeout retrieving SnmpCollectors for 192.0.2.101 for /192.0.2.101: SnmpCollectors for 192.0.2.101: snmpTimeoutError for: /192.0.2.101
+2014-10-06 10:44:43,258 INFO  [Collectd-Thread-5-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:13,629 INFO  [Collectd-Thread-7-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:13,772 INFO  [Collectd-Thread-7-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:13,772 INFO  [Collectd-Thread-7-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:13,989 INFO  [Collectd-Thread-7-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:44,004 INFO  [Collectd-Thread-8-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:44,111 INFO  [Collectd-Thread-8-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:44,112 INFO  [Collectd-Thread-8-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:45:44,158 INFO  [Collectd-Thread-8-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:14,172 INFO  [Collectd-Thread-9-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:14,275 INFO  [Collectd-Thread-9-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:14,275 INFO  [Collectd-Thread-9-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:14,317 INFO  [Collectd-Thread-9-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:44,335 INFO  [Collectd-Thread-10-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:44,455 INFO  [Collectd-Thread-10-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:44,455 INFO  [Collectd-Thread-10-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:46:44,501 INFO  [Collectd-Thread-10-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:14,514 INFO  [Collectd-Thread-11-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:14,617 INFO  [Collectd-Thread-11-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:14,618 INFO  [Collectd-Thread-11-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:14,655 INFO  [Collectd-Thread-11-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:44,671 INFO  [Collectd-Thread-12-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:44,786 INFO  [Collectd-Thread-12-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:44,786 INFO  [Collectd-Thread-12-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:47:44,827 INFO  [Collectd-Thread-12-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:14,842 INFO  [Collectd-Thread-13-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:14,935 INFO  [Collectd-Thread-13-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:14,935 INFO  [Collectd-Thread-13-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:14,970 INFO  [Collectd-Thread-13-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:44,986 INFO  [Collectd-Thread-14-of-50] collector.collect: begin:example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:45,389 INFO  [Collectd-Thread-14-of-50] collector.collect: end:example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:45,389 INFO  [Collectd-Thread-14-of-50] collector.collect: persistDataQueueing: begin: example1/35/192.0.2.101/SNMP
+2014-10-06 10:48:45,454 INFO  [Collectd-Thread-14-of-50] collector.collect: persistDataQueueing: end: example1/35/192.0.2.101/SNMP

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,8 +46,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.Transient;
 import javax.xml.bind.ValidationException;
@@ -62,11 +62,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 
@@ -273,6 +273,17 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     public XMLGregorianCalendar getLastImport() {
         return m_lastImport;
+    }
+
+    /**
+     * <p>getLastImport</p>
+     *
+     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
+     */
+    @Transient
+    @XmlTransient
+    public Date getLastImportAsDate() {
+        return m_lastImport == null ? null : m_lastImport.toGregorianCalendar().getTime();
     }
 
     /**
@@ -489,7 +500,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     @XmlTransient
     @Transient
     public Date getDate() {
-        return getDateStamp() == null? null : getDateStamp().toGregorianCalendar().getTime();
+        return getDateStamp() == null ? null : getDateStamp().toGregorianCalendar().getTime();
     }
 
     public void setDate(final Date date) {

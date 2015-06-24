@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,17 +37,18 @@ import java.util.Date;
 import javax.sql.DataSource;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * <p>For each unit test method, creates a temporary database before the unit
  * test is run and destroys the database after each test (optionally leaving
- * around the test database, either always or on a test failure).  Tests do
- * get run by default, but the system property "mock.rundbtests" can be set
- * to "false" to disable this (and the database won't be touched).</p>
+ * around the test database, either always or on a test failure).</p>
  * 
  * <p>If you get errors about not being able to delete a database because
  * it is in use, make sure that your tests always close their database
@@ -61,7 +62,6 @@ public class TemporaryDatabaseITCase extends TestCase {
 
     private static final String TEST_DB_NAME_PREFIX = "opennms_test_";
     
-    private static final String RUN_PROPERTY = "mock.rundbtests";
     private static final String LEAVE_PROPERTY = "mock.leaveDatabase";
     private static final String LEAVE_ON_FAILURE_PROPERTY =
         "mock.leaveDatabaseOnFailure";
@@ -109,20 +109,10 @@ public class TemporaryDatabaseITCase extends TestCase {
         m_adminPassword = adminPassword;
     }
 
-    /*
-     * TODO: Should we make this final, and let extending classes override
-     * something like afterSetUp() (like the Spring transactional tests do)
-     */ 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         // Reset any previous test failures
         setTestFailureThrowable(null);
-        
-        if (!isEnabled()) {
-            return;
-        }
         
         m_leaveDatabase = "true".equals(System.getProperty(LEAVE_PROPERTY));
         m_leaveDatabaseOnFailure =
@@ -146,50 +136,32 @@ public class TemporaryDatabaseITCase extends TestCase {
         m_testDatabase = testDatabase; 
     }
 
-    @Override
-    protected void runTest() throws Throwable {
-        if (!isEnabled()) {
-            notifyTestDisabled(getName());
-            return;
-        }
-
+    @After
+    public void tearDown() throws Exception {
         try {
-            super.runTest();
+            destroyTestDatabase();
         } catch (Throwable t) {
-            setTestFailureThrowable(t);
-            throw t;
-        }
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        if (isEnabled()) {
-            try {
-                destroyTestDatabase();
-            } catch (Throwable t) {
-                /*
-                 * Do some fancy footwork to catch and reasonably report cases
-                 * where both the test method and destroyTestDatabase throw
-                 * exceptions.  Otherwise, a test that fails in a really
-                 * funky way may cause destroyTestDatabase() to throw an
-                 * exception, which would mask the root cause, since JUnit
-                 * will only report the latter exception.
-                 */ 
-                if (hasTestFailed()) {
-                    throw new TestFailureAndTearDownErrorException(getTestFailureThrowable(), t);
+            /*
+             * Do some fancy footwork to catch and reasonably report cases
+             * where both the test method and destroyTestDatabase throw
+             * exceptions.  Otherwise, a test that fails in a really
+             * funky way may cause destroyTestDatabase() to throw an
+             * exception, which would mask the root cause, since JUnit
+             * will only report the latter exception.
+             */ 
+            if (hasTestFailed()) {
+                throw new TestFailureAndTearDownErrorException(getTestFailureThrowable(), t);
+            } else {
+                if (t instanceof Exception) {
+                    throw (Exception) t;
                 } else {
-                    if (t instanceof Exception) {
-                        throw (Exception) t;
-                    } else {
-                        throw new UndeclaredThrowableException(t);
-                    }
+                    throw new UndeclaredThrowableException(t);
                 }
             }
         }
-
-        super.tearDown();
     }
-    
+
+    @Test
     public void testNothing() {
     }
 
@@ -204,6 +176,7 @@ public class TemporaryDatabaseITCase extends TestCase {
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
         jdbcTemplate = new JdbcTemplate(dataSource);
+        DataSourceFactory.setInstance(dataSource);
     }
     
     public DataSource getDataSource() {
@@ -250,23 +223,6 @@ public class TemporaryDatabaseITCase extends TestCase {
         return m_throwable != null;
     }
     
-    /**
-     * Defaults to true.
-     * 
-     * @return w00t
-     */
-    public static boolean isEnabled() {
-        String property = System.getProperty(RUN_PROPERTY, "true");
-        return "true".equals(property);
-    }
-
-    public static void notifyTestDisabled(String testMethodName) {
-        System.out.println("Test '" + testMethodName
-                           + "' disabled.  Set '"
-                           + RUN_PROPERTY
-                           + "' property from 'false' to 'true' to enable.");
-    }
-
     private void createTestDatabase() throws Exception {
         Connection adminConnection = getAdminDataSource().getConnection();
         Statement st = null;
@@ -304,7 +260,7 @@ public class TemporaryDatabaseITCase extends TestCase {
         if (m_leaveDatabase
                 || (m_leaveDatabaseOnFailure && hasTestFailed())) {
             System.err.println("Not dropping database '" + getTestDatabase()
-                    + "' for test '" + getName() + "'");
+                    + "' for test");
             return;
         }
 

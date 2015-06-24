@@ -9,9 +9,7 @@
 	elementFormDefault="qualified">
 	<annotation>
 		<documentation>
-			XML Schema for the linkd-configuration.xml configuration
-			file. Version: $Id: linkd-configuration.xsd 3400 2006-10-03
-			22:01:41Z rssntn67 $
+			XML Schema for the linkd-configuration.xml configuration file.
 		</documentation>
 	</annotation>
 
@@ -108,7 +106,7 @@
 				<annotation>
 					<documentation>
 						Whether SnmpCollection has to collect snmp Vlan tables on devices.
-						The Vlan data collection is made using the classes defined in vlans elements. 
+						The Vlan data collection is made using the classes defined in vlans elements.
 					</documentation>
 				</annotation>
 			</attribute>
@@ -117,7 +115,7 @@
 				use="optional" default="true">
 				<annotation>
 					<documentation>
-						Whether links discovery process should use 
+						Whether links discovery process should use
 						cisco discovery protocol snmp tables.
 					</documentation>
 				</annotation>
@@ -172,7 +170,7 @@
 					</documentation>
 				</annotation>
 			</attribute>
-			
+
 			<attribute name="use-wifi-discovery" type="boolean"
 				use="optional" default="true">
 				<annotation>
@@ -182,7 +180,7 @@
 					</documentation>
 				</annotation>
 			</attribute>
-			
+
 			<attribute name="save-route-table" type="boolean"
 				use="optional" default="true">
 				<annotation>
@@ -337,7 +335,7 @@
           <documentation>Ending address of the range.</documentation>
         </annotation>
       </attribute>
-		
+
 		</complexType>
 	</element>
 
@@ -436,7 +434,7 @@
 			<attribute name="snmp_poll_interval" type="long">
 				<annotation>
 					<documentation>
-						OverWrite link-configuration corresponding attribute	
+						OverWrite link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -444,7 +442,7 @@
 			<attribute name="discovery_link_interval" type="long">
 				<annotation>
 					<documentation>
-						OverWrite link-configuration corresponding attribute	
+						OverWrite link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -452,7 +450,7 @@
 			<attribute name="auto-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -460,7 +458,7 @@
 			<attribute name="enable-vlan-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -468,7 +466,7 @@
 			<attribute name="use-cdp-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -476,7 +474,7 @@
 			<attribute name="use-ip-route-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -484,7 +482,7 @@
 			<attribute name="use-bridge-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -492,7 +490,7 @@
 			<attribute name="use-lldp-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -500,7 +498,7 @@
 			<attribute name="use-ospf-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -508,7 +506,7 @@
 			<attribute name="use-isis-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -516,7 +514,7 @@
 			<attribute name="use-wifi-discovery" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -524,7 +522,7 @@
 			<attribute name="save-route-table" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -532,7 +530,7 @@
 			<attribute name="save-stp-node-table" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -540,7 +538,7 @@
 			<attribute name="save-stp-interface-table" type="boolean">
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
@@ -548,14 +546,14 @@
 			<attribute name="force-ip-route-discovery-on-ethernet" type="boolean" use="optional" default="false" >
 				<annotation>
 					<documentation>
-						OverWrite default value of link-configuration corresponding attribute	
+						OverWrite default value of link-configuration corresponding attribute
 					</documentation>
 				</annotation>
 			</attribute>
-		
-			
+
+
 		</complexType>
-		
+
 	</element>
 
 	<element name="filter">

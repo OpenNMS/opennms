@@ -1,33 +1,31 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
- * This file is a derivative work, containing both original code, included code,
- * and modified code that was published under the GNU General Public License.
- * 
- * Original code for this file Copyright (C) 2002 Scott McCrory.
- * All rights reserved.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: 
+ * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.core.utils;
 
 import java.io.BufferedReader;

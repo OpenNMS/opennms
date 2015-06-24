@@ -218,13 +218,13 @@ img.info {
     -------------------------------------------------- */
     
 	div.TwoColLeft {
-	    width: 40%;
+	    width: 48%;
 	    float: left;
 	    position: relative;
 	    margin-right: 2%;
 	}
 	div.TwoColRight {
-	    width: 57%;
+	    width: 49%;
 	    float: left;
 	    position: relative;
 	}
@@ -783,6 +783,25 @@ div .alert-warning {
 #graph-results
 {
 	text-align: center;
+}
+
+/* --------------------------------------------------
+    :: Styles for DBIDs, foreign-source, and foreign-ID
+    :: spans in the node list and node details pages
+    -------------------------------------------------- */
+
+span.NLdbid, span.NLfs, span.NLfid, span.NPdbid, span.NPfs, span.NPfid {
+	background-repeat: no-repeat;
+	padding-left: 17px;
+	padding-right: 4px;
+}
+
+span.NLdbid, span.NLfs, span.NLfid {
+	display: none;
+}
+
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid {
+	display: inline;
 }
 
 /* --------------------------------------------------

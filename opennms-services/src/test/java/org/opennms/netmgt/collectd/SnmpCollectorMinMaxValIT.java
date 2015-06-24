@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -60,8 +60,8 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -81,22 +81,22 @@ import org.springframework.transaction.annotation.Transactional;
     JUnitCollectorExecutionListener.class
 })
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
 @Transactional
 public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectorMinMaxValIT.class);
-    private static final String TEST_HOST_ADDRESS = "172.20.1.205";
+    private static final String TEST_HOST_ADDRESS = "192.0.2.205";
     private static final String TEST_NODE_LABEL = "TestNode"; 
-
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -118,6 +118,8 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
 	private SnmpAgentConfig m_agentConfig;
 
+	private RrdStrategy<?, ?> m_rrdStrategy;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -134,7 +136,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(TEST_HOST_ADDRESS));
 
-        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;
@@ -207,46 +209,47 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
     	final int stepSizeInSecs = 1;
 
     	final int stepSizeInMillis = stepSizeInSecs*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(Double.valueOf(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(123.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // now update the data in the agent
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(Double.valueOf(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis + 20000));
-        
+        assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
+
      // now update the data in the agent
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234567));
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(Double.valueOf(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis + 20000));
+        assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
     }
 
-    private static String rrd(final String file) {
-        return file + RrdUtils.getExtension();
+    private String rrd(final String file) {
+        return file + m_rrdStrategy.getDefaultFileExtension();
     }
 
     @Override

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.core.test.http;
 
 import java.util.Collections;
@@ -25,9 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JUnitServer {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(JUnitServer.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(JUnitServer.class);
+
     private Server m_server;
     private JUnitHttpServer m_config;
 
@@ -46,7 +73,7 @@ public class JUnitServer {
             factory.setKeyManagerPassword(config.keyPassword());
             factory.setTrustStore(config.keystore());
             factory.setTrustStorePassword(config.keystorePassword());
-            
+
             final SslSocketConnector connector = new SslSocketConnector(factory);
             connector.setPort(config.port());
             server.setConnectors(new Connector[] { connector });
@@ -60,7 +87,7 @@ public class JUnitServer {
         context1.setResourceBase(config.resource());
         context1.setClassLoader(Thread.currentThread().getContextClassLoader());
         context1.setVirtualHosts(config.vhosts());
-        
+
         final ContextHandler context = context1;
 
         Handler topLevelHandler = null;
@@ -68,7 +95,7 @@ public class JUnitServer {
 
         if (config.basicAuth()) {
             // check for basic auth if we're configured to do so
-        	LOG.debug("configuring basic auth");
+            LOG.debug("configuring basic auth");
 
             final HashLoginService loginService = new HashLoginService("MyRealm", config.basicAuthFile());
             loginService.setRefreshInterval(300000);
@@ -95,11 +122,11 @@ public class JUnitServer {
             security.setLoginService(loginService);
             security.setStrict(false);
             security.setRealmName("MyRealm");
-            
+
             security.setHandler(context);
             topLevelHandler = security;
         } else {
-                topLevelHandler = context;
+            topLevelHandler = context;
         }
 
         final Webapp[] webapps = config.webapps();
@@ -134,24 +161,35 @@ public class JUnitServer {
     }
 
     public synchronized void start() throws Exception {
-    	LOG.debug("starting jetty on port {}", m_config.port());
+        LOG.debug("starting jetty on port {}", m_config.port());
         m_server.start();
     }
 
     // NOTE: we retry server stop because of a concurrency issue inside Jetty that is not
     // easily solvable.
     public synchronized void stop() throws Exception {
-    	LOG.debug("shutting down jetty on port {}", m_config.port());
+        LOG.debug("shutting down jetty on port {}", m_config.port());
         try {
             m_server.stop();
         } catch (final InterruptedException e) {
-        	LOG.debug("Interrupted while attempting to shut down Jetty, propagating interrupt and trying again.", e);
+            LOG.debug("Interrupted while attempting to shut down Jetty, propagating interrupt and trying again.", e);
             Thread.currentThread().interrupt();
             m_server.stop();
         } catch (final RuntimeException e) {
-        	LOG.debug("An exception occurred while attempting to shut down Jetty.", e);
+            LOG.debug("An exception occurred while attempting to shut down Jetty.", e);
             m_server.stop();
             throw e;
         }
+    }
+
+    public synchronized int getPort() {
+        if (m_server == null) return -1;
+
+        for (final Connector conn : m_server.getConnectors()) {
+            System.err.println("connector = " + conn);
+            return conn.getLocalPort();
+        }
+
+        return -1;
     }
 }

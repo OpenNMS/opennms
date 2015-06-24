@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -57,18 +57,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ImportOperationsManager {
     private static final Logger LOG = LoggerFactory.getLogger(ImportOperationsManager.class);
-	public static final class NullUpdateOperation extends UpdateOperation {
-		public NullUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city, final ProvisionService provisionService) {
-			super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
-		}
 
-		@Override
-	    protected void doPersist() {
-			LOG.debug("Skipping persist for node {}: rescanExisting is false", getNode());
-		}
-	}
-
-	/**
+    /**
      * TODO: Seth 2012-03-08: These lists may consume a lot of RAM for large provisioning 
      * groups. We may need to figure out how to use flyweight objects instead of heavier 
      * {@link OnmsNode} objects in these lists. Our goal is to handle 50,000+ nodes per 
@@ -79,7 +69,7 @@ public class ImportOperationsManager {
     
     private final ProvisionService m_provisionService;
     private final Map<String, Integer> m_foreignIdToNodeMap;
-    private Boolean m_rescanExisting;
+    private String m_rescanExisting;
     
     private String m_foreignSource;
     
@@ -90,7 +80,7 @@ public class ImportOperationsManager {
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
      * @param rescanExisting TODO
      */
-    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final Boolean rescanExisting) {
+    public ImportOperationsManager(Map<String, Integer> foreignIdToNodeMap, ProvisionService provisionService, final String rescanExisting) {
         m_provisionService = provisionService;
         m_foreignIdToNodeMap = new HashMap<String, Integer>(foreignIdToNodeMap);
         m_rescanExisting = rescanExisting;
@@ -109,7 +99,7 @@ public class ImportOperationsManager {
         
         SaveOrUpdateOperation ret;
         if (nodeExists(foreignId)) {
-        	ret = updateNode(foreignId, nodeLabel, building, city);
+            ret = updateNode(foreignId, nodeLabel, building, city);
         } else {
             ret = insertNode(foreignId, nodeLabel, building, city);
         }        
@@ -127,13 +117,13 @@ public class ImportOperationsManager {
     }
 
     private SaveOrUpdateOperation updateNode(final String foreignId, final String nodeLabel, final String building, final String city) {
-    	final Integer nodeId = processForeignId(foreignId);
-    	final UpdateOperation updateOperation;
-    	if (m_rescanExisting) {
-            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
-    	} else {
-            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService);
-    	}
+        final Integer nodeId = processForeignId(foreignId);
+        final UpdateOperation updateOperation;
+        if (Boolean.valueOf(m_rescanExisting) || m_rescanExisting.equalsIgnoreCase("dbonly")) {
+            updateOperation = new UpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
+        } else {
+            updateOperation = new NullUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city, m_provisionService, m_rescanExisting);
+        }
         m_updates.add(updateOperation);
         return updateOperation;
     }
@@ -309,7 +299,7 @@ public class ImportOperationsManager {
         return m_foreignSource;
     }
 
-    public Boolean getRescanExisting() {
+    public String getRescanExisting() {
         return m_rescanExisting;
     }
     

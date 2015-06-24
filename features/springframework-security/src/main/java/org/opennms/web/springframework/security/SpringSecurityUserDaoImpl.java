@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -93,6 +93,8 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     private Map<String, Collection<? extends GrantedAuthority>> m_roles = null;
     
+    private Map<String,GrantedAuthority> m_authorities = new HashMap<>();
+
     private long m_magicUsersLastModified;
 
     private long m_groupsLastModified;
@@ -261,7 +263,7 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         m_roles = roles;
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorityListFromRoleList(LinkedList<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
+    private Collection<? extends GrantedAuthority> getAuthorityListFromRoleList(List<String> roleList, Map<String, Boolean> roleAddDefaultMap) {
         boolean addToDefaultGroup = false;
         
         for (String role : roleList) {
@@ -277,23 +279,34 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
         }
 
         for (String role : roleList) {
-            authorities.add(new SimpleGrantedAuthority(role));
+            authorities.add(getAuthority(role));
         }
 
         return authorities;
     }
 
+    protected GrantedAuthority getAuthority(final String role) {
+        if (!m_authorities.containsKey(role)) {
+            m_authorities.put(role, new SimpleGrantedAuthority(role));
+        }
+        return m_authorities.get(role);
+    }
+
     /**
      * <p>getAuthoritiesByUsername</p>
      *
-     * @param user a {@link java.lang.String} object.
+     * @param username a {@link java.lang.String} object.
      * @return an array of {@link org.springframework.security.GrantedAuthority} objects.
      */
-    protected Collection<? extends GrantedAuthority> getAuthoritiesByUsername(String user) {
-        if (m_roles.containsKey(user)) {
-            return m_roles.get(user);
+    protected Collection<? extends GrantedAuthority> getAuthoritiesByUsername(final String username) {
+        if (m_roles.containsKey(username)) {
+            final Collection<? extends GrantedAuthority> roles = m_roles.get(username);
+            LOG.debug("User {} has roles: {}", username, roles);
+            return roles;
         } else {
-            return Arrays.asList(new GrantedAuthority[] { ROLE_USER });
+            final List<GrantedAuthority> roles = Arrays.asList(new GrantedAuthority[] { ROLE_USER });
+            LOG.debug("User {} has roles: {}", username, roles);
+            return roles;
         }
     }
 
@@ -420,10 +433,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     /** {@inheritDoc} */
     @Override
-    public OnmsUser getByUsername(String username) {
+    public SpringSecurityUser getByUsername(String username) {
         reloadIfNecessary();
 
-        OnmsUser user;
+        final OnmsUser user;
         if (m_magicUsers.containsKey(username)) {
             user = m_magicUsers.get(username);
         } else {
@@ -434,9 +447,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             return null;
         }
 
-        user.setAuthorities(getAuthoritiesByUsername(username));
-
-        return user;
+        final SpringSecurityUser springUser = new SpringSecurityUser(user);
+        springUser.setAuthorities(getAuthoritiesByUsername(username));
+        return springUser;
     }
 
     private void reloadIfNecessary() {

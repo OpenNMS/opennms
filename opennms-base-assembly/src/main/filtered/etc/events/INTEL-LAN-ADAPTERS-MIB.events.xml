@@ -1,0 +1,427 @@
+<!-- Start of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB -->
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>1</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterLinkUpTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterLinkUpTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter has reached a linkup state.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterLinkUpTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>2</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterLinkDownTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterLinkDownTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter has reached a link down state.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterLinkDownTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>3</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterAddedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterAddedTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter has been installed.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterAddedTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>4</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterRemovedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterRemovedTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter has been uninstalled.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterRemovedTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>5</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterOnlineDiagPassedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterOnlineDiagPassedTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter's online diagnostics passed.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterOnlineDiagPassedTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.1.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/physicalAdapterOnlineDiagFailedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: physicalAdapterOnlineDiagFailedTrap</event-label>
+		<descr>
+			&lt;p&gt;Adapter's online diagnostics failed.
+			Online diagnostics might fail because of link loss or other hardware issues.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			physicalAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			physicalAdapterOnlineDiagFailedTrap trap received
+			physicalAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.2.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>1</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/virtualAdapterAddedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: virtualAdapterAddedTrap</event-label>
+		<descr>
+			&lt;p&gt;Virtual adapter has been added to a team.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			virtualAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			virtualAdapterAddedTrap trap received
+			virtualAdapterIndex=%parm[#1]%
+			ansId=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.2.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>2</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/virtualAdapterRemovedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: virtualAdapterRemovedTrap</event-label>
+		<descr>
+			&lt;p&gt;Virtual adapter has been removed from a team.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			virtualAdapterIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			virtualAdapterRemovedTrap trap received
+			virtualAdapterIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.3.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>1</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/ansTeamFailoverTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: ansTeamFailoverTrap</event-label>
+		<descr>
+			&lt;p&gt;The primary team member has been changed.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansTeamCurrentPrimaryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			not-available(-1)
+			&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansTeamPreviousPrimaryIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+			not-available(-1)
+			&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			ansTeamFailoverTrap trap received
+			ansId=%parm[#1]%
+			ansTeamCurrentPrimaryIndex=%parm[#2]%
+			ansTeamPreviousPrimaryIndex=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+		<varbindsdecode>
+			<parmid>parm[#2]</parmid>
+			<decode varbinddecodedstring="not-available" varbindvalue="-1"/>
+		</varbindsdecode>
+		<varbindsdecode>
+			<parmid>parm[#3]</parmid>
+			<decode varbinddecodedstring="not-available" varbindvalue="-1"/>
+		</varbindsdecode>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.3.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>2</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/ansAddedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: ansAddedTrap</event-label>
+		<descr>
+			&lt;p&gt;Team has been added.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			ansAddedTrap trap received
+			ansId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.3.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>3</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/ansRemovedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: ansRemovedTrap</event-label>
+		<descr>
+			&lt;p&gt;Team has been removed.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			ansRemovedTrap trap received
+			ansId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.4.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>1</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/teamMemberAddedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: teamMemberAddedTrap</event-label>
+		<descr>
+			&lt;p&gt;Member has been added to a team.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansMemberIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			teamMemberAddedTrap trap received
+			ansMemberIndex=%parm[#1]%
+			ansId=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.343.2.7.2.3.4.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>2</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/vendor/intel/traps/teamMemberRemovedTrap</uei>
+		<event-label>INTEL-LAN-ADAPTERS-MIB defined trap event: teamMemberRemovedTrap</event-label>
+		<descr>
+			&lt;p&gt;Member has been removed from a team.&lt;/p&gt;&lt;table&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+			ansMemberIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+			%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+		</descr>
+		<logmsg dest="logndisplay">&lt;p&gt;
+			teamMemberRemovedTrap trap received
+			ansMemberIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+</events>
+<!-- End of mib2events auto-generated data for MIB: INTEL-LAN-ADAPTERS-MIB -->

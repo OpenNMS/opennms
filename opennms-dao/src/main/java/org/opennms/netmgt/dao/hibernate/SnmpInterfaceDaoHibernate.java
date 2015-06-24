@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,21 +32,16 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.util.Assert;
 
-public class SnmpInterfaceDaoHibernate extends
-		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
-		SnmpInterfaceDao {
+public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements SnmpInterfaceDao {
 
-	/**
-	 * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
-	 */
-	public SnmpInterfaceDaoHibernate() {
-		super(OnmsSnmpInterface.class);
-	}
-	
+    /**
+     * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
+     */
+    public SnmpInterfaceDaoHibernate() {
+        super(OnmsSnmpInterface.class);
+    }
 
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
@@ -56,10 +51,7 @@ public class SnmpInterfaceDaoHibernate extends
         
     }
 
-
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
@@ -70,6 +62,15 @@ public class SnmpInterfaceDaoHibernate extends
                           ifIndex);
     }
 
-	
+    @Override
+    public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(description, "description may not be null");
 
+        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) LIKE LOWER(?) OR LOWER(snmpIf.ifName) LIKE LOWER(?))", 
+            nodeId, 
+            description,
+            description
+        );
+    }
 }

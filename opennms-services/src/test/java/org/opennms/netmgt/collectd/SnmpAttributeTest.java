@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
-import static org.easymock.EasyMock.isNull;
 import static org.easymock.EasyMock.matches;
 
 import java.io.File;
@@ -51,7 +50,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -59,7 +58,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -146,12 +144,12 @@ public class SnmpAttributeTest extends TestCase {
         ipInterface.setNode(node);
         ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
 
-        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
+        expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(7); // It used to be 3, but I think it is more correct to use getStoreDir from DefaultCollectionAgentService on DefaultCollectionAgent (NMS-7516)
 
         expect(m_rrdStrategy.getDefaultFileExtension()).andReturn(".myLittleEasyMockedStrategyAndMe").anyTimes();
         expect(m_rrdStrategy.createDefinition(isA(String.class), isA(String.class), isA(String.class), anyInt(), isAList(RrdDataSource.class), isAList(String.class))).andReturn(new Object());
 
-        m_rrdStrategy.createFile(isA(Object.class), (Map<String, String>) isNull());
+        m_rrdStrategy.createFile(isA(Object.class), isA(Map.class));
 
         expect(m_rrdStrategy.openFile(isA(String.class))).andReturn(new Object());
         m_rrdStrategy.updateFile(isA(Object.class), isA(String.class), matches(".*:" + matchValue));
@@ -179,7 +177,7 @@ public class SnmpAttributeTest extends TestCase {
         RrdRepository repository = createRrdRepository();
         repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
-        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository);
+        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository, m_rrdStrategy);
         persister.createBuilder(nodeInfo, "baz", attributeType);
         
         final AtomicInteger count = new AtomicInteger(0);

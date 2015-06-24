@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,69 +28,35 @@
 
 package org.opennms.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.opennms.web.command.DistributedStatusDetailsCommand;
 import org.opennms.web.svclayer.DistributedStatusService;
-import org.opennms.web.svclayer.SimpleWebTable;
-import org.springframework.validation.BindException;
+import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
+import org.opennms.web.svclayer.model.SimpleWebTable;
+import org.opennms.web.validator.DistributedStatusDetailsValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 /**
  * <p>DistributedStatusDetailsController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-public class DistributedStatusDetailsController extends AbstractCommandController {
-    
+@Controller
+@RequestMapping("/distributedStatusDetails.htm")
+public class DistributedStatusDetailsController {
+
+    @Autowired
     private DistributedStatusService m_distributedStatusService;
-    private String m_successView;
 
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        DistributedStatusDetailsCommand cmd = (DistributedStatusDetailsCommand) command;
+    @Autowired
+    private DistributedStatusDetailsValidator m_validator;
+
+    @RequestMapping(method={ RequestMethod.GET, RequestMethod.POST })
+    public ModelAndView handle(@ModelAttribute("command") DistributedStatusDetailsCommand cmd, BindingResult errors) {
+        m_validator.validate(cmd, errors);
         SimpleWebTable table = m_distributedStatusService.createStatusTable(cmd, errors);
-        return new ModelAndView(getSuccessView(), "webTable", table);
-    }
-
-    /**
-     * <p>getDistributedStatusService</p>
-     *
-     * @return a {@link org.opennms.web.svclayer.DistributedStatusService} object.
-     */
-    public DistributedStatusService getDistributedStatusService() {
-        return m_distributedStatusService;
-    }
-
-    /**
-     * <p>setDistributedStatusService</p>
-     *
-     * @param statusService a {@link org.opennms.web.svclayer.DistributedStatusService} object.
-     */
-    public void setDistributedStatusService(DistributedStatusService statusService) {
-        m_distributedStatusService = statusService;
-    }
-
-    /**
-     * <p>getSuccessView</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getSuccessView() {
-        return m_successView;
-    }
-
-    /**
-     * <p>setSuccessView</p>
-     *
-     * @param successView a {@link java.lang.String} object.
-     */
-    public void setSuccessView(String successView) {
-        m_successView = successView;
+        return new ModelAndView("distributedStatusDetails", "webTable", table);
     }
 }

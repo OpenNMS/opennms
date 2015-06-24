@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,18 +28,20 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.FROH_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
+
+import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
@@ -90,6 +92,9 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertEquals(4, m_isisLinkDao.countAll());
         assertTrue(m_linkd.runSingleSnmpCollection(siegfrie.getId()));
         assertEquals(6, m_isisLinkDao.countAll());
+
+        List<Object[]> links = m_isisLinkDao.getLinksForTopology();
+        assertEquals(3, links.size());
 
         for (OnmsNode node: m_nodeDao.findAll()) {
         	assertNotNull(node.getIsisElement());

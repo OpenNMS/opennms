@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
@@ -24,12 +52,9 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefini
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
-import org.opennms.netmgt.config.accesspointmonitor.AccessPointMonitorConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
-import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -43,6 +68,7 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.groups.Groupinfo;
+import org.opennms.netmgt.config.hardware.HwInventoryAdapterConfiguration;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
@@ -87,7 +113,6 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
-import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
@@ -161,12 +186,9 @@ public class WillItUnmarshalIT {
 
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, Impl.JAXB, "Invalid content was found starting with element 'bad-element'.");
 
-        addFile(Source.CONFIG, "access-point-monitor-configuration.xml", AccessPointMonitorConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "capsd-configuration.xml", CapsdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, Impl.JAXB);
@@ -179,14 +201,14 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, Impl.CASTOR);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "events-archiver-configuration.xml", EventsArchiverConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
-        addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.CASTOR);
         addFile(Source.CONFIG, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, Impl.CASTOR);
@@ -212,7 +234,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.CASTOR);
+        addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "site-status-views.xml", SiteStatusViewConfiguration.class, Impl.CASTOR);
@@ -232,8 +254,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, Impl.JAXB);
-        addFile(Source.CONFIG, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "xmlrpcd-configuration.xml", XmlrpcdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, Impl.CASTOR);
@@ -242,7 +262,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "wmi-config.xml", WmiConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "wmi-datacollection-config.xml", WmiDatacollectionConfig.class, Impl.CASTOR);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
@@ -267,11 +287,16 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/Jvm/1.6/JvmLegacy.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
+        addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, Impl.JAXB);
 
         // Add all event files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
                                                    new String[] { "xml" },
                                                    true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    Events.class,
+                    Impl.JAXB);
             addFile(Source.ABSOLUTE,
                     file.getPath(),
                     Events.class,

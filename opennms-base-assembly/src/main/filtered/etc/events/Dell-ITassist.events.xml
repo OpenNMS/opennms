@@ -1,0 +1,844 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of mib2events auto-generated data for MIB: MIB-Dell-10900 -->
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>1000</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemUp</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemUp</event-label>
+	  <descr>
+		  &lt;p&gt;System up message from IT Assistant. Sent when IT Assistant detects a node has come online.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertNode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertSystemUp trap received
+		  itaAlertMessage=%parm[#1]%
+		  itaAlertNode=%parm[#2]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Normal</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>1001</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemDown</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemDown</event-label>
+	  <descr>
+		  &lt;p&gt;System down message from IT Assistant. Sent when IT Assistant detects a node has gone offline.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertNode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertSystemDown trap received
+		  itaAlertMessage=%parm[#1]%
+		  itaAlertNode=%parm[#2]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Minor</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>2000</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertForwardedAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertForwardedAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Forwarded alert from IT Assistant. The event may have originated from an SNMP trap, DMI indication, or CIM indication.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertNode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertForwardedAlert trap received
+		  itaAlertMessage=%parm[#1]%
+		  itaAlertNode=%parm[#2]%
+		  itaAlertSeverity=%parm[#3]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3001</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;System monitoring alert from IT Assistant. Sent when a node's system monitoring counters has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertSystemMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3002</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertSystemMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertSystemMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;System monitoring alert from IT Assistant. Sent when a node's system monitoring counters has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertSystemMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3003</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertCPUMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertCPUMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;CPU monitoring alert from IT Assistant. Sent when a node's CPU utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertCPUMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3004</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertCPUMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertCPUMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;CPU monitoring alert from IT Assistant. Sent when a node's CPU utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertCPUMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3005</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertMemoryMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertMemoryMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Memory monitoring alert from IT Assistant. Sent when a node's memory utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertMemoryMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3006</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertMemoryMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertMemoryMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Memory monitoring alert from IT Assistant. Sent when a node's memory utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertMemoryMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3007</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertNetworkMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertNetworkMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Network monitoring alert from IT Assistant. Sent when a node's NIC utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertNetworkMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3008</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertNetworkMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertNetworkMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Network monitoring alert from IT Assistant. Sent when a node's NIC utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertNetworkMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3009</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertPhysicalDiskMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertPhysicalDiskMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Physical disk monitoring alert from IT Assistant. Sent when a node's physical disk utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertPhysicalDiskMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3010</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertPhysicalDiskMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertPhysicalDiskMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Physical disk monitoring alert from IT Assistant. Sent when a node's Physical disk utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertPhysicalDiskMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3011</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertLogicalDiskMonitoringCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertLogicalDiskMonitoringCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Logical disk monitoring alert from IT Assistant. Sent when a node's logical disk utilization has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertLogicalDiskMonitoringCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3012</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaAlertLogicalDiskMonitoringWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaAlertLogicalDiskMonitoringWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Logical disk monitoring alert from IT Assistant. Sent when a node's Logical disk utilization has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaAlertLogicalDiskMonitoringWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3015</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Power Management alert from IT Assistant. Sent when a node's power consumption has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaPowerManagementCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3016</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Power Management alert from IT Assistant. Sent when a node's power consumption has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaPowerManagementWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3017</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementGroupWarningAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementGroupWarningAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Power Management alert from IT Assistant. Sent when aggregate power consumption has exceeded user defined warning threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertTaskName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaPowerManagementGroupWarningAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%
+		  itaAlertTaskName=%parm[#5]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Warning</severity>
+  </event>
+  <event>
+	  <mask>
+		  <maskelement>
+			  <mename>id</mename>
+			  <mevalue>.1.3.6.1.4.1.674.10900.1</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>generic</mename>
+			  <mevalue>6</mevalue>
+		  </maskelement>
+		  <maskelement>
+			  <mename>specific</mename>
+			  <mevalue>3018</mevalue>
+		  </maskelement>
+	  </mask>
+	  <uei>uei.opennms.org/vendor/Dell/traps/itaPowerManagementGroupCriticalAlert</uei>
+	  <event-label>MIB-Dell-10900 defined trap event: itaPowerManagementGroupCriticalAlert</event-label>
+	  <descr>
+		  &lt;p&gt;Power Management alert from IT Assistant. Sent when aggregate power consumption has exceeded user defined critical threshold.&lt;/p&gt;&lt;table&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertCounterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdOperator&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertThresholdCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+		  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+		  itaAlertTaskName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+		  %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	  </descr>
+	  <logmsg dest="logndisplay">&lt;p&gt;
+		  itaPowerManagementGroupCriticalAlert trap received
+		  itaAlertCounterName=%parm[#1]%
+		  itaAlertThresholdOperator=%parm[#2]%
+		  itaAlertThresholdValue=%parm[#3]%
+		  itaAlertThresholdCount=%parm[#4]%
+		  itaAlertTaskName=%parm[#5]%&lt;/p&gt;
+	  </logmsg>
+	  <severity>Major</severity>
+  </event>
+</events>
+<!-- End of mib2events auto-generated data for MIB: MIB-Dell-10900 -->

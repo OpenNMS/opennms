@@ -1,9 +1,10 @@
 START_POLLER=0
 
-PIDFILE=/var/run/opennms-remote-poller.pid
+PIDFILE=/var/run/${install.package.name}-remote-poller.pid
 URI=http://localhost:8980/opennms-remoting
 LOCATION=Default
 GUI=false
+DISABLE_ICMP=false
 RUNAS=root
 USERNAME=admin
 PASSWORD=admin

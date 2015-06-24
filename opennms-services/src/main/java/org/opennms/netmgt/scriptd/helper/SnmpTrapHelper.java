@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,11 +32,12 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.eventd.AbstractEventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -100,7 +101,7 @@ public class SnmpTrapHelper {
      * Map of factories for generating different types of SNMP variable binding
      * content
      */
-    private HashMap<String, Object> m_factoryMap;
+    private Map<String, Object> m_factoryMap;
 
     /**
      * Constructs a new SNMPTrapHelper.
@@ -1099,8 +1100,8 @@ public class SnmpTrapHelper {
     public void sendTL1AutonomousMsgTrap(Event event, String destAddr, int destPort, String trapVersion, String community) throws SnmpTrapHelperException, UnknownHostException {
         
         // Check first thing that the event is of the right type.
-        if (! org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
-            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
+        if (! org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI.equals(event.getUei())) {
+            throw new SnmpTrapHelperException("The event must have a UEI of " + org.opennms.netmgt.events.api.EventConstants.TL1_AUTONOMOUS_MESSAGE_UEI);
         }
         
         // Create a TrapBuilder and bootstrap it according to trapVersion
@@ -1126,7 +1127,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.8.0", // OPENNMS-MIB::openNMS-event-nodeid 
                       EventConstants.TYPE_SNMP_OCTET_STRING, Long.toString(event.getNodeid()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.9.0", // OPENNMS-MIB::openNMS-event-time
-                      EventConstants.TYPE_SNMP_OCTET_STRING, event.getTime());
+                      EventConstants.TYPE_SNMP_OCTET_STRING, EventConstants.formatToString(event.getTime()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface
@@ -1136,19 +1137,19 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.18.0", // OPENNMS-MIB::openNMS-event-severity
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getSeverity());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.1.0", // OPENNMS-MIB::tl1amRawMessage
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[raw-message]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[raw-message]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.2.0", // OPENNMS-MIB::tl1amAlarmCode
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[alarm-code]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[alarm-code]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.3.0", // OPENNMS-MIB::tl1amAutonomousTag
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[atag]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[atag]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.4.0", // OPENNMS-MIB::tl1amVerb
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[verb]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[verb]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.5.0", // OPENNMS-MIB::tl1amAutoBlock
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[autoblock]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[autoblock]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.6.0", // OPENNMS-MIB::tl1amAID
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[aid]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[aid]%", event));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.2.1.7.0", // OPENNMS-MIB::tl1amAdditionalParams
-                      EventConstants.TYPE_SNMP_OCTET_STRING, EventUtil.expandParms("%parm[additionalParams]%", event));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, AbstractEventUtil.getInstance().expandParms("%parm[additionalParams]%", event));
         
         // Finally, send the trap!
         this.sendTrap(destAddr, destPort, community, trapBuilder);

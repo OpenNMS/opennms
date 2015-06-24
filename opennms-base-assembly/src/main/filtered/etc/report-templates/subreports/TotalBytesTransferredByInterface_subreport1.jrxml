@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="1.3310000000000013"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
-	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="foreignid" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="rrdDir" class="java.lang.String"/>
+	<parameter name="nodeid" class="java.lang.Integer"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="snmpifalias" class="java.lang.String"/>
 	<parameter name="snmpifname" class="java.lang.String"/>
 	<parameter name="snmpifdescr" class="java.lang.String"/>
@@ -95,7 +99,7 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="32" splitType="Stretch">
+		<band height="37" splitType="Stretch">
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
@@ -129,7 +133,7 @@
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="42">
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="2" width="150" height="16"/>
 				<textElement/>
@@ -145,13 +149,21 @@
 				<textElement/>
 				<text><![CDATA[Total Bytes In+Out]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="149" y="22" width="226" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[No Data For this Interface]]></text>
-			</staticText>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="36" y="18" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="336" y="18" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="186" y="18" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["-"]]></textFieldExpression>
+			</textField>
 		</band>
 	</noData>
 </jasperReport>

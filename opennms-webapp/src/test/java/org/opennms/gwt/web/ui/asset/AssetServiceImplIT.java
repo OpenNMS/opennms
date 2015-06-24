@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
@@ -53,7 +52,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.opennms.web.api.Authentication;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,21 +64,14 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@TestExecutionListeners({ OpenNMSConfigurationExecutionListener.class,
-		TemporaryDatabaseExecutionListener.class,
-		DependencyInjectionTestExecutionListener.class,
-		DirtiesContextTestExecutionListener.class,
-		TransactionalTestExecutionListener.class })
 @ContextConfiguration(locations = {
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-	        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml" })
+		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+		"classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AssetServiceImplIT implements InitializingBean {

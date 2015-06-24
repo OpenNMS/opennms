@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -172,8 +172,8 @@ public class XmpMonitor extends AbstractServiceMonitor {
         if (parameters != null) {
             retry = ParameterMap.getKeyedInteger(parameters, "retry", protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY);
             timeout = ParameterMap.getKeyedInteger(parameters, "timeout", protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT);
-            port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", DEFAULT_AUTHEN_USER);
+            port = ParameterMap.getKeyedInteger(parameters, "port", protoConfig.hasPort() ? protoConfig.getPort() : DEFAULT_PORT);
+            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", (protoConfig.getAuthenUser() != null) ? protoConfig.getAuthenUser() : DEFAULT_AUTHEN_USER);
             requestType = ParameterMap.getKeyedString(parameters, "request-type", DEFAULT_REQUEST_TYPE);
             mib = ParameterMap.getKeyedString(parameters, "mib", DEFAULT_REQUEST_MIB);
             table = ParameterMap.getKeyedString(parameters, "table", DEFAULT_REQUEST_TABLE);

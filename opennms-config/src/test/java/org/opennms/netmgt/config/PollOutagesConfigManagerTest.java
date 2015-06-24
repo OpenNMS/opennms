@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,28 +28,34 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.apache.commons.io.FileUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.springframework.core.io.ByteArrayResource;
+import org.opennms.netmgt.config.poller.outages.Outage;
+import org.springframework.core.io.FileSystemResource;
 
-public class PollOutagesConfigManagerTest extends TestCase {
+public class PollOutagesConfigManagerTest {
 
     private PollOutagesConfigManager m_manager;
+    File m_configFile = new File("target/test-poller-configuration.xml");
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(PollOutagesConfigManagerTest.class);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         
         String xml = "<?xml version=\"1.0\"?>\n" + 
@@ -81,30 +87,46 @@ public class PollOutagesConfigManagerTest extends TestCase {
                 "   <outage name=\"three\" type=\"specific\">\n" + 
                 "       <time begins=\"21-Feb-2005 05:30:00\" ends=\"21-Feb-2005 15:00:00\"/>\n" + 
                 "       <interface address=\"192.168.0.1\"/>\n" + 
-                "   </outage>\n" + 
-                "</outages>\n";
+                "   </outage>\n";
         
+        StringBuffer sb = new StringBuffer(xml);
+
+        // Fake a really big poll-outages.xml
+        for (int i = 1; i <= 10000; i++) {
+            sb.append("<outage name=\"o" + i + "\" type=\"specific\">\n");
+            sb.append("<time begins=\"21-Feb-2005 05:30:00\" ends=\"21-Feb-2005 15:00:00\"/>\n");
+            sb.append("<node id=\"" + i + "\"/>");
+            sb.append("</outage>");
+        }
+        sb.append("</outages>\n");
+
         m_manager = new PollOutagesConfigManager() {
             @Override
             public void update() throws IOException, MarshalException, ValidationException {}
         };
 
-        m_manager.setConfigResource(new ByteArrayResource(xml.getBytes()));
+        FileWriter w = new FileWriter(m_configFile);
+        w.write(sb.toString());
+        w.close();
+        m_manager.setConfigResource(new FileSystemResource(m_configFile));
         m_manager.afterPropertiesSet();
+        assertEquals(10003, m_manager.getOutages().length);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         MockLogAppender.assertNoWarningsOrGreater();
+        FileUtils.deleteQuietly(m_configFile);
     }
     
     private long getTime(String timeString) throws ParseException {
         Date date = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse(timeString);
         return date.getTime();
-        
     }
-    
+
+    @Test
     public void testIsTimeInOutageWeekly() throws Exception {
+        long start = System.currentTimeMillis();
 
         assertTrue(m_manager.isTimeInOutage(getTime("21-FEB-2005 14:00:00"), "one"));
         assertFalse(m_manager.isTimeInOutage(getTime("21-FEB-2005 14:00:00"), "two"));
@@ -122,8 +144,20 @@ public class PollOutagesConfigManagerTest extends TestCase {
         assertFalse(m_manager.isTimeInOutage(getTime("21-FEB-2005 16:00:00"), "two"));
         assertFalse(m_manager.isTimeInOutage(getTime("21-FEB-2005 16:00:00"), "three"));
         
-        
+        long end = System.currentTimeMillis();
+        System.out.println("Test took " + (end-start) + " ms");
     }
 
-
+    @Test
+    public void testPerformance() throws Exception {
+        long start = System.currentTimeMillis();
+        for (int i = 1; i <= 200; i++) {
+            String outageName = "o" + Integer.toString(i);
+            Outage outage = m_manager.getOutage(outageName);
+            assertTrue(outage != null);
+            assertTrue(m_manager.isNodeIdInOutage(i, outageName));
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Test took " + (end-start) + " ms");
+    }
 }

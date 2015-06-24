@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,8 +30,11 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -39,9 +42,13 @@ import java.util.TreeSet;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
+import org.opennms.netmgt.xml.eventconf.EventMatchers;
+import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
+import org.opennms.netmgt.xml.eventconf.Field;
 import org.opennms.netmgt.xml.eventconf.Partition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
@@ -63,7 +70,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private Partition m_partition;
 
-    public String getProgrammaticStoreRelativeUrl() {
+    /**
+     * Used to keep track of the last modified time for the loaded event files.
+     * See the reloadConfig() for details.
+     */
+    private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
+
+	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
 	}
 
@@ -74,7 +87,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public void reload() throws DataAccessException {
 		try {
-			loadConfig();
+		    reloadConfig();
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
@@ -163,7 +176,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public void addEvent(Event event) {
 		m_events.addEvent(event);
-		m_events.initialize(m_partition);
+		m_events.initialize(m_partition, new EventOrdering());
 	}
 
 	@Override
@@ -175,7 +188,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 
 		programmaticEvents.addEvent(event);
-		programmaticEvents.initialize(m_partition);
+		m_events.initialize(m_partition, new EventOrdering());
 
 	}
 
@@ -187,9 +200,10 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		programmaticEvents.removeEvent(event);
 		if (programmaticEvents.getEventCount() <= 0) {
 			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
-		} else {
-			programmaticEvents.initialize(m_partition);
-		}
+		} 
+
+		m_events.initialize(m_partition, new EventOrdering());
+
 		return true;
 
 	}
@@ -201,13 +215,14 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public Event findByUei(final String uei) {
-		return m_events.findFirstMatchingEvent(new EventCriteria() {
-
-			@Override
-			public boolean matches(Event e) {
-				return uei.equals(e.getUei());
-			}
-		});
+	    if (uei == null) {
+	        return null;
+	    }
+	    return m_events.findFirstMatchingEvent(new EventCriteria() {
+	        @Override public boolean matches(final Event e) {
+	            return uei.equals(e.getUei());
+	        }
+	    });
 	}
 
 	@Override
@@ -229,21 +244,74 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		loadConfig();
 	}
 
+	private static class EnterpriseIdPartition implements Partition {
+
+		private Field m_field = EventMatchers.field("id");
+
+		@Override
+		public List<String> group(Event eventConf) {
+			List<String> keys = eventConf.getMaskElementValues("id");
+			if (keys == null) return null;
+			for(String key : keys) {
+			    // if this issue is a wildcard issue we need to test against
+			    // all events so return null here so it isn't pigeon-holed into
+			    // a particular partition
+			    if (key.endsWith("%")) return null;
+			    if (key.startsWith("~")) return null;
+			}
+			return keys;
+		}
+
+		@Override
+		public String group(org.opennms.netmgt.xml.event.Event matchingEvent) {
+			return m_field.get(matchingEvent);
+		}
+		
+	}
+
+    private synchronized void reloadConfig() throws DataAccessException {
+        try {
+            // Load the root event file
+            Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
+
+            // Hash the list of event files for efficient lookup
+            Set<String> eventFiles = new HashSet<String>();
+            eventFiles.addAll(events.getEventFileCollection());
+
+            // Copy the loaded event files from the current root to the new root
+            // if and only if they exist in the new root
+            for (String eventFile : m_events.getEventFile()) {
+                if (!eventFiles.contains(eventFile)) {
+                    m_lastModifiedEventFiles.remove(eventFile);
+                    continue;
+                }
+                events.addLoadedEventFile(eventFile, m_events.getLoadEventsByFile(eventFile));
+            }
+
+            // Load/reload the event files as necessary
+            events.loadEventFilesIfModified(m_configResource, m_lastModifiedEventFiles);
+
+            // Order the events for efficient searching
+            events.initialize(m_partition, new EventOrdering());
+
+            m_events = events;
+        } catch (Exception e) {
+            throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
+        }
+    }
+
 	private synchronized void loadConfig() throws DataAccessException {
 		try {
 			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-			events.loadEventFiles(m_configResource);
-			
+			m_lastModifiedEventFiles = events.loadEventFiles(m_configResource);
+
 			m_partition = new EnterpriseIdPartition();
-			events.initialize(m_partition);
+			events.initialize(m_partition, new EventOrdering());
 
 			m_events = events;
-
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
-
 	}
-
 }
 

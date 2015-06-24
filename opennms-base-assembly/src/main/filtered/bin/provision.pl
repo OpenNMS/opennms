@@ -12,6 +12,32 @@ provision.pl [options] command [arguments ...]
 
 use warnings;
 
+BEGIN {
+	eval("use HTTP::Cookies; use HTTP::Request; use LWP; use Pod::Usage; use XML::Twig;");
+	if ($@) {
+		print <<END;
+!!!! WARNING !!!!
+
+provision.pl requires a couple of perl modules that may not be provided by
+your perl installation.  Please make sure LWP and XML::Twig are installed.
+
+If you are on an RPM-based system, you can run:
+
+	yum install 'perl(LWP)' 'perl(XML::Twig)'
+
+If you are on a Debian-based system, run:
+
+	apt-get install libwww-perl libxml-twig-perl
+
+Otherwise, you can use CPAN directly:
+
+	cpan LWP XML::Twig
+
+END
+		exit(1);
+	}
+}
+
 use Carp;
 use Data::Dumper;
 use File::Path;
@@ -176,9 +202,22 @@ Remove the requisition with the given foreign source.
 If the optional argument "B<deployed>" is specified, it will remove
 the already-imported foreign source configuration.
 
-=item B<requisition import E<lt>foreign-sourceE<gt>>
+=item B<requisition import E<lt>foreign-sourceE<gt>> [rescanExisting] [value]
 
 Import the requisition with the given foreign source.
+
+If the optional argument "B<rescanExisting>" is specified, the value
+must be one of the following:
+
+=over 4
+
+=item * true, to update the database and execute the scan phase 
+
+=item * false, to add/delete nodes on the DB sckipping the scan phase
+
+=item * dbonly, to add/detete/update nodes on the DB sckipping the scan phase
+
+=back
 
 =back
 
@@ -209,7 +248,13 @@ sub cmd_requisition {
 			remove($foreign_source);
 		}
 	} elsif ($command eq 'import' or $command eq 'deploy') {
-		put($foreign_source . '/import');
+		my $key   = shift @args || '';
+		my $value = shift @args || '';
+		if ($key eq 'rescanExisting' and $value !~ /^(true|false|dbonly)$/i) {
+			pod2usage(-exitval => 1, -message => "Error: You must specify a valid value for rescanExisting (true, false, dbonly)!", -verbose => 0);
+		}
+		my $query = "$key=$value" if $key eq 'rescanExisting';
+		put_simple($foreign_source . '/import', $query);
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command", -verbose => 0);
 	}
@@ -538,15 +583,55 @@ Optionally, you can set additional options as key=value pairs.  For example:
 
 Valid options are:
 
-=over 8
+=over 4
 
-=item * version: v1 or v2c
+=item * version: v1 or v2c or v3
 
 =item * port: the port of the SNMP agent
 
 =item * timeout: the timeout, in milliseconds
 
 =item * retries: the number of retries before giving up
+
+=item * max-repetitions: maximum repetitions (defaults to 2)
+
+=item * max-vars-per-pdu: maximum variables per PDU (defaults to 10)
+
+=back
+
+SNMPv3 options:
+
+=over 4
+
+=item * security-name: the USM name
+
+=item * security-level: 1, 2, 3
+
+=over 4
+
+=item * 1: noAuthNoPriv (default)
+
+=item * 2: authNoPriv
+
+=item * 3: authPriv
+
+=back
+
+=item * priv-protocol: DES, AES, AES192, AES256
+
+=item * priv-pass-phrase: the password for privacy protocol
+
+=item * auth-protocol: MD5, SHA
+
+=item * auth-pass-phrase: the password for the authentication protocol
+
+=item * engine-id: the unique engine ID of the SNMP agent
+
+=item * context-engine-id: the context ending ID
+
+=item * context-name: the context name
+
+=item * enterprise-id: the enterprise ID
 
 =back
 
@@ -660,6 +745,22 @@ sub put {
 	my $put = HTTP::Request->new(PUT => $url_root . $base . '/' . $path );
 	$put->content_type('application/x-www-form-urlencoded');
 	$put->content($arguments);
+	my $response = $BROWSER->request($put);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
+	if ($response->is_success) {
+		return $response;
+	}
+	croak($response->status_line);
+}
+
+sub put_simple {
+	my $path = shift;
+	my $args = shift;
+	my $base = shift || '/requisitions';
+
+	my $put = HTTP::Request->new(PUT => $url_root . $base . '/' . $path . (defined $args and $args ne '' ? '?' . $args : ''));
 	my $response = $BROWSER->request($put);
 	if ($response->is_redirect && $response->header('Location')) {
 		return $response;

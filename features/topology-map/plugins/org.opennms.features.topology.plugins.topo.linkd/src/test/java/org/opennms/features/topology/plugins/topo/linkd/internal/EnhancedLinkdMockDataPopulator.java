@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,24 +28,46 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.*;
-import org.opennms.netmgt.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.easymock.EasyMock;
+import org.junit.Assert;
+import org.opennms.core.test.OnmsAssert;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LldpLinkDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OspfLink;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnhancedLinkdMockDataPopulator {
 
     @Autowired
     private LldpLinkDao m_lldpLinkDao;
+
+    @Autowired
+    private OspfLinkDao m_ospfLinkDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -74,6 +96,7 @@ public class EnhancedLinkdMockDataPopulator {
     private List<OnmsNode> m_nodes;
     //private List<DataLinkInterface> m_links;
     private List<LldpLink> m_links;
+    private List<OspfLink> m_ospfLinks;
 
     public void populateDatabase() {
         final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
@@ -119,7 +142,7 @@ public class EnhancedLinkdMockDataPopulator {
                 .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         final OnmsNode node1 = builder.getCurrentNode();
-        node1.setLldpElement(new LldpElement(node1, "node1ChassisId", "node1SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node1.setLldpElement(new LldpElement(node1, "node1ChassisId", "node1SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode1(node1);
 
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2").setType(OnmsNode.NodeType.ACTIVE);
@@ -134,7 +157,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addService(icmp);
         builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         OnmsNode node2 = builder.getCurrentNode();
-        node2.setLldpElement(new LldpElement(node2, "node2ChassisId", "node2SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node2.setLldpElement(new LldpElement(node2, "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode2(node2);
 
         builder.addNode("node3").setForeignSource("imported:").setForeignId("3").setType(OnmsNode.NodeType.ACTIVE);
@@ -147,7 +170,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("192.168.3.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node3 = builder.getCurrentNode();
-        node3.setLldpElement(new LldpElement(node3, "node3ChassisId", "node3SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node3.setLldpElement(new LldpElement(node3, "node3ChassisId", "node3SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode3(node3);
 
         builder.addNode("node4").setForeignSource("imported:").setForeignId("4").setType(OnmsNode.NodeType.ACTIVE);
@@ -160,7 +183,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("192.168.4.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node4 = builder.getCurrentNode();
-        node4.setLldpElement(new LldpElement(node4, "node4ChassisId", "node4SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node4.setLldpElement(new LldpElement(node4, "node4ChassisId", "node4SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode4(node4);
 
         //This node purposely doesn't have a foreignId style assetNumber
@@ -174,7 +197,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("10.1.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node5 = builder.getCurrentNode();
-        node5.setLldpElement(new LldpElement(node5, "node5ChassisId", "node5SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node5.setLldpElement(new LldpElement(node5, "node5ChassisId", "node5SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode5(node5);
 
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
@@ -188,7 +211,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("10.1.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node6 = builder.getCurrentNode();
-        node6.setLldpElement(new LldpElement(node6, "node6ChassisId", "node6SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node6.setLldpElement(new LldpElement(node6, "node6ChassisId", "node6SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode6(node6);
 
         builder.addNode("alternate-node3").setType(OnmsNode.NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
@@ -201,7 +224,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("10.1.3.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node7 = builder.getCurrentNode();
-        node7.setLldpElement(new LldpElement(node7, "node7ChassisId", "node7SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node7.setLldpElement(new LldpElement(node7, "node7ChassisId", "node7SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode7(node7);
 
         builder.addNode("alternate-node4").setType(OnmsNode.NodeType.ACTIVE).getAssetRecord().setDisplayCategory("category1");
@@ -214,7 +237,7 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addInterface("10.1.4.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
         OnmsNode node8 = builder.getCurrentNode();
-        node8.setLldpElement(new LldpElement(node8, "node8ChassisId", "mode8SysName", LldpElement.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
+        node8.setLldpElement(new LldpElement(node8, "node8ChassisId", "mode8SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode8(node8);
 
         List<OnmsNode> nodes = new ArrayList<OnmsNode>();
@@ -242,29 +265,29 @@ public class EnhancedLinkdMockDataPopulator {
                 String portDescr, String remChassisId, String remSysname, LldpElement.LldpChassisIdSubType
         remChassisIdSubType,
                 String remPortId, String remPortDescr*/
-        final LldpLink dli12 = createLldpLink(getNode1(), "node1PortId", "node1PortDescr", 12, 10, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode2().getLldpElement(), "node2PortDescr", "node2PortId");
-        final LldpLink dli21 = createLldpLink(getNode2(), "node2PortId", "node2PortDescr", 22, 20, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode1().getLldpElement(), "node1PortDescr", "node1PortId");
+        final LldpLink dli12 = createLldpLink(getNode1(), "node1PortId", "node1PortDescr", 12, 10, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode2().getLldpElement(), "node2PortDescr", "node2PortId");
+        final LldpLink dli21 = createLldpLink(getNode2(), "node2PortId", "node2PortDescr", 22, 20, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode1().getLldpElement(), "node1PortDescr", "node1PortId");
 
-        final LldpLink dli23 = createLldpLink(getNode2(), "node2PortId", "node2PortDescr", 22, 20, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode3().getLldpElement(), "node3PortDescr", "node3PortId");
-        final LldpLink dli32 = createLldpLink(getNode3(), "node3PortId", "node3PortDescr", 33, 30, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode2().getLldpElement(), "node2PortDescr", "node2PortId");
+        final LldpLink dli23 = createLldpLink(getNode2(), "node2PortId", "node2PortDescr", 22, 20, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode3().getLldpElement(), "node3PortDescr", "node3PortId");
+        final LldpLink dli32 = createLldpLink(getNode3(), "node3PortId", "node3PortDescr", 33, 30, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode2().getLldpElement(), "node2PortDescr", "node2PortId");
 
-        final LldpLink dli34 = createLldpLink(getNode3(), "node3PortId", "node3PortDescr", 33, 30, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode4().getLldpElement(), "node4PortDescr", "node4PortId");
-        final LldpLink dli43 = createLldpLink(getNode4(), "node4PortId", "node4PortDescr", 44, 40, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode3().getLldpElement(), "node3PortDescr", "node3PortId");
+        final LldpLink dli34 = createLldpLink(getNode3(), "node3PortId", "node3PortDescr", 33, 30, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode4().getLldpElement(), "node4PortDescr", "node4PortId");
+        final LldpLink dli43 = createLldpLink(getNode4(), "node4PortId", "node4PortDescr", 44, 40, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode3().getLldpElement(), "node3PortDescr", "node3PortId");
 
-        final LldpLink dli45 = createLldpLink(getNode4(), "node4PortId", "node4PortDescr", 44, 40, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode5().getLldpElement(), "node5PortDescr", "node5PortId");
-        final LldpLink dli54 = createLldpLink(getNode5(), "node5PortId", "node5PortDescr", 55, 50, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode4().getLldpElement(), "node4PortDescr", "node4PortId");
+        final LldpLink dli45 = createLldpLink(getNode4(), "node4PortId", "node4PortDescr", 44, 40, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode5().getLldpElement(), "node5PortDescr", "node5PortId");
+        final LldpLink dli54 = createLldpLink(getNode5(), "node5PortId", "node5PortDescr", 55, 50, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode4().getLldpElement(), "node4PortDescr", "node4PortId");
 
-        final LldpLink dli56 = createLldpLink(getNode5(), "node5PortId", "node5PortDescr", 55, 50, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode6().getLldpElement(), "node6PortDescr", "node6PortId");
-        final LldpLink dli65 = createLldpLink(getNode6(), "node6PortId", "node6PortDescr", 66, 60, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode5().getLldpElement(), "node5PortDescr", "node5PortId");
+        final LldpLink dli56 = createLldpLink(getNode5(), "node5PortId", "node5PortDescr", 55, 50, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode6().getLldpElement(), "node6PortDescr", "node6PortId");
+        final LldpLink dli65 = createLldpLink(getNode6(), "node6PortId", "node6PortDescr", 66, 60, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode5().getLldpElement(), "node5PortDescr", "node5PortId");
 
-        final LldpLink dli67 = createLldpLink(getNode6(), "node6PortId", "node6PortDescr", 66, 60, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode7().getLldpElement(), "node7PortDescr", "node7PortId");
-        final LldpLink dli76 = createLldpLink(getNode7(), "node7PortId", "node7PortDescr", 77, 70, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode6().getLldpElement(), "node6PortDescr", "node6PortId");
+        final LldpLink dli67 = createLldpLink(getNode6(), "node6PortId", "node6PortDescr", 66, 60, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode7().getLldpElement(), "node7PortDescr", "node7PortId");
+        final LldpLink dli76 = createLldpLink(getNode7(), "node7PortId", "node7PortDescr", 77, 70, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode6().getLldpElement(), "node6PortDescr", "node6PortId");
 
-        final LldpLink dli78 = createLldpLink(getNode7(), "node7PortId", "node7PortDescr", 77, 70, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode8().getLldpElement(), "node8PortDescr", "node8PortId");
-        final LldpLink dli87 = createLldpLink(getNode8(), "node8PortId", "node8PortDescr", 88, 80, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode7().getLldpElement(), "node7PortDescr", "node7PortId");
+        final LldpLink dli78 = createLldpLink(getNode7(), "node7PortId", "node7PortDescr", 77, 70, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode8().getLldpElement(), "node8PortDescr", "node8PortId");
+        final LldpLink dli87 = createLldpLink(getNode8(), "node8PortId", "node8PortDescr", 88, 80, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode7().getLldpElement(), "node7PortDescr", "node7PortId");
 
-        final LldpLink dli81 = createLldpLink(getNode8(), "node8PortId", "node8PortDescr", 88, 80, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode1().getLldpElement(), "node1PortDescr", "node1PortId");
-        final LldpLink dli18 = createLldpLink(getNode1(), "node1PortId", "node1PortDescr", 12, 10, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode8().getLldpElement(), "node8PortDescr", "node8PortId");
+        final LldpLink dli81 = createLldpLink(getNode8(), "node8PortId", "node8PortDescr", 88, 80, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode1().getLldpElement(), "node1PortDescr", "node1PortId");
+        final LldpLink dli18 = createLldpLink(getNode1(), "node1PortId", "node1PortDescr", 12, 10, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, getNode8().getLldpElement(), "node8PortDescr", "node8PortId");
 
         dli12.setId(10012);
         dli21.setId(10021);
@@ -317,12 +340,37 @@ public class EnhancedLinkdMockDataPopulator {
         links.add(dli18);
         setLinks(links);
 
+        //OSPF links
+        OspfLink ospfLink12 = createOspfLink(getNode1(), "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
+        OspfLink ospfLink21 = createOspfLink(getNode2(), "192.168.100.245", "255.255.255.252", 0, 10101, "192.168.100.250", "192.168.100.246", 0);
+
+        ospfLink12.setId(10112);
+        ospfLink21.setId(10121);
+
+        List<OspfLink> ospfLinks = new ArrayList<OspfLink>();
+        ospfLinks.add(ospfLink12);
+        ospfLinks.add(ospfLink21);
+        setOspfLinks(ospfLinks);
+
     }
 
-    private LldpLink createLldpLink(OnmsNode node, String nodePortId, String nodePortDescr, int portIfIndex, int localPortNum, LldpLink.LldpPortIdSubType portIdSubType, LldpElement remLldpElement, String node2PortDescr, String node2PortId) {
+    private OspfLink createOspfLink(OnmsNode node, String sourceIpAddr, String sourceIpMask, int addrLessIndex, int ifIndex, String remRouterId, String remIpAddr, int remAddrLessIndex) {
+        final OspfLink ospfLink = new OspfLink();
+        ospfLink.setNode(node);
+        ospfLink.setOspfIpAddr(InetAddressUtils.addr(sourceIpAddr));
+        ospfLink.setOspfIpMask(InetAddressUtils.addr(sourceIpMask));
+        ospfLink.setOspfAddressLessIndex(addrLessIndex);
+        ospfLink.setOspfIfIndex(ifIndex);
+        ospfLink.setOspfRemRouterId(InetAddressUtils.addr(remRouterId));
+        ospfLink.setOspfRemIpAddr(InetAddressUtils.addr(remIpAddr));
+        ospfLink.setOspfRemAddressLessIndex(remAddrLessIndex);
+        return ospfLink;
+    }
+
+    private LldpLink createLldpLink(OnmsNode node, String nodePortId, String nodePortDescr, int portIfIndex, int localPortNum, LldpPortIdSubType portIdSubType, LldpElement remLldpElement, String node2PortDescr, String node2PortId) {
         return new LldpLink(node, localPortNum, portIfIndex, nodePortId, nodePortDescr,
                 portIdSubType, remLldpElement.getLldpChassisId(), remLldpElement.getLldpSysname(), remLldpElement.getLldpChassisIdSubType(),
-                node2PortId, LldpLink.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, node2PortDescr);
+                node2PortId, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, node2PortDescr);
     }
 
     private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
@@ -333,11 +381,13 @@ public class EnhancedLinkdMockDataPopulator {
         return ips;
 
     }
-    public void setUpMock() {
 
+    public void setUpMock() {
         //EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
-        EasyMock.expect(m_nodeDao.findAll()).andReturn(getNodes()).anyTimes();
+        EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
+        EasyMock.expect(m_nodeDao.getAllLabelsById());
+        EasyMock.expectLastCall().andReturn(getNodeLabelsById()).anyTimes();
 
         for (int i=1;i<9;i++) {
             EasyMock.expect(m_nodeDao.get(i)).andReturn(getNode(i)).anyTimes();
@@ -348,6 +398,7 @@ public class EnhancedLinkdMockDataPopulator {
 
         //EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_lldpLinkDao);
+        EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
         EasyMock.replay(m_ipInterfaceDao);
@@ -380,6 +431,7 @@ public class EnhancedLinkdMockDataPopulator {
     public void tearDown() {
 //        EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_lldpLinkDao);
+        EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
         EasyMock.reset(m_snmpInterfaceDao);
         EasyMock.reset(m_ipInterfaceDao);
@@ -469,6 +521,14 @@ public class EnhancedLinkdMockDataPopulator {
         return m_links;
     }
 
+    private void setOspfLinks(List<OspfLink> ospfLinks) {
+        m_ospfLinks = ospfLinks;
+    }
+
+    private List<OspfLink> getOspfLinks(){
+        return m_ospfLinks;
+    }
+
 /*
     public DataLinkInterfaceDao getDataLinkInterfaceDao() {
         return m_dataLinkInterfaceDao;
@@ -498,7 +558,7 @@ public class EnhancedLinkdMockDataPopulator {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());
 
-        Assert.assertEquals(8, topologyProvider.getEdges().size());
+        Assert.assertEquals(9, topologyProvider.getEdges().size());
 
         Assert.assertTrue(topologyProvider.containsVertexId("1"));
         Assert.assertTrue(topologyProvider.containsVertexId("2"));
@@ -510,8 +570,8 @@ public class EnhancedLinkdMockDataPopulator {
         Assert.assertTrue(topologyProvider.containsVertexId("8"));
         Assert.assertTrue(!topologyProvider.containsVertexId("15"));
 
-        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")).length);
-        Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")).length);
+        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")).length);
+        Assert.assertEquals(3, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")).length);
         Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "3")).length);
         Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "4")).length);
         Assert.assertEquals(2, topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "5")).length);
@@ -528,47 +588,55 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
         EasyMock.replay(mockVertex);
         AbstractEdge[] edgeidsforvertex1 = {
-                new AbstractEdge("nodes", "10018|10081", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10012|10021", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10018|10081", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10012|10021", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "10112|10121", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex2 = {
-                new AbstractEdge("nodes", "10023|10032", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10012|10021", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10023|10032", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10012|10021", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "10112|10121", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex3 = {
-                new AbstractEdge("nodes", "10023|10032", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10034|10043", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10023|10032", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10034|10043", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex4 = {
-                new AbstractEdge("nodes", "10045|10054", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10034|10043", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10045|10054", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10034|10043", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex5 = {
-                new AbstractEdge("nodes", "10045|10054", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10056|10065", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10045|10054", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10056|10065", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex6 = {
-                new AbstractEdge("nodes", "10056|10065", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10067|10076", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10056|10065", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10067|10076", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex7 = {
-                new AbstractEdge("nodes", "10078|10087", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10067|10076", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10078|10087", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10067|10076", mockVertex, mockVertex)
         };
         AbstractEdge[] edgeidsforvertex8 = {
-                new AbstractEdge("nodes", "10018|10081", mockVertex, mockVertex),
-                new AbstractEdge("nodes", "10078|10087", mockVertex, mockVertex)
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10018|10081", mockVertex, mockVertex),
+                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10078|10087", mockVertex, mockVertex)
         };
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")), edgeidsforvertex2);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "3")), edgeidsforvertex3);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "4")), edgeidsforvertex4);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "5")), edgeidsforvertex5);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "6")), edgeidsforvertex6);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "7")), edgeidsforvertex7);
+        OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "8")), edgeidsforvertex8);
+    }
 
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")), edgeidsforvertex2);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "3")), edgeidsforvertex3);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "4")), edgeidsforvertex4);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "5")), edgeidsforvertex5);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "6")), edgeidsforvertex6);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "7")), edgeidsforvertex7);
-        Assert.assertArrayEquals(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "8")), edgeidsforvertex8);
-
+    public Map<Integer, String> getNodeLabelsById() {
+        Map<Integer, String> nodeLabelsById = new HashMap<Integer, String>();
+        for (OnmsNode node : getNodes()) {
+            nodeLabelsById.put(node.getId(), node.getLabel());
+        }
+        return nodeLabelsById;
     }
 
     public List<OnmsNode> getNodes() {
@@ -609,5 +677,13 @@ public class EnhancedLinkdMockDataPopulator {
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public void setOspfLinkDao(OspfLinkDao ospfLinkDao) {
+        m_ospfLinkDao = ospfLinkDao;
+    }
+
+    public OspfLinkDao getOspfLinkDao() {
+        return m_ospfLinkDao;
     }
 }

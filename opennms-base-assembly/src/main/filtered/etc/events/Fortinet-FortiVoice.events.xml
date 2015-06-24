@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.113</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>104</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortivoice/fvTrapStorageDiskHighThreshold</uei>
+        <event-label>FORTINET-FORTIVOICE-MIB defined trap event: fvTrapStorageDiskHighThreshold</event-label>
+        <descr>
+&lt;p&gt;Trap being sent if the storage disk usage becomes too high&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fvTrapStorageDiskHighThreshold trap received
+	fvSysSerial=%parm[#1]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.113</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>201</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortivoice/fvTrapSystemEvent</uei>
+        <event-label>FORTINET-FORTIVOICE-MIB defined trap event: fvTrapSystemEvent</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when the system component halt, reboot, upgrade etc.,&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvSysEventCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		systemHalt(1)
+		systemReboot(2)
+		systemReload(3)
+		systemUpgrade(4)
+		guiUpgrade(5)
+		logDiskFormat(6)
+		storageDiskFormat(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fvTrapSystemEvent trap received
+	fvSysSerial=%parm[#1]%
+	fvSysEventCode=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="systemHalt"/>
+            <decode varbindvalue="2" varbinddecodedstring="systemReboot"/>
+            <decode varbindvalue="3" varbinddecodedstring="systemReload"/>
+            <decode varbindvalue="4" varbinddecodedstring="systemUpgrade"/>
+            <decode varbindvalue="5" varbinddecodedstring="guiUpgrade"/>
+            <decode varbindvalue="6" varbinddecodedstring="logDiskFormat"/>
+            <decode varbindvalue="7" varbinddecodedstring="storageDiskFormat"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.113</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>203</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortivoice/fvTrapHAEvent</uei>
+        <event-label>FORTINET-FORTIVOICE-MIB defined trap event: fvTrapHAEvent</event-label>
+        <descr>
+&lt;p&gt;Trap being sent when HA event occurs&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvHAEventId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		masterUnitSwitch(1)
+		slaveUnitSwitch(2)
+		unitShutdown(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvHAUnitIp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fvHAEventReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fvTrapHAEvent trap received
+	fvSysSerial=%parm[#1]%
+	fvHAEventId=%parm[#2]%
+	fvHAUnitIp=%parm[#3]%
+	fvHAEventReason=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="masterUnitSwitch"/>
+            <decode varbindvalue="2" varbinddecodedstring="slaveUnitSwitch"/>
+            <decode varbindvalue="3" varbinddecodedstring="unitShutdown"/>
+        </varbindsdecode>
+    </event>
+</events>

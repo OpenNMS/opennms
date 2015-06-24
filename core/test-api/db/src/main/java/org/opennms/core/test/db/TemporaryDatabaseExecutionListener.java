@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,11 +41,15 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.opennms.core.db.C3P0ConnectionFactory;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -102,11 +106,11 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
             // exist even if they were rolled back after a previous test execution.
             //
             if (jtd.dirtiesContext()) {
-                testContext.markApplicationContextDirty();
+                testContext.markApplicationContextDirty(HierarchyMode.CURRENT_LEVEL);
                 testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
             } else {
                 if (m_database != m_databases.peek()) {
-                    testContext.markApplicationContextDirty();
+                    testContext.markApplicationContextDirty(HierarchyMode.CURRENT_LEVEL);
                     testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
                 }
             }
@@ -225,7 +229,24 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
 
         m_database = m_databases.remove();
 
-        DataSourceFactory.setInstance(m_database);
+        // We should pool connections to simulate the behavior of OpenNMS where we use c3p0,
+        // but we also need to be able to shut down the connection pool reliably after tests
+        // complete which c3p0 isn't great at. So make it configurable.
+        //
+        if (jtd.poolConnections()) {
+            JdbcDataSource ds = new JdbcDataSource();
+            ds.setDatabaseName(m_database.getTestDatabase());
+            ds.setUserName(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
+            ds.setPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
+            ds.setUrl(System.getProperty(TemporaryDatabase.URL_PROPERTY, TemporaryDatabase.DEFAULT_URL) + m_database.getTestDatabase());
+            ds.setClassName(System.getProperty(TemporaryDatabase.DRIVER_PROPERTY, TemporaryDatabase.DEFAULT_DRIVER));
+
+            C3P0ConnectionFactory pool = new C3P0ConnectionFactory(ds);
+
+            DataSourceFactory.setInstance(pool);
+        } else {
+            DataSourceFactory.setInstance(m_database);
+        }
         XADataSourceFactory.setInstance(m_database);
 
         System.err.println(String.format("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s", testContext, m_database.toString()));

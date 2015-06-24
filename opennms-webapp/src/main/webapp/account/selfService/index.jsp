@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -59,7 +59,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="User Account Self-Service" />
   <jsp:param name="headTitle" value="User Account Self-Service" />
   <jsp:param name="breadcrumb" value="User Account Self-Service" />
@@ -76,30 +76,40 @@
   }
 </script>
 
-<div class="TwoColLeft">
-    <h3>User Account Self-Service</h3>
-        <div class="boxWrapper">
-        <ul class="plain">
-        <li><a href="javascript:changePassword()">Change Password</a></li>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">User Account Self-Service</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+          <li><a href="javascript:changePassword()">Change Password</a></li>
         </ul>
-        </div>
-</div>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-<div class="TwoColRight">
-    <h3>Account Self-Service Options</h3>
-    <div class="boxWrapper">
-    <p>
-    Currently, account self-service is limited to password changes. Note that in environments using a
-    reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
-    possible.
-    </p>
-    <p>
-    If you require further changes to your account, please contact the person within your organization responsible for
-    maintaining OpenNMS.
-    </p>
-    </div>
-</div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Self-Service Options</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+         Currently, account self-service is limited to password changes. Note that in environments using a
+         reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
+         possible.
+         </p>
+         <p>
+         If you require further changes to your account, please contact the person within your organization responsible for
+         maintaining OpenNMS.
+         </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
 <form name="selfServiceForm" method="post"></form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

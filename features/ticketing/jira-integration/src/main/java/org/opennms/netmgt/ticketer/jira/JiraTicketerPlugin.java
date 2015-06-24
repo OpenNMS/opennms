@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,6 +50,7 @@ import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Comment;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.Transition;
@@ -61,7 +62,7 @@ import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactor
  * OpenNMS Trouble Ticket Plugin API implementation for Atlassian JIRA.
  * This implementation relies on the JIRA REST interface and is compatible
  * with JIRA 5.0+.
- * 
+ *
  * @see http://www.atlassian.com/software/jira/overview
  * @see http://docs.atlassian.com/jira-rest-java-client/1.0/apidocs/
  *
@@ -121,7 +122,7 @@ public class JiraTicketerPlugin implements Plugin {
             ticket.setState(getStateFromId(issue.getStatus().getName()));
 
             return ticket;
-        } else { 
+        } else {
             return null;
         }
     }
@@ -198,7 +199,10 @@ public class JiraTicketerPlugin implements Plugin {
             builder.setDescription(ticket.getDetails());
             builder.setDueDate(new DateTime(Calendar.getInstance()));
 
-            jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+            BasicIssue createdIssue = jira.getIssueClient().createIssue(builder.build(), new NullProgressMonitor());
+            LOG.info("created ticket " + createdIssue);
+
+            ticket.setId(createdIssue.getKey());
 
         } else {
             // Otherwise update the existing ticket

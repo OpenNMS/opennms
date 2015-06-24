@@ -39,7 +39,7 @@
 				result="viewScope.formats" />
 		</on-render>
 		<transition on="proceed" to="scheduleOrExecute" />
-		<transition on="revise" to="reportParameters" />
+    <transition on="revise" to="hasParameters" />
 		<transition on="cancel" to="reportCancelled" />
 	</view-state>
 	

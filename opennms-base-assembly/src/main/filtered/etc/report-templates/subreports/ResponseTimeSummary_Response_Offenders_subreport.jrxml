@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_subreport" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="164"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="STATSD_REPORT" class="java.lang.String">
 		<defaultValueExpression><![CDATA["TopN_Response"]]></defaultValueExpression>
@@ -60,7 +64,7 @@ LIMIT 10;]]>
 	<pageHeader>
 		<band height="45" splitType="Stretch">
 			<staticText>
-				<reportElement x="199" y="0" width="156" height="12"/>
+				<reportElement style="Section" x="0" y="0" width="555" height="22"/>
 				<textElement/>
 				<text><![CDATA[Top Offenders (Response Time)]]></text>
 			</staticText>
@@ -118,12 +122,14 @@ LIMIT 10;]]>
 	<noData>
 		<band height="100">
 			<staticText>
-				<reportElement x="96" y="35" width="363" height="50"/>
+				<reportElement x="0" y="35" width="555" height="50"/>
 				<textElement textAlignment="Justified"/>
-				<text><![CDATA[There seems to be no data for this section. Please check the statsd-configuration.xml and change the status from off to on for the Top 10 reports. To turn them on change the status from off to on.]]></text>
+				<text><![CDATA[There seems to be no data for this section.
+
+Please check the statsd-configuration.xml and change the status from off to on for the Top 10 reports.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="199" y="10" width="156" height="12"/>
+				<reportElement style="Section" x="0" y="10" width="555" height="22"/>
 				<textElement/>
 				<text><![CDATA[Top Offenders (Response Time)]]></text>
 			</staticText>

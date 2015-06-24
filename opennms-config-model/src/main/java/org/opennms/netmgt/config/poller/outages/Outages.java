@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,10 +32,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,7 +50,6 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
-
 import org.opennms.core.xml.ValidateUsing;
 import org.xml.sax.ContentHandler;
 
@@ -58,7 +60,7 @@ import org.xml.sax.ContentHandler;
  */
 
 @XmlRootElement(name="outages", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("poll-outages.xsd")
 public class Outages implements Serializable {
     private static final Outage[] EMPTY_OUTAGE_LIST = new Outage[0];
@@ -68,35 +70,37 @@ public class Outages implements Serializable {
     /**
      * A scheduled outage
      */
-    @XmlElement(name="outage")
-    private List<Outage> m_outages = new ArrayList<Outage>();
-
-
+    private Map<String, Outage> _outageMap;
+    
     public Outages() {
         super();
+        this._outageMap = new LinkedHashMap<String, Outage>();
     }
 
     /**
      * Adds a new Scheduled Outage
      * 
-     * @param outage
+     * @param vOutage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage(final Outage outage) throws IndexOutOfBoundsException {
-        m_outages.add(outage);
+    public void addOutage(final Outage vOutage) throws IndexOutOfBoundsException {
+        this._outageMap.put(vOutage.getName(), vOutage);
     }
 
     /**
      * Adds a new Scheduled Outage
      * 
      * @param index
-     * @param outage
+     * @param vOutage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addOutage( final int index, final Outage outage) throws IndexOutOfBoundsException {
-        m_outages.add(index, outage);
+    public void addOutage( final int index, final Outage vOutage) throws IndexOutOfBoundsException {
+        List<Outage> outageList = new ArrayList<Outage>(this._outageMap.values());
+        outageList.add(index, vOutage);
+        setOutage(outageList);
+        
     }
 
     /**
@@ -106,7 +110,7 @@ public class Outages implements Serializable {
      * collection
      */
     public Enumeration<Outage> enumerateOutage() {
-        return Collections.enumeration(m_outages);
+        return Collections.enumeration(this._outageMap.values());
     }
 
     /**
@@ -123,12 +127,12 @@ public class Outages implements Serializable {
         if (obj instanceof Outages) {
 
             Outages temp = (Outages)obj;
-            if (m_outages != null) {
-                if (temp.m_outages == null) return false;
-                else if (!(m_outages.equals(temp.m_outages))) 
+            if (this._outageMap != null) {
+                if (temp._outageMap == null) return false;
+                else if (!(this._outageMap.equals(temp._outageMap))) 
                     return false;
             }
-            else if (temp.m_outages != null)
+            else if (temp._outageMap != null)
                 return false;
             return true;
         }
@@ -145,7 +149,20 @@ public class Outages implements Serializable {
      * org.opennms.netmgt.config.poller.Outage at the given index
      */
     public Outage getOutage(final int index) throws IndexOutOfBoundsException {
-        return m_outages.get(index);
+        
+        if (index < 0 || index >= this._outageMap.size()) {
+            throw new IndexOutOfBoundsException("getOutage: Index value '" + index + "' not in range [0.." + (this._outageMap.size() - 1) + "]");
+        }
+        
+        int count = 0;
+        for(Outage o : this._outageMap.values()) {
+            if (count == index) {
+                return o;
+            }
+            count++;
+        }
+        
+        return null;
     }
 
     /**
@@ -157,19 +174,20 @@ public class Outages implements Serializable {
      * 
      * @return this collection as an Array
      */
+    @XmlElement(name="outage")
     public Outage[] getOutage() {
-        return m_outages.toArray(EMPTY_OUTAGE_LIST);
+        return this._outageMap.values().toArray(EMPTY_OUTAGE_LIST);
     }
 
     /**
      * Method getOutageCollection.Returns a reference to
-     * 'm_outages'. No type checking is performed on any
+     * '_outageList'. No type checking is performed on any
      * modifications to the Vector.
      * 
      * @return a reference to the Vector backing this class
      */
     public List<Outage> getOutageCollection() {
-        return new ArrayList<Outage>(m_outages);
+        return new ArrayList<Outage>(this._outageMap.values());
     }
 
     /**
@@ -178,7 +196,7 @@ public class Outages implements Serializable {
      * @return the size of this collection
      */
     public int getOutageCount() {
-        return m_outages.size();
+        return this._outageMap.size();
     }
 
     /**
@@ -189,12 +207,11 @@ public class Outages implements Serializable {
      * 
      * @return a hash code value for the object.
      */
-    @Override
     public int hashCode() {
         int result = 17;
 
-        if (m_outages != null) {
-            result = 37 * result + m_outages.hashCode();
+        if (_outageMap != null) {
+            result = 37 * result + _outageMap.hashCode();
         }
 
         return result;
@@ -209,7 +226,7 @@ public class Outages implements Serializable {
     public boolean isValid() {
         try {
             validate();
-        } catch (final ValidationException vex) {
+        } catch (ValidationException vex) {
             return false;
         }
         return true;
@@ -222,7 +239,7 @@ public class Outages implements Serializable {
      * collection
      */
     public Iterator<Outage> iterateOutage() {
-        return m_outages.iterator();
+        return this._outageMap.values().iterator();
     }
 
     /**
@@ -258,17 +275,18 @@ public class Outages implements Serializable {
     /**
      */
     public void removeAllOutage() {
-        m_outages.clear();
+        this._outageMap.clear();
     }
 
     /**
      * Method removeOutage.
      * 
-     * @param outage
+     * @param vOutage
      * @return true if the object was removed from the collection.
      */
-    public boolean removeOutage(final Outage outage) {
-        return m_outages.remove(outage);
+    public boolean removeOutage(final Outage vOutage) {
+        Outage removed = _outageMap.remove(vOutage.getName());
+        return removed != null;
     }
 
     /**
@@ -278,55 +296,63 @@ public class Outages implements Serializable {
      * @return the element removed from the collection
      */
     public Outage removeOutageAt(final int index) {
-        return m_outages.remove(index);
+        List<Outage> outageList = new ArrayList<Outage>(this._outageMap.values());
+        Outage o = outageList.remove(index);
+        setOutage(outageList);
+        return o;
     }
 
     /**
      * 
      * 
      * @param index
-     * @param outage
+     * @param vOutage
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setOutage(final int index, final Outage outage) throws IndexOutOfBoundsException {
-        m_outages.set(index, outage);
-    }
-
-    /**
-     * 
-     * 
-     * @param outages
-     */
-    public void setOutage(final Outage[] outages) {
-        m_outages.clear();
-        for (final Outage outage : outages) {
-            m_outages.add(outage);
+    public void setOutage(final int index, final Outage vOutage) throws IndexOutOfBoundsException {
+        // check bounds for index
+        if (index < 0 || index >= this._outageMap.size()) {
+            throw new IndexOutOfBoundsException("setOutage: Index value '" + index + "' not in range [0.." + (this._outageMap.size() - 1) + "]");
         }
+
+        List<Outage> outageList = new ArrayList<Outage>(this._outageMap.values());
+        outageList.set(index, vOutage);
+        setOutage(outageList);
     }
 
     /**
-     * Sets the value of 'm_outages' by copying the given Vector.
+     * 
+     * 
+     * @param vOutageArray
+     */
+    public void setOutage(final Outage[] vOutageArray) {
+        setOutage(Arrays.asList(vOutageArray));
+    }
+
+    /**
+     * Sets the value of '_outageList' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
-     * @param outages the Vector to copy.
+     * @param vOutageList the Vector to copy.
      */
-    public void setOutage(final List<Outage> outages) {
-        if (outages != m_outages) {
-            m_outages.clear();
-            m_outages.addAll(outages);
+    public void setOutage(final List<Outage> vOutageList) {
+        Map<String, Outage> m = new LinkedHashMap<String, Outage>();
+        for(Outage o : vOutageList) {
+            m.put(o.getName(), o);
         }
+        this._outageMap = m;
     }
 
     /**
-     * Sets the value of 'm_outages' by setting it to the given
+     * Sets the value of '_outageList' by setting it to the given
      * Vector. No type checking is performed.
      * @deprecated
      * 
-     * @param outages the Vector to set.
+     * @param outageList the Vector to set.
      */
-    public void setOutageCollection(final List<Outage> outages) {
-        m_outages = new ArrayList<Outage>(outages);
+    public void setOutageCollection(final List<Outage> outageList) {
+        setOutage(outageList);
     }
 
     /**
@@ -356,8 +382,12 @@ public class Outages implements Serializable {
         new Validator().validate(this);
     }
 
-    @Override
-    public String toString() {
-        return "Outages[outages=" + m_outages + "]";
+    public Outage getOutage(String name) {
+        return this._outageMap.get(name);
     }
+
+    public void removeOutage(String outageName) {
+        this._outageMap.remove(outageName);
+    }
+
 }

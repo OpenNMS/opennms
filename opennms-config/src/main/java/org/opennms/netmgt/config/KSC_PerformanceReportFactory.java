@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,10 +35,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -122,10 +122,10 @@ public class KSC_PerformanceReportFactory {
         if (isInitialized()) {
             return;
         }
-        
+
         KSC_PerformanceReportFactory newInstance = new KSC_PerformanceReportFactory();
         newInstance.reload();
-        
+
         s_instance = newInstance;
     }
 
@@ -154,16 +154,16 @@ public class KSC_PerformanceReportFactory {
         if (s_configFile == null) s_configFile = ConfigFileConstants.getFile(ConfigFileConstants.KSC_REPORT_FILE_NAME);
 
         m_config = CastorUtils.unmarshal(ReportsList.class, new FileSystemResource(s_configFile));
-        
+
         setIdsOnAllReports();
-        
+
         m_reportList = createReportList();
     }
 
     public static void setConfigFile(final File configFile) {
         s_configFile = configFile;
     }
-    
+
     private void setIdsOnAllReports() {
         int i = 0;
 
@@ -173,7 +173,7 @@ public class KSC_PerformanceReportFactory {
                 i = report.getId() + 1;
             }
         }
-        
+
         // Set IDs for any report lacking one.
         for (Report report : m_config.getReportCollection()) {
             if (!report.hasId()) {
@@ -195,9 +195,9 @@ public class KSC_PerformanceReportFactory {
         assertInitialized();
 
         sortByTitle();
-        
+
         CastorUtils.marshalViaString(m_config, s_configFile);
-        
+
         reload();
     }
 
@@ -220,7 +220,7 @@ public class KSC_PerformanceReportFactory {
             }
         });
     }
-    
+
     /**
      * <p>getReportByIndex</p>
      *
@@ -230,7 +230,7 @@ public class KSC_PerformanceReportFactory {
     public Report getReportByIndex(int index) {
         return m_reportList.get(index);
     }
-    
+
     private Map<Integer, Report> createReportList() {
         Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
 
@@ -240,7 +240,7 @@ public class KSC_PerformanceReportFactory {
             }
             reports.put(report.getId(), report);
         }
-        
+
         return reports;
     }
 
@@ -259,11 +259,26 @@ public class KSC_PerformanceReportFactory {
                 return o1.getTitle().compareTo(o2.getTitle());
             }
         });
-        
+
         for (Report report : reportList) {
             reports.put(report.getId(), report.getTitle());
         }
-        
+
+        return Collections.unmodifiableMap(reports);
+    }
+
+    /**
+     * <p>getReportMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    public Map<Integer, Report> getReportMap() {
+        Map<Integer, Report> reports = new HashMap<Integer, Report>(m_config.getReportCount());
+
+        for (Report report : m_config.getReportCollection()) {
+            reports.put(report.getId(), report);
+        }
+
         return Collections.unmodifiableMap(reports);
     }
 
@@ -297,29 +312,29 @@ public class KSC_PerformanceReportFactory {
         if (arrayIndex == -1) {
             throw new IllegalArgumentException("Could not find report with ID of " + index);
         }
-        
+
         // Make sure we preserve the existing ID, if it exists (which it should)
         if (m_config.getReport(arrayIndex).hasId()) {
             report.setId(m_config.getReport(arrayIndex).getId());
         }
-        
+
         m_config.setReport(arrayIndex, report);
         setIdsOnAllReports();
     }
-    
+
     private int getArrayIndex(int index) {
         int i = 0;
         for (Report report : m_config.getReportCollection()) {
             if (report.getId() == index) {
                 return i;
             }
-            
+
             i++;
         }
-        
+
         return -1;
     }
-    
+
     /**
      * This method requires begin time and end time to be set to the current
      * time prior to call. The start and stop times are relative to this time.

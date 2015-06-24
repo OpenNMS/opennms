@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config.collectd;
 
 import java.io.Serializable;
@@ -29,6 +57,14 @@ public class Package implements Serializable {
      */
     @XmlAttribute(name="name")
     private String m_name;
+
+    /**
+     * Indicates weather this Package is a remote package.
+     * If remote = <code>true</code> it is a remote package.
+     * Remote packages are ignored by Colelctd.
+     */
+    @XmlAttribute(name="remote")
+    private boolean m_remote;
 
     /**
      * A rule which addresses belonging to this package must pass. This
@@ -454,6 +490,7 @@ public class Package implements Serializable {
         result = prime * result + ((m_storFlagOverride == null) ? 0 : m_storFlagOverride.hashCode());
         result = prime * result + ((m_storeByIfAlias == null) ? 0 : m_storeByIfAlias.hashCode());
         result = prime * result + ((m_storeByNodeID == null) ? 0 : m_storeByNodeID.hashCode());
+        result = prime * result + Boolean.valueOf(m_remote).hashCode();
         return result;
     }
 
@@ -560,14 +597,26 @@ public class Package implements Serializable {
         } else if (!m_storeByNodeID.equals(other.m_storeByNodeID)) {
             return false;
         }
+        if (m_remote != other.m_remote) {
+            return false;
+        }
         return true;
+    }
+
+    public boolean isRemote() {
+        return m_remote;
+    }
+
+    public void setRemote(boolean remote) {
+        m_remote = remote;
     }
 
     @Override
     public String toString() {
         return "Package [name=" + m_name + ", filter=" + m_filter + ", specifics=" + m_specifics + ", includeRanges=" + m_includeRanges + ", excludeRanges=" + m_excludeRanges
                 + ", includeUrls=" + m_includeUrls + ", storeByIfAlias=" + m_storeByIfAlias + ", storeByNodeID=" + m_storeByNodeID + ", ifAliasDomain=" + m_ifAliasDomain
-                + ", storFlagOverride=" + m_storFlagOverride + ", ifAliasComment=" + m_ifAliasComment + ", services=" + m_services + ", outageCalendar=" + m_outageCalendar + "]";
+                + ", storFlagOverride=" + m_storFlagOverride + ", ifAliasComment=" + m_ifAliasComment + ", services=" + m_services + ", outageCalendar=" + m_outageCalendar
+                + ", remote=" + m_remote + "]";
     }
 
 }

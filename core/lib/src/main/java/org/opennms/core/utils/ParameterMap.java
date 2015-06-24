@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,8 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Convenience class for looking up string and integer values in a parameter
  * map.
- * 
- * @deprecated This class *modifies* the maps that are passed in, we should really do it another way.
  */
 public abstract class ParameterMap {
 	
@@ -59,7 +57,7 @@ public abstract class ParameterMap {
 	 * @param key a {@link java.lang.String} object.
 	 * @param defValue a long.
 	 */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static long getKeyedLong(final Map map, final String key, final long defValue) {
 	    
 	    if (map == null) return defValue;
@@ -109,7 +107,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValues an array of int.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static final int[] getKeyedIntegerArray(final Map map, final String key, final int[] defValues) {
         
         if (map == null) return defValues;
@@ -156,7 +154,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a {@link java.lang.String} object.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static String getKeyedString(final Map map, final String key, final String defValue) {
         
         if (map == null) return defValue;
@@ -186,7 +184,7 @@ public abstract class ParameterMap {
      * @param key a {@link java.lang.String} object.
      * @param defValue a boolean.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static boolean getKeyedBoolean(final Map map, final String key, final boolean defValue) {
         
         if (map == null) return defValue;

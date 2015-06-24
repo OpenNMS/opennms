@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="WARN">
+<!-- WARN here is just for internal log4j messages and does not effect logging in general -->
+<configuration status="WARN" monitorInterval="60">
   <appenders>
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %c{1.}: %m%n"/>
     </Console>
   </appenders>
   <loggers>
-    <root level="debug">
-      <appender-ref ref="Console"/>
+    <!--
+      Set the threshold for individual loggers that may be too chatty at the default
+      level for their prefix.
+    -->
+    <logger name="httpclient" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="net.sf.jasperreports" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.apache.bsf" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.apache.commons" additivity="false" level="WARN"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.asteriskjava" additivity="false" level="WARN"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.exolab.castor" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.quartz" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <logger name="org.springframework" additivity="false" level="INFO"><appender-ref ref="ConsoleAppender"/></logger>
+    <!-- Allow any message to pass through the root logger -->
+    <root level="DEBUG">
+      <appender-ref ref="ConsoleAppender"/>
     </root>
   </loggers>
 </configuration>

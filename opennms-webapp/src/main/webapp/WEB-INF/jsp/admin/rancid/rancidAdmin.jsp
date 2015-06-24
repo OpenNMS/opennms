@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Rancid" />
   <jsp:param name="headTitle" value="${model.id}" />
   <jsp:param name="headTitle" value="Admin Rancid" />
@@ -44,12 +44,16 @@
   <jsp:param name="breadcrumb" value="Admin Rancid" />
 </jsp:include>
 
-<div class="TwoColLeft">
+<div class="row">
+  <div class="col-md-6">
     <!-- general info box -->
-    <h3>General (Status: ${model.status_general})</h3>
-    <table class="o-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+      </div>
+      <table class="table table-condensed">
 		<tr>
-			<th width="50%">Node</th>
+			<th>Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
 	  	</tr>
 		<tr>
@@ -60,11 +64,14 @@
 	  		<th>RWS status</th>
 	  		<td>${model.RWSStatus}</td>
 	  	</tr>
-	  	
-	</table>
+      </table>
+    </div> <!-- panel -->
 
-	<h3>Rancid Info</h3>
-		<table class="o-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Rancid Info</h3>
+      </div>
+      <table class="table table-condensed">
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
 		<c:choose>
@@ -73,7 +80,7 @@
 			<input type="hidden" name="groupName" value="${model.groupname}"/>
 			<input type="hidden" name="deviceName" value="${model.id}"/>
 		<tr>
-			<th width="50%">Device Name</th>
+			<th>Device Name</th>
 			<td>${model.id}</td>
 		</tr>		 
 		<tr>
@@ -83,7 +90,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" size="1">
+			<select name="deviceTypeName" class="form-control">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -93,13 +100,13 @@
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<td><input id="comment" type="text" name="comment" value="${model.comment}"/></td>
+			<td><input id="comment" type="text" class="form-control" name="comment" value="${model.comment}"/></td>
 		</tr>
 		
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" size="1" onChange="switchStatus()">
+			<select name="statusName" class="form-control" onChange="switchStatus()">
 			<option value="${model.status}">${model.status}</option>
 			<c:choose> 
   				<c:when test="${model.status == 'up'}" >
@@ -115,8 +122,8 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="updateInput" id="updateButton" type="submit" value="Update"/>
-			<input name="deleteInput" id="deleteButton" type="button" value="Delete" onclick="validateFormDelete()"/>
+			<input name="updateInput" id="updateButton" class="btn btn-default" type="submit" value="Update"/>
+			<input name="deleteInput" id="deleteButton" class="btn btn-default" type="button" value="Delete" onclick="validateFormDelete()"/>
 </form>
 		</th>
 		</tr>
@@ -136,7 +143,7 @@
 		<tr>
 			<th>Device Type</th>
 			<td>					
-			<select name="deviceTypeName" size="1">
+			<select name="deviceTypeName" class="form-control">
 			 <option value="${model.devicetype}">${model.devicetype}</option>
 			<c:forEach items="${model.devicetypelist}" var="devicetypelem">
 			 <option value="${devicetypelem}">${devicetypelem}</option>
@@ -146,13 +153,13 @@
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<td><input id="comment" type="text" name="comment" value="${model.comment}"/></td>
+			<td><input id="comment" type="text" class="form-control" name="comment" value="${model.comment}"/></td>
 		</tr>
 		
 		<tr>
 			<th>Status</th>
 			<td><em>
-			<select name="statusName" size="1">
+			<select name="statusName" class="form-control">
 			<option value="up">up</option>
 			<option value="down">down</option>
 			</select>
@@ -161,7 +168,7 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="createInput" id="createButton" type="submit" value="Create"/>
+			<input name="createInput" id="createButton" class="btn btn-default" type="submit" value="Create"/>
 </form>
 		</th>
 		</tr>
@@ -194,7 +201,7 @@
 			 <c:if test="${!empty model.status}">			
 			<em>${model.status}</em>
 	<form id="newUserForm2" method="post" name="newUserForm2" onsubmit="return validateFormInputStatus();">	
-	<input name="newStatus" id="doOKStatus" type="submit" value="Switch"/>
+	<input name="newStatus" class="btn btn-default" id="doOKStatus" type="submit" value="Switch"/>
 	<input type="hidden" name="statusName" value="${model.status}"/>
 	<input type="hidden" name="groupName" value="${model.groupname}"/>
 	<input type="hidden" name="deviceName" value="${model.id}"/>
@@ -205,32 +212,36 @@
 		</c:otherwise>
 		</c:choose>
 	</table> 
+    </div> <!-- panel -->
 	
 
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
-	<h3>Clogin Info</h3>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Clogin Info</h3>
+      </div>
 	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
 		 <input type="hidden" name="groupName" value="${model.groupname}"> 
 		 <input type="hidden" name="deviceName" value="${model.id}"> 
-		<table class="o-box">
+		<table class="table table-condensed">
 			<tr>
-			    <th width="50%"><label id="userIDLabel" for="userID">Username:</label></th>
-			    <td><input id="userID" type="text" name="userID" value="${model.cloginuser}"/></td>
+			    <th><label id="userIDLabel" for="userID">Username:</label></th>
+			    <td><input id="userID" type="text" class="form-control" name="userID" value="${model.cloginuser}"/></td>
 			 </tr>
 		
 			 <tr>
 			 	<th><label id="pass1Label" for="password">Password:</label></th>
-			 	<td><input id="pass" type="text" name="pass" value="${model.cloginpassword}"/></td>
+			 	<td><input id="pass" type="text" class="form-control" name="pass" value="${model.cloginpassword}"/></td>
 			 </tr>
 			 <tr>
 			 	<th><label id="enpass1Label" for="enpassword">Enable password:</label></th>
-			 	<td><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}"/></td>
+			 	<td><input id="enpass" type="text" class="form-control" name="enpass" value="${model.cloginenablepass}"/></td>
 			 </tr>
 			 <tr>
 				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
 				 <td>
-					  <select name="loginM" size="1">
+					  <select name="loginM" class="form-control">
 					  <option value="${model.cloginconnmethod}">${model.cloginconnmethod}</option>
 					  <option value="ssh">ssh</option>
 					  <option value="telnet">telnet</option>
@@ -240,7 +251,7 @@
 			 <tr>
 			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
 			 	<td>
-				  <select name="autoE" size="1">
+				  <select name="autoE" class="form-control">
 				  <option value="${model.cloginautoenable}">${model.cloginautoenable}</option>
 				  <option value="1">1</option>
 				  <option value="0">0</option>
@@ -250,19 +261,23 @@
 		
 			 <tr>
 			 	<th></th>
-			 	<th><input id="doCancel" type="button" value="Cancel" onclick="cancelUser()"/>
-			 		<input id="doOK" type="submit" value="OK"/>
-			 		<input id="doDelete" type="button" value="Delete" onclick="deleteCloginInfo()"/>
+			 	<th><input id="doCancel" type="button" class="btn btn-default" value="Cancel" onclick="cancelUser()"/>
+			 		<input id="doOK" type="submit" class="btn btn-default" value="OK"/>
+			 		<input id="doDelete" type="button" class="btn btn-default" value="Delete" onclick="deleteCloginInfo()"/>
 			 	</th>
 			 </tr>	
 		 </table>
 	 </form>
+    </div> <!-- panel -->
 	 </c:when>
 	 <c:otherwise>
-		<h3>Clogin Info (Requisitioned Node)</h3>
-		<table class="o-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Clogin Info (Requisitioned Node)</h3>
+      </div>
+      <table class="table table-condensed">
 			<tr>
-			 	<th width="50%">Requisition: </th>
+			 	<th>Requisition: </th>
 			 	<td>${model.foreignSource}
 					<a href="admin/provisioningGroups.htm">(provisioning)</a>
 					<a href="asset/modify.jsp?node=${model.db_id}">(asset)</a>
@@ -289,60 +304,62 @@
 			 	<th><label id="autoEnableLabel" for="autoEnable">AutoEnable:</label></th>
 			 	<td>${model.cloginautoenable}</td>
 			 </tr>
-		
-		 </table>
+      </table>
+    </div> <!-- panel -->
 	 
 	 </c:otherwise>
 	 </c:choose>
 
-	<h3>Select Group</h3>
-	<table class="o-box">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Select Group</h3>
+      </div>
+      <table class="table table-condensed">
 	<tr>
 	<th>Group</th>
 	</tr>
 	<c:forEach items="${model.grouplist}" var="groupelem">	
 	<tr><td><a href="admin/rancid/rancidAdmin.htm?node=${model.db_id}&group=${groupelem}">${groupelem}</a></td></tr>
 	</c:forEach>
-	</table>
+      </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
 
-</div>
-
-  
-
-  <div class="TwoColRight">
-      <h3>Descriptions</h3>
-      <div class="boxWrapper">
-      <p> 
-          Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
-          if you want use only the RancidAdapter to provision nodes to Rancid.
-      </p>
-      <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
-      </p>
-        <p><b>Select Group </b>: select the <em>Rancid group</em> to work on</p>
-      
-        <p><b>Rancid Info</b>: Switch the Rancid status from <em>up</em> to <em>down</em> or from <em>down</em> to <em>up</em>
-        	for selected group.
-        	You are able to create, delete and modify the node data in rancid.db by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
-          property is set to <em>true</em> in opennms.properties.
-        </p>
-        
-       <p><b>Clogin Info</b>:  Modify the data according to the authentication information.
-        	Click <b>OK</b> to commit changes to Rancid. 
-            Also you are able to override the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
-            property is set to <em>true</em> in opennms.properties.
-        	In the case the node was requisitioned the <b>Clogin</b> box shows the name of the
-            requisition under which the node was added.
-            Click on the asset page or edit the requisition to modify asset information for the node.
-            You must re-synchronize the requisition to modify the Clogin information in Rancid.
-        </p>
-                
-
- 
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Descriptions</h3>
       </div>
-  </div>
-  <hr />
+      <div class="panel-body">
+        <p> 
+            Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
+            if you want use only the RancidAdapter to provision nodes to Rancid.
+        </p>
+        <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
+        </p>
+          <p><b>Select Group </b>: select the <em>Rancid group</em> to work on</p>
+        
+          <p><b>Rancid Info</b>: Switch the Rancid status from <em>up</em> to <em>down</em> or from <em>down</em> to <em>up</em>
+          	for selected group.
+          	You are able to create, delete and modify the node data in rancid.db by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
+            property is set to <em>true</em> in opennms.properties.
+          </p>
+          
+         <p><b>Clogin Info</b>:  Modify the data according to the authentication information.
+          	Click <b>OK</b> to commit changes to Rancid. 
+              Also you are able to override the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
+              property is set to <em>true</em> in opennms.properties.
+          	In the case the node was requisitioned the <b>Clogin</b> box shows the name of the
+              requisition under which the node was added.
+              Click on the asset page or edit the requisition to modify asset information for the node.
+              You must re-synchronize the requisition to modify the Clogin information in Rancid.
+          </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <script type="text/javascript">
 function deleteCloginInfo() {

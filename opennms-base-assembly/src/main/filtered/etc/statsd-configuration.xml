@@ -4,10 +4,21 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://www.opennms.org/xsd/config/statsd http://www.opennms.org/xsd/config/statistics-daemon-configuration.xsd ">
 
-  <package name="example1">
-    <packageReport name="TopN" description="Top 20 ifInOctets across all nodes"
+  <!--
+       The following packages are simple sample configuration.
+       All of them are disabled by default (status="off").
+       Change the status to be "on" on to enable the scheduling.
+
+       To reload the configuration, use the following command:
+       ${install.dir}/bin/send-event.pl \
+         uei.opennms.org/internal/reloadDaemonConfig \
+         -p 'daemonName Statsd'
+  -->
+
+  <package name="ThroughputReports">
+    <packageReport name="TopN_InOctets" description="Top 20 ifInOctets across all nodes"
                    schedule="0 20 1 * * ?" retainInterval="2592000000"
-                   status="on">
+                   status="off">
       <parameter key="count" value="20"/>
       <parameter key="consolidationFunction" value="AVERAGE"/>
       <parameter key="relativeTime" value="YESTERDAY"/>
@@ -59,7 +70,7 @@
   </package>
   
   
-  <report name="TopN" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="TopN_InOctets" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config.collectd;
 
 import java.util.Arrays;
@@ -29,7 +57,7 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
                     "<?xml version=\"1.0\"?>\n" + 
                             "<?castor class-name=\"org.opennms.netmgt.collectd.CollectdConfiguration\"?>\n" + 
                             "<collectd-configuration threads=\"50\">\n" + 
-                            "        <package name=\"example1\">\n" + 
+                            "        <package name=\"example1\" remote=\"false\">\n" +
                             "                <filter>IPADDR != '0.0.0.0'</filter>\n" + 
                             "                <include-range begin=\"1.1.1.1\" end=\"254.254.254.254\" />\n" + 
                             "                <service name=\"SNMP\" interval=\"30000\" user-defined=\"false\" status=\"on\">\n" + 
@@ -48,7 +76,11 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
                             "                        <parameter key=\"collection\" value=\"jsr160\" />\n" + 
                             "                        <parameter key=\"thresholding-enabled\" value=\"true\" />\n" + 
                             "                </service>\n" + 
-                            "        </package>\n" + 
+                            "        </package>\n" +
+                            "        <package name=\"example2\" remote=\"true\">\n" +
+                            "                <filter>IPADDR != '0.0.0.0'</filter>\n" +
+                            "                <service name=\"dummy\" interval=\"30000\" user-defined=\"true\" status=\"off\"/>\n" +
+                            "        </package>\n" +
                             "        <collector service=\"SNMP\"\n" + 
                             "                class-name=\"org.opennms.netmgt.collectd.SnmpCollector\" />\n" + 
                             "        <collector service=\"OpenNMS-JVM\"\n" + 
@@ -95,7 +127,20 @@ public class CollectdConfigurationTest extends XmlTestNoCastor<CollectdConfigura
         jvm.addParameter("thresholding-enabled", "true");
         p.addService(jvm);
 
+        final Service dummyService = new Service();
+        dummyService.setName("dummy");
+        dummyService.setStatus("off");
+        dummyService.setUserDefined("true");
+        dummyService.setInterval(30000L);
+
+        final Package p2 = new Package();
+        p2.setName("example2");
+        p2.setRemote(true);
+        p2.setFilter(p.getFilter());
+        p2.addService(dummyService);
+
         config.addPackage(p);
+        config.addPackage(p2);
 
         config.addCollector("SNMP", "org.opennms.netmgt.collectd.SnmpCollector");
         config.addCollector("OpenNMS-JVM", "org.opennms.netmgt.collectd.Jsr160Collector");

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,12 +28,15 @@
 
 package org.opennms.dashboard.client;
 
+import com.google.gwt.dom.builder.client.DomUListBuilder;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
+import org.gwtbootstrap3.client.ui.Row;
+import org.gwtbootstrap3.client.ui.html.UnorderedList;
 
 /**
  * <p>Pager class.</p>
@@ -47,33 +50,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class Pager extends Composite {
     
-    private class PageControl extends Composite {
-        
-        Label m_label;
-        int m_direction;
-        
-        PageControl(String text, int direction) {
-            m_label = new Label(text);
-            m_label.addStyleName(direction > 0 ? "pagerRight" : "pagerLeft");
-            m_direction = direction;
-            
-            m_label.addClickHandler(new ClickHandler() {
-
-                @Override
-                public void onClick(ClickEvent sender) {
-                    adjustPage(m_direction);
-                    
-                }
-                
-            });
-            initWidget(m_label);
-        }
-
-
-    }
-    
-
-    private DockPanel m_panel = new DockPanel();
+    private org.gwtbootstrap3.client.ui.Pager m_gwtPager = new org.gwtbootstrap3.client.ui.Pager();
     private Label m_label = new Label();
     private Pageable m_pageable;
     
@@ -83,17 +60,24 @@ public class Pager extends Composite {
      * @param pageable a {@link org.opennms.dashboard.client.Pageable} object.
      */
     public Pager(Pageable pageable) {
-        
         m_pageable = pageable;
-        m_panel.addStyleName("pager");
-        m_panel.add(createLeftPageControl(), DockPanel.WEST);
-        m_label.addStyleName("pagerText");
-        m_panel.add(m_label, DockPanel.CENTER);
-        m_panel.add(createRightPageControl(), DockPanel.EAST);
+
+        m_gwtPager.addPreviousClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                adjustPage(-1);
+            }
+        });
+
+        m_gwtPager.addNextClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                adjustPage(1);
+            }
+        });
+
+        initWidget(m_gwtPager);
         
-        initWidget(m_panel);
-        
-        updateLabel();
     }
     
     private void updateLabel() {
@@ -108,14 +92,6 @@ public class Pager extends Composite {
 
     }
 
-    private Widget createRightPageControl() {
-        return new PageControl(">>", 1);
-    }
-
-    private Widget createLeftPageControl() {
-        return new PageControl("<<", -1);
-    }
-    
     private int getPageSize() {
         return Math.max(1, m_pageable.getPageSize());
     }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -64,8 +64,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -84,13 +83,19 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/junit-component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        // These tests rely on JRobin to verify the values
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy",
+        "org.opennms.rrd.usequeue=false"
+})
 @JUnitTemporaryDatabase(reuseDatabase=false)
 @JUnitSnmpAgent(host = TcaCollectorIT.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
 @Transactional
@@ -127,6 +132,9 @@ public class TcaCollectorIT implements InitializingBean {
 	@Autowired
 	private TcaDataCollectionConfigDao m_configDao;
 
+	@Autowired
+	private RrdStrategy<?, ?> m_rrdStrategy;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -142,8 +150,6 @@ public class TcaCollectorIT implements InitializingBean {
 		MockLogAppender.setupLogging();
 
 		FileUtils.deleteDirectory(new File(TEST_SNMP_DIR));
-
-		RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
 		OnmsIpInterface iface = null;
 		OnmsNode testNode = null;
@@ -216,7 +222,7 @@ public class TcaCollectorIT implements InitializingBean {
 		collector.setConfigDao(m_configDao);
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
-		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"));
+		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), m_rrdStrategy);
 
 		// Setup SNMP Value Handling
 		SnmpValueFactory valFac = SnmpUtils.getValueFactory();
@@ -256,7 +262,7 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + ".jrb");
+		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension());
 
 		// According with the Fixed Step
 		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());

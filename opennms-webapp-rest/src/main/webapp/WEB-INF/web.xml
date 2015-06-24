@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="opennms-rest" version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
+
+  <display-name>OpenNMS REST</display-name>
+
+  <!--  This is used by the Spring ContextLoaderListener <listener> below -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      <!--
+        We don't need the svclayer context in the WARMERGE because the main webapp
+        already defines all of the svclayer service beans.
+      -->
+      /WEB-INF/applicationContext-svclayer.xml
+
+      <!-- WARMERGE: begin contextConfigLocation -->
+      classpath*:/META-INF/opennms/component-service.xml
+      /WEB-INF/applicationContext-jersey.xml
+      <!-- WARMERGE: end contextConfigLocation -->
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>parentContextKey</param-name>
+    <param-value>daoContext</param-value>
+  </context-param>
+
+  <!-- WARMERGE: begin filter -->
+  <filter>
+    <description>Allows "cross-site scripting" for the REST services.</description>
+    <filter-name>CORS Filter</filter-name>
+    <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+    <!-- See https://github.com/eBay/cors-filter for a full list of parameters -->
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,PUT,POST,HEAD,OPTIONS,DELETE</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.support.credentials</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <!-- WARMERGE: end filter -->
+
+  <filter>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>openSessionInViewFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- WARMERGE: begin filter-mapping -->
+  <filter-mapping>
+    <filter-name>CORS Filter</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+  <!-- WARMERGE: end filter-mapping -->
+
+  <!-- Bootstrap listener to start up and shut down Spring's root WebApplicationContext. -->
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- WARMERGE: begin servlet -->
+  <!--  RESTful Web Services -->
+  <servlet>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <!-- WARMERGE: end servlet -->
+
+  <!-- WARMERGE: begin servlet-mapping -->
+  <!-- Servlet mappings for REST Services -->
+  <servlet-mapping>
+    <servlet-name>opennmsRestWebServices</servlet-name>
+    <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+  <!-- WARMERGE: end servlet-mapping -->
+
+</web-app>

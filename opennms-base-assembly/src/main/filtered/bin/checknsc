@@ -1,7 +1,16 @@
 #!/bin/sh -
 
-SERVICES_JAR=`ls -1 "${install.dir}"/lib/*.jar | grep org.opennms.protocols.nsclient- | head -n 1`
-UTIL_JAR=`ls -1 "${install.dir}"/lib/*.jar | grep opennms-util- | head -n 1`
-LOG4J_JAR=`ls -1 "${install.dir}"/lib/*.jar | grep log4j- | head -n 1`
-COMMONS_CLI_JAR=`ls -1 "${install.dir}"/lib/commons-cli-*.jar | head -n 1`
-exec ${install.bin.dir}/runjava -r -- -Xmx256m -cp "$SERVICES_JAR:$UTIL_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" org.opennms.protocols.nsclient.CheckNsc "$@"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+SERVICES_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep org.opennms.protocols.nsclient- | head -n 1`
+UTIL_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep opennms-util- | head -n 1`
+LOG4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/*.jar | grep log4j- | head -n 1`
+COMMONS_CLI_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-cli-*.jar | head -n 1`
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	-Xmx256m \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-cp "$SERVICES_JAR:$UTIL_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" \
+	org.opennms.protocols.nsclient.CheckNsc \
+	"$@"

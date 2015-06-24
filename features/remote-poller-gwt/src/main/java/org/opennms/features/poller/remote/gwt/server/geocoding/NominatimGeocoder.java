@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,25 +35,19 @@ import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.opennms.core.web.HttpClientWrapper;
+import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
-/**
- * <p>NominatimGeocoder class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
 public class NominatimGeocoder implements Geocoder {
     private static final Logger LOG = LoggerFactory.getLogger(NominatimGeocoder.class);
 	private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-	private static final HttpClient m_httpClient = new DefaultHttpClient();
+	private final HttpClientWrapper m_clientWrapper;
+
 	private String m_emailAddress;
 	private String m_referer = null;
 
@@ -79,6 +73,10 @@ public class NominatimGeocoder implements Geocoder {
 		if (m_emailAddress == null || m_emailAddress.equals("")) {
 			throw new GeocoderException("you must configure gwt.geocoder.email to comply with the Nominatim terms of service (see http://wiki.openstreetmap.org/wiki/Nominatim)");
 		}
+
+		m_clientWrapper = HttpClientWrapper.create()
+	                .dontReuseConnections()
+	                .useSystemProxySettings();
 	}
 
 	/** {@inheritDoc} */
@@ -90,8 +88,10 @@ public class NominatimGeocoder implements Geocoder {
 			method.addHeader("Referer", m_referer);
 		}
 
+		CloseableHttpResponse response = null;
 		try {
-			InputStream responseStream = m_httpClient.execute(method).getEntity().getContent();
+			response = m_clientWrapper.execute(method);
+			InputStream responseStream = response.getEntity().getContent();
 			final ElementTree tree = ElementTree.fromStream(responseStream);
 			if (tree == null) {
 				throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
@@ -112,6 +112,8 @@ public class NominatimGeocoder implements Geocoder {
 			throw e;
 		} catch (Throwable e) {
 			throw new GeocoderException("unable to get lat/lng from Nominatim", e);
+		} finally {
+		        m_clientWrapper.close(response);
 		}
 	}
 

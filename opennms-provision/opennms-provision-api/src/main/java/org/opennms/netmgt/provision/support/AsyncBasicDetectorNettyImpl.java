@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,6 +48,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
@@ -68,14 +69,12 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
     
     private static final ChannelFactory m_factory = new NioClientSocketChannelFactory(
         Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors()
-          // TODO: Should be uncommented when merging to master
-          //new LogPreservingThreadFactory(getClass().getSimpleName() + ".boss", Integer.MAX_VALUE, false)
+          Runtime.getRuntime().availableProcessors(),
+          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.boss", Integer.MAX_VALUE)
         ),
         Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors()
-          // TODO: Should be uncommented when merging to master
-          //new LogPreservingThreadFactory(getClass().getSimpleName() + ".worker", Integer.MAX_VALUE, false)
+          Runtime.getRuntime().availableProcessors(),
+          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.worker", Integer.MAX_VALUE)
         )
     ); 
 

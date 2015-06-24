@@ -1,10 +1,15 @@
 #!/bin/sh
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -jar $OPENNMS_HOME/lib/opennms_jmx_config_generator.jar "$@"
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-jar $OPENNMS_HOME/lib/opennms_jmx_config_generator.jar \
+	"$@"

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -196,7 +196,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -256,7 +256,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -340,7 +340,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group");
+					Field<String> field = form.getField("Group");
 					field.setValue(group2.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -392,7 +392,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Item");
+					Field<String> field = form.getField("Item");
 					field.setValue(vertex1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -446,7 +446,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Item");
+					Field<String> field = form.getField("Item");
 					field.setValue(vertex1.getId());
 					// Make sure that the value was set, Vaadin will ignore the value
 					// if, for instance, the specified value is not in the Select list
@@ -493,7 +493,7 @@ public class GroupOperationsTest {
 			Component component = itr.next();
 			try {
 				Form form = (Form)component;
-				Field field = form.getField("Group Label");
+				Field<String> field = form.getField("Group Label");
 				field.setValue(newLabel);
 				// Make sure that the value was set, Vaadin will ignore the value
 				// if, for instance, the specified value is not in the Select list
@@ -532,7 +532,7 @@ public class GroupOperationsTest {
             Form form = getForm(getPrompt(context));
             
             
-            Field field = form.getField("Group");
+            Field<String> field = form.getField("Group");
             field.setValue(group1.getId());
             Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
             try {
@@ -567,7 +567,7 @@ public class GroupOperationsTest {
             Form form = getForm(getPrompt(context));
             
             // we try to add the group to itself. There is no selection
-            Field field = form.getField("Group");
+            Field<String> field = form.getField("Group");
             field.setValue(group1.getId());
             Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
             form.commit();
@@ -665,7 +665,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group Label");
+					Field<String> field = form.getField("Group Label");
 					field.setValue(m_topologyProvider.getParent(vertex1).getLabel());
 					// Make sure that the value was set
 					assertEquals(m_topologyProvider.getParent(vertex1).getLabel(), field.getValue());
@@ -712,7 +712,7 @@ public class GroupOperationsTest {
 				Component component = itr.next();
 				try {
 					Form form = (Form)component;
-					Field field = form.getField("Group Label");
+					Field<String> field = form.getField("Group Label");
 					field.setValue("Oh noes a new name");
 					// Make sure that the value was set
 					assertEquals("Oh noes a new name", field.getValue());
@@ -811,7 +811,7 @@ public class GroupOperationsTest {
 	         Form form = getForm(getPrompt(context));
 	            
 	         // we try to add the group to itself. There is no selection
-	         Field field = form.getField("Group");
+	         Field<String> field = form.getField("Group");
 	         field.setValue(group1.getId());
 	         Assert.assertEquals(group1.getId(), field.getValue());         // Make sure that the value was set
 	         form.commit();

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -58,7 +58,7 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
-@JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestData1.properties")
+@JUnitSnmpAgent(host="192.0.2.205", resource="classpath:snmpTestData1.properties")
 public class SnmpTrackerIT implements InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrackerIT.class);
@@ -173,7 +173,7 @@ public class SnmpTrackerIT implements InitializingBean {
     }
 
     private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
-    	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("172.20.1.205"));
+    	final SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr("192.0.2.205"));
         config.setVersion(SnmpAgentConfig.VERSION2C);
         config.setMaxVarsPerPdu(maxVarsPerPdu);
         config.setMaxRepetitions(maxRepetitions);
@@ -221,7 +221,7 @@ public class SnmpTrackerIT implements InitializingBean {
     }
 
     @Test
-    @JUnitSnmpAgent(host="172.20.1.205", resource="classpath:snmpTestDataIncompleteTable.properties")
+    @JUnitSnmpAgent(host="192.0.2.205", resource="classpath:snmpTestDataIncompleteTable.properties")
     public void testIncompleteTableData() throws Exception {
     	final TestRowCallback rc = new TestRowCallback();
         final TableTracker tt = new TableTracker(rc,

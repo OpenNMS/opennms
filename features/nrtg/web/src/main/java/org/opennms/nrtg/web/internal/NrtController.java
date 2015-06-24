@@ -1,23 +1,31 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with OpenNMS(R). If not, see:
- * http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
- * *****************************************************************************
- */
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.nrtg.web.internal;
 
 import java.util.ArrayList;
@@ -37,11 +45,11 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -56,10 +64,11 @@ import org.slf4j.LoggerFactory;
  */
 public class NrtController {
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtController.class);
     private GraphDao m_graphDao;
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
+    private ResourceStorageDao m_resourceStorageDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
@@ -311,10 +320,7 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            final String rrdRelativePath = attr.getRrdRelativePath();
-            final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
-
-            final Set<Entry<String, String>> metaDataEntrySet = RrdUtils.readMetaDataFile(m_resourceDao.getRrdDirectory().getPath(), rrdName).entrySet();
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(attr.getResource().getPath()).entrySet();
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();
@@ -388,5 +394,13 @@ public class NrtController {
 
     public void setNrtBroker(NrtBroker nrtBroker) {
         this.m_nrtBroker = nrtBroker;
+    }
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
     }
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,18 +38,18 @@ public class LogPreservingThreadFactory implements ThreadFactory {
     private final BitSet m_slotNumbers;
     private final String m_name;
     private final int m_poolSize;
-    private Map m_mdc = null;
+    private Map<String,String> m_mdc = null;
     private int m_counter = 0;
 
-    public LogPreservingThreadFactory(String poolName, int poolSize, boolean preserveMDC) {
+    public LogPreservingThreadFactory(String poolName, int poolSize) {
          m_name = poolName;
          m_poolSize = poolSize;
          // Make the bitset of thread numbers one larger so that we can 1-index it.
          // If pool size is Integer.MAX_VALUE, then the BitSet will not be used.
          m_slotNumbers = poolSize < Integer.MAX_VALUE ? new BitSet(poolSize + 1) : new BitSet(1);
-         if (preserveMDC) {
-        	 m_mdc = MDC.getCopyOfContextMap();
-         }
+
+         m_mdc = MDC.getCopyOfContextMap();
+
     }
 
     @Override
@@ -63,11 +63,11 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         }
     }
     
-    private Map getCopyOfContextMap() {
+    private Map<String,String> getCopyOfContextMap() {
         return MDC.getCopyOfContextMap();
     }
     
-    private void setContextMap(Map map) {
+    private void setContextMap(Map<String,String> map) {
         if (map == null) {
             MDC.clear();
         } else {
@@ -80,7 +80,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -98,7 +98,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     // Set the logging prefix if it was stored during creation
                     setContextMap(m_mdc);
@@ -117,7 +117,7 @@ public class LogPreservingThreadFactory implements ThreadFactory {
         return new Thread(new Runnable() {
             @Override
             public void run() {
-                Map mdc = getCopyOfContextMap();
+                Map<String,String> mdc = getCopyOfContextMap();
                 try {
                     try {
                         setContextMap(m_mdc);

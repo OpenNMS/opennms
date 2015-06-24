@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,12 +25,15 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+
+import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
@@ -46,6 +49,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +65,7 @@ public class KscDashlet extends AbstractDashlet {
     private TransactionOperations m_transactionOperations;
     private DashletComponent m_wallboardComponent;
     private DashletComponent m_dashboardComponent;
+    private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
 
     /**
      * Constructor for instantiating new objects.
@@ -143,23 +148,6 @@ public class KscDashlet extends AbstractDashlet {
                         rows++;
                     }
 
-                    int width = 0;
-                    int height = 0;
-
-        /*
-        try {
-            width = Integer.parseInt(m_dashletSpec.getParameters().get("width"));
-        } catch (NumberFormatException numberFormatException) {
-            width = 400;
-        }
-
-        try {
-            height = Integer.parseInt(m_dashletSpec.getParameters().get("height"));
-        } catch (NumberFormatException numberFormatException) {
-            height = 100;
-        }
-        */
-
                     /**
                      * setting new columns/rows
                      */
@@ -189,9 +177,7 @@ public class KscDashlet extends AbstractDashlet {
 
                                 KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
 
-                                String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
-
-                                Image image = new Image(null, new ExternalResource(urlString));
+                                GraphContainer graphContainer = getGraphContainer(graph, beginTime.getTime(), endTime.getTime());
 
                                 VerticalLayout verticalLayout = new VerticalLayout();
 
@@ -245,13 +231,13 @@ public class KscDashlet extends AbstractDashlet {
                                 horizontalLayout.setExpandRatio(rightLayout, 1.0f);
 
                                 verticalLayout.addComponent(horizontalLayout);
-                                verticalLayout.addComponent(image);
-                                verticalLayout.setWidth(image.getWidth() + "px");
+                                verticalLayout.addComponent(graphContainer);
+                                verticalLayout.setWidth(DEFAULT_GRAPH_WIDTH_PX, Unit.PIXELS);
 
                                 m_gridLayout.addComponent(verticalLayout, x, y);
 
                                 verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                                verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+                                verticalLayout.setComponentAlignment(graphContainer, Alignment.MIDDLE_CENTER);
                                 m_gridLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
                             }
                             i++;
@@ -314,9 +300,6 @@ public class KscDashlet extends AbstractDashlet {
                     Page.getCurrent().getStyles().add(".text { color:#ffffff; line-height: 11px; font-size: 9px; font-family: 'Lucida Grande', Verdana, sans-serif; font-weight: bold; }");
                     Page.getCurrent().getStyles().add(".margin { margin:5px; }");
 
-                    int width = 0;
-                    int height = 0;
-
                     Accordion accordion = new Accordion();
                     accordion.setSizeFull();
                     m_verticalLayout.addComponent(accordion);
@@ -329,9 +312,7 @@ public class KscDashlet extends AbstractDashlet {
 
                         KSC_PerformanceReportFactory.getBeginEndTime(graph.getTimespan(), beginTime, endTime);
 
-                        String urlString = "/opennms/graph/graph.png?resourceId=" + graph.getResourceId() + "&report=" + graph.getGraphtype() + "&start=" + beginTime.getTimeInMillis() + "&end=" + endTime.getTimeInMillis() + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
-
-                        Image image = new Image(null, new ExternalResource(urlString));
+                        GraphContainer graphContainer = getGraphContainer(graph, beginTime.getTime(), endTime.getTime());
 
                         VerticalLayout verticalLayout = new VerticalLayout();
 
@@ -385,13 +366,13 @@ public class KscDashlet extends AbstractDashlet {
                         horizontalLayout.setExpandRatio(rightLayout, 1.0f);
 
                         verticalLayout.addComponent(horizontalLayout);
-                        verticalLayout.addComponent(image);
-                        verticalLayout.setWidth(image.getWidth() + "px");
+                        verticalLayout.addComponent(graphContainer);
+                        verticalLayout.setWidth(DEFAULT_GRAPH_WIDTH_PX, Unit.PIXELS);
 
                         accordion.addTab(verticalLayout, data.get("nodeLabel") + "/" + data.get("resourceTypeLabel") + ": " + data.get("resourceLabel"));
 
                         verticalLayout.setComponentAlignment(horizontalLayout, Alignment.MIDDLE_CENTER);
-                        verticalLayout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+                        verticalLayout.setComponentAlignment(graphContainer, Alignment.MIDDLE_CENTER);
                         verticalLayout.setMargin(true);
                     }
                 }
@@ -442,5 +423,16 @@ public class KscDashlet extends AbstractDashlet {
                 return data;
             }
         });
+    }
+
+    private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {
+        GraphContainer graphContainer = new GraphContainer(graph.getGraphtype(), graph.getResourceId());
+        graphContainer.setTitle(graph.getTitle());
+        // Setup the time span
+        graphContainer.setStart(start);
+        graphContainer.setEnd(end);
+        // Use all of the available width
+        graphContainer.setWidthRatio(1.0d);
+        return graphContainer;
     }
 }

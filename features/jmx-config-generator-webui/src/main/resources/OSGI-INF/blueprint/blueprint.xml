@@ -8,7 +8,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
 	<bean id="jmxConfigToolApplicationFactory"
 		class="org.opennms.features.jmxconfiggenerator.webui.JmxConfigToolUIFactory" />
 
-	<service interface="org.ops4j.pax.vaadin.ApplicationFactory"
+	<service interface="org.opennms.vaadin.extender.ApplicationFactory"
 		ref="jmxConfigToolApplicationFactory">
 		<service-properties>
 			<entry key="alias" value="/jmx-config-tool" />
@@ -19,7 +19,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         
         <bean id="jmxconfiggeneratoruiLink" class="org.opennms.features.jmxconfiggenerator.webui.AdminPageNavEntry">
             <property name="url" value="admin/jmxConfigGenerator.jsp" />
-            <property name="name" value="JMX Config Generator Web UI ALPHA" />
+            <property name="name" value="JMX Configuration Generator" />
         </bean>
 
 

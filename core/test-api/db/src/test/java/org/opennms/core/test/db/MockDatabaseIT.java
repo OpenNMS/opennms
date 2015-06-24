@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -70,6 +71,7 @@ public class MockDatabaseIT extends TestCase {
         // set the initial status to N as a test
         m_network.addService("HTTP").setMgmtStatus(SvcMgmtStatus.NOT_POLLED);
         m_network.addInterface("192.168.1.2");
+        m_network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
         
         m_db = new MockDatabase();
         m_db.populate(m_network);
@@ -135,7 +137,7 @@ public class MockDatabaseIT extends TestCase {
     }
     
     public void testServiceQuery() {
-        Querier querier = new Querier(m_db, "select nodeId, ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, service where ifServices.serviceId = service.serviceId;") {
+        Querier querier = new Querier(m_db, "select node.nodeid as nodeId, ipinterface.ipaddr as ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, ipinterface, node, service where ifServices.serviceId = service.serviceId and ipinterface.id = ifServices.ipInterfaceId and node.nodeid = ipinterface.nodeid;") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
@@ -148,7 +150,7 @@ public class MockDatabaseIT extends TestCase {
                 assertEquals("Assertion failed: " + svc, svc.getNodeId(), nodeId);
                 assertEquals("Assertion failed: " + svc, svc.getIpAddr(), ipAddr);
                 assertEquals("Assertion failed: " + svc, svc.getSvcName(), serviceName);
-                assertEquals("Assertion failed: " + svc, svc.getId(), serviceId);
+                assertEquals("Assertion failed: " + svc, svc.getSvcId(), serviceId);
                 assertEquals("Assertion failed: " + svc, svc.getMgmtStatus().toDbString(), status);
             }
         };
@@ -160,18 +162,17 @@ public class MockDatabaseIT extends TestCase {
         m_db.update("delete from node where nodeid = '1'");
         assertEquals(0, m_db.countRows("select * from node where nodeid = '1'"));
         assertEquals(0, m_db.countRows("select * from ipInterface where nodeid = '1'"));
-        assertEquals(0, m_db.countRows("select * from ifServices where nodeid = '1'"));
+        assertEquals(0, m_db.countRows("select * from ifServices, ipInterface, node where ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeid = node.nodeId and node.nodeid = '1'"));
     }
-    
+
     public void testOutage() {
         final MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("TEST", svc);
-        
+
         m_db.writeEvent(svcLostEvent);
         m_db.createOutage(svc, svcLostEvent);
-        m_db.createOutage(svc, svcLostEvent);
-        assertEquals(2, m_db.countOutagesForService(svc));
-        Querier querier = new Querier(m_db, "select * from outages") {
+        assertEquals(1, m_db.countOutagesForService(svc));
+        Querier querier = new Querier(m_db, "select node.nodeid as nodeid, ipinterface.ipaddr as ipaddr, ifservices.serviceid as serviceid from outages, ifservices, ipinterface, node where outages.ifserviceid = ifservices.id and ifservices.ipinterfaceid = ipinterface.id and ipinterface.nodeid = node.nodeid") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
@@ -179,14 +180,13 @@ public class MockDatabaseIT extends TestCase {
                 int serviceId = rs.getInt("serviceId");
                 assertEquals(nodeId, svc.getNodeId());
                 assertEquals(ipAddr, svc.getIpAddr());
-                assertEquals(serviceId, svc.getId());
+                assertEquals(serviceId, svc.getSvcId());
             }
         };
         querier.execute();
-        assertEquals(2, querier.getCount());
-        
+        assertEquals(1, querier.getCount());
     }
-    
+
     public void testUpdateNodeSequence() {
         int maxNodeId = m_db.getJdbcTemplate().queryForInt("select max(nodeid) from node");
         int nextSeqNum = m_db.getJdbcTemplate().queryForInt("select nextval('nodeNxtId')");

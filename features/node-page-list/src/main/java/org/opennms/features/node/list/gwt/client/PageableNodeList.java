@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.features.node.list.gwt.client;
 
 import java.util.List;
 
+import org.gwtbootstrap3.client.ui.Button;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionEvent;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHandler;
 import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionEvent;
@@ -52,7 +53,7 @@ import com.google.gwt.user.cellview.client.SimplePager.Resources;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window.Location;
-import com.google.gwt.user.client.ui.Button;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -109,8 +110,8 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     
     public static final String COOKIE = "hideNodePageErrorDialog";
     
-    @UiField
-    TabLayoutPanel m_tabLayoutPanel;
+//    @UiField
+//    TabLayoutPanel m_tabLayoutPanel;
     
     @UiField
     IpInterfaceTable m_ipInterfaceTable;
@@ -263,10 +264,10 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     }
 
     private void initializeTabBar() {
-        m_tabLayoutPanel.setSize("100%", "520px");
-        Node node = m_tabLayoutPanel.getElement().getChild(1);
-        Element element = Element.as(node);
-        element.getStyle().setHeight(100, Unit.EM);
+//        m_tabLayoutPanel.setSize("100%", "520px");
+//        Node node = m_tabLayoutPanel.getElement().getChild(1);
+//        Element element = Element.as(node);
+//        element.getStyle().setHeight(100, Unit.EM);
     }
     
     @UiHandler("m_ipSearchBtn")
@@ -285,7 +286,7 @@ public class PageableNodeList extends Composite implements ProvidesResize, Physi
     
     
     public void onResize() {
-        m_tabLayoutPanel.onResize();
+//        m_tabLayoutPanel.onResize();
     }
 
 

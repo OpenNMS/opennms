@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,13 +44,14 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -70,10 +71,13 @@ public class PersistOperationBuilderTest {
     private PlatformTransactionManager m_transMgr = new MockPlatformTransactionManager();
 
     private IpInterfaceDao m_ifDao;
+    private RrdStrategy<?, ?> m_rrdStrategy; 
 
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         m_fileAnticipator = new FileAnticipator();
 
@@ -116,14 +120,14 @@ public class PersistOperationBuilderTest {
 
         CollectionResource resource = new NodeInfo(resourceType, agent);
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.commit();
     }
 
     @Test
     public void testCommitWithDeclaredAttribute() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + m_rrdStrategy.getDefaultFileExtension());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
 
         RrdRepository repository = createRrdRepository();
@@ -151,7 +155,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.commit();
     }
@@ -159,7 +163,7 @@ public class PersistOperationBuilderTest {
     @Test
     public void testCommitWithDeclaredAttributeAndValue() throws Exception {
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, "rrdName" + RrdUtils.getExtension());
+        m_fileAnticipator.expecting(nodeDir, "rrdName" + m_rrdStrategy.getDefaultFileExtension());
         m_fileAnticipator.expecting(nodeDir, "rrdName" + ".meta");
 
         RrdRepository repository = createRrdRepository();
@@ -187,7 +191,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, "6.022E23");
         builder.commit();
@@ -222,7 +226,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(repository, resource, "rrdName");
+        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
         builder.declareAttribute(attributeType);
         builder.setAttributeValue(attributeType, "THIS_IS_A_STRING");
         builder.commit();

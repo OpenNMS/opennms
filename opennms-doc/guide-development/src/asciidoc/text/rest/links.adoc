@@ -1,0 +1,39 @@
+
+==== Links
+
+You can manipulate raw _Linkd DataLinkInterface_ information using the links _API_.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource      | Description
+| `/links`      | Get a list of links. The default for offset is 0, and the default for limit is 10. To get all results, use `limit=0` as a parameter on the URL (ie, `GET /links?limit=0`).
+| `/links/{id}` | Get a link specifically by _ID_.
+|===
+
+===== PUTs (Modifying Data)
+
+PUT requires form data using `application/x-www-form-urlencoded` as a Content-Type.
+
+[options="header", cols="5,10"]
+|===
+| Resource      | Description
+| `/links/{id}` | Modify an existing link.
+|===
+
+===== POSTs (Creating Data)
+
+{[options="header", cols="5,10"]
+|===
+| Resource | Description
+| `/links` | Add a new link.
+|===
+
+===== DELETEs (Removing Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource          | Description
+| `/links/{id}` | Delete the link with the given _ID_.
+|===

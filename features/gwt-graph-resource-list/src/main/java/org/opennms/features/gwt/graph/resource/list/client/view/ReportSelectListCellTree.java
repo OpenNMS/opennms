@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,7 +48,7 @@ import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.user.cellview.client.TreeNode;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 
 public class ReportSelectListCellTree extends CellTree {
@@ -98,15 +98,15 @@ public class ReportSelectListCellTree extends CellTree {
         }
 
         private final List<ResourceType> m_resourceTypes;
-        private final MultiSelectionModel<ResourceListItem> m_multipleSelectionModel;
+        private final SelectionModel<ResourceListItem> m_selectionModel;
         private final Cell<ResourceListItem> m_resourceListItemCell;
         private final DefaultSelectionEventManager<ResourceListItem> m_selectionManager = DefaultSelectionEventManager.createCheckboxManager();
         
-        public CustomTreeModel(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
+        public CustomTreeModel(List<ResourceListItem> resourceList, SelectionModel<ResourceListItem> selectionModel) {
             m_resourceTypes = new ArrayList<ResourceType>();
             organizeList(resourceList);
             
-            m_multipleSelectionModel = selectionModel;
+            m_selectionModel = selectionModel;
             
             List<HasCell<ResourceListItem, ?>> hasCells = new ArrayList<HasCell<ResourceListItem, ?>>();
             hasCells.add(new HasCell<ResourceListItem, Boolean>(){
@@ -125,7 +125,7 @@ public class ReportSelectListCellTree extends CellTree {
 
                 @Override
                 public Boolean getValue(ResourceListItem object) {
-                    return m_multipleSelectionModel.isSelected(object);
+                    return m_selectionModel.isSelected(object);
                 }
             });
             
@@ -210,7 +210,7 @@ public class ReportSelectListCellTree extends CellTree {
           }else if(value instanceof ResourceType) {
               ListDataProvider<ResourceListItem> dataProvider = new ListDataProvider<ResourceListItem>(((ResourceType) value).getResourceList());
               
-              return new DefaultNodeInfo<ResourceListItem>(dataProvider, m_resourceListItemCell, m_multipleSelectionModel, m_selectionManager, null);
+              return new DefaultNodeInfo<ResourceListItem>(dataProvider, m_resourceListItemCell, m_selectionModel, m_selectionManager, null);
           }
           return null;
         }
@@ -229,8 +229,7 @@ public class ReportSelectListCellTree extends CellTree {
         }
       }
     
-    
-    public ReportSelectListCellTree(List<ResourceListItem> resourceList, MultiSelectionModel<ResourceListItem> selectionModel) {
+    public ReportSelectListCellTree(List<ResourceListItem> resourceList, SelectionModel<ResourceListItem> selectionModel) {
         super(new CustomTreeModel(resourceList, selectionModel), null, (CellTree.Resources)GWT.create(CustomCellTreeResource.class));
         setDefaultNodeSize(10000);
         
@@ -238,8 +237,6 @@ public class ReportSelectListCellTree extends CellTree {
         for(int i = 0; i < treeNode.getChildCount(); i++) {
             treeNode.setChildOpen(i, true);
         }
-        
     }
-
-
+    
 }

@@ -1,0 +1,8 @@
+{
+  "name": "OpenNMS",
+  "dependencies": {
+    "bootstrap": "~3.3.1",
+    "bootstrap-sass-official": "~3.3.1",
+    "c3": "https://github.com/masayuki0812/c3.git#v0.4.11-rc1"
+  }
+}

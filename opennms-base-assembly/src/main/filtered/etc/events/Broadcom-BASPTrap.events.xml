@@ -1,0 +1,70 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<!-- Start of mib2events auto-generated data for MIB: Brcm-BASPTrap-MIB -->
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.4413.1.2.3</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/vendor/broadcom/traps/failoverEvent</uei>
+    <event-label>Brcm-BASPTrap-MIB defined trap event: failoverEvent</event-label>
+    <descr>
+&lt;p&gt;This trap is generated to indicate that adapter Fail-Over
+event has occured&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapAdapterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapTeamName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapCauseDirection&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		adapterActive(1)
+		adapterInactive(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapAdapterActivityCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		linkChange(2)
+		adapterEnabledOrDisabled(3)
+		adapterAddedOrRemoved(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+    <logmsg dest="logndisplay">&lt;p&gt;
+	failoverEvent trap received
+	trapAdapterName=%parm[#1]%
+	trapTeamName=%parm[#2]%
+	trapCauseDirection=%parm[#3]%
+	trapAdapterActivityCause=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+    <severity>Warning</severity>
+    <varbindsdecode>
+      <parmid>parm[#3]</parmid>
+      <decode varbinddecodedstring="adapterActive" varbindvalue="1"/>
+      <decode varbinddecodedstring="adapterInactive" varbindvalue="2"/>
+    </varbindsdecode>
+    <varbindsdecode>
+      <parmid>parm[#4]</parmid>
+      <decode varbinddecodedstring="none" varbindvalue="1"/>
+      <decode varbinddecodedstring="linkChange" varbindvalue="2"/>
+      <decode varbinddecodedstring="adapterEnabledOrDisabled" varbindvalue="3"/>
+      <decode varbinddecodedstring="adapterAddedOrRemoved" varbindvalue="4"/>
+    </varbindsdecode>
+  </event>
+</events>
+<!-- End of mib2events auto-generated data for MIB: Brcm-BASPTrap-MIB -->

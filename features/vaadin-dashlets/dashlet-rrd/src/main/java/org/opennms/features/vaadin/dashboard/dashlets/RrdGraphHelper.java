@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import org.opennms.netmgt.dao.api.GraphDao;
@@ -39,6 +40,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -68,36 +71,6 @@ public class RrdGraphHelper {
      * Default constructor for instantiating new objects
      */
     public RrdGraphHelper() {
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query         the parameter combination for this report graph
-     * @param width         the width
-     * @param height        the height
-     * @param calendarField the calendar field to substract from
-     * @param calendarDiff  the value to be substracted
-     * @return the url string
-     */
-    public String imageUrlForGraph(String query, int width, int height, int calendarField, int calendarDiff) {
-        Calendar cal = new GregorianCalendar();
-        long end = cal.getTime().getTime();
-        cal.add(calendarField, -calendarDiff);
-        long start = cal.getTime().getTime();
-        return "/opennms/graph/graph.png?" + query + "&start=" + start + "&end=" + end + (width > 0 ? "&width=" + width : "") + (height > 0 ? "&height=" + height : "");
-    }
-
-    /**
-     * Creates the image url for a given graph parameter and width/height.
-     *
-     * @param query  the parameter combination for this report graph
-     * @param width  the width
-     * @param height the height
-     * @return the url string
-     */
-    public String imageUrlForGraph(String query, int width, int height) {
-        return imageUrlForGraph(query, width, height, Calendar.HOUR_OF_DAY, 1);
     }
 
     /**
@@ -229,6 +202,41 @@ public class RrdGraphHelper {
     }
 
     /**
+     * Parses the name of the graph from the given query string.
+     *
+     * This is used to preserve backwards compatibility with existing dashlets
+     * that store the graphUrl instead of the graphName.
+     */
+    public static String getGraphNameFromQuery(final String query) {
+        if (query == null) {
+            return null;
+        }
+
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            if (idx < 0) {
+                continue;
+            }
+
+            String key;
+            String value;
+            try {
+                key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                value = URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                continue;
+            }
+
+            if ("report".equalsIgnoreCase(key)) {
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Checks a resource label for quotes.
      *
      * @param childResource the child resource to check
@@ -236,7 +244,7 @@ public class RrdGraphHelper {
      */
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         String lbl = Util.convertToJsSafeString(childResource.getLabel());
-        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes());
+        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes(), childResource.getPath());
         resource.setParent(childResource.getParent());
         resource.setEntity(childResource.getEntity());
         resource.setLink(childResource.getLink());

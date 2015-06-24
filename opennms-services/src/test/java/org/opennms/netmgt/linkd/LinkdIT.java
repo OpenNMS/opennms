@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,21 +32,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_BRIDGEID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_C870_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_BRIDGEID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.CISCO_WS_C2948_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.DARWIN_10_8_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.LINUX_UBUNTU_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_BRIDGEID;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.NETGEAR_SW_108_NAME;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_IP;
-import static org.opennms.netmgt.nb.TestNetworkBuilder.WORKSTATION_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_BRIDGEID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_C870_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_BRIDGEID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.CISCO_WS_C2948_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DARWIN_10_8_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.DARWIN_10_8_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.LINUX_UBUNTU_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_BRIDGEID;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.NETGEAR_SW_108_NAME;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_IP;
+import static org.opennms.netmgt.nb.NmsNetworkBuilder.WORKSTATION_NAME;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -73,6 +73,8 @@ import org.opennms.netmgt.model.OnmsStpInterface;
 import org.opennms.netmgt.model.OnmsStpNode;
 import org.opennms.netmgt.model.OnmsStpNode.BridgeBaseType;
 import org.opennms.netmgt.model.OnmsStpNode.StpProtocolSpecification;
+import org.opennms.netmgt.model.topology.AtInterface;
+import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms101NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -262,7 +264,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * CISCO_WS_C2948_IP:172.20.1.7:0002baaacffe:3:me1
+        * CISCO_WS_C2948_IP:192.0.2.7:0002baaacffe:3:me1
         */
         
         final List<AtInterface> atInterfaces = m_linkd.getAtInterfaces(packageName, "0002baaacffe");
@@ -357,8 +359,8 @@ public class LinkdIT extends LinkdBuilderITCase {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * CISCO_C870:172.20.1.1:001f6cd034e7:12:Vlan1
-        * CISCO_C870:172.20.2.1:001f6cd034e7:13:Vlan2
+        * CISCO_C870:192.0.2.1:001f6cd034e7:12:Vlan1
+        * CISCO_C870:198.51.100.1:001f6cd034e7:13:Vlan2
         * CISCO_C870:10.255.255.2:001f6cd034e7:12:Vlan1
         * CISCO_C870:65.41.39.146:00000c03b09e:14:BVI1
         */
@@ -370,9 +372,9 @@ public class LinkdIT extends LinkdBuilderITCase {
         
         assertEquals(3, ats.size());
         for (final AtInterface at :ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.1"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.1"))
                 assertEquals(12, at.getIfIndex().intValue());
-            else if( at.getIpAddress().getHostAddress().equals("172.20.2.1"))
+            else if( at.getIpAddress().getHostAddress().equals("198.51.100.1"))
                 assertEquals(13, at.getIfIndex().intValue());
             else if( at.getIpAddress().getHostAddress().equals("10.255.255.2"))
                 assertEquals(12, at.getIfIndex().intValue());
@@ -477,7 +479,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
         *      
-        * NETGEAR_SW_108:172.20.1.8:00223ff00b7b::
+        * NETGEAR_SW_108:192.0.2.8:00223ff00b7b::
         * Run the spanning tree protocol
         * with bridge identifier: 00223ff00b7b
         * Transparent Bridge
@@ -489,7 +491,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         List<AtInterface> ats = m_linkd.getAtInterfaces(packageName, "00223ff00b7b");
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.8"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.8"))
                 assertTrue(at.getIfIndex().intValue() == -1);
             else 
                 fail("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address");
@@ -571,7 +573,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         // This make shure that the ip/mac association is saved
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
-        * LINUX_UBUNTU:172.20.1.14:406186e28b53:4:br0
+        * LINUX_UBUNTU:192.0.2.14:406186e28b53:4:br0
         * 
         */
         
@@ -583,7 +585,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.14"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.14"))
                 assertTrue(at.getIfIndex().intValue() == 4);
             else 
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);
@@ -664,7 +666,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         // This make shure that the ip/mac association is saved
         /*
         * nodelabel:ip:mac:ifindex:ifdescr
-        * DARWIN_10_8:172.20.1.28:0026b0ed8fb8:4:en0
+        * DARWIN_10_8:192.0.2.28:0026b0ed8fb8:4:en0
         *  
         */
         
@@ -677,7 +679,7 @@ public class LinkdIT extends LinkdBuilderITCase {
         assertEquals("should have saved 1 ip to mac",1, ats.size());        
         
         for (AtInterface at : ats) {
-            if( at.getIpAddress().getHostAddress().equals("172.20.1.28"))
+            if( at.getIpAddress().getHostAddress().equals("192.0.2.28"))
                 assertTrue(at.getIfIndex().intValue() == 4);
             else 
                 assertTrue("ip: "+ at.getIpAddress().getHostAddress() + "does not match any known ip address", false);

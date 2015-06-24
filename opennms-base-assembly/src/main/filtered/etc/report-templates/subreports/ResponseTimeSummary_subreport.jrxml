@@ -3,10 +3,14 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="240"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+  </parameter>
 	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
 	</parameter>

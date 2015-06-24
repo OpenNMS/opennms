@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.model.alarm;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.FuzzyDateFormatter;
@@ -39,13 +45,28 @@ import org.opennms.netmgt.model.OnmsSeverity;
  *
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue</A>
  */
-public class AlarmSummary implements Comparable<AlarmSummary> {
+@XmlRootElement(name="alarm-summary")
+@XmlAccessorType(XmlAccessType.NONE)
+public class AlarmSummary implements Comparable<AlarmSummary>, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private final int nodeId;
-    private final String nodeLabel;
-    private final Date minLastEventDate;
-    private final OnmsSeverity maxSeverity;
-    private final long alarmCount;
+    @XmlAttribute(name="node-id")
+    private int nodeId;
+
+    @XmlAttribute(name="node-label")
+    private String nodeLabel;
+
+    @XmlAttribute(name="date")
+    private Date minLastEventDate;
+
+    @XmlAttribute(name="severity")
+    private OnmsSeverity maxSeverity;
+
+    @XmlAttribute(name="count")
+    private long alarmCount;
+
+    public AlarmSummary() {
+    }
 
     public AlarmSummary(final Integer nodeId, final String nodeLabel, final Date minLastEventDate, final OnmsSeverity maxSeverity, final Long alarmCount) {
         super();

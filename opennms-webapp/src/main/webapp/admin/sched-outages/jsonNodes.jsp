@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -63,7 +63,7 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<OnmsNode> items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
+
 %>
 [
 <% 
@@ -71,27 +71,19 @@ boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
 String autocomplete = request.getParameter("term");
-Pattern pattern = null;
-if (autocomplete != null && !"".equals(autocomplete)) {
-	pattern = Pattern.compile(autocomplete, Pattern.LITERAL + Pattern.CASE_INSENSITIVE);
+
+List<OnmsNode> items;
+if(autocomplete == null || autocomplete.equals("")){
+    items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
+} else{
+    items = NetworkElementFactory.getInstance(getServletContext()).getNodesLike(autocomplete);
 }
 for (OnmsNode item : items) {
 	// Check to see if the item matches the search term
-	Matcher matcher = null;
-	if (pattern != null) {
-		matcher = pattern.matcher(item.getLabel());
-	}
-	if (pattern == null || (matcher != null && matcher.find())) {
+
 		StringBuffer result = new StringBuffer();
-		if (pattern != null) {
-			matcher.reset();
-			while (matcher.find()) {
-				matcher.appendReplacement(result, "<strong>" + matcher.group(0) + "</strong>");
-			}
-			matcher.appendTail(result);
-		} else {
-			result.append(item.getLabel());
-		}
+
+        result.append(item.getLabel());
 		result.append(" (Node ID ").append(item.getId()).append(")");
 		// If we've already printed the first item, separate the items with a comma
 		if (printedFirst) {
@@ -104,7 +96,6 @@ for (OnmsNode item : items) {
 		if (recordCounter++ >= recordLimit) {
 			break;
 		}
-	}
 }
 %>
 ]

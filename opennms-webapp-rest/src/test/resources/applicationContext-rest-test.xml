@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	">
+
+	<context:annotation-config />
+
+	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
+		<constructor-arg value="file:target/test-classes/collectd-configuration.xml" />
+	</bean>
+
+	<bean name="datacollection-config.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.datacollection.DatacollectionConfig" />
+		<constructor-arg value="file:target/test-classes/datacollection-config.xml" />
+	</bean>
+
+	<bean name="dc.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.internal.collection.DataCollectionConfigImpl" />
+		<constructor-arg value="file:target/test-classes/dc.xml" />
+	</bean>
+
+	<bean name="monitoring-locations.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
+		<constructor-arg value="file:target/test-classes/monitoring-locations.xml" />
+	</bean>
+
+	<bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
+		<constructor-arg value="file:target/test-classes/poller-configuration.xml" />
+	</bean>
+	
+</beans>

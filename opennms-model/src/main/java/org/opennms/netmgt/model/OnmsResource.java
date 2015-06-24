@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -53,7 +53,9 @@ public class OnmsResource implements Comparable<OnmsResource> {
     private OnmsEntity m_entity;
     private List<OnmsResource> m_resources;
     private OnmsResource m_parent = null;
-    
+    private ResourcePath m_path;
+    private boolean m_attributesUpdatedWithResource = false;
+
     /**
      * <p>Constructor for OnmsResource.</p>
      *
@@ -63,8 +65,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
      * @param attributes a {@link java.util.Set} object.
      */
     public OnmsResource(String name, String label,
-            OnmsResourceType resourceType, Set<OnmsAttribute> attributes) {
-        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0));
+            OnmsResourceType resourceType, Set<OnmsAttribute> attributes, ResourcePath path) {
+        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0), path);
     }
     
     /**
@@ -78,22 +80,20 @@ public class OnmsResource implements Comparable<OnmsResource> {
      */
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes,
-            List<OnmsResource> resources) {
+            List<OnmsResource> resources, ResourcePath path) {
         Assert.notNull(name, "name argument must not be null");
         Assert.notNull(label, "label argument must not be null");
         Assert.notNull(resourceType, "resourceType argument must not be null");
         Assert.notNull(attributes, "attributes argument must not be null");
         Assert.notNull(resources, "resources argument must not be null");
-        
+        Assert.notNull(path, "path argument must not be null");
+
         m_name = name;
         m_label = label;
         m_resourceType = resourceType;
         m_attributes = attributes;
         m_resources = resources;
-        
-        for (OnmsAttribute attribute : m_attributes) {
-            attribute.setResource(this);
-        }
+        m_path = path;
     }
 
     /**
@@ -129,9 +129,18 @@ public class OnmsResource implements Comparable<OnmsResource> {
      * @return a {@link java.util.Set} object.
      */
     public Set<OnmsAttribute> getAttributes() {
+        // Only update the attribute with the resource on the first get
+        // In some cases the attributes will be stored in a lazy set
+        // so we don't want to preemptively load it
+        if (!m_attributesUpdatedWithResource) {
+            for (OnmsAttribute attribute : m_attributes) {
+                attribute.setResource(this);
+            }
+            m_attributesUpdatedWithResource = true;
+        }
         return m_attributes;
     }
-    
+
     /**
      * <p>getChildResources</p>
      *
@@ -343,4 +352,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
         m_entity = entity;
     }
 
+    public ResourcePath getPath() {
+        return m_path;
+    }
+    
 }

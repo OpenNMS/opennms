@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,10 +28,20 @@
 
 package org.opennms.dashboard.server;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.dashboard.client.*;
+import org.opennms.dashboard.client.Alarm;
+import org.opennms.dashboard.client.NodeRtc;
+import org.opennms.dashboard.client.Notification;
+import org.opennms.dashboard.client.SurveillanceData;
+import org.opennms.dashboard.client.SurveillanceGroup;
+import org.opennms.dashboard.client.SurveillanceService;
+import org.opennms.dashboard.client.SurveillanceSet;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.surveillanceViews.View;
@@ -43,13 +53,18 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.SurveillanceViewConfigDao;
-import org.opennms.netmgt.model.*;
-import org.opennms.web.svclayer.ProgressMonitor;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.svclayer.RtcService;
-import org.opennms.web.svclayer.SimpleWebTable;
-import org.opennms.web.svclayer.SimpleWebTable.Cell;
-import org.opennms.web.svclayer.support.RtcNodeModel;
-import org.opennms.web.svclayer.support.RtcNodeModel.RtcNode;
+import org.opennms.web.svclayer.model.ProgressMonitor;
+import org.opennms.web.svclayer.model.RtcNode;
+import org.opennms.web.svclayer.model.RtcNodeModel;
+import org.opennms.web.svclayer.model.SimpleWebTable;
+import org.opennms.web.svclayer.model.SimpleWebTable.Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -59,10 +74,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * <p>DefaultSurveillanceService class.</p>
@@ -452,11 +463,12 @@ public class DefaultSurveillanceService implements SurveillanceService, Initiali
         
         RtcNodeModel model = m_rtcService.getNodeListForCriteria(serviceCriteria, outageCriteria);
         
-        NodeRtc[] nodeRtc = new NodeRtc[model.getNodeList().size()];
+        final List<RtcNode> nodeList = model.getRtcNodes();
+        NodeRtc[] nodeRtc = new NodeRtc[nodeList.size()];
         
         int index = 0;
         boolean isDashboardRole = isDashboardRole();
-        for (RtcNode node : model.getNodeList()) {
+        for (RtcNode node : nodeList) {
             NodeRtc n = new NodeRtc();
             
             n.setNodeLabel(node.getNode().getLabel());

@@ -4,7 +4,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ul class="plain">
+<ul class="list-unstyled">
   <c:forEach var="nodeModel" items="${nodes}">
     <c:url var="nodeLink" value="element/node.jsp">
       <c:param name="node" value="${nodeModel.node.id}"/>
@@ -12,10 +12,10 @@
     <li>
       <c:choose>
         <c:when test="${!empty nodeModel.node.foreignSource}">
-          <a href="${nodeLink}" title="foreignID: ${nodeModel.node.foreignSource}:${nodeModel.node.foreignId}">${nodeModel.node.label}</a> (ID: ${nodeModel.node.id})
+          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;&nbsp;<span class="NLdbid label label-default" title="Database ID: ${nodeModel.node.id}"><i class="fa fa-database"></i>&nbsp;${nodeModel.node.id}</span>&nbsp;<span class="NLfs label label-default" title="Requisition: ${nodeModel.node.foreignSource}"><i class="fa fa-list-alt"></i>&nbsp;${nodeModel.node.foreignSource}</span>&nbsp;<span class="NLfid label label-default" title="Foreign ID: ${nodeModel.node.foreignId}"><i class="fa fa-qrcode"></i>&nbsp;${nodeModel.node.foreignId}</span></div>
         </c:when>
         <c:otherwise>
-          <a href="${nodeLink}">${nodeModel.node.label}</a> (ID: ${nodeModel.node.id})
+          <div class="NLnode"><a href="${nodeLink}">${nodeModel.node.label}</a>&nbsp;&nbsp;<span class="NLdbid label label-default" title="Database ID: ${nodeModel.node.id}"><i class="fa fa-database"></i>&nbsp;${nodeModel.node.id}</span></div>
         </c:otherwise>
       </c:choose>
       <ul>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 public abstract class StringUtils {
@@ -63,6 +62,7 @@ public abstract class StringUtils {
      * simply remove them and leave the stray escape characters.
      * </p>
      *
+     * @deprecated Use createCommandArray(String s) instead.
      * @param s
      *            the string to split
      * @param delim
@@ -73,50 +73,106 @@ public abstract class StringUtils {
      *             already exists in <code>s</code>.
      */
     public static String[] createCommandArray(String s, char delim) {
-        if (s == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
+        return createCommandArray(s);
+    }
+
+    /**
+     * Convenience method for creating arrays of strings suitable for use as
+     * command-line parameters when executing an external process.
+     *
+     * <p>
+     * The default {@link Runtime#exec Runtime.exec} method will split a single
+     * string based on spaces, but it does not respect spaces within quotation
+     * marks, and it will leave the quotation marks in the resulting substrings.
+     * This method solves those problems by preserving all in-quote spaces.
+     * </p>
+     *
+     * <p>
+     * <em>Caveat:</em> This method does not respect escaped quotes! It will
+     * simply remove them and leave the stray escape characters.
+     * </p>
+     *
+     * @param s
+     *            the string to split
+     * @return An array of strings split by spaces outside of quotes.
+     * @throws java.lang.IllegalArgumentException
+     *             If <code>s</code> is null.
+     */
+    public static String[] createCommandArray(String s) {
+        return new CommandArrayGenerator(s).getCommandArray();
+    }
+
+    private static class CommandArrayGenerator {
+        private final ArrayList<String> m_segments = new ArrayList<String>();
+        private boolean m_isInQuotes = false;
+        private StringBuffer m_segmentBuffer = new StringBuffer();
+
+        public CommandArrayGenerator(String s) {
+            if (s == null) {
+                throw new IllegalArgumentException("Cannot take null parameters.");
+            }
+
+            // Visit the string char. by char. in order,
+            // splitting it into segments
+            for (char c : s.toCharArray()) {
+                onChar(c);
+            }
+
+            // Make sure to keep any trailing characters
+            resetSegment();
         }
-    
-        if (s.indexOf(delim) != -1) {
-            throw new IllegalArgumentException("String parameter cannot already contain delimiter character: " + delim);
-        }
-    
-        char[] chars = s.toCharArray();
-        boolean inquote = false;
-        StringBuilder buffer = new StringBuilder();
-    
-        // append each char to a StringBuffer, but
-        // leave out quote chars and replace spaces
-        // inside quotes with the delim char
-        for (char eachChar : chars) {
-            if (eachChar == '"') {
-                inquote = !inquote; // toggle
-            } else if (inquote && eachChar == ' ') {
-                buffer.append(delim);
+
+        private void onChar(char c) {
+            if (c == '"') {
+                if(m_isInQuotes) {
+                    // Reset the segment if we reach another quote
+                    // while we're in quotes
+                    resetSegment();
+                }
+                m_isInQuotes = !m_isInQuotes; // Toggle
+            } else if (isWhitespace(c)) {
+                if (!m_isInQuotes) {
+                    // Reset the segment if we reach a whitespace
+                    // character outside of quotes
+                    resetSegment();
+                } else if (c == ' ') {
+                    // Preserve any spaces within a quoted segment
+                    m_segmentBuffer.append(c);
+                } else {
+                    // Reset the segment if any other whitespace
+                    // characters are reached in a quoted segment
+                    // (do this in order to preserve existing behavior )
+                    resetSegment();
+                }
             } else {
-                buffer.append(eachChar);
+                m_segmentBuffer.append(c);
             }
         }
-    
-        s = buffer.toString();
-    
-        // split the new string by the whitespaces that were not in quotes
-        ArrayList<String> arrayList = new ArrayList<String>();
-        StringTokenizer tokenizer = new StringTokenizer(s);
-    
-        while (tokenizer.hasMoreTokens()) {
-            arrayList.add(tokenizer.nextElement().toString());
+
+        private void resetSegment() {
+            // Reset the segment if the buffer is not empty
+            if (m_segmentBuffer.length() > 0) {
+                m_segments.add(m_segmentBuffer.toString());
+                m_segmentBuffer = new StringBuffer();
+            }
         }
-    
-        // put the strings in the arraylist into a string[]
-        String[] list = arrayList.toArray(new String[arrayList.size()]);
-    
-        // change all the delim characters back to spaces
-        for (int i = 0; i < list.length; i++) {
-            list[i] = list[i].replace(delim, ' ');
+
+        public String[] getCommandArray() {
+            return m_segments.toArray(new String[m_segments.size()]);
         }
-    
-        return list;
+
+        private static boolean isWhitespace(char aChar) {
+            switch(aChar) {
+            case ' ':
+            case '\t':
+            case '\n':
+            case '\r':
+            case '\f':
+                return true;
+            default:
+                return false;
+            }
+        }
     }
 
     /**

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,12 +30,14 @@ package org.opennms.netmgt.correlation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -48,8 +50,8 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
 
 	private static final AtomicInteger s_lastTimerId = new AtomicInteger(0);
     private EventIpcManager m_eventIpcManager;
-    private Timer m_scheduler;
-    private final Map<Integer, TimerTask> m_pendingTasks = new ConcurrentHashMap<Integer, TimerTask>();
+    private ScheduledExecutorService m_scheduler;
+    private final Map<Integer, ScheduledFuture<?>> m_pendingTasks = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
 
     /** {@inheritDoc} */
         @Override
@@ -66,7 +68,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
@@ -88,20 +90,10 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      * @return a {@link java.lang.Integer} object.
      */
     public Integer setTimer(final long millis) {
-    	final RuleTimerTask task = getTimerTask();
-        m_scheduler.schedule(task, millis);
-        return task.getId();
-    }
-    
-    /**
-     * <p>getTimerTask</p>
-     *
-     * @return a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
-     */
-    public RuleTimerTask getTimerTask() {
-    	final RuleTimerTask timerTask = new RuleTimerTask();
-        m_pendingTasks.put(timerTask.getId(), timerTask);
-        return timerTask;
+        final RuleTimerTask timerTask = new RuleTimerTask();
+        ScheduledFuture<?> future = m_scheduler.schedule(timerTask, millis, TimeUnit.MILLISECONDS);
+        m_pendingTasks.put(timerTask.getId(), future);
+        return timerTask.getId();
     }
     
     /**
@@ -109,10 +101,10 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public void cancelTimer(final Integer timerId) {
-    	final TimerTask task = m_pendingTasks.remove(timerId);
+    protected void cancelTimer(final Integer timerId) {
+        final ScheduledFuture<?> task = m_pendingTasks.remove(timerId);
         if (task != null) {
-            task.cancel();
+            task.cancel(true);
         }
     }
     
@@ -128,7 +120,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param scheduler a {@link java.util.Timer} object.
      */
-    public void setScheduler(final Timer scheduler) {
+    public void setScheduler(final ScheduledExecutorService scheduler) {
         m_scheduler = scheduler;
     }
     
@@ -137,7 +129,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param task a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
      */
-    public void runTimer(final RuleTimerTask task) {
+    protected void runTimer(final RuleTimerTask task) {
         m_pendingTasks.remove(task.getId());
         timerExpired(task.getId());
     }

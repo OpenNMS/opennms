@@ -1,0 +1,9 @@
+<xml-groups>
+    <xml-group name="opennms-statsd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="StaReportsStarted" type="counter" xpath="Attribute[@name='ReportsStarted']/@value" />
+        <xml-object name="StaReportsCompleted" type="counter" xpath="Attribute[@name='ReportsCompleted']/@value" />
+        <xml-object name="StaReportsPersisted" type="counter" xpath="Attribute[@name='ReportsPersisted']/@value" />
+        <xml-object name="StaReportRunTime" type="counter" xpath="Attribute[@name='ReportRunTime']/@value" />
+    </xml-group>
+</xml-groups>

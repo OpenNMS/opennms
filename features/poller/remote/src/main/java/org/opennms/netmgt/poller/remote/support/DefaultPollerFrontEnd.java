@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -73,6 +73,15 @@ import org.springframework.util.ObjectUtils;
  * @version $Id: $
  */
 public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, DisposableBean {
+
+    public static enum PollerFrontEndStates {
+        exitNecessary,
+        started,
+        registered,
+        paused,
+        disconnected
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerFrontEnd.class);
 
     private class Disconnected extends RunningState {
@@ -80,12 +89,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         @Override
         public boolean isDisconnected() {
             return true;
-        }
-
-        @Override
-        public void stop() {
-            // don't call do stop as we are disconnected from the server
-            setState(new Registering());
         }
 
         @Override
@@ -108,6 +111,15 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     }
 
+    private static class Stopped extends State {
+
+        @Override
+        public boolean isExitNecessary() {
+            return true;
+        }
+
+    }
+
     public class Initial extends State {
         @Override
         public void initialize() {
@@ -122,7 +134,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                     doDelete();
                     setState(new Registering());
                 }
-            } catch (final RuntimeException e) {
+            } catch (final Throwable e) {
                 setState(new FatalExceptionOccurred());
 
                 // rethrow the exception on initialize so we exit if we fail to initialize
@@ -207,11 +219,15 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                     case STARTED:
                         onStarted();
                         break;
+                    case STOPPED:
+                        LOG.info("State set to STOPPED; stopping");
+                        stop();
+                        break;
                     default:
                         LOG.debug("Unhandled status on checkIn(): {}", status);
                         break;
                 }
-            } catch (final Exception e) {
+            } catch (final Throwable e) {
                 LOG.error("Unexpected exception occurred while checking in.", e);
                 setState(new FatalExceptionOccurred());
             }
@@ -220,7 +236,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 final File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
                 if (!killSwitch.exists()) {
                     LOG.info("Kill-switch file {} does not exist; stopping.", killSwitch.getPath());
-                    doStop();
+                    stop();
                 }
             }
         }
@@ -228,17 +244,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         @Override
         public boolean isStarted() {
             return true;
-        }
-
-        @Override
-        public void stop() {
-            try {
-                doStop();
-                setState(new Registering());
-            } catch (final Exception e) {
-                LOG.error("Unexpected exception occurred while stopping.", e);
-                setState(new FatalExceptionOccurred());
-            }
         }
 
         protected void onConfigChanged() {
@@ -296,19 +301,19 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     }
 
-    public class FatalExceptionOccurred extends State {
+    public static class FatalExceptionOccurred extends State {
         @Override
         public boolean isExitNecessary() {
             return true;
         }
     }
 
-    private abstract class State {
+    private static abstract class State {
         public void checkIn() {
             // a pollerCheckingIn in any state that doesn't respond just does nothing
         }
 
-        public IllegalStateException illegalState(final String msg) {
+        protected IllegalStateException illegalState(final String msg) {
             return new IllegalStateException(msg + " State: " + this);
         }
 
@@ -346,10 +351,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         public void register(final String location) {
             throw illegalState("Cannot register from this state.");
-        }
-
-        public void stop() {
-            // do nothing here by default as the actual exit is managed by the external program
         }
 
         @Override
@@ -392,21 +393,21 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     /**
      * <p>doResume</p>
      */
-    public void doResume() {
+    private void doResume() {
         doLoadConfig();
     }
 
     /**
      * <p>doPause</p>
      */
-    public void doPause() {
+    private void doPause() {
         // do I need to do anything here?
     }
 
     /**
      * <p>doDisconnected</p>
      */
-    public void doDisconnected() {
+    private void doDisconnected() {
         doLoadConfig();
     }
 
@@ -428,7 +429,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         assertNotNull(m_timeAdjustment, "timeAdjustment");
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
@@ -450,7 +451,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         stop();
     }
 
@@ -459,14 +460,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus} object.
      */
-    public MonitorStatus doCheckIn() {
+    private MonitorStatus doCheckIn() {
         return m_backEnd.pollerCheckingIn(getMonitorId(), getCurrentConfigTimestamp());
     }
 
     /**
      * <p>doDelete</p>
      */
-    public void doDelete() {
+    private void doDelete() {
         setMonitorId(null);
     }
 
@@ -475,7 +476,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer doInitialize() {
+    private Integer doInitialize() {
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
@@ -488,7 +489,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a boolean.
      */
-    public boolean doPollerStart() {
+    private boolean doPollerStart() {
 
         if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
             // the monitor has been deleted on the server
@@ -506,7 +507,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @param polledServiceId a {@link java.lang.Integer} object.
      */
-    public void doPollService(final Integer polledServiceId) {
+    private void doPollService(final Integer polledServiceId) {
         final PollStatus result = doPoll(polledServiceId);
         if (result == null)
             return;
@@ -521,7 +522,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @param location a {@link java.lang.String} object.
      */
-    public void doRegister(final String location) {
+    private void doRegister(final String location) {
 
         int monitorId = m_backEnd.registerLocationMonitor(location);
         setMonitorId(monitorId);
@@ -533,7 +534,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     /**
      * <p>doStop</p>
      */
-    public void doStop() {
+    private void doStop() {
         m_backEnd.pollerStopping(getMonitorId());
     }
 
@@ -564,7 +565,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getMonitorId() {
+    private Integer getMonitorId() {
         return m_pollerSettings.getMonitorId();
     }
 
@@ -682,7 +683,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     @Override
     public void setInitialPollTime(final Integer polledServiceId, final Date initialPollTime) {
         final ServicePollState pollState = getServicePollState(polledServiceId);
-        if (pollState == null) return;
+        if (pollState == null) {
+            return;
+        }
 
         pollState.setInitialPollTime(initialPollTime);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
@@ -693,7 +696,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @param monitorId a {@link java.lang.Integer} object.
      */
-    public void setMonitorId(final Integer monitorId) {
+    private void setMonitorId(final Integer monitorId) {
         m_pollerSettings.setMonitorId(monitorId);
     }
 
@@ -736,7 +739,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     @Override
     public void stop() {
-        m_state.stop();
+        doStop();
+        setState(new Stopped());
     }
 
     private void assertInitialized() {
@@ -745,11 +749,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     private static void assertNotNull(final Object propertyValue, final String propertyName) {
         Assert.state(propertyValue != null, propertyName + " must be set for instances of " + DefaultPollerFrontEnd.class.getName());
-    }
-
-    @SuppressWarnings("unused")
-    private void assertRegistered() {
-        Assert.state(isRegistered(), "The poller must be registered before we can poll or get its configuration");
     }
 
     private void doLoadConfig() {
@@ -787,7 +786,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private PollStatus doPoll(final Integer polledServiceId) {
 
         final PolledService polledService = getPolledService(polledServiceId);
-        if (polledService == null) return null;
+        if (polledService == null) {
+            return null;
+        }
         return m_pollService.poll(polledService);
     }
 
@@ -843,11 +844,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         final boolean disconnected = isDisconnected();
         final boolean exitNecessary = isExitNecessary();
         m_state = newState;
-        firePropertyChange("exitNecessary", exitNecessary, isExitNecessary());
-        firePropertyChange("started", started, isStarted());
-        firePropertyChange("registered", registered, isRegistered());
-        firePropertyChange("paused", paused, isPaused());
-        firePropertyChange("disconnected", disconnected, isDisconnected());
+        firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), exitNecessary, isExitNecessary());
+        firePropertyChange(PollerFrontEndStates.started.toString(), started, isStarted());
+        firePropertyChange(PollerFrontEndStates.registered.toString(), registered, isRegistered());
+        firePropertyChange(PollerFrontEndStates.paused.toString(), paused, isPaused());
+        firePropertyChange(PollerFrontEndStates.disconnected.toString(), disconnected, isDisconnected());
 
     }
 
@@ -871,7 +872,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     private void updateServicePollState(final Integer polledServiceId, final PollStatus result) {
         final ServicePollState pollState = getServicePollState(polledServiceId);
-        if (pollState == null) return;
+        if (pollState == null) {
+            return;
+        }
         pollState.setLastPoll(result);
         fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }

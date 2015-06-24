@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,10 +31,14 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.List;
 
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
@@ -56,7 +60,36 @@ public abstract class EnLinkdTestHelper {
 		for (LldpElement element: lldpelements)
 			printLldpElement(element);
 	}
-	protected static void printLldpElement(final LldpElement lldpElement) {
+
+    protected static void printCdpElement(final CdpElement cdpElement) {
+        System.err.println("----------cdp element --------");
+        System.err.println("Nodeid: " + cdpElement.getNode().getId());
+        System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
+        System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
+    }
+
+    protected static void printCdpLink(CdpLink link) {
+        System.err.println("----------cdp link --------");
+        System.err.println("Create time: " + link.getCdpLinkCreateTime());
+        System.err.println("Last Poll time: " + link.getCdpLinkLastPollTime());
+        System.err.println("----------Source Node--------");
+        System.err.println("Nodeid: " + link.getNode().getId());
+        System.err.println("----------Source Port--------");
+        System.err.println("cdpcacheifindex: " + link.getCdpCacheIfIndex());
+        System.err.println("cdpcachedeviceindex: " + link.getCdpCacheDeviceIndex());
+        System.err.println("cdpinterfacename: " + link.getCdpInterfaceName());
+        System.err.println("----------Rem Node--------");
+        System.err.println("cdpcacheaddresstype: " + CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()));
+        System.err.println("cdpcacheaddress: " + link.getCdpCacheAddress());
+        System.err.println("cdpcacheversion: " + link.getCdpCacheVersion());
+        System.err.println("cdpcachedeviceid: " + link.getCdpCacheDeviceId());
+        System.err.println("cdpcachedeviceplatform: " + link.getCdpCacheDevicePlatform());
+        System.err.println("----------Remote Port--------");
+        System.err.println("cdpcachedeviceport: " + link.getCdpCacheDevicePort());
+        System.err.println("");
+    }
+
+        protected static void printLldpElement(final LldpElement lldpElement) {
     	System.err.println("----------lldp element --------");
     	System.err.println("Nodeid: " + lldpElement.getNode().getId());
     	System.err.println("lldp chassis type/id: " + LldpChassisIdSubType.getTypeString(lldpElement.getLldpChassisIdSubType().getValue())+"/"+lldpElement.getLldpChassisId());
@@ -71,6 +104,7 @@ public abstract class EnLinkdTestHelper {
     	System.err.println("Nodeid: " + link.getNode().getId());
     	System.err.println("----------Source Port--------");
     	System.err.println("lldp port num: " + link.getLldpLocalPortNum());
+        System.err.println("lldp port ifindex: " + link.getLldpPortIfindex());
     	System.err.println("lldp port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpPortIdSubType().getValue())+"/" + link.getLldpPortId());
     	System.err.println("lldp port descr: " + link.getLldpPortDescr());
     	System.err.println("----------Rem Node--------");
@@ -117,5 +151,32 @@ public abstract class EnLinkdTestHelper {
        	System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
     	System.err.println("");
     }
+	
+	protected static void printBridgeMacLink(BridgeMacLink link) {
+    	System.err.println("----------mac link --------");
+    	System.err.println("Create time: " + link.getBridgeMacLinkCreateTime());
+    	System.err.println("Last Poll time: " + link.getBridgeMacLinkLastPollTime());
+    	System.err.println("----------Source Mac Address--------");
+    	System.err.println("Mac: " + link.getMacAddress());
+    	System.err.println("----------Target Node--------");
+    	System.err.println("Nodeid: " + link.getNode().getId());
+    	System.err.println("----------Target Bridge Port--------");
+    	System.err.println("BridgePort: " + link.getBridgePort());
+    	System.err.println("----------Target IfIndex--------");
+    	System.err.println("IfIndex: " + link.getBridgePortIfIndex());
+    	System.err.println("");
+	}
 
+
+	protected static void printBackboneBridgeMacLink(BridgeMacLink link1, BridgeMacLink link2) {
+    	
+		if (link1.getMacAddress().equals(link2.getMacAddress())) {
+		System.err.println("nodeid: "+link1.getNode().getId()+" port:"
+    	+ link1.getBridgePort() + "-->" +
+				link1.getMacAddress() 
+    	+ "<-- port: " + link2.getBridgePort() + " nodeid: " + link2.getNode().getId());  
+		}
+	}
+
+	
 }

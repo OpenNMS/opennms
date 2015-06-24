@@ -1,0 +1,10 @@
+<xml-groups>
+    <xml-group name="opennms-trapd" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="TrapsDiscarded" type="counter" xpath="Attribute[@name='TrapsDiscarded']/@value" />
+        <xml-object name="TrapsErrored" type="counter" xpath="Attribute[@name='TrapsErrored']/@value" />
+        <xml-object name="V1TrapsReceived" type="counter" xpath="Attribute[@name='V1TrapsReceived']/@value" />
+        <xml-object name="V2cTrapsReceived" type="counter" xpath="Attribute[@name='V2cTrapsReceived']/@value" />
+        <xml-object name="V3TrapsReceived" type="counter" xpath="Attribute[@name='V3TrapsReceived']/@value" />
+    </xml-group>
+</xml-groups>

@@ -3,29 +3,29 @@
 
     <!-- DELL Remote Access Controller Resource Types -->
     <resourceType name="drsChassisIndex" label="Dell DRAC Chassis">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="drsPSUIndex" label="Dell DRAC PSU" resourceLabel="Chassis ${drsPSUChassisIndex} - ${drsPSULocation}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <!-- Dell OpenManage Resource Types -->
     <resourceType name="coolingDeviceIndex" label="Dell Cooling Device" resourceLabel="${coolingDeviceLocationName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="temperatureProbeIndex" label="Dell Temperature Probe" resourceLabel="${temperatureProbeLocationName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="powerUsageIndex" label="Dell Power Usage" resourceLabel="${powerUsageEntityName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <!-- Dell OpenManage MIBs -->

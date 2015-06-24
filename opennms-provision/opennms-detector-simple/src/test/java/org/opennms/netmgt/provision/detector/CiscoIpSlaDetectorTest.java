@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,12 +48,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-		"classpath:/META-INF/opennms/detectors.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
 public class CiscoIpSlaDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "192.168.0.1";
+    static final String TEST_IP_ADDRESS = "192.0.2.1";
 
     @Autowired
     private CiscoIpSlaDetector m_detector;
@@ -72,12 +71,14 @@ public class CiscoIpSlaDetectorTest implements InitializingBean {
         m_detector.setAdminTag("to_detect");
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=CiscoIpSlaDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties")
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setAdminTag("extraneous_1");
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

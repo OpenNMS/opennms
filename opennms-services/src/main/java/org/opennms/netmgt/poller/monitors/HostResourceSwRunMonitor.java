@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -240,10 +241,19 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     statusResults.put(result.getInstance(), result.getValue(serviceStatusOidId));
                 }
             };
-            TableTracker tracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tracker);
+            TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
+            tracker.reset();
+            tracker.startAttempt();
+
+            TableTracker tableTracker = new TableTracker(callback, serviceNameOidId, serviceStatusOidId);
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "HostResourceSwRunMonitor", tableTracker);
             walker.start();
             walker.waitFor();
+            String error = walker.getErrorMessage();
+            if (error != null && !error.trim().equals("")) {
+                LOG.warn(error);
+                return PollStatus.unavailable(error);
+            }
 
             // Iterate over the list of running services
             for(SnmpInstId nameInstance : nameResults.keySet()) {
@@ -255,7 +265,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                     LOG.debug("poll: HostResourceSwRunMonitor poll succeeded, addr={}, service-name={}, value={}", hostAddress, serviceName, nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(value, "<=", runLevel)) {
-                        status = PollStatus.available();
+                        status = PollStatus.available(tracker.elapsedTimeInMillis());
                         // If we get here, that means the service passed the criteria, if only one match is desired we exit.
                         if ("false".equals(matchAll)) {
                            return status;

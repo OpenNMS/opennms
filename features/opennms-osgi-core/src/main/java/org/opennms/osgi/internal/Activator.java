@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,15 +28,19 @@
 
 package org.opennms.osgi.internal;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.opennms.osgi.EventRegistry;
 import org.opennms.osgi.OnmsServiceManager;
-import org.ops4j.pax.vaadin.SessionListener;
-import org.osgi.framework.*;
+import org.opennms.vaadin.extender.SessionListener;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.SynchronousBundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Dictionary;
-import java.util.Properties;
 
 /**
  * Each opennms-bundle which uses vaadin wants to listen to Session-Events
@@ -73,15 +77,15 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         Log.info("Auto export of default Services for bundle (id: {}) enabled", bundleId);
 
         final OnmsServiceManager serviceManager = new OnmsServiceManagerImpl(bundleContext);
-        Properties props = new Properties();
+        Dictionary<String,Object> props = new Hashtable<String,Object>();
         props.put("bundleId", bundleContext.getBundle().getBundleId());
 
         Log.info("Registering OnmsServiceManager and SessionListener for bundle (id: {})", bundleId);
         bundleContext.registerService(
                 new String[]{OnmsServiceManager.class.getName(), SessionListener.class.getName()},
-                serviceManager, (Dictionary)props);
+                serviceManager, props);
         Log.info("Registering EventRegistry for bundle (id: {})", bundleId);
-        bundleContext.registerService(EventRegistry.class.getName(), new EventRegistry(bundleContext), (Dictionary)props);
+        bundleContext.registerService(EventRegistry.class.getName(), new EventRegistry(bundleContext), props);
     }
 
     private boolean shouldAutoExportOnmsServices(Bundle bundle) {

@@ -12,6 +12,7 @@
         <include>org.opennms:opennms-map-provisioning-adapter:jar:${project.version}</include>
         <!-- <include>org.opennms:opennms-puppet-provisioning-adapter:jar:${project.version}</include> -->
         <include>org.opennms:opennms-snmp-asset-provisioning-adapter:jar:${project.version}</include>
+        <include>org.opennms:opennms-snmp-hardware-inventory-provisioning-adapter:jar:${project.version}</include>
         <include>org.opennms:opennms-rancid-provisioning-adapter:jar:${project.version}</include>
       </includes>
       <fileMode>0644</fileMode>

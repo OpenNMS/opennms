@@ -1,0 +1,16 @@
+<xml-groups>
+    <xml-group name="opennms-queued" resource-type="node"
+        resource-xpath="/MBean" >
+        <xml-object name="ONMSQueCreates" type="counter" xpath="Attribute[@name='CreatesCompleted']/@value" />
+        <xml-object name="ONMSQueItemDeque" type="counter" xpath="Attribute[@name='DequeuedItems']/@value" />
+        <xml-object name="ONMSQueDequeOps" type="counter" xpath="Attribute[@name='DequeuedOperations']/@value" />
+        <xml-object name="ONMSQueEnqueOps" type="counter" xpath="Attribute[@name='EnqueuedOperations']/@value" />
+        <xml-object name="ONMSQueErrors" type="counter" xpath="Attribute[@name='Errors']/@value" />
+        <xml-object name="ONMSQuePromo" type="counter" xpath="Attribute[@name='PromotionCount']/@value" />
+        <xml-object name="ONMSQueSigOpsCompl" type="counter" xpath="Attribute[@name='SignificantOpsCompleted']/@value" />
+        <xml-object name="ONMSQueSigOpsDeque" type="counter" xpath="Attribute[@name='SignificantOpsDequeued']/@value" />
+        <xml-object name="ONMSQueSigOpsEnque" type="counter" xpath="Attribute[@name='SignificantOpsEnqueued']/@value" />
+        <xml-object name="ONMSQueOpsPend" type="GAUGE" xpath="Attribute[@name='TotalOperationsPending']/@value" />
+        <xml-object name="ONMSQueUpdates" type="counter" xpath="Attribute[@name='UpdatesCompleted']/@value" />
+    </xml-group>
+</xml-groups>

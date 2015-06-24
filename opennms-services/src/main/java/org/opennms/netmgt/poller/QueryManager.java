@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,8 +41,6 @@ public interface QueryManager {
 
     /**
      * <p>getNodeLabel</p>
-     * 
-     * @deprecated Use the NodeDao to fetch values like this.
      *
      * @param nodeId a int.
      * @throws java.sql.SQLException if any.
@@ -51,42 +49,31 @@ public interface QueryManager {
     String getNodeLabel(int nodeId) throws SQLException;
 
     /**
-     * <p>openOutage</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
-     * @param outageIdSQL a {@link java.lang.String} object.
+     * Creates a new outage for the given service without setting
+     * the lost event id.
      */
-    void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
+    Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
 
     /**
-     * <p>resolveOutage</p>
-     * 
-     * @deprecated Fetch outages by primary key instead of the nodeid/ipAddr/service tuple.
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
+     * Set or updates the lost event id on the specified outage.
      */
-    void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void updateOpenOutageWithEventId(int outageId, int lostEventId);
 
     /**
-     * <p>reparentOutages</p>
+     * Marks the outage for the given service as resolved
+     * with the given time and returns the id of this outage.
      *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param oldNodeId a int.
-     * @param newNodeId a int.
+     * If no outages are currently open, then no action is take
+     * and the function returns null.
      */
-    void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
+    Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime);
 
     /**
-     * @deprecated Use the DAOs to fetch services by primary key instead.
-     * 
+     * Set or updates the regained event id on the specified outage.
+     */
+    void updateResolvedOutageWithEventId(int outageId, int regainedEventId);
+
+    /**
      * @param nodeId
      * @return
      */

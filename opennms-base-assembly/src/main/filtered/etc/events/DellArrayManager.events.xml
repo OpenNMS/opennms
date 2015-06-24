@@ -1738,6 +1738,152 @@
     </event>
     <event>
         <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>572</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/percPauseIO</uei>
+        <event-label>ArrayManager-MIB defined trap event: percPauseIO</event-label>
+        <descr>
+&lt;p&gt;%s, Channel %s I/O paused, I/O will automatically
+resume after the allotted time (%d seconds).&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        channelNumberEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        timeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        percPauseIO trap received
+                        controllerNameEv=%parm[#1]%
+                        channelNumberEv=%parm[#2]%
+                        timeEv=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>573</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/percResumeIO</uei>
+        <event-label>ArrayManager-MIB defined trap event: percResumeIO</event-label>
+        <descr>
+&lt;p&gt;%s, Channel %s I/O resumed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        channelNumberEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        percResumeIO trap received
+                        controllerNameEv=%parm[#1]%
+                        channelNumberEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>574</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/percHotSpareAssign</uei>
+        <event-label>ArrayManager-MIB defined trap event: percHotSpareAssign</event-label>
+        <descr>
+&lt;p&gt;%s, assigned %s as Hot Spare.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        percHotSpareAssign trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>575</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/percHotSpareUnAssign</uei>
+        <event-label>ArrayManager-MIB defined trap event: percHotSpareUnAssign</event-label>
+        <descr>
+&lt;p&gt;%s, unassigned %s as Hot Spare.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        percHotSpareUnAssign trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
             <maskelement>
                 <mename>id</mename>
                 <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
@@ -2125,6 +2271,1747 @@
 			arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
 		</logmsg>
         <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>591</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureAlertTempWarnMax</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureAlertTempWarnMax</event-label>
+        <descr>
+&lt;p&gt;%s, %s has exceded the maximum warning threshold.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureAlertTempWarnMax trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>592</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureAlertTempWarnMin</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureAlertTempWarnMin</event-label>
+        <descr>
+&lt;p&gt;%s, %s has dropped below the minimum warning threshold.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureAlertTempWarnMin trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>593</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureAlertTempErrMax</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureAlertTempErrMax</event-label>
+        <descr>
+&lt;p&gt;%s, %s has exceded the maximum error threshold.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureAlertTempErrMax trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>594</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureAlertTempErrMin</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureAlertTempErrMin</event-label>
+        <descr>
+&lt;p&gt;%s, %s has dropped below the minimum error threshold.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureAlertTempErrMin trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>595</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericFailed</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericFailed</event-label>
+        <descr>
+&lt;p&gt;%s, %s failed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericFailed trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>596</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericOffline</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericOffline</event-label>
+        <descr>
+&lt;p&gt;%s, %s is offline.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericOffline trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>597</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericUnknown</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericUnknown</event-label>
+        <descr>
+&lt;p&gt;%s, %s is in an unknown state.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericUnknown trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>598</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericWarning</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericWarning</event-label>
+        <descr>
+&lt;p&gt;%s, %s is in a warning state.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        unitNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericWarning trap received
+                        enclosureNameEv=%parm[#1]%
+                        unitNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>600</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericDegraded</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericDegraded</event-label>
+        <descr>
+&lt;p&gt;%s, %s is degraded.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureUnitNamesEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericDegraded trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureUnitNamesEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>602</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertShutdownEnclosure</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertShutdownEnclosure</event-label>
+        <descr>
+&lt;p&gt;%s, %s Shutting down.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertShutdownEnclosure trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>603</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertShutdownServer</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertShutdownServer</event-label>
+        <descr>
+&lt;p&gt;%s, %s Shutting down the server.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertShutdownServer trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>604</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertPausedCheckConsistency</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertPausedCheckConsistency</event-label>
+        <descr>
+&lt;p&gt;%s, Virtual Disk (%s) consistency check paused.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertPausedCheckConsistency trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>605</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertResumedCheckConsistency</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertResumedCheckConsistency</event-label>
+        <descr>
+&lt;p&gt;%s, Virtual Disk (%s) consistency check resumed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertResumedCheckConsistency trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>606</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertVirtualDiskSplitMirror</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertVirtualDiskSplitMirror</event-label>
+        <descr>
+&lt;p&gt;%s, Virtual Disk (%s) split mirror.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertVirtualDiskSplitMirror trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>607</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertVirtualDiskUnmirror</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertVirtualDiskUnmirror</event-label>
+        <descr>
+&lt;p&gt;%s, Virtual Disk (%s) unmirrored.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertVirtualDiskUnmirror trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>608</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertRenameVirtualDisk</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertRenameVirtualDisk</event-label>
+        <descr>
+&lt;p&gt;%s, %s renamed to %s.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameNewEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertRenameVirtualDisk trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%
+                        virtualDiskNameNewEv=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>609</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertGenericReady</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertGenericReady</event-label>
+        <descr>
+&lt;p&gt;%s, %s is in a ready state.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        device1NameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertGenericReady trap received
+                        controllerNameEv=%parm[#1]%
+                        device1NameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>610</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCommTimeout</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCommTimeout</event-label>
+        <descr>
+&lt;p&gt;%s, %s SES communication timeout.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        device1NameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCommTimeout trap received
+                        controllerNameEv=%parm[#1]%
+                        device1NameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>611</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCommFailure</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCommFailure</event-label>
+        <descr>
+&lt;p&gt;%s, %s SES communication lost.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        device1NameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCommFailure trap received
+                        controllerNameEv=%parm[#1]%
+                        device1NameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>612</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCommRestored</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCommRestored</event-label>
+        <descr>
+&lt;p&gt;%s, %s SES communication restored.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        device1NameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCommRestored trap received
+                        controllerNameEv=%parm[#1]%
+                        device1NameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>650</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/genericEvent_DATABASE_UP</uei>
+        <event-label>ArrayManager-MIB defined trap event: genericEvent_DATABASE_UP</event-label>
+        <descr>
+&lt;p&gt;Communication with the Array Manager database is now
+possible.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        genericEvent_DATABASE_UP trap received&lt;/p&gt;
+                </logmsg>
+        <severity>Cleared</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>651</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/genericEvent_DATABASE_DOWN</uei>
+        <event-label>ArrayManager-MIB defined trap event: genericEvent_DATABASE_DOWN</event-label>
+        <descr>
+&lt;p&gt;Communication with the Array Manager database is NOT
+possible.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        genericEvent_DATABASE_DOWN trap received&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>668</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertMegalibTimeout</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertMegalibTimeout</event-label>
+        <descr>
+&lt;p&gt;%s Array Manager has lost communication with this RAID controller and subsystem.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertMegalibTimeout trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>670</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertScsiSenseFormatFail</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertScsiSenseFormatFail</event-label>
+        <descr>
+&lt;p&gt;%s, %s Sense Key = %s, Sense Code = %s, Sense Qualifier = %s A format
+unit operation was interrupted prior to completion.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseKeyEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseCodeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseQualifierEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertScsiSenseFormatFail trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%
+                        senseKeyEv=%parm[#3]%
+                        senseCodeEv=%parm[#4]%
+                        senseQualifierEv=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>671</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertScsiSenseSectorReassign</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertScsiSenseSectorReassign</event-label>
+        <descr>
+&lt;p&gt;%s, %s Sense Key = %s, Sense Code = %s, Sense Qualifier = %s
+If this disk is part of a non-redundant virtual disk, the data for this block cannot be recovered.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseKeyEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseCodeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        senseQualifierEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertScsiSenseSectorReassign trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%
+                        senseKeyEv=%parm[#3]%
+                        senseCodeEv=%parm[#4]%
+                        senseQualifierEv=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>672</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertEmmFwMismatch</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertEmmFwMismatch</event-label>
+        <descr>
+&lt;p&gt;%s, %s EMMfirmware mismatch (%s / %s.)
+This is an unsupported configuration. Please download the
+firmware to this enclosure again to correct this condition.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        eMMFWVersion0Ev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        eMMFWVersion1Ev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertEmmFwMismatch trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%
+                        eMMFWVersion0Ev=%parm[#3]%
+                        eMMFWVersion1Ev=%parm[#4]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>673</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertConserveCacheModeEnable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertConserveCacheModeEnable</event-label>
+        <descr>
+&lt;p&gt;%s, %s conservative cache mode enabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertConserveCacheModeEnable trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>674</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertConserveCacheModeDisable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertConserveCacheModeDisable</event-label>
+        <descr>
+&lt;p&gt;%s, %s conservative cache mode disabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertConserveCacheModeDisable trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>675</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertEnclosureFwDownload</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertEnclosureFwDownload</event-label>
+        <descr>
+&lt;p&gt;%s, %s firmware version %s downloaded successfully.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        eMMFWVersion0Ev&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertEnclosureFwDownload trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%
+                        eMMFWVersion0Ev=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>676</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertEnclosureAlarmEnable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertEnclosureAlarmEnable</event-label>
+        <descr>
+&lt;p&gt;%s, %s alarm enabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertEnclosureAlarmEnable trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>677</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertEnclosureAlarmDisable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertEnclosureAlarmDisable</event-label>
+        <descr>
+&lt;p&gt;%s, %s alarm disabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertEnclosureAlarmDisable trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>678</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertControllerAlarmEnable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertControllerAlarmEnable</event-label>
+        <descr>
+&lt;p&gt;%s, alarm enabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertControllerAlarmEnable trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>679</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertControllerAlarmDisable</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertControllerAlarmDisable</event-label>
+        <descr>
+&lt;p&gt;%s, alarm disabled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertControllerAlarmDisable trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>680</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertControllerRebuildRate</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertControllerRebuildRate</event-label>
+        <descr>
+&lt;p&gt;%s, rebuild rate changed to %s.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        rebuildRateEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertControllerRebuildRate trap received
+                        controllerNameEv=%parm[#1]%
+                        rebuildRateEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>681</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertArrayDiskForcedOnline</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertArrayDiskForcedOnline</event-label>
+        <descr>
+&lt;p&gt;%s, %s forced online.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertArrayDiskForcedOnline trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>682</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertArrayDiskForcedOffline</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertArrayDiskForcedOffline</event-label>
+        <descr>
+&lt;p&gt;%s, %s forced offline.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertArrayDiskForcedOffline trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>683</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertTaskBGI</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertTaskBGI</event-label>
+        <descr>
+&lt;p&gt;%s, virtual disk %s background initialization started.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertTaskBGI trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>684</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCancelBGI</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCancelBGI</event-label>
+        <descr>
+&lt;p&gt;%s, virtual disk %s background initialization cancelled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCancelBGI trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>685</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertFailBGI</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertFailBGI</event-label>
+        <descr>
+&lt;p&gt;%s, virtual disk %s background initialization failed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertFailBGI trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>686</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCompleteBGI</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCompleteBGI</event-label>
+        <descr>
+&lt;p&gt;%s, virtual disk %s background initialization completed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCompleteBGI trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>687</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericNotInstalled</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericNotInstalled</event-label>
+        <descr>
+&lt;p&gt;%s, %s is not installed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureUnitNamesEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericNotInstalled trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureUnitNamesEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>688</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericCommTimeout</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericCommTimeout</event-label>
+        <descr>
+&lt;p&gt;%s, %s, %s Enclosure communication timeout. rc = %s, scsi_stat = %s&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        commErrorTypeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        returnCodeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        scsiStatusEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericCommTimeout trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%
+                        commErrorTypeEv=%parm[#3]%
+                        returnCodeEv=%parm[#4]%
+                        scsiStatusEv=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>689</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/enclosureGenericCommLost</uei>
+        <event-label>ArrayManager-MIB defined trap event: enclosureGenericCommLost</event-label>
+        <descr>
+&lt;p&gt;%s, %s, %s Enclosure communication lost. rc = %s, scsi_stat = %s&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        enclosureNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        commErrorTypeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        returnCodeEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        scsiStatusEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        enclosureGenericCommLost trap received
+                        controllerNameEv=%parm[#1]%
+                        enclosureNameEv=%parm[#2]%
+                        commErrorTypeEv=%parm[#3]%
+                        returnCodeEv=%parm[#4]%
+                        scsiStatusEv=%parm[#5]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>690</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertCompWithErrDiskRebuild</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertCompWithErrDiskRebuild</event-label>
+        <descr>
+&lt;p&gt;%s, %s rebuild completed with error(s).&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        arrayDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertCompWithErrDiskRebuild trap received
+                        controllerNameEv=%parm[#1]%
+                        arrayDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>691</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/alertControllerMiscError</uei>
+        <event-label>ArrayManager-MIB defined trap event: alertControllerMiscError</event-label>
+        <descr>
+&lt;p&gt;%s, %s&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        additionalInfoEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        alertControllerMiscError trap received
+                        controllerNameEv=%parm[#1]%
+                        additionalInfoEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>692</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/installedDriverVerUnsupported</uei>
+        <event-label>ArrayManager-MIB defined trap event: installedDriverVerUnsupported</event-label>
+        <descr>
+&lt;p&gt;%s current driver %s is unsupported by this release of Array Manager. Version %s is required. Running with an unsupported driver may cause loss of functionality or complete inability to manage this controller&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        instVerEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        reqVerEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        installedDriverVerUnsupported trap received
+                        controllerNameEv=%parm[#1]%
+                        instVerEv=%parm[#2]%
+                        reqVerEv=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>693</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/installedFirmwareVerUnsupported</uei>
+        <event-label>ArrayManager-MIB defined trap event: installedFirmwareVerUnsupported</event-label>
+        <descr>
+&lt;p&gt;%s current firmware %s is unsupported by this release of Array Manager. Version %s is required. Running with an unsupported firmware may cause loss of functionality or complete inability to manage this controller&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        instVerEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        reqVerEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        installedFirmwareVerUnsupported trap received
+                        controllerNameEv=%parm[#1]%
+                        instVerEv=%parm[#2]%
+                        reqVerEv=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>694</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/unsupportedConfig</uei>
+        <event-label>ArrayManager-MIB defined trap event: unsupportedConfig</event-label>
+        <descr>
+&lt;p&gt;%s is not supported on %s. Running an unsupported configuration may cause loss of functionality or complete inability to manage this controller.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        instVerEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        unsupportedConfig trap received
+                        controllerNameEv=%parm[#1]%
+                        instVerEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
     </event>
     <event>
         <mask>
@@ -9395,5 +11282,857 @@
 			Dell ArrayManager: pv660fEvent-SARM-HW-ERR trap received&lt;/p&gt;
 		</logmsg>
         <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>905</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_STARTED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_STARTED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization started.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_STARTED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>906</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_STOPPED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_STOPPED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization stopped.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_STOPPED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>907</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_PAUSED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_PAUSED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization paused.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_PAUSED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>908</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_RESTARTED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_RESTARTED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization restarted.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_RESTARTED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>909</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_FAILED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_FAILED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization failed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_FAILED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>910</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BG_INIT_COMPLETED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BG_INIT_COMPLETED</event-label>
+        <descr>
+&lt;p&gt;Logical drive background initialization completed.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BG_INIT_COMPLETED trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>911</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_BBU_CALIBRATE_START</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_BBU_CALIBRATE_START</event-label>
+        <descr>
+&lt;p&gt;BBU calibration cycle started.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_BBU_CALIBRATE_START trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>912</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_BBU_CALIBRATE_DONE</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_BBU_CALIBRATE_DONE</event-label>
+        <descr>
+&lt;p&gt;BBU calibration cycle finished.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_BBU_CALIBRATE_DONE trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>913</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_BBU_CALIBRATE_ABORT</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_BBU_CALIBRATE_ABORT</event-label>
+        <descr>
+&lt;p&gt;BBU calibration cycle is canceled.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_BBU_CALIBRATE_ABORT trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>914</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_BBU_NO_BATTERY</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_BBU_NO_BATTERY</event-label>
+        <descr>
+&lt;p&gt;BBU battery not present.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_BBU_NO_BATTERY trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>915</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SYSDEV_BBULOW_POSSIBLE_DATA_LOSS</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SYSDEV_BBULOW_POSSIBLE_DATA_LOSS</event-label>
+        <descr>
+&lt;p&gt;Low battery charge level. Logical drive may have lost data.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SYSDEV_BBULOW_POSSIBLE_DATA_LOSS trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>916</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_IN_CLUSTER</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_IN_CLUSTER</event-label>
+        <descr>
+&lt;p&gt;Controller connected to cluster.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_IN_CLUSTER trap received&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>917</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NOT_IN_CLUSTER</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NOT_IN_CLUSTER</event-label>
+        <descr>
+&lt;p&gt;Controller disconnected from cluster.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NOT_IN_CLUSTER trap received&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>918</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_IMPROPERLY_SHUTDOWN</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_IMPROPERLY_SHUTDOWN</event-label>
+        <descr>
+&lt;p&gt;Controller improperly shutdown! Data may have been lost.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        virtualDiskNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_IMPROPERLY_SHUTDOWN trap received
+                        controllerNameEv=%parm[#1]%
+                        virtualDiskNameEv=%parm[#2]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>919</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_AUTOMATIC_FLASH_STARTED</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_AUTOMATIC_FLASH_STARTED</event-label>
+        <descr>
+&lt;p&gt;Dual Active Automatic Flash of Replacement Controller.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_AUTOMATIC_FLASH_STARTED trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>920</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_FAILED_JUMPERS</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_FAILED_JUMPERS</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed jumpers.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_FAILED_JUMPERS trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>921</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_SAME_ID</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_SAME_ID</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed ID's.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_SAME_ID trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>922</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_BOARD_TYPE</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_BOARD_TYPE</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed board types.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_BOARD_TYPE trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>923</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_DISK_CHANNELS</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_DISK_CHANNELS</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed disk channels.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_DISK_CHANNELS trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>924</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_HOST_CHANNELS</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_HOST_CHANNELS</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed host ports.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_HOST_CHANNELS trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>925</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_MEMORY_SIZE</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_MEMORY_SIZE</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed memory size.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_MEMORY_SIZE trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>926</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_CTLDEV_NEGOTIATION_CACHE_SIZE</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_CTLDEV_NEGOTIATION_CACHE_SIZE</event-label>
+        <descr>
+&lt;p&gt;Dual Active Negotiation failed cache memory size.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_CTLDEV_NEGOTIATION_CACHE_SIZE trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>927</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_PHYSDEV_HOT_SPARE_SMALLER</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_PHYSDEV_HOT_SPARE_SMALLER</event-label>
+        <descr>
+&lt;p&gt;Hot spare replaced with a smaller capacity drive.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        channelNumberEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        targetIDEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_PHYSDEV_HOT_SPARE_SMALLER trap received
+                        controllerNameEv=%parm[#1]%
+                        channelNumberEv=%parm[#2]%
+                        targetIDEv=%parm[#3]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>980</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_SES_ERR</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_SES_ERR</event-label>
+        <descr>
+&lt;p&gt;Controller failed, SES not operational.
+This trap is similar to 981 but may occur for older firmware versions.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_SES_ERR trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>981</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/pv660fEvent_ENC_SES_ERR</uei>
+        <event-label>ArrayManager-MIB defined trap event: pv660fEvent_ENC_SES_ERR</event-label>
+        <descr>
+&lt;p&gt;Unable to get enclosure status. Doing a PV660F Subsystem rescan may resolve this problem.
+This trap is similar to 980 but may occur for more recent firmware versions.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        controllerNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        pv660fEvent_ENC_SES_ERR trap received
+                        controllerNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>10804</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/fsysPro_DISK_CAPACITY_WARNING</uei>
+        <event-label>ArrayManager-MIB defined trap event: fsysPro_DISK_CAPACITY_WARNING</event-label>
+        <descr>
+&lt;p&gt;Free disk space has reached warning threshold on volume %s.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        volumeNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        fsysPro_DISK_CAPACITY_WARNING trap received
+                        volumeNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.674.10893.1.1.200</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>10805</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Dell/traps/fsysPro_DISK_CAPACITY_ERROR</uei>
+        <event-label>ArrayManager-MIB defined trap event: fsysPro_DISK_CAPACITY_ERROR</event-label>
+        <descr>
+&lt;p&gt;Free disk space has reached error threshold on volume %s.&lt;/p&gt;&lt;table&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+        volumeNameEv&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        fsysPro_DISK_CAPACITY_ERROR trap received
+                        volumeNameEv=%parm[#1]%&lt;/p&gt;
+                </logmsg>
+        <severity>Minor</severity>
     </event>
 </events>

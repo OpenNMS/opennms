@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,14 +39,18 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     /**
      * <p>Constructor for OutageDaoHibernate.</p>
@@ -100,7 +104,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsOutage> matchingCurrentOutages(final ServiceSelector selector) {
-        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getIPAddressList(selector.getFilterRule()));
+        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getIPAddressList(selector.getFilterRule()));
         final Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
 
         final List<OnmsOutage> matchingOutages = new LinkedList<OnmsOutage>();

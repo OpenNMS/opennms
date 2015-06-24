@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -111,7 +111,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query) {
-        return getHibernateTemplate().find(query);
+        return (List<T>)getHibernateTemplate().find(query);
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query, final Object... values) {
-        return getHibernateTemplate().find(query, values);
+        return (List<T>)getHibernateTemplate().find(query, values);
     }
     
     /**
@@ -137,7 +137,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
         @SuppressWarnings("unchecked")
-        final List<S> notifs = getHibernateTemplate().find(query, values);
+        final List<S> notifs = (List<S>)getHibernateTemplate().find(query, values);
         return notifs;
     }
 
@@ -181,6 +181,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().execute(callback).intValue();
     }
 
+    /**
+     * Return a single instance that matches the query string, 
+     * or null if the query returns no results.
+     */
     protected T findUnique(final String queryString, final Object... args) {
         final Class <? extends T> type = m_entityClass;
     	final HibernateCallback<T> callback = new HibernateCallback<T>() {
@@ -273,7 +277,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             }
             
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<S>)getHibernateTemplate().executeFind(callback);
     }
     
     @SuppressWarnings("unchecked")
@@ -287,7 +291,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 				return (List<T>)(hibernateCriteria.list());
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<T>)getHibernateTemplate().executeFind(callback);
     }
     
     /** {@inheritDoc} */
@@ -323,7 +327,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (List<T>)attachedCrit.list();
             }
         };
-        return getHibernateTemplate().executeFind(callback);
+        return (List<T>)getHibernateTemplate().executeFind(callback);
     }
     
     /** {@inheritDoc} */

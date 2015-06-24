@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,7 +55,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Header;
@@ -63,6 +63,7 @@ import org.opennms.netmgt.config.users.Password;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 
@@ -73,7 +74,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
-public abstract class UserManager {
+public abstract class UserManager implements UserConfig {
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     private static final PasswordEncryptor m_passwordEncryptor = new StrongPasswordEncryptor();
@@ -81,18 +82,6 @@ public abstract class UserManager {
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
     private final Lock m_writeLock = m_readWriteLock.writeLock();
-
-    public enum ContactType {
-        email,
-        pagerEmail,
-        xmppAddress,
-        microblog,
-        numericPage,
-        textPage,
-        workPhone,
-        mobilePhone,
-        homePhone
-    }
 
     protected GroupManager m_groupManager;
     /**
@@ -102,7 +91,7 @@ public abstract class UserManager {
     /**
      * The duty schedules for each user
      */
-    protected HashMap<String, List<DutySchedule>> m_dutySchedules;
+    protected Map<String, List<DutySchedule>> m_dutySchedules;
     private Header oldHeader;
 
     /**

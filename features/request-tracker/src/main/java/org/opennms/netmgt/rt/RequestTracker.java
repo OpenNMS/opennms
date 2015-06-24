@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,48 +44,35 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.opennms.core.web.HttpClientWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RequestTracker {
     private static final Logger LOG = LoggerFactory.getLogger(RequestTracker.class);
+
+    private static final Pattern IN_TOKENS_PATTERN        = Pattern.compile("^(\\w+):\\s*(.*?)\\s*$", Pattern.MULTILINE);
+    private static final Pattern TICKET_CREATED_PATTERN   = Pattern.compile("(?s) Ticket (\\d+) created");
+    private static final Pattern TICKET_UPDATED_PATTERN   = Pattern.compile("(?s) Ticket (\\d+) updated");
+    private static final Pattern OLD_CUSTOM_FIELD_PATTERN = Pattern.compile("^C(?:ustom)?F(?:ield)?-(.*?):\\s*(.*?)\\s*$");
+    private static final Pattern NEW_CUSTOM_FIELD_PATTERN = Pattern.compile("^CF\\.\\{(.*?)\\}:\\s*(.*?)\\s*$");
+
     private final String m_baseURL;
-
     private String m_user;
-
     private String m_password;
-
     private int m_timeout;
-
     private int m_retries;
 
-    private Pattern m_inTokensPattern = Pattern.compile("^(\\w+):\\s*(.*?)\\s*$", Pattern.MULTILINE);
-
-    private Pattern m_ticketCreatedPattern = Pattern.compile("(?s) Ticket (\\d+) created");
-
-    private Pattern m_ticketUpdatedPattern = Pattern.compile("(?s) Ticket (\\d+) updated");
-
-    private Pattern m_customFieldPatternOld = Pattern.compile("^C(?:ustom)?F(?:ield)?-(.*?):\\s*(.*?)\\s*$");
-
-    private Pattern m_customFieldPatternNew = Pattern.compile("^CF\\.\\{(.*?)\\}:\\s*(.*?)\\s*$");
-
-    private DefaultHttpClient m_client;
+    private HttpClientWrapper m_clientWrapper;
 
     public RequestTracker(final String baseURL, final String username, final String password, int timeout, int retries) {
         m_baseURL = baseURL;
@@ -97,12 +84,12 @@ public class RequestTracker {
 
     public Long createTicket(final RTTicket ticket) throws RequestTrackerException {
         final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/edit");
-        return postEdit(post, ticket.toContent(), m_ticketCreatedPattern);
+        return postEdit(post, ticket.toContent(), TICKET_CREATED_PATTERN);
     }
 
     public Long updateTicket(final Long id, final String content) throws RequestTrackerException {
         HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/ticket/" + id + "/edit");
-        return postEdit(post, content, m_ticketUpdatedPattern);
+        return postEdit(post, content, TICKET_UPDATED_PATTERN);
     }
 
     public Long postEdit(final HttpPost post, final String content, final Pattern pattern) throws RequestTrackerException {
@@ -121,8 +108,9 @@ public class RequestTracker {
             LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
         }
 
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = getClient().execute(post);
+            response = getClientWrapper().execute(post);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -138,6 +126,8 @@ public class RequestTracker {
         } catch (final Exception e) {
             LOG.error("Failure attempting to update ticket.", e);
             throw new RequestTrackerException(e);
+        } finally {
+            getClientWrapper().close(response);
         }
 
         if (rtTicketNumber == null) {
@@ -154,8 +144,9 @@ public class RequestTracker {
 
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/user/" + username);
 
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = getClient().execute(get);
+            response = getClientWrapper().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -167,6 +158,8 @@ public class RequestTracker {
         } catch (final Exception e) {
             LOG.error("An exception occurred while getting user info for {}", username, e);
             return null;
+        } finally {
+            getClientWrapper().close(response);
         }
 
         final String id = attributes.get("id");
@@ -210,7 +203,7 @@ public class RequestTracker {
         for (final Entry<String,String> entry : attributes.entrySet()) {
             final String bute = entry.getKey();
             final String headerForm = bute + ": " + entry.getValue();
-            final Matcher cfMatcher = m_customFieldPatternNew.matcher(headerForm);
+            final Matcher cfMatcher = NEW_CUSTOM_FIELD_PATTERN.matcher(headerForm);
             if (cfMatcher.matches()) {
                 final CustomField cf = new CustomField(cfMatcher.group(1));
                 cf.addValue(new CustomFieldValue(cfMatcher.group(2)));
@@ -225,7 +218,7 @@ public class RequestTracker {
         if (ticket.getText() == null || ticket.getText().equals("") && getTextAttachment) {
             attributes = getTicketAttributes(ticketId + "/attachments");
             if (attributes.containsKey("attachments")) {
-                final Matcher matcher = m_inTokensPattern.matcher(attributes.get("attachments"));
+                final Matcher matcher = IN_TOKENS_PATTERN.matcher(attributes.get("attachments"));
                 matcher.find();
                 final String attachmentId = matcher.group(1);
                 if (attachmentId != null && !"".equals(attachmentId)) {
@@ -252,8 +245,9 @@ public class RequestTracker {
         final List<RTTicket> tickets = new ArrayList<RTTicket>();
         final List<Long> ticketIds = new ArrayList<Long>();
 
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = getClient().execute(get);
+            response = getClientWrapper().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -286,6 +280,8 @@ public class RequestTracker {
         } catch (final Exception e) {
             LOG.error("An exception occurred while getting tickets for queue {}", queueName, e);
             return null;
+        } finally {
+            getClientWrapper().close(response);
         }
 
         for (final Long id : ticketIds) {
@@ -350,8 +346,9 @@ public class RequestTracker {
 
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/queue/" + id);
 
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = getClient().execute(get);
+            response = getClientWrapper().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -364,6 +361,8 @@ public class RequestTracker {
         } catch (final Exception e) {
             LOG.error("An exception occurred while getting queue #{}", id, e);
             return null;
+        } finally {
+            getClientWrapper().close(response);
         }
 
         if (attributes.containsKey("id") && attributes.containsKey("name")) {
@@ -399,8 +398,9 @@ public class RequestTracker {
         Map<String,String> ticketAttributes = Collections.emptyMap();
         final HttpGet get = new HttpGet(m_baseURL + "/REST/1.0/ticket/" + ticketQuery);
 
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = getClient().execute(get);
+            response = getClientWrapper().execute(get);
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != HttpStatus.SC_OK) {
                 throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -412,10 +412,12 @@ public class RequestTracker {
             }
         } catch (final Exception e) {
             LOG.error("HTTP exception attempting to get ticket.", e);
+        } finally {
+            getClientWrapper().close(response);
         }
 
         if (ticketAttributes.size() == 0) {
-            LOG.debug("matcher did not match {}", m_inTokensPattern.pattern());
+            LOG.debug("matcher did not match {}", IN_TOKENS_PATTERN.pattern());
             return null;
         }
         return ticketAttributes;
@@ -435,9 +437,9 @@ public class RequestTracker {
                 final String value = ticketAttributes.get(lastKey) + "\n" + line.replaceFirst("^" + lastIndent, "");
                 ticketAttributes.put(lastKey, value);
             } else {
-                final Matcher inTokensMatcher = m_inTokensPattern.matcher(line);
-                final Matcher cfMatcherOld = m_customFieldPatternOld.matcher(line);
-                final Matcher cfMatcherNew = m_customFieldPatternNew.matcher(line);
+                final Matcher inTokensMatcher = IN_TOKENS_PATTERN.matcher(line);
+                final Matcher cfMatcherOld = OLD_CUSTOM_FIELD_PATTERN.matcher(line);
+                final Matcher cfMatcherNew = NEW_CUSTOM_FIELD_PATTERN.matcher(line);
                 if (inTokensMatcher.matches()) {
                     if (cfMatcherOld.matches()) {
                         lastKey = "CF.{" + cfMatcherOld.group(1) + "}"; 
@@ -457,24 +459,28 @@ public class RequestTracker {
     }
 
     private void getSession() {
-        if (m_client == null) {
-            // we need to log in at least once with a POST method before we can do any GETs so we get a session cookie
+    }
+
+    public synchronized HttpClientWrapper getClientWrapper() {
+        if (m_clientWrapper == null) {
+            m_clientWrapper = HttpClientWrapper.create()
+                    .setSocketTimeout(m_timeout)
+                    .setConnectionTimeout(m_timeout)
+                    .setRetries(m_retries)
+                    .useBrowserCompatibleCookies()
+                    .dontReuseConnections();
 
             final HttpPost post = new HttpPost(m_baseURL + "/REST/1.0/user/" + m_user);
             final List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("user", m_user));
             params.add(new BasicNameValuePair("pass", m_password));
+            CloseableHttpResponse response = null;
 
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
                 post.setEntity(entity);
-            } catch (final UnsupportedEncodingException e) {
-                // Should never happen
-                LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
-            }
 
-            try {
-                final HttpResponse response = getClient().execute(post);
+                response = m_clientWrapper.execute(post);
                 int responseCode = response.getStatusLine().getStatusCode();
                 if (responseCode != HttpStatus.SC_OK) {
                     throw new RequestTrackerException("Received a non-200 response code from the server: " + responseCode);
@@ -484,34 +490,22 @@ public class RequestTracker {
                     }
                     LOG.warn("got user session for username: {}", m_user);
                 }
+            } catch (final UnsupportedEncodingException e) {
+                LOG.warn("unsupported encoding exception for UTF-8 -- WTF?!", e);
             } catch (final Exception e) {
                 LOG.warn("Unable to get session (by requesting user details)", e);
+            } finally {
+                m_clientWrapper.close(response);
             }
         }
+        return m_clientWrapper;
     }
 
-    public synchronized HttpClient getClient() {
-        if (m_client == null) {
-            m_client = new DefaultHttpClient();
-
-            HttpParams clientParams = m_client.getParams();
-            clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, m_timeout);
-            clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, m_timeout);
-            clientParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-            m_client.setParams(clientParams);
-
-            m_client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(m_retries, false));
-
-        }
-
-        return m_client;
+    public String getUsername() {
+        return m_user;
     }
 
-    public synchronized void setClient(final DefaultHttpClient client) {
-        m_client = client;
-    }
-
-    public void setUser(final String user) {
+    public void setUsername(final String user) {
         m_user = user;
     }
 
@@ -528,10 +522,6 @@ public class RequestTracker {
         .append("timeout", m_timeout)
         .append("retries", m_retries)
         .toString();
-    }
-
-    public String getUsername() {
-        return m_user;
     }
 
 }

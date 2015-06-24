@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,8 +29,17 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -51,9 +60,11 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
+
+@XmlRootElement(name="category")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Category {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Category.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Category.class);
 
     /** The category definition (from the categories.xml file). */
     protected final org.opennms.netmgt.config.categories.Category m_categoryDef;
@@ -89,6 +100,12 @@ public class Category {
      * this category to all nodes belonging in this category.
      */
     protected Double m_servicePercentage;
+
+    protected Category() {
+        m_categoryDef = new org.opennms.netmgt.config.categories.Category();
+        m_rtcCategory = null;
+        m_lastUpdated = null;
+    }
 
     /**
      * Create an empty category with nothing other than a name. This represents
@@ -135,6 +152,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlAttribute(name="name")
     public String getName() {
         return m_categoryDef.getLabel();
     }
@@ -144,6 +162,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlAttribute(name="normal-threshold")
     public double getNormalThreshold() {
         return m_categoryDef.getNormal();
     }
@@ -155,6 +174,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlAttribute(name="warning-threshold")
     public double getWarningThreshold() {
         return m_categoryDef.getWarning();
     }
@@ -164,6 +184,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="comment")
     public String getComment() {
         return m_categoryDef.getComment();
     }
@@ -173,6 +194,7 @@ public class Category {
      *
      * @return a {@link java.util.Date} object.
      */
+    @XmlElement(name="last-updated")
     public Date getLastUpdated() {
         return m_lastUpdated;
     }
@@ -182,6 +204,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlElement(name="availability")
     public double getValue() {
         if (m_rtcCategory == null) {
             return 0.0;
@@ -236,6 +259,7 @@ public class Category {
      *
      * @return a long.
      */
+    @XmlElement(name="service-down-count")
     public synchronized long getServiceDownCount() {
         if (m_serviceDownCount == null) {
             // This will initialize m_serviceDownCount
@@ -256,6 +280,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlElement(name="service-percentage")
     public synchronized double getServicePercentage() {
         if (m_servicePercentage == null) {
             // This will initialize m_servicePercentage
@@ -310,9 +335,10 @@ public class Category {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @XmlElement(name="outage-class")
     public String getOutageClass() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
-            return "lightblue";
+            return "Indeterminate";
         } else {
             return CategoryUtil.getCategoryClass(this, getServicePercentage());
         }
@@ -326,6 +352,7 @@ public class Category {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @XmlElement(name="availability-class")
     public String getAvailClass() throws IOException, MarshalException, ValidationException {
         if (m_lastUpdated == null) {
             return "lightblue";
@@ -339,6 +366,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="outage-text")
     public String getOutageText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -352,6 +380,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="availability-text")
     public String getAvailText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -389,6 +418,36 @@ public class Category {
      */
     public Enumeration<Node> enumerateNode() {
         return m_rtcCategory.enumerateNode();
+    }
+
+    @XmlElementWrapper(name="nodes")
+    @XmlElement(name="node")
+    public List<Long> getNodeIds() {
+        final List<Long> nodeIds = new ArrayList<>();
+        if (m_rtcCategory != null) {
+            for (final Node node : m_rtcCategory.getNodeCollection()) {
+                nodeIds.add(node.getNodeid());
+            }
+        }
+        return nodeIds;
+    }
+
+    public NodeList getNodes() {
+        if (m_rtcCategory != null) {
+            return NodeList.forNodes(m_rtcCategory.getNodeCollection());
+        }
+        return new NodeList();
+    }
+
+    public AvailabilityNode getNode(final Long nodeId) {
+        if (m_rtcCategory != null) {
+            for (final Node node : m_rtcCategory.getNodeCollection()) {
+                if (node.getNodeid() == nodeId) {
+                    return new AvailabilityNode(node);
+                }
+            }
+        }
+        return null;
     }
 
     /**

@@ -33,13 +33,14 @@ printHelp() {
 	echo "	   ex: rmi://opennms-host.com/"
 	echo "	-l location name for this poller"
 	echo "	-g start the remote poller GUI"
+	echo "	-i disable ICMP"
 	echo "	-j override Java executable"
 	echo "	-n the userName to connect as"
 	echo "	-p the Password to connect with"
 	echo ""
 }
 
-while getopts ":D:u:l:dgj:n:p:" OPT
+while getopts ":D:u:l:dgij:n:p:" OPT
 do
 	case $OPT in
 		h)
@@ -55,6 +56,9 @@ do
 		g)
 			GUI=true
 			EXTRA_ARGS="$EXTRA_ARGS --gui"
+			;;
+		i)
+			EXTRA_ARGS="$EXTRA_ARGS --disable-icmp"
 			;;
 		j)
 			JAVA_EXE="$OPTARG"

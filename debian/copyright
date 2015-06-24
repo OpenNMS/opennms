@@ -1,19 +1,17 @@
 This Debian package was orginally created by Tony Simone 
 <tony.simone@medvantx.com> on Fri, 22 Nov 2002 08:30:00 -0500.
 
-It was downloaded from ftp.opennms.org.
-
 Copyright:
 
-OpenNMS(R) is Copyright (C) 2002-2008 The OpenNMS Group, Inc. All rights
+OpenNMS(R) is Copyright (C) 2002-2015 The OpenNMS Group, Inc. All rights
 reserved.
 
 OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 
 You are free to distribute this software under the terms of the GNU 
-General Public License.
+Affero General Public License.
 
-On Debian systems, the complete text of the GNU General Public License can
-be found in the /usr/share/common-licenses/GPL file.  The GNU Lesser
-General Public License can be found in the /usr/share/common-licenses/LGPL
-file.
+On Debian systems, the complete text of the GNU Affero General Public
+License can be found in the /usr/share/common-licenses/AGPL file.  The
+GNU Lesser General Public License can be found in the
+/usr/share/common-licenses/LGPL file.

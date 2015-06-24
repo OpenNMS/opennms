@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,12 +32,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -324,11 +326,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_threads;
     }
 
-    @Override
-    public boolean shouldNotifyXmlrpc() {
-        return false;
-    }
-
     /**
      * @param svcName
      * @return
@@ -446,10 +443,14 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         m_defaultPollInterval = defaultPollInterval;
     }
 
-    public void populatePackage(final MockNetwork network) {
+    public void populatePackage(final MockNetwork network, MockService... exclude) {
+        final List<MockService> servicesToExclude = Arrays.asList(exclude);
         final MockVisitor populator = new MockVisitorAdapter() {
             @Override
             public void visitService(final MockService svc) {
+                if (servicesToExclude.contains(svc)) {
+                    return;
+                }
                 addService(svc);
             }
         };

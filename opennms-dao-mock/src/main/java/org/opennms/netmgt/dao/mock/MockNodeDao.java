@@ -1,8 +1,36 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao.mock;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -52,7 +80,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         super.update(node);
         updateSubObjects(node);
     }
-    
+
     @Override
     public void save(final OnmsNode node) {
         if (node == null) return;
@@ -69,16 +97,31 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     private void updateSubObjects(final OnmsNode node) {
+        node.getAssetRecord().setNode(node);
         getAssetRecordDao().saveOrUpdate(node.getAssetRecord());
+
         for (final OnmsCategory cat : node.getCategories()) {
             getCategoryDao().saveOrUpdate(cat);
         }
+
         getDistPollerDao().saveOrUpdate(node.getDistPoller());
-        final SnmpInterfaceDao snmpInterfaceDao = getSnmpInterfaceDao();
-        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
-            snmpInterfaceDao.saveOrUpdate(iface);
+
+        /** delete any interfaces that were removed compared to the database **/
+        final OnmsNode dbNode = node.getId() == null? null : get(node.getId());
+        if (dbNode != null) {
+            for (final OnmsSnmpInterface iface : dbNode.getSnmpInterfaces()) {
+                if (!node.getSnmpInterfaces().contains(iface)) {
+                    getSnmpInterfaceDao().delete(iface);
+                }
+            }
+            for (final OnmsIpInterface iface : dbNode.getIpInterfaces()) {
+                if (!node.getIpInterfaces().contains(iface)) {
+                    getIpInterfaceDao().delete(iface);
+                }
+            }
         }
         /* not sure if this is necessary */
+        /*
         for (final OnmsIpInterface iface : getIpInterfaceDao().findAll()) {
             final OnmsSnmpInterface snmpInterface = iface.getSnmpInterface();
             if (snmpInterface != null && snmpInterface.getId() != null) {
@@ -87,7 +130,19 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
                 }
             }
         }
+         */
+
+        for (final OnmsArpInterface iface : node.getArpInterfaces()) {
+            iface.setNode(node);
+        }
+
+        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
+            iface.setNode(node);
+            getSnmpInterfaceDao().saveOrUpdate(iface);
+        }
+
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+            iface.setNode(node);
             getIpInterfaceDao().saveOrUpdate(iface);
         }
     }
@@ -204,6 +259,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
+        return null;
+    }
+
+    @Override
     public OnmsNode findByForeignId(final String foreignSource, final String foreignId) {
         for (final OnmsNode node : findByForeignSource(foreignSource)) {
             if (foreignId.equals(node.getForeignId())) {
@@ -229,17 +289,38 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
 
     @Override
     public List<OnmsIpInterface> findObsoleteIpInterfaces(final Integer nodeId, final Date scanStamp) {
-        final List<OnmsIpInterface> ifaces = new ArrayList<OnmsIpInterface>();
+        final List<OnmsIpInterface> ifaces = new ArrayList<>();
         final OnmsNode node = get(nodeId);
         if (node == null) return ifaces;
-        
+
         for (final OnmsIpInterface iface : node.getIpInterfaces()) {
             if (iface.isPrimary()) continue;
-            if (iface.getIpLastCapsdPoll() == null
-                    || iface.getIpLastCapsdPoll().before(scanStamp)) ifaces.add(iface);
+            if (truncateMillis(iface.getIpLastCapsdPoll()) < truncateMillis(scanStamp)) {
+                LOG.debug("findObsoleteIpInterfaces: {} < {}", truncateMillis(iface.getIpLastCapsdPoll()), truncateMillis(scanStamp));
+                ifaces.add(iface);
+            }
         }
 
         return ifaces;
+    }
+
+    public List<OnmsSnmpInterface> findObsoleteSnmpInterfaces(final Integer nodeId, final Date scanStamp) {
+        final List<OnmsSnmpInterface> ifaces = new ArrayList<>();
+        final OnmsNode node = get(nodeId);
+        if (node == null) return ifaces;
+
+        for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
+            if (truncateMillis(iface.getLastCapsdPoll()) < truncateMillis(scanStamp)) {
+                LOG.debug("findObsoleteSnmpInterfaces: {} < {}", truncateMillis(iface.getLastCapsdPoll()), truncateMillis(scanStamp));
+                ifaces.add(iface);
+            }
+        }
+
+        return ifaces;
+    }
+
+    private static long truncateMillis(final Date date) {
+        return date == null? 0 : (1000 * (date.getTime() / 1000));
     }
 
     @Override
@@ -252,14 +333,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             node.getIpInterfaces().remove(iface);
             getIpInterfaceDao().delete(iface.getId());
         }
-        final Collection<OnmsSnmpInterface> snmpInterfaces = Collections.unmodifiableCollection(node.getSnmpInterfaces());
-        for (final OnmsSnmpInterface iface : snmpInterfaces) {
-            if (iface.getLastCapsdPoll() == null
-                    || iface.getLastCapsdPoll().before(scanStamp)) {
-                LOG.debug("Deleting obsolete SNMP interface: {}", iface);
-                snmpInterfaces.remove(iface);
-                getSnmpInterfaceDao().delete(iface.getId());
-            }
+
+        for (final OnmsSnmpInterface iface : findObsoleteSnmpInterfaces(nodeId, scanStamp)) {
+            LOG.debug("Deleting obsolete SNMP interface: {}", iface);
+            node.getSnmpInterfaces().remove(iface);
+            getSnmpInterfaceDao().delete(iface.getId());
         }
     }
 
@@ -321,8 +399,16 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         return previous;
     }
 
+    @Override
+    public Map<Integer, String> getAllLabelsById() {
+        Map<Integer, String> allLabelsById = new HashMap<Integer, String>();
+        for (final OnmsNode node : findAll()) {
+            allLabelsById.put(node.getId(), node.getLabel());
+        }
+        return allLabelsById;
+    }
+
     public int getNextNodeId() {
         return m_id.get() + 1;
     }
-
 }

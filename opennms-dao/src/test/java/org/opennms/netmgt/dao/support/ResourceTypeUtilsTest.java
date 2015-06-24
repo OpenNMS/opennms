@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,9 +48,9 @@ import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
@@ -66,15 +66,12 @@ public class ResourceTypeUtilsTest {
     @Before
     public void setUp() throws Exception {
         m_fileAnticipator = new FileAnticipator();
-        
-        RrdUtils.setStrategy(new NullRrdStrategy());
     }
-    
+
     @After
     public void tearDown() throws Exception {
         m_fileAnticipator.tearDown();
     }
-    
 
     @Test
     public void testLoadPropertiesNullRrdDirectory() {
@@ -139,7 +136,7 @@ public class ResourceTypeUtilsTest {
     public void testGetAttributesAtRelativePathWithBogusDirectory() {
         File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
         assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
-        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist");
+        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist", ".rrd");
     }
 
     /*
@@ -172,10 +169,10 @@ public class ResourceTypeUtilsTest {
 
 
     private OnmsResource createResource() {
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
         Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(1);
         attributes.add(new RrdGraphAttribute("foo", "1/eth0", "foo.jrb"));
-        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes, new ResourcePath("foo"));
         childResource.setParent(topResource);
         return childResource;
     }

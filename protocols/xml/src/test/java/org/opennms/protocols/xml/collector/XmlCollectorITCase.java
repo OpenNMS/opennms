@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,9 +47,9 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
@@ -75,6 +75,9 @@ public abstract class XmlCollectorITCase {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    /** The RRD strategy. */
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     /**
      * Sets the up.
      *
@@ -85,9 +88,7 @@ public abstract class XmlCollectorITCase {
         FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        m_rrdStrategy = getRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -102,6 +103,10 @@ public abstract class XmlCollectorITCase {
         MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
+    }
+
+    protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
+        return new JRobinRrdStrategy();
     }
 
     /**
@@ -143,9 +148,10 @@ public abstract class XmlCollectorITCase {
      *
      * @param parameters the parameters
      * @param expectedFiles the expected amount of JRB files
+     * @return the collection set
      * @throws Exception the exception
      */
-    public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
+    public CollectionSet executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
         XmlCollector collector = new XmlCollector();
         collector.setXmlCollectionDao(m_xmlCollectionDao);
         collector.initialize(m_collectionAgent, parameters);
@@ -154,12 +160,13 @@ public abstract class XmlCollectorITCase {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
-        
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
+
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { m_rrdStrategy.getDefaultFileExtension().substring(1) }, true).size());
+        return collectionSet;
     }
-    
+
     /**
      * Validates a JRB.
      * <p>It assumes storeByGroup=true</p>
@@ -178,7 +185,6 @@ public abstract class XmlCollectorITCase {
             Assert.assertNotNull(ds);
             Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
         }
-
     }
 
     /**

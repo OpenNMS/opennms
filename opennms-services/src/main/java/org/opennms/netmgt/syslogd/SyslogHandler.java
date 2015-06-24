@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,16 +30,18 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -53,6 +55,10 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  */
 public final class SyslogHandler implements Fiber {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
+
+    private final boolean USE_NIO = false;
+    private final boolean USE_NETTY = false;
+
     /**
      * The UDP receiver thread.
      */
@@ -155,18 +161,59 @@ public final class SyslogHandler implements Fiber {
         m_status = STARTING;
 
         try {
-            if (m_dgIp != null && m_dgIp.length() != 0) {
-                m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
-            } else {
-                m_dgSock = new DatagramSocket(m_dgPort);
-            }
+            if (USE_NIO) {
+                // NIO SyslogReceiver implementation
 
-            m_receiver = new SyslogReceiver(m_dgSock, m_ForwardingRegexp,
+                DatagramChannel channel = DatagramChannel.open();
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(m_dgIp), m_dgPort));
+                } else {
+                    channel.socket().bind(new InetSocketAddress(m_dgPort));
+                }
+
+                m_receiver = new SyslogReceiverNioThreadPoolImpl(
+                    channel,
+                    m_ForwardingRegexp,
                     m_MatchingGroupHost,
                     m_MatchingGroupMessage,
                     m_UeiList,
                     m_HideMessages,
-                    m_DiscardUei);
+                    m_DiscardUei
+                );
+            } else if (USE_NETTY){
+                // Camel Netty SyslogReceiver implementation
+
+                m_receiver = new SyslogReceiverCamelNettyImpl(
+                    (m_dgIp != null && m_dgIp.length() != 0) ? 
+                        InetAddressUtils.addr(m_dgIp) :
+                        InetAddressUtils.getLocalHostAddress(),
+                    m_dgPort,
+                    m_ForwardingRegexp,
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages,
+                    m_DiscardUei
+                );
+            } else {
+                // java.net SyslogReceiver implementation
+
+                if (m_dgIp != null && m_dgIp.length() != 0) {
+                    m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
+                } else {
+                    m_dgSock = new DatagramSocket(m_dgPort);
+                }
+
+                m_receiver = new SyslogReceiverJavaNetImpl(
+                    m_dgSock,
+                    m_ForwardingRegexp,
+                    m_MatchingGroupHost,
+                    m_MatchingGroupMessage,
+                    m_UeiList,
+                    m_HideMessages,
+                    m_DiscardUei
+                );
+            }
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
@@ -211,7 +258,9 @@ public final class SyslogHandler implements Fiber {
             LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
 
-        m_dgSock.close();
+        if (m_dgSock != null) {
+            m_dgSock.close();
+        }
 
         m_status = STOPPED;
     }

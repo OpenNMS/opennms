@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,16 +48,15 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-		"classpath:/META-INF/opennms/detectors.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
 public class HostResourceSWRunDetectorTest implements InitializingBean {
-    static final String TEST_IP_ADDRESS = "172.20.1.205";
+    static final String TEST_IP_ADDRESS = "192.0.2.205";
 
     @Autowired
     private HostResourceSWRunDetector m_detector;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -67,34 +66,40 @@ public class HostResourceSWRunDetectorTest implements InitializingBean {
     public void setUp() throws InterruptedException{
         MockLogAppender.setupLogging();
 
+        m_detector.setServiceToDetect(null);
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectorFail() throws UnknownHostException{
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("WindowServer");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testLackOfCaseSensitivity() throws UnknownHostException{
         m_detector.setServiceToDetect("Omnitek XR.exe");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectCronSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("cron");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=HostResourceSWRunDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
     public void testDetectRegexSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("~snmp.*");
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

@@ -5,7 +5,7 @@ Summary: Yum repository files for %{_tree}/%{_osname} OpenNMS
 Name: opennms-repo-%{_tree}
 Version: %{_version}
 Release: %{_release}
-License: GPL
+License: AGPL
 Group: Development/Tools
 URL: http://yum.opennms.org/
 

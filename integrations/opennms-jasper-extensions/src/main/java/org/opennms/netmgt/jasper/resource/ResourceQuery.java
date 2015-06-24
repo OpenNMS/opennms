@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,12 +31,18 @@ package org.opennms.netmgt.jasper.resource;
 import java.io.File;
 import java.util.Arrays;
 
+import org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil;
+
 public class ResourceQuery {
     private String m_rrdDir;
     private String m_node;
     private String m_resourceName;
+    private String m_foreignSource;
+    private String m_foreignId;
     private String[] m_filters;
     private String[] m_strProperties;
+
+    private JRobinDirectoryUtil m_dirUtil = new JRobinDirectoryUtil();
 
     public ResourceQuery() {
     }
@@ -65,9 +71,26 @@ public class ResourceQuery {
     public void setFilters(String[] filters) {
         m_filters = Arrays.copyOf(filters, filters.length);
     }
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+    }
+    public String getForeignId() {
+        return m_foreignId;
+    }
+    public void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+    }
     
     public String constructBasePath() {
-        return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
+        if (!m_dirUtil.isStoreByForeignSource()) {
+            return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
+        }
+        else {
+            return m_dirUtil.getNodeLevelResourceDirectory(getRrdDir(), getNodeId(), getForeignSource(), getForeignId()) + File.separator + getResourceName();
+        }
     }
 
     public String[] getStringProperties() {

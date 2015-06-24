@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -27,45 +27,24 @@
  *******************************************************************************/
 
 package org.opennms.features.topology.plugins.browsers;
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.osgi.EventConsumer;
-
-import java.util.*;
 
 public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 
@@ -111,15 +90,12 @@ public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
 
     @Override
     @EventConsumer
-    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-        final NodeIdFocusToRestrictionsConverter converter = new NodeIdFocusToRestrictionsConverter() {
-
-            @Override
-            protected Restriction createRestriction(Integer nodeId ) {
-                return new EqRestriction("node.id", nodeId);
-            }
-        };
-        List<Restriction> newRestrictions = converter.getRestrictions(event.getVertexRefs());
+    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
+        final List<Restriction> newRestrictions = new ArrayList<Restriction>();
+        final List<Integer> nodeIds = extractNodeIds(event.getVertexRefs());
+        if (nodeIds.size() > 0) {
+            newRestrictions.add(Restrictions.in("node.id", nodeIds));
+        }
 
         if (!getRestrictions().equals(newRestrictions)) { // selection really changed
             setRestrictions(newRestrictions);

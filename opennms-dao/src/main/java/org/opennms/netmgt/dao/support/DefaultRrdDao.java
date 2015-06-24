@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -213,45 +213,12 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.api.RrdDao#createGraph(java.lang.String, java.io.File)
      */
     @Override
-    public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
+    public InputStream createGraph(String command) throws DataRetrievalFailureException {
        try {
-           return m_rrdStrategy.createGraph(command, workDir);
+           return m_rrdStrategy.createGraph(command, m_rrdBaseDirectory);
        } catch (Throwable e) {
            throw new DataRetrievalFailureException("Could not create graph: " + e, e);
        }
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphTopOffsetWithText()
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return m_rrdStrategy.getGraphTopOffsetWithText();
-    }
-
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphLeftOffset()
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return m_rrdStrategy.getGraphLeftOffset();
-    }
-
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphRightOffset()
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return m_rrdStrategy.getGraphRightOffset();
     }
 
     /** {@inheritDoc} */
@@ -288,4 +255,5 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }
     }
+
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,7 @@ import java.net.URL;
 /**
  * Class containing the information for the HTTP POST operations - this gets
  * constructed when each time a subscribe event is received and is basically
- * immutable(except for error count)
+ * immutable (except for error count).
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  */
@@ -42,22 +42,22 @@ public class HttpPostInfo {
     /**
      * The URL to post to
      */
-    private URL m_url;
+    private final URL m_url;
 
     /**
      * The category name related to this URL
      */
-    private String m_catlabel;
+    private final String m_catlabel;
 
     /**
      * The user name
      */
-    private String m_user;
+    private final String m_user;
 
     /**
      * The password
      */
-    private String m_passwd;
+    private final String m_passwd;
 
     /**
      * Number of post errors

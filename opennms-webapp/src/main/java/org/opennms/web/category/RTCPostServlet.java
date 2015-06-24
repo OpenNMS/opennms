@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,6 +41,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.servlet.InitializerServletContextListener.RTCPostSubscriberTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,11 +73,20 @@ public class RTCPostServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
-        } catch (IOException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
+
+            // Subscribe to all categories now that the servlet is initialized.
+            //
+            // This doesn't actually work because the backend will try to POST
+            // RTC updates in the several milliseconds before the servlet can 
+            // actually handle requests, resulting in {@link ConnectException} 
+            // exceptions and no RTC data.
+            // 
+            //new RTCPostSubscriberTimerTask().run();
         } catch (MarshalException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         } catch (ValidationException e) {
+            throw new ServletException("Could not instantiate the CategoryModel", e);
+        } catch (IOException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
     }

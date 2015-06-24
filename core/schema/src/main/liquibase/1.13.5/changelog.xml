@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="
+    http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+  ">
+
+  <changeSet author="agalue" id="1.13.5-hwEntity">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwentity">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="parentid" type="integer"/>
+      <column name="nodeid" type="integer"/>
+      <column name="entphysicalindex" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="entphysicalparentrelpos" type="integer"/>
+      <column name="entphysicalname" type="varchar(128)"/>
+      <column name="entphysicaldescr" type="varchar(128)"/>
+      <column name="entphysicalalias" type="varchar(128)"/>
+      <column name="entphysicalvendortype" type="varchar(128)"/>
+      <column name="entphysicalclass" type="varchar(128)"/>
+      <column name="entphysicalmfgname" type="varchar(128)"/>
+      <column name="entphysicalmodelname" type="varchar(128)"/>
+      <column name="entphysicalhardwarerev" type="varchar(128)"/>
+      <column name="entphysicalfirmwarerev" type="varchar(128)"/>
+      <column name="entphysicalsoftwarerev" type="varchar(128)"/>
+      <column name="entphysicalserialnum" type="varchar(128)"/>
+      <column name="entphysicalassetid" type="varchar(128)"/>
+      <column name="entphysicalisfru" type="boolean"/>
+      <column name="entphysicalmfgdate" type="datetime"/>
+      <column name="entphysicaluris" type="varchar(256)"/>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwentity" columnName="id" sequenceName="opennmsnxtid" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_parent" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="parentid" referencedTableName="hwentity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_node" onDelete="CASCADE" baseTableName="hwentity" baseColumnNames="nodeid" referencedTableName="node" referencedColumnNames="nodeid" />
+
+    <createIndex tableName="hwentity" indexName="hwentity_entphysicalindex_idx">
+      <column name="entphysicalindex" />
+    </createIndex>
+    <createIndex tableName="hwentity" indexName="hwentity_nodeid_idx">
+      <column name="nodeid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwentity" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="agalue" id="1.13.5-hwEntityAttributeType">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwentityattributetype">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="attribname" type="varchar(128)">
+        <constraints nullable="false" />
+      </column>
+      <column name="attriboid" type="varchar(128)">
+        <constraints nullable="false" />
+      </column>
+      <column name="attribclass" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwentityattributetype" columnName="id" sequenceName="opennmsnxtid" />
+
+    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_name_dx" unique="true">
+      <column name="attribname" />
+    </createIndex>
+    <createIndex tableName="hwentityattributetype" indexName="hwentityattributetype_unique_oid_idx" unique="true">
+      <column name="attriboid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwentityattributetype" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="agalue" id="1.13.5-hwEntityAttribute">
+    <validCheckSum>ANY</validCheckSum>
+
+    <createTable tableName="hwentityattribute">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="hwentityid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="hwattribtypeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="attribvalue" type="varchar(256)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <ext:addAutoIncrement tableName="hwentityattribute" columnName="id" sequenceName="opennmsnxtid" />
+    <addForeignKeyConstraint constraintName="fk_hwentity_hwentityattribute" onDelete="CASCADE" baseTableName="hwentityattribute" baseColumnNames="hwentityid" referencedTableName="hwentity" referencedColumnNames="id" />
+    <addForeignKeyConstraint constraintName="fk_hwentityattribute_hwentityattributetype" onDelete="CASCADE" baseTableName="hwentityattribute" baseColumnNames="hwattribtypeid" referencedTableName="hwentityattributetype" referencedColumnNames="id" />
+    <createIndex tableName="hwentityattribute" indexName="hwentityattribute_unique_idx" unique="true">
+      <column name="hwentityid" />
+      <column name="hwattribtypeid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="hwentityattribute" />
+    </rollback>
+  </changeSet>
+  
+  <changeSet author="ranger@opennms.org" id="1.13.5-requisitioned-categories">
+    <createTable tableName="requisitioned_categories">
+      <column name="id" type="integer">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="nodeid" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="categoryid" type="integer">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <ext:addAutoIncrement tableName="requisitioned_categories" columnName="id" sequenceName="opennmsnxtid" />
+
+    <addForeignKeyConstraint constraintName="requisitioned_nodeid_fkey"
+      onDelete="CASCADE" baseTableName="requisitioned_categories" baseColumnNames="nodeid"
+      referencedTableName="node" referencedColumnNames="nodeid" />
+    <addForeignKeyConstraint constraintName="requisitioned_categoryid_fkey"
+      onDelete="CASCADE" baseTableName="requisitioned_categories" baseColumnNames="categoryid"
+      referencedTableName="categories" referencedColumnNames="categoryid" />
+
+    <createIndex tableName="requisitioned_categories" indexName="requisitioned_category_node_unique_idx">
+      <column name="nodeid" />
+      <column name="categoryid" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="requisitioned_categories" cascadeConstraints="true" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -52,9 +52,9 @@ import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.notifications.Varbind;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.web.api.Util;
 
 /**
@@ -75,14 +75,14 @@ public class NotificationWizardServlet extends HttpServlet {
     /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */
     public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
 
-    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.jsp"</code> */
-    public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
+    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.htm"</code> */
+    public static final String SOURCE_PAGE_NOTICES = "eventNotices.htm";
 
     /** Constant <code>SOURCE_PAGE_NOTIFS_FOR_UEI="notifsForUEI.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
-    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.jsp"</code> */
-    public static final String SOURCE_PAGE_UEIS = "chooseUeis.jsp";
+    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.htm"</code> */
+    public static final String SOURCE_PAGE_UEIS = "chooseUeis.htm";
 
     /** Constant <code>SOURCE_PAGE_RULE="buildRule.jsp"</code> */
     public static final String SOURCE_PAGE_RULE = "buildRule.jsp";

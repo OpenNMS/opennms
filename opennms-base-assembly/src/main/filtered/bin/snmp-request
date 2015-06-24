@@ -1,6 +1,7 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
@@ -14,5 +15,25 @@ else
 	exit 255
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -cp $SNMP4J_JAR org.snmp4j.tools.console.SnmpRequest "$@"
+LOG4J2SLF4J_JAR=`ls -1 $OPENNMS_HOME/lib/log4j-over-slf4j-*.jar | tail -n 1`
+if [ -f $LOG4J2SLF4J_JAR ]; then
+	echo "Using log4j-over-slf4j from: $LOG4J2SLF4J_JAR"
+else
+	echo "log4j-over-slf4j missing from $OPENNMS_HOME/lib, cannot continue, giving up"
+	exit 255
+fi
+
+SLF4JAPI_JAR=`ls -1 $OPENNMS_HOME/lib/slf4j-api-*.jar | tail -n 1`
+if [ -f $SLF4JAPI_JAR ]; then
+	echo "Using SLF4J API from: $SLF4JAPI_JAR"
+else
+	echo "SLF4J API missing from $OPENNMS_HOME/lib, cannot continue, giving up"
+	exit 255
+fi
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS \
+	-cp "${SNMP4J_JAR}:${LOG4J2SLF4J_JAR}:${SLF4JAPI_JAR}" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	org.snmp4j.tools.console.SnmpRequest \
+	"$@"

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,7 +31,7 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="New Group" />
 	<jsp:param name="headTitle" value="New" />
 	<jsp:param name="headTitle" value="Groups" />
@@ -62,33 +62,43 @@
       document.newGroupForm.operation.value="cancel";
       document.newGroupForm.submit();
   }
-
 </script>
 
-<%if ("redo".equals(request.getParameter("action"))) { %>
-  <h3>The group <%=request.getParameter("groupName")%> already exists.
-    Please type in a different group ID.</h3>
-<%} else { %>
-  <h3>Please enter a group ID below.</h3>
-<%}%>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <%if ("redo".equals(request.getParameter("action"))) { %>
+          <h3 class="panel-title">The group <%=request.getParameter("groupName")%> already exists.
+            Please type in a different group ID.</h3>
+        <%} else { %>
+          <h3 class="panel-title">Please enter a group ID below.</h3>
+        <%}%>
+      </div>
+      <div class="panel-body">
+        <form role="form" class="form-horizontal" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
+          <input type="hidden" name="operation" />
 
-<form id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
-  <input type="hidden" name="operation" />
-  <table>
-    <tr>
-      <td width="10%"><label id="groupNameLabel" for="groupName">Group Name:</label></td>
-      <td width="100%"><input id="groupName" type="text" name="groupName"/></td>
-    </tr>
-    <tr>
-      <td width="10%"><label id="groupCommentLabel" for="groupComment">Comment:</label></td>
-      <td width="100%"><input id="groupComment" type="text" name="groupComment"/></td>
-    </tr>
+          <div class="form-group">
+            <label for="groupName" class="col-sm-2 control-label">Group Name:</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="groupName" type="text" name="groupName"/>
+            </div>
+          </div>
 
-    <tr>
-      <td><input id="doOK" type="submit" value="OK"/></td>
-      <td><input id="doCancel" type="button" value="Cancel" onclick="cancelGroup()"/></td>
-    </tr>
-</table>
-</form>
+          <div class="form-group">
+            <label for="groupComment" class="col-sm-2 control-label">Comment:</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="groupComment" type="text" name="groupComment"/>
+            </div>
+          </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+          <button type="submit" class="btn btn-default">OK</button>
+          <button type="button" class="btn btn-default" onclick="cancelGroup()">Cancel</button>
+        </form>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

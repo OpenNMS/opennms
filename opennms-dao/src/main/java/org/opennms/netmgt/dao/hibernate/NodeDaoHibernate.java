@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,6 +42,11 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -86,6 +93,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     public String getLabelForId(Integer id) {
         List<String> list = findObjects(String.class, "select n.label from OnmsNode as n where n.id = ?", id);
         return list == null || list.isEmpty() ? null : list.get(0);
+    }
+
+    /** {@inheritDoc} */
+    public Map<Integer, String> getAllLabelsById() {
+        Map<Integer, String> labelsByNodeId = new HashMap<Integer, String>();
+        List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.id, n.label from OnmsNode as n");
+        for (Object row[] : rows) {
+            labelsByNodeId.put((Integer)row[0], (String)row[1]);
+        }
+        return labelsByNodeId;
     }
 
     /** {@inheritDoc} */
@@ -312,7 +329,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -366,6 +383,25 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public List<OnmsNode> findAllProvisionedNodes() {
         return find("from OnmsNode n where n.foreignSource is not null");
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
+        final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class)
+        .setAliases(Arrays.asList(new Alias[] {
+                new Alias("ipInterfaces","ipInterfaces", JoinType.LEFT_JOIN),
+                new Alias("ipInterfaces.monitoredServices","monitoredServices", JoinType.LEFT_JOIN),
+                new Alias("monitoredServices.serviceType","serviceType", JoinType.LEFT_JOIN)
+        }))
+        .addRestriction(new EqRestriction("ipInterfaces.ipAddress", ipAddress))
+        //TODO: Replace D with a constant
+        .addRestriction(new NeRestriction("ipInterfaces.isManaged", "D"))
+        .addRestriction(new EqRestriction("serviceType.name", serviceName))
+        .setOrders(Arrays.asList(new Order[] {
+                Order.desc("id")
+        }));
+
+        return findMatching(criteria);
     }
 
     /** {@inheritDoc} */

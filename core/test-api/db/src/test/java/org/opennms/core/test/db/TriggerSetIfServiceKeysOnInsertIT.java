@@ -31,6 +31,9 @@ package org.opennms.core.test.db;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import junit.framework.AssertionFailedError;
 

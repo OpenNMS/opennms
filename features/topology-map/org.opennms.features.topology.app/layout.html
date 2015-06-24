@@ -1,0 +1,57 @@
+<html>
+<head>
+<script type="text/javascript" src="data1.js"></script>
+<script type="text/javascript">
+window.onload = function() {
+     var canvas = document.getElementById("canvas"),
+     context = canvas.getContext("2d"),
+     width = canvas.width = window.innerWidth,
+     height = canvas.height = window.innerHeight;
+     var centerX = canvas.width / 2;
+     var centerY = canvas.height / 2;
+     var radius = 70;
+
+     console.log(data);
+
+     var count = 0;
+
+     update();
+     
+     function update() {
+	 context.clearRect(0, 0, width, height);
+
+         context.beginPath();
+         context.arc(gCenter.x, gCenter.y, 5, 0, 2*Math.PI, false);
+         context.fillStyle = "red";
+         context.fill();
+	 
+	 console.log(count);
+	 var iter = data[count];
+
+
+	 console.log(iter);
+
+	 for(var i = 0; i < iter.length; i++) {
+	     drawCircle(context, iter[i]);
+	 }
+	 
+	 count++;
+	 if (count >= data.length) {
+	     console.log("resetting");
+	     count = 0;
+	 }
+	 requestAnimationFrame(update);
+     }
+     
+     function drawCircle(context, d) {
+	 context.beginPath();
+	 context.arc(d.x, d.y, radius, 0, 2 * Math.PI, false);
+         context.fillStyle = "blue";
+	 context.fill();
+     };
+ };
+</script>
+</head>
+<body>
+  <canvas id="canvas"/>
+</body>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -405,5 +406,24 @@ public class FileAnticipatorTest extends TestCase {
         assertEquals("random hex string s2 length", length * 2, s2.length());
         
         assertNotSame("random hex strings s1 and s2 should not be equal", s1, s2);
+    }
+
+    public void testAnticipateFileWithPrefixAndExclude() throws IOException {
+        m_anticipator.initialize();
+
+        File subdir = m_anticipator.tempDir("dir");
+        m_anticipator.expectingFileWithPrefix(subdir, "should_not_exist", ".meta");
+
+        assertFalse(m_anticipator.foundExpected());
+
+        m_anticipator.tempFile(subdir, "should_not_exist.meta");
+
+        assertFalse(m_anticipator.foundExpected());
+
+        m_anticipator.tempFile(subdir, "should_not_exist.jrb");
+
+        assertTrue(m_anticipator.foundExpected());
+
+        m_anticipator.deleteExpected(true);
     }
 }

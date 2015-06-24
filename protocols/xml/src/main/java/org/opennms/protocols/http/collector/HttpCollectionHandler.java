@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -45,12 +45,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
 import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
 import org.opennms.protocols.xml.collector.XmlCollectionResource;
 import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
+import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -73,6 +74,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      */
     @Override
     protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
         Document doc = getJsoupDocument(urlString, request);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using selector {}", group.getName(), group.getResourceXpath());
@@ -81,7 +83,13 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             LOG.debug("fillCollectionSet: {} => {}", group.getResourceXpath(), elements);
             String resourceName = getResourceName(elements, group);
             LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-            XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+            XmlCollectionResource collectionResource;
+            if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
+                collectionResource = nodeResource;
+            } else {
+                collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+            }
+            LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
             AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
             for (XmlObject object : group.getXmlObjects()) {
                 Elements el = elements.select(object.getXpath());
@@ -165,8 +173,9 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
      * @param urlString the URL string
      * @param request the request
      * @return the JSoup document
+     * @throws Exception the exception
      */
-    protected Document getJsoupDocument(String urlString, Request request) {
+    protected Document getJsoupDocument(String urlString, Request request) throws Exception {
         InputStream is = null;
         URLConnection c = null;
         try {
@@ -175,8 +184,6 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             is = c.getInputStream();
             final Document doc = Jsoup.parse(is, "UTF-8", "/");
             return doc;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(is);
             UrlFactory.disconnect(c);

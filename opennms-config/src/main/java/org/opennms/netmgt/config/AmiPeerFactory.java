@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -448,7 +448,12 @@ public class AmiPeerFactory {
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getUsername() == null ? AmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
+        if (def.getUsername() != null) {
+            return def.getUsername();
+        } else if (m_config.getUsername() != null) {
+            return m_config.getUsername();
+        }
+        return AmiAgentConfig.DEFAULT_USERNAME;
     }
 
      /**
@@ -457,7 +462,12 @@ public class AmiPeerFactory {
      * @return a string containing the password. will return the default if none is set.
      */
     private String determinePassword(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getPassword() == null ? AmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        if (def.getPassword() != null) {
+            return def.getPassword();
+        } else if (m_config.getPassword() != null) {
+            return def.getPassword();
+        }
+        return AmiAgentConfig.DEFAULT_PASSWORD;
     }
 
     /**
@@ -466,13 +476,21 @@ public class AmiPeerFactory {
      * @return a long containing the timeout, AmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
     private long determineTimeout(final Definition def) {
-        final long timeout = AmiAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
+        if (def.hasTimeout() && def.getTimeout() != 0) {
+            return def.getTimeout().longValue();
+        } else if (m_config.getTimeout() != 0) {
+            return (long)m_config.getTimeout();
+        }
+        return (long) AmiAgentConfig.DEFAULT_TIMEOUT;
     }
 
     private int determineRetries(final Definition def) {        
-        final int retries = AmiAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
+        if (def.hasRetry() && def.getRetry() != 0) {
+            return def.getRetry();
+        } else if (m_config.getRetry() != 0) {
+            return m_config.getRetry();
+        }
+        return AmiAgentConfig.DEFAULT_RETRIES;
     }
 
     /**

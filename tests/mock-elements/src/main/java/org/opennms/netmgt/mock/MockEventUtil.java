@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,16 +30,13 @@ package org.opennms.netmgt.mock;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -482,7 +479,7 @@ public abstract class MockEventUtil {
      * @param date a {@link java.util.Date} object.
      */
     public static void setEventTime(Event event, Date date) {
-        event.setTime(EventConstants.formatToString(date));
+        event.setTime(date);
     }
     
     /**
@@ -555,26 +552,6 @@ public abstract class MockEventUtil {
         event.addParam(EventConstants.PARM_NEW_NODEID, newNode);
         return event.getEvent();
     }
-    
-    /**
-     * <p>convertEventTimeIntoTimestamp</p>
-     *
-     * @param eventTime a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    public static Timestamp convertEventTimeIntoTimestamp(String eventTime) {
-        Timestamp timestamp = null;
-        try {
-            Date date = EventConstants.parseToDate(eventTime);
-            timestamp = new Timestamp(date.getTime());
-        } catch (ParseException e) {
-        	LOG.warn("Failed to convert event time {} to timestamp.", eventTime, e);
-    
-            timestamp = new Timestamp((new Date()).getTime());
-        }
-        return timestamp;
-    }
-
 
     /**
      * <p>eventsMatch</p>
@@ -596,12 +573,33 @@ public abstract class MockEventUtil {
      * @return a boolean.
      */
     public static boolean eventsMatchDeep(Event e1, Event e2) {
+        return MockEventUtil.eventsMatchDeep(e1, e2, 0);
+    }
+
+    /**
+     * <p>eventsMatchDeep</p>
+     *
+     * @param e1 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e2 a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatchDeep(Event e1, Event e2, long toleratedTimestampOffset) {
         if (e1.getTime() != null || e2.getTime() != null) {
             if (e1.getTime() == null || e2.getTime() == null) {
                 return false;
             }
             
-            if (!e1.getTime().equals(e2.getTime())) {
+            if (toleratedTimestampOffset > 0) {
+                final long d1 = e1.getTime().getTime();
+                final long d2 = e2.getTime().getTime();
+                if ((d2 - toleratedTimestampOffset) < d1 && d1 < (d2 + toleratedTimestampOffset)) {
+                    // d1 is within [toleratedTimestampOffset] of d2
+                } else if ((d1 - toleratedTimestampOffset) < d2 && d2 < (d1 + toleratedTimestampOffset)) {
+                    // d2 is within [toleratedTimestampOffset] of d1
+                } else {
+                    return false;
+                }
+            } else if (!e1.getTime().equals(e2.getTime())) {
                 return false;
             }
         }

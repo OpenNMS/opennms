@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,7 +38,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import com.github.wolfie.refresher.Refresher;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -64,6 +66,16 @@ import org.springframework.transaction.support.TransactionOperations;
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
 public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProvider {
+
+    private class DynamicUpdateRefresher implements Refresher.RefreshListener{
+        private static final long serialVersionUID = 801233170298353060L;
+
+        @Override
+        public void refresh(Refresher refresher) {
+            refreshView();
+        }
+    }
+
     private static final long serialVersionUID = -6364929103619363239L;
     private static final Logger LOG = LoggerFactory.getLogger(MapWidgetComponent.class);
 
@@ -78,6 +90,7 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
     private AlarmDao m_alarmDao;
     private GeocoderService m_geocoderService;
     private TransactionOperations m_transaction;
+    private Boolean m_aclsEnabled = false;
 
     private Map<Integer,NodeEntry> m_activeNodes = new HashMap<Integer,NodeEntry>();
 
@@ -123,6 +136,24 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                 refreshNodeData();
             }
         }, 0, 5, TimeUnit.MINUTES);
+        checkAclsEnabled();
+        setupAutoRefresher();
+    }
+
+    private void checkAclsEnabled() {
+        String aclsPropValue = System.getProperty("org.opennms.web.aclsEnabled");
+        m_aclsEnabled = aclsPropValue != null && aclsPropValue.equals("true");
+    }
+
+    public void setupAutoRefresher(){
+        Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(5000); //Pull every two seconds for view updates
+        refresher.addListener(new DynamicUpdateRefresher());
+        addExtension(refresher);
+    }
+
+    public void refresh() {
+        refreshView();
     }
 
     @Override
@@ -134,6 +165,20 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
         return nodes;
     }
 
+    private void refreshView() {
+        if(m_aclsEnabled) {
+            Map<Integer, String> nodes = getNodeDao().getAllLabelsById();
+
+            Map<Integer, NodeEntry> aclOnlyNodes = new HashMap<Integer, NodeEntry>();
+            for (Integer nodeId : nodes.keySet()) {
+                if (m_activeNodes.containsKey(nodeId)) aclOnlyNodes.put(nodeId, m_activeNodes.get(nodeId));
+            }
+            showNodes(aclOnlyNodes);
+        } else {
+            showNodes(m_activeNodes);
+        }
+    }
+
     private void refreshNodeData() {
         if (getNodeDao() == null) {
             LOG.warn("No node DAO!  Can't refresh node data.");
@@ -142,9 +187,24 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
         LOG.debug("Refreshing node data.");
 
-        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
-        cb.alias("assetRecord", "asset");
-        cb.orderBy("id").asc();
+        // Retrieves nodes with addresses or lat/lon fields
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class)
+            .alias("assetRecord", "asset")
+            .or(
+                   Restrictions.any(
+                           Restrictions.isNotNull("asset.geolocation.address1"),
+                           Restrictions.isNotNull("asset.geolocation.address2"),
+                           Restrictions.isNotNull("asset.geolocation.city"),
+                           Restrictions.isNotNull("asset.geolocation.state"),
+                           Restrictions.isNotNull("asset.geolocation.zip"),
+                           Restrictions.isNotNull("asset.geolocation.country")
+                   ),
+                   Restrictions.and(
+                           Restrictions.isNotNull("asset.geolocation.latitude"),
+                           Restrictions.isNotNull("asset.geolocation.longitude")
+                  )
+             )
+            .orderBy("id").asc();
 
         final List<OnmsAssetRecord> updatedAssets = new ArrayList<OnmsAssetRecord>();
         final Map<Integer, NodeEntry> nodes = new HashMap<Integer, NodeEntry>();
@@ -173,11 +233,8 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                                 nodes.put(node.getId(), new NodeEntry(node));
                                 continue;
                             }
-                        } else if (addressString == null || "".equals(addressString)) {
-                            // no real address info, skip it
-                            continue;
-                        } else {
-                            LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", new Object[]{node.getId(), addressString});
+                        } else if (addressString != null && ! "".equals(addressString)) {
+                            LOG.debug("Node {} has an asset record with address \"{}\", but no coordinates.", node.getId(), addressString);
                             final Coordinates coordinates = getCoordinates(addressString);
 
                             if (coordinates == null) {
@@ -197,9 +254,13 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
                                 // valid coordinates, add to the list
                                 nodes.put(node.getId(), new NodeEntry(node));
                             }
+                        } else {
+                            // We shouldn't hit this block with our criteria, so we warn
+                            LOG.warn("Node {} has no address or latitude/longitude information.", node.getId());
                         }
                     } else {
-                        // no asset information
+                        // We shouldn't hit this block with our criteria, so we warn
+                        LOG.warn("Node {} has no asset information.", node.getId());
                     }
                 }
 
@@ -250,7 +311,6 @@ public class MapWidgetComponent extends NodeMapComponent implements GeoAssetProv
 
 
         m_activeNodes = nodes;
-        showNodes(nodes);
     }
 
     /**

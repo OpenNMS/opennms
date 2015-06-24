@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class SelectTag<T> extends SimpleTagSupport {
 
-    private static class DefaultSelectTagHandler implements SelectTagHandler<Object> {
+    private static class DefaultSelectTagHandler<T> implements SelectTagHandler<T> {
 
         private String m_defaultText = "";
 
@@ -57,14 +57,14 @@ public class SelectTag<T> extends SimpleTagSupport {
         }
 
         @Override
-        public String getValue(Object input) {
+        public String getValue(T input) {
             if (input == null) return m_defaultText;
             if (input instanceof String && StringUtils.isEmpty((String)input)) return m_defaultText;
             return input.toString();
         }
 
         @Override
-        public String getDescription(Object input) {
+        public String getDescription(T input) {
             return getValue(input);
         }
 
@@ -76,14 +76,14 @@ public class SelectTag<T> extends SimpleTagSupport {
         }
     }
 
-    private static final String TEMPLATE = "<select {ONCHANGE}>\n{OPTIONS}\n</select>";
+    private static final String TEMPLATE = "<select id=\"favorite-select\" class=\"form-control\" {ONCHANGE}>\n{OPTIONS}\n</select>";
     private static final String OPTION_TEMPLATE = "<option value='{VALUE}' {SELECTED}>{DESCRIPTION}</option>\n";
 
 
     private List<T> m_elements;
     private T m_selected;
-    private SelectTagHandler m_selectTagHandler;
-    private Comparator m_comparator;
+    private SelectTagHandler<T> m_selectTagHandler;
+    private Comparator<T> m_comparator;
     private String m_onChange;
     private String m_defaultText = "";
 
@@ -113,11 +113,11 @@ public class SelectTag<T> extends SimpleTagSupport {
         m_selected = selected;
     }
 
-    public void setHandler(SelectTagHandler selectTagHandler) {
+    public void setHandler(SelectTagHandler<T> selectTagHandler) {
         m_selectTagHandler = selectTagHandler;
     }
 
-    public void setComparator(Comparator comparator) {
+    public void setComparator(Comparator<T> comparator) {
         m_comparator = comparator;
     }
 
@@ -149,16 +149,16 @@ public class SelectTag<T> extends SimpleTagSupport {
     }
 
     private String getOption(T element, T selected) {
-        SelectTagHandler handler = getSelectTagHandler();
+        SelectTagHandler<T> handler = getSelectTagHandler();
         return OPTION_TEMPLATE
                 .replace("{VALUE}", handler.getValue(element))
                 .replace("{DESCRIPTION}", handler.getDescription(element))
                 .replace("{SELECTED}", handler.isSelected(element, selected) ? "selected" : "");
     }
 
-    private SelectTagHandler getSelectTagHandler() {
+    private SelectTagHandler<T> getSelectTagHandler() {
         if (m_selectTagHandler == null){
-            DefaultSelectTagHandler defaultSelectTagHandler = new DefaultSelectTagHandler();
+            DefaultSelectTagHandler<T> defaultSelectTagHandler = new DefaultSelectTagHandler<T>();
             defaultSelectTagHandler.setDefaultText(m_defaultText);
             return defaultSelectTagHandler;
         }

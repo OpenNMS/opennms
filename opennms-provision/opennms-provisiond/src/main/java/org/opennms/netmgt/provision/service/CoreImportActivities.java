@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,7 +35,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
@@ -69,7 +69,7 @@ public class CoreImportActivities {
     public RequisitionImport loadSpecFile(final Resource resource) {
         final RequisitionImport ri = new RequisitionImport();
 
-        info("Loading requisition from resource %s", resource);
+        info("Loading requisition from resource {}", resource);
         try {
             final Requisition specFile = m_provisionService.loadRequisition(resource);
             ri.setRequisition(specFile);
@@ -82,7 +82,7 @@ public class CoreImportActivities {
     }
     
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
-    public ImportOperationsManager auditNodes(final RequisitionImport ri, final Boolean rescanExisting) {
+    public ImportOperationsManager auditNodes(final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping audit phase import.");
             return null;
@@ -90,7 +90,7 @@ public class CoreImportActivities {
         
         final Requisition specFile = ri.getRequisition();
 
-        info("Auditing nodes for requisition %s", specFile);
+        info("Auditing nodes for requisition {}. The parameter {} was set to {} during import.", specFile, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
 
         // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
@@ -115,14 +115,14 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Scheduling nodes for phase %s", currentPhase);
+        info("Scheduling nodes for phase {}", currentPhase);
         
         final Collection<ImportOperation> operations = opsMgr.getOperations();
         
         for(final ImportOperation op : operations) {
             final LifeCycleInstance nodeScan = currentPhase.createNestedLifeCycle("nodeImport");
 
-            debug("Created lifecycle %s for operation %s", nodeScan, op);
+            debug("Created lifecycle {} for operation {}", nodeScan, op);
             
             nodeScan.setAttribute("operation", op);
             nodeScan.setAttribute("requisitionImport", ri);
@@ -134,19 +134,19 @@ public class CoreImportActivities {
     
     
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
-    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final Boolean rescanExisting) {
+    public void scanNode(final ImportOperation operation, final RequisitionImport ri, final String rescanExisting) {
         if (ri.isAborted()) {
             info("The import has been aborted, skipping scan phase nodeImport.");
             return;
         }
 
-        if (rescanExisting == null || rescanExisting) {
-            info("Running scan phase of %s", operation);
+        if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
+            info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
             operation.scan();
     
-            info("Finished Running scan phase of %s", operation);
+            info("Finished Running scan phase of {}", operation);
         } else {
-            info("Skipping scan phase of %s, because the %s parameter was set during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING);
+            info("Skipping scan phase of {}, because the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
         }
     }
     
@@ -157,9 +157,9 @@ public class CoreImportActivities {
             return;
         }
 
-        info("Running persist phase of %s", operation);
+        info("Running persist phase of {}", operation);
         operation.persist();
-        info("Finished Running persist phase of %s", operation);
+        info("Finished Running persist phase of {}", operation);
 
     }
     

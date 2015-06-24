@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.*;
@@ -90,7 +118,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         assertEquals("node1", node.getNodeLabel());
     }
 
-    private FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
+    private static FasterFilesystemForeignSourceRepository repo(File foreignSourceDir, File requisitionDir) throws Exception {
         FasterFilesystemForeignSourceRepository repo = new FasterFilesystemForeignSourceRepository();
         repo.setForeignSourcePath(foreignSourceDir.getAbsolutePath());
         repo.setRequisitionPath(requisitionDir.getAbsolutePath());
@@ -98,13 +126,13 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return repo;
     }
 
-    private <T> Set<T> set(T... items) {
-        Set<T> set = new HashSet<T>();
+    private static Set<String> set(String... items) {
+        Set<String> set = new HashSet<String>();
         Collections.addAll(set, items);
         return set;
     }
 
-    private String fs(String name) {
+    private static String fs(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<foreign-source date-stamp=\"2012-12-17T13:59:04.299-05:00\" name=\"_TEMPLATE_\" xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\">\n" + 
                 "    <scan-interval>1d</scan-interval>\n" + 
@@ -118,7 +146,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
         return template.replaceAll("_TEMPLATE_", name);
     }
 
-    private String req(String name) {
+    private static String req(String name) {
         String template = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
                 "<model-import last-import=\"2012-12-17T14:00:08.997-05:00\" foreign-source=\"_TEMPLATE_\" date-stamp=\"2012-12-17T14:00:08.757-05:00\" xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\">\n" + 
                 "    <node node-label=\"node1\" foreign-id=\"1234\" building=\"_TEMPLATE_\">\n" + 

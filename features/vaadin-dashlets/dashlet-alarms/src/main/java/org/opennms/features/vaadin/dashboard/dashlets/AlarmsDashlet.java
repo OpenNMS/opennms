@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,10 +25,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import com.google.common.collect.Lists;
 import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
@@ -38,10 +44,19 @@ import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.*;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This class represents a Alert Dashlet with minimum details.
@@ -102,6 +117,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                 {
                     m_verticalLayout.setCaption(getName());
                     m_verticalLayout.setWidth("100%");
+                    injectWallboardStyles();
                     refresh();
                 }
 
@@ -119,6 +135,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                     Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 18px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 18px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
@@ -128,8 +145,6 @@ public class AlarmsDashlet extends AbstractDashlet {
                     OnmsSeverity boostSeverity = OnmsSeverity.valueOf(getDashletSpec().getParameters().get("boostSeverity"));
 
                     m_verticalLayout.removeAllComponents();
-
-                    injectWallboardStyles();
 
                     boosted = false;
 
@@ -155,6 +170,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                 {
                     m_verticalLayout.setCaption(getName());
                     m_verticalLayout.setWidth("100%");
+                    injectDashboardStyles();
                     refresh();
                 }
 
@@ -172,6 +188,7 @@ public class AlarmsDashlet extends AbstractDashlet {
                     Page.getCurrent().getStyles().add(".alerts-font {color: #3ba300; font-size: 11px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts-noalarms-font { font-size: 11px; line-height: normal; }");
                     Page.getCurrent().getStyles().add(".alerts { padding: 5px 5px; margin: 1px; }");
+                    Page.getCurrent().getStyles().add(".v-slot-alerts-font { overflow: hidden; }");
                 }
 
                 @Override
@@ -179,8 +196,6 @@ public class AlarmsDashlet extends AbstractDashlet {
                     List<OnmsAlarm> alarms = getAlarms();
 
                     m_verticalLayout.removeAllComponents();
-
-                    injectDashboardStyles();
 
                     boosted = false;
 
@@ -215,9 +230,22 @@ public class AlarmsDashlet extends AbstractDashlet {
         alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
         alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
-        alarmCb.distinct();
+        /**
+         * due to restrictions in the criteria api it's quite hard
+         * to use distinct and orderBy together, so I apply a workaround
+         * to avoid alarmCb.distinct();
+         */
 
-        return m_alarmDao.findMatching(alarmCb.toCriteria());
+        List<OnmsAlarm> onmsAlarmList = m_alarmDao.findMatching(alarmCb.toCriteria());
+        Map<Integer, OnmsAlarm> onmsAlarmMap = new LinkedHashMap<>();
+
+        for (OnmsAlarm onmsAlarm : onmsAlarmList) {
+            if (!onmsAlarmMap.containsKey(onmsAlarm.getId())) {
+                onmsAlarmMap.put(onmsAlarm.getId(), onmsAlarm);
+            }
+        }
+
+        return Lists.newArrayList(onmsAlarmMap.values());
     }
 
     /**

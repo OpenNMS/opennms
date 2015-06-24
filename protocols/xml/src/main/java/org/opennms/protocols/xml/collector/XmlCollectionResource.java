@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,8 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The abstract Class XmlCollectionResource.
@@ -39,6 +41,9 @@ import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class XmlCollectionResource extends AbstractCollectionResource {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(XmlCollectionResource.class);
 
     /** The Time Keeper. */
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
@@ -59,7 +64,8 @@ public abstract class XmlCollectionResource extends AbstractCollectionResource {
      * @param value the value
      */
     public void setAttributeValue(XmlCollectionAttributeType type, String value) {
-        XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
+        final XmlCollectionAttribute attr = new XmlCollectionAttribute(this, type, value);
+        LOG.debug("setAttributeValue: setting attribute {}", attr);
         addAttribute(attr);
     }
 

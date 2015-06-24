@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -39,8 +40,6 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
@@ -70,8 +69,6 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             return;
         }
 
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-
         // make a fake database schema with hibernate
         InputStream is = ConfigurationTestUtils.getInputStreamForResource(testContext.getTestInstance(), config.schemaConfig());
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
@@ -85,7 +82,7 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         // set up the collection configuration factory
         if ("http".equalsIgnoreCase(config.datacollectionType()) || "https".equalsIgnoreCase(config.datacollectionType())) {
-        	is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
+            is = ConfigurationTestUtils.getInputStreamForResourceWithReplacements(testContext.getTestInstance(), config.datacollectionConfig(), new String[] { "%rrdRepository%", m_snmpRrdDirectory.getAbsolutePath() });
             HttpCollectionConfigFactory factory = new HttpCollectionConfigFactory(is);
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
@@ -110,16 +107,19 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         boolean shouldIgnoreNonExistent = testContext.getTestException() != null;
 
-        if (config.anticipateFiles().length > 0 ||
-                config.anticipateRrds().length > 0) {
+        /*
+        if (config.anticipateFiles().length > 0 || config.anticipateRrds().length > 0) {
             // make sure any RRDs have time to get written
-            Thread.sleep(1000);
+            Thread.sleep(config.timeout());
         }
+        */
 
         if (config.anticipateRrds().length > 0) {
             for (String rrdFile : config.anticipateRrds()) {
-                m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + RrdUtils.getExtension());
-                
+                // Expect the RRD files, for which we don't know the suffix
+                // Make sure they don't match the .meta files though
+                m_fileAnticipator.expectingFileWithPrefix(m_snmpRrdDirectory, rrdFile, ".meta");
+
                 //the nrtg feature requires .meta files in parallel to the rrd/jrb files.
                 //this .meta files are expected
                 m_fileAnticipator.expecting(m_snmpRrdDirectory, rrdFile + ".meta");
@@ -134,31 +134,32 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
 
         Exception e = null;
         if (m_fileAnticipator.isInitialized()) {
-        	try {
-        		m_fileAnticipator.deleteExpected(shouldIgnoreNonExistent);
-        	} catch (Throwable t) {
-        		e = new RuntimeException(t);
-        	}
-        }
+            final long finished = System.currentTimeMillis() + config.timeout();
+            while (System.currentTimeMillis() <= finished) {
+                if (m_fileAnticipator.foundExpected()) {
+                    break;
+                }
+                try {
+                    Thread.sleep(200);
+                } catch (final InterruptedException ie) {
+                    break;
+                }
+            }
 
-        deleteResursively(m_snmpRrdDirectory);
-        m_fileAnticipator.tearDown();
-        
-        if (e != null) {
-        	throw e;
-        }
-    }
-    
-    private static void deleteResursively(File directory) {
-    	if (!directory.exists()) return;
-    	
-    	if (directory.isDirectory()) {
-    		for (File f : directory.listFiles()) {
-                deleteResursively(f);
+            try {
+                m_fileAnticipator.deleteExpected(shouldIgnoreNonExistent);
+            } catch (Throwable t) {
+                e = new RuntimeException(t);
             }
         }
-    	
-    	directory.delete();
+
+        FileUtils.deleteDirectory(m_snmpRrdDirectory);
+
+        m_fileAnticipator.tearDown();
+
+        if (e != null) {
+            throw e;
+        }
     }
 
     private static JUnitCollector findCollectorAnnotation(TestContext testContext) {

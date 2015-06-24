@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -61,34 +61,34 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
      */
-    private Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
+    private final Map<Long, PeekableFifoQueue<ReadyRunnable>> m_queues;
 
     /**
      * The total number of elements currently scheduled. This should be the sum
      * of all the elements in the various queues.
      */
-    private int m_scheduled;
+    private volatile int m_scheduled;
 
     /**
      * The pool of threads that are used to executed the runnable instances
      * scheduled by the class' instance.
      */
-    private ExecutorService m_runner;
+    private final ExecutorService m_runner;
 
     /**
      * The status for this fiber.
      */
-    private int m_status;
+    private volatile int m_status;
 
     /**
      * The worker thread that executes this instance.
      */
-    private Thread m_worker;
+    private volatile Thread m_worker;
 
     /**
      * Used to keep track of the number of tasks that have been executed.
      */
-    private long m_numTasksExecuted = 0;
+    private volatile long m_numTasksExecuted = 0;
 
     /**
      * This queue extends the standard FIFO queue instance so that it is
@@ -129,7 +129,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
      */
     public LegacyScheduler(final String parent, final int maxSize) {
         m_status = START_PENDING;
-        m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize, false));
+        m_runner = Executors.newFixedThreadPool(maxSize, new LogPreservingThreadFactory(parent, maxSize));
         m_queues = new ConcurrentSkipListMap<Long, PeekableFifoQueue<ReadyRunnable>>();
         m_scheduled = 0;
         m_worker = null;

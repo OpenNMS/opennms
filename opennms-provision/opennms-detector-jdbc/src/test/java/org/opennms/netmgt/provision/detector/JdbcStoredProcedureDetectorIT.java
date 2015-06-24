@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -58,6 +58,8 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/detectors.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/applicationContext-minimal-conf.xml"
@@ -65,13 +67,12 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class JdbcStoredProcedureDetectorIT implements InitializingBean {
-    
     @Autowired
     public JdbcStoredProcedureDetector m_detector;
-    
+
     @Autowired
     public DataSource m_dataSource;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -83,7 +84,7 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
 
         String createSchema = "CREATE SCHEMA test";
         String createProcedure = "CREATE FUNCTION test.isRunning () RETURNS bit AS 'BEGIN RETURN 1; END;' LANGUAGE 'plpgsql';";
-                            		
+
         String url = null;
         String username = null;
         Connection conn = null;
@@ -92,62 +93,64 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
             DatabaseMetaData metaData = conn.getMetaData();
             url = metaData.getURL();
             username = metaData.getUserName();
-            
+
             Statement createStmt = conn.createStatement();
             createStmt.executeUpdate(createSchema);
             createStmt.close();
-            
+
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(createProcedure);
             stmt.close();
-            
+
             conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            conn.close();
+            if (conn != null) {
+                conn.close();
+            }
         }
-        
+
         m_detector.setDbDriver("org.postgresql.Driver");
         m_detector.setPort(5432);
         m_detector.setUrl(url);
         m_detector.setUser(username);
         m_detector.setPassword("");
         m_detector.setStoredProcedure("isRunning");
-        
+
     }
-    
+
     @After
     public void tearDown(){
-        
+
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.init();
         assertTrue("JDBCStoredProcedureDetector should work", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testStoredProcedureFail() throws UnknownHostException{
         m_detector.setStoredProcedure("bogus");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testWrongUserName() throws UnknownHostException{
         m_detector.setUser("wrongUserName");
         m_detector.init();
-        
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
     }
-    
 
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testWrongSchema() throws UnknownHostException{
         m_detector.setSchema("defaultSchema");
         m_detector.init();
-        
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1")) );
     }
 }

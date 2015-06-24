@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -51,6 +51,11 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
 	private List<String> nonCollapsibleColumns = new ArrayList<String>();
 	private EventProxy eventProxy;
+
+    /**
+     * Used to temporary disable the refreshing of the row cache.
+     */
+    private boolean m_disableRowCacheRefresh = false;
 
 	/**
 	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
@@ -96,24 +101,43 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 			return value.toString();
 		}
 	}
-	
+
 	/**
-	 * Sets the non collapsbile columns.
+	 * Sets the non collapsible columns.
+	 *
+	 * Temporarily disables row cache refreshing since every call to
+	 * setColumnCollapsible() triggers one. The refresh is deferred
+	 * until all columns have been processed.
+	 *
 	 * @param nonCollapsibleColumns
 	 */
-	public void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
-	    // set all elements to collapsible
-	    for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
-	        setColumnCollapsible(eachPropertyId,  true);
+	public synchronized void setNonCollapsibleColumns(List<String> nonCollapsibleColumns) {
+	    m_disableRowCacheRefresh = true;
+	    try {
+	        // set all elements to collapsible
+	        for (Object eachPropertyId : m_container.getContainerPropertyIds()) {
+	            setColumnCollapsible(eachPropertyId,  true);
+	        }
+
+	        // set new value
+	        if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
+
+	        // set non collapsible
+	        for (Object eachPropertyId : nonCollapsibleColumns) {
+	            setColumnCollapsible(eachPropertyId,  false);
+	        }
+	    } finally {
+	        m_disableRowCacheRefresh = false;
 	    }
-	    
-	    // set new value
-	    if (nonCollapsibleColumns == null) nonCollapsibleColumns = new ArrayList<String>();
-        
-        // set non collapsible
-        for (Object eachPropertyId : nonCollapsibleColumns) {
-            setColumnCollapsible(eachPropertyId,  false);
+	    refreshRowCache();
+    }
+
+    @Override
+    public void refreshRowCache() {
+        if (m_disableRowCacheRefresh) {
+            return;
         }
+        super.refreshRowCache();
     }
 
     @Override

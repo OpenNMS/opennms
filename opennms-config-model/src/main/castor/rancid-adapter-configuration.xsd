@@ -262,6 +262,12 @@
         </annotation>
       </attribute>
 
+     <attribute name="sysdescr-match" type="string" use="optional">
+        <annotation>
+          <documentation>regular expression to match sysdescription.</documentation>
+        </annotation>
+      </attribute>
+
       <attribute name="type" type="string" use="required">
         <annotation>
           <documentation>The rancid device type 

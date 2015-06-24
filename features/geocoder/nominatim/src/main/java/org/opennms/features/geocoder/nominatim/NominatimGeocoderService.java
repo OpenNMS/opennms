@@ -1,20 +1,46 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.geocoder.nominatim;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.ProxySelector;
 import java.net.URLEncoder;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderException;
 import org.opennms.features.geocoder.GeocoderService;
@@ -23,7 +49,7 @@ import org.slf4j.LoggerFactory;
 
 public class NominatimGeocoderService implements GeocoderService {
     private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
-    private static final DefaultHttpClient m_httpClient = new DefaultHttpClient();
+    private final HttpClientWrapper m_clientWrapper;
 
     private String m_emailAddress;
     private String m_referer;
@@ -31,14 +57,11 @@ public class NominatimGeocoderService implements GeocoderService {
     private Logger m_log = LoggerFactory.getLogger(getClass());
 
     public NominatimGeocoderService() {
-        // Honor the JRE's HTTP proxy settings
-        final ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
-            m_httpClient.getConnectionManager().getSchemeRegistry(),
-            ProxySelector.getDefault()
-        );
-        m_httpClient.setRoutePlanner(routePlanner);
+        m_clientWrapper = HttpClientWrapper.create()
+                .dontReuseConnections()
+                .useSystemProxySettings();
     }
-    
+
     public void onInit() {
         if (m_emailAddress == null || "".equals(m_emailAddress)) {
             throw new UnsupportedOperationException("You must specify an email address for the Nominatim geocoder!");
@@ -54,8 +77,9 @@ public class NominatimGeocoderService implements GeocoderService {
         }
 
         InputStream responseStream = null;
+        CloseableHttpResponse response = null;
         try {
-            final HttpResponse response = m_httpClient.execute(method);
+            response = m_clientWrapper.execute(method);
             final StatusLine statusLine = response.getStatusLine();
             if (statusLine.getStatusCode() != 200) {
                 throw new GeocoderException("Nominatim returned a non-OK response code: " + statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
@@ -83,6 +107,7 @@ public class NominatimGeocoderService implements GeocoderService {
             throw new GeocoderException("unable to get lon/lat from Nominatim", e);
         } finally {
             IOUtils.closeQuietly(responseStream);
+            m_clientWrapper.close(response);
         }
     }
 
@@ -105,7 +130,7 @@ public class NominatimGeocoderService implements GeocoderService {
     public String getReferer() {
         return m_referer;
     }
-    
+
     public void setReferer(final String referer) {
         m_referer = referer;
     }

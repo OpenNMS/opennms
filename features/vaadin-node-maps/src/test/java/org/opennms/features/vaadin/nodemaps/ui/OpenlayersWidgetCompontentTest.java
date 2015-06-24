@@ -1,6 +1,35 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.ui;
 
-import com.vaadin.server.PaintTarget;
+import static org.junit.Assert.assertEquals;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -8,19 +37,17 @@ import org.junit.Test;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
 import org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent;
-import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 
-import static org.junit.Assert.assertEquals;
+import com.vaadin.server.PaintTarget;
 
 public class OpenlayersWidgetCompontentTest {
     private NodeDao m_nodeDao;
     private AssetRecordDao m_assetDao;
-    private AlarmDao m_alarmDao;
     private GeocoderService m_geocoder;
     @SuppressWarnings("unused")
     private MapWidgetComponent m_component;
@@ -29,7 +56,6 @@ public class OpenlayersWidgetCompontentTest {
     public void setUp() {
         m_nodeDao = EasyMock.createMock(NodeDao.class);
         m_assetDao = EasyMock.createMock(AssetRecordDao.class);
-        m_alarmDao = EasyMock.createMock(AlarmDao.class);
         m_geocoder = EasyMock.createMock(GeocoderService.class);
         m_component = new MapWidgetComponent();
     }

@@ -19,7 +19,7 @@
     <complexType mixed="true">
       <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="0" ref="this:global"/>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:event"/>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:event"/>
         <element maxOccurs="unbounded" minOccurs="0" name="event-file" type="string"/>
       </choice>
     </complexType>

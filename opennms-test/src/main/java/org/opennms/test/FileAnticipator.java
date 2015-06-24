@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,15 +34,22 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
+
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.io.FileUtils;
@@ -63,11 +70,13 @@ public class FileAnticipator extends Assert {
 
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     
-    private LinkedList<File> m_expecting = new LinkedList<File>();
-    private LinkedList<File> m_deleteMe = new LinkedList<File>();
+    private List<File> m_expecting = new LinkedList<File>();
+    private List<File> m_expectingPrefixes = new LinkedList<File>();
+    private Map<File, List<String>> m_suffixesToExclude = new HashMap<File, List<String>>();
+    private List<File> m_deleteMe = new LinkedList<File>();
     private File m_tempDir = null;
     private boolean m_initialized = false;
-    
+
     /**
      * <p>Constructor for FileAnticipator.</p>
      *
@@ -418,13 +427,33 @@ public class FileAnticipator extends Assert {
 
         return internalExpecting(parent, name);
     }
-    
+
+    public void expectingFileWithPrefix(File parent, String prefix, String... suffixesToExclude) {
+        if (parent == null) {
+            throw new IllegalArgumentException("parent argument cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("prefix argument cannot be null");
+        }
+
+        assertInitialized();
+
+        internalExpectingFileWithPrefix(parent, prefix, suffixesToExclude);
+    }
+
     private File internalExpecting(File parent, String name) {
         File f = new File(parent, name);
         m_expecting.add(f);
         return f;
     }
-    
+
+    private File internalExpectingFileWithPrefix(File parent, String prefix, String[] suffixesToExclude) {
+        File f = new File(parent, prefix);
+        m_expectingPrefixes.add(f);
+        m_suffixesToExclude.put(f, Arrays.asList(suffixesToExclude));
+        return f;
+    }
+
     /**
      * Delete expected files, throwing an AssertionFailedError if any of
      * the expected files don't exist.
@@ -453,6 +482,18 @@ public class FileAnticipator extends Assert {
         });
         
         List<String> errors = new ArrayList<String>();
+
+        for (ListIterator<File> i = m_expectingPrefixes.listIterator(m_expectingPrefixes.size()); i.hasPrevious(); ) {
+            File f = i.previous();
+            List<Path> matches = getMatches(f);
+            if (matches.size() < 1 && !ignoreNonExistantFiles) {
+                errors.add("Expected prefix that needs to be deleted does not exist: " + f.getAbsolutePath());
+            }
+            for (Path match : matches) {
+                if (!match.toFile().delete()) errors.add("Could not delete expected file: " + match.toAbsolutePath());
+            }
+            i.remove();
+        }
 
         for (ListIterator<File> i = m_expecting.listIterator(m_expecting.size()); i.hasPrevious(); ) {
             File f = i.previous();
@@ -498,5 +539,63 @@ public class FileAnticipator extends Assert {
     public boolean isInitialized() {
         return m_initialized;
     }
-    
+
+    public boolean foundExpected() {
+        LOG.debug("checking for {} expected files...", m_expecting.size() + m_expectingPrefixes.size());
+        for (final File expected : m_expecting) {
+            if (!expected.exists()) {
+                return false;
+            }
+        }
+
+        // Handle files with prefixes
+        for (final File expected : m_expectingPrefixes) {
+            if (getMatches(expected).size() < 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private List<Path> getMatches(File expectedFileWithPrefix) {
+        List<Path> filteredMatches = new LinkedList<Path>();
+
+        // Split the filename into its parent folder and the requested prefix
+        String prefix = expectedFileWithPrefix.getName();
+        File parent = expectedFileWithPrefix.getParentFile();
+
+        // Find all files in the parent folder that match the prefix
+        List<Path> matches;
+        try {
+            matches = Files.list(parent.toPath())
+                    .filter(p -> p.getFileName().toString().startsWith(prefix))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return filteredMatches;
+        }
+
+        // Grab the list of excluded sufixes for this particular expectation
+        List<String> suffixesToExclude = m_suffixesToExclude.get(expectedFileWithPrefix);
+        if (suffixesToExclude == null) {
+            suffixesToExclude = new ArrayList<String>(0);
+        }
+
+        // Filter the list of matches
+        for (Path match : matches) {
+            boolean shouldAdd = true;
+            for (String suffix : suffixesToExclude) {
+                if (match.getFileName().toString().endsWith(suffix)) {
+                    shouldAdd = false;
+                    break;
+                }
+            }
+
+            if (shouldAdd) {
+                filteredMatches.add(match);
+            }
+        }
+
+        return filteredMatches;
+    }
 }

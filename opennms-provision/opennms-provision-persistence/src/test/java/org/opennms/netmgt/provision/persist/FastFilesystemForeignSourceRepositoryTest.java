@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,7 +50,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
     private String m_defaultForeignSourceName;
 
     @Autowired
-    @Qualifier("fast")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before
@@ -62,6 +62,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         Requisition r = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
         m_foreignSourceRepository.save(r);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return r;
     }
 
@@ -71,6 +72,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return fs;
     }
 

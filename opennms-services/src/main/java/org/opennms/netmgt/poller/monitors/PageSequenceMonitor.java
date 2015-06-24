@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,11 +31,13 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
+import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,41 +47,33 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.SSLContext;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.http.Header;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
@@ -98,16 +92,15 @@ import org.slf4j.LoggerFactory;
  * that allows it to be used along with other plug-ins by the service poller framework.
  *
  * @author <a mailto:brozow@opennms.org>Mathew Brozowski</a>
- * @version $Id: $
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
-    
-    
+
+
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
-    
+
     protected static class SequenceTracker{
-        
+
         TimeoutTracker m_tracker;
         public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
             final Map<String, Object> parameters = new HashMap<String, Object>();
@@ -133,7 +126,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_tracker.elapsedTimeInMillis();
         }
     }
-    
+
     private static final int DEFAULT_SEQUENCE_RETRY = 0;
 
     //FIXME: This should be wired with Spring
@@ -191,7 +184,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return m_pages;
         }
 
-        private void execute(DefaultHttpClient client, MonitoredService svc, Map<String,Number> responseTimes) {
+        private void execute(HttpClientWrapper clientWrapper, MonitoredService svc, Map<String,Number> responseTimes) {
             // Clear the sequence properties before each run
             clearSequenceProperties();
 
@@ -204,13 +197,13 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
             for (HttpPage page : getPages()) {
                 LOG.debug("Executing HttpPage: {}", page.toString());
-                page.execute(client, svc, m_sequenceProperties);
+                page.execute(clientWrapper, svc, m_sequenceProperties);
                 if (page.getDsName() != null) {
                     LOG.debug("Recording response time {} for ds {}", page.getResponseTime(), page.getDsName());
                     responseTimes.put(page.getDsName(), page.getResponseTime());
                 }
             }
-            
+
         }
 
         protected Properties getSequenceProperties() {
@@ -260,7 +253,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             try {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
                 URIBuilder ub = new URIBuilder(uri);
-                ub.setQuery(query);
+                final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
+                if (!params.isEmpty()) {
+                    ub.setParameters(params);
+                }
                 uriWithQueryString = ub.build();
                 this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
@@ -311,41 +307,52 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return retval.toString();
         }
 
-        void execute(DefaultHttpClient client, MonitoredService svc, Properties sequenceProperties) {
+        void execute(final HttpClientWrapper parentClientWrapper, final MonitoredService svc, final Properties sequenceProperties) {
+            final HttpClientWrapper clientWrapper = parentClientWrapper.duplicate();
+            CloseableHttpResponse response = null;
             try {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
-                if (getVirtualHost(svc) != null) {
-                    // According to the standard, adding the default ports to the host header is optional, and this makes IIS 7.5 happy.
-                    HttpHost host = null;
-                    if ("https".equals(uri.getScheme()) && uri.getPort() == 443) { // Suppress the addition of default port for HTTPS
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else if ("http".equals(uri.getScheme()) && uri.getPort() == 80) { //  Suppress the addition of default port for HTTP
-                        host = new HttpHost(getVirtualHost(svc));
-                    } else {  // Add the port if it is non-standard
-                        host = new HttpHost(getVirtualHost(svc), uri.getPort());
-                    }
-                    method.getParams().setParameter(ClientPNames.VIRTUAL_HOST, host);
+                if (getVirtualHost(svc) == null) {
+                    LOG.debug("Adding request interceptor to remove the host header");
+                    clientWrapper.addRequestInterceptor(new HttpRequestInterceptor() {
+                        @Override
+                        public void process(HttpRequest request, HttpContext ctx) throws HttpException, IOException {
+                            Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                            if (host != null) {
+                                request.removeHeader(host);
+                                LOG.debug("httpRequestInterceptor: virtual-host is not set, removing host header");
+                            }
+                        }
+                    });
+                } else {
+                    HttpHost host = new HttpHost(getVirtualHost(svc), uri.getPort());
+                    clientWrapper.setVirtualHost(host.toHostString());
                 }
 
-                if (getUserAgent() != null) {
-                    method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, getUserAgent());
+                switch(m_page.getHttpVersion()) {
+                    case "0.9":
+                        clientWrapper.setVersion(HttpVersion.HTTP_0_9); break;
+                    case "1.0":
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_0); break;
+                    default:
+                        clientWrapper.setVersion(HttpVersion.HTTP_1_1); break;
+                }
+
+                if (getUserAgent() != null && !getUserAgent().trim().isEmpty()) {
+                    clientWrapper.setUserAgent(getUserAgent());
                 } else {
-                    method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS PageSequenceMonitor (Service name: " + svc.getSvcName() + ")");
+                    clientWrapper.setUserAgent("OpenNMS PageSequenceMonitor (Service name: " + svc.getSvcName() + ")");
                 }
 
                 if ("https".equals(uri.getScheme())) {
                     if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
-                        final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                        final Scheme https = registry.getScheme("https");
-
-                        // Override the trust validation with a lenient implementation
-                        final SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                        final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
-                        // This will replace the existing "https" schema
-                        registry.register(lenient);
+                        try {
+                            clientWrapper.useRelaxedSSL("https");
+                        } catch (final GeneralSecurityException e) {
+                            LOG.warn("Failed configure relaxed SSL for PageSequence {}", svc.getSvcName(), e);
+                        }
                     }
                 }
 
@@ -357,14 +364,14 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     String userInfo = getUserInfo();
                     String[] streetCred = userInfo.split(":", 2);
                     if (streetCred.length == 2) {
-                        client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(streetCred[0], streetCred[1]));
+                        clientWrapper.addBasicCredentials(streetCred[0], streetCred[1]);
                     } else { 
                         LOG.warn("Illegal value found for username/password HTTP credentials: {}", userInfo);
                     }
                 }
 
                 long startTime = System.nanoTime();
-                HttpResponse response = client.execute(method);
+                response = clientWrapper.execute(method);
                 long endTime = System.nanoTime();
                 m_responseTime = (endTime - startTime)/1000000.0;
 
@@ -404,14 +411,15 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     updateSequenceProperties(sequenceProperties, matcher);
                 }
 
-            } catch (NoSuchAlgorithmException e) {
-                // Should never happen
-                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider", e);
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException("unable to construct URL for page", e);
             } catch (IOException e) {
                 LOG.debug("I/O Error", e);
                 throw new PageSequenceMonitorException("I/O Error", e);
+            } finally {
+                if (clientWrapper != null) {
+                    clientWrapper.close(response);
+                }
             }
         }
 
@@ -483,7 +491,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setHost(host);
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
-            ub.setQuery(getQuery(seqProps, svcProps));
+            final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), Charset.forName("UTF-8"));
+            if (!params.isEmpty()) {
+                ub.setParameters(params);
+            }
             ub.setFragment(getFragment(seqProps, svcProps));
             return ub.build();
         }
@@ -509,8 +520,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private Properties getServiceProperties(MonitoredService svc) {
+            final InetAddress addr = InetAddressUtils.addr(svc.getIpAddr());
+            boolean requireBrackets = addr != null && addr instanceof Inet6Address && !svc.getIpAddr().startsWith("[");
             Properties properties = new Properties();
-            properties.put("ipaddr", svc.getIpAddr());
+            properties.put("ipaddr", requireBrackets ? "[" + svc.getIpAddr() + "]" : svc.getIpAddr());
             properties.put("nodeid", svc.getNodeId());
             properties.put("nodelabel", svc.getNodeLabel());
             properties.put("svcname", svc.getSvcName());
@@ -584,10 +597,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private final Map<String, Object> m_parameterMap;
-        private final HttpParams m_clientParams;
         private final HttpPageSequence m_pageSequence;
 
-        @SuppressWarnings("unchecked")
         PageSequenceMonitorParameters(final Map<String, Object> parameterMap) {
             m_parameterMap = parameterMap;
 
@@ -614,8 +625,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             PageSequence sequence = parsePageSequence((String)pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
             m_pageSequence.setParameters(m_parameterMap);
-
-            m_clientParams = createClientParams();
         }
 
         Map<String, Object> getParameterMap() {
@@ -631,16 +640,6 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         }
 
-        private HttpParams createClientParams() {
-            HttpParams clientParams = new BasicHttpParams();
-            clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, getTimeout());
-            clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, getTimeout());
-            clientParams.setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-            // Not sure if this flag has any effect under the new httpcomponents-client code
-            clientParams.setBooleanParameter("http.protocol.single-cookie-header", true);
-            return clientParams;
-        }
-
         public int getRetries() {
             return getKeyedInteger(m_parameterMap, "retry", DEFAULT_RETRY);
         }
@@ -649,43 +648,40 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return getKeyedInteger(m_parameterMap, "timeout", DEFAULT_TIMEOUT);
         }
 
-        public HttpParams getClientParams() {
-            return m_clientParams;
-        }
-
-        DefaultHttpClient createHttpClient() {
-            DefaultHttpClient client = new DefaultHttpClient(getClientParams());
-
-            client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(getRetries(), false));
-
-            return client;
+        HttpClientWrapper createHttpClient() {
+            HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                    .setConnectionTimeout(getTimeout())
+                    .setSocketTimeout(getTimeout())
+                    .setRetries(getRetries())
+                    .useBrowserCompatibleCookies();
+            return clientWrapper;
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
-        DefaultHttpClient client = null;
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-        
+
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
+            HttpClientWrapper clientWrapper = null;
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-    
-                client = parms.createHttpClient();
-                
+
+                clientWrapper = parms.createHttpClient();
+
                 tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
-                parms.getPageSequence().execute(client, svc, responseTimes);
-    
+                parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
+
                 double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
-    
+
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
                 serviceStatus.setProperties(responseTimes);
@@ -694,12 +690,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
                 serviceStatus.setProperties(responseTimes);
             } finally {
-                if (client != null) {
-                    client.getConnectionManager().shutdown();
-                }
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
-        
+
         return serviceStatus;
     }
 }

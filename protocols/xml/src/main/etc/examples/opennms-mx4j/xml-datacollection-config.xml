@@ -1,0 +1,41 @@
+<xml-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+  <xml-collection name="opennms-mx4j">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Queued">
+      <import-groups>xml-datacollection/opennms-queued-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Pollerd">
+      <import-groups>xml-datacollection/opennms-pollerd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Vacuumd">
+      <import-groups>xml-datacollection/opennms-vacuumd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Collectd">
+      <import-groups>xml-datacollection/opennms-collectd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=JettyServer">
+      <import-groups>xml-datacollection/opennms-jettyserver-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Statsd">
+      <import-groups>xml-datacollection/opennms-statsd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Trapd">
+      <import-groups>xml-datacollection/opennms-trapd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=OpenNMS:Name=Notifd">
+      <import-groups>xml-datacollection/opennms-notifd-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=java.lang:type=Memory">
+      <import-groups>xml-datacollection/jvm-memory-mx4j.xml</import-groups>
+    </xml-source>
+    <xml-source url="http://manager:manager@{ipaddr}:8181/mbean?objectname=java.lang:type=Threading">
+      <import-groups>xml-datacollection/jvm-threading-mx4j.xml</import-groups>
+    </xml-source>
+  </xml-collection>
+</xml-datacollection-config>

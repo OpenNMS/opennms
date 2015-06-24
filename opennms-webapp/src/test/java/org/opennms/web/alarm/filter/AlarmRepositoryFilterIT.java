@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,7 +35,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +54,7 @@ import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,10 +65,12 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@DirtiesContext // XXX needed? JUnitTemporaryDatabase marks dirty by default
 public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Autowired
@@ -90,13 +92,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         m_dbPopulator.populateDatabase();
     }
     
-    @After
-    public void tearDown(){
-        
-    }
-    
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testAlarmTypeFilter(){
         OnmsAlarm[] alarm = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new AlarmTypeFilter(3))));
         assertEquals(0, alarm.length);
@@ -107,6 +105,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testBeforeFirstEventTimeFilter(){
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new BeforeFirstEventTimeFilter(new Date()))));
         assertEquals(1, alarms.length);
@@ -117,6 +116,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testBeforeLastEventTime(){
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new BeforeLastEventTimeFilter(new Date()))));
         assertEquals(1, alarms.length);
@@ -124,6 +124,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testExactUeiFilter(){
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new ExactUEIFilter("test uei"))));
         assertEquals(0, alarms.length);
@@ -134,6 +135,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testInterfaceFilter(){
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(new AlarmCriteria(new InterfaceFilter(addr("192.168.1.1")))));
         assertEquals(1, alarms.length);
@@ -141,6 +143,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeAcknowledgeByFilter(){
         AlarmCriteria criteria = new AlarmCriteria(new NegativeAcknowledgedByFilter("non user"));
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
@@ -149,6 +152,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testIPLikeFilter(){
         AlarmCriteria criteria = new AlarmCriteria(new IPAddrLikeFilter("192.168.1.1"));
         
@@ -159,6 +163,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeInterfaceFilter(){
         AlarmCriteria criteria = new AlarmCriteria(new NegativeInterfaceFilter(addr("192.168.1.101")));
         
@@ -168,6 +173,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeNodeFilter(){
         AlarmCriteria criteria = getCriteria(new NegativeNodeFilter(11, m_appContext));
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
@@ -179,6 +185,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeExactUeiFilter(){
         AlarmCriteria criteria = getCriteria(new NegativeExactUEIFilter("uei.opennms.org/bogus"));
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
@@ -187,6 +194,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativePartialUEIFilter(){
         AlarmCriteria criteria = getCriteria(new NegativePartialUEIFilter("uei.opennms.org"));
         
@@ -196,6 +204,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeServiceFilter(){
         AlarmCriteria criteria = getCriteria(new NegativeServiceFilter(12, null));
         
@@ -205,6 +214,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNegativeSeverityFilter(){
         AlarmCriteria criteria = getCriteria(new NegativeSeverityFilter(OnmsSeverity.CRITICAL));
         
@@ -216,6 +226,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     @Ignore
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNodeFilter(){
         AlarmCriteria criteria = getCriteria(new NodeFilter(1));
         
@@ -231,6 +242,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
 
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testNodeNameLikeFilter(){
         AlarmCriteria criteria = getCriteria(new NodeNameLikeFilter("mr"));
         
@@ -240,6 +252,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testSeverityBetweenFilter(){
         AlarmCriteria criteria = getCriteria(new SeverityBetweenFilter(OnmsSeverity.CLEARED, OnmsSeverity.MAJOR));
         
@@ -249,6 +262,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testServiceFilter(){
         AlarmCriteria criteria = getCriteria(new ServiceFilter(1, null));
         
@@ -258,6 +272,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testAfterFirstEventTime(){
         AlarmCriteria criteria = getCriteria(new AfterFirstEventTimeFilter(new Date()));
         
@@ -267,6 +282,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testDescriptionSubstringFilter(){
         AlarmCriteria criteria = getCriteria(new DescriptionSubstringFilter("alarm"));
         
@@ -276,6 +292,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testLogMessageSubstringFilter(){
         AlarmCriteria criteria = getCriteria(new LogMessageSubstringFilter("this is a test"));
         
@@ -285,6 +302,8 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
+    @SuppressWarnings("deprecation")
     public void testLogMessageMatchAnyFilter(){
         AlarmCriteria criteria = getCriteria(new LogMessageMatchesAnyFilter("log"));
         
@@ -294,6 +313,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testParmsLikeFilter() {
         List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
         assertNotNull(events);
@@ -335,6 +355,7 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     
     @Test
     @Transactional
+    @JUnitTemporaryDatabase
     public void testParmsNotLikeFilter() {
         List<OnmsEvent> events = m_dbPopulator.getEventDao().findAll();
         assertNotNull(events);

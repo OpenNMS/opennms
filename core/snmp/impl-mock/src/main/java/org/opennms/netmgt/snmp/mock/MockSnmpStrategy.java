@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,8 @@
 package org.opennms.netmgt.snmp.mock;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -239,7 +241,27 @@ public class MockSnmpStrategy implements SnmpStrategy {
     public static void setDataForAddress(final SnmpAgentAddress agentAddress, final Resource resource) throws IOException {
         m_loaders.put(agentAddress, new PropertyOidContainer(resource));
     }
-    
+
+    public static void updateIntValue(final SnmpAgentAddress agentAddress, String oid, int value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getInt32(value));
+    }
+
+    public static void updateStringValue(final SnmpAgentAddress agentAddress, String oid, String value) {
+        try {
+            m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getOctetString(value.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            // Should be impossible
+        }
+    }
+
+    public static void updateCounter32Value(final SnmpAgentAddress agentAddress, String oid, long value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getCounter32(value));
+    }
+
+    public static void updateCounter64Value(final SnmpAgentAddress agentAddress, String oid, BigInteger value) {
+        m_loaders.get(agentAddress).set(SnmpObjId.get(oid), new MockSnmpValueFactory().getCounter64(value));
+    }
+
     public static void removeHost(final SnmpAgentAddress agentAddr) {
         m_loaders.remove(agentAddr);
     }

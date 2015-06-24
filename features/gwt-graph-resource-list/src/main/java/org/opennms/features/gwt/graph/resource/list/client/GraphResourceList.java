@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -113,7 +113,7 @@ public class GraphResourceList implements EntryPoint {
 
 
     private void createReportSelectView(Element element) {
-        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
+        ReportSelectListAppController reportSelectListAppController = new ReportSelectListAppController(getResourceListData(getDataObjectAttribute(element)), getTargetUrl(element), getBaseUrl());
         reportSelectListAppController.go(RootPanel.get(element.getId()));
     }
     
@@ -131,7 +131,7 @@ public class GraphResourceList implements EntryPoint {
     
     
     private void createGraphResourceView(Element element) {
-        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)), getBaseUrl());
+        ResourceListAppController resourceListView = new ResourceListAppController(getResourceListData(getDataObjectAttribute(element)), getTargetUrl(element), getBaseUrl());
         resourceListView.go(RootPanel.get(element.getId()));
     }
     
@@ -148,6 +148,10 @@ public class GraphResourceList implements EntryPoint {
 
     private boolean getReadOnlyAttribue(Element elem){
         return elem.getAttribute("isreadonly") != null ? (elem.getAttribute("isreadonly").equals("true")) : false;
+    }
+
+    private String getTargetUrl(Element elem) {
+        return elem.getAttribute("targetUrl") != null ? elem.getAttribute("targetUrl") : "graph/results.htm";
     }
 
     public final native String getBaseUrl() /*-{

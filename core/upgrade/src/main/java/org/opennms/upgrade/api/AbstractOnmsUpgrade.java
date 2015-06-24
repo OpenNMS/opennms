@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.upgrade.api;
 
 import java.io.File;
@@ -32,21 +33,30 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Abstract class for OpenNMS Upgrade Implementations.
@@ -55,6 +65,10 @@ import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
+
+    private static final String MERIDIAN = "meridian";
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractOnmsUpgrade.class);
 
     /** The Constant ZIP_EXT. */
     public static final String ZIP_EXT = ".zip";
@@ -68,6 +82,13 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     /** The OpenNMS version. */
     private String onmsVersion;
 
+    private String onmsProductDescription = "OpenNMS";
+
+    private String onmsProductName = "opennms";
+
+    /** The Data Source. */
+    private DataSource dataSource;
+
     /**
      * Instantiates a new abstract OpenNMS upgrade.
      *
@@ -76,6 +97,37 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     public AbstractOnmsUpgrade() throws OnmsUpgradeException {
         registerProperties(getMainProperties());
         registerProperties(getRrdProperties());
+        locateOpenNMSProduct();
+    }
+
+    /**
+     * Sets the version.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param version the new version
+     */
+    protected void setVersion(String version) {
+        onmsVersion = version;
+    }
+
+    /**
+     * Sets the product name.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param productName the new product name
+     */
+    protected void setProductName(String productName) {
+        onmsProductName = productName;
+    }
+
+    /**
+     * Sets the product description.
+     * <p>This method is intended for JUnit tests.</p>
+     *
+     * @param productDescription the new product description
+     */
+    protected void setProductDescription(String productDescription) {
+        onmsProductDescription = productDescription;
     }
 
     /* (non-Javadoc)
@@ -237,6 +289,23 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected Connection getDbConnection() throws OnmsUpgradeException {
+        initializeDatasource();
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            throw new OnmsUpgradeException("Can't obtain a connection to OpenNMS Database because " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Initializes the data source.
+     *
+     * @throws OnmsUpgradeException the OpenNMS upgrade exception
+     */
+    protected void initializeDatasource() throws OnmsUpgradeException {
+        if (dataSource != null) {
+            return;
+        }
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             DataSourceConfiguration dsc = null;
@@ -246,17 +315,19 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
                 dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
             } finally {
                 IOUtils.closeQuietly(fileInputStream);
-            } 
-            for (JdbcDataSource ds : dsc.getJdbcDataSourceCollection()) {
-                if (ds.getName().equals("opennms")) {
-                    log("Connecting to %s\n", ds.getUrl());
-                    return DriverManager.getConnection(ds.getUrl(), ds.getUserName(), ds.getPassword());
+            }
+            for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
+                if (jds.getName().equals("opennms")) {
+                    dataSource = new SimpleDataSource(jds);
+                    DataSourceFactory.setInstance(dataSource);
                 }
+            }
+            if (dataSource == null) {
+                throw new OnmsUpgradeException("Can't find theOpenNMS Database settings.");
             }
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't connect to OpenNMS Database because " + e.getMessage(), e);
         }
-        throw new OnmsUpgradeException("Databaseconnection cannot be null");
     }
 
     /**
@@ -345,7 +416,11 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected void unzipFile(File zipFile, File outputFolder) throws OnmsUpgradeException {
         try {
-            if (!outputFolder.exists()) outputFolder.mkdirs();
+            if (!outputFolder.exists()) {
+                if (!outputFolder.mkdirs()) {
+                    LOG.warn("Could not make directory: {}", outputFolder.getPath());
+                }
+            }
             FileInputStream fis;
             byte[] buffer = new byte[1024];
             fis = new FileInputStream(zipFile);
@@ -392,9 +467,59 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             if (version == null) {
                 throw new OnmsUpgradeException("Can't retrive OpenNMS version");
             }
-            onmsVersion = version;
+            final Pattern versionPattern = Pattern.compile("^(\\d+\\.\\d+\\.\\d+).*?$");
+            final Matcher m = versionPattern.matcher(version);
+            if (m.matches()) {
+                onmsVersion = m.group(1);
+            } else {
+                onmsVersion = version;
+            }
         }
         return onmsVersion;
+    }
+
+    /**
+     * Locate OpenNMS product.
+     */
+    private void locateOpenNMSProduct()  {
+        try {
+            final InputStream installerProperties = getClass().getResourceAsStream("/installer.properties");
+            if (installerProperties != null) {
+                final Properties props = new Properties();
+                props.load(installerProperties);
+                installerProperties.close();
+                onmsProductName = (String) props.get("install.package.name");
+                onmsProductDescription = (String) props.get("install.package.description");
+            }
+        } catch (final IOException e) {
+        }
+    }
+
+    /**
+     * Gets the OpenNMS product name.
+     *
+     * @return the OpenNMS product name
+     */
+    public String getOpennmsProductName() {
+        return onmsProductName;
+    }
+
+    /**
+     * Gets the OpenNMS product description.
+     *
+     * @return the OpenNMS product description
+     */
+    public String getOpennmsProductDescription() {
+        return onmsProductDescription;
+    }
+
+    /**
+     * Checks if is meridian.
+     *
+     * @return true, if is meridian
+     */
+    public boolean isMeridian() {
+        return getOpennmsProductName().equals(MERIDIAN);
     }
 
     /**
@@ -409,9 +534,12 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
     protected boolean isInstalledVersionGreaterOrEqual(int mayor, int minor, int release) throws OnmsUpgradeException {
         String version = getOpennmsVersion();
         String[] a = version.split("\\.");
+        int c_major = isMeridian() ? Integer.parseInt(a[0]) + 13 :  Integer.parseInt(a[0]); // Meridian ~ 14.0.4
+        int c_minor = isMeridian() ? Integer.parseInt(a[1]) + 1 :Integer.parseInt(a[1]); // Be sure it's greater than 14.0.3
+        int c_release = Integer.parseInt(a[2]);
         try {
             int supplied  = mayor * 100 + minor * 10 + release;
-            int installed = Integer.parseInt(a[0]) * 100 + Integer.parseInt(a[1]) * 10 + Integer.parseInt(a[2].replaceFirst("[^\\d].+", ""));
+            int installed = c_major * 100 + c_minor * 10 + c_release;
             return installed >= supplied;
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't process the OpenNMS version");
@@ -425,9 +553,10 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      */
     protected void printMainSettings() throws OnmsUpgradeException {
         log("OpenNMS Home: %s\n", getHomeDirectory());
-        log("OpenNMS Version: %s\n", getOpennmsVersion());
+        log("OpenNMS Version: %s\n", getOpennmsProductDescription() + " " + getOpennmsVersion());
         log("Is RRDtool enabled? %s\n", isRrdToolEnabled());
         log("Is storeByGroup enabled? %s\n", isStoreByGroupEnabled());
+        log("Is storeByForeignSource enabled? %s\n", isStoreByForeignSourceEnabled());
         log("RRD Extension: %s\n", getRrdExtension());
         log("RRD Strategy: %s\n", getRrdStrategy());
     }

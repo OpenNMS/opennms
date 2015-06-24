@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTime_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="204"/>
+	<property name="ireport.zoom" value="1.5026296018031553"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290120600000L)]]></defaultValueExpression>
-	</parameter>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="rrdDir" class="java.lang.String"/>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
 	<queryString language="jrobin">
@@ -62,9 +62,6 @@
 	</pageFooter>
 	<summary>
 		<band height="47" splitType="Stretch">
-			<rectangle>
-				<reportElement x="25" y="0" width="530" height="20" backcolor="#CCCCCC"/>
-			</rectangle>
 			<textField pattern="###0.00">
 				<reportElement style="Body" x="355" y="20" width="100" height="20"/>
 				<textElement/>
@@ -108,7 +105,7 @@
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="48">
 			<textField>
 				<reportElement style="Body" x="25" y="22" width="230" height="20"/>
 				<textElement textAlignment="Left"/>
@@ -135,11 +132,11 @@
 				<text><![CDATA[Maximum (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="22" width="300" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
+				<reportElement style="Body" x="255" y="22" width="300" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="10"/>
 				</textElement>
-				<text><![CDATA[No Data for Interface]]></text>
+				<text><![CDATA[No data for interface]]></text>
 			</staticText>
 		</band>
 	</noData>

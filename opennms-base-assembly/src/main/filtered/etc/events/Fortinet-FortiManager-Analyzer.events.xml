@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>401</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapHASwitch</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapHASwitch</event-label>
+        <descr>
+&lt;p&gt;FortiManager HA cluster has been re-arranged. A new master has been selected and asserted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapHASwitch trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>402</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapRAIDStatusChange</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapRAIDStatusChange</event-label>
+        <descr>
+&lt;p&gt;Trap is sent when there is a change in the status of the RAID array, if present.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmRAIDStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		arrayOK(1)
+		arrayDegraded(2)
+		arrayFailed(3)
+		arrayRebuilding(4)
+		arrayRebuildingStarted(5)
+		arrayRebuildingFinished(6)
+		arrayInitializing(7)
+		arrayInitializingStarted(8)
+		arrayInitializingFinished(9)
+		diskOK(10)
+		diskDegraded(11)
+		diskFailEvent(12)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmRAIDDevIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapRAIDStatusChange trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fmRAIDStatus=%parm[#3]%
+	fmRAIDDevIndex=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="arrayOK"/>
+            <decode varbindvalue="2" varbinddecodedstring="arrayDegraded"/>
+            <decode varbindvalue="3" varbinddecodedstring="arrayFailed"/>
+            <decode varbindvalue="4" varbinddecodedstring="arrayRebuilding"/>
+            <decode varbindvalue="5" varbinddecodedstring="arrayRebuildingStarted"/>
+            <decode varbindvalue="6" varbinddecodedstring="arrayRebuildingFinished"/>
+            <decode varbindvalue="7" varbinddecodedstring="arrayInitializing"/>
+            <decode varbindvalue="8" varbinddecodedstring="arrayInitializingStarted"/>
+            <decode varbindvalue="9" varbinddecodedstring="arrayInitializingFinished"/>
+            <decode varbindvalue="10" varbinddecodedstring="diskOK"/>
+            <decode varbindvalue="11" varbinddecodedstring="diskDegraded"/>
+            <decode varbindvalue="12" varbinddecodedstring="diskFailEvent"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>403</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapLogAlert</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapLogAlert</event-label>
+        <descr>
+&lt;p&gt;Trap is sent when a log based alert has been triggered.
+         Alert description included in trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnGenTrapMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapLogAlert trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fnGenTrapMsg=%parm[#3]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>404</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapLogRateThreshold</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapLogRateThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates that the incoming log rate has exceeded the threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLogRate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLogRateThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapLogRateThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fmLogRate=%parm[#3]%
+	fmLogRateThreshold=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>405</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapLogDataRateThreshold</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapLogDataRateThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates that the incoming log data rate has exceeded the threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLogDataRate&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLogDataRateThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapLogDataRateThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fmLogDataRate=%parm[#3]%
+	fmLogDataRateThreshold=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>407</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapLicGbDayThreshold</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapLicGbDayThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates that the used log has exceeded the licensed GB/Day&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLicGbDay&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLicGbDayThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapLicGbDayThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fmLicGbDay=%parm[#3]%
+	fmLicGbDayThreshold=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>408</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapLicDevQuotaThreshold</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapLicDevQuotaThreshold</event-label>
+        <descr>
+&lt;p&gt;Indicates that the used device quota has exceeded the licensed device quota&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLicDevQuota&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fmLicDevQuotaThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapLicDevQuotaThreshold trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%
+	fmLicDevQuota=%parm[#3]%
+	fmLicDevQuotaThreshold=%parm[#4]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12356.103.0</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>409</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/fortinet/traps/fortimanager-analyzer/fmTrapCpuThresholdExcludeNice</uei>
+        <event-label>FORTINET-FORTIMANAGER-FORTIANALYZER-MIB defined trap event: fmTrapCpuThresholdExcludeNice</event-label>
+        <descr>
+&lt;p&gt;Indicates that the CPU usage excluding nice processes has exceeded the threshold&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fnSysSerial&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+	fmTrapCpuThresholdExcludeNice trap received
+	fnSysSerial=%parm[#1]%
+	sysName=%parm[#2]%&lt;/p&gt;
+	</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>

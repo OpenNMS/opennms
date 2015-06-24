@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.gwt.web.ui.asset.client.tools.fieldsets;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.user.client.ui.ListBox;
@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.ListBox;
 public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 
 	private ListBox listBox = new ListBox(false);
-	private ArrayList<String> options;
+	private List<String> options;
 
 	@UiConstructor
 	public FieldSetListBox(String name, String value, String helpText) {
@@ -49,7 +49,7 @@ public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 		init(value, null);
 	}
 
-	public FieldSetListBox(String name, String value, String helpText, ArrayList<String> options) {
+	public FieldSetListBox(String name, String value, String helpText, List<String> options) {
 		super(name, helpText);
 		init(value, options);
 	}
@@ -59,7 +59,7 @@ public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 		return listBox.getItemText(listBox.getSelectedIndex());
 	}
 
-	private void init(String value, ArrayList<String> options) {
+	private void init(String value, List<String> options) {
 		inititalValue = value;
 
 		this.options = options;
@@ -83,9 +83,7 @@ public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 
 		listBox.setVisibleItemCount(1);
 		listBox.addChangeHandler(this);
-		listBox.setStyleName("listBox");
-
-		listBox.setSize("300px", "18px");
+		listBox.addStyleName("form-control");
 
 		panel.add(listBox);
 	}
@@ -102,7 +100,7 @@ public class FieldSetListBox extends AbstractFieldSet implements FieldSet {
 	 * @param ArrayList
 	 *            <String> options
 	 */
-	public void setOptions(ArrayList<String> options) {
+	public void setOptions(List<String> options) {
 		this.options = options;
 		listBox.clear();
 		for (String string : options) {

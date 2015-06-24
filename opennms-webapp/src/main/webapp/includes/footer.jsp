@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,6 +33,7 @@
 
   Modifications:
 
+  2014 Dec 30: Happy new year - jeffg@opennms.org
   2014 Jan 20: Happy new year - jeffg@opennms.org
   2013 Jan 04: Happy new year - jeffg@opennms.org
   2011 Jan 01: Happy new year - jeffg@opennms.org
@@ -79,7 +80,7 @@
 
     <div id="footer">
       <p>
-        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2014
+        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2015
 	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
 	    OpenNMS&reg; is a registered trademark of
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

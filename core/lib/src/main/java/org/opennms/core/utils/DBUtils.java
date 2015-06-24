@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,20 +38,18 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * <p>DBUtils class.</p>
+ * A utility for tracking open JDBC {@link Statement}s, {@link ResultSet}s, and {@link Connection}s
+ * to ease cleanup and avoid connection leaks.
  *
- * @author ranger
+ * @author Benjamin Reed &lt;ranger@opennms.org&gt;
  */
 public class DBUtils {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DBUtils.class);
-	
+    private Logger LOG = LoggerFactory.getLogger(DBUtils.class);
+
     private final Set<Statement> m_statements;
     private final Set<ResultSet> m_resultSets;
     private final Set<Connection> m_connections;
-    private Class<?> m_loggingClass;
 
     /**
      * <p>Constructor for DBUtils.</p>
@@ -59,7 +57,7 @@ public class DBUtils {
     public DBUtils() {
         this(DBUtils.class);
     }
-    
+
     /**
      * <p>Constructor for DBUtils.</p>
      *
@@ -69,7 +67,7 @@ public class DBUtils {
         m_statements = Collections.synchronizedSet(new HashSet<Statement>());
         m_resultSets = Collections.synchronizedSet(new HashSet<ResultSet>());
         m_connections = Collections.synchronizedSet(new HashSet<Connection>());
-        m_loggingClass = loggingClass;
+        LOG = LoggerFactory.getLogger(loggingClass);
     }
 
     public DBUtils(Class<?> loggingClass, Object... targets) {
@@ -85,7 +83,7 @@ public class DBUtils {
      * @return a {@link org.opennms.core.utils.DBUtils} object.
      */
     public DBUtils setLoggingClass(Class<?> c) {
-        m_loggingClass = c;
+        LOG = LoggerFactory.getLogger(c);
         return this;
     }
 
@@ -120,7 +118,7 @@ public class DBUtils {
             }
         }
         m_resultSets.clear();
-        
+
         for (Statement s : m_statements) {
             if (s != null) {
                 try {
@@ -131,7 +129,7 @@ public class DBUtils {
             }
         }
         m_statements.clear();
-        
+
         for (Connection c : m_connections) {
             if (c != null) {
                 try {
@@ -143,5 +141,5 @@ public class DBUtils {
         }
         m_connections.clear();
     }
-    
+
 }

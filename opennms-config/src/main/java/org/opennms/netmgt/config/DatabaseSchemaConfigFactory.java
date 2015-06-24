@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,10 +47,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.CastorUtils;
+import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
+import org.opennms.netmgt.filter.api.FilterParseException;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -62,7 +64,7 @@ import org.opennms.netmgt.config.filter.Table;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  */
-public final class DatabaseSchemaConfigFactory {
+public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -403,4 +405,37 @@ public final class DatabaseSchemaConfigFactory {
             getReadLock().unlock();
         }
     }
+
+
+    /**
+     * Validate that a column is in the schema, add it's table to a list of tables,
+     * and return the full table.column name of the column.
+     *
+     * @param tables
+     *            a list of tables to add the column's table to
+     * @param column
+     *            the column to add
+     *
+     * @return table.column string
+     *
+     * @exception FilterParseException
+     *                if the column is not found in the schema
+     */
+    public String addColumn(final List<Table> tables, final String column) throws FilterParseException {
+        getReadLock().lock();
+        try {
+            final Table table = findTableByVisibleColumn(column);
+            if(table == null) {
+                final String message = "Could not find the column '" + column +"' in filter rule";
+                throw new FilterParseException(message);
+            }
+            if (!tables.contains(table)) {
+                tables.add(table);
+            }
+            return table.getName() + "." + column;
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
 }

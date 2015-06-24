@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,7 +35,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.hibernate.type.StringType;
 import org.hibernate.type.Type;
 import org.opennms.dashboard.client.SurveillanceGroup;
@@ -46,6 +49,9 @@ import org.opennms.netmgt.config.surveillanceViews.RowDef;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -124,8 +130,38 @@ public class CriteriaAddingVisitor implements Visitor, InitializingBean {
      * @param categories a {@link java.lang.String} object.
      */
     public void addCriteriaForCategories(OnmsCriteria criteria, String... categories) {
-        String sql = "{alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (" + commaDelimitedQuestionMarks(categories.length) + "))";
-        criteria.add(Restrictions.sqlRestriction(sql, categories, arrayOfType(categories.length, new StringType())));
+        if (criteria.resultsOfType(OnmsMonitoredService.class) || criteria.resultsOfType(OnmsOutage.class)) {
+            // Make a detached criteria to subselect the node IDs that are in the
+            // specified surveillance categories
+            DetachedCriteria categoryNodeCriteria = DetachedCriteria.forClass(OnmsNode.class, "categoryNodes");
+
+            // HACK: Hibernate 3.6 aliases 'categoryNodes' as 'categoryNodes_' so use that for the raw SQL statement.
+            // Also note that the database field that we use here is 'nodeId' but the bean property for node ID
+            // in OnmsNode is 'id'.
+            String sql = "categoryNodes_.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (" + commaDelimitedQuestionMarks(categories.length) + "))";
+            categoryNodeCriteria.add(Restrictions.sqlRestriction(sql, categories, arrayOfType(categories.length, new StringType())));
+
+            // Join the categoryNodes IDs found by the subselect with the outer 'node' alias.
+            // This requires that the criteria already has a 'node' alias to the node table.
+            //
+            // @see org.opennms.web.svclayer.support.DefaultRtcService#createOutageCriteria()
+            // @see org.opennms.web.svclayer.support.DefaultRtcService#createServiceCriteria()
+            //
+            categoryNodeCriteria.add(Restrictions.eqProperty("categoryNodes.id", "node.id"));
+
+            // Add a projection for 'id' so that the categoryNodes.id can be joined to
+            // node.id in the outer criteria
+            categoryNodeCriteria.setProjection(Projections.property("id"));
+
+            // Use an exists subquery to evaluate the subselect
+            criteria.add(Subqueries.exists(categoryNodeCriteria));
+        } else {
+            // TODO: This case assumes that the OnmsCriteria is querying an object with a 'nodeId' property.
+            // I'm not sure this is ever used... I think this visitor is just for OnmsMonitoredService and 
+            // OnmsOutage queries.
+            String sql = "{alias}.nodeId in (select distinct cn.nodeId from category_node cn join categories c on cn.categoryId = c.categoryId where c.categoryName in (" + commaDelimitedQuestionMarks(categories.length) + "))";
+            criteria.add(Restrictions.sqlRestriction(sql, categories, arrayOfType(categories.length, new StringType())));
+        }
     }
     
     /**

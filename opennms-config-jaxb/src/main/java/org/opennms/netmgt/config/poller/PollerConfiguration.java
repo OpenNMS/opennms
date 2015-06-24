@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 /*
  * This class was converted to JAXB from Castor.
  */
@@ -50,13 +78,6 @@ public class PollerConfiguration implements Serializable {
      */
     @XmlAttribute(name="serviceUnresponsiveEnabled")
     private String m_serviceUnresponsiveEnabled = "false";
-
-    /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    @XmlAttribute(name="xmlrpc")
-    private String m_xmlrpc = "false";
 
     /**
      * Flag which indicates if the optional path outage feature is enabled
@@ -114,18 +135,6 @@ public class PollerConfiguration implements Serializable {
 
     public void setServiceUnresponsiveEnabled(final String serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
-    }
-
-    /**
-     * Flag which indicates if an external XMLRPC server has to be notified
-     * with any event process errors
-     */
-    public String getXmlrpc() {
-        return m_xmlrpc == null? "false" : m_xmlrpc;
-    }
-    
-    public void setXmlrpc(final String xmlrpc) {
-        m_xmlrpc = xmlrpc;
     }
 
     /**
@@ -213,7 +222,6 @@ public class PollerConfiguration implements Serializable {
         newConfig.setThreads(getThreads());
         newConfig.setNextOutageId(getNextOutageId());
         newConfig.setServiceUnresponsiveEnabled(getServiceUnresponsiveEnabled());
-        newConfig.setXmlrpc(getXmlrpc());
         newConfig.setPathOutageEnabled(getPathOutageEnabled());
         newConfig.setNodeOutage(getNodeOutage());
         
@@ -242,7 +250,6 @@ public class PollerConfiguration implements Serializable {
         result = prime * result + ((m_pathOutageEnabled == null) ? 0 : m_pathOutageEnabled.hashCode());
         result = prime * result + ((m_serviceUnresponsiveEnabled == null) ? 0 : m_serviceUnresponsiveEnabled.hashCode());
         result = prime * result + ((m_threads == null) ? 0 : m_threads.hashCode());
-        result = prime * result + ((m_xmlrpc == null) ? 0 : m_xmlrpc.hashCode());
         return result;
     }
 
@@ -307,13 +314,6 @@ public class PollerConfiguration implements Serializable {
         } else if (!m_threads.equals(other.m_threads)) {
             return false;
         }
-        if (m_xmlrpc == null) {
-            if (other.m_xmlrpc != null) {
-                return false;
-            }
-        } else if (!m_xmlrpc.equals(other.m_xmlrpc)) {
-            return false;
-        }
         return true;
     }
 
@@ -323,7 +323,6 @@ public class PollerConfiguration implements Serializable {
                 "threads=" + m_threads +
                 ",nextOutageId=" + m_nextOutageId +
                 ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
-                ",xmlrpc=" + m_xmlrpc +
                 ",pathOutageEnabled=" + m_pathOutageEnabled +
                 ",nodeOutage=" + m_nodeOutage +
                 ",packages=" + m_packages +

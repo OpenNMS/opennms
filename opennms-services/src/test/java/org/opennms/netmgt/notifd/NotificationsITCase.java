@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,10 +35,15 @@ import java.util.Date;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
@@ -54,16 +59,42 @@ import org.opennms.netmgt.config.mock.MockUserManager;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNotification;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.NotificationAnticipator;
 import org.opennms.test.DaoTestConfigBean;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
-public class NotificationsITCase {
-
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        // Notifd
+        "classpath:/META-INF/opennms/applicationContext-notifdTest.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+@Ignore
+public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase> {
+    @Autowired
     protected Notifd m_notifd;
+
+    @Autowired
+    protected BroadcastEventProcessor m_eventProcessor;
+
+    @Autowired
+    protected EventUtil m_eventUtil;
+
     protected MockEventIpcManager m_eventMgr;
     protected MockNotifdConfigManager m_notifdConfig;
     protected MockGroupManager m_groupManager;
@@ -85,12 +116,13 @@ public class NotificationsITCase {
         MockLogAppender.setupLogging();
         
         m_network = createMockNetwork();
-        
-        m_db = createDatabase(m_network);
-    
+
+        m_db.populate(m_network);
+        DataSourceFactory.setInstance(m_db);
+
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
-        
+
         m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
         m_notifdConfig.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
@@ -105,17 +137,18 @@ public class NotificationsITCase {
         
         m_anticipator = new NotificationAnticipator();
         MockNotificationStrategy.setAnticipator(m_anticipator);
-        
-        m_notifd = new Notifd();
-        m_notifd.setEventManager(m_eventMgr);
+
         m_notifd.setConfigManager(m_notifdConfig);
-        m_notifd.setGroupManager(m_groupManager);
-        m_notifd.setUserManager(m_userManager);
-        m_notifd.setDestinationPathManager(m_destinationPathManager);
-        m_notifd.setNotificationCommandManager(m_notificationCommandManger);
-        m_notifd.setNotificationManager(m_notificationManager);
-        m_notifd.setPollOutagesConfigManager(m_pollOutagesConfigManager);
-                
+
+        m_eventProcessor.setEventManager(m_eventMgr);
+        m_eventProcessor.setNotifdConfigManager(m_notifdConfig);
+        m_eventProcessor.setGroupManager(m_groupManager);
+        m_eventProcessor.setUserManager(m_userManager);
+        m_eventProcessor.setDestinationPathManager(m_destinationPathManager);
+        m_eventProcessor.setNotificationCommandManager(m_notificationCommandManger);
+        m_eventProcessor.setNotificationManager(m_notificationManager);
+        m_eventProcessor.setPollOutagesConfigManager(m_pollOutagesConfigManager);
+
         m_notifd.init();
         m_notifd.start();
         
@@ -132,13 +165,6 @@ public class NotificationsITCase {
         MockUtil.println("################ Finish Setup ################");
 
     
-    }
-
-    protected MockDatabase createDatabase(MockNetwork network) throws Exception {
-        MockDatabase db = new MockDatabase();
-        DataSourceFactory.setInstance(db);
-        db.populate(network);
-        return db;
     }
 
     protected MockNetwork createMockNetwork() {
@@ -246,4 +272,8 @@ public class NotificationsITCase {
         return TimeConverter.convertToMillis(interval);
     }
 
+    @Override
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_db = database;
+    }
 }
