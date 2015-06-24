@@ -243,14 +243,7 @@
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
-            <feature>jira-troubleticketer</feature>
-            <feature>datachoices</feature>
-            
-            <!-- features defined as internal opennms plugins -->
-            <feature>vaadin-opennms-pluginmanager</feature>
-            <feature>alarm-change-notifier</feature>
-            <feature>opennms-es-rest</feature>
-            <feature>internal-plugins-descriptor</feature>
+            <feature>opennms-elasticsearch-event-forwarder</feature>
           </features>
         </configuration>
       </plugin>
