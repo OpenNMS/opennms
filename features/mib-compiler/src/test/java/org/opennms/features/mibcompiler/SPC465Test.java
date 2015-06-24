@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler;
+package org.opennms.features.mibcompiler;
 
 import java.io.File;
 import java.net.URL;
@@ -39,9 +39,8 @@ import org.jsmiparser.smi.SmiModule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
+import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.mibcompiler.services.JsmiMibParser;
 
 /**
  * The Test Class for <a href="http://issues.opennms.org/browse/SPC-465">SPC-465</a>

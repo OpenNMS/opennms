@@ -31,6 +31,9 @@ public class ResourceDTO {
     @XmlAttribute(name = "link")
     private final String m_link;
 
+    @XmlAttribute(name="typeLabel")
+    private final String m_typeLabel;
+
     @XmlAttribute(name = "parentId")
     private final String m_parentId;
 
@@ -63,6 +66,7 @@ public class ResourceDTO {
         m_label = resource.getLabel();
         m_name = resource.getName();
         m_link = resource.getLink();
+        m_typeLabel = resource.getResourceType().getLabel();
         m_parentId = resource.getParent() == null ? null : resource.getParent().getId();
         m_stringPropertyAttributes = resource.getStringPropertyAttributes();
         m_externalValueAttributes = resource.getExternalValueAttributes();
@@ -93,6 +97,10 @@ public class ResourceDTO {
 
     public String getLink() {
         return m_link;
+    }
+
+    public String getTypeLabel() {
+        return m_typeLabel;
     }
 
     public String getParentId() {

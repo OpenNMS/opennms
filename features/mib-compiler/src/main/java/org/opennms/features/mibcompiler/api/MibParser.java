@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler.api;
+package org.opennms.features.mibcompiler.api;
 
 import java.io.File;
 import java.util.List;

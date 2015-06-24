@@ -1,0 +1,42 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+=== Heatmap
+
+The _Heatmap_ can be either be used to display unacknowledged alarms or to display ongoing outages
+of nodes. Each of this visualizations can be applied either on categories or on foreign sources of
+nodes. The sizing of an entity is calculated by counting the monitored services inside the entity.
+Thus, a node with fewer services will appear in a smaller box than a node with more services.
+
+The feature is by default deactivated and is configured through `opennms.properties`.
+
+.Heatmap visualizations of alarms
+image:webui/heatmap/heatmap.png[]
+
+.Grafana Dashboard configuration properties
+[options="header, autowidth"]
+|===
+| Name                                       | Type      | Description                                                  | Default
+| `org.opennms.heatmap.defaultMode`          | _String_  | There exist two options for using the heatmap: `alarms` and
+                                                           `outages`. This option configures which are displayed per
+                                                           default.
+                                                                                                                        | `alarms`
+| `org.opennms.heatmap.defaultHeatmap`       | _String_  | This option defines which _Heatmap_ is displayed by default.
+                                                           The two valid options are `categories` or `foreignSources`   | `categories`
+| `org.opennms.heatmap.categoryFilter`       | _String_  | The following option is used to filter for categories to be
+                                                           displayed in the _Heatmap_. This option uses the Java regular
+                                                           expression syntax. The default is `.*` so all categories will
+                                                           be displayed.                                                | `.*`
+| `org.opennms.heatmap.foreignSourceFilter`  | _String_  | The following option is used to filter for foreign sources
+                                                           to be displayed in the _Heatmap_. This option uses the Java
+                                                           regular expression syntax. The default is `.*` so all foreign
+                                                           sources will be displayed.                                   | `.*`
+| `org.opennms.heatmap.onlyUnacknowledged`   | _Boolean_ | This option configures whether only unacknowledged alarms
+                                                           will be taken into account when generating the alarm-based
+                                                           version of the _Heatmap_.                                    | `false`
+| `org.opennms.web.console.centerUrl`        | _String_  |  You can also place the _Heatmap_ on the landing page by
+                                                           setting this option to `/heatmap/heatmap-box.jsp`.           | `/surveillance-box.jsp`
+|===
+
+TIP: You can use negative lookahead expressions for excluding categories you wish not to be displayed in the heatmap,
+e.g. by using an expression like `^(?!XY).*` you can filter out entities with names starting with `XY`.
