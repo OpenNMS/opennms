@@ -33,9 +33,9 @@ import java.io.FileWriter;
 import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.features.vaadin.api.Logger;
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.PrefabGraph;
