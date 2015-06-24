@@ -1,3 +1,15 @@
+opennms (16.0.2-1) stable; urgency=low
+
+  * New upstream release.  This is a repack of 16.0.1 with a small bug fix.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 17 Jun 2015 16:38:00 -0500
+
+opennms (16.0.1-1) stable; urgency=low
+
+  * New upstream release.  This release contains a few enhancements and bug fixes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 17 Jun 2015 12:30:00 -0500
+
 opennms (16.0.0-1) stable; urgency=medium
 
   * New upstream release.  This release contains bugfixes and updates since 15.0.2.
