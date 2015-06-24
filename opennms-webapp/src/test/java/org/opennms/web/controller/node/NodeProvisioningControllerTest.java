@@ -57,7 +57,6 @@ import org.springframework.web.servlet.ModelAndView;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations={
-		"classpath:/org/opennms/web/rest/applicationContext-test.xml",
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
