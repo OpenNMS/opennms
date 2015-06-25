@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NodeListPageIT extends OpenNMSSeleniumITCase {
+public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         createNode("node1");

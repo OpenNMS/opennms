@@ -42,7 +42,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AddNodePageIT extends OpenNMSSeleniumITCase {
+public class AddNodePageIT extends OpenNMSSeleniumTestCase {
     private static final String m_unreachableIp = InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS);
 
     @Before

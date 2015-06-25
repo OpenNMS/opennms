@@ -36,9 +36,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class MenuHeaderIT extends OpenNMSSeleniumITCase {
-    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderIT.class);
-
+public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testMenuEntries() throws Exception {
         clickMenuItem("Search", null, "element/index.jsp");

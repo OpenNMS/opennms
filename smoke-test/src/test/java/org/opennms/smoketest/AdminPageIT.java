@@ -29,14 +29,16 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.Selenium;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AdminPageIT extends OpenNMSSeleniumITCase {
+public class AdminPageIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AdminPageTest.class);
 
     @Before

@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AssetsPageIT extends OpenNMSSeleniumITCase {
+public class AssetsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         m_driver.get(BASE_URL + "opennms/asset/index.jsp");

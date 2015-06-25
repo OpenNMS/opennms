@@ -29,11 +29,13 @@
 package org.opennms.smoketest;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EventsPageIT extends OpenNMSSeleniumITCase {
+public class EventsPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         m_driver.get(BASE_URL + "opennms/event/list");

@@ -32,7 +32,9 @@ import java.net.InetSocketAddress;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.support.TcpEventProxy;
@@ -41,7 +43,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AlarmsPageIT extends OpenNMSSeleniumITCase {
+public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     @BeforeClass
     public static void createAlarm() throws Exception {
         final EventProxy eventProxy = new TcpEventProxy(new InetSocketAddress(OPENNMS_EVENT_HOST, OPENNMS_EVENT_PORT));

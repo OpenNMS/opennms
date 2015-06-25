@@ -42,7 +42,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumITCase {
+public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() throws Exception {

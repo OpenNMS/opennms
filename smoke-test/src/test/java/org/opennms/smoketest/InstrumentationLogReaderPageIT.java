@@ -31,11 +31,13 @@ package org.opennms.smoketest;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumITCase {
+public class InstrumentationLogReaderPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         adminPage();

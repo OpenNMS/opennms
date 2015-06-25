@@ -38,7 +38,7 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class DistributedMapIT extends OpenNMSSeleniumITCase {
+public class DistributedMapIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         m_driver.get(BASE_URL + "opennms/RemotePollerMap/index.jsp");

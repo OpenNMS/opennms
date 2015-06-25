@@ -33,12 +33,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SupportPageIT extends OpenNMSSeleniumITCase {
+public class SupportPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         supportPage();
