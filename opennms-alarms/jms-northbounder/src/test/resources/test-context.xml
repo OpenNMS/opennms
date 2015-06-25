@@ -3,15 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 	xmlns:context="http://www.springframework.org/schema/context">
-	<!-- <bean name="jmsNorthbounderConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
-		<property name="connectionFactory">
-			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
-				<property name="brokerURL">
-					<value>vm://localhost?broker.persistent=false</value>
-				</property>
-			</bean>
-		</property>
-	</bean> -->
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties">
 			<props>
