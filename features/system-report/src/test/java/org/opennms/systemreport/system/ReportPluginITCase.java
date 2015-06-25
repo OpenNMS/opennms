@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class ReportPluginITCase {
+public abstract class ReportPluginITCase {
     @Resource(name="serviceRegistry")
     private ServiceRegistry m_defaultServiceRegistry;
 
