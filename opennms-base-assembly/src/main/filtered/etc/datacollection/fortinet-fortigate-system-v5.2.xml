@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datacollection-group name="Fortinet-Fortinet-Main-v5.2">
+<datacollection-group name="Fortinet-Fortigate-System-v5.2">
 <resourceType name="fgProcessorEntIndex" label="Fortigate Processor"
               resourceLabel="CPU: ${fgProcEntIndex}">
   <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
@@ -45,7 +45,7 @@
     <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.6" instance="fgVpnSslStatsEntry" alias="fgVpnSslActTunnels" type="Counter32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.7" instance="fgVpnSslStatsEntry" alias="fgVpnSslMaxTunnels" type="Counter32" />
   </group>
-  <systemDef name="Fortinet-FGT-v5.2">
+  <systemDef name="Fortinet-Fortigate-System-v5.2">
     <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
     <collect>
       <includeGroup>fgSysteminfo</includeGroup>

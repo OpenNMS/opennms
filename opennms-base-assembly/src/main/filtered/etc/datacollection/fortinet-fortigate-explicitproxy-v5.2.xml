@@ -38,7 +38,7 @@
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.5" instance="fgExProScriStaEntry" alias="fgExPr0FiltVBS" type="Counter32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.6" instance="fgExProScriStaEntry" alias="fgExPr0FiltScript" type="Counter32" />
   </group>
-  <systemDef name="Fortinet-FGT-v5.2">
+  <systemDef name="Fortinet-Fortigate-ExplicitProxy-v5.2">
     <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
     <collect>
       <includeGroup>fgExplicitProxyInfo</includeGroup>
