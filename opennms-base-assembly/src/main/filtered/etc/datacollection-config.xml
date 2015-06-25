@@ -32,7 +32,11 @@
         <include-collection dataCollectionGroup="Equallogic"/>
         <include-collection dataCollectionGroup="Extreme Networks"/>
         <include-collection dataCollectionGroup="F5"/>
-        <include-collection dataCollectionGroup="Fortinet"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-Application-v5.2"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-ExplicitProxy-v5.2"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-HA-v5.2"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-System-v5.2"/>
+        <include-collection dataCollectionGroup="Fortinet-Fortigate-Security-v5.2"/>
         <include-collection dataCollectionGroup="Force10"/>
         <include-collection dataCollectionGroup="Foundry Networks"/>
         <include-collection dataCollectionGroup="HP"/>
