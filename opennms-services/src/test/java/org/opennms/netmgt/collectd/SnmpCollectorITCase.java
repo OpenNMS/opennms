@@ -63,7 +63,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 
-public class SnmpCollectorITCase extends OpenNMSITCase {
+public abstract class SnmpCollectorITCase extends OpenNMSITCase {
 
 	private static final class AttributeVerifier extends AbstractCollectionSetVisitor {
 		private final List<MibObject> list;
@@ -265,8 +265,8 @@ public class SnmpCollectorITCase extends OpenNMSITCase {
         addAttribute("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
     }
     
-    @Override
-    public void testDoNothing() {}
+    //@Override
+    //public void testDoNothing() {}
 
     public List<MibObject> getAttributeList() {
         return m_config.getAttrList();
