@@ -41,7 +41,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 
 public class NodeSnmpResourceTypeTest {
 
@@ -54,11 +54,14 @@ public class NodeSnmpResourceTypeTest {
 
     @Test
     public void canGetChildByName() throws IOException {
+        final RrdStrategy<?, ?> rrdStrategy = new NullRrdStrategy();
+
         final FilesystemResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
         resourceStorageDao.setRrdDirectory(tempFolder.getRoot());
+        resourceStorageDao.setRrdStrategy(rrdStrategy);
 
         File nodeSnmpFolder = tempFolder.newFolder("snmp", "1");
-        File rrd = new File(nodeSnmpFolder, "ds" + RrdUtils.getExtension());
+        File rrd = new File(nodeSnmpFolder, "ds" + rrdStrategy.getDefaultFileExtension());
         rrd.createNewFile();
 
         final NodeSnmpResourceType nodeSnmpResourceType = new NodeSnmpResourceType(resourceStorageDao);

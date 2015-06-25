@@ -31,6 +31,11 @@
                 <threshold type="high" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="55.0" rearm="50.0" trigger="3"/>
                 <threshold type="relativeChange" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="0.2" rearm="0.0" trigger="1"/>
         </group>
+
+        <group name="juniper-srx"
+                        rrdRepository = "${install.share.dir}/rrd/snmp/">
+                        <expression description="Trigger a warning event when the number of tracked sessions of a Juniper SRX router exceeds 90% of its capacity." type="high" expression="juniSPUMonCurrFlow / juniSPUMonMaxFlow * 100.0" ds-type="node" ds-label="" value="90.0" rearm="75.0" trigger="2"/>
+        </group>
         
         <group name="netsnmp"
         		rrdRepository = "${install.share.dir}/rrd/snmp/">

@@ -175,7 +175,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
         DataSourceFactory.setInstance(db);
         XADataSourceFactory.setInstance(db);
 
-
         try {
 
             MockFilterConfig filterConfig = new MockFilterConfig(servletContext, "openSessionInViewFilter");

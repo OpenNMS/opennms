@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
@@ -119,6 +120,8 @@ final class CollectableService implements ReadyRunnable {
     
     private final RrdRepository m_repository;
 
+    private final RrdStrategy<?, ?> m_rrdStrategy;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -130,13 +133,14 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr, RrdStrategy<?, ?> rrdStrategy) throws CollectionInitializationException {
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
+        m_rrdStrategy = rrdStrategy;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
@@ -370,13 +374,13 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-        private static BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
-            if (ResourceTypeUtils.isStoreByGroup()) {
-                return new GroupPersister(params, repository);
-            } else {
-                return new OneToOnePersister(params, repository);
-            }
+    private static BasePersister createPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
+        if (ResourceTypeUtils.isStoreByGroup()) {
+            return new GroupPersister(params, repository, rrdStrategy);
+        } else {
+            return new OneToOnePersister(params, repository, rrdStrategy);
         }
+    }
 
         /**
          * Perform data collection.
@@ -389,7 +393,7 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            BasePersister persister = createPersister(m_params, m_repository);
+                            BasePersister persister = createPersister(m_params, m_repository, m_rrdStrategy);
                             persister.setIgnorePersist(result.ignorePersist());
                             result.visit(persister);
                         } finally {

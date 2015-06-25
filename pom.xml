@@ -213,7 +213,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>features-maven-plugin</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>1.2.0</version>
         <executions>
           <execution>
             <id>features.xml</id>
@@ -1178,7 +1178,7 @@
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <asmVersion>5.0.3</asmVersion>
-    <asciidoctorVersion>1.5.2</asciidoctorVersion>
+    <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
     <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
@@ -1208,6 +1208,7 @@
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
+    <jrubyVersion>9.0.0.0.rc1</jrubyVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
@@ -1992,6 +1993,12 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jrrd-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrrd2-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3508,7 +3515,7 @@
       <dependency>
         <groupId>org.krupczak</groupId>
         <artifactId>xmp</artifactId>
-        <version>1.30r1</version>
+        <version>1.40</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>

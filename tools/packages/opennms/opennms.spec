@@ -973,7 +973,7 @@ for dir in /etc /etc/rc.d; do
 	fi
 done
 
-for LIBNAME in jicmp jicmp6 jrrd; do
+for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
 	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then

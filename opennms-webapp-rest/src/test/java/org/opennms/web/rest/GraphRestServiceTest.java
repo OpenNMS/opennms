@@ -126,5 +126,11 @@ public class GraphRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // 404 on invalid resource
         url = "/graphs/for/" + URLEncoder.encode("node[99].nodeSnmp[]", "UTF-8");
         sendRequest(GET, url, 404);
+
+        url = "/graphs/fornode/1";
+        xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("netsnmp.swapinout"));
+        assertTrue(xml.contains("Node-level Performance Data"));
     }
+
 }

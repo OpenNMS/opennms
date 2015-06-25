@@ -49,7 +49,7 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.collector.XmlCollector;
 import org.opennms.protocols.xml.config.XmlRrd;
@@ -76,6 +76,8 @@ public abstract class AbstractVTDXmlCollectorTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     /**
      * Sets the up.
      *
@@ -86,9 +88,7 @@ public abstract class AbstractVTDXmlCollectorTest {
         FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -155,7 +155,7 @@ public abstract class AbstractVTDXmlCollectorTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());

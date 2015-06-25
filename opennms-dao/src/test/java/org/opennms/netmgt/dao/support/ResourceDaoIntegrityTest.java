@@ -78,8 +78,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceVisitor;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -153,7 +151,6 @@ public class ResourceDaoIntegrityTest implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
-        RrdUtils.setStrategy(new JniRrdStrategy());
         setStoreByForeignSource(true);
 
         m_easyMockUtils = new EasyMockUtils();

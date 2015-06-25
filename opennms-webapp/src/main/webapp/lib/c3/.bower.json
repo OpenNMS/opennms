@@ -4,6 +4,7 @@
     "c3.css",
     "c3.js"
   ],
+  "version": "0.4.11-rc1",
   "homepage": "https://github.com/masayuki0812/c3",
   "authors": [
     "Masayuki Tanaka <masayuki0812@mac.com>"
@@ -28,12 +29,13 @@
   "dependencies": {
     "d3": "<=3.5.0"
   },
-  "_release": "ae26e98ed9",
+  "_release": "0.4.11-rc1",
   "_resolution": {
-    "type": "commit",
-    "commit": "ae26e98ed9496"
+    "type": "version",
+    "tag": "0.4.11-rc1",
+    "commit": "4b34a1958edd686a934a193ad1d9f76fc14937bc"
   },
   "_source": "https://github.com/masayuki0812/c3.git",
-  "_target": "ae26e98ed9496",
+  "_target": "v0.4.11-rc1",
   "_originalSource": "https://github.com/masayuki0812/c3.git"
 }

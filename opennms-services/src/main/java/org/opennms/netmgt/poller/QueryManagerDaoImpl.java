@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +89,11 @@ public class QueryManagerDaoImpl implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public String getNodeLabel(int nodeId) {
-        return m_nodeDao.get(nodeId).getLabel();
+        final OnmsNode onmsNode = m_nodeDao.get(nodeId);
+        if (onmsNode == null) {
+            return null;
+        }
+        return onmsNode.getLabel();
     }
 
     /** {@inheritDoc} */

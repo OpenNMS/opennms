@@ -268,7 +268,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     @Override
     public List<OnmsResource> findTopLevelResources() {
         // Retrieve all top-level resources by passing null as the parent
-        final List<OnmsResource> resources = m_resourceTypes.values().parallelStream()
+        final List<OnmsResource> resources = m_resourceTypes.values().stream()
                 .map(type -> type.getResourcesForParent(null))
                 .flatMap(rs -> rs.stream())
                 .collect(Collectors.toList());
@@ -288,7 +288,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      *   2) Have one or more child resources
      */
     protected List<OnmsResource> findNodeResources() {
-        return m_nodeDao.findAll().parallelStream()
+        return m_nodeDao.findAll().stream()
             // Only return non-deleted nodes - see NMS-2977
             .filter(node -> node.getType() == null || !node.getType().equals("D"))
             .map(node -> getResourceForNode(node))
@@ -354,8 +354,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         // then create the resource using the node type instead of the nodeSource type
         if (createUsingNodeSourceType) {
             final boolean nodeSourcePathExists = m_resourceStorageDao.exists(m_nodeSourceResourceType.getResourcePathForNode(node));
-            final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
-            createUsingNodeSourceType = nodeSourcePathExists || !nodePathExists;
+            if (!nodeSourcePathExists) {
+                final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
+                createUsingNodeSourceType = !nodePathExists;
+            }
         }
 
         // Create the resource

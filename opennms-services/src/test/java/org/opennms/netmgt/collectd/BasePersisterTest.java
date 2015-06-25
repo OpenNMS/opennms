@@ -53,11 +53,14 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
+
 /**
  * JUnit TestCase for the BasePersister.
  * 
@@ -73,6 +76,7 @@ public class BasePersisterTest {
     private EasyMockUtils m_easyMockUtils = new EasyMockUtils();
     private IpInterfaceDao m_ifDao;
     private ServiceParameters m_serviceParams;
+    private RrdStrategy<?, ?> m_rrdStrategy;
 
     /* erg, Rule fields must be public */
     @Rule public TestName m_testName = new TestName();
@@ -83,7 +87,9 @@ public class BasePersisterTest {
         MockLogAppender.setupLogging();
 
         m_fileAnticipator = new FileAnticipator();
-        
+
+        m_rrdStrategy = new JRobinRrdStrategy();
+
         m_intf = new OnmsIpInterface();
         m_node = new OnmsNode();
         m_node.setId(1);
@@ -205,7 +211,7 @@ public class BasePersisterTest {
     }
 
     private void initPersister() throws IOException {
-        m_persister = new BasePersister(m_serviceParams, createRrdRepository());
+        m_persister = new BasePersister(m_serviceParams, createRrdRepository(), m_rrdStrategy);
     }
 
     private RrdRepository createRrdRepository() throws IOException {

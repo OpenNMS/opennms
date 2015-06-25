@@ -69,7 +69,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,8 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",
-    "opennms.pollerBackend.disconnectedTimeout=3000"
+    "opennms.pollerBackend.disconnectedTimeout=3000",
+    "opennms.pollerBackend.minimumConfigurationReloadInterval=300000"
 })
 @JUnitTemporaryDatabase
 public class PollerBackEndIntegrationTest implements InitializingBean {
@@ -120,6 +121,9 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
 
     @Autowired
     LocationMonitorDao m_locationMonitorDao;
+
+    @Autowired
+    RrdStrategy<?, ?> m_rrdStrategy;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -238,7 +242,7 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
         final int serviceId = service.getId();
 
         // make sure there is no rrd data
-        final File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ InetAddressUtils.str(iface.getIpAddress()) +"/http" + RrdUtils.getExtension());
+        final File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ InetAddressUtils.str(iface.getIpAddress()) +"/http" + m_rrdStrategy.getDefaultFileExtension());
         if (rrdFile.exists()) {
             rrdFile.delete();
         }

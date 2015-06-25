@@ -45,11 +45,9 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
@@ -117,8 +115,6 @@ public class CategoryModelTest implements TemporaryDatabaseAware<MockDatabase> {
 
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
-
-		RrdUtils.setStrategy(new NullRrdStrategy());
 	}
 
 	@After

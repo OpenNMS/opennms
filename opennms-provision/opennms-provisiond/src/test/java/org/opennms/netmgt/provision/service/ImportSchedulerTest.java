@@ -144,7 +144,7 @@ public class ImportSchedulerTest implements InitializingBean {
                     Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.URL));
                     Assert.assertEquals("dns://localhost/localhost", context.getJobDetail().getJobDataMap().get(ImportJob.URL));
                     Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.RESCAN_EXISTING));
-                    Assert.assertEquals("true", context.getJobDetail().getJobDataMap().get(ImportJob.RESCAN_EXISTING));
+                    Assert.assertEquals("dbonly", context.getJobDetail().getJobDataMap().get(ImportJob.RESCAN_EXISTING));
                 }
                 callTracker.setCalled(true);
             }

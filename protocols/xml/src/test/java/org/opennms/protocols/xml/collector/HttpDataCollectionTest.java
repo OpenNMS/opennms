@@ -58,7 +58,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.http.collector.HttpCollectionHandler;
 import org.opennms.protocols.json.collector.DefaultJsonCollectionHandler;
@@ -89,6 +89,8 @@ public class HttpDataCollectionTest {
     /** The OpenNMS Node DAO. */
     private NodeDao m_nodeDao;
 
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     /**
      * Sets the up.
      *
@@ -104,9 +106,7 @@ public class HttpDataCollectionTest {
         dao.afterPropertiesSet();
         DataCollectionConfigFactory.setInstance(dao);
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -160,7 +160,7 @@ public class HttpDataCollectionTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File("target/snmp/1/count-stats.jrb"));
@@ -198,7 +198,7 @@ public class HttpDataCollectionTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File("target/snmp/1/market.jrb"));
@@ -236,7 +236,7 @@ public class HttpDataCollectionTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File("target/snmp/1/person-stats.jrb"));
@@ -274,7 +274,7 @@ public class HttpDataCollectionTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository); // storeByGroup=true;
+        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy); // storeByGroup=true;
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File("target/snmp/1/solarisZoneStats/global/solaris-zone-stats.jrb"));
