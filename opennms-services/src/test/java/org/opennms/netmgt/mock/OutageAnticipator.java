@@ -82,13 +82,15 @@ public class OutageAnticipator implements EventListener {
      * @param element
      * @param lostService
      */
-    public synchronized void anticipateOutageOpened(MockElement element, final Event lostService) {
+    public synchronized List<Event> anticipateOutageOpened(MockElement element, final Event lostService) {
+        final List<Event> outageCreatedEvents = new ArrayList<Event>();
         MockVisitor outageCounter = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
                 if (!m_db.hasOpenOutage(svc) || anticipatesClose(svc)) {
                     m_expectedOpenCount++;
                     m_expectedOutageCount++;
+                    outageCreatedEvents.add(svc.createOutageCreatedEvent());
                     Outage outage = new Outage(svc);
                     MockUtil.println("Anticipating outage open: "+outage);
                     addToOutageList(m_pendingOpens, lostService, outage);
@@ -96,6 +98,7 @@ public class OutageAnticipator implements EventListener {
             }
         };
         element.visit(outageCounter);
+        return outageCreatedEvents;
     }
 
     /**
@@ -164,14 +167,15 @@ public class OutageAnticipator implements EventListener {
         
     }
 
-    public synchronized void anticipateOutageClosed(MockElement element, final Event regainService) {
+    public synchronized List<Event> anticipateOutageClosed(MockElement element, final Event regainService) {
+        List<Event> outageResolvedEvents = new ArrayList<Event>();
         MockVisitor outageCounter = new MockVisitorAdapter() {
             @Override
             public void visitService(MockService svc) {
                 if ((m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) && !anticipatesClose(svc)) {
                     // Decrease the open ones.. leave the total the same
                     m_expectedOpenCount--;
-                    
+                    outageResolvedEvents.add(svc.createOutageResolvedEvent());
                     for (Outage outage : m_db.getOpenOutages(svc)) {
                         MockUtil.println("Anticipating outage closed: "+outage);
 
@@ -181,6 +185,7 @@ public class OutageAnticipator implements EventListener {
             }
         };
         element.visit(outageCounter);
+        return outageResolvedEvents;
     }
     
     /**

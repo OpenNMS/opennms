@@ -75,23 +75,15 @@ public class BroadcastEventProcessor implements InitializingBean {
     }
 
     @EventHandler(ueis={
+        // add the outageCreated event
+        EventConstants.OUTAGE_CREATED_EVENT_UEI,
+        // add the outageResolved event
+        EventConstants.OUTAGE_RESOLVED_EVENT_UEI,
         // add the nodeGainedService event
         EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
-        // add the nodeLostService event
-        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
-        // add the interfaceDown event
-        EventConstants.INTERFACE_DOWN_EVENT_UEI,
-        // add the nodeDown event
-        EventConstants.NODE_DOWN_EVENT_UEI,
-        // add the nodeUp event
-        EventConstants.NODE_UP_EVENT_UEI,
         // add the nodeCategoryMembershipChanged event
         EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI,
         // add the interfaceUp event
-        EventConstants.INTERFACE_UP_EVENT_UEI,
-        // add the nodeRegainedService event
-        EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
-        // add the serviceDeleted event
         EventConstants.SERVICE_DELETED_EVENT_UEI,
         // add the serviceDeleted event
         EventConstants.SERVICE_UNMANAGED_EVENT_UEI,

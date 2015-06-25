@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler;
+package org.opennms.features.mibcompiler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,8 +42,8 @@ import org.jsmiparser.smi.SmiModule;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
+import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.mibcompiler.services.JsmiMibParser;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
 
