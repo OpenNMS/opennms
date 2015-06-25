@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.topology.AtInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.nb.Nms7467NetworkBuilder;
 
+@Ignore
 public class Nms7467IT extends LinkdBuilderITCase {
     Nms7467NetworkBuilder builder = new Nms7467NetworkBuilder();
 
