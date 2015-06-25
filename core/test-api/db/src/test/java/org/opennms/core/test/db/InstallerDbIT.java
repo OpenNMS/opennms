@@ -66,8 +66,6 @@ import org.opennms.test.ThrowableAnticipator;
 import org.springframework.util.StringUtils;
 
 public class InstallerDbIT extends TemporaryDatabaseITCase {
-    private static final String s_constraint = "fk_nodeid6";
-
     private InstallerDb m_installerDb;
     private Connection m_connection;
 
