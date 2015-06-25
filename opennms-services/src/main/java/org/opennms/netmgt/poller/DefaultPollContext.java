@@ -308,6 +308,13 @@ public class DefaultPollContext implements PollContext, EventListener {
             bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
             
         }
+        if (uei.equals(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI)) {
+            String nodeLabel = this.getNodeLabel(nodeId);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+            for(Map.Entry<String, String> entry : params.entrySet()) {
+                bldr.addParam(entry.getKey(), entry.getValue());
+            }
+        }
         
         return bldr.getEvent();
     }
@@ -355,13 +362,6 @@ public class DefaultPollContext implements PollContext, EventListener {
         if (outageId == null) {
             LOG.info("resolveOutage: no outstanding outage for {} on {} with node id {}", svc.getSvcName(), svc.getIpAddr(), svc.getNodeId());
             return;
-        }
-        if (uei.equals(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI)) {
-            String nodeLabel = this.getNodeLabel(nodeId);
-            bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
-            for(Map.Entry<String, String> entry : params.entrySet()) {
-                bldr.addParam(entry.getKey(), entry.getValue());
-            }
         }
 
         // Defer updating the outage with the event id until we receive back
