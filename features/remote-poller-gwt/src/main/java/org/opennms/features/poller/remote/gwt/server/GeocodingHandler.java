@@ -79,7 +79,8 @@ class GeocodingHandler implements LocationDefHandler {
 	public void handle(final LocationDef def) {
 		final GWTLatLng latLng = m_locationDataService.getLatLng(def, false);
 		if (latLng != null) {
-			def.setCoordinates(latLng.getCoordinates());
+			def.setLatitude(latLng.getLatitude().floatValue());
+			def.setLongitude(latLng.getLongitude().floatValue());
 		}
 		final Date now = new Date();
 		if (now.getTime() - m_date.getTime() >= 500) {

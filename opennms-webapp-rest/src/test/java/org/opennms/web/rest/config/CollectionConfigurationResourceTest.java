@@ -78,11 +78,11 @@ public class CollectionConfigurationResourceTest extends AbstractSpringJerseyRes
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", "35.715751,-79.16262", 1L);
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L);
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new LocationDef("00002", "IN", new String[0], new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", "38.2096,-85.8704", 100L, "even");
+        location = new LocationDef("00002", "IN", new String[0], new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "even");
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new LocationDef("00003", "IN", new String[0], new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", "38.2096,-85.8704", 100L, "odd");
+        location = new LocationDef("00003", "IN", new String[0], new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
     }
 

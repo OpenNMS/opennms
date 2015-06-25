@@ -630,9 +630,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         final String coordinateMatchString = "^\\s*[\\-\\d\\.]+\\s*,\\s*[\\-\\d\\.]+\\s*$";
 
         // first, see if we already have coordinates
-        if (def.getCoordinates() != null && def.getCoordinates().matches(coordinateMatchString)) {
-            final String[] coordinates = def.getCoordinates().split(",");
-            latLng = new GWTLatLng(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+        if (def.getLatitude() != null && def.getLongitude() != null) {
+            latLng = new GWTLatLng(def.getLatitude(), def.getLongitude());
         }
 
         // if not, see if geolocation is coordinates
@@ -742,7 +741,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         for (final LocationDef def : definitions) {
             final GWTLatLng latLng = getLatLng(def, true);
             if (latLng != null) {
-                def.setCoordinates(latLng.getCoordinates());
+                def.setLatitude(latLng.getLatitude().floatValue());
+                def.setLongitude(latLng.getLongitude().floatValue());
                 if (m_save) {
                     m_monitoringLocationDao.save(def);
                 }

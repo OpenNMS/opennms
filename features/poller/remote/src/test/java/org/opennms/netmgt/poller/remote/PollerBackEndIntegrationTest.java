@@ -134,7 +134,7 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
     public void setUp(){
         MockLogAppender.setupLogging();
 
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", "35.715751,-79.16262", 1L, "odd");
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
     }
 

@@ -233,7 +233,8 @@ CREATE TABLE monitoringlocations (
     id TEXT NOT NULL,
     monitoringarea TEXT NOT NULL,
     geolocation TEXT,
-    coordinates TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     priority INTEGER,
 
     CONSTRAINT monitoringlocations_pkey PRIMARY KEY (id)

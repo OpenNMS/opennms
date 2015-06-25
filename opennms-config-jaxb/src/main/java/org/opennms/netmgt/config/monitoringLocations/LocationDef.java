@@ -118,10 +118,16 @@ public class LocationDef implements Serializable {
     private String m_geolocation;
 
     /**
-     * The coordinates (latitude,longitude) of this monitoring location.
+     * The latitude of this monitoring location.
      */
-    @XmlAttribute(name="coordinates")
-    private String m_coordinates;
+    @XmlAttribute(name="longitude")
+    private Float m_longitude;
+
+    /**
+     * The latitude of this monitoring location.
+     */
+    @XmlAttribute(name="latitude")
+    private Float m_latitude;
 
     /**
      * The priority of the location. (1=highest)
@@ -145,17 +151,18 @@ public class LocationDef implements Serializable {
      * @param pollingPackageName
      */
     public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
+        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, null, 100L);
     }
 
-    public LocationDef(final String locationName, final String monitoringArea, final String[] foreignSourceNames, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final String coordinates, final Long priority, final String... tags) {
+    public LocationDef(final String locationName, final String monitoringArea, final String[] foreignSourceNames, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
         m_foreignSourceNames = (foreignSourceNames == null ? null : Arrays.asList(foreignSourceNames));
         m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
         m_collectionPackageNames = (collectionPackageNames == null ? null : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
-        m_coordinates = coordinates;
+        m_latitude = latitude;
+        m_longitude = longitude;
         m_priority = priority;
         m_tags = (tags == null ? null : Arrays.asList(tags));
     }
@@ -219,13 +226,30 @@ public class LocationDef implements Serializable {
         m_geolocation = geolocation;
     }
 
-    @Column(name="coordinates")
-    public String getCoordinates() {
-        return m_coordinates;
+    /**
+     * The longitude coordinate of this node.
+     * @return
+     */
+    @Column(name="longitude")
+    public Float getLongitude() {
+        return m_longitude;
     }
 
-    public void setCoordinates(final String coordinates) {
-        m_coordinates = coordinates;
+    public void setLongitude(final Float longitude) {
+        m_longitude = longitude;
+    }
+
+    /**
+     * The latitude coordinate of this node.
+     * @return
+     */
+    @Column(name="latitude")
+    public Float getLatitude() {
+        return m_latitude;
+    }
+
+    public void setLatitude(final Float latitude) {
+        m_latitude = latitude;
     }
 
     @Column(name="priority")
@@ -260,7 +284,8 @@ public class LocationDef implements Serializable {
     public int hashCode() {
         final int prime = 353;
         int result = 1;
-        result = prime * result + ((m_coordinates == null) ? 0 : m_coordinates.hashCode());
+        result = prime * result + ((m_latitude == null) ? 0 : m_latitude.hashCode());
+        result = prime * result + ((m_longitude == null) ? 0 : m_longitude.hashCode());
         result = prime * result + ((m_geolocation == null) ? 0 : m_geolocation.hashCode());
         result = prime * result + ((m_locationName == null) ? 0 : m_locationName.hashCode());
         result = prime * result + ((m_monitoringArea == null) ? 0 : m_monitoringArea.hashCode());
@@ -285,7 +310,8 @@ public class LocationDef implements Serializable {
         }
         final LocationDef other = (LocationDef) obj;
         return new EqualsBuilder()
-            .append(getCoordinates(), other.getCoordinates())
+            .append(getLatitude(), other.getLatitude())
+            .append(getLongitude(), other.getLongitude())
             .append(getGeolocation(), other.getGeolocation())
             .append(getLocationName(), other.getLocationName())
             .append(getMonitoringArea(), other.getMonitoringArea())
@@ -305,7 +331,8 @@ public class LocationDef implements Serializable {
                 ", polling-package-names=" + m_pollingPackageNames +
                 ", collection-package-names=" + m_collectionPackageNames +
                 ", geolocation=" + m_geolocation +
-                ", coordinates=" + m_coordinates +
+                ", latitude=" + m_latitude +
+                ", longitude=" + m_longitude +
                 ", priority=" + m_priority +
                 ", tags=" + m_tags + "]";
     }

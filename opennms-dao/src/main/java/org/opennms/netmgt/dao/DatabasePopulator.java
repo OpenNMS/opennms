@@ -387,7 +387,8 @@ public class DatabasePopulator {
         def.setMonitoringArea("East Coast");
         def.setPollingPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
-        def.setCoordinates("35.715751,-79.16262");
+        def.setLatitude(35.715751f);
+        def.setLongitude(-79.16262f);
         def.setPriority(1L);
         m_monitoringLocationDao.save(def);
 

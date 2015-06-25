@@ -289,7 +289,8 @@
         <constraints nullable="false" />
       </column>
       <column name="geolocation" type="TEXT"/>
-      <column name="coordinates" type="TEXT"/>
+      <column name="latitude" type="DOUBLE PRECISION"/>
+      <column name="longitude" type="DOUBLE PRECISION"/>
       <column name="priority" type="INTEGER"/>
     </createTable>
   </changeSet>
