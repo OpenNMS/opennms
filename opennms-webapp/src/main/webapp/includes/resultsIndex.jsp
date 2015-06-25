@@ -73,6 +73,12 @@
     //optional parameter multiple
     String multipleString = request.getParameter(multipleName);
 
+    String footerStr = request.getParameter("footer");
+    if (footerStr == null || "".equals(footerStr)) {
+        footerStr = "false";
+    }
+    boolean inFooter = "true".equals(footerStr);
+
     //get the count
     long count = WebSecurityUtils.safeParseLong(countString);
 
@@ -144,7 +150,7 @@
      </div>
 
 <% if( count > limit ) { %>
-    <ul class="pagination pagination-sm nav navbar-nav navbar-right" style="margin: 5px 0px;">
+    <ul class="pagination pagination-sm nav navbar-nav navbar-right<%= inFooter ? " dropup" : "" %>" style="margin: 5px 0px;">
     <% if( multiple > 0 ) { %>
       <li><a href="${firstUrl}">First</a></li>
       <li><a href="${previousUrl}">Previous</a></li>

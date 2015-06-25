@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -579,6 +579,7 @@
             <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
             <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
             <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
+            <jsp:param name="footer"   value="true" />
           </jsp:include>
         <% } %>
 
