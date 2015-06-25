@@ -9,11 +9,11 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.access-point-monitor</artifactId>
   <name>OpenNMS Features Access Point Monitor</name>
-  
+ 
   <properties>
     <skipITs>true</skipITs>
   </properties>
-  
+
   <build>
     <plugins>
       <plugin>

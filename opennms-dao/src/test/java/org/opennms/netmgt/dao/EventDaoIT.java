@@ -69,19 +69,19 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class EventDaoIT implements InitializingBean {
     @Autowired
-	private DistPollerDao m_distPollerDao;
+    private DistPollerDao m_distPollerDao;
     
     @Autowired
-	private EventDao m_eventDao;
+    private EventDao m_eventDao;
 
     @Autowired
-	private NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
 
-	@Autowired
-	private DatabasePopulator m_databasePopulator;
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
 
-	private static boolean m_populated = false;
-	
+    private static boolean m_populated = false;
+
     @BeforeTransaction
     public void setUp() {
         if (!m_populated) {

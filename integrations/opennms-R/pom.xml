@@ -10,7 +10,7 @@
   <name>OpenNMS Integrations R Interface</name>
 
   <packaging>bundle</packaging>
-      
+
   <properties>
     <skipITs>true</skipITs>
   </properties>

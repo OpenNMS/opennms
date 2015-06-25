@@ -71,26 +71,26 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 public class UserNotificationDaoIT implements InitializingBean {
 	
-	@Autowired
-	private DistPollerDao m_distPollerDao;
+    @Autowired
+    private DistPollerDao m_distPollerDao;
 	
-	@Autowired
-	private NodeDao m_nodeDao;
+    @Autowired
+    private NodeDao m_nodeDao;
 
-	@Autowired
-	private UserNotificationDao m_userNotificationDao;
+    @Autowired
+    private UserNotificationDao m_userNotificationDao;
 
-	@Autowired
-	private NotificationDao m_notificationDao;
+    @Autowired
+    private NotificationDao m_notificationDao;
 
-	@Autowired
-	private EventDao m_eventDao;
+    @Autowired
+    private EventDao m_eventDao;
 
-	@Autowired
-	private DatabasePopulator m_databasePopulator;
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
 
-	private static boolean m_populated = false;
-	
+    private static boolean m_populated = false;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -104,8 +104,8 @@ public class UserNotificationDaoIT implements InitializingBean {
         }
     }
 
-	@Test
-	@Transactional
+    @Test
+    @Transactional
     public void testSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_distPollerDao.load("localhost"));

@@ -29,7 +29,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>    
+      </plugin>
 <!--
       <plugin>
         <groupId>org.apache.felix</groupId>

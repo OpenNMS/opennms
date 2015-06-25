@@ -19,7 +19,7 @@ import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.test.FileAnticipator;
 import org.springframework.core.io.Resource;
 
-public class PropertiesGraphDaoTestCase {
+public class PropertiesGraphDaoITCase {
 
 	protected static final Map<String, Resource> s_emptyMap = new HashMap<String, Resource>();
 	protected static final String s_prefab = "command.prefix=foo\n"

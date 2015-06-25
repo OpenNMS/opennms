@@ -62,10 +62,10 @@ public class AvailabilityReportIT extends TestCase {
     @Override
     protected void setUp() throws Exception {
         System.err.println("------------------- begin "+getName()+" ---------------------");
-        
+
         // Reset the FilterDaoFactory so we don't get screwed by having the JdbcFilterDao be connected to an older database
         FilterDaoFactory.setInstance(null);
-    	
+
         super.setUp();
         Locale.setDefault(Locale.US);
         calendar = new GregorianCalendar();
@@ -240,7 +240,7 @@ public class AvailabilityReportIT extends TestCase {
         marshaller.setSuppressNamespaces(true);
         marshaller.setValidation(false);
         marshaller.marshal(report);
-        
+
         Categories categories = report.getCategories();
         assertNotNull("report categories", report.getCategories());
         
@@ -333,7 +333,7 @@ public class AvailabilityReportIT extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-    	m_db.drop();
+        m_db.drop();
         super.tearDown();
 
         System.err.println("------------------- end "+getName()+" -----------------------");

@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.service;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 
-public class ProvisionerRescanExistingDbonly extends ProvisionerRescanExistingFalse {
+public class ProvisionerRescanExistingDbonlyIT extends ProvisionerRescanExistingFalseIT {
 
     public void testNoRescanOnImport() throws Exception {
         executeTest("dbonly");
