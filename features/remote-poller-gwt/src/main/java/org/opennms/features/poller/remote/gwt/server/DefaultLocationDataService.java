@@ -185,7 +185,9 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
 
     private volatile Map<String, MonitorStatus> m_monitorStatuses = new HashMap<String, MonitorStatus>();
 
-    // whether to save monitoring-locations.xml changes
+    /**
+     * Whether to save {@link LocationDef} changes.
+     */
     public boolean m_save = true;
 
     /**

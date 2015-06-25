@@ -349,6 +349,7 @@ public class PollerBackEndTest extends TestCase {
         m_eventIpcManager = m_mocks.createMock(EventIpcManager.class);
 
         m_backEnd = new DefaultPollerBackEnd();
+        m_backEnd.setMonitoringLocationDao(m_monitoringLocationDao);
         m_backEnd.setLocationMonitorDao(m_locMonDao);
         m_backEnd.setMonitoredServiceDao(m_monSvcDao);
         m_backEnd.setPollerConfig(m_pollerConfig);

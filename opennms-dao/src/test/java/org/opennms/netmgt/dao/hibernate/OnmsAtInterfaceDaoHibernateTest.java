@@ -96,6 +96,7 @@ public class OnmsAtInterfaceDaoHibernateTest implements InitializingBean {
 
 
     @Test
+    @JUnitTemporaryDatabase
     public void testSaveAtInterface() {
         final OnmsAtInterface atinterface = new OnmsAtInterface(m_databasePopulator.getNode6(), m_databasePopulator.getNode6().getPrimaryInterface().getIpAddress(),"0080aa12aa12");
 
@@ -112,6 +113,7 @@ public class OnmsAtInterfaceDaoHibernateTest implements InitializingBean {
     
 
     @Test 
+    @JUnitTemporaryDatabase
     public void testFindByNodeAndAddress() throws UnknownHostException {
     	final OnmsAtInterface atinterface = m_atInterfaceDao.findByNodeAndAddress(m_databasePopulator.getNode2().getId(), InetAddress.getByName("192.168.2.1"), "AA:BB:CC:DD:EE:FF");
 	    	
@@ -123,6 +125,7 @@ public class OnmsAtInterfaceDaoHibernateTest implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetAtInterfaceForAddress() throws UnknownHostException {
     	Collection<OnmsAtInterface> atinterfaces = m_atInterfaceDao.getAtInterfaceForAddress(InetAddress.getByName("192.168.2.1"));
     	assertEquals(1, atinterfaces.size());

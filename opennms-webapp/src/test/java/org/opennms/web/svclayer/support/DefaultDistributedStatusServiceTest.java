@@ -136,6 +136,7 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         super.setUp();
         
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
+        m_service.setMonitoringLocationDao(m_monitoringLocationDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);
         m_service.setResourceDao(m_resourceDao);

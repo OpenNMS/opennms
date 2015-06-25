@@ -736,6 +736,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_eventIpcManager = eventIpcManager;
     }
 
+    public void setMonitoringLocationDao(final MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
+    }
+
     /**
      * <p>setLocationMonitorDao</p>
      *

@@ -29,6 +29,7 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -55,10 +56,12 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
@@ -99,6 +102,10 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class LocationDataServiceTest implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
+
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     @Autowired
     private LocationDataService m_locationDataService;
 
@@ -145,7 +152,10 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         p.setProperty("log4j.logger.org.hibernate", "INFO");
         p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(p);
-        
+
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", "35.715751,-79.16262", 1L, "odd");
+        m_monitoringLocationDao.saveOrUpdate(location);
+
         OnmsApplication app = new OnmsApplication();
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
@@ -242,6 +252,7 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - days(20) - hours(4))));
         
         LocationInfo li = m_locationDataService.getLocationInfo("RDU");
+        assertNotNull(li);
         assertEquals("RDU", li.getName());
         // Down because one of the services is down.
         assertEquals(Status.DOWN, li.getStatusDetails().getStatus());

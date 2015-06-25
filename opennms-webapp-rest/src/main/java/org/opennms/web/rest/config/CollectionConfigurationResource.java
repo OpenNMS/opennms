@@ -41,29 +41,27 @@ import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("collectionConfigurationResource")
 public class CollectionConfigurationResource {
     private static final Logger LOG = LoggerFactory.getLogger(CollectionConfigurationResource.class);
 
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     @Resource(name="collectd-configuration.xml")
     private ConfigurationResource<CollectdConfiguration> m_collectdConfigResource;
-
-    @Resource(name="monitoring-locations.xml")
-    private ConfigurationResource<MonitoringLocationsConfiguration> m_monitoringLocationsConfigResource;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getCollectdConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
-        LOG.debug("getCollectConfigurationForLocation(location={})", location);
-        final MonitoringLocationsConfiguration monitoringConfig = m_monitoringLocationsConfigResource.get();
 
-        LOG.debug("monitoring config: {}", monitoringConfig);
-        final LocationDef def = monitoringConfig.getLocation(location);
+        final LocationDef def = m_monitoringLocationDao.get(location);
         if (def == null) {
             LOG.warn("Unable to find monitoring location {}", location);
             return Response.status(Response.Status.NOT_FOUND).build();

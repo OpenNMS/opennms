@@ -56,6 +56,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -115,6 +116,9 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
     ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
+
+    @Autowired
     LocationMonitorDao m_locationMonitorDao;
 
     @Override
@@ -125,8 +129,11 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
+
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", "35.715751,-79.16262", 1L, "odd");
+        m_monitoringLocationDao.saveOrUpdate(location);
     }
-    
+
     @Test
     @Transactional
     public void testRegister() {

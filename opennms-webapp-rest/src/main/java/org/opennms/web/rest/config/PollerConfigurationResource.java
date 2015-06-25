@@ -40,31 +40,28 @@ import javax.ws.rs.core.Response;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("pollerConfigurationResource")
 public class PollerConfigurationResource {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationResource.class);
 
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     @Resource(name="poller-configuration.xml")
     private ConfigurationResource<PollerConfiguration> m_pollerConfigResource;
-    
-    @Resource(name="monitoring-locations.xml")
-    private ConfigurationResource<MonitoringLocationsConfiguration> m_monitoringLocationsConfigResource;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getPollerConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
-        LOG.debug("getPollerConfigurationForLocation(location={})", location);
-        final MonitoringLocationsConfiguration monitoringConfig = m_monitoringLocationsConfigResource.get();
 
-        LOG.debug("monitoring config: {}", monitoringConfig);
-        final LocationDef def = monitoringConfig.getLocation(location);
+        final LocationDef def = m_monitoringLocationDao.get(location);
         if (def == null) {
             LOG.warn("Unable to find monitoring location {}", location);
             return Response.status(Response.Status.NOT_FOUND).build();
