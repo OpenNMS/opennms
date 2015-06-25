@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Configuration for the JMS NBI
@@ -42,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author <a mailto:dschlenk@converge-one.com>David Schlenk</a>
  */
 @XmlRootElement(name = "jms-northbounder-config")
+@XmlType(namespace="http://xmlns.opennms.org/xsd/config/jms-northbounder")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JmsNorthbounderConfig {
     private static final long serialVersionUID = 1L;
