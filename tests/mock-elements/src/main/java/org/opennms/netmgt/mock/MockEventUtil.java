@@ -71,7 +71,15 @@ public abstract class MockEventUtil {
     public static Event createNodeLostServiceEvent(String source, MockService svc, String reason) {
         return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, reason);
     }
-    
+
+    public static Event createOutageCreatedEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.OUTAGE_CREATED_EVENT_UEI, svc, reason);
+    }
+
+    public static Event createOutageResolvedEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.OUTAGE_RESOLVED_EVENT_UEI, svc, reason);
+    }
+
     /**
      * <p>createNodeLostServiceEvent</p>
      *

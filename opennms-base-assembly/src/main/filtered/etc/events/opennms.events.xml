@@ -16,6 +16,31 @@
     <severity>Indeterminate</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/internal/poller/outageCreated</uei>
+    <event-label>OpenNMS-defined node event: outageCreated</event-label>
+    <descr>
+      &lt;p&gt;A %service% outage was created on interface
+      %interface%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/outageResolved</uei>
+    <event-label>OpenNMS-defined node event: outageResolved</event-label>
+    <descr>
+      &lt;p&gt;The %service% service outage on interface %interface% 
+      has been restored.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      The %service% outage on interface %interface% has been
+      resolved.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>  
+  <event>
     <uei>uei.opennms.org/internal/capsd/discPause</uei>
     <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
     <descr>
