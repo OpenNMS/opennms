@@ -97,6 +97,8 @@ public class ForwardingEventListener implements EventListener {
 		Assert.notNull(eventForwarder, "eventForwarder must not be null");
 
 		installMessageSelectors();
+
+		LOG.info("Elasticsearch event forwarder initialized");
 	}
 
 	private void installMessageSelectors() {

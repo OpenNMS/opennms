@@ -134,6 +134,12 @@
       </exclusions>
       <!-- use the same version as your Camel core version -->
     </dependency>
+    <!--<dependency>-->
+    	<!--<groupId>org.apache.servicemix.bundles</groupId>-->
+    	<!--<artifactId>org.apache.servicemix.bundles.lucene</artifactId>-->
+    	<!--<version>4.10.3_1</version>-->
+        <!--<scope>runtime</scope>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

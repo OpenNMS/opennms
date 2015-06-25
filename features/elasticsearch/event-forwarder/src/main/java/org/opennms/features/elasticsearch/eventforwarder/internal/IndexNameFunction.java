@@ -36,9 +36,10 @@ public class IndexNameFunction implements PropertiesFunction {
         String result=null;
         result=remainder.toLowerCase()+"-"+df.format(new Date());
 
-        if(logger.isTraceEnabled()) {
-            logger.trace("IndexNameFunction.apply=" + result);
-        }
+//        if(logger.isTraceEnabled()) {
+//            logger.trace("IndexNameFunction.apply=" + result);
+//        }
+        logger.debug("IndexNameFunction.apply=" + result);
         return result;
     }
 
@@ -46,9 +47,10 @@ public class IndexNameFunction implements PropertiesFunction {
             String result=null;
             result=remainder.toLowerCase()+"-"+df.format(date);
 
-            if(logger.isTraceEnabled()) {
-                logger.trace("IndexNameFunction.apply=" + result);
-            }
+//            if(logger.isTraceEnabled()) {
+//                logger.trace("IndexNameFunction.apply=" + result);
+//            }
+            logger.debug("IndexNameFunction.apply=" + result);
 
             return result;
         }

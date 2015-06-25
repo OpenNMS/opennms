@@ -6,9 +6,13 @@ import org.opennms.core.camel.DefaultDispatcher;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @InOnly
 public class DefaultEventForwarder extends DefaultDispatcher implements EventForwarder {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventForwarder.class);
 
 	@Produce(property="endpointUri")
 	EventForwarder m_proxy;
@@ -23,6 +27,7 @@ public class DefaultEventForwarder extends DefaultDispatcher implements EventFor
 	 */
 	@Override
 	public void sendNow(Event event) {
+		LOG.debug("forwarding event"+event);
 		m_proxy.sendNow(event);
 	}
 
