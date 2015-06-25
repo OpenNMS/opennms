@@ -73,8 +73,8 @@ import com.google.common.collect.Maps;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-test.xml",
-        "file:../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml"
+        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
+        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
@@ -94,7 +94,7 @@ public class MeasurementRestServiceIntegrationTest extends AbstractSpringJerseyR
     protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
     
     public MeasurementRestServiceIntegrationTest() {
-        super("file:../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml");
+        super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml");
     }
 
     @Before
