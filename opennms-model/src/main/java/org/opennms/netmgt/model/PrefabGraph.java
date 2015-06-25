@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,7 +109,7 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
             String command, String[] externalValues,
             String[] propertiesValues, int order, String[] types,
             String description, Integer graphWidth, Integer graphHeight,
-            String[] suppress) {
+            String[] suppress, String colors) {
         Assert.notNull(name, "name argument cannot be null");
         Assert.notNull(title, "title argument cannot be null");
         Assert.notNull(columns, "columns argument cannot be null");
@@ -131,6 +131,7 @@ public class PrefabGraph extends Object implements Comparable<PrefabGraph> {
         m_description = description;
         m_graphWidth = graphWidth;
         m_graphHeight = graphHeight;
+        m_colors = colors;
     }
 
     /**

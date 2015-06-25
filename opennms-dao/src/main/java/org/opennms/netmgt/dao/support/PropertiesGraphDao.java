@@ -531,8 +531,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
         for (String name : list) {
             try {
-                PrefabGraph graph = makePrefabGraph(name, properties,
-                                                    type.getNextOrdering());
+                PrefabGraph graph = makePrefabGraph(name, properties, type);
                 result.add(graph);
             } catch (DataAccessResourceFailureException e) {
                 LOG.error("Failed to load report '{}'", name, e);
@@ -543,7 +542,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     private PrefabGraph makePrefabGraph(String name, Properties props,
-            int order) {
+            PrefabGraphTypeDao type) {
         Assert.notNull(name, "name argument cannot be null");
         Assert.notNull(props, "props argument cannot be null");
 
@@ -611,8 +610,9 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                                                     : BundleLists.parseBundleList(suppressString);
 
         return new PrefabGraph(name, title, columns, command, externalValues,
-                               propertiesValues, order, types, description,
-                               graphWidth, graphHeight, suppress);
+                               propertiesValues, type.getNextOrdering(), types,
+                               description, graphWidth, graphHeight, suppress,
+                               type.getColors());
 
     }
 
