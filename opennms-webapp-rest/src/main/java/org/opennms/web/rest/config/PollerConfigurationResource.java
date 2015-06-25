@@ -68,7 +68,7 @@ public class PollerConfigurationResource {
         }
 
         final List<String> pollingPackageNames = def.getPollingPackageNames();
-        if (pollingPackageNames != null) {
+        if (pollingPackageNames != null && pollingPackageNames.size() > 0) {
             final PollerConfiguration pollerConfig = m_pollerConfigResource.get().getPollerConfigurationForPackages(pollingPackageNames);
             return Response.ok(pollerConfig).build();
         }

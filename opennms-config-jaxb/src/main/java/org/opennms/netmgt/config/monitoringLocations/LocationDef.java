@@ -131,7 +131,7 @@ public class LocationDef implements Serializable {
 
     @XmlElementWrapper(name="tags")
     @XmlElement(name="tag")
-    private List<Tag> m_tags;
+    private List<String> m_tags;
 
     public LocationDef() {
         super();
@@ -157,12 +157,7 @@ public class LocationDef implements Serializable {
         m_geolocation = geolocation;
         m_coordinates = coordinates;
         m_priority = priority;
-        for (final String tag : tags) {
-            if (m_tags == null) {
-                m_tags = new ArrayList<Tag>(tags.length);
-            }
-            m_tags.add(new Tag(tag));
-        }
+        m_tags = (tags == null ? null : Arrays.asList(tags));
     }
 
     @Id 
@@ -245,7 +240,7 @@ public class LocationDef implements Serializable {
     @ElementCollection
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")
-    public List<Tag> getTags() {
+    public List<String> getTags() {
         if (m_tags == null) {
             return null;
         } else {
@@ -253,11 +248,11 @@ public class LocationDef implements Serializable {
         }
     }
 
-    public void setTags(final List<Tag> tags) {
+    public void setTags(final List<String> tags) {
         if (tags == null || tags.size() == 0) {
             m_tags = null;
         } else {
-            m_tags = new ArrayList<Tag>(tags);
+            m_tags = new ArrayList<String>(tags);
         }
     }
 

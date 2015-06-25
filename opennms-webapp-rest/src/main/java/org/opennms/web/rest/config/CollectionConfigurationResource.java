@@ -68,7 +68,7 @@ public class CollectionConfigurationResource {
         }
 
         final List<String> collectionPackageNames = def.getCollectionPackageNames();
-        if (collectionPackageNames != null) {
+        if (collectionPackageNames != null && collectionPackageNames.size() > 0) {
             final CollectdConfiguration collectdConfig = m_collectdConfigResource.get().getCollectdConfigurationForPackages(collectionPackageNames);
             return Response.ok(collectdConfig).build();
         }

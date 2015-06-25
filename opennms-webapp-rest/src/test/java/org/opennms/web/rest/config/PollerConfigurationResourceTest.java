@@ -38,10 +38,13 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -67,9 +70,18 @@ public class PollerConfigurationResourceTest extends AbstractSpringJerseyRestTes
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationResourceTest.class);
 
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", "35.715751,-79.16262", 1L);
+        m_monitoringLocationDao.saveOrUpdate(location);
+        location = new LocationDef("00002", "IN", new String[0], new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", "38.2096,-85.8704", 100L, "even");
+        m_monitoringLocationDao.saveOrUpdate(location);
+        location = new LocationDef("00003", "IN", new String[0], new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", "38.2096,-85.8704", 100L, "odd");
+        m_monitoringLocationDao.saveOrUpdate(location);
     }
     
     @Test

@@ -65,7 +65,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.server.geocoding.Geocoder;
 import org.opennms.features.poller.remote.gwt.server.geocoding.GeocoderException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.config.monitoringLocations.Tag;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -278,8 +277,8 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         
         Set<String> tags = new TreeSet<String>();
         if (def.getTags() != null) {
-            for (Tag tag : def.getTags()) {
-                tags.add(tag.getName());
+            for (String tag : def.getTags()) {
+                tags.add(tag);
             }
         }
         
