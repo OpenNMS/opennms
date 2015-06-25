@@ -90,7 +90,6 @@ public class MinionRestService extends OnmsRestService {
 
     private CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
-        //builder.alias("minionProperties", "property", JoinType.LEFT_JOIN);
         //builder.alias("properties", "property", JoinType.LEFT_JOIN);
         applyQueryFilters(params, builder);
         return builder;

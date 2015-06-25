@@ -56,7 +56,6 @@ import com.google.common.collect.Lists;
  * @author jwhite
  */
 @Component("resourceRestService")
-@Scope("prototype")
 @Path("resources")
 public class ResourceRestService extends OnmsRestService {
 

@@ -67,7 +67,6 @@ import com.google.common.collect.Maps;
  * @author jwhite
  */
 @Component("graphRestService")
-@Scope("prototype")
 @Path("graphs")
 public class GraphRestService extends OnmsRestService {
 

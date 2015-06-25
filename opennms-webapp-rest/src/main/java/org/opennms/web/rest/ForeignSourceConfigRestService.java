@@ -55,8 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-//import com.sun.jersey.spi.resource.PerRequest;
-
 /**
  * The Class ForeignSourceConfigRestService.
  * 
