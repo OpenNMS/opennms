@@ -277,7 +277,10 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         Map<String, String> params = new HashMap<String,String>(4);
         params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
         params.put(EventConstants.PARM_POLLSTATUS_STATUSNAME, getStatus().getStatusName());
-        params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, getStatus().getResponseTime().toString());
+        Double responseTime = getStatus().getResponseTime();
+        if (responseTime != null) {
+            params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, responseTime.toString());
+        }
         return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
 
