@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler;
+package org.opennms.features.mibcompiler;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -40,10 +40,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser;
-import org.opennms.features.vaadin.mibcompiler.services.OnmsProblemEventHandler;
-import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
+import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.mibcompiler.services.JsmiMibParser;
+import org.opennms.features.mibcompiler.services.OnmsProblemEventHandler;
+import org.opennms.features.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;

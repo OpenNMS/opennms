@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler.services;
+package org.opennms.features.mibcompiler.services;
 
 import java.io.File;
 import java.io.Serializable;
@@ -53,8 +53,8 @@ import org.jsmiparser.smi.SmiPrimitiveType;
 import org.jsmiparser.smi.SmiRow;
 import org.jsmiparser.smi.SmiTrapType;
 import org.jsmiparser.smi.SmiVariable;
+import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.namecutter.NameCutter;
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
