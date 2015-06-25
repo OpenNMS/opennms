@@ -176,7 +176,6 @@
       <includeGroup>fgApHTTPStatsTable</includeGroup>
       <includeGroup>fgApHTTPConnections</includeGroup>
       <includeGroup>fgApSMTPStatsTable</includeGroup>
-      <includeGroup>fgApSMTPConnections</includeGroup>
       <includeGroup>fgApPOP3StatsTable</includeGroup>
       <includeGroup>fgApPOP3Connections</includeGroup>
       <includeGroup>fgApIMAPStatsTable</includeGroup>
