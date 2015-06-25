@@ -338,6 +338,7 @@
 
       <!-- Needed for JSON annotations -->
       <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
@@ -379,6 +380,7 @@
 
     <feature name="opennms-config" description="OpenNMS :: Configuration" version="${project.version}">
       <feature>c3p0</feature>
+      <feature>commons-codec</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-poller-api</feature>
