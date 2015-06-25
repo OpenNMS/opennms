@@ -1264,6 +1264,7 @@
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.14.1</camelVersion>
+    <elasticsearch-version>1.0.0_4</elasticsearch-version>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
     <commonsCodecVersion>1.9</commonsCodecVersion>

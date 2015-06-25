@@ -21,7 +21,7 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="elasticsearchUri" value="opennms?operation=INDEX&amp;indexType=mmsg&amp;ip=127.0.0.1"/>
+      <cm:property name="elasticsearchUri" value="opennms?operation=INDEX&amp;indexType=events&amp;ip=127.0.0.1"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -64,7 +64,7 @@
       <bean ref="elasticsearchHeaders" method="process"/>
       <log message="elasticsearch-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
       <!-- Send to ES -->
-      <to uri="elasticsearch://{{elasticsearchUri}}?operation=INDEX&amp;indexName={{index:opennms}}"/>
+      <to uri="elasticsearch://{{elasticsearchUri}}&amp;indexName={{index:opennms}}"/>
     </route>
   </camelContext>
 
