@@ -189,13 +189,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
 
     /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<>();
-
-    /** persistent field */
     private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
-
-    /** persistent field */
-    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<>();
 
     private Set<OnmsCategory> m_categories = new LinkedHashSet<>();
 
@@ -946,65 +940,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setSnmpInterfaces(Set<OnmsSnmpInterface> snmpinterfaces) {
         m_snmpInterfaces = snmpinterfaces;
-    }
-
-    /**
-     * The ARP interfaces with this node as a source
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    @XmlTransient
-    @JsonIgnore
-    @OneToMany(mappedBy="sourceNode",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
-    public Set<OnmsArpInterface> getArpInterfacesBySource() {
-        return m_arpInterfacesBySource;
-    }
-
-    /**
-     * @param arpInterfaces a {@link java.util.Set} object.
-     */
-    public void setArpInterfacesBySource(Set<OnmsArpInterface> arpInterfaces) {
-        m_arpInterfacesBySource = arpInterfaces;
-    }
-
-    /**
-     * @param iface a {@link org.opennms.netmgt.model.OnmsArpInterface} object.
-     */
-    public void addArpInterfaceBySource(OnmsArpInterface iface) {
-        iface.setNode(this);
-        getArpInterfacesBySource().add(iface);
-    }
-
-    /**
-     * The ARP interfaces on this node
-     *
-     * @return a {@link java.util.Set} object.
-     */
-    @XmlTransient
-    @JsonIgnore
-    @OneToMany(mappedBy="node")
-    public Set<OnmsArpInterface> getArpInterfaces() {
-        return m_arpInterfaces;
-    }
-
-    /**
-     * <p>setArpInterfaces</p>
-     *
-     * @param arpInterfaces a {@link java.util.Set} object.
-     */
-    public void setArpInterfaces(Set<OnmsArpInterface> arpInterfaces) {
-        m_arpInterfaces = arpInterfaces;
-    }
-
-    /**
-     * <p>addArpInterface</p>
-     *
-     * @param iface a {@link org.opennms.netmgt.model.OnmsArpInterface} object.
-     */
-    public void addArpInterface(OnmsArpInterface iface) {
-        iface.setNode(this);
-        getArpInterfaces().add(iface);
     }
 
     /**

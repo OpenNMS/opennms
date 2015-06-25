@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -47,8 +46,6 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -109,9 +106,6 @@ public class AvailabilityDatabasePopulator {
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private LocationMonitorDao m_locationMonitorDao;
-    private OnmsMapDao m_onmsMapDao;
-    private OnmsMapElementDao m_onmsMapElementDao;
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
@@ -447,30 +441,6 @@ public class AvailabilityDatabasePopulator {
         m_locationMonitorDao = locationMonitorDao;
     }
 
-    public OnmsMapDao getOnmsMapDao() {
-        return m_onmsMapDao;
-    }
-
-    public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
-        this.m_onmsMapDao = onmsMapDao;
-    }
-
-    public OnmsMapElementDao getOnmsMapElementDao() {
-        return m_onmsMapElementDao;
-    }
-
-    public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
-        this.m_onmsMapElementDao = onmsMapElementDao;
-    }
-
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-    
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_acknowledgmentDao;
     }

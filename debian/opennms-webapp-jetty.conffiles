@@ -5,7 +5,6 @@
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-webflow.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/gwtDispatcher-servlet.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/mapDispatcher-servlet.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/messages.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/urlrewrite.xml
 /usr/share/opennms/jetty-webapps/opennms/WEB-INF/web.xml

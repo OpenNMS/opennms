@@ -58,32 +58,21 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.IpRouteInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpInterfaceDao;
-import org.opennms.netmgt.dao.api.StpNodeDao;
-import org.opennms.netmgt.dao.api.VlanDao;
-import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsArpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpRouteInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsStpInterface;
-import org.opennms.netmgt.model.OnmsStpNode;
-import org.opennms.netmgt.model.OnmsVlan;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.StatusType;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,22 +100,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
     @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
-    @Autowired
-    private IpRouteInterfaceDao m_ipRouteInterfaceDao;
-
-    @Autowired
-    private StpNodeDao m_stpNodeDao;
-    
-    @Autowired
-    private StpInterfaceDao m_stpInterfaceDao;
-    
-    @Autowired
-    private VlanDao m_vlanDao;
-    
     @Autowired
     private MonitoredServiceDao m_monSvcDao;
     
@@ -859,247 +833,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         return m_nodeDao.findMatching(criteria);
     }
-    
-
-    /**
-     * <p>getAtInterface</p>
-     *
-     * @param nodeID a int.
-     * @param ipaddr a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.element.AtInterface} object.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public AtInterface getAtInterface(int nodeId, String ipAddr) {
-        return getAtInterfaceForOnmsNode(m_nodeDao.get(nodeId), ipAddr);
-    }
-
-    private AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
-        for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
-            final String ifaceAddress = iface.getIpAddress();
-            if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
-                return new AtInterface(iface);
-            }
-        }
-        return null;
-    }
-
-
-
-    /**
-     * <p>getIpRoute</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public IpRouteInterface[] getIpRoute(int nodeID) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.add(Restrictions.and(Restrictions.eq("node.id", nodeID), Restrictions.ne("status", StatusType.DELETED)));
-        List<IpRouteInterface> nodes = getIpRouteInterfaceArray(m_ipRouteInterfaceDao.findMatching(criteria));
-        return nodes.toArray(new IpRouteInterface[nodes.size()]);
-    }
-
-    private List<IpRouteInterface> getIpRouteInterfaceArray(List<OnmsIpRouteInterface> iproutes ) {
-        List<IpRouteInterface> routes = new ArrayList<IpRouteInterface>();
-        for (OnmsIpRouteInterface iproute: iproutes) {
-            routes.add(new IpRouteInterface(iproute));
-        }
-        return routes;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#isParentNode(int)
-	 */
-    @Override
-    public boolean isParentNode(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeParentId", nodeId));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        
-        int count = m_dataLinkInterfaceDao.countMatching(criteria);
-        
-        return (count > 0);
-        
-    }
-
-    /**
-     * <p>isBridgeNode</p>
-     *
-     * @param nodeID a int.
-     * @return a boolean.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public boolean isBridgeNode(int nodeID) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        
-        int count = m_stpNodeDao.countMatching(criteria);
-        return (count > 0);
-    }
-
-    /**
-     * <p>isRouteInfoNode</p>
-     *
-     * @param nodeID a int.
-     * @return a boolean.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public boolean isRouteInfoNode(int nodeID) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsIpRouteInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        int count = m_ipRouteInterfaceDao.countMatching(criteria);
-        //        m_jdbcTemplate.queryForInt("SELECT COUNT(*) FROM IPROUTEINTERFACE WHERE NODEID = ? AND STATUS != 'D'", nodeID);
-        return (count > 0);
-    }
-
-    /**
-     * <p>getLinkedNodeIdOnNode</p>
-     *
-     * @param nodeID a int.
-     * @return a {@link java.util.Set} object.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public Set<Integer> getLinkedNodeIdOnNode(int nodeID) {
-        Set<Integer> nodes = new TreeSet<Integer>();
-
-        for (DataLinkInterface link: m_dataLinkInterfaceDao.findByNodeId(nodeID)) {
-            Integer linkedNodeId = link.getNodeParentId();
-            if (nodes.contains(linkedNodeId) || link.getStatus().equals(StatusType.DELETED))
-                continue;
-            nodes.add(linkedNodeId);            
-        }
-
-        for (DataLinkInterface link : m_dataLinkInterfaceDao.findByNodeParentId(nodeID)) {
-            Integer linkedNodeId = link.getNodeId();
-            if (nodes.contains(linkedNodeId) || link.getStatus().equals(StatusType.DELETED))
-                continue;
-            nodes.add(linkedNodeId);            
-        }
-        
-        // Remove all nulls, TreeSets cannot contain null
-        return nodes;
-    }
-    
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnNode(int)
-	 */
-    @Override
-    public List<LinkInterface> getDataLinksOnNode(int nodeId) {
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        criteria.addOrder(Order.asc("ifIndex"));
-
-        List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
-
-        criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeParentId", nodeId));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-
-        ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
-        
-        return ifaces;
-    	
-    }
-
-    @Override
-    public List<LinkInterface> getDataLinksOnInterface(int nodeId, String ipAddress){
-    	Interface iface = getInterface(nodeId, ipAddress);
-    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
-    		return getDataLinksOnInterface(nodeId, iface.getIfIndex());    		
-    	}
-    	return new ArrayList<LinkInterface>();
-    }
-    
-    @Override
-    public List<LinkInterface> getDataLinksOnInterface(int id){
-    	Interface iface = getInterface(id);
-    	if (iface != null && Integer.valueOf(iface.getIfIndex()) != null && iface.getIfIndex() > 0) {
-    		return getDataLinksOnInterface(iface.getNodeId(), iface.getIfIndex());    		
-    	}
-    	return new ArrayList<LinkInterface>();    	
-    }
-
-
-    /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnInterface(int, int)
-	 */
-    @Override
-    public List<LinkInterface> getDataLinksOnInterface(int nodeId, int ifIndex){
-        OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ifIndex", ifIndex));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-
-        List<LinkInterface> ifaces = getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId);
-
-        criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
-        criteria.add(Restrictions.eq("nodeParentId", nodeId));
-        criteria.add(Restrictions.eq("parentIfIndex", ifIndex));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        criteria.addOrder(Order.asc("parentIfIndex"));
-
-        ifaces.addAll(getDataLinkInterface(m_dataLinkInterfaceDao.findMatching(criteria),nodeId));
-        
-        return ifaces;
-    	
-    	
-    }
-
-
-    private List<LinkInterface> getDataLinkInterface(List<DataLinkInterface> dlifaces, int nodeId) {
-    	List<LinkInterface> lifaces = new ArrayList<LinkInterface>();
-    	for (DataLinkInterface dliface: dlifaces) {
-    		if (dliface.getNode().getId() == nodeId) {
-    			lifaces.add(createLinkInterface(dliface, false));
-    		} else if (dliface.getNodeParentId() == nodeId ) {
-    			lifaces.add(createLinkInterface(dliface, true));
-    		}
-    	}
-    	return lifaces;
-    }
-    
-    /*
-     * Casi d'uso
-     * 1) nessuna interfaccia associabile (come rappresentare il link?) 
-     * se il nodo ha una sola interfaccia allora va associata anche a quella
-     * altrimenti non la associamo
-     * 2) node ha ip interface e node parent has SNMP interface
-     * 3) node ha una interfaccia SNMP e node parent pure
-     * 
-     */
-    private LinkInterface createLinkInterface(DataLinkInterface dliface, boolean isParent) {
-
-        Integer nodeid = dliface.getNode().getId();
-        Integer ifindex = dliface.getIfIndex();
-
-        Integer linkedNodeid = dliface.getNodeParentId();
-        Integer linkedIfindex = dliface.getParentIfIndex();
-
-        if (isParent) {
-            nodeid = dliface.getNodeParentId();
-            ifindex = dliface.getParentIfIndex();
-            
-            linkedNodeid = dliface.getNode().getId();
-            linkedIfindex = dliface.getIfIndex();
-        } 
-    		
-        Interface iface = getInterfaceForLink(nodeid, ifindex);
-        Interface linkedIface = getInterfaceForLink(linkedNodeid, linkedIfindex); 
-    		
-        return new LinkInterface(dliface, isParent, iface, linkedIface);
-    }
 
     private Interface getInterfaceForLink(int nodeid, int ifindex) {
         Interface iface = null;
@@ -1134,170 +867,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return iface;
     }
 
-    /**
-     * <p>getVlansOnNode</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.Vlan} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public Vlan[] getVlansOnNode(int nodeID) {
-        //String sqlQuery = "SELECT * from vlan WHERE status != 'D' AND nodeid = ? order by vlanid;";
-        //m_jdbcTemplate.query(sqlQuery, new VlanRowMapper(), nodeID);
-        
-        final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsVlan.class)
-            .setAliases(Arrays.asList(new Alias[] {
-                new Alias("node", "node", JoinType.LEFT_JOIN)
-            }))
-            .addRestriction(new EqRestriction("node.id", nodeID))
-            .addRestriction(new NeRestriction("status", StatusType.DELETED));
-
-        List<Vlan> vlans = getVlans(m_vlanDao.findMatching(criteria));
-        return vlans.toArray(new Vlan[vlans.size()]);
-    }
-
-    private List<Vlan> getVlans(List<OnmsVlan> onmsvlans) {
-        List<Vlan> vlans = new ArrayList<Vlan>();
-        for (OnmsVlan onmsvlan: onmsvlans) {
-            vlans.add(new Vlan(onmsvlan));
-        }
-        return vlans;
-    }
-    /**
-     * <p>getStpInterface</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public StpInterface[] getStpInterface(int nodeID) {
-        final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-
-        List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
-    	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
-    		stpinterfaces.add(getStpInterface(onmsStpInterface));
-    	}
-    	/*
-        String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
-            + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
-            + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress " 
-            + "AND stpportdesignatedbridge != '0000000000000000'"
-            + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ?) AS stpinterfacedb "
-            + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
-        List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID);
-        */
-    	
-        return stpinterfaces.toArray(new StpInterface[stpinterfaces.size()]);
-    }
-
-    /**
-     * <p>getStpInterface</p>
-     *
-     * @param nodeID a int.
-     * @param ifindex a int.
-     * @return an array of {@link org.opennms.web.element.StpInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public StpInterface[] getStpInterface(int nodeID, int ifindex) {
-    	/*
-        String sqlQuery = "SELECT DISTINCT(stpnode.nodeid) AS droot, stpinterfacedb.* FROM "
-            + "((SELECT DISTINCT(stpnode.nodeid) AS dbridge, stpinterface.* FROM "
-            + "stpinterface LEFT JOIN stpnode ON SUBSTR(stpportdesignatedbridge,5,16) = stpnode.basebridgeaddress "
-            + "AND stpportdesignatedbridge != '0000000000000000'"
-            + "WHERE stpinterface.status != 'D' AND stpinterface.nodeid = ? AND stpinterface.ifindex = ?) AS stpinterfacedb "
-            + "LEFT JOIN stpnode ON SUBSTR(stpportdesignatedroot, 5, 16) = stpnode.basebridgeaddress) order by stpinterfacedb.stpvlan, stpinterfacedb.ifindex;";
-        List<StpInterface> nodes = m_jdbcTemplate.query(sqlQuery, new StpInterfaceRowMapper(), nodeID, ifindex);
-        */
-
-    	final OnmsCriteria criteria = new OnmsCriteria(OnmsStpInterface.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.eq("ifIndex", ifindex));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-
-        List<StpInterface> stpinterfaces = new ArrayList<StpInterface>();
-    	for (OnmsStpInterface onmsStpInterface: m_stpInterfaceDao.findMatching(criteria)) {
-    		stpinterfaces.add(getStpInterface(onmsStpInterface));
-    	}
-        return stpinterfaces.toArray(new StpInterface[stpinterfaces.size()]);
-    }
-
-    /**
-     * <p>getStpNode</p>
-     *
-     * @param nodeID a int.
-     * @return an array of {@link org.opennms.web.element.StpNode} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    @Override
-    public StpNode[] getStpNode(int nodeID) {
-    	/*
-        String sqlQuery = "select distinct(e2.nodeid) as stpdesignatedrootnodeid, e1.* from (stpnode e1 left join stpnode e2 on substr(e1.stpdesignatedroot, 5, 16) = e2.basebridgeaddress) where e1.nodeid = ? AND e1.status != 'D' ORDER BY e1.basevlan";
-        List<StpNode> nodes = m_jdbcTemplate.query(sqlQuery, new StpNodeRowMapper(), nodeID);
-		*/
-    	final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-        criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
-        criteria.add(Restrictions.eq("node.id", nodeID));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-
-    	List<StpNode> nodes = new ArrayList<StpNode>();
-    	
-    	for (OnmsStpNode onmsstpnode: m_stpNodeDao.findMatching(criteria)) {
-    		nodes.add(getStpNode(onmsstpnode));
-    	}
-        return nodes.toArray(new StpNode[nodes.size()]);
-    }
-
-    private Integer getStpNodeFromStpRootIdentifier(String rootaddress) {
-
-        String baseaddress =null;
-        
-        if(rootaddress.length() == 16){
-            baseaddress = rootaddress.substring(5,16);
-        } else if (rootaddress.length() == 12) {
-            baseaddress = rootaddress;
-        }
-        if (baseaddress != null) {
-            final OnmsCriteria criteria = new OnmsCriteria(OnmsStpNode.class);
-            criteria.add(Restrictions.eq("baseBridgeAddress", baseaddress));
-            List<OnmsStpNode> stpnodes = m_stpNodeDao.findMatching(criteria);
-            if (stpnodes.size() == 1)
-                return stpnodes.get(0).getId();
-        }
-        return null;
-    }
-
-    private StpInterface getStpInterface(OnmsStpInterface onmsStpInterface)  {
-        StpInterface stpIf = new StpInterface(onmsStpInterface);
-        if (stpIf.get_stpdesignatedbridge() != null) {
-        Integer element = getStpNodeFromStpRootIdentifier(stpIf.get_stpdesignatedbridge());
-	        if (element != null) {
-	            stpIf.setStpBridgeNodeid(element);
-	        }
-        }
-        return stpIf;
-    }
-    /**
-     * This class converts data from the result set into {@link StpNode}
-     * objects.
-     */
-    private StpNode getStpNode(OnmsStpNode node) {
-        StpNode stpNode = new StpNode(node);
-        if (node.getStpDesignatedRoot() != null) {
-        	Integer element = getStpNodeFromStpRootIdentifier(node.getStpDesignatedRoot());
-        	if (element != null) {
-        		stpNode.m_stprootnodeid = element;
-        	}
-        }
-        return stpNode;
-    }
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeIdsWithIpLike(java.lang.String)
 	 */
@@ -1320,7 +889,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         return nodeIds;
     }
-    
 
     /* (non-Javadoc)
      * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], boolean)

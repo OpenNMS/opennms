@@ -117,8 +117,6 @@
             httpIp = lowest.getHostAddress();
         }
     }
-
-    boolean isBridgeIP = NetworkElementFactory.getInstance(getServletContext()).isBridgeNode(nodeId);
 %>
 
 <% pageContext.setAttribute("nodeId", nodeId); %>
@@ -175,11 +173,6 @@
   </div>
   <div class="panel-body">
     <ul class="list-inline">
-      <% if( isBridgeIP ) { %>
-      <li>
-        <a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
-      </li>
-      <% }%>				     
       <li>
       	<a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
       </li>

@@ -344,29 +344,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-map-provisioning-adapter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-map-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>etc</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-asset-provisioning-adapter</artifactId>
     </dependency>
     <dependency>

@@ -281,15 +281,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       </table>
     </div> <!-- panel -->
           
-    <% if (ifIndex > 0 ) { %>
-    
-    <!-- Node Link box -->
-    <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
-      <jsp:param name="node" value="<%=nodeId%>" />
-      <jsp:param name="ifindex" value="<%=ifIndex%>" />
-    </jsp:include>
-    <% } %>
-
     <!-- Availability box -->
     <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false">
       <jsp:param name="node" value="<%=nodeId%>" />

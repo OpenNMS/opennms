@@ -168,7 +168,6 @@ public class NetworkBuilderTest {
         builder.addService("HTTP");
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService("ICMP");
-        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         final OnmsNode node2 = builder.getCurrentNode();
         
         assertNotNull(node2);

@@ -95,12 +95,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>drools-correlation-engine</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>

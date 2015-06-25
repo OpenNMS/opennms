@@ -28,18 +28,8 @@
 
 package org.opennms.netmgt.dao.mock;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -48,6 +38,15 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements NodeDao {
     private static final Logger LOG = LoggerFactory.getLogger(MockNodeDao.class);
@@ -107,7 +106,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         getDistPollerDao().saveOrUpdate(node.getDistPoller());
 
         /** delete any interfaces that were removed compared to the database **/
-        final OnmsNode dbNode = node.getId() == null? null : get(node.getId());
+        final OnmsNode dbNode = node.getId() == null ? null : get(node.getId());
         if (dbNode != null) {
             for (final OnmsSnmpInterface iface : dbNode.getSnmpInterfaces()) {
                 if (!node.getSnmpInterfaces().contains(iface)) {
@@ -132,10 +131,6 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         }
          */
 
-        for (final OnmsArpInterface iface : node.getArpInterfaces()) {
-            iface.setNode(node);
-        }
-
         for (final OnmsSnmpInterface iface : node.getSnmpInterfaces()) {
             iface.setNode(node);
             getSnmpInterfaceDao().saveOrUpdate(iface);
@@ -155,7 +150,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     @Override
     public String getLabelForId(final Integer id) {
         final OnmsNode node = get(id);
-        return node == null? null : node.getLabel();
+        return node == null ? null : node.getLabel();
     }
 
     @Override
@@ -187,7 +182,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
 
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(final String foreignSource) {
-        final Map<String,Integer> nodes = new HashMap<String,Integer>();
+        final Map<String, Integer> nodes = new HashMap<String, Integer>();
         for (final OnmsNode node : findAll()) {
             if (foreignSource.equals(node.getForeignSource())) {
                 nodes.put(node.getForeignId(), node.getId());
@@ -320,7 +315,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     private static long truncateMillis(final Date date) {
-        return date == null? 0 : (1000 * (date.getTime() / 1000));
+        return date == null ? 0 : (1000 * (date.getTime() / 1000));
     }
 
     @Override

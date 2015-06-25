@@ -175,40 +175,7 @@ public class NetworkElementFactoryTest implements InitializingBean {
     	assertEquals("active interfaces", 4, intfs.length);
     	
     }
-        
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testGetDataLinksOnInterface() {
-        List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 1);
-        assertEquals(4, dlis.size());
-        
-        List<LinkInterface> dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(m_dbPopulator.getNode1().getId(), 9);
-        assertEquals(0, dlis2.size());
-    }
-    
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testGetAtInterfaces() throws Exception {
-        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(m_dbPopulator.getNode2().getId(), "192.168.2.1");
-        assertEquals("AA:BB:CC:DD:EE:FF", atif.get_physaddr());
-        
-        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("AA:BB:CC:DD:EE:FF");
-        assertEquals(1, nodes.size());
-    }
-    
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testGetDataLinksOnNode() throws SQLException {
-    	List<LinkInterface> dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(m_dbPopulator.getNode1().getId());
-        assertEquals(5, dlis.size());
-        
-        List<LinkInterface> dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
-        assertEquals(0, dlis2.size());
-    }
-    
+
     @Test
     @JUnitTemporaryDatabase
     public void testGetServicesOnInterface() {

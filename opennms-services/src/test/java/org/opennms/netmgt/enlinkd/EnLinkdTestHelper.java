@@ -29,8 +29,8 @@
 package org.opennms.netmgt.enlinkd;
 
 
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.BridgeMacLink;
@@ -39,10 +39,14 @@ import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
+
+import java.util.List;
+
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
@@ -50,16 +54,16 @@ import static org.opennms.core.utils.InetAddressUtils.str;
  */
 
 public abstract class EnLinkdTestHelper {
-        
-	protected static void printLldpTopology(List<LldpLink> lldplinks) {
-		for (LldpLink link: lldplinks)
-			printLldpLink(link);
-	}
 
-	protected static void printLldpElements(List<LldpElement> lldpelements) {
-		for (LldpElement element: lldpelements)
-			printLldpElement(element);
-	}
+    protected static void printLldpTopology(List<LldpLink> lldplinks) {
+        for (LldpLink link : lldplinks)
+            printLldpLink(link);
+    }
+
+    protected static void printLldpElements(List<LldpElement> lldpelements) {
+        for (LldpElement element : lldpelements)
+            printLldpElement(element);
+    }
 
     protected static void printCdpElement(final CdpElement cdpElement) {
         System.err.println("----------cdp element --------");
@@ -89,94 +93,111 @@ public abstract class EnLinkdTestHelper {
         System.err.println("");
     }
 
-        protected static void printLldpElement(final LldpElement lldpElement) {
-    	System.err.println("----------lldp element --------");
-    	System.err.println("Nodeid: " + lldpElement.getNode().getId());
-    	System.err.println("lldp chassis type/id: " + LldpChassisIdSubType.getTypeString(lldpElement.getLldpChassisIdSubType().getValue())+"/"+lldpElement.getLldpChassisId());
-    	System.err.println("lldp sysname: " + lldpElement.getLldpSysname());
-	}
-	
-	protected static void printLldpLink(LldpLink link) {
-    	System.err.println("----------lldp link --------");
-    	System.err.println("Create time: " + link.getLldpLinkCreateTime());
-    	System.err.println("Last Poll time: " + link.getLldpLinkLastPollTime());
-    	System.err.println("----------Source Node--------");
-    	System.err.println("Nodeid: " + link.getNode().getId());
-    	System.err.println("----------Source Port--------");
-    	System.err.println("lldp port num: " + link.getLldpLocalPortNum());
+    protected static void printLldpElement(final LldpElement lldpElement) {
+        System.err.println("----------lldp element --------");
+        System.err.println("Nodeid: " + lldpElement.getNode().getId());
+        System.err.println("lldp chassis type/id: " + LldpChassisIdSubType.getTypeString(lldpElement.getLldpChassisIdSubType().getValue()) + "/" + lldpElement.getLldpChassisId());
+        System.err.println("lldp sysname: " + lldpElement.getLldpSysname());
+    }
+
+    protected static void printLldpLink(LldpLink link) {
+        System.err.println("----------lldp link --------");
+        System.err.println("Create time: " + link.getLldpLinkCreateTime());
+        System.err.println("Last Poll time: " + link.getLldpLinkLastPollTime());
+        System.err.println("----------Source Node--------");
+        System.err.println("Nodeid: " + link.getNode().getId());
+        System.err.println("----------Source Port--------");
+        System.err.println("lldp port num: " + link.getLldpLocalPortNum());
         System.err.println("lldp port ifindex: " + link.getLldpPortIfindex());
-    	System.err.println("lldp port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpPortIdSubType().getValue())+"/" + link.getLldpPortId());
-    	System.err.println("lldp port descr: " + link.getLldpPortDescr());
-    	System.err.println("----------Rem Node--------");
-    	System.err.println("lldp rem chassis type/id: " + LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue())+"/"+link.getLldpRemChassisId());
-    	System.err.println("lldp rem sysname: " + link.getLldpRemSysname());
-    	System.err.println("----------Remote Port--------");
-    	System.err.println("lldp rem port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpRemPortIdSubType().getValue())+"/" + link.getLldpRemPortId());
-    	System.err.println("lldp rem port descr: " + link.getLldpRemPortDescr());
-    	System.err.println("");
+        System.err.println("lldp port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpPortIdSubType().getValue()) + "/" + link.getLldpPortId());
+        System.err.println("lldp port descr: " + link.getLldpPortDescr());
+        System.err.println("----------Rem Node--------");
+        System.err.println("lldp rem chassis type/id: " + LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue()) + "/" + link.getLldpRemChassisId());
+        System.err.println("lldp rem sysname: " + link.getLldpRemSysname());
+        System.err.println("----------Remote Port--------");
+        System.err.println("lldp rem port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpRemPortIdSubType().getValue()) + "/" + link.getLldpRemPortId());
+        System.err.println("lldp rem port descr: " + link.getLldpRemPortDescr());
+        System.err.println("");
     }
-	
-	protected static void printOspfTopology(List<OspfLink> ospflinks) {
-		for (OspfLink link: ospflinks)
-			printOspfLink(link);
-	}
 
-	protected static void printOspfElements(List<OspfElement> ospfelements) {
-		for (OspfElement element: ospfelements)
-			printOspfElement(element);
-	}
-	protected static void printOspfElement(final OspfElement element) {
-    	System.err.println("----------ospf element --------");
-    	System.err.println("Nodeid: " + element.getNode().getId());
-    	System.err.println("ospf router id/mask/ifindex: " + str(element.getOspfRouterId())+"/"+str(element.getOspfRouterIdNetmask())+"/"+element.getOspfRouterIdIfindex());
-    	System.err.println("ospf admin status: " + Status.getTypeString(element.getOspfAdminStat().getValue()));
-    	System.err.println("ospf version number: " + element.getOspfVersionNumber());
-    	System.err.println("ospf Border Router Status: " + TruthValue.getTypeString(element.getOspfBdrRtrStatus().getValue()));
-    	System.err.println("ospf AS Boder Router Status: " + TruthValue.getTypeString(element.getOspfASBdrRtrStatus().getValue()));
-       	System.err.println("");
-        	}
-	
-	protected static void printOspfLink(OspfLink link) {
-    	System.err.println("----------ospf link --------");
-    	System.err.println("Create time: " + link.getOspfLinkCreateTime());
-    	System.err.println("Last Poll time: " + link.getOspfLinkLastPollTime());
-    	System.err.println("----------Source Node--------");
-    	System.err.println("Nodeid: " + link.getNode().getId());
-    	System.err.println("----------Source Port--------");
-    	System.err.println("ospf router id/mask/ifindex/addressleifindex: " + str(link.getOspfIpAddr())+"/"+str(link.getOspfIpMask())+"/"+link.getOspfIfIndex()+"/"+link.getOspfAddressLessIndex());
-    	System.err.println("----------Rem Node--------");
-    	System.err.println("ospf rem router id: " + str(link.getOspfRemRouterId()));
-    	System.err.println("----------Remote Port--------");
-    	System.err.println("ospf rem router ip: " + str(link.getOspfRemIpAddr()));
-       	System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
-    	System.err.println("");
+    protected static void printOspfTopology(List<OspfLink> ospflinks) {
+        for (OspfLink link : ospflinks)
+            printOspfLink(link);
     }
-	
-	protected static void printBridgeMacLink(BridgeMacLink link) {
-    	System.err.println("----------mac link --------");
-    	System.err.println("Create time: " + link.getBridgeMacLinkCreateTime());
-    	System.err.println("Last Poll time: " + link.getBridgeMacLinkLastPollTime());
-    	System.err.println("----------Source Mac Address--------");
-    	System.err.println("Mac: " + link.getMacAddress());
-    	System.err.println("----------Target Node--------");
-    	System.err.println("Nodeid: " + link.getNode().getId());
-    	System.err.println("----------Target Bridge Port--------");
-    	System.err.println("BridgePort: " + link.getBridgePort());
-    	System.err.println("----------Target IfIndex--------");
-    	System.err.println("IfIndex: " + link.getBridgePortIfIndex());
-    	System.err.println("");
-	}
+
+    protected static void printOspfElements(List<OspfElement> ospfelements) {
+        for (OspfElement element : ospfelements)
+            printOspfElement(element);
+    }
+
+    protected static void printOspfElement(final OspfElement element) {
+        System.err.println("----------ospf element --------");
+        System.err.println("Nodeid: " + element.getNode().getId());
+        System.err.println("ospf router id/mask/ifindex: " + str(element.getOspfRouterId()) + "/" + str(element.getOspfRouterIdNetmask()) + "/" + element.getOspfRouterIdIfindex());
+        System.err.println("ospf admin status: " + Status.getTypeString(element.getOspfAdminStat().getValue()));
+        System.err.println("ospf version number: " + element.getOspfVersionNumber());
+        System.err.println("ospf Border Router Status: " + TruthValue.getTypeString(element.getOspfBdrRtrStatus().getValue()));
+        System.err.println("ospf AS Boder Router Status: " + TruthValue.getTypeString(element.getOspfASBdrRtrStatus().getValue()));
+        System.err.println("");
+    }
+
+    protected static void printOspfLink(OspfLink link) {
+        System.err.println("----------ospf link --------");
+        System.err.println("Create time: " + link.getOspfLinkCreateTime());
+        System.err.println("Last Poll time: " + link.getOspfLinkLastPollTime());
+        System.err.println("----------Source Node--------");
+        System.err.println("Nodeid: " + link.getNode().getId());
+        System.err.println("----------Source Port--------");
+        System.err.println("ospf router id/mask/ifindex/addressleifindex: " + str(link.getOspfIpAddr()) + "/" + str(link.getOspfIpMask()) + "/" + link.getOspfIfIndex() + "/" + link.getOspfAddressLessIndex());
+        System.err.println("----------Rem Node--------");
+        System.err.println("ospf rem router id: " + str(link.getOspfRemRouterId()));
+        System.err.println("----------Remote Port--------");
+        System.err.println("ospf rem router ip: " + str(link.getOspfRemIpAddr()));
+        System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
+        System.err.println("");
+    }
+
+    protected static void printBridgeMacLink(BridgeMacLink link) {
+        System.err.println("----------mac link --------");
+        System.err.println("Create time: " + link.getBridgeMacLinkCreateTime());
+        System.err.println("Last Poll time: " + link.getBridgeMacLinkLastPollTime());
+        System.err.println("----------Source Mac Address--------");
+        System.err.println("Mac: " + link.getMacAddress());
+        System.err.println("----------Target Node--------");
+        System.err.println("Nodeid: " + link.getNode().getId());
+        System.err.println("----------Target Bridge Port--------");
+        System.err.println("BridgePort: " + link.getBridgePort());
+        System.err.println("----------Target IfIndex--------");
+        System.err.println("IfIndex: " + link.getBridgePortIfIndex());
+        System.err.println("");
+    }
 
 
-	protected static void printBackboneBridgeMacLink(BridgeMacLink link1, BridgeMacLink link2) {
-    	
-		if (link1.getMacAddress().equals(link2.getMacAddress())) {
-		System.err.println("nodeid: "+link1.getNode().getId()+" port:"
-    	+ link1.getBridgePort() + "-->" +
-				link1.getMacAddress() 
-    	+ "<-- port: " + link2.getBridgePort() + " nodeid: " + link2.getNode().getId());  
-		}
-	}
+    protected static void printBackboneBridgeMacLink(BridgeMacLink link1, BridgeMacLink link2) {
 
-	
+        if (link1.getMacAddress().equals(link2.getMacAddress())) {
+            System.err.println("nodeid: " + link1.getNode().getId() + " port:"
+                    + link1.getBridgePort() + "-->" +
+                    link1.getMacAddress()
+                    + "<-- port: " + link2.getBridgePort() + " nodeid: " + link2.getNode().getId());
+        }
+    }
+
+    public static <T> boolean checkLinks(Iterable<T> iterable, Predicate<T>... matchers) {
+        for (Predicate<T> matcher : matchers) {
+            if (!Iterables.any(iterable, matcher)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static Predicate<OspfLink> ospfLinkMatcher(OnmsNode node, OnmsNode parentNode, int ifIndex, int parentIfIndex) {
+        return (link) -> {
+           return node.equals(link.getNode()) &&
+                   parentNode.getOspfElement().getOspfRouterId().equals(link.getOspfRemRouterId()) &&
+                   ifIndex == link.getOspfIfIndex() &&
+                   parentIfIndex == link.getOspfAddressLessIndex();
+        };
+    }
 }

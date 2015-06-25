@@ -28,15 +28,6 @@
 
 package org.opennms.netmgt.model;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
-import java.net.InetAddress;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
@@ -45,12 +36,19 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 /**
  * <p>NetworkBuilder class.</p>
  */
 public class NetworkBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
 
 
     private final OnmsDistPoller m_distPoller;
@@ -63,13 +61,11 @@ public class NetworkBuilder {
 
     OnmsSnmpInterface m_currentSnmpIf;
 
-    OnmsArpInterface m_currentAtIf;
-
     OnmsMonitoredService m_currentMonSvc;
 
-    private Map<String,OnmsServiceType> m_serviceTypeCache = new HashMap<String,OnmsServiceType>();
+    private Map<String, OnmsServiceType> m_serviceTypeCache = new HashMap<String, OnmsServiceType>();
 
-    private Map<String,OnmsCategory> m_categoryCache = new HashMap<String,OnmsCategory>();
+    private Map<String, OnmsCategory> m_categoryCache = new HashMap<String, OnmsCategory>();
 
     /**
      * <p>Constructor for NetworkBuilder.</p>
@@ -215,43 +211,6 @@ public class NetworkBuilder {
         }
     }
 
-    public static class AtInterfaceBuilder {
-        final OnmsArpInterface m_iface;
-
-        AtInterfaceBuilder(final OnmsArpInterface iface) {
-            m_iface = iface;
-        }
-
-        public AtInterfaceBuilder setStatus(final char managed) {
-            m_iface.setStatus(StatusType.get(managed));
-            return this;
-        }
-
-        public AtInterfaceBuilder setIfIndex(final int ifIndex) {
-            m_iface.setIfIndex(ifIndex);
-            return this;
-        }
-
-        public AtInterfaceBuilder setSourceNode(final OnmsNode node) {
-            m_iface.setSourceNode(node);
-            return this;
-        }
-
-        public OnmsArpInterface getInterface() {
-            return m_iface;
-        }
-
-        public AtInterfaceBuilder setId(final int id) {
-            m_iface.setId(id);
-            return this;
-        }
-
-        public AtInterfaceBuilder setLastPollTime(final Date timestamp) {
-            m_iface.setLastPoll(timestamp);
-            return this;
-        }
-    }
-
     /**
      * <p>addInterface</p>
      *
@@ -264,14 +223,6 @@ public class NetworkBuilder {
         m_currentIf.setSnmpInterface(snmpInterface);
         return new InterfaceBuilder(m_currentIf);
     }
-
-    /**
-     */
-    public AtInterfaceBuilder addAtInterface(final OnmsNode sourceNode, final String ipAddr, final String physAddr) {
-        m_currentAtIf = new OnmsArpInterface(sourceNode, m_currentNode, ipAddr, physAddr);
-        return new AtInterfaceBuilder(m_currentAtIf);
-    }
-
 
     /**
      * <p>addSnmpInterface</p>
@@ -399,6 +350,6 @@ public class NetworkBuilder {
         if (!m_categoryCache.containsKey(categoryName)) {
             m_categoryCache.put(categoryName, new OnmsCategory(categoryName));
         }
-        return m_categoryCache .get(categoryName);
+        return m_categoryCache.get(categoryName);
     }
 }

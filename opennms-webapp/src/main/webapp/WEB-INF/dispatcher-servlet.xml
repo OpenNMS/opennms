@@ -327,12 +327,6 @@
                     <property name="url" value="node-maps"/>
                     <property name="locationMatch" value="node-maps"/>
                 </bean>
-                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
-                    <property name="name" value="SVG"/>
-                    <property name="url" value="map/index.jsp"/>
-                    <property name="locationMatch" value="map"/>
-                    <property name="file" value="${opennms.home}/etc/map.enable"/>
-                </bean>
             </list>
         </property>
     </bean>

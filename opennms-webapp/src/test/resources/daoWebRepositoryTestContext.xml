@@ -17,9 +17,6 @@
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
     <property name="acknowledgmentDao" ref="acknowledgmentDao"/>
     <property name="serviceTypeDao" ref="serviceTypeDao"/>
-    <property name="onmsMapDao" ref="onmsMapDao"/>
-    <property name="onmsMapElementDao" ref="onmsMapElementDao"/>
-    <property name="dataLinkInterfaceDao" ref="dataLinkInterfaceDao"/>
   </bean>
   <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="daoWebEventRepository" class="org.opennms.web.event.DaoWebEventRepository">

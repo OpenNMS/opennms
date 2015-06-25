@@ -207,12 +207,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       </table>
     </div>
 
-    <!-- Node Link box -->
-    <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="ifindex" value="<%=ifIndex%>" />
-    </jsp:include>                        
-
     <!-- SNMP box, if info available -->
     <div class="panel panel-default">
       <div class="panel-heading">
