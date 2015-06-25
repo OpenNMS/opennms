@@ -282,11 +282,7 @@ public class PollableNode extends PollableContainer {
      */
     @Override
     public Event createPollStatusEvent(Date date) {
-        Map<String, String> params = new HashMap<String,String>(4);
-        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
-        params.put(EventConstants.PARM_POLLSTATUS_STATUSNAME, getStatus().getStatusName());
-        params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, getStatus().getResponseTime().toString());
-        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), null, null, date, params);
+        throw new UnsupportedOperationException("No pollStatus event for the node");
     }
 
     /**

@@ -31,8 +31,9 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -273,7 +274,11 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      */
     @Override
     public Event createPollStatusEvent(Date date) {
-        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, getStatus().getReason());
+        Map<String, String> params = new HashMap<String,String>(4);
+        params.put(EventConstants.PARM_POLLSTATUS_REASON, getStatus().getReason());
+        params.put(EventConstants.PARM_POLLSTATUS_STATUSNAME, getStatus().getStatusName());
+        params.put(EventConstants.PARM_POLLSTATUS_RESPONSETIME, getStatus().getResponseTime().toString());
+        return getContext().createEvent(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date, params);
     }
 
     /**

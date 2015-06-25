@@ -301,14 +301,14 @@ public class DefaultPollContext implements PollContext, EventListener {
         
         // For node level events (nodeUp/nodeDown) retrieve the
         // node's nodeLabel value and add it as a parm
-        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
+        else if (uei.equals(EventConstants.NODE_UP_EVENT_UEI)
                 || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
         
             String nodeLabel = this.getNodeLabel(nodeId);
             bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
             
         }
-        if (uei.equals(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI)) {
+        else if (uei.equals(EventConstants.SERVICE_POLLSTATUS_EVENT_UEI)) {
             String nodeLabel = this.getNodeLabel(nodeId);
             bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
             for(Map.Entry<String, String> entry : params.entrySet()) {
