@@ -39,7 +39,7 @@ import com.thoughtworks.selenium.Selenium;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageIT extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(AdminPageTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminPageIT.class);
 
     @Before
     public void setUp() throws Exception {
