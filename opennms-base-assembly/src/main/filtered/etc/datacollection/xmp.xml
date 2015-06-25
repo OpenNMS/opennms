@@ -2,14 +2,14 @@
 <datacollection-group name="XMP">
 
      <resourceType name="xmpFilesys" label="Cartographer Filesystem" resourceLabel="${mountpoint}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
      </resourceType>
 
      <!-- Resource Type for XMP processes -->
      <resourceType name="procStats" label="Cartographer Process Stats" resourceLabel="${index}" >
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
      </resourceType>
 
 </datacollection-group>

@@ -1,10 +1,10 @@
 
 [[poller-icmp-monitor]]
-=== IcmpMonitor
+==== IcmpMonitor
 The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
 The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -12,7 +12,7 @@ The service is considered available when the node sends back an _echo reply_ ICM
 | Remote Enabled | true with some restrictions (see <<poller-icmp-monitor-remote,below>>)
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the IcmpMonitor
 [options="header, autowidth"]
@@ -23,7 +23,8 @@ The service is considered available when the node sends back an _echo reply_ ICM
 | `timeout`     | Time in milliseconds to wait for a response.           | optional | `800`
 |===
 
-==== Examples
+===== Examples
+
 [source, xml]
 ----
 <service name="ICMP" interval="300000" user-defined="false" status="on">
@@ -37,7 +38,8 @@ The service is considered available when the node sends back an _echo reply_ ICM
 ----
 
 [[poller-icmp-monitor-remote]]
-==== Note on Remote Poller
+===== Note on Remote Poller
+
 The IcmpMonitor needs the JNA ICMP implementation to function on remote poller.
 Though, corner cases exist where the IcmpMonitor monitor won't work on remote poller.
 Examples of such corner cases are: Windows when the remote poller isn't running has administrator, and Linux on ARM / Rasperry Pi.

@@ -159,16 +159,18 @@
     }
 </script>
 
-<div id="include-eventlist">
-
 <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
     <input type="hidden" name="redirect" value="<c:out value="<%= request.getServletPath() + "?" + request.getQueryString()%>"/>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
-<h3 class="o-box"><%=header%></h3>
-<table class="standard o-box">
+<div id="include-eventlist" class="panel panel-default">
+
+<div class="panel-heading">
+<h3 class="panel-title"><%=header%></h3>
+</div>
+<table class="table table-condensed severity">
 
 <%
    String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");
@@ -176,7 +178,7 @@
        Event event = events[i];
        pageContext.setAttribute("event", event);
 %>
-     <tr class="<%= event.getSeverity().getLabel() %>">
+     <tr class="severity-<%= event.getSeverity().getLabel() %>">
        <% if( request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
            <td class="divider">
              <nobr>
@@ -193,23 +195,25 @@
      </tr>
 <% } %>
 
+<% if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
      <tr>
        <td class="standard" colspan="2">
-         <%
-         if( (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
            <nobr>
              <input type="button" value="Acknowledge" onclick="submitAck()">
              <input TYPE="reset" />
            </nobr>
-         <% } %>
        </td>
 
-  <% if( moreUrl != null ) { %>     
-       <td class="standard" colspan="2"><a href="<c:out value="<%=moreUrl%>"/>">More...</a></td>
-  <% } %>
      </tr>
+<% } %>
       
 </table>
-</form>
+
+<% if( moreUrl != null ) { %>
+  <div class="panel-footer">
+    <a href="<c:out value="<%=moreUrl%>"/>">More...</a>
+  </div>
+<% } %>
 
 </div>
+</form>

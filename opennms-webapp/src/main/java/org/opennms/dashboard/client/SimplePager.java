@@ -47,7 +47,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SimplePager extends Composite {
     private SimplePageable m_pageable;
-    private DockPanel m_pager = new DockPanel();
+    private org.gwtbootstrap3.client.ui.Pager m_pager = new org.gwtbootstrap3.client.ui.Pager();
     
     /**
      * <p>Constructor for SimplePager.</p>
@@ -57,40 +57,21 @@ public class SimplePager extends Composite {
     public SimplePager(SimplePageable pageable) {
         m_pageable = pageable;
         
-        m_pager.addStyleName("pager");
-        m_pager.add(createLeftPageControl(), DockPanel.WEST);
-        //m_pager.add(m_label, DockPanel.CENTER);
-        m_pager.add(createRightPageControl(), DockPanel.EAST);
-        
+        m_pager.addPreviousClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                m_pageable.adjustPage(-1);
+            }
+        });
+
+        m_pager.addNextClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                m_pageable.adjustPage(1);
+            }
+        });
+
         initWidget(m_pager);
     }
 
-    private Widget createRightPageControl() {
-        return new PageControl(">>", 1);
-    }
-
-    private Widget createLeftPageControl() {
-        return new PageControl("<<", -1);
-    }
-    
-    private class PageControl extends Composite {
-        Label m_label;
-        int m_direction;
-        
-        PageControl(String text, int direction) {
-            m_label = new Label(text);
-            m_label.addStyleName(direction > 0 ? "pagerRight" : "pagerLeft");
-            m_direction = direction;
-            
-            m_label.addClickHandler(new ClickHandler() {
-
-                @Override
-                public void onClick(ClickEvent sender) {
-                    m_pageable.adjustPage(m_direction);
-                }
-                
-            });
-            initWidget(m_label);
-        }
-    }
 }

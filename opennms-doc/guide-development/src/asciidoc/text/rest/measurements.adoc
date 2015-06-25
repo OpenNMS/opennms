@@ -1,0 +1,144 @@
+==== Measurements API
+
+The _Measurements API_ can be used to retrieve collected values stored in _RRD_ (or _JRB_) files.
+Note that all units of time are expressed in milliseconds.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                 | Description
+| `/measurements/{resourceId}/{attribute}` | Retrieve the measurements for a single attribute
+|===
+
+The following table shows all supported query string parameters and their default values.
+
+[options="header"]
+|===
+| name        | default   | comment
+| start       | -14400000 | Timestamp in milliseconds. If < 0, the effective value will be (end + start).
+| end         | 0         | Timestamp in milliseconds. If <= 0, the effective value will be the current timestamp.
+| step        | 300000    | Requested time interval between rows. Actual step may differ. Set to 1 for maximum accuracy.
+| maxrows     | 0         | When using the measurements to render a graph, this should be set to the graph's pixel width.
+| aggregation | AVERAGE   | Consolidation function used. Can typically be `AVERAGE`, `MIN` or `MAX`. Depends on `RRA` definitions.
+|===
+
+===== Usage examples with curl
+
+.Retrieve CPU counter metrics over the last 2 hours for node 1
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/measurements/node%5B1%5D.nodeSnmp%5B%5D/CpuRawUser?start=-7200000&maxrows=30&aggregation=AVERAGE"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<query-response end="1425588138256" start="1425580938256" step="300000">
+  <columns>
+    <values>159.5957271523179</values>
+    <values>158.08531037527592</values>
+    <values>158.45835584842285</values>
+    ...
+  </columns>
+  <labels>CpuRawUser</labels>
+  <timestamps>1425581100000</timestamps>
+  <timestamps>1425581400000</timestamps>
+  <timestamps>1425581700000</timestamps>
+  ...
+</query-response>
+----
+
+===== POSTs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/measurements` | Retrieve the measurements for one or more attributes, possibly spanning multiple resources, with support for JEXL expressions.
+|===
+
+Here we use a POST instead of a GET to retrieve the measurements, which allows us to perform complex queries which are difficult to express in a query string.
+These requests cannot be used to update or create new metrics.
+
+An example of the POST body is available bellow.
+
+===== Usage examples with curl
+
+.Retrieve bits in and bits out metrics for a particular interface. Perform calculations on bits out, and only return the derived values.
+[source,bash]
+----
+curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" -u admin:admin  -d @report.json  http://127.0.0.1:8980/opennms/rest/measurements
+----
+
+.Contents of report.json
+[source,javascript]
+----
+{
+    "start": 1425563626316,
+    "end": 1425585226316,
+    "step": 10000,
+    "maxrows": 1600,
+    "source": [
+        {
+            "aggregation": "AVERAGE",
+            "attribute": "ifHCInOctets",
+            "label": "ifHCInOctets",
+            "resourceId": "nodeSource[NODES:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "transient": "false"
+        },
+        {
+            "aggregation": "AVERAGE",
+            "attribute": "ifHCOutOctets",
+            "label": "ifHCOutOctets",
+            "resourceId": "nodeSource[NODES:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "transient": "true"
+        }
+    ],
+    "expression": [
+        {
+            "label": "ifHCOutOctetsNeg",
+            "value": "-1.0 * ifHCOutOctets",
+            "transient": "false"
+        }
+    ]
+}
+----
+
+.Response
+[source,javascript]
+----
+{
+    "step": 300000,
+    "start": 1425563626316,
+    "end": 1425585226316,
+    "timestamps": [
+        1425563700000,
+        1425564000000,
+        1425564300000,
+        ...
+    ],
+    "labels": [
+        "ifHCInOctets",
+        "ifHCOutOctetsNeg"
+    ],
+    "columns": [
+        {
+            "values": [
+                139.94817275747508,
+                199.0062569213732,
+                162.6264894795127,
+                ...
+            ]
+        },
+        {
+            "values": [
+                -151.66179401993355,
+                -214.7415503875969,
+                -184.9012624584718,
+                ...
+            ]
+        }
+    ]
+}
+----

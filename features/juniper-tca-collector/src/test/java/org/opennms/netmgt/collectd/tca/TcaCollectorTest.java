@@ -64,8 +64,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -85,13 +84,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/junit-component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:META-INF/opennms/applicationContext-minimal-conf.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        // These tests rely on JRobin to verify the values
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy",
+        "org.opennms.rrd.usequeue=false"
+})
 @JUnitTemporaryDatabase(reuseDatabase=false)
 @JUnitSnmpAgent(host = TcaCollectorTest.TEST_NODE_IP, port = 9161, resource = "classpath:juniperTcaSample.properties")
 @Transactional
@@ -128,6 +132,9 @@ public class TcaCollectorTest implements InitializingBean {
 	@Autowired
 	private TcaDataCollectionConfigDao m_configDao;
 
+	@Autowired
+	private RrdStrategy<?, ?> m_rrdStrategy;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -143,8 +150,6 @@ public class TcaCollectorTest implements InitializingBean {
 		MockLogAppender.setupLogging();
 
 		FileUtils.deleteDirectory(new File(TEST_SNMP_DIR));
-
-		RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
 		OnmsIpInterface iface = null;
 		OnmsNode testNode = null;
@@ -217,7 +222,7 @@ public class TcaCollectorTest implements InitializingBean {
 		collector.setConfigDao(m_configDao);
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
-		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"));
+		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), m_rrdStrategy);
 
 		// Setup SNMP Value Handling
 		SnmpValueFactory valFac = SnmpUtils.getValueFactory();
@@ -257,7 +262,7 @@ public class TcaCollectorTest implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + ".jrb");
+		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension());
 
 		// According with the Fixed Step
 		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());

@@ -61,7 +61,7 @@ import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,String> {
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpRrdStrategy.class);
 
-    private final BlockingQueue<PerformanceDataReading> m_queue = new LinkedBlockingQueue<PerformanceDataReading>(50000);
+    private final BlockingQueue<PerformanceDataReading> m_queue;
     private final TcpRrdStrategy m_delegate;
     private int m_skippedReadings = 0;
 
@@ -122,8 +122,9 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @param delegate a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy} object.
      */
-    public QueuingTcpRrdStrategy(TcpRrdStrategy delegate) {
+    public QueuingTcpRrdStrategy(TcpRrdStrategy delegate, int queueSize) {
         m_delegate = delegate;
+        m_queue = new LinkedBlockingQueue<PerformanceDataReading>(queueSize);
         ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue);
         consumerThread.start();
     }
@@ -220,36 +221,6 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     @Override
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException {
         return m_delegate.createGraphReturnDetails(command, workDir);
-    }
-
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return m_delegate.getGraphLeftOffset();
-    }
-
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return m_delegate.getGraphRightOffset();
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return m_delegate.getGraphTopOffsetWithText();
     }
 
     /**

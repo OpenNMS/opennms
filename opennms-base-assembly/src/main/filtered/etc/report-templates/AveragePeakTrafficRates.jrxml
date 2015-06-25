@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="668" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="628" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-10T10:30:25 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd0c0584-c0b6-4860-a6fd-62182c4d11a5">
 	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -143,9 +146,11 @@ ORDER BY
 		<groupHeader>
 			<band height="24">
 				<textField>
-					<reportElement style="Section" x="0" y="0" width="628" height="22"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
+					<reportElement style="Section" x="0" y="0" width="555" height="22" uuid="b42637a1-4c34-4bdb-ab88-2747a5a77564">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textFieldExpression><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -158,33 +163,50 @@ ORDER BY
 		<groupHeader>
 			<band height="59">
 				<textField>
-					<reportElement style="Node_Group" x="0" y="0" width="628" height="20"/>
+					<reportElement style="Node_Group" x="0" y="0" width="554" height="20" uuid="9cf5d812-b1e6-4d56-b134-8d7df83cd63a"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement style="Interface_Header" x="0" y="21" width="143" height="36"/>
-					<textElement textAlignment="Left"/>
+					<reportElement style="Table-Header" x="0" y="21" width="110" height="36" uuid="dd5b8010-f786-42da-b6cc-65ecc5a7eb74">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
 					<text><![CDATA[IP-Interface]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="144" y="21" width="123" height="36"/>
-					<textElement textAlignment="Right"/>
+					<reportElement style="Table-Header" x="113" y="21" width="110" height="36" uuid="078ee64f-02b4-4e83-a4a3-e4aff62e2ba8">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
 					<text><![CDATA[Average Receive bps]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="267" y="21" width="100" height="36"/>
-					<textElement textAlignment="Right"/>
+					<reportElement style="Table-Header" x="225" y="21" width="100" height="36" uuid="c83c1eac-1317-49d6-b2bc-adba05062fb9"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
 					<text><![CDATA[Peak Receive bps]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="511" y="21" width="115" height="36"/>
+					<reportElement style="Interface_Header" x="451" y="21" width="104" height="36" uuid="2469a483-786b-45ae-af35-ee6fbdef24f7"/>
 					<textElement textAlignment="Right"/>
 					<text><![CDATA[Peak Transmit bps]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="367" y="21" width="144" height="36"/>
-					<textElement textAlignment="Right"/>
+					<reportElement style="Table-Header" x="329" y="21" width="120" height="36" uuid="18f9a612-6983-4f3f-a9fc-7b8761227559">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
 					<text><![CDATA[Average Transmit bps]]></text>
 				</staticText>
 			</band>
@@ -200,38 +222,63 @@ ORDER BY
 		<band height="4" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="58" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="460" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="e2bbd5aa-7bb3-4da8-9975-db0696053b3e">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Average and Peak Traffic Rates]]></text>
 			</staticText>
 			<image>
-				<reportElement x="461" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="360" y="0" width="194" height="50" uuid="7a2e4fd9-7cb3-4ee0-a739-39549ded3164">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="34" width="393" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy/MM/dd HH:mm:ss">
+				<reportElement key="" style="Creation-Date" x="0" y="59" width="355" height="20" uuid="aa059c80-39ec-4afd-811c-2f04207127dc">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
+			<textField evaluationTime="Page">
+				<reportElement style="Range" x="0" y="30" width="354" height="20" uuid="2f0ae334-9a90-4bd9-9c65-810f51487089">
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA["Report Begin: " + $P{startDate} + " Report End: " + $P{endDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="8" splitType="Stretch">
 			<line>
-				<reportElement x="0" y="54" width="626" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1" uuid="c5cc50fc-34f3-4f66-a76a-c648728b32a8">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="8" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
 		<band height="29" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="628" height="26"/>
+				<reportElement x="0" y="0" width="555" height="26" uuid="1772531b-1e7a-4122-81ce-d3698bff19aa"/>
 				<subreportParameter name="snmpifname">
 					<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -263,7 +310,7 @@ ORDER BY
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "PeakTraffic_subreport.jasper"]]></subreportExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "PeakTraffic_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
@@ -271,42 +318,23 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="36" splitType="Stretch">
+		<band height="35" splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<line>
-				<reportElement x="0" y="9" width="626" height="1"/>
+				<reportElement x="0" y="10" width="554" height="1" uuid="ec45ea9b-d9e4-4343-9cf9-512b9db8e881"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Page_Footer" x="521" y="13" width="80" height="20"/>
+				<reportElement style="Paging-Footer" x="451" y="13" width="80" height="20" uuid="eb684bd0-d9e6-4a31-a516-b4edf17125d7"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement style="Page_Footer" x="601" y="13" width="24" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement style="Page_Footer" x="0" y="13" width="76" height="15"/>
-				<textElement/>
-				<text><![CDATA[Report begin: ]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Page_Footer" x="202" y="13" width="60" height="14"/>
-				<textElement/>
-				<text><![CDATA[Report end: ]]></text>
-			</staticText>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="76" y="13" width="126" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="262" y="13" width="131" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
+				<reportElement style="Paging-Footer" x="531" y="13" width="24" height="20" uuid="647f6ab1-e658-4c3c-b0d7-356b2366cba4"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
@@ -314,33 +342,50 @@ ORDER BY
 		<band height="42" splitType="Stretch"/>
 	</summary>
 	<noData>
-		<band height="166">
+		<band height="155">
 			<image>
-				<reportElement x="462" y="0" width="164" height="49"/>
-				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+				<reportElement x="360" y="0" width="194" height="50" uuid="8458642b-6c7d-4ff5-a4a2-413628cef57e">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<line>
-				<reportElement x="0" y="54" width="626" height="1"/>
+				<reportElement x="0" y="80" width="555" height="1" uuid="3904dc8d-463e-4824-b19c-5663db0bc38a">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement style="Title" x="0" y="0" width="461" height="34"/>
+				<reportElement style="Title" x="0" y="0" width="355" height="30" uuid="77b23a8a-5ba7-417f-b0c3-e54a390d45e7">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitheight" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Average and Peak Traffic Rates]]></text>
 			</staticText>
-			<textField pattern="dd/MM/yyyy h.mm a">
-				<reportElement style="Body" x="0" y="34" width="394" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			<textField pattern="yyyy/MM/dd HH:mm:ss">
+				<reportElement style="Creation-Date" x="0" y="59" width="355" height="20" uuid="816130c1-d3fc-46e5-8627-87c4a7495f1c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="69" width="625" height="59"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA["There is no data for this report.\n\n" +
+				<reportElement x="0" y="85" width="555" height="59" uuid="5fa4caf7-f9b2-4ab4-8570-ecd5b55057fa">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA["There is no data for this report.\n\n" +
 "You can change the parameter SURVEILLANCE_CATEGORY (current value is " +
 $P{SURVEILLANCE_CATEGORY} + ")."]]></textFieldExpression>
 			</textField>

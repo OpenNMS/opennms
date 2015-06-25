@@ -59,7 +59,7 @@ public final class ProxyFilter implements Filter {
         }
     }
 
-    private BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
+    private static BundleContext getBundleContext(final ServletContext servletContext) throws ServletException {
         final Object context = servletContext.getAttribute(BundleContext.class.getName());
         if (context instanceof BundleContext) {
             return (BundleContext)context;

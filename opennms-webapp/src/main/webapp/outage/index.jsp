@@ -34,7 +34,7 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
   <jsp:param name="headTitle" value="Outages" />
   <jsp:param name="location" value="outage" />
@@ -53,28 +53,46 @@ function validateId() {
 }
 </script>
 
-  <div class="TwoColLeft">
-      <h3>Outage Menu</h3>    
-		<div class="boxWrapper">
-        <form name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
-          <p align="right">Outage ID:
-				<input type="text" name="id" />
-				<input type="submit" value="Get details" /></p>
-        </form>
-			<ul class="plain">
-				<li><a href="outage/list.htm?outtype=current">Current outages</a></li>
-				<li><a href="outage/list.htm?outtype=both">All outages</a></li>
-			</ul>
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Outage Menu</h3>
       </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-6 col-xs-6">
+            <ul class="list-unstyled">
+              <li><a href="outage/list.htm?outtype=current">Current outages</a></li>
+              <li><a href="outage/list.htm?outtype=both">All outages</a></li>
+            </ul>
+          </div> <!-- column -->
+          <div class="col-md-6 col-xs-6">
+            <form role="form" class="form-inline text-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
+              <div class="form-group">
+                <label for="input_id">Outage ID:</label>
+                <input type="text" class="form-control" id="input_id" name="id" />
+              </div>
+              <button type="submit" class="btn btn-default">Get details</button>
+            </form>
+          </div> <!-- column -->
+        </div> <!-- row -->
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Outages and Service Level Availability</h3>
+      </div>
+      <div class="panel-body">
+        <p>Outages are tracked by OpenNMS by polling services that have been provisioned. If the service does not respond to the poll, a service outage is created and service availability levels are impacted. Service outages create notifications.</p>
+      </div>
+    </div>
   </div>
-  <div class="TwoColRight">
-      <h3>Outages and Service Level Availability</h3>
-		<div class="boxWrapper">
-			<p>Outages are tracked by OpenNMS by polling services that have been
-			provisioned.  If the service does not respond to the poll, a service outage
-			is created and service availability levels are impacted.  Service 
-			outages create notifications.</p>
-		</div>
-  </div>
-  <hr />                                   
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</div>
+
+<hr />
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

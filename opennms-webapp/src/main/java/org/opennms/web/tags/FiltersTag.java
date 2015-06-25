@@ -44,13 +44,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders the filter area for a given set of filters. It also considers if a favorite is there.
+ * Renders the filter area for a given set of filters.
  */
 public class FiltersTag extends TagSupport {
 
+    private static final long serialVersionUID = -8419211806241306127L;
+
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "<span class=\"filter\">{FILTER_DESCRIPTION} {REMOVE_FILTER_LINK}</span> ";
+    private static final String FILTER_TEMPLATE = "<span style=\"white-space:nowrap;\"><span class=\"label label-default\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK}</span> ";
 
     private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
 
@@ -177,9 +179,6 @@ public class FiltersTag extends TagSupport {
 
     private String getLeading() {
         StringBuffer leadingString = new StringBuffer();
-        if (favorite == null) {
-            leadingString.append("Search constraints: ");
-        }
         if (isShowAcknowledgeFilter()) {
             NormalizedQueryParameters params = new NormalizedQueryParameters(parameters);
             if (isAcknowledgeType()) {

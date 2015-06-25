@@ -54,33 +54,51 @@
 	m_category_list = new CategoryList();
     }
 
+	// Creates a link to the rtc/category.jsp according to the selected outagesType.
+	public String createCategoriesOutageLink(HttpServletResponse response, Category category, String outagesType, String linkTitle, String linkText) {
+		if (category.getLastUpdated() != null) {
+			if (linkTitle == null) {
+				return String.format("<a href=\"%s\">%s</a>",
+						response.encodeURL("rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+						linkText);
+			}
+			return String.format("<a href=\"%s\" title=\"%s\">%s</a>",
+					response.encodeURL("rtc/category.jsp?showoutages=" + outagesType + "&category=" + Util.encode(category.getName())),
+					linkTitle,
+					linkText);
+		}
+		return linkText;
+	}
 %>
 
 <%
 	Map<String, List<Category>> categoryData = m_category_list.getCategoryData();
 
 	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
-	boolean opennmsDisconnect =
-		m_category_list.isDisconnected(earliestUpdate);
+	boolean opennmsDisconnect = m_category_list.isDisconnected(earliestUpdate);
+
+	String titleName = "Availability Over the Past 24 Hours";
+	if (opennmsDisconnect) {
+		titleName = "Waiting for availability data. ";
+		if (earliestUpdate > 0) {
+			titleName += new Date(earliestUpdate).toString();
+		} else {
+			titleName += "One or more categories have never been updated.";
+		}
+	}
 %>
-<%	if (opennmsDisconnect) { %>
-	    <h3 class="o-box">Waiting for availability data... - 
-		Last update:
-<%=		(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
-	      </h3>
-<%	} else { %>
-	    <h3 class="o-box">Availability Over the Past 24 Hours</h3>
-<%	} %>
 
+<div class="panel panel-default fix-subpixel">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= titleName %></h3>
+  </div>
 
-<table class="o-box onms-table">
+<table class="table table-condensed severity">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();
 %>
-	<thead>
+	<thead class="dark">
 		<tr>
 			<th><%= sectionName %></th>
 			<th align="right">Outages</th>
@@ -92,26 +110,20 @@
 
 	    for (Iterator<Category> j = categories.iterator(); j.hasNext(); ) {
 		Category category = j.next();
-		String categoryName = category.getName();
 %>
-	<tr class="CellStatus">
+	<tr>
 		<td>
-          <% if (category.getLastUpdated() != null) { %>
-		    <a href="<%= response.encodeURL("rtc/category.jsp?category=" + Util.encode(categoryName)) %>"
-		       title="<%= category.getTitle() %>">
-              <%= categoryName %>
-            </a>
-          <% } else { %>
-            <%= categoryName %>
-          <% } %>
+			<%=createCategoriesOutageLink(response, category, "all", category.getTitle(), category.getName())%>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getOutageClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getOutageClass().toLowerCase()) %> bright divider"
 	        align="right"
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
+		    title="Updated: <%= category.getLastUpdated() %>">
+			<%=createCategoriesOutageLink(response, category, "outages", null, category.getOutageText())%>
 		</td>
-		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getAvailClass()) %>"
+		<td class="severity-<%= (opennmsDisconnect ? "indeterminate" : category.getAvailClass().toLowerCase()) %> bright divider"
 		    align="right" 
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
+		    title="Updated: <%= category.getLastUpdated() %>">
+			<%=createCategoriesOutageLink(response, category, "avail", null, category.getAvailText())%>
 		</td>
 	</tr>
 	
@@ -120,3 +132,5 @@
 	}
 %>
 </table>
+<!-- </div> -->
+</div>

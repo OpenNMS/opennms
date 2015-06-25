@@ -31,12 +31,12 @@ package org.opennms.netmgt.nb;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class Nms101NetworkBuilder extends TestNetworkBuilder {
+public class Nms101NetworkBuilder extends NmsNetworkBuilder {
     static {
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.8.1"), 8);
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.16.190.1"), 9);
     	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("10.1.1.2"), 10);
-    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("172.20.1.182"), 6);
+    	LAPTOP_IP_IF_MAP.put(InetAddressUtils.addr("192.0.2.182"), 6);
     	LAPTOP_IF_IFNAME_MAP.put(5, "fw0");
     	LAPTOP_IF_IFDESCR_MAP.put(5, "fw0");
     	LAPTOP_IF_IFNAME_MAP.put(7, "utun0");

@@ -28,11 +28,16 @@
 
 package org.opennms.core.test.db;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.PrintStream;
 
+import org.junit.Before;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -55,7 +60,8 @@ public class PopulatedTemporaryDatabaseTestCase extends
     private boolean m_insertData = false;
     
     @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         
         try {
@@ -66,9 +72,6 @@ public class PopulatedTemporaryDatabaseTestCase extends
     }
 
     protected void initializeDatabase() throws Exception {
-        if (!isEnabled()) {
-            return;
-        }
 
         // Create a ByteArrayOutputSteam to effectively throw away output.
         resetOutputStream();

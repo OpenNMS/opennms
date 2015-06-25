@@ -159,7 +159,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + getDefaultFileExtension();
 
         if (new File(fileName).exists()) {
             LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
@@ -206,7 +206,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
 
-        String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
+        String filenameWithoutExtension = rrdDef.getPath().replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
 
         RrdUtils.createMetaDataFile(
@@ -690,7 +690,8 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 graphDef.hrule(value, getColor(color[1]), (hrule.length > 1 ? hrule[1] : ""));
             } else if (arg.endsWith("/rrdtool") || arg.equals("graph") || arg.equals("-")) {
             	// ignore, this is just a leftover from the rrdtool-specific options
-
+            } else if (arg.trim().isEmpty()) {
+                // ignore empty whitespace arguments
             } else {
                 LOG.warn("JRobin: Unrecognized graph argument: {}", arg);
             }
@@ -877,39 +878,6 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     @Override
     public String getStats() {
         return "";
-    }
-
-    /*
-     * These offsets work for ranger@ with Safari and JRobin 1.5.8.
-     */
-    /**
-     * <p>getGraphLeftOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphLeftOffset() {
-        return 74;
-    }
-
-    /**
-     * <p>getGraphRightOffset</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphRightOffset() {
-        return -15;
-    }
-
-    /**
-     * <p>getGraphTopOffsetWithText</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getGraphTopOffsetWithText() {
-        return -61;
     }
 
     /**

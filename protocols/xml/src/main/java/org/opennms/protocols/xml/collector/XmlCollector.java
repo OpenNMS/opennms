@@ -38,7 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.xml.config.XmlDataCollection;
 import org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao;
@@ -157,7 +157,7 @@ public class XmlCollector implements ServiceCollector {
             if (collectionName == null) {
                 throw new CollectionException("Parameter collection is required for the XML Collector!");
             }
-            LOG.debug("collect: collecting XML data using collection {}", collectionName);
+            LOG.debug("collect: collecting XML data using collection {} for {}", collectionName, agent);
             XmlDataCollection collection = m_xmlCollectionDao.getDataCollectionByName(collectionName);
             if (collection == null) {
                 throw new CollectionException("XML Collection " + collectionName +" does not exist.");

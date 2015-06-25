@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-03-09T17:15:50 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DiskUsageForCTXServer_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="59dc74f3-5a5f-4957-94c9-288eacb7b951">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-  <parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
-    <parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
-    <defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
-  </parameter>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
 	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false"/>
@@ -72,30 +83,26 @@
 	<summary>
 		<band height="32" splitType="Stretch">
 			<textField pattern="###0.00">
-				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{used_AVG} > 1000000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1073741824.0")) + " GB" : ($V{used_AVG} > 1000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{used_AVG}/new Double("1024.0")) + " KB"))
+				<reportElement style="Table_Body" x="36" y="16" width="150" height="16" uuid="7d4af3af-5450-4727-acf4-2679da67ec3c"/>
+				<textFieldExpression><![CDATA[($V{used_AVG} > 1000000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1073741824.0")) + " GB" : ($V{used_AVG} > 1000000 ? String.format("%10.2f", $V{used_AVG}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{used_AVG}/new Double("1024.0")) + " KB"))
 + " / " +
 ($V{total_AVG} > 1000000000 ? String.format("%10.2f", $V{total_AVG}/new Double("1073741824.0")) + " GB" : ($V{total_AVG} > 1000000 ? String.format("%10.2f", $V{total_AVG}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{total_AVG}/new Double("1024.0")) + " KB"))]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Table_Body" x="186" y="16" width="73" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[String.format("%3.2f",($F{dskUsed}/$F{dskTotal} * 100))]]></textFieldExpression>
+				<reportElement style="Table_Body" x="186" y="16" width="73" height="16" uuid="242a1792-0489-40c3-b866-59e0fc9837d6"/>
+				<textFieldExpression><![CDATA[String.format("%3.2f",($F{dskUsed}/$F{dskTotal} * 100))]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table_Header" x="36" y="0" width="150" height="16" uuid="a27a526f-bff8-4dab-a597-04fa1fc128bd"/>
 				<text><![CDATA[Used / Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="186" y="0" width="73" height="16"/>
-				<textElement/>
+				<reportElement style="Table_Header" x="186" y="0" width="73" height="16" uuid="342b1409-a01a-4b96-b211-c2828d6fe68a"/>
 				<text><![CDATA[% Used]]></text>
 			</staticText>
 			<stackedBarChart>
 				<chart isShowLegend="false">
-					<reportElement stretchType="RelativeToBandHeight" x="259" y="16" width="250" height="16"/>
+					<reportElement stretchType="RelativeToBandHeight" x="259" y="16" width="250" height="16" uuid="7a6cb2cc-2ca7-4fd2-96ff-fd835915b4bc"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -113,16 +120,10 @@
 					</plot>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					<categoryAxisFormat>
-						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
+						<axisFormat/>
 					</categoryAxisFormat>
 					<valueAxisFormat>
-						<axisFormat verticalTickLabels="false">
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
+						<axisFormat verticalTickLabels="false"/>
 					</valueAxisFormat>
 					<rangeAxisMinValueExpression><![CDATA[0]]></rangeAxisMinValueExpression>
 					<rangeAxisMaxValueExpression><![CDATA[100]]></rangeAxisMaxValueExpression>
@@ -133,7 +134,7 @@
 	<noData>
 		<band height="47">
 			<staticText>
-				<reportElement x="149" y="13" width="226" height="20"/>
+				<reportElement x="149" y="13" width="226" height="20" uuid="a9d0411a-2c5f-421f-80af-febe281a48af"/>
 				<textElement textAlignment="Center">
 					<font size="14"/>
 				</textElement>

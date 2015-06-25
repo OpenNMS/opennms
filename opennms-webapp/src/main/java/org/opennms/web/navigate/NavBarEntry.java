@@ -29,27 +29,22 @@
 
 package org.opennms.web.navigate;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 public interface NavBarEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public abstract String getName();
+    public String getName();
+    public String getDisplayString();
+    public String getUrl();
 
     /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
+     * If this navbar entry has sub-entries, return them.  May return null if there are no sub-entries.
      */
-    public abstract String getUrl();
+    public List<NavBarEntry> getEntries();
+    public boolean hasEntries();
 
     /**
-     * <p>evaluate</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.opennms.web.navigate.DisplayStatus} object.
+     * Return an object that represents whether or not the entry should be displayed and/or linked.
      */
     public abstract DisplayStatus evaluate(HttpServletRequest request);
 }

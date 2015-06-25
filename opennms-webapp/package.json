@@ -1,0 +1,9 @@
+{
+	"name": "OpenNMS",
+	"devDependencies": {
+		"bower": "*",
+		"gulp": "*",
+		"gulp-sass": "*",
+		"gulp-util": "*"
+	}
+}

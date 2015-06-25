@@ -68,7 +68,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +79,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -86,12 +87,12 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerBackEnd.xml",
         "classpath:/META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml",
-        //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/org/opennms/netmgt/poller/remote/applicationContext-configOverride.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
     "opennms.pollerBackend.monitorCheckInterval=500",
-    "opennms.pollerBackend.disconnectedTimeout=3000"
+    "opennms.pollerBackend.disconnectedTimeout=3000",
+    "opennms.pollerBackend.minimumConfigurationReloadInterval=300000"
 })
 @JUnitTemporaryDatabase
 public class PollerBackEndIntegrationTest implements InitializingBean {
@@ -116,6 +117,9 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
 
     @Autowired
     LocationMonitorDao m_locationMonitorDao;
+
+    @Autowired
+    RrdStrategy<?, ?> m_rrdStrategy;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -232,7 +236,7 @@ public class PollerBackEndIntegrationTest implements InitializingBean {
         final int serviceId = service.getId();
 
         // make sure there is no rrd data
-        final File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ InetAddressUtils.str(iface.getIpAddress()) +"/http" + RrdUtils.getExtension());
+        final File rrdFile = new File("target/test-data/distributed/"+locationMonitorId+"/"+ InetAddressUtils.str(iface.getIpAddress()) +"/http" + m_rrdStrategy.getDefaultFileExtension());
         if (rrdFile.exists()) {
             rrdFile.delete();
         }

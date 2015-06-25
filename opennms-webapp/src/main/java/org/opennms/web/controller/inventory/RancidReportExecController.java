@@ -28,100 +28,56 @@
 
 package org.opennms.web.controller.inventory;
 
-import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.text.ParseException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.report.configuration.svclayer.ConfigurationReportCriteria;
 import org.opennms.report.configuration.svclayer.ConfigurationReportService;
 import org.opennms.report.inventory.svclayer.InventoryReportCriteria;
 import org.opennms.report.inventory.svclayer.InventoryReportService;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * <p>RancidReportExecController class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-public class RancidReportExecController extends SimpleFormController {
+@Controller
+@RequestMapping("/inventory/rancidReportExec.htm")
+public class RancidReportExecController {
+
     private static final Logger LOG = LoggerFactory.getLogger(RancidReportExecController.class);
-    
-//    InventoryService m_inventoryService;
-    ConfigurationReportService m_configurationReportService;
-    InventoryReportService m_inventoryReportService;
-    
-    
-    
-    /**
-     * <p>getConfigurationReportService</p>
-     *
-     * @return a {@link org.opennms.report.configuration.svclayer.ConfigurationReportService} object.
-     */
-    public ConfigurationReportService getConfigurationReportService() {
-        return m_configurationReportService;
-    }
-    /**
-     * <p>setConfigurationReportService</p>
-     *
-     * @param configurationReportService a {@link org.opennms.report.configuration.svclayer.ConfigurationReportService} object.
-     */
-    public void setConfigurationReportService(
-            ConfigurationReportService configurationReportService) {
-        m_configurationReportService = configurationReportService;
-    }
-    /**
-     * <p>getInventoryReportService</p>
-     *
-     * @return a {@link org.opennms.report.inventory.svclayer.InventoryReportService} object.
-     */
-    public InventoryReportService getInventoryReportService() {
-        return m_inventoryReportService;
-    }
-    /**
-     * <p>setInventoryReportService</p>
-     *
-     * @param inventoryReportService a {@link org.opennms.report.inventory.svclayer.InventoryReportService} object.
-     */
-    public void setInventoryReportService(
-            InventoryReportService inventoryReportService) {
-        m_inventoryReportService = inventoryReportService;
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            Object command, BindException errors) throws ServletException, IOException, Exception {
+
+    @Autowired
+    private ConfigurationReportService m_configurationReportService;
+
+    @Autowired
+    private InventoryReportService m_inventoryReportService;
+
+    @RequestMapping(method=RequestMethod.POST)
+    public ModelAndView onSubmit(HttpServletRequest request, RancidReportExecCommClass bean) {
 
         LOG.debug("RancidReportExecController ModelAndView onSubmit");
-        
-        RancidReportExecCommClass bean = (RancidReportExecCommClass) command;
-        
         LOG.debug("RancidReportExecController ModelAndView type {}", bean.getReporttype());
         LOG.debug("RancidReportExecController ModelAndView type {}", bean.getFieldhas());
-        
+
         String user = request.getRemoteUser();
         Date reportRequestDate = new Date();
 
-        
-        ModelAndView mav = new ModelAndView(getSuccessView());
+        ModelAndView mav = new ModelAndView("inventory/rancidReportExec");
 
         if (bean.getReporttype().compareTo("rancidlist") == 0){
             LOG.debug("RancidReportExecController rancidlist report");
             ConfigurationReportCriteria criteria = new ConfigurationReportCriteria(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
-//            boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
+            // boolean done = m_inventoryService.runRancidListReport(bean.getDate(), bean.getReportfiletype(), bean.getReportemail(), user, reportRequestDate);
             boolean done = m_configurationReportService.runReport(criteria);
             mav.addObject("type", "Rancid List");
             if (!done){
@@ -149,18 +105,7 @@ public class RancidReportExecController extends SimpleFormController {
         } else {
             mav.addObject("reportformat", "HTML");
         }
-        
-        return mav;
 
-        
-//        String redirectURL = request.getHeader("Referer");
-//        response.sendRedirect(redirectURL);
-//        return super.onSubmit(request, response, command, errors);
+        return mav;
     }
-    /** {@inheritDoc} */
-    @Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
-        LOG.debug("RancidReportExecController initBinder");
-    }
-    
 }

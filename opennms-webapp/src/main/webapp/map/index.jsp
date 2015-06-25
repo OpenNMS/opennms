@@ -39,10 +39,12 @@
    response.setHeader("Pragma","no-cache");
    response.setHeader("Expires","0"); 
 %>
-		<jsp:include page="/includes/header.jsp" flush="false">
-		  <jsp:param name="title" value="Display Network Topology Maps" />
-		  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-		</jsp:include>
+
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="title" value="Display Network Topology Maps" />
+    <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+</jsp:include>
+
 <p>
 
 <center>
@@ -121,7 +123,7 @@ emitSVG();
 </script>
 </p>
 
-    <jsp:include page="/includes/footer.jsp" flush="false" >
-      <jsp:param name="location" value="map" />
-    </jsp:include>
-    
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
+    <jsp:param name="location" value="map" />
+</jsp:include>
+

@@ -1,0 +1,240 @@
+
+==== SNMP Configuration
+
+You can edit the community string, SNMP version, etc. for an IP address using this interface.  If you make a change that would overlap with an existing snmp-config.xml, it will automatically create groups of &lt;definition /&gt; entries as necessary. If no <definition /> entry is created it matches the defaults.
+
+There are different versions of the interface (see below).
+The following operations are supported:
+
+===== GETs (Reading Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                 | Description
+| `/snmpConfig/{ipAddress}` | Get the SNMP configuration for a given IP address.
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="1,10"]
+|===
+| Parameter                 | Description
+| `/snmpConfig/{ipAddress}` | Add or update the SNMP configuration for a given IP address.
+|===
+
+===== Determine API version
+
+To determine the version of the _API_ running in your OpenNMS type http://localhost:8980/opennms/rest/snmpConfig/1.1.1.1 in your browser and have a look at the output:
+
+- *Version 1:* If the output only have attributes `community`, `port`, `retries`, `timeout` and `version`
+- *Version 2:* If there are more attributes than described before (e.g. max Repetitions)
+
+===== API Version 1
+
+In version 1 only a few attributes defined in `snmp-config.xsd` are supported.
+These are defined in `snmp-info.xsd`:
+
+[source, xml]
+----
+<xs:schema
+    xmlns:tns="http://xmlns.opennms.org/xsd/config/snmp-info"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    version="1.0"
+    targetNamespace="http://xmlns.opennms.org/xsd/config/snmp-info">
+  <xs:element name="snmp-info" type="tns:snmpInfo"/>
+  <xs:complexType name="snmpInfo">
+    <xs:sequence>
+      <xs:element name="community" type="xs:string" minOccurs="0"/>
+      <xs:element name="port" type="xs:int"/>
+      <xs:element name="retries" type="xs:int"/>
+      <xs:element name="timeout" type="xs:int"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+----
+
+The following table shows all supported attributes, optional restrictions and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
+All parameters can be set regardless the version.
+
+[options="header"]
+|===
+| attribute snmp-info.xml | attribute snmp-config.xml | default | restricted to version | restriction
+| version                 | version                   | v1      | -                     | "v1", "v2c" or "v3" are valid arguments.
+                                                                                          If an invalid or empty argument is provided "v1" is used.
+| port                    | port                      | 161     | -                     | Integer > 0
+| retries                 | retry                     | 1       | -                     | Integer > 0
+| timeout                 | timeout                   | 3000    | -                     | Integer > 0
+| community               | read-community            | public  | -                     | any string with a length >= 1
+|===
+
+.Example 1:
+[source, bash]
+----
+curl -v -X PUT -H "Content-Type: application/xml" \
+     -H "Accept: application/xml" \
+     -d "&lt;snmp-info&gt;
+             &lt;community&gt;yRuSonoZ&lt;/community&gt;
+             &lt;port&gt;161&lt;/port&gt;
+             &lt;retries&gt;1&lt;/retries&gt;
+             &lt;timeout&gt;2000&lt;/timeout&gt;
+             &lt;version&gt;v2c&lt;/version&gt;
+          &lt;/snmp-info&gt;" \
+     -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Creates or updates a `<definition/>`-entry for IP address 10.1.1.1 in `snmp-config.xml`.
+
+.Example 2:
+[source, bash]
+----
+curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Returns the SNMP configuration for IP address 10.1.1.1 as defined in example 1.
+
+===== API Version 2
+
+Since Version 2 all attributes of a `<definition />` entry defined in `snmp-config.xsd` (http://xmlns.opennms.org/xsd/config/snmp) can be set or get via the interface - except it is only possible to set the configuration for one IP address and not for a range of IP addresses.
+This may change in the future.
+
+The interface uses _SnmpInfo_ objects for communication.
+Therefore it is possible to set for example v1 and v3 parameters in one request (e.g. `readCommunity` String and `privProtocol` String).
+However OpenNMS does not allow this.
+It is only allowed to set attributes which have no version restriction (e.g. timeout value) or the attributes which are limited to the version (e.g. `readCommunity` String if version is v1/v2c).
+The same is for getting data from the _API_, even if it is possible to store v1 and v3 parameters in one definition block in the `snmp-config.xml` manually, the _ReST API_ will only return the parameters which match the version.
+If no version is defined, the default is assumed (both in _PUT_ and _GET_ requests).
+
+The _SnmpInfo_ schema is defined as follows:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema
+  elementFormDefault="qualified"
+  version="1.0"
+  targetNamespace="http://xmlns.opennms.org/xsd/config/snmp-info"
+  xmlns:tns="http://xmlns.opennms.org/xsd/config/snmp-info"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="snmp-info" type="tns:snmpInfo"/>
+  <xs:complexType name="snmpInfo">
+    <xs:sequence>
+      <xs:element name="authPassPhrase" type="xs:string" minOccurs="0"/>
+      <xs:element name="authProtocol" type="xs:string" minOccurs="0"/>
+      <xs:element name="community" type="xs:string" minOccurs="0"/>
+      <xs:element name="contextEngineId" type="xs:string" minOccurs="0"/>
+      <xs:element name="contextName" type="xs:string" minOccurs="0"/>
+      <xs:element name="engineId" type="xs:string" minOccurs="0"/>
+      <xs:element name="enterpriseId" type="xs:string" minOccurs="0"/>
+      <xs:element name="maxRepetitions" type="xs:int" minOccurs="0"/>
+      <xs:element name="maxRequestSize" type="xs:int" minOccurs="0"/>
+      <xs:element name="maxVarsPerPdu" type="xs:int" minOccurs="0"/>
+      <xs:element name="port" type="xs:int" minOccurs="0"/>
+      <xs:element name="privPassPhrase" type="xs:string" minOccurs="0"/>
+      <xs:element name="privProtocol" type="xs:string" minOccurs="0"/>
+      <xs:element name="proxyHost" type="xs:string" minOccurs="0"/>
+      <xs:element name="readCommunity" type="xs:string" minOccurs="0"/>
+      <xs:element name="retries" type="xs:int" minOccurs="0"/>
+      <xs:element name="securityLevel" type="xs:int" minOccurs="0"/>
+      <xs:element name="securityName" type="xs:string" minOccurs="0"/>
+      <xs:element name="timeout" type="xs:int" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="writeCommunity" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+----
+
+The following table shows all supported attributes, the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
+It also shows the version limitations, default values and the restrictions - if any.
+
+[options="header", cols="1,10"]
+|===
+| attribute snmp-info.xml | attribute snmp-config.xml | default      | restricted to version | restriction
+| version                 | version                   | v1           | -                     | "v1", "v2c" or "v3" are valid arguments.
+                                                                                               If an invalid or empty argument is provided "v1" is used.
+| port                    | port                      | 161          | -                     | Integer > 0
+| retries                 | retry                     | 1            | -                     | Integer > 0
+| timeout                 | timeout                   | 3000         | -                     | Integer > 0
+| maxVarsPerPdu           | max-vars-per-pdu          | 10           | -                     | Integer > 0
+| maxRepetitions          | max-repetitions           | 2            | -                     | Integer > 0
+| maxRequestSize          | max-request-size          | 65535        | -                     | Integer > 0
+| proxyHost               | proxy-host                |              | -                     |
+| readCommunity           | read-community            | public       | v1, v2c               |
+| writeCommunity          | write-community           | private      | v1, v2c               |
+| securityName            | security-name             | opennmsUser  | v3                    |
+| securityLevel           | security-level            | noAuthNoPriv | v3                    | Integer value, which can be null, 1, 2, or 3. <ul><li>1 means noAuthNoPriv</li><li>2 means authNoPriv</li><li>3 means authPriv</li></ul> If you do not set the security level manually it is determined automatically: <ul><li>if no authPassPhrase set the securityLevel is 1</li><li>if a authPassPhrase and no privPassPhrase is set the security level is 2.</li><li>if a authPassPhrase and a privPassPhrase is set the security level is 3.</li></ul>
+| authPassPhrase          | auth-passphrase           | 0p3nNMSv3    | v3                    |
+| authProtocol            | auth-protocol             | MD5          | v3                    | only MD5 or SHA are valid arguments
+| privPassPhrase          | privacy-passphrase        | 0p3nNMSv3    | v3                    |
+| privProtocol            | privacy-protocol          | DES          | v3                    | only DES, AES, AES192 or AES256 are valid arguments.
+| engineId                | engine-id                 |              | v3                    |
+| contextEngineId         | context-engine-id         |              | v3                    |
+| contextName             | context-name              |              | v3                    |
+| enterpriseId            | enterprise-id             |              | v3                    |
+|===
+
+.Example 1:
+[source, bash]
+----
+curl -v -X PUT -H "Content-Type: application/xml" \
+     -H "Accept: application/xml" \
+     -d "&lt;snmp-info&gt;
+             &lt;readCommunity&gt;yRuSonoZ&lt;/readCommunity&gt;
+             &lt;port&gt;161&lt;/port&gt;
+             &lt;retries&gt;1&lt;/retries&gt;
+             &lt;timeout&gt;2000&lt;/timeout&gt;
+             &lt;version&gt;v2c&lt;/version&gt;
+          &lt;/snmp-info&gt;" \
+     -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Creates or updates a `<definition/>`-entry for IP address 10.1.1.1 in `snmp-config.xml`.
+
+.Example 2:
+[source, bash]
+----
+curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Returns the SNMP configuration for IP address 10.1.1.1 as defined in example 1.
+
+.Example 3:
+[source, bash]
+----
+curl -v -X PUT -H "Content-Type: application/xml" \
+     -H "Accept: application/xml" \
+     -d "&lt;snmp-info&gt;
+             &lt;readCommunity&gt;yRuSonoZ&lt;/readCommunity&gt;
+             &lt;port&gt;161&lt;/port&gt;
+             &lt;retries&gt;1&lt;/retries&gt;
+             &lt;timeout&gt;2000&lt;/timeout&gt;
+             &lt;version&gt;v1&lt;/version&gt;
+             &lt;securityName&gt;secret-stuff&lt;/securityName&gt;
+             &lt;engineId&gt;engineId&lt;/engineId&gt;
+          &lt;/snmp-info&gt;" \
+     -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Creates or updates a `<definition/>`-entry for IP address 10.1.1.1 in `snmp-config.xml` ignoring attributes `securityName` and `engineId`.
+
+.Example 4:
+[source, bash]
+----
+curl -v -X PUT -H "Content-Type: application/xml" \
+     -H "Accept: application/xml" \
+     -d "&lt;snmp-info&gt;
+             &lt;readCommunity&gt;yRuSonoZ&lt;/readCommunity&gt;
+             &lt;port&gt;161&lt;/port&gt;
+             &lt;retries&gt;1&lt;/retries&gt;
+             &lt;timeout&gt;2000&lt;/timeout&gt;
+             &lt;version&gt;v3&lt;/version&gt;
+             &lt;securityName&gt;secret-stuff&lt;/securityName&gt;
+             &lt;engineId&gt;engineId&lt;/engineId&gt;
+          &lt;/snmp-info&gt;" \
+     -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+Creates or updates a `<definition/>`-entry for IP address 10.1.1.1 in `snmp-config.xml` ignoring attribute `readCommunity`.

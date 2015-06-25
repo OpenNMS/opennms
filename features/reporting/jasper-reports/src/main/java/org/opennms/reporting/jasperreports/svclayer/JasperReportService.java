@@ -28,6 +28,7 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
@@ -118,11 +119,11 @@ public class JasperReportService implements ReportService {
                     final ReportParameters reportParameters = new ReportParameters();
 
                     JasperReport jasperReport = null;
-                    Map<?, ?> defaultValues = null;
+                    Map<String, Object> defaultValues = null;
 
                     try {
                         jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-                        defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, null);
+                        defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, new HashMap<String, Object>());
                     } catch (final JRException e) {
                         LOG.error("unable to compile jasper report", e);
                         throw new ReportException("unable to compile jasperReport", e);
@@ -350,7 +351,7 @@ public class JasperReportService implements ReportService {
         if (location.contains("jrpxml")) {
             return JRPrintXmlLoader.load(location);
         } else {
-            return (JasperPrint) JRLoader.loadObject(location);
+            return (JasperPrint) JRLoader.loadObject(new File(location));
         }
     }
 

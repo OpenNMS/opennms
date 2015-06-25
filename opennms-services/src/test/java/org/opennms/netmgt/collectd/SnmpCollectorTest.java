@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -37,8 +38,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
+import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,10 +63,10 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -78,13 +82,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
@@ -114,6 +118,8 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
 
     private SnmpAgentConfig m_agentConfig;
 
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -123,7 +129,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
+        m_rrdStrategy = new JRobinRrdStrategy();
 
         m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
 
@@ -211,7 +217,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -259,29 +265,30 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         int stepSizeInSecs = 1;
 
         int stepSizeInMillis = stepSizeInSecs*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
-        assertEquals(Double.valueOf(123.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(123.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
 
         // This is the value from snmpTestData1.properties
         // .1.3.6.1.2.1.2.2.1.10.6 = Counter32: 1234567
-        assertEquals(Double.valueOf(1234567.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(1234567.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // now update the data in the agent
         SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
         SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
-        CollectorTestUtils.collectNTimes(m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
-        assertEquals(Double.valueOf(456.0), RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, stepSizeInMillis));
-        assertEquals(Double.valueOf(7654321.0), RrdUtils.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, stepSizeInMillis));
+        assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
+        assertEquals(Double.valueOf(7654321.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
 
         // release the agent
         m_collectionSpecification.release(m_collectionAgent);
@@ -305,22 +312,24 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         int numUpdates = 2;
 
         long start = System.currentTimeMillis();
+        final int stepSizeInMillis = stepSize*1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
         File rrdFile = new File(snmpDir, rrd("test"));
 
-        RrdStrategy<Object,Object> m_rrdStrategy = RrdUtils.getStrategy();
+        RrdStrategy<RrdDef,RrdDb> m_rrdStrategy = new JRobinRrdStrategy();
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
-        Object def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def, attributeMappings);
 
-        Object rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", ((start/1000) - (stepSize*(numUpdates-i))) + ":1");
         }
         m_rrdStrategy.closeFile(rrdFileObject);
 
-        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSize*1000, 2*stepSize*1000));
+        assertEquals(Double.valueOf(1.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "testAttr", stepSizeInMillis, rangeSizeInMillis));
     }
 
     @Test
@@ -377,7 +386,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
 
-        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -450,7 +459,7 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
 
-        CollectorTestUtils.persistCollectionSet(m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -468,8 +477,80 @@ public class SnmpCollectorTest implements InitializingBean, TestContextAware {
         m_collectionSpecification.release(m_collectionAgent);
     }
 
-    private static String rrd(String file) {
-        return file + RrdUtils.getExtension();
+    @Test
+    @Transactional
+    @JUnitCollector(
+                    datacollectionConfig = "/org/opennms/netmgt/config/datacollection-brocade-no-ifaces-config.xml",
+                    datacollectionType = "snmp",
+                    anticipateRrds={
+                            "1/brocadeFCPortIndex/1/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/1/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/2/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/3/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/4/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/5/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/6/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/7/swFCPortRxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortTxWords",
+                            "1/brocadeFCPortIndex/8/swFCPortRxWords"
+                    },
+                    anticipateFiles={
+                            "1",
+                            "1/brocadeFCPortIndex",
+                            "1/brocadeFCPortIndex/1/strings.properties",
+                            "1/brocadeFCPortIndex/1",
+                            "1/brocadeFCPortIndex/2/strings.properties",
+                            "1/brocadeFCPortIndex/2",
+                            "1/brocadeFCPortIndex/3/strings.properties",
+                            "1/brocadeFCPortIndex/3",
+                            "1/brocadeFCPortIndex/4/strings.properties",
+                            "1/brocadeFCPortIndex/4",
+                            "1/brocadeFCPortIndex/5/strings.properties",
+                            "1/brocadeFCPortIndex/5",
+                            "1/brocadeFCPortIndex/6/strings.properties",
+                            "1/brocadeFCPortIndex/6",
+                            "1/brocadeFCPortIndex/7/strings.properties",
+                            "1/brocadeFCPortIndex/7",
+                            "1/brocadeFCPortIndex/8/strings.properties",
+                            "1/brocadeFCPortIndex/8"
+                    }
+            )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    public void verifyPersistedStringProperties() throws Exception {
+        // Initialize the agent
+        m_collectionSpecification.initialize(m_collectionAgent);
+
+        // Perform the collection
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status",
+                ServiceCollector.COLLECTION_SUCCEEDED,
+                collectionSet.getStatus());
+
+        // Persist
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+
+        // Verify results on disk
+        File snmpDir = (File)m_context.getAttribute("rrdDirectory");
+        Properties properties = ResourceTypeUtils.getStringProperties(snmpDir, "1/brocadeFCPortIndex/1");
+
+        // "string" attributes should convert the octets directly to a string
+        String value = properties.getProperty("swFCPortName");
+        assertTrue(value.startsWith("..3DUfw"));
+
+        // "hexstring" attributes should convert the octets to a hex string
+        // see http://issues.opennms.org/browse/NMS-7367
+        value = properties.getProperty("swFCPortWwn");
+        assertEquals("1100334455667788", value);
+    }
+
+    private String rrd(String file) {
+        return file + m_rrdStrategy.getDefaultFileExtension();
     }
 
     @Override

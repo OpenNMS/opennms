@@ -144,7 +144,7 @@ public abstract class PollableElement {
         PollStatus oldStatus = getStatus();
         if (!oldStatus.equals(newStatus)) {
             
-            LOG.info("Changing status of PollableElement {} from {} to {}", newStatus, this, oldStatus);
+            LOG.info("Changing status of PollableElement {} from {} to {}", this, oldStatus, newStatus);
             setStatus(newStatus);
             setStatusChanged(true);
         }

@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
   <bean id="schedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
-	<property name="scheduler">
-		<ref local="schedulerFactory" />
-	</property>
-	<property name="jobDetail">
-		<ref local="batchReportJobDetail" />
-	</property>
+	<property name="scheduler" ref="schedulerFactory" />
+	<property name="jobDetail" ref="batchReportJobDetail" />
 	<property name="triggerGroup" value="reporting" />
-	<property name="reportWrapperService">
-		 <ref local="reportWrapperService"/>
-	</property>
+	<property name="reportWrapperService" ref="reportWrapperService" />
   </bean>
   
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

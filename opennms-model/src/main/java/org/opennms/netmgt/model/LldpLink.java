@@ -30,8 +30,6 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,7 +45,8 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 
 @Entity
 @Table(name="lldpLink")
@@ -59,114 +58,6 @@ public class LldpLink implements Serializable {
 	private static final long serialVersionUID = 3813247749765614567L;
 
 
-	public enum LldpPortIdSubType{
-	    LLDP_PORTID_SUBTYPE_INTERFACEALIAS(1),
-	    LLDP_PORTID_SUBTYPE_PORTCOMPONENT(2),
-	    LLDP_PORTID_SUBTYPE_MACADDRESS(3),
-	    LLDP_PORTID_SUBTYPE_NETWORKADDRESS(4),
-	    LLDP_PORTID_SUBTYPE_INTERFACENAME(5),
-	    LLDP_PORTID_SUBTYPE_AGENTCIRCUITID(6),
-	    LLDP_PORTID_SUBTYPE_LOCAL(7);
-		/*
-	     * LldpPortIdSubtype ::= TEXTUAL-CONVENTION
-        STATUS current
-        DESCRIPTION
-                "This TC describes the source of a particular type of port
-                identifier used in the LLDP MIB.
-
-                The enumeration 'interfaceAlias(1)' represents a port
-                identifier based on the ifAlias MIB object, defined in IETF
-                RFC 2863.
-
-                The enumeration 'portComponent(2)' represents a port
-                identifier based on the value of entPhysicalAlias (defined in
-                IETF RFC 2737) for a port component (i.e., entPhysicalClass
-                value of 'port(10)'), within the containing chassis.
-
-                The enumeration 'macAddress(3)' represents a port identifier
-                based on a unicast source address (encoded in network
-                byte order and IEEE 802.3 canonical bit order), which has
-                been detected by the agent and associated with a particular
-                port (IEEE Std 802-2001).
-
-                The enumeration 'networkAddress(4)' represents a port
-                identifier based on a network address, detected by the agent
-                and associated with a particular port.
-
-                The enumeration 'interfaceName(5)' represents a port
-                identifier based on the ifName MIB object, defined in IETF
-                RFC 2863.
-
-                The enumeration 'agentCircuitId(6)' represents a port
-                identifier based on the agent-local identifier of the circuit
-                (defined in RFC 3046), detected by the agent and associated
-                with a particular port.
-
-                The enumeration 'local(7)' represents a port identifier
-                based on a value locally assigned."
-
-        SYNTAX INTEGER {
-                interfaceAlias(1),
-                portComponent(2),
-                macAddress(3),
-                networkAddress(4),
-                interfaceName(5),
-                agentCircuitId(6),
-                local(7)
-        }
-	     */
-		private int m_type;
-  
-	    LldpPortIdSubType(Integer chassisIdsubtype) {
-	    	m_type = chassisIdsubtype;
-	    }
-
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
-
-	    static {
-        	s_typeMap.put(1, "interfaceAlias" );
-        	s_typeMap.put(2, "portComponent" );
-        	s_typeMap.put(3, "macAddress" );
-        	s_typeMap.put(4, "networkAddress" );
-        	s_typeMap.put(5, "interfaceName" );
-        	s_typeMap.put(6, "agentCircuitId" );
-        	s_typeMap.put(7, "local" );
-        }
-
-	    /**
-	     * <p>ElementIdentifierTypeString</p>
-	     *
-	     * @return a {@link java.lang.String} object.
-	     */
-	    /**
-	     */
-	    public static String getTypeString(Integer code) {
-	        if (s_typeMap.containsKey(code))
-	                return s_typeMap.get( code);
-	        return null;
-	    }
-
-        public static LldpPortIdSubType get(Integer code) {
-            if (code == null)
-                throw new IllegalArgumentException("Cannot create LldpPortIdSubType from null code");
-            switch (code) {
-            case 1:  	return LLDP_PORTID_SUBTYPE_INTERFACEALIAS;
-            case 2:  	return LLDP_PORTID_SUBTYPE_PORTCOMPONENT;
-            case 3:  	return LLDP_PORTID_SUBTYPE_MACADDRESS;
-            case 4:  	return LLDP_PORTID_SUBTYPE_NETWORKADDRESS;
-            case 5:  	return LLDP_PORTID_SUBTYPE_INTERFACENAME;
-            case 6:  	return LLDP_PORTID_SUBTYPE_AGENTCIRCUITID;
-            case 7:  	return LLDP_PORTID_SUBTYPE_LOCAL;
-            default:
-                throw new IllegalArgumentException("Cannot create LldpPortIdSubType from code "+code);
-            }
-        }
-        
-        public Integer getValue() {
-        	return m_type;
-        }
-        
-	}
 
     private Integer m_id;	
 	private OnmsNode m_node;
@@ -179,7 +70,7 @@ public class LldpLink implements Serializable {
     
 	private String m_lldpRemChassisId;
 	private String m_lldpRemSysname;
-    private LldpChassisIdSubType m_lldpRemChassisIdSubType;
+        private org.opennms.core.utils.LldpUtils.LldpChassisIdSubType m_lldpRemChassisIdSubType;
 	private LldpPortIdSubType m_lldpRemPortIdSubType;
 	private String m_lldpRemPortId;
 	private String m_lldpRemPortDescr;

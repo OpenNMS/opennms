@@ -61,8 +61,8 @@ public class TestServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.info("JUnit Test Request: %s", req.getRequestURI());
-        LOG.info("JUnit Test Content Type: %s", req.getContentType());
+        LOG.info("JUnit Test Request: {}", req.getRequestURI());
+        LOG.info("JUnit Test Content Type: {}", req.getContentType());
         String requestContent = IOUtils.toString(req.getReader());
         if (req.getRequestURI().equals("/junit/test/sample")) {
             resp.getWriter().write("OK!");
@@ -94,6 +94,19 @@ public class TestServlet extends HttpServlet {
             } else {
                 resp.setContentType("text/plain");
                 resp.getWriter().write("ERROR!");
+            }
+        }
+        if (req.getRequestURI().equals("/junit/test/post-data")) {
+            Person p = JaxbUtils.unmarshal(Person.class, requestContent);
+            if ("Alejandro".equals(p.getFirstName()) && "Galue".equals(p.getLastName())) {
+                SampleData data = new SampleData();
+                data.addParameter("contributions", "500");
+                data.addParameter("applications", "2");
+                data.addParameter("frameworks", "25");
+                resp.setContentType("application/xml");
+                resp.getWriter().write(JaxbUtils.marshal(data));
+            } else {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid request");
             }
         }
     }

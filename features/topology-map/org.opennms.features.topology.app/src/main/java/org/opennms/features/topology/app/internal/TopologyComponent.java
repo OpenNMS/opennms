@@ -86,6 +86,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
         @Override
         public void mapPhysicalBounds(int width, int height) {
             getViewManager().setViewPort(width, height);
+            getViewManager().setMapBounds(m_graph.getLayout().getBounds());
         }
 
         @Override

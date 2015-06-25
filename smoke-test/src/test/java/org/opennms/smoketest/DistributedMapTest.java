@@ -28,25 +28,30 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DistributedMapTest extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        clickAndWait("//a[@href='maps.htm']");
-        clickAndWait("//div[@id='content']//a[contains(@href,'RemotePollerMap')]");
+        m_driver.get(BASE_URL + "opennms/RemotePollerMap/index.jsp");
     }
 
     @Test
-    public void a_testDistributedMap() throws Exception {
-        assertEquals("Applications", selenium.getTable("css=td > table.0.2"));
-        assertEquals("off", selenium.getValue("id=gwt-uid-6"));
-        assertEquals("on", selenium.getValue("id=gwt-uid-1"));
+    public void testDistributedMap() throws Exception {
+        m_driver.switchTo().frame("app");
+        // first 5 checkboxes are checked by default
+        for (int i=1; i <= 5; i++) {
+            assertTrue("checkbox gwt-uid-" + i + " should be checked.", m_driver.findElement(By.id("gwt-uid-" + i)).isSelected());
+        }
+        assertFalse("checkbox gwt-uid-6 should be unchecked.", m_driver.findElement(By.id("gwt-uid-6")).isSelected());
     }
 
 }

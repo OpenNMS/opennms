@@ -63,7 +63,6 @@ import org.springframework.util.StringUtils;
  */
 public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     protected static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
-    protected static final String DRIVER_PROPERTY = "mock.db.driver";
     private static final Object TEMPLATE1_MUTEX = new Object();
 
     private final String m_testDatabase;
@@ -391,6 +390,19 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
                 try {
                     st = adminConnection.createStatement();
+
+                    // Attempt to forcefully terminate all connections to the test database
+                    // before we issue the DROP DATABASE command
+                    try {
+                        st.execute("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '" + getTestDatabase() + "'");
+                    } catch (final SQLException e) {
+                        // Eat the exception; this version of the call only works on PostgreSQL 9.1 and earlier
+                    }
+                    try {
+                        st.execute("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '" + getTestDatabase() + "'");
+                    } catch (final SQLException e) {
+                        // Eat the exception; this version of the call only works on PostgreSQL 9.2 and later
+                    }
                     st.execute("DROP DATABASE " + getTestDatabase());
                     break;
                 } catch (final SQLException e) {

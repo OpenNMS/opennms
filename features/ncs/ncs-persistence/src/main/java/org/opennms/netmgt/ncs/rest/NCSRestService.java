@@ -42,11 +42,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -69,7 +67,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
-@Component
+@Component("ncsRestService")
 @PerRequest
 @Scope("prototype")
 @Path("NCS")
@@ -79,9 +77,6 @@ public class NCSRestService {
 
     @Autowired
     NCSComponentService m_componentService;
-
-    @Context 
-    UriInfo m_uriInfo;
 
     public void afterPropertiesSet() throws RuntimeException {
         Assert.notNull(m_componentService);

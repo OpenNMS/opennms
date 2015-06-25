@@ -70,8 +70,41 @@ public class AbstractOnmsUpgradeTest {
         Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(1, 12, 1));
         Assert.assertFalse(task.isInstalledVersionGreaterOrEqual(1, 12, 3));
         Assert.assertFalse(task.isInstalledVersionGreaterOrEqual(1, 13, 0));
+        Assert.assertFalse(task.isInstalledVersionGreaterOrEqual(14, 0, 0));
         Assert.assertFalse(task.isRrdToolEnabled());
         Assert.assertFalse(task.isStoreByGroupEnabled());
+    }
+
+    /**
+     * Test meridian.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMeridian() throws Exception {
+        task.setProductName("meridian");
+        task.setProductDescription("OpenNMS Meridian");
+        task.setVersion("1.0.0");
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(1, 8, 17));
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(1, 12, 1));
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(14, 0, 0));
+        Assert.assertFalse(task.isInstalledVersionGreaterOrEqual(16, 0, 0));
+    }
+
+    /**
+     * Test horizon.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testHorizon() throws Exception {
+        task.setProductName("horizon");
+        task.setProductDescription("OpenNMS Horizon");
+        task.setVersion("15.0.0");
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(1, 8, 17));
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(1, 12, 1));
+        Assert.assertTrue(task.isInstalledVersionGreaterOrEqual(14, 0, 0));
+        Assert.assertFalse(task.isInstalledVersionGreaterOrEqual(16, 0, 0));
     }
 
     /**

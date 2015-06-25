@@ -1,5 +1,6 @@
 
-=== DnsMonitor
+==== DnsMonitor
+
 This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.
 The monitor tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
 
@@ -37,7 +38,7 @@ TIP:
 This monitor is intended for testing the availability of a DNS service.
 If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<poller-dns-resolution-monitor,DNSResolutionMonitor>>.
 
-==== Monitor facts
+===== Monitor facts
 
 [options="autowidth"]
 |===
@@ -45,7 +46,7 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | Remote Enabled | true
 |===
 
-==== Configuration and Usage
+===== Configuration and Usage
 
 .Monitor specific parameters for the DnsMonitor
 [options="header, autowidth"]
@@ -62,7 +63,8 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
 |===
 
-==== Examples
+===== Examples
+
 The given examples shows how to monitor if the IP interface from a given DNS server resolves a DNS request.
 This service should be bound to a DNS server which should be able to give a valid DNS respone for DNS request _www.google.com_.
 The service is _up_ if the DNS server gives between `1` and `10` _A record_ responses.

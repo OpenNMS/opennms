@@ -152,11 +152,13 @@ public class DiskUsageDetector extends SnmpDetector {
             if (getForceVersion() != null) {
                 String version = getForceVersion();
                 
-                if (version.equalsIgnoreCase("snmpv1")) {
+                // TODO: Deprecate the snmpv1, snmpv2, snmpv2c, snmpv3 params in favor of more-used v1, v2c, and v3
+                // @see http://issues.opennms.org/browse/NMS-7518
+                if ("v1".equalsIgnoreCase(version) || "snmpv1".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION1);
-                } else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c")) {
+                } else if ("v2".equalsIgnoreCase(version) || "v2c".equalsIgnoreCase(version) || "snmpv2".equalsIgnoreCase(version) || "snmpv2c".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
-                } else if (version.equalsIgnoreCase("snmpv3")) {
+                } else if ("v3".equalsIgnoreCase(version) || "snmpv3".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION3);
                 }
             }

@@ -70,13 +70,13 @@ public class OpenManageChassisDetectorTest implements InitializingBean {
         m_detector.setTimeout(5000);
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     @JUnitSnmpAgent(host=OpenManageChassisDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/openManageChassisDetector-success.properties")
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     @JUnitSnmpAgent(host=OpenManageChassisDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/openManageChassisDetector-fail.properties")
     public void testDetectorFail() throws UnknownHostException{
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS)));

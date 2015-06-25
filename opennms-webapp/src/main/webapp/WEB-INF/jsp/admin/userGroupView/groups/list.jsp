@@ -31,7 +31,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Group Configuration" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Groups" />
@@ -41,10 +41,7 @@
   <jsp:param name="breadcrumb" value="Group List" />
 </jsp:include>
 
-<link rel="stylesheet" href="css/font-awesome-4.0.3/css/font-awesome.min.css">
-
 <script type="text/javascript" >
-
     function addNewGroup()
     {
         document.allGroups.action="admin/userGroupView/groups/modifyGroup";
@@ -89,15 +86,11 @@
           document.allGroups.submit();
         }
     }
-
 </script>
 
-<h3>Group Configuration</h3>
-
-<form method="post" name="allGroups">
-  <input type="hidden" name="operation"/>
-  <input type="hidden" name="groupName"/>
-  <input type="hidden" name="newName"/>
+<p>
+  Click on the <i>Group Name</i> link to view detailed information about a group.
+</p>
 
 <p>
   <a href="javascript:addNewGroup()">
@@ -105,8 +98,13 @@
   </a>
 </p>
 
-  <table>
+<form method="post" name="allGroups">
+  <input type="hidden" name="operation"/>
+  <input type="hidden" name="groupName"/>
+  <input type="hidden" name="newName"/>
 
+  <div class="panel panel-default">
+    <table class="table table-condensed table-bordered">
          <tr>
           <th>Delete</th>
           <th>Modify</th>
@@ -116,7 +114,7 @@
         </tr>
          <c:forEach var="group" varStatus="groupStatus" items="${groups}">
          <tr class="divider ${groupStatus.index % 2 == 0 ?  'even' : 'odd'}" id="group-${group.name}">
-          <td width="5%" align="center">
+          <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
                 <a id="${group.name}.doDelete" href="javascript:deleteGroup('${group.name}')" onclick="return confirm('Are you sure you want to delete the group ${group.name}?')"><i class="fa fa-trash-o fa-2x"></i></a>              
@@ -126,16 +124,16 @@
               </c:otherwise>
             </c:choose>
           </td>
-          <td width="5%" align="center">
+          <td width="5%" class="text-center">
             <a id="${group.name}.doModify" href="javascript:modifyGroup('${group.name}')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
-          <td width="5%" align="center">
+          <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <input id="${group.name}.doRename" type="button" name="rename" value="Rename" onclick="renameGroup('${group.name}')">
+                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
               </c:when>
               <c:otherwise>
-                <input id="${group.name}.doRename" type="button" name="rename" value="Rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">
+                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
               </c:otherwise>
             </c:choose>
           </td>
@@ -157,9 +155,5 @@
         </c:forEach>
      </table>
 </form>
-<p>
-  Click on the <i>Group Name</i> link to view detailed information about
-  a group.
-</p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -13,5 +13,17 @@
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
 		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
+		<detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="port" value="18980"/>
+			<parameter key="factory" value="PASSWORD-CLEAR"/>
+			<parameter key="username" value="admin"/>
+			<parameter key="password" value="admin"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="type" value="default"/>
+			<parameter key="ipMatch" value="127.0.0.1"/>
+		</detector>
 	</detectors>
 </foreign-source>

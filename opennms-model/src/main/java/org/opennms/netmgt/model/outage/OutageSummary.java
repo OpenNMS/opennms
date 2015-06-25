@@ -28,7 +28,13 @@
 
 package org.opennms.netmgt.model.outage;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.utils.FuzzyDateFormatter;
@@ -39,12 +45,28 @@ import org.opennms.core.utils.FuzzyDateFormatter;
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @since 1.8.1
  */
-public class OutageSummary implements Comparable<OutageSummary> {
-    protected final int nodeId;
-    protected final String nodeLabel;
-    protected final Date timeDown;
-    protected final Date timeUp;
-    protected final Date timeNow;
+@XmlRootElement(name="outage-summary")
+@XmlAccessorType(XmlAccessType.NONE)
+public class OutageSummary implements Comparable<OutageSummary>, Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @XmlAttribute(name="node-id")
+    protected int nodeId;
+
+    @XmlAttribute(name="node-label")
+    protected String nodeLabel;
+
+    @XmlAttribute(name="time-down")
+    protected Date timeDown;
+
+    @XmlAttribute(name="time-up")
+    protected Date timeUp;
+
+    @XmlAttribute(name="time-now")
+    protected Date timeNow;
+
+    public OutageSummary() {
+    }
 
     /**
      * <p>Constructor for OutageSummary.</p>
@@ -71,7 +93,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
         this.timeUp = timeUp;
         this.timeNow = timeNow;
     }
-    
+
     /**
      * <p>Constructor for OutageSummary.</p>
      *
@@ -83,7 +105,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
     public OutageSummary(final int nodeId, final String nodeLabel, final Date timeDown, final Date timeUp) {
         this(nodeId, nodeLabel, timeDown, timeUp, new Date());
     }
-    
+
     /**
      * <p>Constructor for OutageSummary.</p>
      *
@@ -139,7 +161,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
     public Date getTimeUp() {
         return (this.timeUp);
     }
-    
+
     /**
      * <p>getFuzzyTimeDown</p>
      *
@@ -149,7 +171,7 @@ public class OutageSummary implements Comparable<OutageSummary> {
         // mmm... I *love* Get Fuzzy!
         return FuzzyDateFormatter.calculateDifference(this.getTimeDown(), new Date());
     }
-    
+
     /**
      * <p>toString</p>
      *
@@ -174,11 +196,11 @@ public class OutageSummary implements Comparable<OutageSummary> {
     @Override
     public int compareTo(final OutageSummary that) {
         return new CompareToBuilder()
-            .append(this.getTimeDown(), that.getTimeDown())
-            .append(this.getTimeUp(), that.getTimeUp())
-            .append(this.getHostname(), that.getHostname())
-            .append(this.getNodeLabel(), that.getNodeLabel())
-            .toComparison();
+        .append(this.getTimeDown(), that.getTimeDown())
+        .append(this.getTimeUp(), that.getTimeUp())
+        .append(this.getHostname(), that.getHostname())
+        .append(this.getNodeLabel(), that.getNodeLabel())
+        .toComparison();
     }
 
 };

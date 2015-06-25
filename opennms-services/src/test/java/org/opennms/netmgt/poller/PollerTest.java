@@ -34,20 +34,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -56,17 +61,14 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
-import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager.SendNowHook;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -80,29 +82,29 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
-import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
@@ -110,13 +112,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
-    private static final String CAPSD_CONFIG = "\n"
-            + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
-            + "   delete-propagation-enabled=\"true\">\n"
-            + "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "</capsd-configuration>\n";
 
     private Poller m_poller;
 
@@ -139,11 +134,13 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
     private QueryManager m_queryManager;
 
     @Autowired
+    private OutageDao m_outageDao;
+
+    @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
     private TransactionTemplate m_transactionTemplate;
-
 
     //private DemandPollDao m_demandPollDao;
 
@@ -185,6 +182,11 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_network.addNode(4, "DownNode");
         m_network.addInterface("192.168.1.6");
         m_network.addService("SNMP");
+        m_network.addNode(5, "Loner");
+        m_network.addInterface("192.168.1.7");
+        m_network.addService("ICMP");
+        m_network.addService("SNMP");
+        MockService unmonitoredService = m_network.addService("NotMonitored");
 
         m_db.populate(m_network);
         DataSourceFactory.setInstance(m_db);
@@ -196,7 +198,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
-        m_pollerConfig.populatePackage(m_network);
+        m_pollerConfig.populatePackage(m_network, unmonitoredService);
         m_pollerConfig.addPackage("TestPkg2");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(2000L);
@@ -210,6 +212,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(false);
+        m_eventMgr.setNumSchedulerThreads(2);
 
         DefaultPollContext pollContext = new DefaultPollContext();
         pollContext.setEventManager(m_eventMgr);
@@ -223,6 +226,7 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         m_poller = new Poller();
         m_poller.setDataSource(m_db);
         m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
+        m_poller.setOutageDao(m_outageDao);
         m_poller.setTransactionTemplate(m_transactionTemplate);
         m_poller.setEventIpcManager(m_eventMgr);
         m_poller.setNetwork(network);
@@ -232,8 +236,6 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
         MockOutageConfig config = new MockOutageConfig();
         config.setGetNextOutageID(m_db.getNextOutageIdStatement());
-
-        RrdUtils.setStrategy(new NullRrdStrategy());
 
         // m_outageMgr = new OutageManager();
         // m_outageMgr.setEventMgr(m_eventMgr);
@@ -769,11 +771,20 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
         Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
 
-        assertEquals(1, receivedEvents.size());
+        assertEquals(2, receivedEvents.size());
 
-        Event event = receivedEvents.iterator().next();
-
-        assertEquals(expectedReason, EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON));
+        Iterator<Event> receivedEventsIter= receivedEvents.iterator();
+        
+        Event event1 = receivedEventsIter.next();
+        
+        assertEquals(expectedReason, EventUtils.getParm(event1, EventConstants.PARM_LOSTSERVICE_REASON));
+        
+        Event event2 = receivedEventsIter.next();
+        
+        assertNotNull(event2);
+        assertEquals(EventConstants.OUTAGE_CREATED_EVENT_UEI,event2.getUei());
+        assertEquals("SMTP",event2.getService());
+        assertEquals("192.168.1.1",event2.getInterface());
     }
 
     @Test
@@ -1109,54 +1120,6 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         verifyAnticipated(10000);
     }
 
-    @Test
-    public void testNodeGainedDynamicService() throws Exception {
-        m_pollerConfig.setNodeOutageProcessingEnabled(true);
-
-        startDaemons();
-
-        TestCapsdConfigManager capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-
-        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        configStream.close();
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
-
-        JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
-        syncer.setJdbcTemplate(jdbcTemplate);
-        syncer.setOpennmsServerConfig(onmsSvrConfig);
-        syncer.setCapsdConfig(capsdConfig);
-        syncer.setPollerConfig(m_pollerConfig);
-        syncer.setCollectdConfig(collectdConfig);
-        syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
-        syncer.afterPropertiesSet();
-
-        OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
-        provisioner.setPollerConfig(m_pollerConfig);
-        provisioner.setCapsdConfig(capsdConfig);
-        provisioner.setCapsdDbSyncer(syncer);
-
-        provisioner.setEventManager(m_eventMgr);
-        provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53, "www.opennms.org");
-
-        assertNotNull("The service id for MyDNS is null", m_db.getServiceID("MyDNS"));
-        MockUtil.println("The service id for MyDNS is: " + m_db.getServiceID("MyDNS").toString());
-
-        m_anticipator.reset();
-
-        sendNodeGainedService("MyDNS", "HTTP");
-
-    }
-
     @Test(timeout=30000)
     public void testSuspendPollingResumeService() {
         MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
@@ -1185,6 +1148,402 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         }
         assertTrue(0 < svc.getPollCount());
 
+    }
+
+    /**
+     * Verifies that outages are properly opened and resolved
+     * when events arrive out of order.
+     *
+     * See NMS-7394 for details.
+     */
+    @Test
+    public void testNoDuplicateOutagesWithDownDownUp() {
+        MockInterface nodeIf = m_network.getInterface(1, "192.168.1.1");
+        MockService icmpService = m_network.getService(1, "192.168.1.1", "ICMP");
+        MockService smtpService = m_network.getService(1, "192.168.1.1", "SMTP");
+
+        // Start the poller
+        startDaemons();
+
+        // Kill the critical service on the interface and expect an interfaceDown:
+        // The node in question has multiple interfaces, so we don't expect a nodeDown.
+        resetAnticipated();
+        anticipateDown(nodeIf);
+
+        icmpService.bringDown();
+
+        verifyAnticipated(10000);
+
+        // There should now be a single outage for the SMTP service:
+        // The critical service on the interface is down, so all
+        // of the services on that interface are also marked as down.
+        List<OnmsOutage> smtpOutages = getOutages(smtpService);
+        assertEquals(1, smtpOutages.size());
+        assertEquals(null, smtpOutages.get(0).getIfRegainedService());
+
+        // Next, we will take the SMTP service offline and bring
+        // the ICMP service online in order to make
+        // the poller daemon generate a interfaceDown event
+        // followed by a nodeLostService event.
+        //
+        // The poller daemon will then  wait to receive these event back
+        // from eventd, so that they are populated with the database ids.
+        //
+        // When the interfaceDown event is received, it will close
+        // the previous outages, and when the nodeLostService event is
+        // received it will create a new outage.
+        //
+        // If these events are received in a different order then which
+        // they were sent, we will end up with two outages in the table.
+        // This can happen, as observed in NMS-7394, if both events
+        // are sent shortly one after another.
+        //
+        // In order to test the behavior of pollerd, we manually
+        // manipulate the order of these events.
+
+        // Stops all other events until the nodeLostService has been processed
+        EventOrderAlteringHook hook = new EventOrderAlteringHook(
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        m_eventMgr.setSendNowHook(hook);
+
+        anticipateUp(nodeIf);
+        anticipateDown(smtpService);
+
+        smtpService.bringDown();
+        icmpService.bringUp();
+
+        verifyAnticipated(10000);
+
+        // There should be two outages in the database:
+        // one closed with the event id populated and another one pending
+        smtpOutages = getOutages(smtpService);
+        assertEquals(2, smtpOutages.size());
+        assertNotNull(smtpOutages.get(0).getIfRegainedService());
+        assertNotNull(smtpOutages.get(0).getServiceRegainedEvent());
+        assertNull(smtpOutages.get(1).getIfRegainedService());
+    }
+
+    /**
+     * Halts all events until one with the given UEI has
+     * been successfully broadcasted.
+     *
+     * Requires the MockEventIPCManager to asynchronous and to have
+     * as many scheduler threads as there are waiting events + 1.
+     */
+    private static class EventOrderAlteringHook implements SendNowHook {
+        private final CountDownLatch m_latch = new CountDownLatch(1);
+
+        private final String m_uei;
+
+        public EventOrderAlteringHook(String uei) {
+            m_uei = uei;
+        }
+
+        @Override
+        public void beforeBroadcast(final Event event) {
+            if (m_uei.equalsIgnoreCase(event.getUei())) {
+                // pass
+            } else {
+                try {
+                    // stall
+                    m_latch.await();
+                } catch (InterruptedException e) {
+                    // Fail if we're interrupted
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        @Override
+        public void afterBroadcast(final Event event) {
+            if (m_uei.equalsIgnoreCase(event.getUei())) {
+                m_latch.countDown();
+            }
+        }
+
+        @Override
+        public void finishProcessingEvents() {
+            while(m_latch.getCount() > 0) {
+                m_latch.countDown();
+            }
+        }
+    }
+
+    /**
+     * Verifies that outages are properly opened and resolved
+     * when events arrive out of order.
+     *
+     * See NMS-7519 for details.
+     */
+    @Test
+    public void testNoDuplicateOutagesWithUpDownDown() throws InterruptedException {
+        final MockService httpService = m_network.getService(2, "192.168.1.3", "HTTP");
+        final MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
+
+        // Start the poller
+        startDaemons();
+
+        // Starting with 0 outages
+        List<OnmsOutage> httpOutages = getOutages(httpService);
+        assertEquals(0, httpOutages.size());
+
+        // Halts all nodeLostService events until at least 2
+        // of them a queued.
+        //
+        // The event bus should receive the following sequence:
+        //   nodeLostService
+        //   nodeGainedService
+        //   nodeLostService
+        //
+        // We're looking to reorder them as follows:
+        //   nodeGainedService
+        //   nodeLostService
+        //   nodeLostService
+        QueueMultipleDownsHook hook = new QueueMultipleDownsHook(2);
+        m_eventMgr.setSendNowHook(hook);
+
+        // Verify that the initial latch count is 2
+        waitForHookCount(hook, 2);
+
+        // Take the HTTP service down
+        httpService.bringDown();
+
+        // Wait for the latch count to decrease
+        waitForHookCount(hook, 1);
+
+        m_anticipator.reset();
+        m_anticipator.anticipateEvent(httpService.createUpEvent());
+
+        // Bring the HTTP service back up even though the nodeLostService
+        // event is still pending
+        httpService.bringUp();
+
+        m_anticipator.waitForAnticipated(10000);
+
+        // Take the HTTP service down again
+        httpService.bringDown();
+
+        // Wait for the latch count to decrease and send the queued events
+        waitForHookCount(hook, 0);
+
+        m_anticipator.reset();
+        m_anticipator.anticipateEvent(httpService.createUpEvent());
+
+        // Bring the HTTP service back online
+        httpService.bringUp();
+
+        m_anticipator.waitForAnticipated(10000);
+
+        // We've succeeded in altering the order of events for the
+        // HTTP service. Now we make sure that outage processing
+        // continues to work as expeceted on a different service
+        m_eventMgr.setSendNowHook(null);
+
+        m_anticipator.reset();
+        m_anticipator.anticipateEvent(httpService.createUpEvent());
+
+        smtpService.bringDown();
+
+        m_anticipator.waitForAnticipated(10000);
+
+        // Verifies that all of the outage fields are properly
+        // set for both outages affecting the HTTP service,
+        // even though the events we're send out of order
+        httpOutages = getOutages(httpService);
+        assertEquals(2, httpOutages.size());
+        assertNotNull(httpOutages.get(0).getIfRegainedService());
+        assertNotNull(httpOutages.get(0).getIfLostService());
+        assertNotNull(httpOutages.get(0).getIfRegainedService());
+        assertNotNull(httpOutages.get(0).getServiceRegainedEvent());
+
+        assertNotNull(httpOutages.get(1).getIfRegainedService());
+        assertNotNull(httpOutages.get(1).getIfLostService());
+        assertNotNull(httpOutages.get(1).getIfRegainedService());
+        assertNotNull(httpOutages.get(1).getServiceRegainedEvent());
+    }
+
+    /**
+     * Halts all "down" events until the desired number
+     * of them are queued.
+     */
+    private static class QueueMultipleDownsHook implements SendNowHook {
+        private final CountDownLatch m_latch;
+
+        private final Set<String> m_ueis = Sets.newHashSet();
+
+        public QueueMultipleDownsHook(int count) {
+            m_latch = new CountDownLatch(count);
+            m_ueis.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
+            m_ueis.add(EventConstants.NODE_DOWN_EVENT_UEI);
+            m_ueis.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        }
+
+        @Override
+        public void beforeBroadcast(final Event event) {
+            if (!m_ueis.contains(event.getUei())) {
+                // pass
+            } else {
+                try {
+                    // stall
+                    m_latch.countDown();
+                    m_latch.await();
+                } catch (InterruptedException e) {
+                    // Fail if we're interrupted
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        @Override
+        public void afterBroadcast(Event event) {
+            // pass
+        }
+
+        @Override
+        public void finishProcessingEvents() {
+            while(m_latch.getCount() > 0) {
+                m_latch.countDown();
+            }
+        }
+
+        public long getCount() {
+            return m_latch.getCount();
+        }
+    }
+
+    private void waitForHookCount(QueueMultipleDownsHook hook, long count) throws InterruptedException {
+        final long interval = 50;
+        long timeout = 10000;
+        while(timeout >= 0) {
+            Thread.sleep(interval);
+            timeout -= interval;
+            if (hook.getCount() == count) {
+                break;
+            }
+        }
+        assertEquals(count, hook.getCount());
+    }
+
+    /**
+     * Test for NMS-7426.
+     */
+    @Test
+    public void testServicesWithoutPackagesAreMarkedAsNotPolled() {
+        MockService monitoredSvc = m_network.getService(5, "192.168.1.7", "SNMP");
+        MockService notMonitoredSvc = m_network.getService(5, "192.168.1.7", "NotMonitored");
+        OnmsMonitoredService notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+
+        // The status should be set initially set to active
+        assertEquals("A", notMonitored.getStatus());
+
+        // Start the poller
+        startDaemons();
+
+        // Take a service down, and wait for the event
+        // We do this to make ensure the nodes services we're in fact scheduled
+        anticipateDown(monitoredSvc);
+
+        monitoredSvc.bringDown();
+
+        verifyAnticipated(10000);
+
+        // The status should now be set to not monitored
+        notMonitored = m_monitoredServiceDao.get(
+                notMonitoredSvc.getNodeId(),
+                notMonitoredSvc.getAddress(),
+                notMonitoredSvc.getSvcName());
+        assertEquals("N", notMonitored.getStatus());
+    }
+
+    @Test
+    public void restoresServiceStateOnRestart() {
+        MockNode node = m_network.getNode(2);
+        MockService criticalService = m_network.getService(2, "192.168.1.3", "ICMP");
+
+        // Bring the critical service down
+        anticipateDown(node);
+        criticalService.bringDown();
+
+        // Start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+
+        // Stop the poller
+        stopDaemons();
+
+        // Bring the critical service up and expect a nodeUp
+        // The service should restore the proper state and know that the outage
+        // was triggered by a node down
+        anticipateUp(node);
+        criticalService.bringUp();
+
+        // (Re)start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+    }
+
+    /**
+     * Test for NMS-7585
+     */
+    @Test
+    public void closesOpenOutagesWithNoSvcLostEventIdOnRestart() {
+        MockNode node = m_network.getNode(2);
+        MockService criticalService = m_network.getService(2, "192.168.1.3", "ICMP");
+
+        // Bring the critical service down
+        anticipateDown(node);
+        criticalService.bringDown();
+
+        // Start the poller
+        startDaemons();
+
+        // Verify
+        verifyAnticipated(10000);
+
+        // Stop the poller
+        stopDaemons();
+
+        // Remove the reference to the lost service event from all of the outages,
+        // and let's pretend that they weren't even there in the first place
+        Set<Integer> outageIds = new HashSet<Integer>();
+        for (OnmsOutage outage : m_outageDao.findAll()) {
+            outage.setServiceLostEvent(null);
+            m_outageDao.update(outage);
+            outageIds.add(outage.getId());
+        }
+        m_outageDao.flush();
+
+        // We should get another node down
+        m_anticipator.anticipateEvent(node.createDownEvent());
+
+        // (Re)start the poller
+        startDaemons();
+
+        // Verify
+        m_anticipator.waitForAnticipated(10000);
+
+        // Wait for the outages to be populated (this happen after
+        // the down event is sent)
+        sleep(1000);
+
+        for (OnmsOutage outage : m_outageDao.findAll()) {
+            if (outageIds.contains(outage.getId())) {
+                // Outages in our list should be closed with
+                // no svcRegainedEvent
+                assertNotNull(outage.getIfRegainedService());
+                assertNull(outage.getServiceRegainedEvent());
+            } else {
+                // Other outages should be open
+                assertNull(outage.getIfRegainedService());
+            }
+        }
     }
 
     //
@@ -1242,7 +1601,9 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         if (force || !element.getPollStatus().equals(PollStatus.up())) {
             Event event = element.createUpEvent();
             m_anticipator.anticipateEvent(event);
-            m_outageAnticipator.anticipateOutageClosed(element, event);
+            for (Event outageResovedEvent: m_outageAnticipator.anticipateOutageClosed(element, event)) {
+                m_anticipator.anticipateEvent(outageResovedEvent);
+            }
         }
     }
 
@@ -1254,7 +1615,9 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         if (force || !element.getPollStatus().equals(PollStatus.down())) {
             Event event = element.createDownEvent();
             m_anticipator.anticipateEvent(event);
-            m_outageAnticipator.anticipateOutageOpened(element, event);
+            for (Event outageCretedEvent : m_outageAnticipator.anticipateOutageOpened(element, event)){
+                m_anticipator.anticipateEvent(outageCretedEvent);
+            }
         }
     }
 
@@ -1303,6 +1666,22 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
     }
 
+    /**
+     * Retrieves all of the outages (using DAOs) associated with
+     * the given service.
+     */
+    private List<OnmsOutage> getOutages(MockService svc) {
+        OnmsMonitoredService monitoredSvc = m_monitoredServiceDao.get(
+                svc.getNodeId(), svc.getAddress(), svc.getSvcName());
+
+        Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+            .eq("monitoredService", monitoredSvc)
+            .orderBy("ifLostService")
+            .toCriteria();
+
+        return m_outageDao.findMatching(criteria);
+    }
+
     class OutageChecker extends Querier {
         private Event m_lostSvcEvent;
 
@@ -1324,17 +1703,18 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
             m_svc = svc;
             m_lostSvcEvent = lostSvcEvent;
-            m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent.getTime());
+            m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
             m_regainedSvcEvent = regainedSvcEvent;
-            if (m_regainedSvcEvent != null)
-                m_regainedSvcTime = m_db.convertEventTimeToTimeStamp(m_regainedSvcEvent.getTime());
+            if (m_regainedSvcEvent != null) {
+                m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+            }
         }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
             assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
             assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-            assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+            assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
             assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
             assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
             assertEquals(getRegainedEventId(), rs.getObject("svcRegainedEventId"));

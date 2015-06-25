@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,34 +67,36 @@ public class BSFDetectorTest implements InitializingBean {
     public void setUp() {
         MockLogAppender.setupLogging();
         assertNotNull(m_detector);
+
+        m_detector.setFileName(null);
         m_detector.setLangClass("groovy");
-        m_detector.setRunType("exec");
-        m_detector.setFileExtensions("groovy,gy");
         m_detector.setBsfEngine("org.codehaus.groovy.bsf.GroovyEngine");
+        m_detector.setFileExtensions("groovy,gy");
+        m_detector.setRunType("exec");
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testa.groovy");
         m_detector.onInit();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorWrongBanner() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/testb.groovy");
         m_detector.onInit();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testDetectorFileNotFound() throws UnknownHostException {
         m_detector.setFileName("src/test/resources/unknown.groovy");
         m_detector.onInit();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testBadType() throws UnknownHostException {
         m_detector.setRunType("eval");
         m_detector.setFileName("src/test/resources/testa.groovy");
@@ -102,7 +104,7 @@ public class BSFDetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
     }
 
-    @Test(timeout=90000)
+    @Test(timeout=20000)
     public void testInvalidEngine() throws UnknownHostException {
         m_detector.setLangClass("jython");
         m_detector.setRunType("exec");

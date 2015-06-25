@@ -38,9 +38,9 @@ import org.opennms.netmgt.model.topology.CdpTopologyLink;
 
 public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
 
-    CdpLink get(OnmsNode node, Integer cdpCacheIfIndex);
+    CdpLink get(OnmsNode node, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
 
-    CdpLink get(Integer nodeId, Integer cdpCacheIfIndex);
+    CdpLink get(Integer nodeId, Integer cdpCacheIfIndex, Integer cdpCacheDeviceIndex);
     
     List<CdpLink> findByNodeId(Integer nodeId);
 

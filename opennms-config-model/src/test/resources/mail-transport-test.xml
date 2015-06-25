@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mail-transport-test xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<!--  Example end2end test sending to localhost and reading from gmail.  In an
+      end2end test, mail is sent to the specified host and read from the specified host.
+      If the host value is set to ${ipaddr}, then the IP address of the service being
+      polled will be used.  And end2end test is configured when both a send and a read
+      test are defined.  The subject in the send is used for the match and the subject is
+      modified to have the current time in millis appended.  The subject-match attribute in
+      the read test is ignored for the end2end test.-->
+
+  <mail-test>
+    <sendmail-test attempt-interval="3000" debug="true" use-authentication="false" use-jmta="false">
+    
+      <!-- These 2 properties are passed directly to the javamailer class.  The will
+           be overridden if they are the same properties that are derived based on the
+           other configuration elements.  Mainly here for convenience allowing properties
+           to be set that don't get set by the configuration. -->
+      <javamail-property name="mail.smtp.userset" value="false"/>
+      <javamail-property name="mail.smtp.ehlo" value="true"/>
+ 
+      <!-- Connect to local MTA and send... no auth required but the configuration
+           requires auth be configured.  Disable with use-authentication attribute above. -->
+      <sendmail-host host="127.0.0.1" port="25"/>
+      <sendmail-protocol char-set="us-ascii" 
+                         mailer="smtpsend" 
+                         message-content-type="text/plain" 
+                         message-encoding="7-bit" 
+                         quit-wait="true" 
+                         ssl-enable="false" 
+                         start-tls="false" 
+                         transport="smtp" />
+      <sendmail-message to="foo@gmail.com" 
+                        from="root@[127.0.0.1]" 
+                        subject="OpenNMS Test Message "
+                        body="This is an OpenNMS test message." />
+      <user-auth user-name="opennms" password="rulz" />
+    </sendmail-test>
+
+    <!-- Read portion of the test.  Check to see if local MTA has delivered mail to Google Gmail account.  The
+         attempt interval gives a delay between send and read test as well as between each retry. -->    
+    <readmail-test attempt-interval="5000" debug="true" mail-folder="INBOX" subject-match="OpenNMS Test Message" delete-all-mail="true" >
+    
+      <!-- Sample properties that you may want to set... these examples are the javamail defaults. -->
+      <javamail-property name="mail.pop3.apop.enable" value="false"/>
+      <javamail-property name="mail.pop3.rsetbeforequit" value="false" />
+      
+      <readmail-host host="pop.gmail.com" port="995">
+        <readmail-protocol ssl-enable="true" start-tls="false" transport="pop3s"/>
+      </readmail-host>
+      
+      <user-auth password="foo" user-name="bar"/>
+    </readmail-test>
+  </mail-test>
+</mail-transport-test>

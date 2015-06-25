@@ -34,15 +34,12 @@ package org.opennms.netmgt.rtc.datablock;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
-public class RTCNodeSvcTime extends Object {
+public class RTCNodeSvcTime {
     /**
      * Time at which service was lost
      */
-    private long m_svcLostTime;
+    private final long m_svcLostTime;
 
     /**
      * Time at which service was regained
@@ -50,49 +47,26 @@ public class RTCNodeSvcTime extends Object {
     private long m_svcRegainedTime;
 
     /**
-     * Default constructor - initilializes the values
-     */
-    public RTCNodeSvcTime() {
-        m_svcLostTime = -1;
-        m_svcRegainedTime = -1;
-    }
-
-    /**
      * Creates a time with the lost time
      *
-     * @param lostt
+     * @param lostTime
      *            the time at which service was lost
      */
-    public RTCNodeSvcTime(long lostt) {
-        m_svcLostTime = lostt;
-        m_svcRegainedTime = -1;
+    public RTCNodeSvcTime(long lostTime) {
+        this(lostTime, -1);
     }
 
     /**
      * Creates the service time with both the lost and regained times
      *
-     * @param lostt
+     * @param lostTime
      *            the time at which service was lost
-     * @param regainedt
+     * @param regainedTime
      *            the time at which service was regained
      */
-    public RTCNodeSvcTime(long lostt, long regainedt) {
-        m_svcLostTime = lostt;
-
-        if (regainedt <= 0)
-            m_svcRegainedTime = -1;
-        else
-            m_svcRegainedTime = regainedt;
-    }
-
-    /**
-     * Set the service lost time
-     *
-     * @param t
-     *            the time at which service was lost
-     */
-    public void setLostTime(long t) {
-        m_svcLostTime = t;
+    public RTCNodeSvcTime(long lostTime, long regainedTime) {
+        m_svcLostTime = lostTime;
+        setRegainedTime(regainedTime);
     }
 
     /**
@@ -102,10 +76,13 @@ public class RTCNodeSvcTime extends Object {
      *            the time at which service was regained
      */
     public void setRegainedTime(long t) {
-        if (t <= 0)
+        if (t <= 0) {
             m_svcRegainedTime = -1;
-        else
+        } else if (t < m_svcLostTime) {
+            throw new IllegalArgumentException("Cannot set outage end time to value less than outage start time: " + m_svcRegainedTime + " < " + m_svcLostTime);
+        } else {
             m_svcRegainedTime = t;
+        }
     }
 
     /**
@@ -127,22 +104,23 @@ public class RTCNodeSvcTime extends Object {
     }
 
     /**
-     * Return if this outages has expired
+     * Return true if this outage has expired.
      *
-     * @return if this outages has expired
-     * @param startOfRollingWindow a long.
+     * @return true if this outage has expired
+     * 
+     * @param startOfRollingWindow Epoch milliseconds that indicates the 
+     *   beginning of the rolling outage window.
      */
     public boolean hasExpired(long startOfRollingWindow) {
-        if (m_svcRegainedTime == -1) {
+        if (m_svcRegainedTime < 0) {
             // service currently down, return false
             return false;
-        }
-
-        if (m_svcLostTime < startOfRollingWindow && m_svcRegainedTime < startOfRollingWindow) {
+        } else if (m_svcRegainedTime >= startOfRollingWindow) {
+            // service was regained after the start of the rolling outage window, return false
+            return false;
+        } else {
             return true;
         }
-
-        return false;
     }
 
     /**
@@ -155,33 +133,31 @@ public class RTCNodeSvcTime extends Object {
      * @param rollingWindow a long.
      */
     public long getDownTime(long curTime, long rollingWindow) {
-        long downTime = 0;
 
         // make sure the lost time is not later than current time!
-        if (curTime < m_svcLostTime)
-            return downTime;
+        if (curTime < m_svcLostTime) {
+            return 0;
+        }
 
         // the start of the rolling window
         long startTime = curTime - rollingWindow;
 
-        if (m_svcRegainedTime == -1) {
+        if (m_svcRegainedTime < 0 || m_svcRegainedTime >= curTime) {
             // node yet to regain service
             if (m_svcLostTime < startTime) {
                 // if svclosttime is less than the rolling window
                 // means its been down throughout
-                downTime = rollingWindow;
+                return rollingWindow; // curTime - startTime
             } else {
-                downTime = curTime - m_svcLostTime;
+                return curTime - m_svcLostTime;
             }
         } else {
             // node has regained service
-            if (m_svcLostTime >= startTime) {
-                downTime = m_svcRegainedTime - m_svcLostTime;
-            } else if (m_svcRegainedTime > startTime) {
-                downTime = m_svcRegainedTime - startTime;
+            if (m_svcLostTime < startTime) {
+                return m_svcRegainedTime - startTime;
+            } else {
+                return m_svcRegainedTime - m_svcLostTime;
             }
         }
-
-        return downTime;
     }
 }

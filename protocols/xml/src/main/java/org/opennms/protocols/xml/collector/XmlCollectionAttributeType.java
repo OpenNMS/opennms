@@ -82,4 +82,24 @@ public class XmlCollectionAttributeType extends AbstractCollectionAttributeType 
     public String getType() {
         return m_object.getDataType();
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof XmlCollectionAttributeType) {
+            XmlCollectionAttributeType attrType = (XmlCollectionAttributeType) obj;
+            return attrType.getType().equals(getType()) && attrType.getName().equals(getName());
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return m_object.getName().hashCode();
+    }
 }

@@ -34,7 +34,7 @@ import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Table;
 
 /**
- * An interface for EventdConfigManager
+ * An interface for DatabaseSchemaConfigFactory
  * 
  * @author <a href="ryan@mail1.opennms.com"> Ryan Lambeth </a>
  *
@@ -93,4 +93,6 @@ public interface DatabaseSchemaConfig {
 	 * @return a String
 	 */
 	String constructJoinExprForTables(final List<Table> tables);
+
+	String addColumn(List<Table> tables, String column);
 }

@@ -8,9 +8,7 @@ dialect "mvel"
 
 global Ticket ticket;
 
-#
-# Set tickets defaults
-#
+// Set tickets defaults
 
 rule "TicketDefaults"
 salience 100
@@ -22,9 +20,7 @@ salience 100
   ticket.user = "admin"
 end
 
-#
-# Overwrite defaults with custom logic
-#
+// Overwrite defaults with custom logic
 
 rule "AssignNodeDownOnRoutersToJesse"
  when

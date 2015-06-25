@@ -34,12 +34,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,25 +49,18 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.JdbcCapsdDbSyncer;
-import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
@@ -81,18 +74,13 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
-import org.opennms.netmgt.mock.TestCapsdConfigManager;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -100,11 +88,11 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 
         // Override the default QueryManager with the DAO version
         "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
@@ -112,13 +100,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDatabase> {
-    private static final String CAPSD_CONFIG = "\n"
-            + "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n"
-            + "   delete-propagation-enabled=\"true\">\n"
-            + "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n"
-            + "</capsd-configuration>\n";
 
 	private Poller m_poller;
 
@@ -145,7 +126,6 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 	@Autowired
 	private TransactionTemplate m_transactionTemplate;
-
 
 	//private DemandPollDao m_demandPollDao;
 
@@ -246,8 +226,6 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 		MockOutageConfig config = new MockOutageConfig();
 		config.setGetNextOutageID(m_db.getNextOutageIdStatement());
-		
-		RrdUtils.setStrategy(new NullRrdStrategy());
 
 		// m_outageMgr = new OutageManager();
 		// m_outageMgr.setEventMgr(m_eventMgr);
@@ -802,11 +780,20 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
         Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
 
-        assertEquals(1, receivedEvents.size());
+        assertEquals(2, receivedEvents.size());
         
-        Event event = receivedEvents.iterator().next();
+        Iterator<Event> receivedEventsIter= receivedEvents.iterator();
+        Event event1 = receivedEventsIter.next();
         
-        assertEquals(expectedReason, EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON));
+        assertEquals(expectedReason, EventUtils.getParm(event1, EventConstants.PARM_LOSTSERVICE_REASON));
+        
+        Event event2 = receivedEventsIter.next();
+        
+        assertNotNull(event2);
+        assertEquals(EventConstants.OUTAGE_CREATED_EVENT_UEI,event2.getUei());
+        assertEquals("SMTP",event2.getService());
+        assertEquals("192.168.1.1",event2.getInterface());
+        
     }
 
     @Test
@@ -1146,60 +1133,9 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		svc1.bringDown();
 
 		verifyAnticipated(10000);
-    }
-
-    @Test
-	public void testNodeGainedDynamicService() throws Exception {
-		m_pollerConfig.setNodeOutageProcessingEnabled(true);
-
-		startDaemons();
-
-        TestCapsdConfigManager capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
-
-        InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("opennms-server.xml");
-        OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(configStream);
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
-        configStream.close();
-
-        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
-        CollectdConfigFactory collectdConfig = new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
-        configStream.close();
-        
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
-
-        JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
-        syncer.setJdbcTemplate(jdbcTemplate);
-        syncer.setOpennmsServerConfig(onmsSvrConfig);
-        syncer.setCapsdConfig(capsdConfig);
-        syncer.setPollerConfig(m_pollerConfig);
-        syncer.setCollectdConfig(collectdConfig);
-        syncer.setNextSvcIdSql(m_db.getNextServiceIdStatement());
-        syncer.afterPropertiesSet();
-
-		OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
-		provisioner.setPollerConfig(m_pollerConfig);
-		provisioner.setCapsdConfig(capsdConfig);
-		provisioner.setCapsdDbSyncer(syncer);
-
-		provisioner.setEventManager(m_eventMgr);
-		provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53,
-				"www.opennms.org");
-
-		assertNotNull("The service id for MyDNS is null", m_db
-				.getServiceID("MyDNS"));
-		MockUtil.println("The service id for MyDNS is: "
-				+ m_db.getServiceID("MyDNS").toString());
-
-		m_anticipator.reset();
-		
-		testSendNodeGainedService("MyDNS", "HTTP");
-
 	}
 
-    @Test
+	@Test
 	public void testSuspendPollingResumeService() {
 
 		MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
@@ -1279,7 +1215,9 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		if (force || !element.getPollStatus().equals(PollStatus.up())) {
 			Event event = element.createUpEvent();
 			m_anticipator.anticipateEvent(event);
-			m_outageAnticipator.anticipateOutageClosed(element, event);
+			for (Event outageResolvedEvent: m_outageAnticipator.anticipateOutageClosed(element, event)){
+			    m_anticipator.anticipateEvent(outageResolvedEvent);
+			}
 		}
 	}
 
@@ -1291,7 +1229,9 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 		if (force || !element.getPollStatus().equals(PollStatus.down())) {
 			Event event = element.createDownEvent();
 			m_anticipator.anticipateEvent(event);
-			m_outageAnticipator.anticipateOutageOpened(element, event);
+			for (Event outageCreatedEvent: m_outageAnticipator.anticipateOutageOpened(element, event)) {
+			    m_anticipator.anticipateEvent(outageCreatedEvent);
+			}
 		}
 	}
 
@@ -1362,20 +1302,18 @@ public class PollerQueryManagerDaoTest implements TemporaryDatabaseAware<MockDat
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
-			m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent
-					.getTime());
+			m_lostSvcTime = new Timestamp(m_lostSvcEvent.getTime().getTime());
 			m_regainedSvcEvent = regainedSvcEvent;
-			if (m_regainedSvcEvent != null)
-				m_regainedSvcTime = m_db
-						.convertEventTimeToTimeStamp(m_regainedSvcEvent
-								.getTime());
+			if (m_regainedSvcEvent != null) {
+				m_regainedSvcTime = new Timestamp(m_regainedSvcEvent.getTime().getTime());
+			}
 		}
 
                 @Override
 		public void processRow(ResultSet rs) throws SQLException {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
-			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+			assertEquals(m_svc.getSvcId(), rs.getInt("serviceId"));
 			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs

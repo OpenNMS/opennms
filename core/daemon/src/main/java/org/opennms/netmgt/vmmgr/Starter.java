@@ -257,7 +257,9 @@ public class Starter {
                         "An error occurred while attempting to start the \"" +
                                 name + "\" service (class " + className + ").  "
                                 + "Shutting down and exiting.";
+
                 LOG.error(message, result.getThrowable());
+
                 System.err.println(message);
                 result.getThrowable().printStackTrace();
 

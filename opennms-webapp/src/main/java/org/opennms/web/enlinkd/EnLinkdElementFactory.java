@@ -28,6 +28,8 @@
 
 package org.opennms.web.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,9 +38,13 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
@@ -58,25 +64,23 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
-import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
-import org.opennms.netmgt.model.LldpElement.LldpChassisIdSubType;
-import org.opennms.netmgt.model.LldpLink.LldpPortIdSubType;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
 import org.opennms.netmgt.model.IsIsLink;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjNeighSysType;
+import org.opennms.netmgt.model.IsIsLink.IsisISAdjState;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfElement;
+import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.web.api.Util;
@@ -87,14 +91,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 @Transactional(readOnly=true)
 public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFactoryInterface{
-
-	Map<Integer,BridgeLinkNode> bridgelinks = new HashMap<Integer,BridgeLinkNode>(); 
-
-	Map<Integer, NodeLinkBridge> nodelinks = new HashMap<Integer,NodeLinkBridge>();
 	
 	@Autowired
 	private OspfElementDao m_ospfElementDao;
@@ -312,49 +310,56 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	public List<LldpLinkNode> getLldpLinks(int nodeId) {
 		List<LldpLinkNode> nodelinks = new ArrayList<LldpLinkNode>(); 
 		for (LldpLink link: m_lldpLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			nodelinks.addAll(convertFromModel(nodeId, link));
+			nodelinks.add(convertFromModel(nodeId, link));
 		}
 		return nodelinks;
 	}
 	
 	@Transactional
-	private List<LldpLinkNode> convertFromModel(int nodeid, LldpLink link) {
-		List<LldpLinkNode> linknodes = new ArrayList<>();
+	private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
 
-		List<LldpElement> lldpremelements= m_lldpElementDao.findByChassisId(link.getLldpRemChassisId(),link.getLldpRemChassisIdSubType());
+                LldpLinkNode linknode = new LldpLinkNode();
+                linknode.setLldpPortString(getPortString(link.getLldpPortId(), link.getLldpPortIdSubType()));
+                linknode.setLldpPortDescr(link.getLldpPortDescr());
+                linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid), link.getLldpPortIfindex()));
 
-		for (LldpElement lldpremelement : lldpremelements) {
-			LldpLinkNode linknode = new LldpLinkNode();
-			linknode.setLldpPortString(getPortString(link.getLldpPortId(), link.getLldpPortIdSubType()));
-			linknode.setLldpPortDescr(link.getLldpPortDescr());
-			linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid), link.getLldpPortIfindex()));
+                linknode.setLldpRemSysName(link.getLldpRemSysname());
+                linknode.setLldpRemPortString(getPortString(link.getLldpRemPortId(), link.getLldpRemPortIdSubType()));
+                linknode.setLldpRemPortDescr(link.getLldpRemPortDescr());
 
-			linknode.setLldpRemSysName(link.getLldpRemSysname());
-			linknode.setLldpRemPortString(getPortString(link.getLldpRemPortId(), link.getLldpRemPortIdSubType()));
-			linknode.setLldpRemPortDescr(link.getLldpRemPortDescr());
-
-			linknode.setLldpCreateTime(Util.formatDateToUIString(link.getLldpLinkCreateTime()));
-			linknode.setLldpLastPollTime(Util.formatDateToUIString(link.getLldpLinkLastPollTime()));
-
-			if (lldpremelement != null) {
-				linknode.setLldpRemChassisIdString(getRemChassisIdString(lldpremelement.getNode().getLabel(), link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
-				linknode.setLldpRemChassisIdUrl(getNodeUrl(lldpremelement.getNode().getId()));
-
-				if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
-					try {
-						Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
-						linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(lldpremelement.getNode().getId()), remIfIndex));
-					} catch (Exception e) {
-					}
-				}
-
-			} else {
-				linknode.setLldpRemChassisIdString(getRemChassisIdString(link.getLldpRemSysname(), link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
-			}
-			linknodes.add(linknode);
-		}
+                linknode.setLldpCreateTime(Util.formatDateToUIString(link.getLldpLinkCreateTime()));
+                linknode.setLldpLastPollTime(Util.formatDateToUIString(link.getLldpLinkLastPollTime()));
 		
-		return linknodes;
+                OnmsNode remNode = null; 
+                
+                List<LldpElement> lldpremelements= m_lldpElementDao.findByChassisId(link.getLldpRemChassisId(),link.getLldpRemChassisIdSubType());
+                
+                if (lldpremelements.size() == 1) {
+                    remNode = lldpremelements.get(0).getNode();
+                } else if (lldpremelements.size() > 1) {
+                    linknode.setLldpRemChassisIdString(getChassisIdString("Found " + lldpremelements.size() + " nodes for", link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
+                    return linknode;
+                } else {
+                    final Criteria criteria = new Criteria(OnmsNode.class).addRestriction(new EqRestriction("sysName", link.getLldpRemSysname()));
+                    List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+                    if (nodes.size() == 1) 
+                        remNode=nodes.get(0);
+                }
+                
+                if (remNode != null) {
+                    linknode.setLldpRemChassisIdString(getChassisIdString(remNode.getLabel(), link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
+                    linknode.setLldpRemChassisIdUrl(getNodeUrl(remNode.getId()));
+                    if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
+                        try {
+                            Integer remIfIndex = Integer.getInteger(link.getLldpRemPortId());
+                            linknode.setLldpRemPortUrl(getSnmpInterfaceUrl(Integer.valueOf(remNode.getId()), remIfIndex));
+                        } catch (Exception e) {
+                        }
+                    }
+                } else {
+                    linknode.setLldpRemChassisIdString(getChassisIdString(link.getLldpRemChassisId(), link.getLldpRemChassisIdSubType()));
+                }
+		return linknode;
 	}
 
 	public IsisElementNode getIsisElement(int nodeId) {
@@ -463,10 +468,11 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 
 	@Override
 	public Collection<NodeLinkBridge> getNodeLinks(int nodeId) {
+	        Map<Integer, NodeLinkBridge> nodelinks = new HashMap<Integer,NodeLinkBridge>();
 		for (OnmsIpInterface ip: m_ipInterfaceDao.findByNodeId(nodeId)) {
 			for (IpNetToMedia ipnetomedia: m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
 				for (BridgeMacLink maclink: m_bridgeMacLinkDao.findByMacAddress(ipnetomedia.getPhysAddress())) {
-					convertFromModel(nodeId, maclink, getNodePortString(str(ipnetomedia.getNetAddress()), ipnetomedia.getPhysAddress()));
+					convertFromModel(nodeId, maclink, getNodePortString(str(ipnetomedia.getNetAddress()), ipnetomedia.getPhysAddress()),nodelinks);
 				}
 			}
 		}
@@ -474,27 +480,28 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	}
 
 	@Transactional
-	private void convertFromModel(int nodeid, BridgeMacLink link, String port) {
+	private void convertFromModel(int nodeid, BridgeMacLink link, String port, Map<Integer, NodeLinkBridge> nodelinks) {
 		if (!nodelinks.containsKey(link.getId())) {
-			NodeLinkBridge linknode = new NodeLinkBridge();
-			BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-			
+			final NodeLinkBridge linknode = new NodeLinkBridge();
+			final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+			final Integer nodeId = link.getNode() == null? null : link.getNode().getId();
+			final Integer bridgePortIfIndex = link.getBridgePortIfIndex();
+
 			remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
-			remlinknode.setBridgeRemoteUrl(getNodeUrl(link.getNode().getId()));
-			OnmsSnmpInterface remiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(link.getNode().getId(), link.getBridgePortIfIndex());
-			if (remiface != null)
-			    remlinknode.setBridgeRemotePort(getPortString(remiface));
-			else 
-                            remlinknode.setBridgeRemotePort(getPortString(link.getBridgePortIfIndex(),null));
-			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(link.getNode().getId(), link.getBridgePortIfIndex()));
+			remlinknode.setBridgeRemoteUrl(getNodeUrl(nodeId));
+			final OnmsSnmpInterface remiface = bridgePortIfIndex == null? null : m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, bridgePortIfIndex);
+			if (remiface != null) {
+				remlinknode.setBridgeRemotePort(getPortString(remiface));
+			} else {
+				remlinknode.setBridgeRemotePort(getPortString(bridgePortIfIndex,null));
+			}
+			remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(nodeId, bridgePortIfIndex));
 			remlinknode.setBridgeRemoteVlan(link.getVlan());
-			
+
 			linknode.setBridgeLinkRemoteNode(remlinknode);
-			
 			linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
 			linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
 			nodelinks.put(link.getId(), linknode);
-			
 		} 
 			
 		nodelinks.get(link.getId()).getNodeLocalPorts().add(port);
@@ -502,20 +509,22 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 
 	@Override
 	public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
-		for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link);
+	        Map<Integer,BridgeLinkNode> bridgelinks = new HashMap<Integer,BridgeLinkNode>(); 
+
+	        for (BridgeMacLink link: m_bridgeMacLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
+			convertFromModel(nodeId,link,bridgelinks);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link);
+			convertFromModel(nodeId,link,bridgelinks);
 		}
 		for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findByDesignatedNodeId(Integer.valueOf(nodeId))) {
-			convertFromModel(nodeId,link.getReverseBridgeBridgeLink());
+			convertFromModel(nodeId,link.getReverseBridgeBridgeLink(),bridgelinks);
 		}
 		return bridgelinks.values();
 	}
 	
 	@Transactional 
-	private void convertFromModel(int nodeid, BridgeBridgeLink link) {
+	private void convertFromModel(int nodeid, BridgeBridgeLink link,Map<Integer,BridgeLinkNode> bridgelinks) {
 
 		BridgeLinkNode linknode = new BridgeLinkNode();
 		if (bridgelinks.containsKey(link.getBridgePort())) {
@@ -542,7 +551,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 	}
 	
 	@Transactional
-	private void convertFromModel(int nodeid, BridgeMacLink link) {
+	private void convertFromModel(int nodeid, BridgeMacLink link,Map<Integer,BridgeLinkNode> bridgelinks) {
 		BridgeLinkNode linknode = new BridgeLinkNode();
 		if (bridgelinks.containsKey(link.getBridgePort())) {
 				linknode = bridgelinks.get(link.getBridgePort());
@@ -593,7 +602,7 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
 		return adjsysid + "("+label+")";
 	}
 	
-	private String getRemChassisIdString(String sysname, String chassisId, LldpChassisIdSubType chassisType) {
+	private String getChassisIdString(String sysname, String chassisId, LldpChassisIdSubType chassisType) {
 		return sysname+ ": " + LldpChassisIdSubType.getTypeString(chassisType.getValue())+ ": " + chassisId;
 	}
 
