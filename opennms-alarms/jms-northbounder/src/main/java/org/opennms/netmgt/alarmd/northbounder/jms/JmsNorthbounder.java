@@ -43,15 +43,28 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsDestination.DestinationType;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 /**
  * Northbound Interface JMS Implementation
  * 
+ * Allows alarms to be automatically forwarded to a JMS destination. JMS
+ * implementation neutral, defaults to ActiveMQ. To change,
+ * add a Spring bean that implements javax.jms.ConnectionFactory
+ * and change OpenNMS property opennms.alarms.northbound.jms.connectionFactoryImplRef
+ * to that bean's ID. It will be wrapped in the Spring's CachingConnectionFactory
+ * so your bean does not need to handle caching or pooling itself.
+ *
+ * Configuration is done in $ONMS_HOME/etc/jms-northbounder-configuration.xml
+ * and is similar to the syslog NBI config file. See JmsNorthbounderConfig
+ * or the appropriate schema file for details.
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
  * @version $Id: $
@@ -125,18 +138,24 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
                 LOG.debug("Attempting to send a message to "
                         + m_jmsDestination.getJmsDestination() + " of type "
                         + m_jmsDestination.getDestinationType());
-                m_template.send(m_jmsDestination.getJmsDestination(),
-                                new MessageCreator() {
+                try {
+                    m_template.send(m_jmsDestination.getJmsDestination(),
+                                    new MessageCreator() {
 
-                                    @Override
-                                    public Message createMessage(
-                                            Session session)
-                                            throws JMSException {
-                                        return session.createTextMessage(convertAlarmToText(alarmMappings,
-                                                                                            alarm));
-                                    }
+                                        @Override
+                                        public Message createMessage(
+                                                Session session)
+                                                throws JMSException {
+                                            return session.createTextMessage(convertAlarmToText(alarmMappings,
+                                                                                                alarm));
+                                        }
 
-                                });
+                                    });
+                } catch (JmsException e) {
+                    LOG.error("Unable to send alarm to JMS NB because "
+                            + e.getLocalizedMessage());
+                }
+                LOG.debug("Sent message.");
             }
         }
     }

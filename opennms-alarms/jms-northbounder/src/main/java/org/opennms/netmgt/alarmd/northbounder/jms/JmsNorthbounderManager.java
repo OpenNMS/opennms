@@ -41,46 +41,51 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+/**
+ * @author schlazor <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
+ *
+ */
+public class JmsNorthbounderManager implements InitializingBean,
+        DisposableBean {
 
-public class JmsNorthbounderManager implements InitializingBean, DisposableBean {
-	
-	@Autowired
-	private ServiceRegistry m_serviceRegistry;
+    @Autowired
+    private ServiceRegistry m_serviceRegistry;
 
-	@Autowired
-	private ConnectionFactory m_jmsNorthbounderConnectionFactory;
-	
-	@Autowired
-	private JmsNorthbounderConfigDao m_configDao;
-	
-	@Autowired
-	private NodeDao m_nodeDao;
-	
-	private Registration m_registration = null;
+    @Autowired
+    private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
-		Assert.notNull(m_nodeDao);
-		Assert.notNull(m_configDao);
-		Assert.notNull(m_serviceRegistry);
-		
-		JmsNorthbounderConfig config = m_configDao.getConfig();
-		List<JmsDestination> destinations = config.getDestinations();
-		for(JmsDestination jmsDestination : destinations) {
+    @Autowired
+    private JmsNorthbounderConfigDao m_configDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    private Registration m_registration = null;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        Assert.notNull(m_nodeDao);
+        Assert.notNull(m_configDao);
+        Assert.notNull(m_serviceRegistry);
+
+        JmsNorthbounderConfig config = m_configDao.getConfig();
+        List<JmsDestination> destinations = config.getDestinations();
+        for (JmsDestination jmsDestination : destinations) {
             JmsNorthbounder nbi = new JmsNorthbounder(
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
                                                       jmsDestination);
-		    nbi.afterPropertiesSet();
-		    m_registration = m_serviceRegistry.register(nbi, Northbounder.class);
-		}
-	}
-	
-	@Override
-	public void destroy() throws Exception {
-		m_registration.unregister();
-	}
+            nbi.setNodeDao(m_nodeDao);
+            nbi.afterPropertiesSet();
+            m_registration = m_serviceRegistry.register(nbi,
+                                                        Northbounder.class);
+        }
+    }
 
+    @Override
+    public void destroy() throws Exception {
+        m_registration.unregister();
+    }
 
 }

@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.netmgt.alarmd.api.Destination;
@@ -12,6 +13,8 @@ import org.opennms.netmgt.alarmd.api.Destination;
 @XmlRootElement(name="jms-destination")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JmsDestination implements Destination{
+    private static final long serialVersionUID = 1L;
+
     @XmlType(name="destination-type")
     @XmlEnum
     public enum DestinationType {
@@ -23,6 +26,8 @@ public class JmsDestination implements Destination{
             return valueOf(v);
         }
     }
+
+    @XmlTransient
     private String m_destinationName;
     
     @XmlElement(name = "first-occurence-only", required = false, defaultValue = "false")
