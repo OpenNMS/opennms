@@ -19,9 +19,9 @@
 ">
 
   <!-- Configuration properties -->
-  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="none">
+  <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="elasticsearchUri" value="elasticsearch://opennms?operation=INDEX&amp;indexType=mmsg&amp;ip=127.0.0.1"/>
+      <cm:property name="elasticsearchUri" value="opennms?operation=INDEX&amp;indexType=mmsg&amp;ip=127.0.0.1"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -44,24 +44,27 @@
 
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
-    <argument value="seda:forwardEvent"/>
+    <argument value="seda:elasticsearchForwardEvent"/>
   </bean>
 
   <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders"/>
 
   <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
-    <!--<constructor-arg name="dateFormat" value="yyyy.MM"/>-->
+    <argument value="yyyy.MM"/>
   </bean>
 
-  <camelContext id="elasticsearchEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
-    <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
+  <camelContext autoStartup="true" id="elasticsearchEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+    <!--<propertyPlaceholder id="properties" location="blueprint:esEventForwarderProperties"/>-->
+    <propertyPlaceholder id="funcBasedProperties" location="none" ignoreMissingLocation="true">
+      <propertiesFunction ref="indexNameFunction"/>
+    </propertyPlaceholder>
 
-    <route id="forwardEvent">
-      <from uri="seda:forwardEvent"/>
+    <route id="forwardEventToElasticsearch">
+      <from uri="seda:elasticsearchForwardEvent"/>
       <bean ref="elasticsearchHeaders" method="process"/>
-      <log message="es-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
+      <log message="elasticsearch-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
       <!-- Send to ES -->
-      <to uri="${elasticsearchUri}?operation=INDEX&amp;indexName={{index:opennms}}"/>
+      <to uri="elasticsearch://{{elasticsearchUri}}?operation=INDEX&amp;indexName={{index:opennms}}"/>
     </route>
   </camelContext>
 

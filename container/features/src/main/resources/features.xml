@@ -63,6 +63,7 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-elasticsearch</feature>
+      <!-- <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/4.10.3_1</bundle> -->
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.elasticsearch/org.opennms.features.elasticsearch.event-forwarder/${project.version}</bundle>
     </feature>
