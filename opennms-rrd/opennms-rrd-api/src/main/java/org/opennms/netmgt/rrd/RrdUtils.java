@@ -62,6 +62,8 @@ public abstract class RrdUtils {
     public static void createMetaDataFile(final String directory, final String rrdName, final Map<String, String> attributeMappings) {
         final File metaFile = new File(directory + File.separator + rrdName + ".meta");
 
+        LOG.info("createMetaDataFile: creating meta data file {} with values '{}'", metaFile, attributeMappings);
+
         try {
             if (metaFile.exists()) {
                 s_cache.updateProperties(metaFile, attributeMappings);

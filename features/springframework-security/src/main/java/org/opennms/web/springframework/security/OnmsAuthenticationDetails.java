@@ -33,7 +33,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import javax.servlet.http.HttpServletRequest;
 
 public class OnmsAuthenticationDetails extends WebAuthenticationDetails {
-
     private static final long serialVersionUID = -7850100700631490637L;
 
    private String[] m_userGroupList;

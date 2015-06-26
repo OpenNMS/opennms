@@ -143,7 +143,7 @@ public class ConfigureSnmpTest extends TestCase {
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
         SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("opennmsrules");
+        info.setReadCommunityString("opennmsrules");
         
         SnmpPeerFactory.getInstance().define(info);
         
@@ -166,7 +166,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
         final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("splice-test");
+        info.setReadCommunityString("splice-test");
         info.setVersion("v2c");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -193,7 +193,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
         final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
-        info.setCommunityString("splice2-test");
+        info.setReadCommunityString("splice2-test");
 
         SnmpPeerFactory.getInstance().define(info);
         
@@ -218,7 +218,7 @@ public class ConfigureSnmpTest extends TestCase {
     }
 
     private void addCommunityStringToEvent(final EventBuilder bldr, final String commStr) {
-        bldr.addParam(EventConstants.PARM_COMMUNITY_STRING, commStr);
+        bldr.addParam(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, commStr);
     }
 
 }
