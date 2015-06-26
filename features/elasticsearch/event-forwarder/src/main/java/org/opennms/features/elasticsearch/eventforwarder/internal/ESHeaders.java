@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
@@ -65,16 +66,7 @@ public class ESHeaders {
 
                 if(event.getNodeid()!=null) {
                     try {
-                        // wrap in a transaction so that Hibernate session is bound and getCategories works
-                        transactionOperations.execute(new TransactionCallbackWithoutResult() {
-                            @Override
-                            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                                OnmsNode node = nodeDao.get(event.getNodeid().toString());
-                                if(node!=null) {
-                                    populateBodyWithNodeInfo(body, node);
-                                }
-                            }
-                        });
+                        body.putAll(getNodeAndCategoryInfo(event.getNodeid()));
                     } catch(Exception e) {
                         logger.error("error fetching node categories: ", e);
                     }
@@ -99,6 +91,29 @@ public class ESHeaders {
         }
         in.setHeader(ElasticsearchConfiguration.PARAM_INDEX_NAME, indexName);
         exchange.getOut().setBody(body);
+    }
+
+    @Cacheable("nodesWithCategories")
+    public Map getNodeAndCategoryInfo(Long nodeId) {
+        logger.debug("called getNodeAndCategoryInfo("+nodeId+")");
+        final Map result=new HashMap();
+
+        // safety check
+        if(nodeId!=null) {
+
+            // wrap in a transaction so that Hibernate session is bound and getCategories works
+            transactionOperations.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    OnmsNode node = nodeDao.get(nodeId.toString());
+                    if (node != null) {
+                        populateBodyWithNodeInfo(result, node);
+                    }
+                }
+            });
+
+        }
+        return result;
     }
 
     /**
