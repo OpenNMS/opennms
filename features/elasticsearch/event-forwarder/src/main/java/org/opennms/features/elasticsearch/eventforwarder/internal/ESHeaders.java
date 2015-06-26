@@ -132,7 +132,7 @@ public class ESHeaders {
         body.put("uei",event.getUei());
         body.put("id",event.getDbid());
         body.put("eventseverity_text", event.getSeverity());
-        body.put("severity", OnmsSeverity.get(event.getSeverity()).getId());
+        body.put("eventseverity", OnmsSeverity.get(event.getSeverity()).getId());
 
         body.put("service", event.getService());
         body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
