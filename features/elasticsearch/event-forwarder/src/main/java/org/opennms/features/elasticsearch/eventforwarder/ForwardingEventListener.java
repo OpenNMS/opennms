@@ -28,11 +28,7 @@
 
 package org.opennms.features.elasticsearch.eventforwarder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -42,11 +38,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
-import javax.naming.event.EventContext;
-
 /**
- * This event sends incoming events to an {@link EventForwarder} that uses Camel+ActiveMQ to 
- * forward events to an external ActiveMQ broker. 
+ * This event sends incoming events to an {@link EventForwarder} that uses Camel+Elasticsearch to
+ * forward events to an external Elasticsearch.
  */
 public class ForwardingEventListener implements EventListener {
 
