@@ -67,7 +67,7 @@ public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
      *
      * @param monitoringLocationDao a {@link org.opennms.netmgt.dao.api.MonitoringLocationDao} object.
      */
-    public void setLocationMonitorDao(MonitoringLocationDao monitoringLocationDao) {
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
         m_monitoringLocationDao = monitoringLocationDao;
     }
 }
