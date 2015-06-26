@@ -42,10 +42,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.dao.mock.MockEventProxy;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -60,14 +62,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    
+
+    @Autowired
+    MockEventIpcManager m_eventProxy;
+
     @Test
     public void testRequisition() throws Exception {
         cleanUpImports();
@@ -343,25 +348,23 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
     public void testImport() throws Exception {
         createRequisition();
         
-        final MockEventProxy eventProxy = getEventProxy();
-        eventProxy.resetEvents();
+        EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
         sendRequest(PUT, "/requisitions/test/import", 303);
 
-        assertEquals(1, eventProxy.getEvents().size());
+        assertEquals(1, anticipator.unanticipatedEvents().size());
     }
 
     @Test
     public void testImportNoRescan() throws Exception {
         createRequisition();
         
-        final MockEventProxy eventProxy = getEventProxy();
-        eventProxy.resetEvents();
+        EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
         sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 303);
 
-        assertEquals(1, eventProxy.getEvents().size());
-        final Event event = eventProxy.getEvents().get(0);
+        assertEquals(1, anticipator.unanticipatedEvents().size());
+        final Event event = anticipator.unanticipatedEvents().iterator().next();
         final List<Parm> parms = event.getParmCollection();
         assertEquals(2, parms.size());
         assertEquals("false", parms.get(1).getValue().getContent());
@@ -390,9 +393,5 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
 
         
         sendPost("/requisitions", req, 303, "/requisitions/test");
-    }
-
-    private MockEventProxy getEventProxy() {
-        return getBean("eventProxy", MockEventProxy.class);
     }
 }

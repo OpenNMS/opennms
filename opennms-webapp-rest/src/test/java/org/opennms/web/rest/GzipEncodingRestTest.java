@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 
+import javax.servlet.ServletContext;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,7 +73,7 @@ import com.google.common.io.CharStreams;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
@@ -84,6 +86,9 @@ public class GzipEncodingRestTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DatabasePopulator populator;
+
+    @Autowired
+    private ServletContext m_context;
 
     @Before
     @Override
@@ -105,7 +110,7 @@ public class GzipEncodingRestTest extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testGzippedEncodedReponse() throws Exception {
         // Retrieve the results of request without any encoding headers set
-        final MockHttpServletRequest request = createRequest(getServletContext(), GET, "/nodes");
+        final MockHttpServletRequest request = createRequest(m_context, GET, "/nodes");
         String xml = sendRequest(request, 200);
 
         // Now set the header, and re-issue that same request

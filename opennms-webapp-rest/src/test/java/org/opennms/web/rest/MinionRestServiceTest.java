@@ -42,6 +42,7 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -55,18 +56,20 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class MinionRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     MinionDao m_minionDao;
 
     @Override
     protected void afterServletStart() throws Exception {
-        m_minionDao = getBean("minionDao", MinionDao.class);
+
         final OnmsMinion minion = new OnmsMinion("12345", "Here", "Started", new Date());
         minion.setProperty("Foo", "Bar");
         m_minionDao.save(minion);

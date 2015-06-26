@@ -46,7 +46,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -85,7 +84,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @since 15.0.2
  */
-@Component
+@Component("availabilityRestService")
 @PerRequest
 @Scope("prototype")
 @Path("availability")
@@ -111,9 +110,6 @@ public class AvailabilityRestService extends OnmsRestService {
 
     @Autowired
     MonitoredServiceDao m_monitoredServiceDao;
-
-    @Context 
-    UriInfo m_uriInfo;
 
     @Context
     ResourceContext m_context;

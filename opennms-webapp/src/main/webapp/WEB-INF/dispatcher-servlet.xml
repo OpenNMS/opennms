@@ -428,6 +428,11 @@
                                 <property name="url" value="surveillance-view.jsp"/>
                                 <property name="locationMatch" value="surveillance-view"/>
                             </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Heatmap"/>
+                                <property name="url" value="heatmap/index.jsp"/>
+                                <property name="locationMatch" value="heatmap"/>
+                            </bean>
                             <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
                                 <property name="name" value="Distributed Status"/>
                                 <property name="url" value="distributedStatusSummary.htm"/>

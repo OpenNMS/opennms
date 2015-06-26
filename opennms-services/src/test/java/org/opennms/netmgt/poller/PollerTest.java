@@ -40,6 +40,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -770,11 +771,20 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
 
         Collection<Event> receivedEvents = m_anticipator.getAnticipatedEventsRecieved();
 
-        assertEquals(1, receivedEvents.size());
+        assertEquals(2, receivedEvents.size());
 
-        Event event = receivedEvents.iterator().next();
-
-        assertEquals(expectedReason, EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON));
+        Iterator<Event> receivedEventsIter= receivedEvents.iterator();
+        
+        Event event1 = receivedEventsIter.next();
+        
+        assertEquals(expectedReason, EventUtils.getParm(event1, EventConstants.PARM_LOSTSERVICE_REASON));
+        
+        Event event2 = receivedEventsIter.next();
+        
+        assertNotNull(event2);
+        assertEquals(EventConstants.OUTAGE_CREATED_EVENT_UEI,event2.getUei());
+        assertEquals("SMTP",event2.getService());
+        assertEquals("192.168.1.1",event2.getInterface());
     }
 
     @Test
@@ -1591,7 +1601,9 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         if (force || !element.getPollStatus().equals(PollStatus.up())) {
             Event event = element.createUpEvent();
             m_anticipator.anticipateEvent(event);
-            m_outageAnticipator.anticipateOutageClosed(element, event);
+            for (Event outageResovedEvent: m_outageAnticipator.anticipateOutageClosed(element, event)) {
+                m_anticipator.anticipateEvent(outageResovedEvent);
+            }
         }
     }
 
@@ -1603,7 +1615,9 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         if (force || !element.getPollStatus().equals(PollStatus.down())) {
             Event event = element.createDownEvent();
             m_anticipator.anticipateEvent(event);
-            m_outageAnticipator.anticipateOutageOpened(element, event);
+            for (Event outageCretedEvent : m_outageAnticipator.anticipateOutageOpened(element, event)){
+                m_anticipator.anticipateEvent(outageCretedEvent);
+            }
         }
     }
 

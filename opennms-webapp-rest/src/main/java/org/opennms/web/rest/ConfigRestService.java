@@ -28,8 +28,9 @@
 
 package org.opennms.web.rest;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.config.AgentConfigurationResource;
 import org.opennms.web.rest.config.CollectionConfigurationResource;
@@ -40,25 +41,18 @@ import org.opennms.web.rest.config.SnmpConfigurationResource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import com.sun.jersey.api.core.ResourceContext;
+import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * ReST service for (JAXB) ConfigurationResource files.
  */
 
-@Component
+@Component("configRestService")
 @PerRequest
 @Scope("prototype")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
-    @Context
-    private UriInfo m_uriInfo;
-
-    @Context
-    private SecurityContext m_securityContext;
 
     @Context
     private ResourceContext m_context;

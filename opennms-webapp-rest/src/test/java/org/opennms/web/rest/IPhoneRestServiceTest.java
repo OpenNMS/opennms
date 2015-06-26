@@ -50,6 +50,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
@@ -74,17 +75,19 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 @Transactional
 public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     private EventDao m_eventDao;
 
+    @Autowired
     private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() throws Exception {
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
-        dbp.populateDatabase();
-        m_distPollerDao = context.getBean("distPollerDao", DistPollerDao.class);
-        m_eventDao = context.getBean("eventDao", EventDao.class);
+        m_databasePopulator.populateDatabase();
     }
 
     @Test

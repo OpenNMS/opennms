@@ -1,6 +1,48 @@
 [releasenotes-16]
 === OpenNMS 16
 
+[releasenotes-changelog-16.0.2]
+==== Release 16.0.2
+
+Release 16.0.2 is the latest stable release of OpenNMS.  It is a repack of 16.0.1 with a missing bugfix included.
+
+The codename for 16.0.2 is **__still__** _Bananaman_.  It'll be our secret.
+
+[releasenotes-changelog-16.0.1]
+==== Release 16.0.1
+
+Release 16.0.1 is the latest stable release of OpenNMS.  It contains a fe small enhancements and a number of bugfixes, including
+a fix to running OpenNMS on a system that cannot reach the public Internet.
+
+The codename for 16.0.1 is _Bananaman_.
+
+===== Bug
+
+* Dashboard node status shows wrong service count (Issue http://issues.opennms.org/browse/NMS-7459[NMS-7459])
+* XML Collector is not working as expected for node-level resources (Issue http://issues.opennms.org/browse/NMS-7516[NMS-7516])
+* Vaadin dashboard meaning of yellow in the surveillance view (Issue http://issues.opennms.org/browse/NMS-7667[NMS-7667])
+* Web UI doesn't start on system with no internet connection (Issue http://issues.opennms.org/browse/NMS-7683[NMS-7683])
+* Missing release notes v16 (Issue http://issues.opennms.org/browse/NMS-7685[NMS-7685])
+* Links and missing docs release for Horizon 16 (Issue http://issues.opennms.org/browse/NMS-7690[NMS-7690])
+* Example Drools rules imports incorrect classes (Issue http://issues.opennms.org/browse/NMS-7693[NMS-7693])
+* Logging not initialized but used on Drools Rule files. (Issue http://issues.opennms.org/browse/NMS-7695[NMS-7695])
+* NumberFormatException in LldpUtils (Issue http://issues.opennms.org/browse/NMS-7697[NMS-7697])
+* Hibernate exception in AlarmDetailsDashlet (Issue http://issues.opennms.org/browse/NMS-7698[NMS-7698])
+* Nodelist page acts unexpectedly when mouse over nodelabel (Issue http://issues.opennms.org/browse/NMS-7699[NMS-7699])
+* CSS Dashboard don't work. (Issue http://issues.opennms.org/browse/NMS-7701[NMS-7701])
+* Unable to create a user defined label on nodes after upgrade to 16.0.0 (Issue http://issues.opennms.org/browse/NMS-7704[NMS-7704])
+* API documentation links are not up to date (Issue http://issues.opennms.org/browse/NMS-7708[NMS-7708])
+* NullPointerException in RrdtoolXportFetchStrategy (Issue http://issues.opennms.org/browse/NMS-7710[NMS-7710])
+* 'More...' event link on /opennms/element/service.jsp encodes URL incorrectly (Issue http://issues.opennms.org/browse/NMS-7714[NMS-7714])
+* output.log flooded with "java.lang.NumberFormatException: For input string" (Issue http://issues.opennms.org/browse/NMS-7733[NMS-7733])
+
+===== Enhancement
+
+* Improve drill down workflow for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7668[NMS-7668])
+* Add links to SLA category on start page (Issue http://issues.opennms.org/browse/NMS-7669[NMS-7669])
+* Improve links for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7713[NMS-7713])
+
+
 [releasenotes-changelog-16.0.0]
 ==== Release 16.0.0
 

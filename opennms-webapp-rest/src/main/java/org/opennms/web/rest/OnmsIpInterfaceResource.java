@@ -46,8 +46,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -71,7 +71,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
-@Component
+@Component("onmsIpInterfaceResource")
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -93,9 +93,6 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Context
     ResourceContext m_context;
     
-    @Context 
-    UriInfo m_uriInfo;
-
     /**
      * <p>getIpInterfaces</p>
      *
@@ -104,7 +101,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") final String nodeCriteria) {
+    public OnmsIpInterfaceList getIpInterfaces(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
         readLock();
         
         try {
@@ -112,7 +109,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
             
-            final MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+            final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
             
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
             builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
@@ -165,7 +162,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
+    public Response addIpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
         writeLock();
         
         try {
@@ -193,7 +190,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(getRedirectUri(m_uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
+            return Response.seeOther(getRedirectUri(uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
         }
@@ -210,7 +207,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
-    public Response updateIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateIpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -239,7 +236,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             LOG.debug("updateIpInterface: ip interface {} updated", ipInterface);
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

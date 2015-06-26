@@ -31,6 +31,7 @@ package org.opennms.web.api;
 import java.net.InetAddress;
 import java.util.Date;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.netmgt.model.InetAddressTypeEditor;
@@ -44,14 +45,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-
 public abstract class RestUtils {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RestUtils.class);
 
 
-	public static void setBeanProperties(final Object bean, final MultivaluedMapImpl properties) {
+	public static void setBeanProperties(final Object bean, final MultivaluedMap<String,String> properties) {
 		final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
 	    wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
 	    wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());

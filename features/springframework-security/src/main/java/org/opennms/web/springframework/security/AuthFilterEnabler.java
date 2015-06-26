@@ -41,6 +41,8 @@ import javax.servlet.ServletResponse;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.FilterManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -48,6 +50,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class AuthFilterEnabler implements Filter {
     
+    private final static Logger LOG = LoggerFactory.getLogger(AuthFilterEnabler.class);
+
     private FilterManager m_filterManager;
     
     private GroupDao m_groupDao;
@@ -83,12 +87,13 @@ public class AuthFilterEnabler implements Filter {
             String[] groupNames;
             if (shouldFilter) {
                 String user = SecurityContextHolder.getContext().getAuthentication().getName();
-
+                LOG.debug("Applying ACL filter for user: {}", user);
                 List<Group> groups = m_groupDao.findGroupsForUser(user);
                 groupNames  = new String[groups.size()];
                 for(int i = 0; i < groups.size(); i++) {
                     groupNames[i] = groups.get(i).getName();
                 }
+                LOG.debug("Found groups for user {}: {}", user, Arrays.toString(groupNames));
 
                 if(SecurityContextHolder.getContext().getAuthentication().getDetails() instanceof OnmsAuthenticationDetails){
                     OnmsAuthenticationDetails details = (OnmsAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -103,6 +108,8 @@ public class AuthFilterEnabler implements Filter {
                     }
                 }
 
+                // Log the group names again, since they may have been changed in the statement above
+                LOG.debug("Enabling authorization filter for user {} with groups: {}", user, Arrays.toString(groupNames));
                 m_filterManager.enableAuthorizationFilter(groupNames);
             }
             chain.doFilter(request, response);
@@ -113,8 +120,6 @@ public class AuthFilterEnabler implements Filter {
             }
 
         }
-
-        
     }
 
     @Override

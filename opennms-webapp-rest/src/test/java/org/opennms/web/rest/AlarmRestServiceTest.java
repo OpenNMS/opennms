@@ -30,7 +30,6 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathDoesNotMatch;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
@@ -65,8 +64,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -78,23 +75,23 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    @Autowired
-    TransactionTemplate m_template;
 
+    @Autowired
+    private TransactionTemplate m_template;
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_template.execute(new TransactionCallbackWithoutResult() {
 
             @Override

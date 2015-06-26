@@ -402,7 +402,7 @@ public class DataManager implements AvailabilityService, InitializingBean {
     }
 
     /**
-     * Handles a node lost service event. Add a lost service entry to the right
+     * Handles a node outage created event. Add a lost service entry to the right
      * node
      *
      * @param nodeid
@@ -414,12 +414,12 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was lost
      */
-    public synchronized void nodeLostService(int nodeid, InetAddress ip, String svcName, long t) {
+    public synchronized void outageCreated(int nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            LOG.info("Received a nodeLostService event for an unknown/irrelevant node: {}", key.toString());
+            LOG.info("Received a outageCreated event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 
@@ -429,67 +429,8 @@ public class DataManager implements AvailabilityService, InitializingBean {
     }
 
     /**
-     * Add a lost service entry to the right nodes.
-     *
-     * @param nodeid
-     *            the node id
-     * @param ip
-     *            the IP address
-     * @param t
-     *            the time at which service was lost
-     */
-    public synchronized void interfaceDown(int nodeid, InetAddress ip, long t) {
-        for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
-            rtcN.nodeLostService(t);
-        }
-    }
-
-    /**
-     * Add a lost service entry to the right nodes.
-     *
-     * @param nodeid
-     *            the node id
-     * @param t
-     *            the time at which service was lost
-     */
-    public synchronized void nodeDown(int nodeid, long t) {
-    	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
-            rtcN.nodeLostService(t);
-        }
-    }
-
-    /**
-     * Add a regained service entry to the right nodes.
-     *
-     * @param nodeid
-     *            the node id
-     * @param t
-     *            the time at which service was regained
-     */
-    public synchronized void nodeUp(int nodeid, long t) {
-    	for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid)) {
-            rtcN.nodeRegainedService(t);
-        }
-    }
-
-    /**
-     * Add a regained service entry to the right nodes.
-     *
-     * @param nodeid
-     *            the node id
-     * @param ip
-     *            the IP address
-     * @param t
-     *            the time at which service was regained
-     */
-    public synchronized void interfaceUp(int nodeid, InetAddress ip, long t) {
-        for (RTCNode rtcN : (List<RTCNode>) m_map.getRTCNodes(nodeid, ip)) {
-            rtcN.nodeRegainedService(t);
-        }
-    }
-
-    /**
-     * Add a regained service entry to the right node.
+     * Handles a node outage resolved event. Add a regained service entry to the right 
+     * node.
      *
      * @param nodeid
      *            the node id
@@ -500,12 +441,12 @@ public class DataManager implements AvailabilityService, InitializingBean {
      * @param t
      *            the time at which service was regained
      */
-    public synchronized void nodeRegainedService(int nodeid, InetAddress ip, String svcName, long t) {
+    public synchronized void outageResolved(int nodeid, InetAddress ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
         RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
-            LOG.info("Received a nodeRegainedService event for an unknown/irrelevant node: {}", key.toString());
+            LOG.info("Received a outageResolved event for an unknown/irrelevant node: {}", key.toString());
             return;
         }
 

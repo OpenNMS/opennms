@@ -89,7 +89,6 @@ public class InvalidRequisitionDataTest extends ProvisioningTestCase implements 
     private ResourceLoader m_resourceLoader;
     
     @Autowired
-    @Qualifier("mock")
     private MockEventIpcManager m_eventManager;
 
     @Autowired

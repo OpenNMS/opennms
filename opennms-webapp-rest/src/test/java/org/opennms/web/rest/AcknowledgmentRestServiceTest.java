@@ -50,8 +50,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -63,7 +61,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
@@ -71,17 +69,17 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 public class AcknowledgmentRestServiceTest extends AbstractSpringJerseyRestTestCase {
 	@Autowired
-	TransactionTemplate m_template;
+	private TransactionTemplate m_template;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
 
 	@Override
 	protected void afterServletStart() {
-		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		final DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
 		m_template.execute(new TransactionCallbackWithoutResult() {
-
 			@Override
 			protected void doInTransactionWithoutResult(TransactionStatus status) {
-				dbp.populateDatabase();
+				m_databasePopulator.populateDatabase();
 			}
 		});
 	}

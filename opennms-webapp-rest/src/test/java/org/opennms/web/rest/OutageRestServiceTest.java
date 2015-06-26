@@ -1,5 +1,10 @@
 package org.opennms.web.rest;
 
+import java.util.Date;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,9 +27,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.ws.rs.core.MediaType;
-import java.util.Date;
-
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -36,7 +38,7 @@ import java.util.Date;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventProxy.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
 })
@@ -49,6 +51,9 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private DatabasePopulator populator;
+
+    @Autowired
+    private ServletContext m_context;
 
     @Before
     @Override
@@ -119,7 +124,7 @@ public class OutageRestServiceTest extends AbstractSpringJerseyRestTestCase {
     public void testGetAllOutages() throws Exception {
         String xml = sendRequest(GET, "/outages", 200);
 
-        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, "/outages");
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(jsonRequest, 200);
 
