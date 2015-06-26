@@ -110,8 +110,10 @@ public class ForwardingEventListener implements EventListener {
 	 */
 	@Override
 	public void onEvent(final Event event) {
-		// Send the event to the event forwarder
-		eventForwarder.sendNow(event);
+		if(event.getDbid()!=null) {
+			// Send the event to the event forwarder
+			eventForwarder.sendNow(event);
+		}
 	}
 
 	@Override
