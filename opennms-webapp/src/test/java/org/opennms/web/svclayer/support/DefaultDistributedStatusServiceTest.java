@@ -839,8 +839,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
 
     private void expectResourceDaoCall(OnmsLocationMonitor monitor, Collection<OnmsMonitoredService> services) {
-        PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
-        PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0]);
+        final String graphColors = "27AAE1,8DC63F,EF343B,FFB238,8F5AA8,A5A9AA,227BB6,4D9C2D,B42A24,DEA02D,6A3D97,8C8F92,1A5D89,3B7622,891E13,896B1A,380C5B,4B4C4C,000000,FFFFFF";
+        PrefabGraph httpGraph = new PrefabGraph("http", "title", new String[] { "http" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0], graphColors);
+        PrefabGraph httpsGraph = new PrefabGraph("https", "title", new String[] { "https" }, "command", new String[0], new String[0], 0, new String[] { "distributedStatus" }, null, null, null, new String[0], graphColors);
         
         for (OnmsMonitoredService service : services) {
             OnmsResource resource = new OnmsResource("foo", "even more foo", new MockResourceType(), new HashSet<OnmsAttribute>(0), ResourcePath.get("foo"));

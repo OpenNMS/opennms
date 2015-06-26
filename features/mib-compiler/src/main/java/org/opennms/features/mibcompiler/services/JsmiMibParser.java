@@ -280,6 +280,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         final String color = System.getProperty("org.opennms.snmp.mib-compiler.default-graph-template.color", "#00ccff");
+        final String graphColors = "27AAE1,8DC63F,EF343B,FFB238,8F5AA8,A5A9AA,227BB6,4D9C2D,B42A24,DEA02D,6A3D97,8C8F92,1A5D89,3B7622,891E13,896B1A,380C5B,4B4C4C,000000,FFFFFF";
         List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
@@ -307,7 +308,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     sb.append(" GPRINT:var:MIN:\"Min\\\\: %8.2lf %s\" \\\n");
                     sb.append(" GPRINT:var:MAX:\"Max\\\\: %8.2lf %s\\\\n\"");
                     sb.append("\n\n");
-                    PrefabGraph graph = new PrefabGraph(name, title, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0]);
+                    PrefabGraph graph = new PrefabGraph(name, title, new String[] { alias }, sb.toString(), new String[0], new String[0], order++, new String[] { resourceType }, descr, null, null, new String[0], graphColors);
                     graphs.add(graph);
                 }
             }

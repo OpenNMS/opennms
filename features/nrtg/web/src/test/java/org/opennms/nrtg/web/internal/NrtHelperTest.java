@@ -50,10 +50,11 @@ public class NrtHelperTest {
     @Test
     public void testStringProperties () {
         String rawString = "--title='Current TCP Connections' --vertical-label='Current Connections ({ifSpeed})' DEF:currEstab={rrd1}:tcpCurrEstab:AVERAGE DEF:minCurrEstab={rrd1}:tcpCurrEstab:MIN DEF:maxCurrEstab={rrd1}:tcpCurrEstab:MAX LINE2:currEstab#00ff00:'Current ' GPRINT:currEstab:AVERAGE:'Avg  \n: %8.2lf %s' GPRINT:currEstab:MIN:'Min  \n: %8.2lf %s' GPRINT:currEstab:MAX:'Max  \n: %8.2lf %s\n'";
+        final String graphColors = "27AAE1,8DC63F,EF343B,FFB238,8F5AA8,A5A9AA,227BB6,4D9C2D,B42A24,DEA02D,6A3D97,8C8F92,1A5D89,3B7622,891E13,896B1A,380C5B,4B4C4C,000000,FFFFFF";
         final Map<String,String> properties = new HashMap<String,String>();
         properties.put("ifSpeed", "monkey");
 
-        final PrefabGraph prefabGraph = new PrefabGraph("foo", "bar", new String[]{}, rawString, new String[]{}, new String[]{}, 0, null, null, null, null, new String[]{});
+        final PrefabGraph prefabGraph = new PrefabGraph("foo", "bar", new String[]{}, rawString, new String[]{}, new String[]{}, 0, null, null, null, null, new String[]{}, graphColors);
         final String graphString = nrtHelper.cleanUpRrdGraphStringForWebUi(prefabGraph, m_emptyMap, properties);
         assertTrue(graphString.contains("(monkey)"));
     }
