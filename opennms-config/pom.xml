@@ -28,6 +28,7 @@
         <version>2.16</version>
         <configuration>
           <skipITs>${skipITs}</skipITs>
+          <reuseForks>false</reuseForks> <!-- blame PollerConfigFactoryIT -->
         </configuration>
         <executions>
           <execution>
