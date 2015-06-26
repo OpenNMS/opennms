@@ -74,6 +74,7 @@
         <version>2.16</version>
         <configuration>
           <skipITs>${skipITs}</skipITs>
+          <reuseForks>false</reuseForks>
         </configuration>
         <executions>
           <execution>
