@@ -98,13 +98,6 @@ public class ForwardingEventListener implements EventListener {
 
 		installMessageSelectors();
 
-		try {
-			Class.forName("org.apache.lucene.store.IndexInput");
-			LOG.debug("org.apache.lucene.store.IndexInput loaded");
-		} catch (Exception e) {
-			LOG.warn("org.apache.lucene.store.IndexInput cannot be loaded");
-		}
-
 		LOG.info("Elasticsearch event forwarder initialized");
 	}
 
@@ -124,7 +117,6 @@ public class ForwardingEventListener implements EventListener {
 	@Override
 	public void onEvent(final Event event) {
 		// Send the event to the event forwarder
-		LOG.debug("Forwarding Event UEI=%s", event.getUei());
 		eventForwarder.sendNow(event);
 	}
 
