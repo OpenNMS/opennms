@@ -70,7 +70,9 @@ public class ESHeaders {
                             @Override
                             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                                 OnmsNode node = nodeDao.get(event.getNodeid().toString());
-                                populateBodyWithNodeInfo(body,node);
+                                if(node!=null) {
+                                    populateBodyWithNodeInfo(body, node);
+                                }
                             }
                         });
                     } catch(Exception e) {
