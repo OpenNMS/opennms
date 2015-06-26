@@ -29,6 +29,7 @@
 package org.opennms.upgrade.implementations;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,8 +45,6 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.implementations.monitoringLocations16.LocationDef;
 import org.opennms.upgrade.implementations.monitoringLocations16.MonitoringLocationsConfiguration;
 import org.opennms.upgrade.implementations.monitoringLocations16.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Migrate the content from monitoring-locations.xml into the monitoringlocations tables
@@ -54,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * @author Seth 
  */
 public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationsMigratorOffline.class);
 
     private MonitoringLocationsConfiguration monitoringLocationsConfig;
 
@@ -69,9 +66,16 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
         try {
             // Parse the existing config file
             configFile = ConfigFileConstants.getConfigFileByName("monitoring-locations.xml");
-            monitoringLocationsConfig = JaxbUtils.unmarshal(MonitoringLocationsConfiguration.class, configFile);
+            if (configFile.exists() && configFile.isFile()) {
+                monitoringLocationsConfig = JaxbUtils.unmarshal(MonitoringLocationsConfiguration.class, configFile);
+            } else {
+                monitoringLocationsConfig = null;
+            }
+        } catch (FileNotFoundException e) {
+            log("No monitoring-locations.xml file found, skipping migration to database\n");
+            monitoringLocationsConfig = null;
         } catch (IOException e) {
-            throw new OnmsUpgradeException("Can't find Services Configuration file", e);
+            throw new OnmsUpgradeException("Unexpected exception while reading monitoring-locations.xml", e);
         }
     }
 
@@ -92,6 +96,8 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (monitoringLocationsConfig == null) return;
+
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
@@ -102,15 +108,19 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
-        if (zip.exists()) {
-            log("Removing backup %s\n", zip);
-            FileUtils.deleteQuietly(zip);
+        if (monitoringLocationsConfig == null) return;
+
+        // Delete the original config file so that it doesn't get remigrated later
+        if (configFile.exists()) {
+            log("Removing original config file %s\n", configFile);
+            FileUtils.deleteQuietly(configFile);
         }
     }
 
     @Override
     public void rollback() throws OnmsUpgradeException {
+        if (monitoringLocationsConfig == null) return;
+
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -119,6 +129,9 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (monitoringLocationsConfig == null) return;
+
+        log("Moving monitoring locations into the database...\n");
         long count = 0;
         try {
             Connection connection = null;
@@ -193,6 +206,6 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
         } catch (Throwable e) {
             throw new OnmsUpgradeException("Can't fix services configuration because " + e.getMessage(), e);
         }
-        LOG.info("Moved {} monitoring locations into the database", count);
+        log("Moved %d monitoring locations into the database\n", count);
     }
 }

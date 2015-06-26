@@ -29,6 +29,8 @@
 package org.opennms.upgrade.implementations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.sql.Connection;
@@ -81,7 +83,13 @@ public class MonitoringLocationsMigratorOfflineTest {
     @Test
     public void testMigrateLargeConfigToDatabase() throws Exception {
         MonitoringLocationsMigratorOffline migrator = new MonitoringLocationsMigratorOffline();
+        migrator.preExecute();
         migrator.execute();
+        migrator.postExecute();
+
+        assertFalse(new File("target/home/etc/monitoring-locations.xml").exists());
+        assertTrue(new File("target/home/etc/monitoring-locations.xml.zip").exists());
+        assertTrue(new File("target/home/etc/monitoring-locations.xml.zip").isFile());
 
         Connection connection = null;
         final DBUtils dbUtils = new DBUtils(getClass());
@@ -121,5 +129,17 @@ public class MonitoringLocationsMigratorOfflineTest {
         } finally {
             dbUtils.cleanUp();
         }
+    }
+
+    /**
+     * Test fixing the configuration file.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMissingConfigFile() throws Exception {
+        FileUtils.deleteQuietly(new File("target/home/etc/monitoring-locations.xml"));
+        MonitoringLocationsMigratorOffline migrator = new MonitoringLocationsMigratorOffline();
+        migrator.execute();
     }
 }
