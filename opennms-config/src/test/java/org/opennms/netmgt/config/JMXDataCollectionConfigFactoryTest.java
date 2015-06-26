@@ -8,15 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/*
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
-        "classpath:/emptyContext.xml"
-})
-@TestExecutionListeners({
-    OpenNMSConfigurationExecutionListener.class
-})
-*/
 public class JMXDataCollectionConfigFactoryTest {
     @Before
     public void setUp() {
