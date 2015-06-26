@@ -28,16 +28,19 @@
 
 package org.opennms.web.rest.support;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.ext.search.PrimitiveStatement;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchUtils;
 import org.apache.cxf.jaxrs.ext.search.visitor.AbstractSearchConditionVisitor;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.web.rest2.NodeRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,30 +135,43 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 				}
 			}
 		} else {
-			//boolean first = true;
+			List<Restriction> subRestrictions = new ArrayList<Restriction>();
 			for (SearchCondition<T> condition : sc.getSearchConditions()) {
-				Restriction current = Restrictions.all(m_criteriaBuilder.toCriteria().getRestrictions());
-
-				// visit the children
 				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(new CriteriaBuilder(m_class), m_class);
+
+				// Visit the children
 				condition.accept(newVisitor);
-				Restriction additional = Restrictions.all(newVisitor.getQuery().toCriteria().getRestrictions());
 
-				// Make a new CriteriaBuilder that will be the sum of the two sides of the search condition
-				m_criteriaBuilder = new CriteriaBuilder(m_class);
-
-				switch(sc.getConditionType()) {
-				case OR:
-					LOG.info("OR criteria: {} OR {}", current, additional);
-					// .or() with current Criteria
-					m_criteriaBuilder.or(current, additional);
-				case AND:
-					LOG.info("AND criteria: {} AND {}", current, additional);
-					// .and() with current Criteria
-					m_criteriaBuilder.and(current, additional);
-				default:
-					// TODO: What do we do here?
+				// Fetch the rendered restrictions
+				Collection<Restriction> restrictions = newVisitor.getQuery().toCriteria().getRestrictions();
+				// If there are restrictions...
+				if (restrictions != null && restrictions.size() > 0) {
+					final Restriction subRestriction;
+					// If there are multiple restrictions...
+					if (restrictions.size() > 1) {
+						// Wrap them in an AND restriction
+						subRestriction = Restrictions.all(restrictions);
+					} else {
+						subRestriction = restrictions.iterator().next();
+					}
+					LOG.info(subRestriction.toString());
+					subRestrictions.add(subRestriction);
 				}
+			}
+
+			switch(sc.getConditionType()) {
+			case OR:
+				LOG.info("OR criteria");
+				// .or() with current Criteria
+				m_criteriaBuilder.or(subRestrictions.toArray(new Restriction[0]));
+				break;
+			case AND:
+				LOG.info("AND criteria");
+				// .and() with current Criteria
+				m_criteriaBuilder.and(subRestrictions.toArray(new Restriction[0]));
+				break;
+			default:
+				// TODO: What do we do here?
 			}
 		}
 	}
