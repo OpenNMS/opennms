@@ -193,9 +193,9 @@ public class PollerConfigFactoryIT extends TestCase {
         
         TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
         Package p = newFactory.getPackage("TestPkg");
-        assertNotNull(p);
-        assertTrue(newFactory.isInterfaceInPackage("192.169.1.5", p));
-        assertFalse(newFactory.isInterfaceInPackage("192.168.1.5", p));
+        assertNotNull("package for 'TestPkg'", p);
+        assertTrue("Expected 192.169.1.5 to be in the package", newFactory.isInterfaceInPackage("192.169.1.5", p));
+        assertFalse("Expected 192.168.1.5 to *not* be in the package", newFactory.isInterfaceInPackage("192.168.1.5", p));
         
     }
     
