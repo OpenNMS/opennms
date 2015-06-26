@@ -21,7 +21,9 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="elasticsearchUri" value="opennms?operation=INDEX&amp;indexType=events&amp;ip=127.0.0.1"/>
+      <cm:property name="elasticsearchCluster" value="opennms"/>
+      <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+      <cm:property name="logEventDescription" value="false"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -34,24 +36,24 @@
   </bean>
 
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
-
-  <bean id="foreignSourceForeignIdHeaderProcessor" class="org.opennms.features.elasticsearch.eventforwarder.ForeignSourceForeignIdHeaderProcessor">
-    <property name="nodeDao" ref="nodeDao"/>
-  </bean>
-
-  <!-- Camel marshalling processor -->
-  <!--<bean id="marshaller" class="org.opennms.features.elasticsearch.eventforwarder.JaxbUtilsMarshalProcessor"/>-->
+  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
     <argument value="seda:elasticsearchForwardEvent"/>
   </bean>
 
-  <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders"/>
+  <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders">
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="transactionOperations" ref="transactionOperations"/>
+    <property name="logEventDescription" value="${logEventDescription}"/>
+  </bean>
 
   <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
     <argument value="yyyy.MM"/>
   </bean>
+
+  <bean id="elmapping" class="org.opennms.features.elasticsearch.eventforwarder.internal.ElMappingLoader"/>
 
   <camelContext autoStartup="true" id="elasticsearchEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
     <!--<propertyPlaceholder id="properties" location="blueprint:esEventForwarderProperties"/>-->
@@ -59,12 +61,26 @@
       <propertiesFunction ref="indexNameFunction"/>
     </propertyPlaceholder>
 
-    <route id="forwardEventToElasticsearch">
+    <route id="elastisearchTemplateMapping" autoStartup="true" startupOrder="1">
+        <from uri="timer://runOnce?repeatCount=1&amp;delay=0"/>
+        <setHeader headerName="CamelHttpMethod">
+          <constant>PUT</constant>
+        </setHeader>
+        <setHeader headerName="CamelContentType">
+          <constant>application/x-www-form-urlencoded</constant>
+        </setHeader>
+        <bean ref="elmapping" method="process"/>
+        <to uri="http:{{elasticsearchIp}}:9200/_template/{{elasticsearchCluster}}"/>
+        <log message="${body}"/>
+    </route>
+
+    <route id="forwardEventToElasticsearch" autoStartup="true" startupOrder="2">
       <from uri="seda:elasticsearchForwardEvent"/>
       <bean ref="elasticsearchHeaders" method="process"/>
+      <!-- Log -->
       <log message="elasticsearch-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
       <!-- Send to ES -->
-      <to uri="elasticsearch://{{elasticsearchUri}}&amp;indexName={{index:opennms}}"/>
+      <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>
     </route>
   </camelContext>
 
