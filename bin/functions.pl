@@ -27,7 +27,6 @@ use vars qw(
 	$PATHSEP
 	$PREFIX
 	$SKIP_OPENJDK
-	$INTEGRATIONTESTS
 	$TESTS
 	$VERBOSE
 	@ARGS
@@ -91,8 +90,7 @@ if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
-	"enable-tests|tests|test|t" => \$TESTS,	# no-op
-	"enable-it"                 => \$INTEGRATIONTESTS,
+	"enable-tests|tests|test|t" => \$TESTS,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
 	"profile|p=s"               => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
@@ -120,7 +118,7 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
-	-t/--enable-tests      enable tests when building
+	-t/--enable-tests      enable integration tests when building
 	-l/--log-level         log level (error/warning/info/debug)
 END
 	exit 1;
@@ -181,17 +179,11 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
-# This might not be needed anymore
-#if (defined $TESTS) {
-#	debug("tests are enabled");
-#	unshift(@ARGS, '-DfailIfNoTests=false');
-#}
-
-if (defined $INTEGRATIONTESTS) {
+unshift(@ARGS, '-DfailIfNoTests=false');
+if (defined $TESTS) {
 	debug("integration tests are enabled");
 	unshift(@ARGS, '-DskipITs=false');
 }
-
 unshift(@ARGS, '-Djava.awt.headless=true');
 
 if (not grep { $_ =~ /^-Dmaven.metadata.legacy/ } @ARGS) {
