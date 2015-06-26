@@ -33,8 +33,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.matches;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -63,15 +61,10 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.FileAnticipator;
-
 
 public class SnmpAttributeTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private IpInterfaceDao m_ipInterfaceDao = m_mocks.createMock(IpInterfaceDao.class);
-
-    private FileAnticipator m_fileAnticipator = null;
-    private File m_snmpDirectory = null;
 
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
@@ -81,8 +74,6 @@ public class SnmpAttributeTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        m_fileAnticipator = new FileAnticipator();
     }
 
     @Override
@@ -90,14 +81,6 @@ public class SnmpAttributeTest extends TestCase {
         super.runTest();
 
         m_mocks.verifyAll();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
-        m_fileAnticipator.deleteExpected();
-        m_fileAnticipator.tearDown();
     }
 
     public void testNumericAttributeFloatValueInString() throws Exception {
@@ -172,7 +155,7 @@ public class SnmpAttributeTest extends TestCase {
         attributeType.storeResult(new SnmpCollectionSet(agent, snmpCollection), null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), snmpValue));
         
 
-        RrdRepository repository = createRrdRepository();
+        RrdRepository repository = new RrdRepository();
         repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
         final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository, m_rrdStrategy);
@@ -209,21 +192,4 @@ public class SnmpAttributeTest extends TestCase {
     private <T> List<T> isAList(Class<T> clazz) {
         return isA(List.class);
     }
-
-    private RrdRepository createRrdRepository() throws IOException {
-        RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(getSnmpRrdDirectory());
-        repository.setHeartBeat(600);
-        repository.setStep(300);
-        repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
-        return repository;
-    }
-
-    private File getSnmpRrdDirectory() throws IOException {
-        if (m_snmpDirectory == null) {
-            m_snmpDirectory = m_fileAnticipator.tempDir("snmp"); 
-        }
-        return m_snmpDirectory;
-    }
-
 }

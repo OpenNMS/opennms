@@ -41,6 +41,8 @@ import javax.servlet.ServletException;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.resource.Vault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS
@@ -50,12 +52,8 @@ import org.opennms.core.resource.Vault;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public abstract class ServletInitializer {
-    /**
-     * Private, empty constructor so that this class cannot be instantiated
-     * outside of itself.
-     */
-    private ServletInitializer() {
-    }
+
+    private static final Logger LOG = LoggerFactory.getLogger(ServletInitializer.class);
 
     /**
      * Initialize servlet and JSP configuration on the first invocation of this

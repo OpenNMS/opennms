@@ -44,7 +44,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeLevelDataTest extends XmlCollectorITCase {
+public class NodeLevelDataTest extends AbstractXmlCollectorTest {
 
     /**
      * The Class CountVisitor.
