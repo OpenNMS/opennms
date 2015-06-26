@@ -78,7 +78,7 @@
       <from uri="seda:elasticsearchForwardEvent"/>
       <bean ref="elasticsearchHeaders" method="process"/>
       <!-- Log -->
-      <log message="elasticsearch-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
+      <!--<log message="elasticsearch-blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>-->
       <!-- Send to ES -->
       <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>
     </route>

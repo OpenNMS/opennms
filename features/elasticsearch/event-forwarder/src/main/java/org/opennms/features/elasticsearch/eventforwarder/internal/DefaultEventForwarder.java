@@ -27,7 +27,9 @@ public class DefaultEventForwarder extends DefaultDispatcher implements EventFor
 	 */
 	@Override
 	public void sendNow(Event event) {
-		LOG.debug("forwarding event"+event);
+		if(LOG.isTraceEnabled()) {
+			LOG.trace("forwarding event " + event);
+		}
 		m_proxy.sendNow(event);
 	}
 

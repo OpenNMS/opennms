@@ -8,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * The apply method is called on each message to determine in which index it should end up into.
+ *
+ * http://unicolet.blogspot.com/2015/01/camel-elasticsearch-create-timestamped.html
+ *
  * Created:
  * User: unicoletti
  * Date: 11:12 AM 6/24/15
