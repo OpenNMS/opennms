@@ -30,6 +30,8 @@ package org.opennms.netmgt.ncs.rest;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -51,7 +53,6 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
-import org.opennms.web.rest.OnmsRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,7 @@ import org.springframework.util.Assert;
 @Component("ncsRestService")
 @Path("NCS")
 @Transactional
-public class NCSRestService extends OnmsRestService {
+public class NCSRestService {
     private static final Logger LOG = LoggerFactory.getLogger(NCSRestService.class);
 
     @Autowired
@@ -193,6 +194,35 @@ public class NCSRestService extends OnmsRestService {
             return Response.ok().build();
         } finally {
             writeUnlock();
+        }
+    }
+
+    private final ReentrantReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+
+    protected void readLock() {
+        m_readLock.lock();
+    }
+
+    protected void readUnlock() {
+        if (m_globalLock.getReadHoldCount() > 0) {
+            m_readLock.unlock();
+        }
+    }
+
+    protected void writeLock() {
+        if (m_globalLock.getWriteHoldCount() == 0) {
+            while (m_globalLock.getReadHoldCount() > 0) {
+                m_readLock.unlock();
+            }
+            m_writeLock.lock();
+        }
+    }
+
+    protected void writeUnlock() {
+        if (m_globalLock.getWriteHoldCount() > 0) {
+            m_writeLock.unlock();
         }
     }
 
