@@ -47,7 +47,7 @@ import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeLevelDataWithRrdtoolTest extends AbstractXmlCollectorTest {
+public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()

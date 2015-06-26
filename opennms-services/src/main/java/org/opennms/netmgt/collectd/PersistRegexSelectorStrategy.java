@@ -94,7 +94,7 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
                 Expression exp = parser.parseExpression(param.getValue());
                 boolean shouldPersist = false;
                 try {
-                    shouldPersist = exp.getValue(visitor.getEvaluationContext(), Boolean.class);
+                    shouldPersist = (Boolean)exp.getValue(visitor.getEvaluationContext(), Boolean.class);
                 } catch (Exception e) {
                     LOG.warn("shouldPersist: can't evaluate expression {} for resource {} because: {}", param.getValue(), resource, e.getMessage());
                 }

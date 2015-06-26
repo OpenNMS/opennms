@@ -37,7 +37,6 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.xmlgraphics.util.ClasspathResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
