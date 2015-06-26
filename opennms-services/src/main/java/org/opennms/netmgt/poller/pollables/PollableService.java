@@ -55,6 +55,8 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     
     private static final Logger LOG = LoggerFactory.getLogger(PollableService.class);
 
+    private static final String ENABLE_POLLSTATUS_SYSTEM_PROPERTY = "opennms.poller.enablePollStatusEvent";
+
     private final class PollRunner implements Runnable {
     	
     	private volatile PollStatus m_pollStatus;
@@ -310,7 +312,9 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /** {@inheritDoc} */
     @Override
     public void processStatusChange(Date date) {
-        getContext().sendEvent(createPollStatusEvent(new Date()));
+        if (Boolean.getBoolean(ENABLE_POLLSTATUS_SYSTEM_PROPERTY)) {
+            getContext().sendEvent(createPollStatusEvent(new Date()));
+        }
         
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus().equals(PollStatus.unresponsive())) {
