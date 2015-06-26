@@ -6,7 +6,6 @@
   <version>17.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
-    <seleniumVersion>2.45.0</seleniumVersion>
     <skipITs>true</skipITs>
   </properties>
   <build>

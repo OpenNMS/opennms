@@ -42,8 +42,8 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserTest extends OpenNMSSeleniumTestCase {
-    private static final Logger LOG = LoggerFactory.getLogger(UserTest.class);
+public class UserIT extends OpenNMSSeleniumTestCase {
+    private static final Logger LOG = LoggerFactory.getLogger(UserIT.class);
 
     @Before
     public void setUp() throws Exception {

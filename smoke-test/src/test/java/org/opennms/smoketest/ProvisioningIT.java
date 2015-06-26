@@ -29,7 +29,6 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.concurrent.TimeUnit;
 
@@ -44,9 +43,9 @@ import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProvisioningTest extends OpenNMSSeleniumTestCase {
+public class ProvisioningIT extends OpenNMSSeleniumTestCase {
     private static final String NODE_LABEL = "localNode";
-    private static final Logger LOG = LoggerFactory.getLogger(ProvisioningTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProvisioningIT.class);
 
     @Before
     public void setUp() throws Exception {

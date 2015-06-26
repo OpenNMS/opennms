@@ -30,17 +30,12 @@ package org.opennms.smoketest;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This test is used to make sure that the opennms-remoting webapp is properly
  * initialized and that the JNLP files are installed properly.
  */
-public class RemotingPageTest extends OpenNMSSeleniumTestCase {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RemotingPageTest.class);
-
+public class RemotingPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
         remotingPage();
