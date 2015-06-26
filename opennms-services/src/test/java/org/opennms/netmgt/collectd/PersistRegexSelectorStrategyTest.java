@@ -155,7 +155,7 @@ public class PersistRegexSelectorStrategyTest {
         Expression exp = parser.parseExpression("#name matches '^Alejandro.*'");
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariable("name", "Alejandro Galue");
-        boolean result = exp.getValue(context, Boolean.class);
+        boolean result = (Boolean)exp.getValue(context, Boolean.class);
         Assert.assertTrue(result);
     }
 }
