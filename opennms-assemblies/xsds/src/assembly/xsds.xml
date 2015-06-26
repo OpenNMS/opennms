@@ -38,6 +38,7 @@
         <include>org.opennms:opennms-provision-persistence:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-reporting:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-webapp:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-alarm-northbounder-jms:jar:xsds:${project.version}</include>
 
         <include>org.opennms.protocols:org.opennms.protocols.dhcp:jar:xsds:${project.version}</include>
         <include>org.opennms.protocols:org.opennms.protocols.nsclient:jar:xsds:${project.version}</include>
