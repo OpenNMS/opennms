@@ -8,29 +8,6 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rancid-provisioning-adapter</artifactId>
   <name>OpenNMS Integrations RANCID Provisioning Interface</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.16</version>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
