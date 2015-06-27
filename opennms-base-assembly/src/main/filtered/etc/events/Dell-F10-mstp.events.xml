@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.6027.3.7.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/traps/Dell/Force10/camUsageThresholdExceed</uei>
+    <event-label>FORCE10-SYSTEM-COMPONENT-MIB defined trap event: camUsageThresholdExceed</event-label>
+    <descr>
+      <p>The agent generate this trap when the
+cam usage for a partition is exceeded.</p>
+      <table>
+        <tr>
+          <td>
+            <b>
+sysCompAlarmLevel</b>
+          </td>
+          <td>
+%parm1%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompAlarmVarString</b>
+          </td>
+          <td>
+%parm2%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompSlotId</b>
+          </td>
+          <td>
+%parm3%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompPortPipe</b>
+          </td>
+          <td>
+%parm4%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompCamPartId</b>
+          </td>
+          <td>
+%parm5%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+      </table>
+    </descr>
+    <logmsg dest="logndisplay">
+      <p>
+camUsageThresholdExceed trap received
+sysCompAlarmLevel=%parm1%
+sysCompAlarmVarString=%parm2%
+sysCompSlotId=%parm3%
+sysCompPortPipe=%parm4%
+sysCompCamPartId=%parm5%</p>
+    </logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>id</mename>
+        <mevalue>.1.3.6.1.4.1.6027.3.7.1.2</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>2</mevalue>
+      </maskelement>
+    </mask>
+    <uei>uei.opennms.org/traps/Dell/Force10/camIsFull</uei>
+    <event-label>FORCE10-SYSTEM-COMPONENT-MIB defined trap event: camIsFull</event-label>
+    <descr>
+      <p>The agent generate this trap when the
+cam is fully used.</p>
+      <table>
+        <tr>
+          <td>
+            <b>
+sysCompAlarmLevel</b>
+          </td>
+          <td>
+%parm1%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompAlarmVarString</b>
+          </td>
+          <td>
+%parm2%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompSlotId</b>
+          </td>
+          <td>
+%parm3%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompPortPipe</b>
+          </td>
+          <td>
+%parm4%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>
+sysCompCamPartId</b>
+          </td>
+          <td>
+%parm5%;</td>
+          <td>
+            <p/>
+          </td>
+        </tr>
+      </table>
+    </descr>
+    <logmsg dest="logndisplay">
+      <p>
+camIsFull trap received
+sysCompAlarmLevel=%parm1%
+sysCompAlarmVarString=%parm2%
+sysCompSlotId=%parm3%
+sysCompPortPipe=%parm4%
+sysCompCamPartId=%parm5%</p>
+    </logmsg>
+    <severity>Indeterminate</severity>
+  </event>
+</events>
