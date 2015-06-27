@@ -4,9 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
 import org.apache.camel.component.bean.BeanInvocation;
-import org.apache.commons.lang.StringUtils;
-import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -19,11 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * This bean is camel processor that translates the incoming OpenNMS event into a HashMap
@@ -41,9 +33,8 @@ import org.springframework.transaction.support.TransactionOperations;
 public class ESHeaders {
     Logger logger = LoggerFactory.getLogger(ESHeaders.class);
 
-    private volatile NodeDao nodeDao;
-    private volatile TransactionOperations transactionOperations;
     private boolean logEventDescription=false;
+    private GuavaCache cache;
 
     IndexNameFunction idxName = new IndexNameFunction();
 
@@ -66,9 +57,12 @@ public class ESHeaders {
 
                 if(event.getNodeid()!=null) {
                     try {
-                        body.putAll(getNodeAndCategoryInfo(event.getNodeid()));
+
+                        // will cache on first access
+                        body.putAll(cache.getEntry(event.getNodeid()));
+
                     } catch(Exception e) {
-                        logger.error("error fetching node categories: ", e);
+                        logger.error("error fetching nodeData categories: ", e);
                     }
                 }
             } else if(incoming instanceof Map) {
@@ -85,35 +79,9 @@ public class ESHeaders {
             logger.error("Cannot compute index name, failing back to default: "+e.getMessage());
             indexName = idxName.apply(remainder);
         }
-        // attention: this will probably log a LOT of lines!
-        if(body!=null) {
-            logger.trace("Computing indexName from @timestamp: "+body.get("@timestamp")+" yelds "+indexName);
-        }
+        logger.trace("Computing indexName from @timestamp: "+body.get("@timestamp")+" yelds "+indexName);
         in.setHeader(ElasticsearchConfiguration.PARAM_INDEX_NAME, indexName);
         exchange.getOut().setBody(body);
-    }
-
-    @Cacheable("nodesWithCategories")
-    public Map getNodeAndCategoryInfo(Long nodeId) {
-        logger.debug("called getNodeAndCategoryInfo("+nodeId+")");
-        final Map result=new HashMap();
-
-        // safety check
-        if(nodeId!=null) {
-
-            // wrap in a transaction so that Hibernate session is bound and getCategories works
-            transactionOperations.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                    OnmsNode node = nodeDao.get(nodeId.toString());
-                    if (node != null) {
-                        populateBodyWithNodeInfo(result, node);
-                    }
-                }
-            });
-
-        }
-        return result;
     }
 
     /**
@@ -152,25 +120,6 @@ public class ESHeaders {
         body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
     }
 
-    /**
-     * utility method to populate a Map with the most import node attributes
-     *
-     * @param body the map
-     * @param node the node object
-     */
-    private void populateBodyWithNodeInfo(Map body, OnmsNode node) {
-        body.put("nodelbl", node.getLabel());
-        body.put("nodesysname", node.getSysName());
-        body.put("nodesyslocation", node.getSysLocation());
-        body.put("foreignsource", node.getForeignSource());
-        body.put("operatingsystem", node.getOperatingSystem());
-        StringBuilder categories=new StringBuilder();
-        for (OnmsCategory cat : node.getCategories()) {
-            categories.append(cat.getName()).append(" ");
-        }
-        body.put("categories", categories.toString());
-    }
-
     // getters and setters
     public String getRemainder() {
         return remainder;
@@ -178,22 +127,6 @@ public class ESHeaders {
 
     public void setRemainder(String remainder) {
         this.remainder = remainder;
-    }
-
-    public NodeDao getNodeDao() {
-        return nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
-    public TransactionOperations getTransactionOperations() {
-        return transactionOperations;
-    }
-
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-        this.transactionOperations = transactionOperations;
     }
 
     public boolean isLogEventDescription() {
@@ -206,5 +139,13 @@ public class ESHeaders {
 
     public void setLogEventDescription(String logEventDescription) {
         this.logEventDescription = Boolean.parseBoolean(logEventDescription);
+    }
+
+    public GuavaCache getCache() {
+        return cache;
+    }
+
+    public void setCache(GuavaCache cache) {
+        this.cache = cache;
     }
 }
