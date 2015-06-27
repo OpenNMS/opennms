@@ -89,6 +89,11 @@
   <event-file>events/DellEquallogic.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
   <event-file>events/Dell-ITassist.events.xml</event-file>
+  <event-file>events/Dell-F10-bgb4-v2.events.xml</event-file>
+  <event-file>events/Dell-F10-chassis.events.xml</event-file>
+  <event-file>events/Dell-F10-copy-config.events.xml</event-file>
+  <event-file>events/Dell-F10-mstp.events.xml</event-file>
+  <event-file>events/Dell-F10-system-component.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
