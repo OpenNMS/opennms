@@ -42,6 +42,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.reporting.availability.svclayer.LegacyAvailabilityDataService;
 
@@ -58,6 +59,10 @@ public class AvailabilityCalculatorIT extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        
+        // Reset the FilterDaoFactory so we don't get screwed by having the JdbcFilterDao be connected to an older database
+        FilterDaoFactory.setInstance(null);
+        
         Locale.setDefault(Locale.US);
         m_calendar = new GregorianCalendar();
         // date for report run is 18th May 2005
