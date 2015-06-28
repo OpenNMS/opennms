@@ -21,7 +21,7 @@
 
   <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
     <sql>
-      DROP SEQUENCE IF EXISTS vulnnxtid;
+      DROP SEQUENCE IF EXISTS vulnnxtid
     </sql>
   </changeSet>
 
