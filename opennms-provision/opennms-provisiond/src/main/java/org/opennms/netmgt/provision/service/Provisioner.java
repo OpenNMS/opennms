@@ -484,7 +484,7 @@ public class Provisioner implements SpringServiceDaemon {
         
         try {
             
-            LOG.info("doImport: importing from url: {}", url);
+            LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
             
             Resource resource = new UrlResource(url);
             
@@ -500,7 +500,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         } catch (final Throwable t) {
             final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {}", url, t);
+            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
             send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting));
         }
     }
@@ -915,7 +915,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
             .getEvent();
     }
@@ -928,7 +928,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_FAILED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
             .addParam( EventConstants.PARM_FAILURE_MESSAGE, msg )
             .getEvent();
     }
@@ -937,7 +937,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
-            .addParam( EventConstants.PARM_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
             .getEvent();
     }
 
