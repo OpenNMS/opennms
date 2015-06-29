@@ -21,9 +21,11 @@
   <!-- Configuration properties -->
   <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="elasticsearchCluster" value="opennms"/>
-      <cm:property name="elasticsearchIp" value="127.0.0.1"/>
-      <cm:property name="logEventDescription" value="false"/>
+        <cm:property name="elasticsearchCluster" value="opennms"/>
+        <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+        <cm:property name="logEventDescription" value="false"/>
+        <cm:property name="cache_max_ttl" value="10"/>
+        <cm:property name="cache_max_size" value="10000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -43,9 +45,12 @@
     <argument value="seda:elasticsearchForwardEvent"/>
   </bean>
 
-    <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.GuavaCache">
+    <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.GuavaCache"
+            init-method="init">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="transactionOperations" ref="transactionOperations"/>
+        <property name="MAX_TTL" value="${cache_max_ttl}"/>
+        <property name="MAX_SIZE" value="${cache_max_size}"/>
     </bean>
 
   <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders">

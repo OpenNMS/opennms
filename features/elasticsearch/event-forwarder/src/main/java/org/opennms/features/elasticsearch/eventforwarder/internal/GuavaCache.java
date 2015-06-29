@@ -24,22 +24,27 @@ import java.util.concurrent.TimeUnit;
 public class GuavaCache {
     Logger logger = LoggerFactory.getLogger(GuavaCache.class);
 
-    private static final long MAX_SIZE = 10000;
-    private static final long MAX_TTL  = 5; // Minutes
+    private long MAX_SIZE = 10000;
+    private long MAX_TTL  = 5; // Minutes
 
     private volatile NodeDao nodeDao;
     private volatile TransactionOperations transactionOperations;
 
-    private final LoadingCache<Long, Map> cache;
+    private LoadingCache<Long, Map> cache=null;
 
-    public GuavaCache() {
-        cache = CacheBuilder.newBuilder().expireAfterWrite(MAX_TTL, TimeUnit.MINUTES).maximumSize(MAX_SIZE).build(new CacheLoader<Long, Map>() {
-                                                                          @Override
-                                                                          public Map load(Long key) throws Exception {
-                                                                              return getNodeAndCategoryInfo(key);
+    public GuavaCache() {}
+
+    public void init() {
+        if(cache==null) {
+            logger.info("initializing node data cache (TTL="+MAX_TTL+"m, MAX_SIZE="+MAX_SIZE+")...");
+            cache = CacheBuilder.newBuilder().expireAfterWrite(MAX_TTL, TimeUnit.MINUTES).maximumSize(MAX_SIZE).build(new CacheLoader<Long, Map>() {
+                                                                              @Override
+                                                                              public Map load(Long key) throws Exception {
+                                                                                  return getNodeAndCategoryInfo(key);
+                                                                              }
                                                                           }
-                                                                      }
-        );
+            );
+        }
     }
 
     public Map getEntry(Long key) {
@@ -102,5 +107,21 @@ public class GuavaCache {
 
     public void setTransactionOperations(TransactionOperations transactionOperations) {
         this.transactionOperations = transactionOperations;
+    }
+
+    public long getMAX_SIZE() {
+        return MAX_SIZE;
+    }
+
+    public void setMAX_SIZE(long MAX_SIZE) {
+        this.MAX_SIZE = MAX_SIZE;
+    }
+
+    public long getMAX_TTL() {
+        return MAX_TTL;
+    }
+
+    public void setMAX_TTL(long MAX_TTL) {
+        this.MAX_TTL = MAX_TTL;
     }
 }
