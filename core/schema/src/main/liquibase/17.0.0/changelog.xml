@@ -18,13 +18,13 @@
     </preConditions> 
     <dropTable tableName="vulnerabilities" />
   </changeSet>
-<!--
+
   <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
     <sql>
       DROP SEQUENCE IF EXISTS vulnnxtid;
     </sql>
   </changeSet>
--->
+
 
   <!-- Fix a misspelled outage index -->
   <changeSet author="seth" id="17.0.0-remove-misspelled-outage-index">
