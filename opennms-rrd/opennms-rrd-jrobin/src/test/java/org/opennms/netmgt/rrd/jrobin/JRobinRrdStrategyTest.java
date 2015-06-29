@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -70,6 +71,7 @@ public class JRobinRrdStrategyTest {
     
     @Before
     public void setUp() throws Exception {
+        Locale.setDefault(Locale.US);
         // Make sure that AWT headless mode is enabled
         System.setProperty("java.awt.headless", "true");
         
