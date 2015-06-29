@@ -106,11 +106,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public PollStatus poll() {
-        String packageName = null;
-        synchronized(this) {
-            packageName = m_pkg.getName();
-        }
         try {
+            String packageName = getPackageName();
             ServiceMonitor monitor = getServiceMonitor();
             LOG.debug("Polling {} using pkg {}", m_service, packageName);
             PollStatus result = monitor.poll(m_service, getParameters());
@@ -275,4 +272,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         return false;
     }
 
+    public synchronized String getPackageName() {
+        return m_pkg.getName();
+    }
+
+    public int getNodeId() {
+        return m_service.getNodeId();
+    }
 }

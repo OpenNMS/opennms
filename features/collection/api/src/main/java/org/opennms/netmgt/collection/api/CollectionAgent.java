@@ -70,6 +70,13 @@ public interface CollectionAgent extends NetworkInterface<InetAddress> {
     int getNodeId();
 
     /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    String getNodeLabel();
+
+    /**
      * <p>getForeignSource</p>
      * 
      * @return a {@link java.lang.String} object.

@@ -90,6 +90,11 @@ public class JMXCollectorTest {
         }
 
         @Override
+        public String getNodeLabel() {
+            return null;
+        }
+
+        @Override
         public String getForeignSource() {
             return null;
         }

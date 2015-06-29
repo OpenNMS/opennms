@@ -85,7 +85,14 @@ public interface CollectionAgentService {
      * @return a int.
      */
     public abstract int getNodeId();
-    
+
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public abstract String getNodeLabel();
+
     /**
      * <p>getIfIndex</p>
      *

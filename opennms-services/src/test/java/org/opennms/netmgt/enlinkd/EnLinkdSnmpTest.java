@@ -50,6 +50,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBaseTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dStpPortTableTracker;
@@ -67,7 +70,6 @@ import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
 import org.opennms.netmgt.enlinkd.snmp.OspfNbrTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRow;
-
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
@@ -131,6 +133,104 @@ public class EnLinkdSnmpTest extends NmsNetworkBuilder implements InitializingBe
     			InetAddress.getByName("192.168.0.5"),InetAddress.getByName("255.255.255.252")));
     	assertEquals(true, InetAddressUtils.inSameNetwork(InetAddress.getByName("10.10.0.1"),
     			InetAddress.getByName("10.168.0.5"),InetAddress.getByName("255.0.0.0")));
+    }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE)
+    })
+    public void testCdpInterfaceGetter() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
+        CdpInterfacePortNameGetter get = new CdpInterfacePortNameGetter(config);
+
+        assertEquals("FastEthernet0", get.getInterfaceNameFromCiscoCdpMib(1).toDisplayString());
+        assertEquals("FastEthernet1", get.getInterfaceNameFromCiscoCdpMib(2).toDisplayString());
+        assertEquals("FastEthernet2", get.getInterfaceNameFromCiscoCdpMib(3).toDisplayString());
+        assertEquals("FastEthernet3", get.getInterfaceNameFromCiscoCdpMib(4).toDisplayString());
+        assertEquals("FastEthernet4", get.getInterfaceNameFromCiscoCdpMib(5).toDisplayString());
+        assertEquals("Tunnel0", get.getInterfaceNameFromCiscoCdpMib(9).toDisplayString());
+        assertEquals("Tunnel3", get.getInterfaceNameFromCiscoCdpMib(10).toDisplayString());
+
+        assertEquals("FastEthernet0", get.getInterfaceNameFromMib2(1).toDisplayString());
+        assertEquals("FastEthernet1", get.getInterfaceNameFromMib2(2).toDisplayString());
+        assertEquals("FastEthernet2", get.getInterfaceNameFromMib2(3).toDisplayString());
+        assertEquals("FastEthernet3", get.getInterfaceNameFromMib2(4).toDisplayString());
+        assertEquals("FastEthernet4", get.getInterfaceNameFromMib2(5).toDisplayString());
+        assertEquals("Tunnel0", get.getInterfaceNameFromMib2(9).toDisplayString());
+        assertEquals("Tunnel3", get.getInterfaceNameFromMib2(10).toDisplayString());
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE)
+    })
+    public void testCdpGlobalGroupCollection() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
+
+        String trackerName = "cdpGlobalGroup";
+
+        final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpGlobalGroup);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals("r-ro-suce-pict-001.infra.u-ssi.net",cdpGlobalGroup.getCdpDeviceId());
+        assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = RPict001_IP, port = 161, resource = RPict001_SNMP_RESOURCE)
+    })
+    public void testCdpCacheTableCollection() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(RPict001_IP));
+
+        class CdpCacheTableTrackerTester extends CdpCacheTableTracker {
+            int count = 0;
+            public int count() {
+                return count;
+            }
+        }
+        final CdpCacheTableTrackerTester cdpCacheTableTracker = new CdpCacheTableTrackerTester() {
+
+            public void processCdpCacheRow(final CdpCacheRow row) {
+                count++;
+            }
+            
+        };
+
+        String trackerName = "cdpCacheTable";
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpCacheTableTracker);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            return;
+        }
+        
+        assertEquals(14, cdpCacheTableTracker.count());
     }
 
     
