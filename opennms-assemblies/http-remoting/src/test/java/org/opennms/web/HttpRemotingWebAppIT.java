@@ -68,7 +68,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class HttpRemotingWebAppTest extends TestCase {
+public class HttpRemotingWebAppIT extends TestCase {
 
 	@Autowired
 	private ServletContext servletContext;
