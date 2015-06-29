@@ -107,6 +107,10 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         assertTrue(xml.contains("<user><user-id>test</user-id>"));
 
         // change password and email
+        setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
+        sendPut("/users/test", "password=MONKEYS&email=test@opennms.org", 400, null); 
+
+        setUser("admin", new String[] { "ROLE_ADMIN" });
         sendPut("/users/test", "password=MONKEYS&email=test@opennms.org", 303, "/users/test"); 
 
         // validate change of password
@@ -122,7 +126,11 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
     @Test
     public void testWriteUserWithEmail() throws Exception {
-        createUser("test123", "test123@opennms.org");
+        setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
+        createUser("test123", "test123@opennms.org", 400, null);
+
+        setUser("admin", new String[] { "ROLE_ADMIN" });
+        createUser("test123", "test123@opennms.org", 303, "/users/test123");
 
         // validate creation
         String xml = sendRequest(GET, "/users/test123", 200);
@@ -146,7 +154,8 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
                 @Override
                 public void run() {
                     try {
-                        createUser(userName, userName + "@opennms.org");
+                        setUser("admin", new String[] { "ROLE_ADMIN" });
+                        createUser(userName, userName + "@opennms.org", 303, "/users/" + userName);
                     } catch (Exception e) {
                         e.printStackTrace();
                         fail(e.getMessage());
@@ -198,6 +207,10 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
         sendRequest(DELETE, "/users/idontexist", 400);
 
+        setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
+        sendRequest(DELETE, "/users/deleteMe", 400);
+
+        setUser("admin", new String[] { "ROLE_ADMIN" });
         sendRequest(DELETE, "/users/deleteMe", 200);
 
         sendRequest(GET, "/users/deleteMe", 404);
@@ -241,11 +254,10 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     }
 
     protected void createUser(final String username) throws Exception {
-        createUser(username, null);
+        createUser(username, null, 303, null);
     }
 
-    protected void createUser(final String username, final String email) throws Exception {
-        setUser("admin", new String[] { "ROLE_ADMIN" });
+    protected void createUser(final String username, final String email, final int statusCode, final String expectedUrlSuffix) throws Exception {
 
         String userXml = "<user>" +
                 "<user-id>" + username + "</user-id>" +
@@ -255,6 +267,6 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
                 "<password>" + PASSWORD + "</password>" +
                 "</user>";
         userXml = userXml.replace("{EMAIL}", email != null ?  "<email>" + email + "</email>": "");
-        sendPost("/users", userXml, 303, "/users/" + username);
+        sendPost("/users", userXml, statusCode, expectedUrlSuffix);
     }
 }
