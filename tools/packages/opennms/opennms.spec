@@ -63,8 +63,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 8.4
-Requires:		postgresql-server  >= 8.4
+Requires(pre):		postgresql-server  >= 9.1
+Requires:		postgresql-server  >= 9.1
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
