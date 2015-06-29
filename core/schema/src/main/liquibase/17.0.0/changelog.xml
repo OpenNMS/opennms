@@ -48,7 +48,6 @@
 
 
   <!-- Remove all of the legacy triggers and related fields from ipinterface, ifservices, and outages -->
-<!--
   <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
     <sql>
       DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
@@ -67,7 +66,6 @@
       DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate();
     </sql>
   </changeSet>
--->
 
   <changeSet author="seth" id="17.0.0-remove-legacy-ifservices-composite-key-fields">
     <!-- Drop indices that rely on legacy columns -->
@@ -78,7 +76,7 @@
     <!-- Use SQL for this one because we need it to cascade into a foreign key -->
     <!-- <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique"/> -->
     <sql>
-      DROP INDEX ifservices_nodeid_ipaddr_svc_unique CASCADE
+      DROP INDEX ifservices_nodeid_ipaddr_svc_unique CASCADE;
     </sql>
 
     <!-- Create equivalent indices -->
