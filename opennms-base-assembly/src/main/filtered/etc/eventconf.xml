@@ -49,6 +49,7 @@
   <event-file>events/Avocent.DSR.events.xml</event-file>
   <event-file>events/Avocent.DSR1021.events.xml</event-file>
   <event-file>events/Avocent.DSR2010.events.xml</event-file>
+  <event-file>events/Avocent-DSView.events.xml</event-file>
   <event-file>events/Avocent.Mergepoint.events.xml</event-file>
   <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
