@@ -151,7 +151,7 @@ public class NewtsUtils {
      *
      */
     protected static String getResourceIdFromPath(String path) {
-        final String prefix = Paths.get(System.getProperty("opennms.home"), "share", "rrd").toString();
+        final String prefix = System.getProperty("rrd.base.dir");
 
         // Initial sanitation
         if(Strings.isNullOrEmpty(path)
