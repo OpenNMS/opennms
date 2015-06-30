@@ -757,6 +757,8 @@
             <!-- Unit test classes -->
             <exclude>**/*Test.*</exclude>
             <exclude>**/*TestCase.*</exclude>
+            <exclude>**/*IT.*</exclude>
+            <exclude>**/*ITCase.*</exclude>
             <!-- Duplicate classes -->
             <exclude>**/SnmpUtilsTest*</exclude>
             <!-- Drools rules -->
@@ -983,6 +985,13 @@
             <goals>
               <!- - Add the jacoco agent configuration to the argLine for surefire - ->
               <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-prepare-agent-integration</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent-integration</goal>
             </goals>
           </execution>
         </executions>
