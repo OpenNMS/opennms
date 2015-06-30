@@ -25,8 +25,8 @@ public class NewtsRrdStrategyTest {
 
     @Test
     public void createOpenUpdateCloseRead() throws Exception {
-        String opennmsHome = "/opt/opennms";
-        System.setProperty("opennms.home", opennmsHome);
+        String rrdBaseDir = "/opt/opennms/share/rrd";
+        System.setProperty("rrd.base.dir", rrdBaseDir);
 
         MockSampleRepository mockSampleRepository = new MockSampleRepository();
 
@@ -37,7 +37,7 @@ public class NewtsRrdStrategyTest {
         // Go through the life-cycle of creating and updating an .rrd file
         RrdDataSource ds1 = new RrdDataSource("x", "GAUGE", 900, "0", "100");
         RrdDataSource ds2 = new RrdDataSource("y", "GAUGE", 900, "0", "100");
-        RrdDef def = rrdStrategy.createDefinition("test", opennmsHome + "/share/rrd/snmp/1", "loadavg", 1,
+        RrdDef def = rrdStrategy.createDefinition("test", rrdBaseDir + "/snmp/1", "loadavg", 1,
                 Lists.newArrayList(ds1, ds2),
                 Lists.newArrayList("RRA:AVERAGE:0.5:1:1000"));
 
@@ -46,7 +46,7 @@ public class NewtsRrdStrategyTest {
         rrdStrategy.createFile(def, attributes);
 
         // Add metrics to the file we created above
-        String fileName = opennmsHome + "/share/rrd/snmp/1/loadavg.newts";
+        String fileName = rrdBaseDir + "/snmp/1/loadavg.newts";
         RrdDb db = rrdStrategy.openFile(fileName);
 
         long timestampInSeconds = Timestamp.now().asSeconds();

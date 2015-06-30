@@ -31,19 +31,19 @@ import com.google.common.collect.Maps;
         "classpath:/META-INF/opennms/applicationContext-rrd.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.newts.config.hostname=" + NewtsRrdStrategyITest.CASSANDRA_HOST,
-        "org.opennms.newts.config.port=" + NewtsRrdStrategyITest.CASSANDRA_PORT,
-        "org.opennms.newts.config.keyspace=" + NewtsRrdStrategyITest.NEWTS_KEYSPACE,
+        "org.opennms.newts.config.hostname=" + NewtsRrdStrategyIT.CASSANDRA_HOST,
+        "org.opennms.newts.config.port=" + NewtsRrdStrategyIT.CASSANDRA_PORT,
+        "org.opennms.newts.config.keyspace=" + NewtsRrdStrategyIT.NEWTS_KEYSPACE,
         "org.opennms.newts.config.max_batch_delay=0", // No delay
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.newts.NewtsRrdStrategy",
         "org.opennms.rrd.usequeue=false"
 })
 @JUnitNewtsCassandra(
-        host=NewtsRrdStrategyITest.CASSANDRA_HOST,
-        port=NewtsRrdStrategyITest.CASSANDRA_PORT,
-        keyspace=NewtsRrdStrategyITest.NEWTS_KEYSPACE
+        host=NewtsRrdStrategyIT.CASSANDRA_HOST,
+        port=NewtsRrdStrategyIT.CASSANDRA_PORT,
+        keyspace=NewtsRrdStrategyIT.NEWTS_KEYSPACE
 )
-public class NewtsRrdStrategyITest {
+public class NewtsRrdStrategyIT {
 
     protected static final String CASSANDRA_HOST = "localhost";
     protected static final int CASSANDRA_PORT = 9043;
@@ -57,12 +57,12 @@ public class NewtsRrdStrategyITest {
 
     @Test
     public void createOpenUpdateCloseRead() throws Exception {
-        String opennmsHome = System.getProperty("opennms.home");
+        String rrdBaseDir = System.getProperty("rrd.base.dir");
 
         // Go through the life-cycle of creating and updating an .rrd file
         RrdDataSource ds1 = new RrdDataSource("x", "GAUGE", 900, "0", "100");
         RrdDataSource ds2 = new RrdDataSource("y", "GAUGE", 900, "0", "100");
-        RrdDef def = m_rrdStrategy.createDefinition("test", opennmsHome + "/share/rrd/snmp/1", "loadavg", 1,
+        RrdDef def = m_rrdStrategy.createDefinition("test", rrdBaseDir + "/snmp/1", "loadavg", 1,
                 Lists.newArrayList(ds1, ds2),
                 Lists.newArrayList("RRA:AVERAGE:0.5:1:1000"));
 
@@ -71,7 +71,7 @@ public class NewtsRrdStrategyITest {
         m_rrdStrategy.createFile(def, attributes);
 
         // Add metrics to the file we created above
-        String fileName = opennmsHome + "/share/rrd/snmp/1/loadavg.newts";
+        String fileName = rrdBaseDir + "/snmp/1/loadavg.newts";
         RrdDb db = m_rrdStrategy.openFile(fileName);
 
         long timestampInSeconds = Timestamp.now().asSeconds();

@@ -24,17 +24,17 @@ import com.google.common.collect.Maps;
 @JUnitConfigurationEnvironment
 public class NewtsUtilsTest {
 
-    private String opennmsHome;
+    private String rrdBaseDir;
 
     @Before
     public void setUp() {
-        opennmsHome = System.getProperty("opennms.home");
+        rrdBaseDir = System.getProperty("rrd.base.dir");
     }
 
     @Test
     public void addParentPathAttributes() {
         Map<String, String> attributes = Maps.newHashMap();
-        String path = opennmsHome + "/share/rrd/snmp/1/loadavg1" + NewtsRrdStrategy.FILE_EXTENSION;
+        String path = rrdBaseDir + "/snmp/1/loadavg1" + NewtsRrdStrategy.FILE_EXTENSION;
         NewtsUtils.addParentPathAttributes(path, attributes);
 
         assertEquals("snmp", attributes.get("_parent0"));
@@ -44,14 +44,14 @@ public class NewtsUtilsTest {
 
     @Test
     public void canConvertFilenameToResource() {
-        String resourceId = NewtsUtils.getResourceIdFromPath(opennmsHome + "/share/rrd/snmp/1/loadavg1.newts");
+        String resourceId = NewtsUtils.getResourceIdFromPath(rrdBaseDir + "/snmp/1/loadavg1.newts");
         assertEquals("snmp:1:loadavg1", resourceId);
 
         // What if there's already a ':' in the filename?
-        resourceId = NewtsUtils.getResourceIdFromPath(opennmsHome + "/share/rrd/snmp/1/load:avg1.newts");
+        resourceId = NewtsUtils.getResourceIdFromPath(rrdBaseDir + "/snmp/1/load:avg1.newts");
         assertEquals("snmp:1:loadavg1", resourceId);
 
-        resourceId = NewtsUtils.getResourceIdFromPath(opennmsHome + "/share/rrd/snmp/1/eth0-04013f75f101/ifInOctets.newts");
+        resourceId = NewtsUtils.getResourceIdFromPath(rrdBaseDir + "/snmp/1/eth0-04013f75f101/ifInOctets.newts");
         assertEquals("snmp:1:eth0-04013f75f101:ifInOctets", resourceId);
     }
 
@@ -59,7 +59,7 @@ public class NewtsUtilsTest {
     public void canConvertRrdUpdateStringToSampleSet() {
         RrdDataSource ds1 = new RrdDataSource("x", "GAUGE", 900, "0", "100");
         RrdDataSource ds2 = new RrdDataSource("y", "GAUGE", 900, "0", "100");
-        RrdDef def = new RrdDef(opennmsHome + "/share/rrd/snmp/1", "loadavg1", Lists.newArrayList(ds1, ds2));
+        RrdDef def = new RrdDef(rrdBaseDir + "/snmp/1", "loadavg1", Lists.newArrayList(ds1, ds2));
         List<Sample> samples = NewtsUtils.getSamplesFromRrdUpdateString(def, "1:U:9", null);
         assertEquals(2, samples.size());
     }
