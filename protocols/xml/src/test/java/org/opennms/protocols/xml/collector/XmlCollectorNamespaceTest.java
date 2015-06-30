@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  * @author <a href="mailto:david.schlenk@spanlink.com">David Schlenk</a>
  */
-public class XmlCollectorNamespaceTest extends AbstractXmlCollectorTest {
+public class XmlCollectorNamespaceTest extends XmlCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
