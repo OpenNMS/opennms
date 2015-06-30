@@ -128,4 +128,13 @@
     <dropTable tableName="servermap" />
   </changeSet>
 
+  <!-- Create column cdpGlobalDeviceIdFormat on cdpElement table -->
+  <changeSet author="rssntn67" id="17.0.0-create-cdpglobaldeviceidformat-on-cdpelement-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="cdpelement"/>
+    </preConditions> 
+    <addColumn tableName="cdpelement">
+    	<column name="cdpglobaldeviceidformat" type="integer"/>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

@@ -592,6 +592,10 @@ function confirmAssetEdit() {
         <td>${model.cdp.cdpGlobalDeviceId}</td>
       </tr>
       <tr>
+        <th>global device id format</th>
+        <td>${model.cdp.cdpGlobalDeviceIdFormat}</td>
+      </tr>
+      <tr>
         <th>global run</th>
         <td>${model.cdp.cdpGlobalRun}</td>
       </tr>
