@@ -139,7 +139,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractJaxbConfigDao<Li
         try {
             LinkAdapterConfiguration config = JaxbUtils.unmarshal(LinkAdapterConfiguration.class, resource);
             long endTime = System.currentTimeMillis();
-            LOG.info(config.toString());
+            LOG.info("Loaded {} configuration from {} in {}s. Config: {}", getDescription(), resource, (endTime - startTime)/1000, config.toString());
             return config;
         } catch (Throwable e) {
             throw new MarshallingResourceFailureException("Unable to unmarshal the link adapter configuration.", e);

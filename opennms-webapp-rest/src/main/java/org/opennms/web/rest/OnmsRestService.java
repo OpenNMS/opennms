@@ -119,9 +119,6 @@ public class OnmsRestService {
 	    builder.distinct();
 	    builder.limit(defaultLimit);
 
-	    // not sure why we remove this, but that's what the old query filter code did, I presume there's a reason  :)
-	    params.remove("_dc");
-
     	if (params.containsKey("limit")) {
     		builder.limit(Integer.valueOf(params.getFirst("limit")));
     		params.remove("limit");
@@ -130,12 +127,7 @@ public class OnmsRestService {
     		builder.offset(Integer.valueOf(params.getFirst("offset")));
     		params.remove("offset");
     	}
-    	// Is this necessary anymore? setLimitOffset() comments implies it's for Ext-JS.
-    	if (params.containsKey("start")) {
-    		builder.offset(Integer.valueOf(params.getFirst("start")));
-    		params.remove("start");
-    	}
-    	
+
 	    if(params.containsKey("orderBy")) {
 	    	builder.orderBy(params.getFirst("orderBy"));
 			params.remove("orderBy");

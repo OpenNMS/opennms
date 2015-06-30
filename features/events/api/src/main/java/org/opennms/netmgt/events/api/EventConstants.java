@@ -182,6 +182,16 @@ public abstract class EventConstants {
     public static final String CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
 
     /**
+     * The outage created event UEI.
+     */
+    public static final String OUTAGE_CREATED_EVENT_UEI = "uei.opennms.org/internal/poller/outageCreated";
+
+    /**
+     * The outage Resolved event UEI.
+     */
+    public static final String OUTAGE_RESOLVED_EVENT_UEI = "uei.opennms.org/internal/poller/outageResolved";
+
+    /**
      * The restart polling node event UEI.
      */
     public static final String RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";

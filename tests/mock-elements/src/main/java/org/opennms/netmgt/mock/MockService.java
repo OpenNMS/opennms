@@ -437,4 +437,12 @@ public class MockService extends MockElement implements MonitoredService {
 		return null;
 	}
 
+    public Event createOutageCreatedEvent() {
+        return MockEventUtil.createOutageCreatedEvent("Test", this, null);
+    }
+
+    public Event createOutageResolvedEvent() {
+        return MockEventUtil.createOutageResolvedEvent("Test", this, null);
+    }
+
 }

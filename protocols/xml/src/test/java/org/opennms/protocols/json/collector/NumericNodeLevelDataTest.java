@@ -40,7 +40,7 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NumericNodeLevelDataTest extends AbstractJsonCollectorTest {
+public class NumericNodeLevelDataTest extends JsonCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.json.collector.AbstractJsonCollectorTest#getJSONConfigFileName()

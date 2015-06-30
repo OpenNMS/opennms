@@ -93,7 +93,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
     @Autowired
     protected VlanDao m_vlanDao;
 
-    protected void printRouteInterface(int nodeid, RouterInterface route) {
+    protected static void printRouteInterface(int nodeid, RouterInterface route) {
         System.err.println("-----------------------------------------------------------");
         System.err.println("Local Route nodeid: "+nodeid);
         System.err.println("Local Route ifIndex: "+route.getIfindex());
@@ -106,7 +106,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.err.println("");        
     }
 
-    protected void printCdpInterface(int nodeid, CdpInterface cdp) {
+    protected static void printCdpInterface(int nodeid, CdpInterface cdp) {
         System.err.println("-----------------------------------------------------------");
         System.err.println("Local cdp nodeid: "+nodeid);
         System.err.println("Local cdp ifindex: "+cdp.getCdpIfIndex());
@@ -124,7 +124,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.out.println("----------------net to media------------------");
         System.out.println("id: " + at.getId());
         System.out.println("nodeid: " + at.getNode().getId());
-        System.out.println("nodelabel: " + m_nodeDao.get(at.getNode().getId()).getLabel());       
+        System.out.println("nodelabel: " + at.getNode().getLabel());
         System.out.println("ip: " + at.getIpAddress());
         System.out.println("mac: " + at.getMacAddress());
         System.out.println("ifindex: " + at.getIfIndex());
@@ -140,7 +140,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         Integer nodeid = datalinkinterface.getNode().getId();
         System.out.println("linkid: " + datalinkinterface.getId());
         System.out.println("nodeid: " + nodeid);
-        System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());       
+        System.out.println("nodelabel: " + m_nodeDao.get(nodeid).getLabel());
         Integer ifIndex = datalinkinterface.getIfIndex();
         System.out.println("ifindex: " + ifIndex);
         if (ifIndex > 0)
@@ -149,11 +149,11 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.out.println("nodeparent: " + nodeparent);
         System.out.println("parentnodelabel: " + m_nodeDao.get(nodeparent).getLabel());
         Integer parentifindex = datalinkinterface.getParentIfIndex();
-        System.out.println("parentifindex: " + parentifindex);        
+        System.out.println("parentifindex: " + parentifindex);
         if (parentifindex > 0)
             System.out.println("parentifname: " + m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeparent,parentifindex).getIfName());
-        System.out.println("source: " + datalinkinterface.getSource());        
-        System.out.println("protocol: " + datalinkinterface.getProtocol());        
+        System.out.println("source: " + datalinkinterface.getSource());
+        System.out.println("protocol: " + datalinkinterface.getProtocol());
         System.out.println("--------------------------------------");
         System.out.println("");
 
@@ -181,7 +181,7 @@ public abstract class LinkdTestHelper implements InitializingBean {
         }
     }
 
-    protected void printNode(OnmsNode node) {
+    protected static void printNode(OnmsNode node) {
         System.err.println("----------------Node------------------");
         System.err.println("nodeid: " + node.getId());
         System.err.println("nodelabel: " + node.getLabel());
@@ -190,8 +190,8 @@ public abstract class LinkdTestHelper implements InitializingBean {
         System.err.println("");
 
     }
-
-    protected int getStartPoint(List<DataLinkInterface> links) {
+    
+    protected static int getStartPoint(List<DataLinkInterface> links) {
         int start = 0;
         for (final DataLinkInterface link:links) {
             if (start==0 || link.getId().intValue() < start) {

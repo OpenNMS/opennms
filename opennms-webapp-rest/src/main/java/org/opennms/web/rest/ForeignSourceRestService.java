@@ -187,8 +187,8 @@ public class ForeignSourceRestService extends OnmsRestService {
     public String getDeployedCount() {
         readLock();
         try {
-            m_pendingForeignSourceRepository.flush();
-            return Integer.toString(m_pendingForeignSourceRepository.getForeignSourceCount());
+            m_deployedForeignSourceRepository.flush();
+            return Integer.toString(m_deployedForeignSourceRepository.getForeignSourceCount());
         } finally {
             readUnlock();
         }
