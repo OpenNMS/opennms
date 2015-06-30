@@ -146,7 +146,7 @@ public class IfServicesRestService extends OnmsRestService {
             c.setOffset(null);
             final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
             if (services.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matchinng the provided criteria: " + uriInfo.getQueryParameters());
+                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matching the provided criteria: " + uriInfo.getQueryParameters());
             }
             boolean modified = false;
             for (OnmsMonitoredService svc : services) {
@@ -163,12 +163,12 @@ public class IfServicesRestService extends OnmsRestService {
                     final String currentStatus = svc.getStatus();
                     svc.setStatus(status);
                     m_serviceDao.update(svc);
-                    if ("S".equals(status) || (currentStatus.equals("A") && status.equals("F"))) {
+                    if ("S".equals(status) || ("A".equals(currentStatus) && "F".equals(status))) {
                         LOG.debug("updateServices: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
                         sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
                         sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
                     }
-                    if ("R".equals(status) || (currentStatus.equals("F") && status.equals("A"))) {
+                    if ("R".equals(status) || ("F".equals(currentStatus) && "A".equals(status))) {
                         LOG.debug("updateServices: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
                         sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
                     }

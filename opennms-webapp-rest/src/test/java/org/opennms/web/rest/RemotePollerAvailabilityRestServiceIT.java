@@ -190,14 +190,15 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
         final long startTime = System.currentTimeMillis();
         final String url = BASE_REST_URL + "/RDU";
         final Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("resolution", "minute");
         addStartTime(parameters);
         addEndTime(parameters);
 
-        final String responseString = sendRequest(GET, url, parameters, 200);
-
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("IPv4"));
+        for (String resolution : new String[] {"minute", "hourly", "daily", "Minute", "hOURly", "daiLY"}){
+            parameters.put("resolution", resolution);
+            final String responseString = sendRequest(GET, url, parameters, 200);
+            assertTrue(responseString.contains("IPv6"));
+            assertTrue(responseString.contains("IPv4"));
+        }
 
         System.err.println("total time taken: " + (System.currentTimeMillis() - startTime));
     }
@@ -211,23 +212,22 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
     }
 
     @Test
-    public void testRemotePollerAvailabilityFiveMinutes() throws Exception {
+    public void testRemotePollerAvailabilityTimePeriods() throws Exception {
         String url = BASE_REST_URL;
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("startTime", "" + (new Date().getTime() - (86400000 * 2)));
         parameters.put("endTime", "" + (new Date().getTime() - 86400000));
-        parameters.put("resolution", "minute");
 
-        String responseString = sendRequest(GET, url, parameters, 200);
-
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("IPv4"));
-
+        for (String resolution : new String[] {"minute", "hourly", "daily", "Minute", "hOURly", "daiLY"}){
+            parameters.put("resolution", resolution);
+            String responseString = sendRequest(GET, url, parameters, 200);
+            assertTrue(responseString.contains("IPv6"));
+            assertTrue(responseString.contains("IPv4"));
+        }
     }
 
 
     private void createLocationMonitors() throws InterruptedException {
-
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override

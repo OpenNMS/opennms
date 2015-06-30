@@ -52,6 +52,7 @@ import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.poller.outages.Outage;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -172,7 +173,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</notifd-configuration>");
         NotifdConfigFactory.init();
 
-        m_jaxbContext = JaxbUtils.getContextFor(Outage.class);
+        m_jaxbContext = JaxbUtils.getContextFor(Outages.class);
     }
 
     // This is required in order to avoid override configuration files in opennms-base-assembly
@@ -186,6 +187,15 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     public void afterServletDestroy() {
         EasyMock.verify(m_filterDao);
         MockLogAppender.assertNoWarningsOrGreater();
+    }
+
+    @Test
+    public void testGetOutages() throws Exception {
+        String url = "/sched-outages";
+        Outages outages = getXmlObject(m_jaxbContext, url, 200, Outages.class);
+        Assert.assertNotNull(outages);
+        Assert.assertEquals(1, outages.getOutageCount());
+        Assert.assertEquals("match-any", outages.getOutage(0).getInterface(0).getAddress());
     }
 
     @Test
@@ -206,6 +216,23 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 "<node id='11' />" +
                 "</outage>";
         sendPost(url, outage, 303, "/sched-outages/test-outage");
+
+        Outage out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
+        Assert.assertNotNull(out);
+        Assert.assertEquals("13:20:00", out.getTime(0).getBegins());
+
+        // Update the outage slightly
+        outage = "<?xml version=\"1.0\"?>" +
+                "<outage name='test-outage' type='specific'>" +
+                "<time day='friday' begins='14:20:00' ends='15:30:00' />" +
+                "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
+                "<node id='11' />" +
+                "</outage>";
+        sendPost(url, outage, 303, "/sched-outages/test-outage");
+
+        out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
+        Assert.assertNotNull(out);
+        Assert.assertEquals("14:20:00", out.getTime(0).getBegins());
     }
 
     @Test
@@ -237,4 +264,15 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 200);
     }
 
+    @Test
+    public void testNodeInOutage() throws Exception {
+        Assert.assertEquals("false", sendRequest(GET, "/sched-outages/my-junit-test/nodeInOutage/1", 200));
+        Assert.assertEquals("false", sendRequest(GET, "/sched-outages/nodeInOutage/1", 200));
+    }
+
+    @Test
+    public void testInterfaceInOutage() throws Exception {
+        Assert.assertEquals("false", sendRequest(GET, "/sched-outages/my-junit-test/interfaceInOutage/1.1.1.1", 200));
+        Assert.assertEquals("false", sendRequest(GET, "/sched-outages/interfaceInOutage/1.1.1.1", 200));
+    }
 }

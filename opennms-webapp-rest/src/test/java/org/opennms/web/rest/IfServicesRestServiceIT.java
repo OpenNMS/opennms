@@ -28,14 +28,21 @@
 
 package org.opennms.web.rest;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsMonitoredServiceDetail;
+import org.opennms.netmgt.model.OnmsMonitoredServiceDetailList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -57,17 +64,30 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitTemporaryDatabase
 public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
+    @Autowired
+    DatabasePopulator m_databasePopulator;
+
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+        m_databasePopulator.populateDatabase();
     }
-    
+
     @Test
     public void testGetServices() throws Exception {
         String url = "/ifservices";
-        String xml = sendRequest(GET, url, 200);
-        Assert.assertNotNull(xml);
-        Assert.assertTrue(xml.contains("monitored-services"));
-    }
+        OnmsMonitoredServiceDetailList list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);
+        for(OnmsMonitoredServiceDetail detail : list.getObjects()) {
+            assertFalse("F".equals(detail.getStatusCode()));
+        }
 
+        // Mark all services as forced unmanaged
+        sendPut(url, "status=F", 303, null);
+
+        // Verify that all statuses were updated
+        list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);
+        for(OnmsMonitoredServiceDetail detail : list.getObjects()) {
+            assertEquals("F", detail.getStatusCode());
+        }
+    }
 }
