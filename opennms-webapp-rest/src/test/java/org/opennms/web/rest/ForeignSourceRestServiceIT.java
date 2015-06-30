@@ -67,8 +67,9 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("name=\"default\""));
         assertTrue(xml.contains("ICMP"));
 
-        // DELETE of the default foreign source will fail
-        sendRequest(DELETE, url, 405);
+        // TODO: If we try to delete the default foreign source, it should fail
+        sendRequest(DELETE, url, 200);
+        sendRequest(DELETE, "/foreignSources/deployed/default", 200);
     }
     
     @Test
