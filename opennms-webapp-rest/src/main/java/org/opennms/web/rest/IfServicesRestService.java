@@ -59,11 +59,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Managing Monitored Services (control the polling state of monitored services).
@@ -90,8 +87,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Component("ifServicesRestService")
-@PerRequest
-@Scope("prototype")
 @Path("ifservices")
 @Transactional
 public class IfServicesRestService extends OnmsRestService {
@@ -107,83 +102,74 @@ public class IfServicesRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public OnmsMonitoredServiceDetailList getServices(@Context UriInfo uriInfo) {
-        readLock();
-        try {
-            final Criteria c = getCriteria(uriInfo.getQueryParameters());
-            final OnmsMonitoredServiceDetailList servicesList = new OnmsMonitoredServiceDetailList();
-            final List<OnmsMonitoredService> services = m_serviceDao.findMatching(c);
-            for (OnmsMonitoredService svc : services) {
-                servicesList.add(new OnmsMonitoredServiceDetail(svc));
-            }
-            c.setLimit(null);
-            c.setOffset(null);
-            c.setOrders(new ArrayList<Order>());
-            servicesList.setTotalCount(m_serviceDao.countMatching(c));
-            return servicesList;
-        } finally {
-            readUnlock();
+    public OnmsMonitoredServiceDetailList getServices(@Context final UriInfo uriInfo) {
+        final Criteria c = getCriteria(uriInfo.getQueryParameters());
+        final OnmsMonitoredServiceDetailList servicesList = new OnmsMonitoredServiceDetailList();
+        final List<OnmsMonitoredService> services = m_serviceDao.findMatching(c);
+        for (OnmsMonitoredService svc : services) {
+            servicesList.add(new OnmsMonitoredServiceDetail(svc));
         }
+        c.setLimit(null);
+        c.setOffset(null);
+        c.setOrders(new ArrayList<Order>());
+        servicesList.setTotalCount(m_serviceDao.countMatching(c));
+        return servicesList;
     }
 
     @PUT
-    public Response updateServices(@Context UriInfo uriInfo, MultivaluedMapImpl params) {
-        readLock();
-        try {
-            final String status = params.getFirst("status");
-            if (status == null || !status.matches("(A|R|S|F)")) {
-                throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
-            }
-            final String services_csv = params.getFirst("services");
-            final List<String> serviceList = new ArrayList<String>();
-            if (services_csv != null) {
-                for (String s : services_csv.split(",")) {
-                    serviceList.add(s);
-                }
-            }
-            final Criteria c = getCriteria(uriInfo.getQueryParameters());
-            c.setLimit(null);
-            c.setOffset(null);
-            final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
-            if (services.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matching the provided criteria: " + uriInfo.getQueryParameters());
-            }
-            boolean modified = false;
-            for (OnmsMonitoredService svc : services) {
-                boolean proceed = false;
-                if (serviceList.isEmpty()) {
-                    proceed = true;
-                } else {
-                    if (serviceList.contains(svc.getServiceName())) {
-                        proceed = true;
-                    }
-                }
-                if (proceed) {
-                    modified = true;
-                    final String currentStatus = svc.getStatus();
-                    svc.setStatus(status);
-                    m_serviceDao.update(svc);
-                    if ("S".equals(status) || ("A".equals(currentStatus) && "F".equals(status))) {
-                        LOG.debug("updateServices: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
-                        sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
-                        sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
-                    }
-                    if ("R".equals(status) || ("F".equals(currentStatus) && "A".equals(status))) {
-                        LOG.debug("updateServices: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
-                        sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
-                    }
-                }
-            }
-            if (!modified && !serviceList.isEmpty()) {
-                throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
-            }
-        } finally {
-            readUnlock();
+    public Response updateServices(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
+        final String status = params.getFirst("status");
+        if (status == null || !status.matches("(A|R|S|F)")) {
+            throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
         }
+        final String services_csv = params.getFirst("services");
+        final List<String> serviceList = new ArrayList<String>();
+        if (services_csv != null) {
+            for (String s : services_csv.split(",")) {
+                serviceList.add(s);
+            }
+        }
+        final Criteria c = getCriteria(uriInfo.getQueryParameters());
+        c.setLimit(null);
+        c.setOffset(null);
+        final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
+        if (services.isEmpty()) {
+            throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matching the provided criteria: " + uriInfo.getQueryParameters());
+        }
+        boolean modified = false;
+        for (OnmsMonitoredService svc : services) {
+            boolean proceed = false;
+            if (serviceList.isEmpty()) {
+                proceed = true;
+            } else {
+                if (serviceList.contains(svc.getServiceName())) {
+                    proceed = true;
+                }
+            }
+            if (proceed) {
+                modified = true;
+                final String currentStatus = svc.getStatus();
+                svc.setStatus(status);
+                m_serviceDao.update(svc);
+                if ("S".equals(status) || ("A".equals(currentStatus) && "F".equals(status))) {
+                    LOG.debug("updateServices: suspending polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
+                    sendEvent(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, svc); // TODO ManageNodeServlet is sending this.
+                    sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
+                }
+                if ("R".equals(status) || ("F".equals(currentStatus) && "A".equals(status))) {
+                    LOG.debug("updateServices: resuming polling for service {} on node with IP {}", svc.getServiceName(), svc.getIpAddress().getHostAddress());
+                    sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
+                }
+            }
+        }
+        if (!modified && !serviceList.isEmpty()) {
+            throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
+        }
+
         return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
-    private Criteria getCriteria(MultivaluedMap<String, String> params) {
+    private static Criteria getCriteria(final MultivaluedMap<String, String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsMonitoredService.class);
         builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
         builder.alias("ipInterface", "ipInterface", JoinType.LEFT_JOIN);

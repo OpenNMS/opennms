@@ -49,12 +49,8 @@ import org.opennms.netmgt.model.DataLinkInterfaceList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>DataLinkInterfaceRestService class.</p>
@@ -63,8 +59,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.11.1
  */
 @Component("dataLinkInterfaceRestService")
-@PerRequest
-@Scope("prototype")
 @Path("links")
 @Transactional
 public class DataLinkInterfaceRestService extends OnmsRestService {
@@ -77,23 +71,14 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;
 
-    @Context
-    ResourceContext m_context;
-
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
-    public DataLinkInterfaceList getLinks(@Context UriInfo uriInfo) {
-        readLock();
-        
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
-            applyQueryFilters(uriInfo.getQueryParameters(), builder);
-            builder.orderBy("lastPollTime").desc();
-            return new DataLinkInterfaceList(m_dataLinkInterfaceDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+    public DataLinkInterfaceList getLinks(@Context final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(DataLinkInterface.class);
+        applyQueryFilters(uriInfo.getQueryParameters(), builder);
+        builder.orderBy("lastPollTime").desc();
+        return new DataLinkInterfaceList(m_dataLinkInterfaceDao.findMatching(builder.toCriteria()));
     }
 
     @GET
@@ -101,19 +86,14 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @Path("{linkId}")
     @Transactional(readOnly=true)
     public DataLinkInterface getLink(@PathParam("linkId") final Integer linkId) {
-        readLock();
-        try {
-            return m_dataLinkInterfaceDao.get(linkId);
-        } finally {
-            readUnlock();
-        }
+        return m_dataLinkInterfaceDao.get(linkId);
     }
 
     @PUT
     @Path("{linkId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateDataLinkInterface(@Context UriInfo uriInfo, @PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
+    public Response updateDataLinkInterface(@Context final UriInfo uriInfo, @PathParam("linkId") final Integer linkId, final MultivaluedMapImpl params) {
         writeLock();
         try {
             LOG.debug("updateDataLinkInterface: Updating DataLinkInterface with ID {}", linkId);
@@ -133,7 +113,7 @@ public class DataLinkInterfaceRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Transactional
-    public Response addOrReplaceDataLinkInterface(@Context UriInfo uriInfo, final DataLinkInterface iface) {
+    public Response addOrReplaceDataLinkInterface(@Context final UriInfo uriInfo, final DataLinkInterface iface) {
         writeLock();
         try {
             if (iface.getNode() == null && iface.getNodeId() != null) {

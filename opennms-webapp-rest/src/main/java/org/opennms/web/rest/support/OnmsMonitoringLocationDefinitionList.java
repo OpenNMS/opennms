@@ -26,8 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.ncs.rest;
+package org.opennms.web.rest.support;
 
-public class MockWebContainer {
+import java.util.Collection;
+import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+
+@XmlRootElement(name="locations")
+@ValidateUsing("monitoring-locations.xsd")
+@JsonRootName("locations")
+public class OnmsMonitoringLocationDefinitionList extends JaxbListWrapper<LocationDef> {
+    private static final long serialVersionUID = 1L;
+
+    public OnmsMonitoringLocationDefinitionList() { super(); }
+    public OnmsMonitoringLocationDefinitionList(final Collection<? extends LocationDef> definitions) {
+        super(definitions);
+    }
+
+    @XmlElement(name="location")
+    @JsonProperty("location")
+    public List<LocationDef> getObjects() {
+        return super.getObjects();
+    }
 }

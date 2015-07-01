@@ -40,7 +40,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -77,7 +77,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
             @Override
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
-                OnmsDistPoller distPoller = populator.getDistPoller("localhost", "127.0.0.1");
+                OnmsDistPoller distPoller = populator.getDistPollerDao().whoami();
                 outageEvent = populator.buildEvent(distPoller);
                 populator.getEventDao().save(outageEvent);
                 populator.getEventDao().flush();

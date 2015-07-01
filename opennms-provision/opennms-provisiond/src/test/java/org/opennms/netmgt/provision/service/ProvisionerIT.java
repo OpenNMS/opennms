@@ -86,8 +86,10 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -220,6 +222,14 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Before
     public void setUp() throws Exception {
+        if (m_distPollerDao.findAll().size() == 0) {
+            OnmsDistPoller distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+            distPoller.setLabel("localhost");
+            distPoller.setLocation("localhost");
+            distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+            m_distPollerDao.save(distPoller);
+        }
+
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
 
@@ -268,7 +278,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void tearDown() {
         // remove property set during tests
         System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
-        m_populator.resetDatabase();
         m_eventAnticipator.reset();
     }
 
@@ -393,7 +402,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Test(timeout=300000)
     public void testSendEventsOnImport() throws Exception {
-        m_populator.resetDatabase();
 
         final int nextNodeId = m_nodeDao.getNextNodeId();
         final String nodeLabel = "node1";
@@ -480,7 +488,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     @Test(timeout=300000)
     @JUnitSnmpAgent(host="192.0.2.201", resource="classpath:snmpTestData1.properties")
     public void testPopulateWithSnmp() throws Exception {
-        m_populator.resetDatabase();
 
         importFromResource("classpath:/tec_dump.xml", Boolean.TRUE.toString());
 
@@ -1327,24 +1334,32 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryDisabled() throws Exception{
         System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
         // populator creates 4 provisioned nodes and 2 discovered nodes
-        m_populator.populateDatabase();
+        try {
+            m_populator.populateDatabase();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes();
 
-        // make sure just the provisioned nodes are scheduled
-        assertEquals(4, m_provisioner.getScheduleLength());
+            // make sure just the provisioned nodes are scheduled
+            assertEquals(4, m_provisioner.getScheduleLength());
+        } finally {
+            m_populator.resetDatabase();
+        }
     }
 
     @Test(timeout=300000)
     public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryEnabled() throws Exception{
         System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
         // populator creates 4 provisioned nodes and 2 discovered nodes
-        m_populator.populateDatabase();
+        try {
+            m_populator.populateDatabase();
 
-        m_provisioner.scheduleRescanForExistingNodes();
+            m_provisioner.scheduleRescanForExistingNodes();
 
-        // make sure all the nodes are scheduled (even the discovered ones)
-        assertEquals(6, m_provisioner.getScheduleLength());
+            // make sure all the nodes are scheduled (even the discovered ones)
+            assertEquals(6, m_provisioner.getScheduleLength());
+        } finally {
+            m_populator.resetDatabase();
+        }
     }
 
     @Test(timeout=300000)

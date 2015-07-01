@@ -283,13 +283,13 @@ public class CriteriaBuilder {
         return this;
     }
 
-    public CriteriaBuilder and(final Restriction lhs, final Restriction rhs) {
-        addRestriction(Restrictions.and(lhs, rhs));
+    public CriteriaBuilder and(final Restriction... restrictions) {
+        addRestriction(Restrictions.and(restrictions));
         return this;
     }
 
-    public CriteriaBuilder or(final Restriction lhs, final Restriction rhs) {
-        final Restriction restriction = Restrictions.or(lhs, rhs);
+    public CriteriaBuilder or(final Restriction... restrictions) {
+        final Restriction restriction = Restrictions.or(restrictions);
         addRestriction(restriction);
         return this;
     }

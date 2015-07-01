@@ -132,8 +132,7 @@ public class OutageDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("localhost");
+        OnmsNode node = new OnmsNode("localhost");
         m_nodeDao.save(node);
 
         OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
@@ -162,8 +161,7 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-                node.setLabel("localhost");
+                OnmsNode node = new OnmsNode("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -192,8 +190,7 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-                node.setLabel("localhost");
+                OnmsNode node = new OnmsNode("localhost");
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -221,21 +218,18 @@ public class OutageDaoIT implements InitializingBean {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
         }
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("shoes");
+        OnmsNode node = new OnmsNode("shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
-        node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("megaphone");
+        node = new OnmsNode("megaphone");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
-        node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("grunties");
+        node = new OnmsNode("grunties");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
@@ -250,21 +244,18 @@ public class OutageDaoIT implements InitializingBean {
         for (final OnmsNode node : m_nodeDao.findAll()) {
             m_nodeDao.delete(node);
         }
-        OnmsNode node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("shoes");
+        OnmsNode node = new OnmsNode("shoes");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
-        node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("megaphone");
+        node = new OnmsNode("megaphone");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
-        node = new OnmsNode(getLocalHostDistPoller());
-        node.setLabel("grunties");
+        node = new OnmsNode("grunties");
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
@@ -286,7 +277,7 @@ public class OutageDaoIT implements InitializingBean {
     }
 
     private OnmsDistPoller getLocalHostDistPoller() {
-        return m_distPollerDao.load("localhost");
+        return m_distPollerDao.whoami();
     }
     
     private OnmsOutage insertEntitiesAndOutage(final String ipAddr, final String serviceName, OnmsNode node) {

@@ -53,8 +53,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -62,7 +64,6 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -116,6 +117,9 @@ public class PollerBackEndIT implements InitializingBean {
     ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
+
+    @Autowired
     LocationMonitorDao m_locationMonitorDao;
 
     @Autowired
@@ -129,21 +133,23 @@ public class PollerBackEndIT implements InitializingBean {
     @Before
     public void setUp(){
         MockLogAppender.setupLogging();
+
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
+        m_monitoringLocationDao.saveOrUpdate(location);
     }
-    
+
     @Test
     @Transactional
     public void testRegister() {
         
-        final Collection<OnmsMonitoringLocationDefinition> locations = m_backEnd.getMonitoringLocations();
+        final Collection<LocationDef> locations = m_backEnd.getMonitoringLocations();
         assertNotNull("locations list should not be null", locations);
         assertFalse("locations list should not be empty", locations.isEmpty());
 
         final int initialCount = m_locationMonitorDao.findAll().size();
         
-        for (final OnmsMonitoringLocationDefinition location : locations) {
-            final int locationMonitorId = m_backEnd.registerLocationMonitor(location.getName());
-            assertTrue(locationMonitorId > 0);
+        for (final LocationDef location : locations) {
+            final String locationMonitorId = m_backEnd.registerLocationMonitor(location.getLocationName());
             assertEquals(MonitorStatus.REGISTERED, m_locationMonitorDao.get(locationMonitorId).getStatus());
         }
         
@@ -153,13 +159,13 @@ public class PollerBackEndIT implements InitializingBean {
     @Test
     @Transactional
     public void testPollingStarted() {
-        final int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        final String locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
 
         final OnmsLocationMonitor monitor = m_locationMonitorDao.get(locationMonitorId);
         assertNotNull(monitor);
-        final Map<String, String> details = monitor.getDetails();
+        final Map<String, String> details = monitor.getProperties();
         assertNotNull(details);
         assertEquals(MonitorStatus.STARTED, monitor.getStatus());
         assertEquals(2, details.keySet().size());
@@ -170,7 +176,7 @@ public class PollerBackEndIT implements InitializingBean {
     @Transactional
     public void testPollingStopped() {
 
-        int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        String locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
         
@@ -185,7 +191,7 @@ public class PollerBackEndIT implements InitializingBean {
     @Transactional
     public void testPollerDisconnected() throws Exception {
 
-        int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        String locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         
         m_backEnd.pollerStarting(locationMonitorId, getPollerDetails());
 
@@ -219,7 +225,7 @@ public class PollerBackEndIT implements InitializingBean {
     @Test
     @Transactional
     public void testReportResults() throws InterruptedException {
-        final OnmsNode node = new OnmsNode(m_distPollerDao.findAll().get(0), "foo");
+        final OnmsNode node = new OnmsNode("foo");
         final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr("192.168.1.1"), node);
         OnmsServiceType serviceType = m_serviceTypeDao.findByName("HTTP");
         if (serviceType == null) {
@@ -232,7 +238,7 @@ public class PollerBackEndIT implements InitializingBean {
         m_nodeDao.save(node);
         m_nodeDao.flush();
         
-        final int locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
+        final String locationMonitorId = m_backEnd.registerLocationMonitor("RDU");
         final int serviceId = service.getId();
 
         // make sure there is no rrd data

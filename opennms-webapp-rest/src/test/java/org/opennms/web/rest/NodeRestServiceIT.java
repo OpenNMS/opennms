@@ -46,6 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
@@ -67,7 +68,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -87,11 +87,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-@DirtiesContext
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
 
@@ -187,7 +186,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createSnmpInterface();
 
         final MockHttpServletRequest req = createRequest(m_context, GET, "/nodes");
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
         JSONObject jo = new JSONObject(json);
@@ -306,7 +305,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes/1/ipinterfaces";
 
         final MockHttpServletRequest req = createRequest(m_context, GET, url);
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
         assertNotNull(json);
@@ -378,7 +377,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String url = "/nodes/1/snmpinterfaces";
 
         final MockHttpServletRequest req = createRequest(m_context, GET, url);
-        req.addHeader("Accept", "application/json");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         final String json = sendRequest(req, 200);
         assertNotNull(json);
@@ -412,18 +411,27 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testCategory() throws Exception {
         createNode();
-        // add category to node 
-        sendRequest(PUT, "/nodes/1/categories/Routers", 303);         
+
         String xml = sendRequest(GET, "/nodes/1/categories", 200);
+        assertFalse(xml.contains("name=\"Routers\""));
+
+        // add category to node 
+        sendRequest(POST, "/nodes/1/categories/Routers", 303);
+        xml = sendRequest(GET, "/nodes/1/categories", 200);
         assertTrue(xml.contains("name=\"Routers\""));
         
         // add category to node (again)
-        sendRequest(PUT, "/nodes/1/categories/Routers", 400); // should fail
+        sendRequest(POST, "/nodes/1/categories/Routers", 400); // should fail
         
-        // change category name
+        // change category description via PUT to categories path
         sendPut("/categories/Routers", "description=My Equipment", 303, "/categories/Routers");
         xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
         assertTrue(xml.contains("<description>My Equipment</description>"));
+
+        // Change category description via PUT to node path
+        sendPut("/nodes/1/categories/Routers", "description=My Equipment UPDATED", 303, "/nodes/1/categories/Routers");
+        xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
+        assertTrue(xml.contains("<description>My Equipment UPDATED</description>"));
 
         // cleanup up...
         sendRequest(DELETE, "/nodes/1/categories/Routers", 200);
@@ -432,11 +440,13 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // ... ensure that category is not deleted, only association is removed
         xml = sendRequest(GET, "/categories/Routers", 200);
         assertNotNull(xml);
-        assertTrue(xml.contains("<description>My Equipment</description>"));
+        assertTrue(xml.contains("<description>My Equipment UPDATED</description>"));
         assertTrue(xml.contains("name=\"Routers\""));
         
         // try backwards compatibility
         sendPost("/nodes/1/categories/", JaxbUtils.marshal(new OnmsCategory("Routers")), 303, "/nodes/1/categories/Routers");
+        xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
+        assertTrue(xml.contains("<description>My Equipment UPDATED</description>"));
         
         // and clean up again
         sendRequest(DELETE, "/nodes/1/categories/Routers", 200);

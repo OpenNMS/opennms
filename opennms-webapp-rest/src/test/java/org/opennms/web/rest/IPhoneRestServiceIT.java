@@ -67,7 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -212,7 +212,7 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         node.setId(1);
 
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.get("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventUei("uei.opennms.org/test");
         event.setEventTime(new Date());
         event.setEventSource("test");

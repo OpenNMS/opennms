@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -52,9 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 @Provider
+@Consumes({ MediaType.APPLICATION_XML, "application/*+xml", MediaType.TEXT_XML })
 public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
-	private static final Logger LOG = LoggerFactory.getLogger(ValidatingMessageBodyReader.class);
 
+	private static final Logger LOG = LoggerFactory.getLogger(ValidatingMessageBodyReader.class);
 
 	@Context
 	protected Providers providers;
@@ -63,12 +65,12 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 	 * @return true if the class is a JAXB-marshallable class that has 
 	 * an {@link javax.xml.bind.annotation.XmlRootElement} annotation.
 	 */
-        @Override
+	@Override
 	public boolean isReadable(final Class<?> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType) {
 		return (clazz.getAnnotation(XmlRootElement.class) != null);
 	}
 
-        @Override
+	@Override
 	public T readFrom(final Class<T> clazz, final Type type, final Annotation[] annotations, final MediaType mediaType, final MultivaluedMap<String, String> parameters, final InputStream stream) throws IOException, WebApplicationException {
 		LOG.debug("readFrom: {}/{}/{}", clazz.getSimpleName(), type, mediaType);
 
@@ -84,7 +86,7 @@ public class ValidatingMessageBodyReader<T> implements MessageBodyReader<T> {
 				jaxbContext = JAXBContext.newInstance(clazz);
 
 			}
-			
+
 			return JaxbUtils.unmarshal(clazz, new InputSource(stream), jaxbContext);
 
 		} catch (final JAXBException e) {

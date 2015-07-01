@@ -77,7 +77,6 @@ import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
-import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 import org.opennms.netmgt.config.notifications.Notifications;
@@ -216,8 +215,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
-        addFile(Source.CONFIG, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.JAXB);
-        addFile(Source.EXAMPLE, "monitoring-locations.xml", MonitoringLocationsConfiguration.class, Impl.JAXB);
         addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, Impl.CASTOR);

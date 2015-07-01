@@ -28,15 +28,12 @@
 
 package org.opennms.web.rest;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 
 /**
  * <p>MultivaluedMapImpl class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
  */
-public class MultivaluedMapImpl extends com.sun.jersey.core.util.MultivaluedMapImpl implements MultivaluedMap<String, String> {
+public class MultivaluedMapImpl extends MultivaluedHashMap<String,String> implements MultivaluedMap<String, String> {
 }

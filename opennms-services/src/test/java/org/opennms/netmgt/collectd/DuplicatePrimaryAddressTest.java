@@ -203,7 +203,7 @@ public class DuplicatePrimaryAddressTest {
         };
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
-        NetworkBuilder netBuilder = new NetworkBuilder("localhost", "127.0.0.1");
+        NetworkBuilder netBuilder = new NetworkBuilder();
 
         OnmsNode n1 = netBuilder.addNode("node1").setId(1).setForeignSource("TestA").setForeignId("node1").getNode();
         OnmsIpInterface ip1 = netBuilder.addSnmpInterface(1).addIpInterface("192.168.1.1").setId(2).setIsSnmpPrimary("P").getInterface();

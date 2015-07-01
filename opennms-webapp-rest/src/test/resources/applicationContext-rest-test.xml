@@ -24,11 +24,6 @@
 		<constructor-arg value="file:target/test-classes/dc.xml" />
 	</bean>
 
-	<bean name="monitoring-locations.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
-		<constructor-arg value="org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration" />
-		<constructor-arg value="file:target/test-classes/monitoring-locations.xml" />
-	</bean>
-
 	<bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
 		<constructor-arg value="file:target/test-classes/poller-configuration.xml" />

@@ -64,7 +64,7 @@ public class LocationMonitorIdValidator implements Validator, InitializingBean {
                                "Value required.");
         } else {
             try {
-                int monitorId = cmd.getMonitorId();
+                String monitorId = cmd.getMonitorId();
                 OnmsLocationMonitor monitor = m_locationMonitorDao.get(monitorId);
                 if (monitor == null) {
                     throw new ObjectRetrievalFailureException(OnmsLocationMonitor.class, monitorId, "Could not find location monitor with id " + monitorId, null);

@@ -34,12 +34,15 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 /**
  * <p>OnmsMapElementList class.</p>
  */
 @XmlRootElement(name = "mapElements")
+@JsonRootName("mapElements")
 public class OnmsMapElementList extends JaxbListWrapper<OnmsMapElement> {
     private static final long serialVersionUID = 1L;
 
@@ -49,6 +52,7 @@ public class OnmsMapElementList extends JaxbListWrapper<OnmsMapElement> {
     }
 
     @XmlElement(name="mapElement")
+    @JsonProperty("mapElement")
     public List<OnmsMapElement> getObjects() {
         return super.getObjects();
     }

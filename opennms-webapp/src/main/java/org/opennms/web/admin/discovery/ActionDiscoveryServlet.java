@@ -229,7 +229,6 @@ public class ActionDiscoveryServlet extends HttpServlet {
         			StringWriter configString = new StringWriter();
         			config.marshal(configString);
         			LOG.debug(configString.toString().trim());
-        		DiscoveryConfigFactory.init();
         		dcf = DiscoveryConfigFactory.getInstance();
             	        dcf.saveConfiguration(config);
         	}catch(Throwable ex){

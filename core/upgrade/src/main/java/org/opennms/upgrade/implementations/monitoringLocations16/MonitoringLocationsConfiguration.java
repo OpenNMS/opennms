@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.monitoringLocations;
+package org.opennms.upgrade.implementations.monitoringLocations16;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="monitoring-locations-configuration")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("monitoring-locations.xsd")
+//@ValidateUsing("monitoring-locations.xsd")
 public class MonitoringLocationsConfiguration implements Serializable {
     private static final long serialVersionUID = 4774677097952128710L;
 

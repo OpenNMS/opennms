@@ -81,14 +81,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findByLabel(String label);
     
     /**
-     * <p>findNodes</p>
-     *
-     * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-     * @return a {@link java.util.Collection} object.
-     */
-    List<OnmsNode> findNodes(OnmsDistPoller dp);
-    
-    /**
      * <p>getHierarchy</p>
      *
      * @param id a {@link java.lang.Integer} object.

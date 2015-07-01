@@ -84,9 +84,6 @@ public interface EventWriter extends EventProcessor {
      */
     public static final int EVENT_INTERFACE_FIELD_SIZE = 50;
 
-    /** Constant <code>EVENT_DPNAME_FIELD_SIZE=12</code> */
-    public static final int EVENT_DPNAME_FIELD_SIZE = 12;
-
     /** Constant <code>EVENT_SNMPHOST_FIELD_SIZE=256</code> */
     public static final int EVENT_SNMPHOST_FIELD_SIZE = 256;
 

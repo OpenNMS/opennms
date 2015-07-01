@@ -169,7 +169,7 @@ public class JaxbCastorEquivalenceTest {
 		final EventBuilder builder = new EventBuilder("uei.opennms.org/test", "JaxbCastorEquivalenceTest");
 		final Event event = builder
 			.setUuid("1234")
-			.setDistPoller("localhost")
+			.setDistPoller("00000000-0000-0000-0000-000000000000")
 			.setMasterStation("chief")
 			.setNodeid(1)
 			.setHost("funkytown")

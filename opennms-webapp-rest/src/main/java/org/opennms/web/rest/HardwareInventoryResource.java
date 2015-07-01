@@ -57,11 +57,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * The Class HardwareInventoryResource.
@@ -87,8 +84,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Component("hardwareInventoryResource")
-@PerRequest
-@Scope("prototype")
 @Path("hardwareInventory")
 @Transactional
 public class HardwareInventoryResource extends OnmsRestService {
@@ -115,17 +110,12 @@ public class HardwareInventoryResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsHwEntity getHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria) {
-        readLock();
-        try {
-            OnmsNode node = getOnmsNode(nodeCriteria);
-            OnmsHwEntity entity = m_hwEntityDao.findRootByNodeId(node.getId());
-            if (entity == null ) {
-                throw getException(Status.BAD_REQUEST, "getHardwareInventory: Can't find root hardware entity for node " + nodeCriteria);
-            }
-            return entity;
-        } finally {
-            readUnlock();
+        OnmsNode node = getOnmsNode(nodeCriteria);
+        OnmsHwEntity entity = m_hwEntityDao.findRootByNodeId(node.getId());
+        if (entity == null ) {
+            throw getException(Status.BAD_REQUEST, "getHardwareInventory: Can't find root hardware entity for node " + nodeCriteria);
         }
+        return entity;
     }
 
     /**
@@ -139,13 +129,8 @@ public class HardwareInventoryResource extends OnmsRestService {
     @Path("{entPhysicalIndex}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsHwEntity getHwEntityByIndex(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
-        readLock();
-        try {
-            OnmsNode node = getOnmsNode(nodeCriteria);
-            return getHwEntity(node.getId(), entPhysicalIndex);
-        } finally {
-            readUnlock();
-        }
+        OnmsNode node = getOnmsNode(nodeCriteria);
+        return getHwEntity(node.getId(), entPhysicalIndex);
     }
 
     /**
@@ -157,7 +142,7 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setHardwareInventory(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
+    public Response setHardwareInventory(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
         if (!entity.isRoot()) {
             throw getException(Status.BAD_REQUEST, "setHardwareInventory: The OnmsHwEntity is not a root entity " + entity);
         }
@@ -191,7 +176,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addOrReplaceChild(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+    public Response addOrReplaceChild(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -226,7 +211,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @PUT
     @Path("{entPhysicalIndex}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateHwEntity(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
+    public Response updateHwEntity(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -264,7 +249,7 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @DELETE
     @Path("{entPhysicalIndex}")
-    public Response deleteHwEntity(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+    public Response deleteHwEntity(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
