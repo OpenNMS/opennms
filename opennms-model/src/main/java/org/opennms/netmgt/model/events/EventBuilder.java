@@ -296,7 +296,7 @@ public class EventBuilder {
         }
 
         for(final Parm parm : m_event.getParmCollection()) {
-            if (parm.getParmName().equals(val)) {
+            if (parm.getParmName().equals(parmName)) {
             	final Value value = new Value();
                 value.setContent(val);
                 parm.setValue(value);
