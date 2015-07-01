@@ -16,7 +16,7 @@
                 <mevalue>1000</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultboardStatusFalse</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultboardStatusFalse</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultboardStatusFalse</event-label>
         <descr>&lt;p&gt;Board Status OK&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
             %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -43,7 +43,7 @@
                 <mevalue>1001</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultboardStatusTrue</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultboardStatusTrue</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultboardStatusTrue</event-label>
         <descr>&lt;p&gt;Board Status Fault&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
             %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -69,7 +69,7 @@
                 <mevalue>1002</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputPresentAsi1False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi1False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi1False</event-label>
         <descr>&lt;p&gt;ASI Input signal Present on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -96,7 +96,7 @@
                 <mevalue>1003</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputPresentAsi1True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi1True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi1True</event-label>
         <descr>&lt;p&gt;ASI Input signal Not present on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -122,7 +122,7 @@
                 <mevalue>1004</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputPresentAsi2False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi2False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi2False</event-label>
         <descr>&lt;p&gt;ASI Input signal Present on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -149,7 +149,7 @@
                 <mevalue>1005</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputPresentAsi2True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputPresentAsi2True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputPresentAsi2True</event-label>
         <descr>&lt;p&gt;ASI Input signal Not present on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -175,7 +175,7 @@
                 <mevalue>1006</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputSyncErrorAsi1False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi1False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi1False</event-label>
         <descr>&lt;p&gt;ASI Input sync OK on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
             %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -202,7 +202,7 @@
                 <mevalue>1007</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputSyncErrorAsi1True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi1True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi1True</event-label>
         <descr>&lt;p&gt;ASI Input sync Error on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -228,7 +228,7 @@
                 <mevalue>1008</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputSyncErrorAsi2False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi2False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi2False</event-label>
         <descr>&lt;p&gt;ASI Input sync OK on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
             %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -255,7 +255,7 @@
                 <mevalue>1009</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputSyncErrorAsi2True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputSyncErrorAsi2True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputSyncErrorAsi2True</event-label>
         <descr>&lt;p&gt;ASI Input sync Error on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -281,7 +281,7 @@
                 <mevalue>1010</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputContinuityErrorAsi1False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi1False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi1False</event-label>
         <descr>&lt;p&gt;ASI Input continuity count OK on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -308,7 +308,7 @@
                 <mevalue>1011</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputContinuityErrorAsi1True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi1True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi1True</event-label>
         <descr>&lt;p&gt;ASI Input continuity count Error on Asi1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -334,7 +334,7 @@
                 <mevalue>1012</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputContinuityErrorAsi2False</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi2False</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi2False</event-label>
         <descr>&lt;p&gt;ASI Input continuity count OK on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -361,7 +361,7 @@
                 <mevalue>1013</mevalue>
             </maskelement>
         </mask>
-        <uei>uei.opennms.org/traps/Evertz/ASIIP27780/faultasiInputContinuityErrorAsi2True</uei>
+        <uei>uei.opennms.org/traps/evertz/asiip27780/faultasiInputContinuityErrorAsi2True</uei>
         <event-label>ASIIP27780-TRAPS defined trap event: faultasiInputContinuityErrorAsi2True</event-label>
         <descr>&lt;p&gt;ASI Input continuity count Error on Asi2&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
             faultReservedData&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
