@@ -348,20 +348,17 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isPolled(final String ipaddr) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public boolean isPolled(final String svcName, final Package pkg) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public boolean isPolled(final String ipaddr, final String svcName) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
