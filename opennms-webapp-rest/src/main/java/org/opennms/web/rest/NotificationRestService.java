@@ -117,6 +117,8 @@ public class NotificationRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNotificationCollection} object.
      */
     @GET
+    // We have to have a blank path here so that the UriBuilder calls work
+    @Path("")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsNotificationCollection getNotifications(@Context UriInfo uriInfo) {

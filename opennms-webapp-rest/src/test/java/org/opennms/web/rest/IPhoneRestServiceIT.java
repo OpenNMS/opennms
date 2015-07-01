@@ -114,6 +114,23 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/alarms", parameters, 200);
         assertTrue(xml.contains("This is a test alarm"));
 
+        parameters.clear();
+        parameters.put("orderBy", "lastEventTime");
+        parameters.put("order", "asc");
+        parameters.put("alarmAckUser", "null");
+        parameters.put("limit", "1");
+        xml = sendRequest(GET, "/alarms", parameters, 200);
+        assertTrue(xml.contains("This is a test alarm"));
+
+        parameters.clear();
+        parameters.put("orderBy", "lastEventTime");
+        parameters.put("order", "asc");
+        parameters.put("alarmAckUser", "notnull");
+        parameters.put("limit", "1");
+        xml = sendRequest(GET, "/alarms", parameters, 200);
+        // There are no acknowledged alarms
+        assertTrue(xml.contains("<alarms totalCount=\"0\"/>"));
+
         xml = sendRequest(GET, "/alarms/1", parameters, 200);
         assertTrue(xml.contains("This is a test alarm"));
         assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));

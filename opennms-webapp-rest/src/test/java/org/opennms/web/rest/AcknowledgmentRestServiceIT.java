@@ -28,8 +28,10 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -42,7 +44,12 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -93,10 +100,10 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	    Matcher m = p.matcher(xml);
 	    assertTrue(m.matches());
 	    assertTrue(m.group(1).equals("admin"));
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=unack");
-        xml = sendRequest(GET, "/notifications/1", new HashMap<String,String>(), 200);
-        m = p.matcher(xml);
-        assertFalse(m.matches());
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "notifId=1&action=unack");
+	    xml = sendRequest(GET, "/notifications/1", new HashMap<String,String>(), 200);
+	    m = p.matcher(xml);
+	    assertFalse(m.matches());
 	}
 
 	@Test
@@ -104,13 +111,49 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	public void testAcknowlegeAlarm() throws Exception {
 	    final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
 	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
-	    String xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
+
+	    // Try to fetch a non-existent ack, get 204 No Content
+	    String xml = sendRequest(GET, "/acks/999999", 204);
+
+	    xml = sendRequest(GET, "/acks/count", 200);
+	    // {@link DatabasePopulator} adds one ack so we have 2 total
+	    assertEquals("2", xml);
+
+	    Integer newAckId = null;
+	    for (OnmsAcknowledgment ack : getXmlObject(JaxbUtils.getContextFor(OnmsAcknowledgmentCollection.class), "/acks", 200, OnmsAcknowledgmentCollection.class).getObjects()) {
+	        if (AckType.UNSPECIFIED.equals(ack.getAckType())) {
+	            // Ack from DatabasePopulator
+	            assertEquals(AckAction.UNSPECIFIED, ack.getAckAction());
+	            assertEquals("admin", ack.getAckUser());
+	        } else if (AckType.ALARM.equals(ack.getAckType())) {
+	            // Ack that we just created
+	            assertEquals(new Integer(1), ack.getRefId());
+	            assertEquals(AckAction.ACKNOWLEDGE, ack.getAckAction());
+	            newAckId = ack.getId();
+	        } else {
+	            fail("Unrecognized alarm type: " + ack.getAckType().toString());
+	        }
+	    }
+
+	    if (newAckId == null) {
+	        fail("Couldn't determine ID of new ack");
+	    }
+
+	    xml = sendRequest(GET, "/acks/" + newAckId, 200);
+
+	    xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
 	    Matcher m = p.matcher(xml);
 	    assertTrue(m.matches());
 	    assertTrue(m.group(1).length() > 0);
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
-        xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
-        m = p.matcher(xml);
-        assertFalse(m.matches());
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
+	    xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
+	    m = p.matcher(xml);
+	    assertFalse(m.matches());
+
+	    // POST with no argument, this will ack by default
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1");
+	    xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
+	    m = p.matcher(xml);
+	    assertTrue(m.matches());
 	}
 }

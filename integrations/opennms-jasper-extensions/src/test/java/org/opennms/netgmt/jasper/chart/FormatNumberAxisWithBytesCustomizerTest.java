@@ -2,10 +2,19 @@ package org.opennms.netgmt.jasper.chart;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.chart.FormatNumberAxisWithBytesCustomizer.ByteFormat;
 
+import java.util.Locale;
+
 public class FormatNumberAxisWithBytesCustomizerTest {
+
+    @Before
+    public void setUp() {
+        Locale.setDefault(Locale.US);
+    }
+
     @Test
     public void canFormatBytes() {
         double megabyteInBytes = 1024 * 1024;

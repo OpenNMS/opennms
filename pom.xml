@@ -732,12 +732,12 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.4.201502262128</version>
+        <version>0.7.5.201505241946</version>
         <configuration>
           <!-- TODO: Figure out how to configure this to be the same path for all projects -->
-          <classDumpDir>${project.build.directory}/classes</classDumpDir>
+          <classDumpDir>${opennms.build.basedir}/target/jacoco/classes</classDumpDir>
           <!-- TODO: Figure out how to configure this to be the same path for all projects -->
-          <destFile>${project.build.directory}/jacoco.exec</destFile>
+          <destFile>${opennms.build.basedir}/target/jacoco/jacoco.exec</destFile>
           <!-- Append all .exec content to the same file -->
           <append>true</append>
           <includes>
@@ -757,6 +757,8 @@
             <!-- Unit test classes -->
             <exclude>**/*Test.*</exclude>
             <exclude>**/*TestCase.*</exclude>
+            <exclude>**/*IT.*</exclude>
+            <exclude>**/*ITCase.*</exclude>
             <!-- Duplicate classes -->
             <exclude>**/SnmpUtilsTest*</exclude>
             <!-- Drools rules -->
@@ -848,22 +850,27 @@
         <inherited>false</inherited>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.8</version>
         <executions>
           <execution>
             <phase>validate</phase>
             <configuration>
-              <tasks>
-                <!-- I have to explicitly set Ant properties from Maven
-                     properties.  They aren't passed automatically, even
-                     when inheritAll="true" is used with <ant />.  -->
-                <ant target="java.check">
-                  <property name="java.vm.version" value="${java.vm.version}"/>
-                  <property name="java.version" value="${java.version}"/>
-                  <property name="java.home" value="${java.home}"/>
-                </ant>
+              <target>
+                <condition property="java.versionokay">
+                  <or>
+                    <!-- Don't forget to update the <fail> message below -->
+                    <contains string="${java.version}" substring="1.8."/>
+                    <contains string="${java.vm.version}" substring="1.8."/>
+                  </or>
+                </condition>
+                <fail unless="java.versionokay">You must use Java 1.8 to build!</fail>
                 <echo message="update policy is ${updatePolicy}"/>
-              </tasks>
+              </target>
+              <target>
+                <property name="opennms.build.basedir" location="." />
+                <mkdir dir="${opennms.build.basedir}/target/jacoco/classes" />
+                <echo message="base directory is ${opennms.build.basedir}" />
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -978,6 +985,13 @@
             <goals>
               <!- - Add the jacoco agent configuration to the argLine for surefire - ->
               <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-prepare-agent-integration</id>
+            <goals>
+              <!- - Add the jacoco agent configuration to the argLine for surefire - ->
+              <goal>prepare-agent-integration</goal>
             </goals>
           </execution>
         </executions>

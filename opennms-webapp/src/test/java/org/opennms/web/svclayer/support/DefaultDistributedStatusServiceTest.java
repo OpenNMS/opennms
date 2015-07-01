@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -114,7 +115,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
+        Locale.setDefault(Locale.US);
+
         m_service.setMonitoredServiceDao(m_monitoredServiceDao);
         m_service.setLocationMonitorDao(m_locationMonitorDao);
         m_service.setApplicationDao(m_applicationDao);

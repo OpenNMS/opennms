@@ -479,6 +479,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     @JUnitTemporaryDatabase
     public void testHardwareInventory() throws Exception {
+        // Try to fetch inventory on a non-existent node
+        sendRequest(GET, "/nodes/1000000/hardwareInventory", 400);
+
         createIpInterface();
         byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
         String entity = new String(encoded, "UTF-8");

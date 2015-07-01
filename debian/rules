@@ -20,6 +20,8 @@ export BUILDDEFINES=\
 	-Dinstall.webapps.dir=/usr/share/opennms/webapps \
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms.pid \
+	-Dmaven.test.skip.exec=true \
+	-DskipITs=true \
 	-Dproduct.release=1 \
 	-Dproduct.snapshot=true
 

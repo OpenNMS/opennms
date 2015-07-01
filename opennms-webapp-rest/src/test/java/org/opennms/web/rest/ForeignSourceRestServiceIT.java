@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -60,12 +61,37 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     
     @Test
+    public void testGetDefaultForeignSources() throws Exception {
+        String url = "/foreignSources/default";
+        String xml = sendRequest(GET, url, 200);
+        assertTrue(xml.contains("name=\"default\""));
+        assertTrue(xml.contains("ICMP"));
+
+        // DELETE of the default foreign source will fail
+        sendRequest(DELETE, url, 405);
+    }
+    
+    @Test
+    public void testGetDeployedForeignSources() throws Exception {
+        String url = "/foreignSources/deployed";
+        String xml = sendRequest(GET, url, 200);
+
+        url = "/foreignSources/deployed/count";
+        xml = sendRequest(GET, url, 200);
+        assertEquals(xml, "0", xml);
+    }
+    
+    @Test
     public void testForeignSources() throws Exception {
         createForeignSource();
         String url = "/foreignSources";
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("ICMP"));
-        
+
+        url = "/foreignSources/count";
+        xml = sendRequest(GET, url, 200);
+        assertEquals(xml, "1", xml);
+
         url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h", 303, "/foreignSources/test");
         xml = sendRequest(GET, url, 200);

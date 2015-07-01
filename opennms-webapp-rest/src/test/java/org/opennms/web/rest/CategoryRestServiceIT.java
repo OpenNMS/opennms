@@ -159,10 +159,26 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
     // does not test in detail, just checks if methods are still there
     // the tests should be done in NodeRestServiceTest
     public void testNodeCategories() throws Exception {
-        createNode(); 
+        createNode();
         sendRequest(GET, "/categories/nodes/1", 200); // list all categories of node 1
+
+        // Add node 1 to Routers
         sendRequest(PUT, "/categories/Routers/nodes/1", 303); // add category to node 1
+        sendRequest(GET, "/categories/Routers/nodes/1", 200); // list all categories of node 1
+        // Delete via the node path
         sendRequest(DELETE, "/nodes/1/categories/Routers", 200); // remove category from node 1
+
+        // Make sure that the node was removed from the category (204 No content)
+        sendRequest(GET, "/nodes/1/categories/Routers", 204);
+
+        // Add node 1 to Routers
+        sendRequest(PUT, "/categories/Routers/nodes/1", 303); // add category to node 1
+        sendRequest(GET, "/categories/Routers/nodes/1", 200); // list all categories of node 1
+        // Delete via the category path
+        sendRequest(DELETE, "/categories/Routers/nodes/1", 200); // remove category from node 1
+
+        // Make sure that the node was removed from the category (204 No content)
+        sendRequest(GET, "/categories/Routers/nodes/1", 204);
     }
     
     @Test
