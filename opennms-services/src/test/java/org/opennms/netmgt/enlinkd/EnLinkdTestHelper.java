@@ -67,7 +67,7 @@ public abstract class EnLinkdTestHelper {
         System.err.println("----------cdp element --------");
         System.err.println("Nodeid: " + cdpElement.getNode().getId());
         System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
-        if (cdpElement.getCdpGlobalDeviceId() !=  null)
+        if (cdpElement.getCdpGlobalDeviceIdFormat() !=  null)
             System.err.println("Cdp Global Device Id Format: " + CdpGlobalDeviceIdFormat.getTypeString(cdpElement.getCdpGlobalDeviceIdFormat().getValue()));
         System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
     }
