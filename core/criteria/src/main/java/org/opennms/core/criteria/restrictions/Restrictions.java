@@ -94,12 +94,12 @@ public abstract class Restrictions {
         return new NotRestriction(restriction);
     }
 
-    public static AllRestriction and(final Restriction lhs, final Restriction rhs) {
-        return new AllRestriction(lhs, rhs);
+    public static AllRestriction and(final Restriction... restrictions) {
+        return new AllRestriction(restrictions);
     }
 
-    public static AnyRestriction or(final Restriction lhs, final Restriction rhs) {
-        return new AnyRestriction(lhs, rhs);
+    public static AnyRestriction or(final Restriction... restrictions) {
+        return new AnyRestriction(restrictions);
     }
 
     public static AllRestriction all(final Restriction... restrictions) {

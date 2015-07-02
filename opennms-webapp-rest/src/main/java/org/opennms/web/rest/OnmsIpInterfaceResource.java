@@ -39,6 +39,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -64,21 +65,14 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("onmsIpInterfaceResource")
-@PerRequest
-@Scope("prototype")
 @Transactional
 public class OnmsIpInterfaceResource extends OnmsRestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsIpInterfaceResource.class);
-
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -90,9 +84,6 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
 
-    @Context
-    ResourceContext m_context;
-    
     /**
      * <p>getIpInterfaces</p>
      *
@@ -101,32 +92,26 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsIpInterfaceList getIpInterfaces(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
-        readLock();
+    public OnmsIpInterfaceList getIpInterfaces(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria) {
+        LOG.debug("getIpInterfaces: reading interfaces for node {}", nodeCriteria);
+
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
         
-        try {
-            LOG.debug("getIpInterfaces: reading interfaces for node {}", nodeCriteria);
-    
-            final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            
-            final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
-            
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
-            builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
-            builder.ne("isManaged", "D");
-            builder.limit(20);
-            applyQueryFilters(params, builder);
-            builder.alias("node", "node");
-            builder.eq("node.id", node.getId());
-            
-            final OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(builder.toCriteria()));
-    
-            interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(builder.count().toCriteria()));
-            
-            return interfaceList;
-        } finally {
-            readUnlock();
-        }
+        final MultivaluedMap<String,String> params = uriInfo.getQueryParameters();
+        
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);
+        builder.alias("monitoredServices.serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.ne("isManaged", "D");
+        builder.limit(20);
+        applyQueryFilters(params, builder);
+        builder.alias("node", "node");
+        builder.eq("node.id", node.getId());
+        
+        final OnmsIpInterfaceList interfaceList = new OnmsIpInterfaceList(m_ipInterfaceDao.findMatching(builder.toCriteria()));
+
+        interfaceList.setTotalCount(m_ipInterfaceDao.countMatching(builder.count().toCriteria()));
+        
+        return interfaceList;
     }
 
     /**
@@ -140,17 +125,11 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
     public OnmsIpInterface getIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress) {
-        readLock();
-        
-        try {
-            final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeCriteria);
-            }
-            return node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
-        } finally {
-            readUnlock();
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "getIpInterface: can't find node " + nodeCriteria);
         }
+        return node.getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
     }
 
     /**
@@ -162,7 +141,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addIpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
+    public Response addIpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final OnmsIpInterface ipInterface) {
         writeLock();
         
         try {
@@ -207,7 +186,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
-    public Response updateIpInterface(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateIpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -289,13 +268,8 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
      * @return a {@link org.opennms.web.rest.OnmsMonitoredServiceResource} object.
      */
     @Path("{ipAddress}/services")
-    public OnmsMonitoredServiceResource getServices() {
-        readLock();
-        try {
-            return m_context.getResource(OnmsMonitoredServiceResource.class);
-        } finally {
-            readUnlock();
-        }
+    public OnmsMonitoredServiceResource getServices(@Context final ResourceContext context) {
+        return context.getResource(OnmsMonitoredServiceResource.class);
     }
 
 }

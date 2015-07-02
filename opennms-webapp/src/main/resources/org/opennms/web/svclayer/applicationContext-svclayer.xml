@@ -65,6 +65,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <!-- Distributed Status Service Status beans -->
   <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
     <property name="applicationDao" ref="applicationDao"/>
     <property name="resourceDao" ref="resourceDao"/>
@@ -72,6 +73,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="layoutApplicationsVertically" value="${distributed.layoutApplicationsVertically}"/>
   </bean>
   <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
+    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
   </bean>
   <!--  Graphing beans -->

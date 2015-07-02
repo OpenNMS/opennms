@@ -28,11 +28,8 @@
 
 package org.opennms.netmgt.dao;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,10 +69,11 @@ public class DistPollerDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testCreate() {
-        OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   
-        distPoller.setLastEventPull(new Date(1000000));
+        OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller");
+        distPoller.setLabel("otherpoller");
+        distPoller.setLocation("localhost");
+        distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
         getDistPollerDao().save(distPoller);
-        
     }
     
 	@Test
@@ -86,8 +85,6 @@ public class DistPollerDaoIT implements InitializingBean {
         
         OnmsDistPoller distPoller = getDistPollerDao().get("otherpoller");
         assertNotNull(distPoller);
-        assertEquals(new Date(1000000), distPoller.getLastEventPull());
-        
     }
 
 	private DistPollerDao getDistPollerDao() {

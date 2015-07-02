@@ -212,11 +212,9 @@ public class PollerConfiguration implements Serializable {
         return m_monitors.remove(monitor);
     }
 
-    public PollerConfiguration getPollerConfigurationForPackage(final String pollingPackageName) {
-        if (pollingPackageName == null) return null;
-        final Package pkg = getPackage(pollingPackageName);
-        if (pkg == null) return null;
-
+    public PollerConfiguration getPollerConfigurationForPackages(final List<String> pollingPackageNames) {
+        if (pollingPackageNames == null || pollingPackageNames.size() < 1) return null;
+        
         final Set<String> seenMonitors = new HashSet<String>();
         final PollerConfiguration newConfig = new PollerConfiguration();
         newConfig.setThreads(getThreads());
@@ -225,11 +223,20 @@ public class PollerConfiguration implements Serializable {
         newConfig.setPathOutageEnabled(getPathOutageEnabled());
         newConfig.setNodeOutage(getNodeOutage());
         
-        newConfig.addPackage(pkg);
-        
-        for (final Service service : pkg.getServices()) {
-            seenMonitors.add(service.getName());
+        // Add all requested polling packages to the config
+        boolean foundPackage = false;
+        for (String pollingPackageName : pollingPackageNames) {
+            final Package pkg = getPackage(pollingPackageName);
+            if (pkg != null) {
+                newConfig.addPackage(pkg);
+                foundPackage = true;
+                for (final Service service : pkg.getServices()) {
+                    seenMonitors.add(service.getName());
+                }
+            }
         }
+        // If the list of polling packages doesn't match anything, then return null
+        if (!foundPackage) return null;
         
         for (final Monitor monitor : getMonitors()) {
             if (seenMonitors.contains(monitor.getService())) {

@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.springframework.validation.Errors;
@@ -113,7 +113,7 @@ public class LocationMonitorListModel {
     public static class LocationMonitorModel {
         private String m_area;
         private String m_definitionName;
-        private int m_id;
+        private String m_id;
         private String m_name;
         private String m_hostName;
         private String m_ipAddress;
@@ -133,26 +133,26 @@ public class LocationMonitorListModel {
          * @param monitor the location monitor
          * @param def the monitoring location definition for the location monitor (if any; can be null)
          */
-        public LocationMonitorModel(OnmsLocationMonitor monitor, OnmsMonitoringLocationDefinition def) {
+        public LocationMonitorModel(OnmsLocationMonitor monitor, LocationDef def) {
             if (monitor == null) {
                 throw new IllegalArgumentException("monitor argument cannot be null");
             }
             // def can be null
 
-            if (def != null && def.getArea() != null) {
-                setArea(def.getArea());
+            if (def != null && def.getMonitoringArea() != null) {
+                setArea(def.getMonitoringArea());
             }
             
-            setDefinitionName(monitor.getDefinitionName());
+            setDefinitionName(monitor.getLocation());
             setId(monitor.getId());
-            setHostName(monitor.getDetails().get(PollerBackEnd.HOST_NAME_KEY));
-            setIpAddress(monitor.getDetails().get(PollerBackEnd.HOST_ADDRESS_KEY));
-            setConnectionHostName(monitor.getDetails().get(PollerBackEnd.CONNECTION_HOST_NAME_KEY));
-            setConnectionIpAddress(monitor.getDetails().get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY));
+            setHostName(monitor.getProperties().get(PollerBackEnd.HOST_NAME_KEY));
+            setIpAddress(monitor.getProperties().get(PollerBackEnd.HOST_ADDRESS_KEY));
+            setConnectionHostName(monitor.getProperties().get(PollerBackEnd.CONNECTION_HOST_NAME_KEY));
+            setConnectionIpAddress(monitor.getProperties().get(PollerBackEnd.CONNECTION_HOST_ADDRESS_KEY));
             setStatus(monitor.getStatus());
-            setLastCheckInTime(monitor.getLastCheckInTime());
+            setLastCheckInTime(monitor.getLastUpdated());
             
-            List<Entry<String, String>> details = new ArrayList<Entry<String, String>>(monitor.getDetails().entrySet());
+            List<Entry<String, String>> details = new ArrayList<Entry<String, String>>(monitor.getProperties().entrySet());
             Collections.sort(details, new Comparator<Entry<String, String>>() {
                 @Override
                 public int compare(Entry<String, String> one, Entry<String, String> two) {
@@ -219,11 +219,11 @@ public class LocationMonitorListModel {
             m_connectionHostName = hostName;
         }
 
-        public int getId() {
+        public String getId() {
             return m_id;
         }
 
-        public void setId(int id) {
+        public void setId(String id) {
             m_id = id;
         }
 

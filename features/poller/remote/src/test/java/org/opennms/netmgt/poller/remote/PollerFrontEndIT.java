@@ -131,7 +131,7 @@ public class PollerFrontEndIT implements InitializingBean {
         // Start up the remote poller
         m_frontEnd.register("RDU");
         assertTrue(m_frontEnd.isStarted());
-        Integer monitorId = m_settings.getMonitorId();
+        String monitorId = m_settings.getMonitorId();
 
         assertTrue(m_frontEnd.isRegistered());
         // Make sure there is a total of one remote poller
@@ -162,15 +162,15 @@ public class PollerFrontEndIT implements InitializingBean {
         m_frontEnd.stop();
     }
 
-    protected int getSpecificChangesCount(Integer monitorId) {
+    protected int getSpecificChangesCount(String monitorId) {
         return m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes where locationMonitorId = ?", monitorId);
     }
 
-    protected int getDisconnectedCount(Integer monitorId) {
+    protected int getDisconnectedCount(String monitorId) {
         return m_jdbcTemplate.queryForInt("select count(*) from location_monitors where status=? and id=?", MonitorStatus.DISCONNECTED.toString(), monitorId);
     }
 
-    protected int getMonitorCount(Integer monitorId) {
+    protected int getMonitorCount(String monitorId) {
         return m_jdbcTemplate.queryForInt("select count(*) from location_monitors where id=?", monitorId);
     }
 }

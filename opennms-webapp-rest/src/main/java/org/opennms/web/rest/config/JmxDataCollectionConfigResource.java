@@ -28,8 +28,12 @@
 
 package org.opennms.web.rest.config;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
+import javax.annotation.Resource;
+import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.JMXDataCollectionConfigDao;
@@ -37,34 +41,16 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import javax.annotation.Resource;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("jmxDataCollectionConfigResource")
 public class JmxDataCollectionConfigResource implements InitializingBean {
 
-    @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(JmxDataCollectionConfigResource.class);
 
     @Resource(name = "jmxDataCollectionConfigDao")
     private JMXDataCollectionConfigDao m_jmxDataCollectionConfigDao;
-
-    @Context
-    private ResourceContext m_context;
-
-    @Context
-    private UriInfo m_uriInfo;
 
     public void setJmxDataCollectionConfigDao(final JMXDataCollectionConfigDao dao) {
         m_jmxDataCollectionConfigDao = dao;
@@ -81,7 +67,6 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
     public Response getJmxDataCollectionConfig() throws ConfigurationResourceException {
         LOG.debug("getJmxDataCollectionConfigurationForLocation()");
 
-        @SuppressWarnings("unchecked")
         final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getContainer().getObject();
 
         if (jmxDataCollectionConfig == null) {

@@ -30,7 +30,6 @@ package org.opennms.web.rest;
 
 import java.util.Date;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -39,7 +38,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.Alias.JoinType;
@@ -50,11 +48,8 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsOutageCollection;
 import org.opennms.netmgt.model.outage.OutageSummaryCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * TODO: Add functionality to getting outages by:
@@ -73,20 +68,12 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("outageRestService")
-@PerRequest
-@Scope("prototype")
 @Path("outages")
 public class OutageRestService extends OnmsRestService {
 
     @Autowired
     private OutageDao m_outageDao;
 
-    @Context
-    SecurityContext m_securityContext;
-    
-    @Context
-    ServletContext m_servletContext;
-    
     /**
      * <p>getOutage</p>
      *
@@ -97,24 +84,19 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{outageId}")
     @Transactional
-    public Response getOutage(@Context UriInfo uriInfo, @PathParam("outageId") final String outageId) {
-        readLock();
-        try {
-            if ("summaries".equals(outageId)) {
-                final MultivaluedMap<String,String> parms = uriInfo.getQueryParameters(true);
-                int limit = 10;
-                if (parms.containsKey("limit")) {
-                    limit = Integer.parseInt(parms.getFirst("limit"));
-                }
-                return Response.ok(new OutageSummaryCollection(m_outageDao.getNodeOutageSummaries(limit))).build();
-            } else {
-                return Response.ok(m_outageDao.get(Integer.valueOf(outageId))).build();
+    public Response getOutage(@Context final UriInfo uriInfo, @PathParam("outageId") final String outageId) {
+        if ("summaries".equals(outageId)) {
+            final MultivaluedMap<String,String> parms = uriInfo.getQueryParameters(true);
+            int limit = 10;
+            if (parms.containsKey("limit")) {
+                limit = Integer.parseInt(parms.getFirst("limit"));
             }
-        } finally {
-            readUnlock();
+            return Response.ok(new OutageSummaryCollection(m_outageDao.getNodeOutageSummaries(limit))).build();
+        } else {
+            return Response.ok(m_outageDao.get(Integer.valueOf(outageId))).build();
         }
     }
-    
+
     /**
      * <p>getCount</p>
      *
@@ -125,12 +107,7 @@ public class OutageRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_outageDao.countAll());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_outageDao.countAll());
     }
 
     /**
@@ -141,27 +118,22 @@ public class OutageRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsOutageCollection getOutages(@Context UriInfo uriInfo) {
-        readLock();
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-            builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
-            builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
-            builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
-            builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
-            builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
+    public OnmsOutageCollection getOutages(@Context final UriInfo uriInfo) {
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
+        builder.alias("ipInterface.snmpInterface", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN);
 
-            applyQueryFilters(uriInfo.getQueryParameters(), builder);
-    
-            final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-    
-            //For getting totalCount
-            coll.setTotalCount(m_outageDao.countMatching(builder.count().toCriteria()));
-    
-            return coll;
-        } finally {
-            readUnlock();
-        }
+        applyQueryFilters(uriInfo.getQueryParameters(), builder);
+
+        final OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
+
+        //For getting totalCount
+        coll.setTotalCount(m_outageDao.countMatching(builder.count().toCriteria()));
+
+        return coll;
     }
 
     /**
@@ -174,28 +146,23 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     @Path("forNode/{nodeId}")
-    public OnmsOutageCollection forNodeId(@Context UriInfo uriInfo, @PathParam("nodeId") final int nodeId) {
-        readLock();
-        
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-            builder.eq("node.id", nodeId);
-            final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
-    
-            builder.alias("monitoredService", "monitoredService");
-            builder.alias("monitoredService.ipInterface", "ipInterface");
-            builder.alias("monitoredService.ipInterface.node", "node");
-            builder.alias("monitoredService.serviceType", "serviceType");
-    
-            applyQueryFilters(uriInfo.getQueryParameters(), builder);
-    
-            builder.orderBy("id").desc();
-    
-            return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+    public OnmsOutageCollection forNodeId(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId) {
+
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.eq("node.id", nodeId);
+        final Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));
+        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", d));
+
+        builder.alias("monitoredService", "monitoredService");
+        builder.alias("monitoredService.ipInterface", "ipInterface");
+        builder.alias("monitoredService.ipInterface.node", "node");
+        builder.alias("monitoredService.serviceType", "serviceType");
+
+        applyQueryFilters(uriInfo.getQueryParameters(), builder);
+
+        builder.orderBy("id").desc();
+
+        return new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
     }
 }
 

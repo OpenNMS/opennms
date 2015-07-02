@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -72,6 +73,8 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
 public class DefaultResourceDaoTest {
+
+    private static final String LOCATION_MONITOR_ID = UUID.randomUUID().toString();
 
     private EasyMockUtils m_easyMockUtils;
 
@@ -353,7 +356,7 @@ public class DefaultResourceDaoTest {
 
         File response = m_fileAnticipator.tempDir("response");
         File distributed = m_fileAnticipator.tempDir(response, "distributed");
-        File monitor = m_fileAnticipator.tempDir(distributed, "1");
+        File monitor = m_fileAnticipator.tempDir(distributed, LOCATION_MONITOR_ID);
         File ipDir = m_fileAnticipator.tempDir(monitor, "192.168.1.1");
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
@@ -361,7 +364,7 @@ public class DefaultResourceDaoTest {
 
         // Setup the status to match the path on disk
         OnmsLocationMonitor locMon = new OnmsLocationMonitor();
-        locMon.setId(1);
+        locMon.setId(LOCATION_MONITOR_ID);
         OnmsIpInterface ipIntf = new OnmsIpInterface();
         ipIntf.setIpAddress(InetAddress.getByName("192.168.1.1"));
         LocationMonitorIpInterface locMonIpIntf = new LocationMonitorIpInterface(locMon, ipIntf);
@@ -462,7 +465,7 @@ public class DefaultResourceDaoTest {
         OnmsIpInterface ip = createIpInterfaceOnNode();
 
         OnmsLocationMonitor locMon = new OnmsLocationMonitor();
-        locMon.setId(12345);
+        locMon.setId(LOCATION_MONITOR_ID);
 
         // Create distributed/9850/209.61.128.9
         File response = m_fileAnticipator.tempDir("response");

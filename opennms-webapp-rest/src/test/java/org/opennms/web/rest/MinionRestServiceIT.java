@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -58,7 +59,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -89,35 +90,31 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testMinions() throws Exception {
         final String xml = sendRequest(GET, "/minions", 200);
-        assertTrue(xml.contains("12345"));
-        assertTrue(xml.contains("23456"));
-        assertTrue(xml.contains("key=\"Foo\""));
-        assertTrue(xml.contains("<property"));
-        assertTrue(xml.contains(">Bar<"));
+        assertTrue(xml, xml.contains("id=\"12345\""));
+        assertTrue(xml, xml.contains("id=\"23456\""));
+        assertTrue(xml, xml.contains("<key>Foo</key>"));
+        assertTrue(xml, xml.contains("<value>Bar</value>"));
     }
     
     @Test
     public void testGetMinion() throws Exception {
         String xml = sendRequest(GET, "/minions/12345", 200);
-        assertTrue(xml.contains("12345"));
-        assertFalse(xml.contains("23456"));
-        assertTrue(xml.contains("key=\"Foo\""));
-        assertTrue(xml.contains("<property"));
-        assertTrue(xml.contains(">Bar<"));
+        assertTrue(xml, xml.contains("id=\"12345\""));
+        assertFalse(xml, xml.contains("id=\"23456\""));
+        assertTrue(xml, xml.contains("<key>Foo</key>"));
+        assertTrue(xml, xml.contains("<value>Bar</value>"));
         
         xml = sendRequest(GET, "/minions/23456", 200);
-        assertFalse(xml.contains("12345"));
-        assertTrue(xml.contains("23456"));
-        assertFalse(xml.contains("key=\"Foo\""));
-        assertFalse(xml.contains("<property"));
-        assertFalse(xml.contains(">Bar<"));
+        assertFalse(xml, xml.contains("id=\"12345\""));
+        assertTrue(xml, xml.contains("id=\"23456\""));
+        assertFalse(xml, xml.contains("<key>Foo</key>"));
+        assertFalse(xml, xml.contains("<value>Bar</value>"));
     }
 
     @Test
     public void testGetProperty() throws Exception {
         String xml = sendRequest(GET, "/minions/12345/Foo", 200);
-        assertFalse(xml.contains("12345"));
-        assertTrue(xml.contains("key=\"Foo\""));
-        assertTrue(xml.contains(">Bar<"));
+        assertFalse(xml, xml.contains("id=\"12345\""));
+        assertEquals("Bar", xml);
     }
 }

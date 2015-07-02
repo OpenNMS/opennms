@@ -36,10 +36,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name = "users")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName("users")
 public class OnmsUserList extends JaxbListWrapper<OnmsUser> {
     private static final long serialVersionUID = 1L;
 
@@ -49,6 +52,7 @@ public class OnmsUserList extends JaxbListWrapper<OnmsUser> {
     }
 
     @XmlElement(name="user")
+    @JsonProperty("user")
     public List<OnmsUser> getObjects() {
         return super.getObjects();
     }

@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.ncs.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -39,6 +42,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.ncs.NCSBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
@@ -75,12 +79,7 @@ public class NCSComponentDaoIT {
 	@Before
 	public void setUp() {
 		
-		OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-		
-		m_distPollerDao.save(distPoller);
-		
-		
-		NetworkBuilder bldr = new NetworkBuilder(distPoller);
+		NetworkBuilder bldr = new NetworkBuilder();
 		bldr.addNode("PE1").setForeignSource("space").setForeignId("1111-PE1");
 		
 		m_nodeDao.save(bldr.getCurrentNode());

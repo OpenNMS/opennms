@@ -22,7 +22,8 @@
   <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.activemq.eventforwarder" update-strategy="none">
     <cm:default-properties>
       <cm:property name="brokerUri" value="tcp://127.0.0.1:61716"/>
-      <cm:property name="location" value="remote" />
+      <!-- TODO: We should use a service to fetch the UUID of the current system -->
+      <cm:property name="systemId" value="remote" />
       <cm:property name="username" value="admin"/>
       <cm:property name="password" value="admin"/>
       <cm:property name="refreshInterval" value="300000"/> <!-- milliseconds -->
@@ -67,8 +68,11 @@
       <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
       <!-- Add headers for foreignsource/foreignid -->
       <bean ref="foreignSourceForeignIdHeaderProcessor"/>
-      <setHeader headerName="location">
-        <constant>{{location}}</constant>        
+      <!-- 
+        Should match value of UpdateNodeIdByForeignSourceForeignIdHeaderProcessor.EVENT_HEADER_SYSTEMID
+      -->
+      <setHeader headerName="systemId">
+        <constant>{{location}}</constant>
       </setHeader>
       <!-- Marshal Event to XML -->
       <bean ref="marshaller"/>

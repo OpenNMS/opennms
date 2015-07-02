@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,9 +77,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
-
-        "classpath:/org/opennms/web/rest/applicationContext-test.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -235,8 +234,9 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
 
                 System.err.println("======= Starting createLocationMonitors() ======");
                 OnmsLocationMonitor locMon1 = new OnmsLocationMonitor();
-                locMon1.setDefinitionName("RDU");
-                locMon1.setLastCheckInTime(new Date());
+                locMon1.setId(UUID.randomUUID().toString());
+                locMon1.setLocation("RDU");
+                locMon1.setLastUpdated(new Date());
                 locMon1.setStatus(MonitorStatus.STARTED);
                 m_locationMonitorDao.save(locMon1);
 

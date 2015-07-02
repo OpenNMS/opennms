@@ -51,7 +51,7 @@ import org.springframework.web.context.ContextLoaderListener;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author Seth
  */
-public class HttpRemotingContextTest extends TestCase {
+public class HttpRemotingContextIT extends TestCase {
 
 	private String contextPath = "/opennms/http-remoting";
 
