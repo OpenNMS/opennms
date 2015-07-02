@@ -268,7 +268,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
-        final Map<String, String> stringMap = JmxUtils.convertToStringMap(map);
+        final Map<String, String> stringMap = JmxUtils.convertToUnmodifiableStringMap(map);
         final InetAddress ipaddr = agent.getAddress();
         final JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         final String collectionName = agent.getAttribute("collectionName");

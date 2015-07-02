@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<jmx-config>
+    <mbean-server ipAddress="127.0.0.1" port="18980">
+        <parameter key="protocol" value="rmi"/>
+        <parameter key="urlPath" value="/jmxrmi"/>
+    </mbean-server>
+</jmx-config>

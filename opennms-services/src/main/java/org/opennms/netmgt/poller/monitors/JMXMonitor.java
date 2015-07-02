@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.config.jmx.MBeanServer;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
@@ -42,8 +45,10 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 
 @Distributable
@@ -58,6 +63,8 @@ import java.util.Map;
 public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
+
+    protected JmxConfigDao m_jmxConfigDao = null;
 
     private class Timer {
 
@@ -83,9 +90,21 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
+        if (m_jmxConfigDao == null) {
+            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
+        }
 
         final NetworkInterface<InetAddress> iface = svc.getNetInterface();
         final InetAddress ipv4Addr = iface.getAddress();
+
+        Map<String, String> mergedStringMap = JmxUtils.convertToStringMap(map);
+
+        if (mergedStringMap.containsKey("port")) {
+            MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(ipv4Addr), mergedStringMap.get("port"));
+            if (mBeanServer != null) {
+                mergedStringMap.putAll(mBeanServer.getParameterMap());
+            }
+        }
 
         PollStatus serviceStatus = PollStatus.unavailable();
         try {
@@ -98,7 +117,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 }
             };
 
-            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), InetAddrUtils.str(ipv4Addr), JmxUtils.convertToStringMap(map), retryCallback)) {
+            try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(), InetAddrUtils.str(ipv4Addr), mergedStringMap, retryCallback)) {
 
                 connection.getMBeanServerConnection().getMBeanCount();
                 long nanoResponseTime = System.nanoTime() - timer.getStartTime();
