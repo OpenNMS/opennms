@@ -52,7 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/emptyContext.xml"
 })
 @JUnitTemporaryDatabase
-public class MonitoringLocationsMigratorOfflineTest {
+public class MonitoringLocationsMigratorOfflineIT {
 
     /**
      * Sets up the test.
