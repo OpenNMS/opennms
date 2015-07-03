@@ -281,14 +281,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
-     */
-    public void testMonitoringLocations() {
-        ignoreConfigFile("monitoring-locations.xml");
-    }
-
-    @Test
     public void testNotifdConfiguration() {
         testConfigFile("notifd-configuration.xml");
     }

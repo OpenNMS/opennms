@@ -56,7 +56,6 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -116,8 +115,7 @@ public class NotificationManagerIT implements InitializingBean {
 
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
-        
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+
         OnmsNode node;
         OnmsIpInterface ipInterface;
         OnmsMonitoredService service;
@@ -137,7 +135,7 @@ public class NotificationManagerIT implements InitializingBean {
         serviceType = new OnmsServiceType("HTTP");
         m_serviceTypeDao.save(serviceType);
 
-		node = new OnmsNode(distPoller, "node 1");
+		node = new OnmsNode("node 1");
 		node.addCategory(category1);
 		node.addCategory(category2);
 		node.addCategory(category3);
@@ -147,7 +145,7 @@ public class NotificationManagerIT implements InitializingBean {
 		m_nodeDao.save(node);
 
         // node 2
-        node = new OnmsNode(distPoller, "node 2");
+        node = new OnmsNode("node 2");
 		node.addCategory(category1);
 		node.addCategory(category2);
 		node.addCategory(category4);
@@ -162,7 +160,7 @@ public class NotificationManagerIT implements InitializingBean {
         m_ipInterfaceDao.save(ipInterface);
         
         // node 3
-        node = new OnmsNode(distPoller, "node 3");
+        node = new OnmsNode("node 3");
         m_nodeDao.save(node);
         
         ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
@@ -171,14 +169,14 @@ public class NotificationManagerIT implements InitializingBean {
         m_serviceDao.save(service);
         
         // node 4 has an interface, but no services
-        node = new OnmsNode(distPoller, "node 4");
+        node = new OnmsNode("node 4");
         m_nodeDao.save(node);
 
         ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
         m_ipInterfaceDao.save(ipInterface);
         
         // node 5 has no interfaces
-        node = new OnmsNode(distPoller, "node 5");
+        node = new OnmsNode("node 5");
         m_nodeDao.save(node);
 
         m_nodeDao.flush();

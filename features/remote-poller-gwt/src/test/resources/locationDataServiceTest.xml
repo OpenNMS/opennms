@@ -16,10 +16,6 @@
 
   <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
   
-  <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="classpath:rdu-only-monitoring-locations.xml" />
-  </bean>
-  
   <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService">
     <property name="save" value="false" />
   </bean>
@@ -36,6 +32,7 @@
   </bean>
 
   <bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="monitoringLocationDao" ref="monitoringLocationDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerConfig" ref="pollerConfig" />

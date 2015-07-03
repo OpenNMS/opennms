@@ -11,8 +11,8 @@
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies Jersey Client</name>
   <properties>
-    <jerseyVersion>1.18.1</jerseyVersion>
-    <jerseyContribVersion>1.18</jerseyContribVersion>
+    <jerseyVersion>1.19</jerseyVersion>
+    <jerseyContribVersion>1.19</jerseyContribVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -23,6 +23,10 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -36,6 +40,11 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- replacing jsr311-api dep in jersey-client -->
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
   </dependencies>
   <repositories>

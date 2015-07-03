@@ -34,10 +34,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 
 @XmlRootElement(name="minions")
+@JsonRootName("minions")
 public class OnmsMinionCollection extends JaxbListWrapper<OnmsMinion> {
     private static final long serialVersionUID = 1L;
 
@@ -47,8 +50,8 @@ public class OnmsMinionCollection extends JaxbListWrapper<OnmsMinion> {
     }
 
     @XmlElement(name="minion")
+    @JsonProperty("minion")
     public List<OnmsMinion> getObjects() {
         return super.getObjects();
     }
 }
-

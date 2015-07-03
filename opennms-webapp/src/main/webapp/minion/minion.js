@@ -5,9 +5,7 @@
 		return this.indexOf(suffix, this.length - suffix.length) !== -1;
 	};
 
-	angular.module('minion', [
-		'ng'
-	])
+	angular.module('minion', [])
 
 	.controller('MinionListCtrl', ['$scope', '$http', '$log', function($scope, $http, $log) {
 		$log.debug('MinionListCtrl Initialized.');

@@ -45,11 +45,10 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsLinkState;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsLinkState;
 import org.opennms.netmgt.model.OnmsLinkState.LinkState;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.DefaultEndPointConfigurationDao;
 import org.opennms.netmgt.xml.event.Event;
@@ -93,7 +92,7 @@ public class LinkEventCorrelatorTest {
 
         m_nodeLinkService = createMock(NodeLinkService.class);
 
-        final OnmsNode node = new OnmsNode(new OnmsDistPoller("localhost", "127.0.0.1"), "pittsboro-2");
+        final OnmsNode node = new OnmsNode("pittsboro-2");
         node.setId(2);
         final Collection<DataLinkInterface> dlis = new ArrayList<DataLinkInterface>();
         m_dataLinkInterface = new DataLinkInterface(node, 1, 1, 1, StatusType.UNKNOWN, new Date());

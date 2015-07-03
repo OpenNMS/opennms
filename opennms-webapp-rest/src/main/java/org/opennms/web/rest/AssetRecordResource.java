@@ -54,28 +54,23 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
 @Component("assetRecordResource")
-@PerRequest
-@Scope("prototype")
 @Path("assetRecord")
 @Transactional
 public class AssetRecordResource extends OnmsRestService {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AssetRecordResource.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AssetRecordResource.class);
 
     @Autowired
-    private NodeDao m_nodeDao;    
-    
+    private NodeDao m_nodeDao;
+
     @Autowired
     @Qualifier("eventProxy")
     private EventProxy m_eventProxy;
-    
+
     /**
      * <p>getAssetRecord</p>
      *
@@ -84,17 +79,12 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") String nodeCriteria) {
-        readLock();
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "getAssetRecord: Can't find node " + nodeCriteria);
-            }
-            return getAssetRecord(node);
-        } finally {
-            readUnlock();
+    public OnmsAssetRecord getAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "getAssetRecord: Can't find node " + nodeCriteria);
         }
+        return getAssetRecord(node);
     }
     
     /**
@@ -106,48 +96,42 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria,  MultivaluedMapImpl params) {
-        writeLock();
-        
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) {
-                throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
-            }
-            
-            OnmsAssetRecord assetRecord = getAssetRecord(node);
-            if (assetRecord == null) {
-                throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
-            }
-            if (assetRecord.getGeolocation() == null) {
-                assetRecord.setGeolocation(new OnmsGeolocation());
-            }
-            LOG.debug("updateAssetRecord: updating category {}", assetRecord);
-            BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
-            for(String key : params.keySet()) {
-                if (wrapper.isWritableProperty(key)) {
-                    String stringValue = params.getFirst(key);
-                    Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-                    wrapper.setPropertyValue(key, value);
-                }
-            }
-       
-            LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-            m_nodeDao.saveOrUpdate(node);
-            
-            try {
-                sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
-            } catch (EventProxyException e) {
-                throw getException(Status.BAD_REQUEST, e.getMessage());
-            }
-            
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
-        } finally {
-            writeUnlock();
+    public Response updateAssetRecord(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
         }
+
+        OnmsAssetRecord assetRecord = getAssetRecord(node);
+        if (assetRecord == null) {
+            throw getException(Status.BAD_REQUEST, "updateAssetRecord: Node " + node  + " could not update ");
+        }
+        if (assetRecord.getGeolocation() == null) {
+            assetRecord.setGeolocation(new OnmsGeolocation());
+        }
+        LOG.debug("updateAssetRecord: updating category {}", assetRecord);
+        BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
+        for(String key : params.keySet()) {
+            if (wrapper.isWritableProperty(key)) {
+                String stringValue = params.getFirst(key);
+                Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                wrapper.setPropertyValue(key, value);
+            }
+        }
+
+        LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
+        m_nodeDao.saveOrUpdate(node);
+
+        try {
+            sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
+        } catch (EventProxyException e) {
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
+
+        return Response.seeOther(getRedirectUri(uriInfo)).build();
     }
 
-    private OnmsAssetRecord getAssetRecord(OnmsNode node) {
+    private static OnmsAssetRecord getAssetRecord(OnmsNode node) {
         return node.getAssetRecord();
     }
     

@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -98,7 +97,7 @@ public class AgentConfigurationResourceTest {
         final List<InetAddress> addresses = Arrays.asList(oneNinetyTwo);
         m_filterDao.setActiveIPAddressList(addresses);
 
-        final OnmsNode node = new OnmsNode(null, "foo");
+        final OnmsNode node = new OnmsNode("foo");
         node.setId(1);
         node.setForeignSource("foo");
         node.setForeignId("bar");
@@ -112,9 +111,9 @@ public class AgentConfigurationResourceTest {
         assertEquals(200, response.getStatus());
         final Object entity = response.getEntity();
         assertNotNull(entity);
-        assertTrue(entity instanceof GenericEntity<?>);
+        assertTrue(entity instanceof List<?>);
         @SuppressWarnings("unchecked")
-        final List<AgentResponse> agentResponses = (List<AgentResponse>) ((GenericEntity<?>)entity).getEntity();
+        final List<AgentResponse> agentResponses = (List<AgentResponse>)entity;
         System.err.println(agentResponses);
         assertEquals(1, agentResponses.size());
         assertEquals(oneNinetyTwo, agentResponses.get(0).getAddress());

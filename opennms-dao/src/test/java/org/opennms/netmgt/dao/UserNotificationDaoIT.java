@@ -108,7 +108,7 @@ public class UserNotificationDaoIT implements InitializingBean {
     @Transactional
     public void testSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.load("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventCreateTime(new Date());
         event.setEventDescr("event dao test");
         event.setEventHost("localhost");

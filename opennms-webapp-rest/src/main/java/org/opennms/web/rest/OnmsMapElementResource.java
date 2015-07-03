@@ -31,7 +31,6 @@ package org.opennms.web.rest;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -41,14 +40,9 @@ import org.opennms.netmgt.model.OnmsMapElementList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
-
-@Component
 /**
  * <p>OnmsMapElementResource class.</p>
  *
@@ -56,8 +50,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@PerRequest
-@Scope("prototype")
+@Component("onmsMapElementResource")
 @Transactional
 public class OnmsMapElementResource extends OnmsRestService {
 	
@@ -65,9 +58,6 @@ public class OnmsMapElementResource extends OnmsRestService {
 
     @Autowired
     private OnmsMapDao m_mapDao;
-
-    @Context
-    ResourceContext m_context;
 
     /**
      * <p>getMapElements</p>
@@ -78,14 +68,9 @@ public class OnmsMapElementResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMapElementList getMapElements(@PathParam("mapId") final int mapId) {
-        readLock();
-        try {
-            LOG.debug("getMapElements: reading elements for map {}", mapId);
-            final OnmsMap map = m_mapDao.get(mapId);
-            if (map == null) throw getException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
-            return new OnmsMapElementList(map.getMapElements());
-        } finally {
-            readUnlock();
-        }
+        LOG.debug("getMapElements: reading elements for map {}", mapId);
+        final OnmsMap map = m_mapDao.get(mapId);
+        if (map == null) throw getException(Response.Status.BAD_REQUEST, "getMapElements: can't find map " + mapId);
+        return new OnmsMapElementList(map.getMapElements());
     }
 }

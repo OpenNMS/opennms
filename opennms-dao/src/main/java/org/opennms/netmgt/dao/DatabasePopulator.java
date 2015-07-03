@@ -29,12 +29,14 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -45,6 +47,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -60,6 +63,7 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -67,16 +71,14 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
@@ -151,6 +153,7 @@ public class DatabasePopulator {
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
     private OnmsMapDao m_onmsMapDao;
     private OnmsMapElementDao m_onmsMapElementDao;
@@ -249,6 +252,9 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        for (final LocationDef location : m_monitoringLocationDao.findAll()) {
+            m_monitoringLocationDao.delete(location);
+        }
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
@@ -279,8 +285,7 @@ public class DatabasePopulator {
     private void doPopulateDatabase() {
         LOG.debug("==== DatabasePopulator Starting ====");
 
-        final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
         
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
@@ -311,7 +316,7 @@ public class DatabasePopulator {
         getNodeDao().flush();
         setNode6(node6);
         
-        final OnmsEvent event = buildEvent(distPoller);
+        final OnmsEvent event = buildEvent(builder.getDistPoller());
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -377,14 +382,15 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final OnmsMonitoringLocationDefinition def = new OnmsMonitoringLocationDefinition();
-        def.setName("RDU");
-        def.setArea("East Coast");
-        def.setPollingPackageName("example1");
+        final LocationDef def = new LocationDef();
+        def.setLocationName("RDU");
+        def.setMonitoringArea("East Coast");
+        def.setPollingPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
-        def.setCoordinates("35.715751,-79.16262");
+        def.setLatitude(35.715751f);
+        def.setLongitude(-79.16262f);
         def.setPriority(1L);
-        m_locationMonitorDao.saveMonitoringLocationDefinition(def);
+        m_monitoringLocationDao.save(def);
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
@@ -582,7 +588,7 @@ public class DatabasePopulator {
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_node1);
@@ -594,17 +600,6 @@ public class DatabasePopulator {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         return alarm;
-    }
-
-    public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
-    	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
-            getDistPollerDao().save(newDp);
-            getDistPollerDao().flush();
-            return newDp;
-        }
-        return distPoller;
     }
 
     public AlarmDao getAlarmDao() {
@@ -782,6 +777,14 @@ public class DatabasePopulator {
 
     private void setNode6(final OnmsNode node6) {
         m_node6 = node6;
+    }
+
+    public MonitoringLocationDao getMonitoringLocationDao() {
+        return m_monitoringLocationDao;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
     }
 
     public LocationMonitorDao getLocationMonitorDao() {

@@ -1613,7 +1613,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         getInstallerDb().updatePlPgsql();
         getInstallerDb().addStoredProcedures();
 
-        addTableFromSQL("distpoller");
+        addTableFromSQL("monitoringsystems");
         addTableFromSQL("node");
         
         // Add snmpinterface table with an arbitrary change so it gets upgraded

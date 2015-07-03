@@ -57,11 +57,8 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Basic Web Service using REST for NCS Components
@@ -69,59 +66,45 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
 @Component("alarmStatsRestService")
-@PerRequest
-@Scope("prototype")
 @Path("stats/alarms")
 @Transactional
 public class AlarmStatsRestService extends AlarmRestServiceBase {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestService.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmStatsRestService.class);
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     @Autowired
-    AlarmStatisticsService m_statisticsService;
+    private AlarmStatisticsService m_statisticsService;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public AlarmStatistics getStats(@Context UriInfo uriInfo) {
-        readLock();
-        try {
-            return getStats(uriInfo, null);
-        } finally {
-            readUnlock();
-        }
+    public AlarmStatistics getStats(@Context final UriInfo uriInfo) {
+        return getStats(uriInfo, null);
     }
 
     @GET
     @Path("/by-severity")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public AlarmStatisticsBySeverity getStatsForEachSeverity(@Context UriInfo uriInfo, @QueryParam("severities") final String severitiesString) {
-        readLock();
+    public AlarmStatisticsBySeverity getStatsForEachSeverity(@Context final UriInfo uriInfo, @QueryParam("severities") final String severitiesString) {
+        final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
 
-        try {
-            final AlarmStatisticsBySeverity stats = new AlarmStatisticsBySeverity();
-    
-            String[] severities = StringUtils.split(severitiesString, ",");
-            if (severities == null || severities.length == 0) {
-                severities = OnmsSeverity.names().toArray(EMPTY_STRING_ARRAY);
-            }
-    
-            for (final String severityName : severities) {
-                final OnmsSeverity severity = OnmsSeverity.get(severityName);
-    
-                final AlarmStatistics stat = getStats(uriInfo, severity);
-                stat.setSeverity(severity);
-                stats.add(stat);
-            }
-            
-            return stats;
-        } finally {
-            readUnlock();
+        String[] severities = StringUtils.split(severitiesString, ",");
+        if (severities == null || severities.length == 0) {
+            severities = OnmsSeverity.names().toArray(EMPTY_STRING_ARRAY);
         }
+
+        for (final String severityName : severities) {
+            final OnmsSeverity severity = OnmsSeverity.get(severityName);
+
+            final AlarmStatistics stat = getStats(uriInfo, severity);
+            stat.setSeverity(severity);
+            stats.add(stat);
+        }
+        
+        return stats;
     }
-    
+
     protected AlarmStatistics getStats(final UriInfo uriInfo, final OnmsSeverity severity) {
         final AlarmStatistics stats = new AlarmStatistics();
 
@@ -190,7 +173,7 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         return m_statisticsService.getUnacknowledged(criteria);
     }
 
-    protected CriteriaBuilder getCriteriaBuilder(final OnmsSeverity severity) {
+    protected static CriteriaBuilder getCriteriaBuilder(final OnmsSeverity severity) {
     	final CriteriaBuilder builder = new CriteriaBuilder(OnmsAlarm.class);
         if (severity != null) {
             builder.eq("severity", severity);

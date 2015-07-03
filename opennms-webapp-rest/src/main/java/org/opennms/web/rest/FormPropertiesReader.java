@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -44,9 +45,15 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 @Provider
+@Consumes({ MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_OCTET_STREAM })
 public class FormPropertiesReader implements MessageBodyReader<MultivaluedMapImpl> {
-    @Context
+
     private HttpServletRequest m_httpServletRequest;
+
+    @Context
+    public void setHttpServletRequest(HttpServletRequest request) {
+        m_httpServletRequest = request;
+    }
 
     /** {@inheritDoc} */
     @Override

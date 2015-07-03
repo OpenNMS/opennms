@@ -49,11 +49,8 @@ import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.svclayer.model.SnmpInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>
@@ -101,14 +98,10 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @version $Id: $
  * @since 1.8.1
  */
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("snmpConfigRestService")
 @Path("snmpConfig")
 @Transactional
 public class SnmpConfigRestService extends OnmsRestService {
-    @Context 
-    UriInfo m_uriInfo;
 
     @Autowired
     private SnmpConfigAccessService m_accessService;
@@ -130,17 +123,12 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
-        readLock();
-        try {
-            final InetAddress addr = InetAddressUtils.addr(ipAddr);
-            if (addr == null) {
-                throw new WebApplicationException(Response.serverError().build());
-            }
-            final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
-            return new SnmpInfo(config);
-        } finally {
-            readUnlock();
+        final InetAddress addr = InetAddressUtils.addr(ipAddr);
+        if (addr == null) {
+            throw new WebApplicationException(Response.serverError().build());
         }
+        final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
+        return new SnmpInfo(config);
     }
 
     /**
@@ -153,7 +141,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_XML)
     @Path("{ipAddr}")
-    public Response setSnmpInfo(@PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
+    public Response setSnmpInfo(@Context final UriInfo uriInfo, @PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();
         try {
             final SnmpEventInfo eventInfo;
@@ -165,7 +153,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             }
 
             m_accessService.define(eventInfo);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {
@@ -184,7 +172,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Path("{ipAddr}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateInterface(@PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateInterface(@Context final UriInfo uriInfo, @PathParam("ipAddr") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         try {
             final SnmpInfo info = new SnmpInfo();
@@ -197,7 +185,7 @@ public class SnmpConfigRestService extends OnmsRestService {
                 eventInfo = info.createEventInfo(ipAddress);
             }
             m_accessService.define(eventInfo);
-            return Response.seeOther(getRedirectUri(m_uriInfo)).build();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {

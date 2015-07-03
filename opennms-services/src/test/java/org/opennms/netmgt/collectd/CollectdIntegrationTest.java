@@ -164,7 +164,7 @@ public class CollectdIntegrationTest extends TestCase {
         };
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
-        NetworkBuilder netBuilder = new NetworkBuilder("localhost", "127.0.0.1");
+        NetworkBuilder netBuilder = new NetworkBuilder();
         NodeBuilder nodeBuilder = netBuilder.addNode("node1").setId(1);
         InterfaceBuilder ifaceBlder = 
             netBuilder.addInterface("192.168.1.1")

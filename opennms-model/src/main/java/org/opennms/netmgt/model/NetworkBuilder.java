@@ -49,9 +49,8 @@ import org.springframework.beans.PropertyAccessorFactory;
  * <p>NetworkBuilder class.</p>
  */
 public class NetworkBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
 
     private final OnmsDistPoller m_distPoller;
 
@@ -83,18 +82,17 @@ public class NetworkBuilder {
     /**
      * <p>Constructor for NetworkBuilder.</p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @param ipAddress a {@link java.lang.String} object.
-     */
-    public NetworkBuilder(final String name, final String ipAddress) {
-        m_distPoller = new OnmsDistPoller(name, ipAddress);
-    }
-
-    /**
-     * Totally bogus
+     * @param distPollerId a {@link java.lang.String} object.
      */
     public NetworkBuilder() {
-        this("localhost", "127.0.0.1");
+        m_distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+        m_distPoller.setLabel("localhost");
+        m_distPoller.setLocation("localhost");
+        m_distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+    }
+
+    public OnmsDistPoller getDistPoller() {
+        return m_distPoller;
     }
 
     /**
@@ -104,8 +102,7 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.NodeBuilder} object.
      */
     public NodeBuilder addNode(String label) {
-        m_currentNode = new OnmsNode(m_distPoller);
-        m_currentNode.setLabel(label);
+        m_currentNode = new OnmsNode(label);
         m_assetBean = PropertyAccessorFactory.forBeanPropertyAccess(m_currentNode.getAssetRecord());
         return new NodeBuilder(m_currentNode);
     }

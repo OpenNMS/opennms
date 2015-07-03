@@ -438,6 +438,10 @@
       <classifier>contrib</classifier>
     </dependency>
     <dependency>
+      <groupId>com.ximpleware</groupId>
+      <artifactId>vtd-xml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-vtdxml-collector-handler</artifactId>
       <version>${project.version}</version>
