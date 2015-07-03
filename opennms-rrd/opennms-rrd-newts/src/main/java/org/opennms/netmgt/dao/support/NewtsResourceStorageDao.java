@@ -51,6 +51,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     private static final int INFINITE_DEPTH = -1;
 
     @Autowired
+    private Context m_context;
+
+    @Autowired
     private CassandraSearcher m_searcher;
 
     @Autowired
@@ -168,7 +171,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         List<Result> matchingResults = Lists.newArrayList();
 
         LOG.trace("Searching for '{}'.", q);
-        SearchResults results = m_searcher.search(q);
+        SearchResults results = m_searcher.search(m_context, q);
         LOG.trace("Found {} results.", results.size());
         for (final Result result : results) {
             Integer relativeDepth = getRelativeDepth(path, toResourcePath(result.getResource().getId()));
@@ -258,5 +261,10 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @VisibleForTesting
     protected void setSearcher(CassandraSearcher searcher) {
         m_searcher = searcher;
+    }
+
+    @VisibleForTesting
+    protected void setContext(Context context) {
+        m_context = context;
     }
 }

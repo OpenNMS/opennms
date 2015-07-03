@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdDataSource;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -65,15 +66,15 @@ public class NewtsRrdStrategyTest {
         private List<Collection<Sample>> m_samples = Lists.newLinkedList();
 
         @Override
-        public Results<Measurement> select(Resource resource,
-                Optional<Timestamp> start, Optional<Timestamp> end,
-                ResultDescriptor descriptor, Duration resolution) {
+        public Results<Sample> select(Context context, Resource resource,
+                Optional<Timestamp> start, Optional<Timestamp> end) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Results<Sample> select(Resource resource,
-                Optional<Timestamp> start, Optional<Timestamp> end) {
+        public Results<Measurement> select(Context context, Resource resource,
+                Optional<Timestamp> start, Optional<Timestamp> end,
+                ResultDescriptor descriptor, Optional<Duration> resolution) {
             throw new UnsupportedOperationException();
         }
 
@@ -90,5 +91,7 @@ public class NewtsRrdStrategyTest {
         public List<Collection<Sample>> getInsertedSamples() {
             return m_samples;
         }
+
+
     }
 }

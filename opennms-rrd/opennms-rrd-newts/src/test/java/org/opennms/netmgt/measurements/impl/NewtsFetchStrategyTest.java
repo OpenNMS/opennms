@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
@@ -66,6 +67,8 @@ public class NewtsFetchStrategyTest {
         ResourceDao resourceDao = EasyMock.createNiceMock(ResourceDao.class);
         EasyMock.expect(resourceDao.getResourceById("nodeSource[NODES:1430502148137].responseTime[127.0.0.1]")).andReturn(resource);
 
+        Context context = new Context("test");
+
         SampleRepository sampleRepository = EasyMock.createNiceMock(SampleRepository.class);
         Results<Measurement> results = new Results<Measurement>();
         Resource res = new Resource("");
@@ -75,7 +78,7 @@ public class NewtsFetchStrategyTest {
         results.addRow(row);
 
         EasyMock.expect(sampleRepository.select(
-                EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
+                EasyMock.eq(context), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
                 )).andReturn(results);
 
         EasyMock.replay(resourceDao, sampleRepository);
@@ -83,6 +86,7 @@ public class NewtsFetchStrategyTest {
         NewtsFetchStrategy nfs = new NewtsFetchStrategy();
         nfs.setResourceDao(resourceDao);
         nfs.setSampleRepository(sampleRepository);
+        nfs.setContext(context);
 
         Source source = new Source();
         source.setAggregation("AVERAGE");

@@ -26,6 +26,7 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
@@ -58,6 +59,8 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
     public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
 
+    public static final boolean ENABLE_HIERARCHICAL_INDEXING = true;
+
     protected static final String FILE_EXTENSION = ".newts";
 
     private final int m_maxBatchSize;
@@ -67,6 +70,9 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
     /////////
     // Newts
     /////////
+
+    @Autowired
+    private Context m_context;
 
     @Autowired
     private SampleRepository m_sampleRepository;
@@ -271,7 +277,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
         LOG.debug("Selecting samples for resource {} from {} to {}", resource, start, end);
 
         // Grab all of the sample in the requested interval
-        final Results<Sample> samples = m_sampleRepository.select(resource, Optional.of(start), Optional.of(end));
+        final Results<Sample> samples = m_sampleRepository.select(m_context, resource, Optional.of(start), Optional.of(end));
 
         LOG.debug("Retrieved samples: {}", samples);
 

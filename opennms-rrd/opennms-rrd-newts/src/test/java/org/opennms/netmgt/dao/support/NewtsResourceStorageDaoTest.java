@@ -49,14 +49,16 @@ public class NewtsResourceStorageDaoTest {
 
     @Test
     public void exists() throws IOException {
+        Context context = Context.DEFAULT_CONTEXT;
         CassandraSearcher searcher = EasyMock.createNiceMock(CassandraSearcher.class);
         NewtsResourceStorageDao nrs = new NewtsResourceStorageDao();
         nrs.setSearcher(searcher);
         nrs.setSearchableCache(m_cache);
+        nrs.setContext(context);
 
         // Path is missing when the resource does not exist
         SearchResults searchResults = new SearchResults();
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertFalse(nrs.exists(ResourcePath.get("should", "not", "exist")));
@@ -66,7 +68,7 @@ public class NewtsResourceStorageDaoTest {
         // Path is missing when the resource exists, but does not have a bucket
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertFalse(nrs.exists(ResourcePath.get("a")));
@@ -76,7 +78,7 @@ public class NewtsResourceStorageDaoTest {
         // Path exists when a child resource with a bucket exists
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:b:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertTrue(nrs.exists(ResourcePath.get("a")));
@@ -86,7 +88,7 @@ public class NewtsResourceStorageDaoTest {
         // Path exists when the resource with a bucket exists
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertTrue(nrs.exists(ResourcePath.get("a")));
@@ -96,13 +98,15 @@ public class NewtsResourceStorageDaoTest {
 
     @Test
     public void children() throws IOException {
+        Context context = Context.DEFAULT_CONTEXT;
         CassandraSearcher searcher = EasyMock.createNiceMock(CassandraSearcher.class);
         NewtsResourceStorageDao nrs = new NewtsResourceStorageDao();
         nrs.setSearcher(searcher);
+        nrs.setContext(context);
 
         // Children are empty when the resource id does not exist
         SearchResults searchResults = new SearchResults();
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertEquals(0, nrs.children(ResourcePath.get("should", "not", "exist")).size());
@@ -111,7 +115,7 @@ public class NewtsResourceStorageDaoTest {
 
         // Children are empty when there are no child resources
         searchResults = new SearchResults();
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertEquals(0, nrs.children(ResourcePath.get("a")).size());
@@ -121,7 +125,7 @@ public class NewtsResourceStorageDaoTest {
         // Child exists when the is a child resource
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:b:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         Set<ResourcePath> children = nrs.children(ResourcePath.get("a"));
@@ -133,7 +137,7 @@ public class NewtsResourceStorageDaoTest {
         // Same call but specifying the depth
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:b:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         children = nrs.children(ResourcePath.get("a"), 1);
@@ -145,7 +149,7 @@ public class NewtsResourceStorageDaoTest {
         // Only returns the next level
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:b:c:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         children = nrs.children(ResourcePath.get("a"));
@@ -157,7 +161,7 @@ public class NewtsResourceStorageDaoTest {
         // No children when depth is 0
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:b:bucket"), Collections.emptyList());
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         children = nrs.children(ResourcePath.get("a"), 0);
@@ -168,13 +172,15 @@ public class NewtsResourceStorageDaoTest {
 
     @Test
     public void getAttributes() throws IOException {
+        Context context = Context.DEFAULT_CONTEXT;
         CassandraSearcher searcher = EasyMock.createNiceMock(CassandraSearcher.class);
         NewtsResourceStorageDao nrs = new NewtsResourceStorageDao();
         nrs.setSearcher(searcher);
+        nrs.setContext(context);
 
         // Attributes are empty when the resource does not exist
         SearchResults searchResults = new SearchResults();
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         assertEquals(0, nrs.getAttributes(ResourcePath.get("should", "not", "exist")).size());
@@ -185,7 +191,7 @@ public class NewtsResourceStorageDaoTest {
         searchResults = new SearchResults();
         searchResults.addResult(new Resource("a:bucket1"), Sets.newHashSet("metric11", "metric12"));
         searchResults.addResult(new Resource("a:bucket2"), Sets.newHashSet("metric21", "metric22"));
-        EasyMock.expect(searcher.search(EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
         EasyMock.replay(searcher);
 
         Set<OnmsAttribute> attributes = nrs.getAttributes(ResourcePath.get("a"));

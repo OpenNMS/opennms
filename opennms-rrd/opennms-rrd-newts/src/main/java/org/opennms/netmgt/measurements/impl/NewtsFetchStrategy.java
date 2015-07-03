@@ -39,6 +39,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
 import org.opennms.newts.api.Measurement;
 import org.opennms.newts.api.Resource;
@@ -68,6 +69,9 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private static final int RESOLUTION_MULTIPLIER = 2;
 
     private static final int STEP_LOWER_BOUND_IN_MS = 120 * 1000;
+
+    @Autowired
+    private Context m_context;
 
     @Autowired
     private ResourceDao m_resourceDao;
@@ -143,7 +147,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             }
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
-            Results<Measurement> results = m_sampleRepository.select(new Resource(newtsResourceId), startTs, endTs, resultDescriptor, Duration.millis(RESOLUTION_MULTIPLIER*step));
+            Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
+                    resultDescriptor, Optional.of(Duration.millis(RESOLUTION_MULTIPLIER*step)));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
@@ -201,5 +206,10 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     @VisibleForTesting
     protected void setSampleRepository(SampleRepository sampleRepository) {
         m_sampleRepository = sampleRepository;
+    }
+
+    @VisibleForTesting
+    protected void setContext(Context context) {
+        m_context = context;
     }
 }

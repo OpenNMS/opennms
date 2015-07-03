@@ -54,6 +54,8 @@
 
   <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.rrd.newts.NewtsRrdStrategy.TTL" />
 
+  <util:constant id="search.hierarical-indexing" static-field="org.opennms.netmgt.rrd.newts.NewtsRrdStrategy.ENABLE_HIERARCHICAL_INDEXING" />
+
   <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.maxSampleProcessorThreads:8}" />
   </bean>
@@ -61,6 +63,10 @@
   <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.maxCacheEntries:8192}" />
   </bean>
+
+  <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
+
+  <bean id="contextConfigurations" class="org.opennms.newts.persistence.cassandra.ContextConfigurations" />
 
   <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
