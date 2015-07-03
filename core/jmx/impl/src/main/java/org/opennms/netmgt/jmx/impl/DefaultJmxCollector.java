@@ -291,4 +291,13 @@ public class DefaultJmxCollector implements JmxCollector {
         }
         return Collections.unmodifiableSet(objectNames);
     }
+
+    /**
+     * Method for setting the config dao to use. Required for the tests to work properly.
+     *
+     * @param jmxConfigDao the dao instance
+     */
+    public void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
+        this.m_jmxConfigDao = jmxConfigDao;
+    }
 }
