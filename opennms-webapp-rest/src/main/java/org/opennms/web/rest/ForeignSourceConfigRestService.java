@@ -52,20 +52,15 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * The Class ForeignSourceConfigRestService.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("foreignSourceConfigRestService")
 @Path("foreignSourcesConfig")
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
 

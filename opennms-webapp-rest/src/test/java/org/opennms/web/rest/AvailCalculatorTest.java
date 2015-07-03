@@ -52,7 +52,7 @@ public class AvailCalculatorTest {
     @Before
     public void setUp() {
         m_locationMon = new OnmsLocationMonitor();
-        m_locationMon.setDefinitionName("IPv6");
+        m_locationMon.setLocation("IPv6");
         m_locationMon.setStatus(MonitorStatus.STARTED);
         
         m_svc = new OnmsMonitoredService();

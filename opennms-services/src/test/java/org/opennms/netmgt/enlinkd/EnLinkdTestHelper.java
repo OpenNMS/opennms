@@ -31,6 +31,8 @@ package org.opennms.netmgt.enlinkd;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import java.util.List;
+
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.model.BridgeMacLink;
@@ -39,14 +41,10 @@ import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
-
-import java.util.List;
-
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
@@ -69,6 +67,8 @@ public abstract class EnLinkdTestHelper {
         System.err.println("----------cdp element --------");
         System.err.println("Nodeid: " + cdpElement.getNode().getId());
         System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
+        if (cdpElement.getCdpGlobalDeviceIdFormat() !=  null)
+            System.err.println("Cdp Global Device Id Format: " + CdpGlobalDeviceIdFormat.getTypeString(cdpElement.getCdpGlobalDeviceIdFormat().getValue()));
         System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
     }
 

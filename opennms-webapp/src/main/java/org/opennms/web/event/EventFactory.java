@@ -186,7 +186,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE EVENTID=? ");
+            PreparedStatement stmt = conn.prepareStatement("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, node.nodeLabel, service.serviceName FROM events LEFT OUTER JOIN monitoringsystems ON events.systemId=monitoringsystems.id LEFT OUTER JOIN node USING (nodeId) LEFT OUTER JOIN service USING (serviceId) WHERE eventId=? ");
             d.watch(stmt);
             stmt.setInt(1, eventId);
 
@@ -318,10 +318,14 @@ public class EventFactory {
 
         try {
             StringBuffer select = new StringBuffer("" +
-                    "          SELECT events.*, node.nodelabel, service.servicename " + 
+                    "          SELECT events.*, node.nodelabel, service.servicename, " +
+                    "                 monitoringsystems.id AS systemId, " + 
+                    "                 monitoringsystems.label AS systemLabel " +
                     "            FROM node " + 
                     "RIGHT OUTER JOIN events " +
                     "              ON (events.nodeid = node.nodeid) " + 
+                    " LEFT OUTER JOIN monitoringsystems " +
+                    "              ON (events.systemid = monitoringsystems.id) " +
                     " LEFT OUTER JOIN service " +
                     "              ON (service.serviceid = events.serviceid) " + 
                     "           WHERE ");
@@ -872,7 +876,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT * FROM EVENTS WHERE EVENTDPNAME=?");
+            StringBuffer select = new StringBuffer("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND EVENTACKUSER IS NULL");
@@ -1225,7 +1229,7 @@ public class EventFactory {
 
             event.host = rs.getString("eventHost");
             event.snmphost = rs.getString("eventSnmpHost");
-            event.dpName = rs.getString("eventDpName");
+            event.dpName = rs.getString("systemLabel");
             event.parms = rs.getString("eventParms");
 
             // node id can be null

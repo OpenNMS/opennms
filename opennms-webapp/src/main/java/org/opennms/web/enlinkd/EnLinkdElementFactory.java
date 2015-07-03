@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.IpNetToMedia;
@@ -243,6 +244,10 @@ public class EnLinkdElementFactory implements InitializingBean, EnLinkdElementFa
         CdpElementNode cdpNode = new CdpElementNode();
         cdpNode.setCdpGlobalRun(TruthValue.getTypeString(cdp.getCdpGlobalRun().getValue()));
         cdpNode.setCdpGlobalDeviceId(cdp.getCdpGlobalDeviceId());
+        if (cdp.getCdpGlobalDeviceIdFormat() != null)
+            cdpNode.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.getTypeString(cdp.getCdpGlobalDeviceIdFormat().getValue()));
+        else 
+            cdpNode.setCdpGlobalDeviceIdFormat("&nbsp");
         cdpNode.setCdpCreateTime(Util.formatDateToUIString(cdp.getCdpNodeCreateTime()));
         cdpNode.setCdpLastPollTime(Util.formatDateToUIString(cdp.getCdpNodeLastPollTime()));
         

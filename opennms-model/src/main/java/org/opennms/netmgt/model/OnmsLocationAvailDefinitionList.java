@@ -34,6 +34,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement
@@ -46,6 +47,7 @@ public class OnmsLocationAvailDefinitionList extends JaxbListWrapper<OnmsLocatio
     }
 
     @XmlElement(name="data")
+    @JsonProperty("data")
     public List<OnmsLocationAvailDataPoint> getObjects() {
         return super.getObjects();
     }

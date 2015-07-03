@@ -164,8 +164,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private String m_foreignId;
 
-    /** persistent field */
-    private OnmsDistPoller m_distPoller;
+    /**
+     * TODO: Make this a persistent foreign key reference to the monitoringLocations table
+     */
+    private String m_location = "localhost";
 
     /** persistent field */
     private OnmsAssetRecord m_assetRecord;
@@ -207,17 +209,14 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * <p>Constructor for OnmsNode.</p>
      *
-     * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @param label The node label
      */
-    public OnmsNode(final OnmsDistPoller distPoller) {
-        m_distPoller = distPoller;
+    public OnmsNode(final String label) {
+        // Set the label
+        setLabel(label);
+        // Create an asset record for the node
         m_assetRecord = new OnmsAssetRecord();
         m_assetRecord.setNode(this);
-    }
-
-    public OnmsNode(final OnmsDistPoller distPoller, final String label) {
-        this(distPoller);
-        setLabel(label);
     }
 
     /**
@@ -710,25 +709,20 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     }
 
     /**
-     * Distributed Poller responsible for this node
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * Monitoring location that this node is located in.
      */
     @XmlTransient
     @JsonIgnore
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName")
-    public OnmsDistPoller getDistPoller() {
-        return m_distPoller;
+    @Transient
+    public String getLocation() {
+        return m_location;
     }
 
     /**
-     * <p>setDistPoller</p>
-     *
-     * @param distpoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * Set the monitoring location that this node is located in.
      */
-    public void setDistPoller(org.opennms.netmgt.model.OnmsDistPoller distpoller) {
-        m_distPoller = distpoller;
+    public void setLocation(String location) {
+        m_location = location;
     }
 
     /**
@@ -894,6 +888,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @return a {@link java.util.Set} object.
      */
+    @XmlTransient
+    @JsonIgnore
     @OneToMany(mappedBy="node",orphanRemoval=true)
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
     public Set<LldpLink> getLldpLinks() {
@@ -1035,7 +1031,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         retval.append("label", m_label);
         retval.append("parent.id", getParent() == null ? null : getParent().getId());
         retval.append("createTime", m_createTime);
-        // retval.append("distPoller", m_distPoller);
         retval.append("sysObjectId", m_sysObjectId);
         retval.append("sysName", m_sysName);
         retval.append("sysDescription", m_sysDescription);
@@ -1095,6 +1090,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @return a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     @Transient
+    @JsonIgnore
     public OnmsSnmpInterface getSnmpInterfaceWithIfIndex(int ifIndex) {
         for (OnmsSnmpInterface dbSnmpIface : getSnmpInterfaces()) {
             if (dbSnmpIface.getIfIndex().equals(ifIndex)) {

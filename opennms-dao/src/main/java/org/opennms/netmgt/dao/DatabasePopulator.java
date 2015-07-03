@@ -28,7 +28,15 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
@@ -38,6 +46,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -55,9 +64,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -70,15 +77,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
- *
+ * 
  * Example usage:
  * <pre>
  * private DatabasePopulator m_populator;
@@ -90,12 +91,12 @@ import java.util.Map;
  *         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
  *     };
  * }
- *
+ * 
  * @Override
  * protected void onSetUpInTransactionIfEnabled() {
  *     m_populator.populateDatabase();
  * }
- *
+ * 
  * public void setPopulator(DatabasePopulator populator) {
  *     m_populator = populator;
  * }
@@ -540,7 +541,7 @@ public class DatabasePopulator {
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_node1);
@@ -552,17 +553,6 @@ public class DatabasePopulator {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         return alarm;
-    }
-
-    public OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
-        final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
-            getDistPollerDao().save(newDp);
-            getDistPollerDao().flush();
-            return newDp;
-        }
-        return distPoller;
     }
 
     public AlarmDao getAlarmDao() {
@@ -740,6 +730,14 @@ public class DatabasePopulator {
 
     private void setNode6(final OnmsNode node6) {
         m_node6 = node6;
+    }
+
+    public MonitoringLocationDao getMonitoringLocationDao() {
+        return m_monitoringLocationDao;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
     }
 
     public LocationMonitorDao getLocationMonitorDao() {

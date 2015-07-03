@@ -90,6 +90,9 @@
     <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" ref="monitoredServiceDao" />
 
+    <bean id="monitoringLocationDao" class="org.opennms.netmgt.dao.mock.MockMonitoringLocationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
+
     <bean id="memoDao" class="org.opennms.netmgt.dao.mock.MockMemoDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MemoDao" ref="memoDao" />
 
@@ -207,6 +210,7 @@
         <property name="alarmDao" ref="alarmDao" />
         <property name="notificationDao" ref="notificationDao" />
         <property name="userNotificationDao" ref="userNotificationDao" />
+        <property name="monitoringLocationDao" ref="monitoringLocationDao" />
         <property name="locationMonitorDao" ref="locationMonitorDao" />
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="serviceTypeDao" ref="serviceTypeDao" />

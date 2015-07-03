@@ -39,14 +39,9 @@ import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.sun.jersey.spi.resource.PerRequest;
-
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("snmpConfigurationResource")
 public class SnmpConfigurationResource {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigurationResource.class);

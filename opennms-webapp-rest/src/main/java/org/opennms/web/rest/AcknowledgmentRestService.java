@@ -49,11 +49,8 @@ import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * ReST service for Acknowledgments of alarms/notifications.
@@ -63,8 +60,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("acknowledgmentRestService")
-@PerRequest
-@Scope("prototype")
 @Path("acks")
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
@@ -87,12 +82,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Path("{id}")
     @Transactional
     public OnmsAcknowledgment getAcknowledgment(@PathParam("id") String alarmId) {
-        readLock();
-        try {
-            return m_ackDao.get(new Integer(alarmId));
-        } finally {
-            readUnlock();
-        }
+        return m_ackDao.get(new Integer(alarmId));
     }
     
     /**
@@ -105,12 +95,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Path("count")
     @Transactional
     public String getCount() {
-        readLock();
-        try {
-            return Integer.toString(m_ackDao.countAll());
-        } finally {
-            readUnlock();
-        }
+        return Integer.toString(m_ackDao.countAll());
     }
 
     /**
@@ -121,23 +106,17 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsAcknowledgmentCollection getAcks(@Context UriInfo uriInfo) {
-        readLock();
-        
-        try {
-            final CriteriaBuilder builder = getQueryFilters(uriInfo.getQueryParameters());
-            OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(builder.toCriteria()));
-    
-            //For getting totalCount
-            builder.clearOrder();
-            builder.limit(null);
-            builder.offset(null);
-            coll.setTotalCount(m_ackDao.countMatching(builder.toCriteria()));
-    
-            return coll;
-        } finally {
-            readUnlock();
-        }
+    public OnmsAcknowledgmentCollection getAcks(@Context final UriInfo uriInfo) {
+        final CriteriaBuilder builder = getQueryFilters(uriInfo.getQueryParameters());
+        OnmsAcknowledgmentCollection coll = new OnmsAcknowledgmentCollection(m_ackDao.findMatching(builder.toCriteria()));
+
+        //For getting totalCount
+        builder.clearOrder();
+        builder.limit(null);
+        builder.offset(null);
+        coll.setTotalCount(m_ackDao.countMatching(builder.toCriteria()));
+
+        return coll;
     }
 
     /**
@@ -151,49 +130,43 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public OnmsAcknowledgment acknowledge(MultivaluedMap<String, String> formParams) {
-    	writeLock();
-    	
-    	try {
-	        String alarmId = formParams.getFirst("alarmId");
-	        String notifId = formParams.getFirst("notifId");
-	        String action = formParams.getFirst("action");
-	        if (action == null) {
-	            action = "ack";
-	        }
-	    	OnmsAcknowledgment ack = null;
-	    	if (alarmId == null && notifId == null) {
-	    		throw new IllegalArgumentException("You must supply either an alarmId or notifId!");
-	    	} else if (alarmId != null && notifId != null) {
-	    		throw new IllegalArgumentException("You cannot supply both an alarmId and a notifId!");
-	    	} else if (alarmId != null) {
-	    		final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
-	            ack = new OnmsAcknowledgment(alarm);
-	    	} else if (notifId != null) {
-	    		final OnmsNotification notification = m_notificationDao.get(Integer.valueOf(notifId));
-	    		ack = new OnmsAcknowledgment(notification);
-	    	}
-	        
-	        if ("ack".equals(action)) {
-	            ack.setAckAction(AckAction.ACKNOWLEDGE);
-	        } else if ("unack".equals(action)) {
-	            ack.setAckAction(AckAction.UNACKNOWLEDGE);
-	        } else if ("clear".equals(action)) {
-	            ack.setAckAction(AckAction.CLEAR);
-	        } else if ("esc".equals(action)) {
-	            ack.setAckAction(AckAction.ESCALATE);
-	        } else {
-	            throw new IllegalArgumentException(
-	            "Must supply the 'action' parameter, set to either 'ack, 'unack', 'clear', or 'esc'");
-	        }
+        String alarmId = formParams.getFirst("alarmId");
+        String notifId = formParams.getFirst("notifId");
+        String action = formParams.getFirst("action");
+        if (action == null) {
+            action = "ack";
+        }
+        OnmsAcknowledgment ack = null;
+        if (alarmId == null && notifId == null) {
+            throw new IllegalArgumentException("You must supply either an alarmId or notifId!");
+        } else if (alarmId != null && notifId != null) {
+            throw new IllegalArgumentException("You cannot supply both an alarmId and a notifId!");
+        } else if (alarmId != null) {
+            final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            ack = new OnmsAcknowledgment(alarm);
+        } else if (notifId != null) {
+            final OnmsNotification notification = m_notificationDao.get(Integer.valueOf(notifId));
+            ack = new OnmsAcknowledgment(notification);
+        }
+        
+        if ("ack".equals(action)) {
+            ack.setAckAction(AckAction.ACKNOWLEDGE);
+        } else if ("unack".equals(action)) {
+            ack.setAckAction(AckAction.UNACKNOWLEDGE);
+        } else if ("clear".equals(action)) {
+            ack.setAckAction(AckAction.CLEAR);
+        } else if ("esc".equals(action)) {
+            ack.setAckAction(AckAction.ESCALATE);
+        } else {
+            throw new IllegalArgumentException(
+            "Must supply the 'action' parameter, set to either 'ack, 'unack', 'clear', or 'esc'");
+        }
 
-	        m_ackDao.processAck(ack);
-	        return ack;
-    	} finally {
-    		writeUnlock();
-    	}
+        m_ackDao.processAck(ack);
+        return ack;
     }
 
-    private CriteriaBuilder getQueryFilters(MultivaluedMap<String,String> params) {
+    private static CriteriaBuilder getQueryFilters(MultivaluedMap<String,String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class);
         applyQueryFilters(params, builder);
         builder.orderBy("ackTime").desc();

@@ -63,8 +63,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 8.4
-Requires:		postgresql-server  >= 8.4
+Requires(pre):		postgresql-server  >= 9.1
+Requires:		postgresql-server  >= 9.1
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 #BuildRequires:		%{jdk}
@@ -463,6 +463,8 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
+
 if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
@@ -476,21 +478,21 @@ if [ "%{skip_compile}" = 1 ]; then
 	TOPDIR=`pwd`
 	for dir in . opennms-tools; do
 		cd $dir
-			"$TOPDIR"/compile.pl -N $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
+			"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
 		cd -
 	done
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 cd opennms-tools
-	../compile.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" install
 cd -
 

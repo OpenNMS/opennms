@@ -60,6 +60,8 @@
     <property name="dataSource" ref="dataSource" />
     <property name="packagesToScan">
       <list>
+        <!-- TODO: Move into org.opennms.netmgt.model -->
+        <value>org.opennms.netmgt.config.monitoringLocations</value>
         <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
       </list>
@@ -271,12 +273,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionDao" ref="minionDao" />
 
-  <bean id="minionPropertyDao" class="org.opennms.netmgt.dao.hibernate.MinionPropertyDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.MinionPropertyDao" ref="minionPropertyDao" />
-
   <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -374,13 +370,14 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceReferenceDao" ref="resourceReferenceDao" />
 
-  <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/monitoring-locations.xml" />
+  <bean id="monitoringLocationDao" class="org.opennms.netmgt.dao.hibernate.MonitoringLocationDaoHibernate">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringLocationDao" ref="monitoringLocationDao" />
 
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="monitoringLocationConfigResource" ref="locationMonitorConfigResourceLocation" />
   </bean>
  
   <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />

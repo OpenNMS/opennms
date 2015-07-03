@@ -64,12 +64,9 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>OnmsMonitoredServiceResource class.</p>
@@ -79,8 +76,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @since 1.8.1
  */
 @Component("onmsMonitoredServiceResource")
-@PerRequest
-@Scope("prototype")
 @Transactional
 public class OnmsMonitoredServiceResource extends OnmsRestService {
 	
@@ -115,13 +110,8 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsMonitoredServiceList getServices(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
-        readLock();
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
-        } finally {
-            readUnlock();
-        }
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        return new OnmsMonitoredServiceList(node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServices());
     }
 
     /**
@@ -136,13 +126,8 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
     public OnmsMonitoredService getService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
-        readLock();
-        try {
-            OnmsNode node = m_nodeDao.get(nodeCriteria);
-            return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
-        } finally {
-            readUnlock();
-        }
+        OnmsNode node = m_nodeDao.get(nodeCriteria);
+        return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
     }
     
     /**
@@ -155,7 +140,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addService(@Context UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
+    public Response addService(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final OnmsMonitoredService service) {
         writeLock();
         
         try {
@@ -212,7 +197,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
-    public Response updateService(@Context UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
+    public Response updateService(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -229,12 +214,12 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     if (key.equals("status")) {
-                        if ("S".equals(value) || (service.getStatus().equals("A") && value.equals("F"))) {
+                        if ("S".equals(value) || ("A".equals(service.getStatus()) && "F".equals(value))) {
                             LOG.debug("updateService: suspending polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
                             value = "F";
                             sendEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, service);
                         }
-                        if ("R".equals(value) || (service.getStatus().equals("F") && value.equals("A"))) {
+                        if ("R".equals(value) || ("F".equals(service.getStatus()) && "A".equals(value))) {
                             LOG.debug("updateService: resuming polling for service {} on node with IP {}", service.getServiceName(), service.getIpAddress().getHostAddress());
                             value = "A";
                             sendEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, service);
@@ -262,7 +247,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
      */
     @DELETE
     @Path("{service}")
-    public Response deleteService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName) {
+    public Response deleteService(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, @PathParam("service") final String serviceName) {
         writeLock();
         
         try {
