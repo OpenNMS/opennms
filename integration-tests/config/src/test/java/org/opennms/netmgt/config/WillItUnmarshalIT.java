@@ -73,9 +73,7 @@ import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
-import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
-import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
@@ -209,9 +207,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, Impl.JAXB);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "linkd-configuration.xml", LinkdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, Impl.JAXB);
@@ -264,8 +260,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "rws-configuration.xml", RwsConfiguration.class, Impl.CASTOR);
-        addFile(Source.CONFIG, "mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Impl.CASTOR);
-        addFile(Source.EXAMPLE, "mapsadapter-configuration.xml", MapsAdapterConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, Impl.CASTOR);

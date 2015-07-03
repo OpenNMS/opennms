@@ -618,38 +618,7 @@ public abstract class ElementUtil {
         }
         
         return node;
-}
-
-    public static IpRouteInterface[] getIpRouteByParams(HttpServletRequest request, ServletContext servletContext) {
-        return getIpRouteInterfaceByParams(request, "node", servletContext);
-
     }
-    
-    
-    public static IpRouteInterface[] getIpRouteInterfaceByParams(
-			HttpServletRequest request, String nodeIdParam,
-			ServletContext servletContext) {
-        if (request.getParameter(nodeIdParam) == null) {
-            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
-        }
-
-        String nodeIdString = request.getParameter(nodeIdParam);
-
-        int nodeId;
-
-        try {
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new ElementIdNotFoundException("Wrong data type for \""
-                    + nodeIdParam + "\", should be integer", nodeIdString, 
-                    "node", "element/node.jsp", "node", "element/nodeList.htm");
-        }
-        
-        IpRouteInterface[] ipri = NetworkElementFactory.getInstance(servletContext).getIpRoute(nodeId);
-        if (ipri ==  null )
-        	return new IpRouteInterface[0];
-        return ipri;
-	}
 
 	/**
      * <p>getInterfaceByParams</p>
@@ -964,24 +933,5 @@ public abstract class ElementUtil {
         }
         
         return svcs;
-    }
-
-    /**
-     * <p>isRouteInfoNodeByParams</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a boolean.
-     * @throws java.sql.SQLException if any.
-     */
-    public static boolean isRouteInfoNodeByParams(HttpServletRequest request, ServletContext servletContext) throws SQLException {
-    	int nodeId;
-    	
-    	try {
-    		nodeId = Integer.parseInt(request.getParameter("node"));
-    	} catch (NumberFormatException nfe) {
-    		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
-    					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
-    	}
-    	return NetworkElementFactory.getInstance(servletContext).isRouteInfoNode(nodeId);
     }
 }

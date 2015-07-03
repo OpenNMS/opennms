@@ -102,24 +102,6 @@
             </li>
           </c:forEach>
         </c:if>
-        <c:if test="${!empty nodeModel.arpInterfaces}">
-          <c:forEach var="arpInterface" items="${nodeModel.arpInterfaces}">
-            <li>
-              <c:if test="${isMaclikeSearch && arpInterface.physAddr!=null && arpInterface.physAddr!=''}">
-                <c:set var="notFound" value="true"/>
-                <c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
-                  <c:if test="${ipInterface.ipAddressAsString == arpInterface.ipAddress}">
-                    <a href="element/interface.jsp?ipinterfaceid=${ipInterface.id}">${arpInterface.ipAddress}</a> : ${arpInterface.physAddr} (from arp)
-                    <c:remove var="notFound"/>
-                  </c:if>
-                </c:forEach>
-                <c:if test="${notFound}">
-                  ${arpInterface.ipAddress} : ${arpInterface.physAddr} (from arp)
-                </c:if>
-              </c:if>
-            </li>
-          </c:forEach>
-        </c:if>
         <c:if test="${!empty nodeModel.snmpInterfaces}">
           <c:forEach var="snmpInterface" items="${nodeModel.snmpInterfaces}">
             <c:url var="interfaceLink" value="element/interface.jsp">

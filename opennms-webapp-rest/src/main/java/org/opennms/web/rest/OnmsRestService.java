@@ -52,7 +52,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSeverityEditor;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.PrimaryTypeEditor;
-import org.opennms.netmgt.model.StatusTypeEditor;
 import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
@@ -211,7 +210,6 @@ public class OnmsRestService {
 		wrapper.registerCustomEditor(java.net.InetAddress.class, new InetAddressTypeEditor());
 		wrapper.registerCustomEditor(OnmsSeverity.class, new OnmsSeverityEditor());
 		wrapper.registerCustomEditor(PrimaryType.class, new PrimaryTypeEditor());
-		wrapper.registerCustomEditor(StatusType.class, new StatusTypeEditor());
 		return wrapper;
 	}
 

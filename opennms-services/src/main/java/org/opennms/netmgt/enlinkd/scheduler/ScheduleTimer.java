@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal;
+package org.opennms.netmgt.enlinkd.scheduler;
 
-import java.util.Collection;
+import org.opennms.netmgt.scheduler.Timer;
+/**
+ * Represents a ScheduleTimer
+ *
+ * @author brozow
+ * @version $Id: $
+ */
+public interface ScheduleTimer extends Timer {
+    
+    /**
+     * <p>schedule</p>
+     *
+     * @param interval a long.
+     * @param schedule a {@link org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable} object.
+     */
+    public void schedule(long interval, ReadyRunnable schedule);
 
-import org.junit.Test;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-
-import com.vaadin.data.util.BeanItem;
-
-public class ComponentTest {
-	@Test
-	public void testComponentBeanProperties() throws Exception {
-		Collection<?> ids = new BeanItem<AbstractVertex>(new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
-		for (Object id : ids) {
-			System.out.println(id);
-		}
-	}
 }
