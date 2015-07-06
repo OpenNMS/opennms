@@ -107,6 +107,10 @@
   <event-file>events/EMC.events.xml</event-file>
   <event-file>events/EMC-Celerra.events.xml</event-file>
   <event-file>events/EMC-Clariion.events.xml</event-file>
+  <event-file>events/Evertz.7780ASI-IP2.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP-FR.events.xml</event-file>
+  <event-file>events/Evertz.7881DEC-MP2-HD.events.xml</event-file>
   <event-file>events/Extreme.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/fcmgmt.events.xml</event-file>
