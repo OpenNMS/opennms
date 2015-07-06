@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class LogmsgTest extends XmlTestNoCastor<Logmsg> {
+public class LogmsgTest extends JaxbTestNoCastor<Logmsg> {
 
 	public LogmsgTest(final Logmsg sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);

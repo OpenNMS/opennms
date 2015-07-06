@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class OnmsUsersTest extends XmlTestNoCastor<OnmsUserList> {
+public class OnmsUsersTest extends JaxbTestNoCastor<OnmsUserList> {
 
     public OnmsUsersTest(final OnmsUserList sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);

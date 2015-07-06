@@ -31,9 +31,9 @@ package org.opennms.core.test.xml;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
-    public XmlTestNoCastor(final T sampleObject, final Object sampleXml, final String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+public abstract class JaxbTestNoCastor<T> extends JaxbTest<T> {
+    public JaxbTestNoCastor(final T sampleObject, final Object sampleXml, final String schemaFile) {
+        super(sampleObject, sampleXml, null, schemaFile);
     }
 
     @Test
@@ -51,13 +51,13 @@ public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
     @Test
     @Override
     @Ignore
-    public void marshalCastorUnmarshalJaxb() throws Exception {
+    public void marshalCastorXmlUnmarshalJaxbXml() throws Exception {
     }
 
     @Test
     @Override
     @Ignore
-    public void marshalJaxbUnmarshalCastor() throws Exception {
+    public void marshalJaxbXmlUnmarshalCastorXml() throws Exception {
     }
 
     @Test
@@ -69,12 +69,12 @@ public abstract class XmlTestNoCastor<T> extends XmlTest<T> {
     @Test
     @Override
     @Ignore
-    public void unmarshalCastorMarshalCastor() throws Exception {
+    public void unmarshalCastorXmlMarshalCastorXml() throws Exception {
     }
 
     @Test
     @Override
     @Ignore
-    public void marshalCastorUnmarshalCastor() throws Exception {
+    public void marshalCastorXmlUnmarshalCastorXml() throws Exception {
     }
 }

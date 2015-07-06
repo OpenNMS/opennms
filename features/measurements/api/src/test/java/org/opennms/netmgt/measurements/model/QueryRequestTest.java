@@ -29,7 +29,7 @@
 package org.opennms.netmgt.measurements.model;
 
 import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.Source;
@@ -40,7 +40,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
+public class QueryRequestTest extends JaxbTestNoCastor<QueryRequest> {
 
     public QueryRequestTest(QueryRequest sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

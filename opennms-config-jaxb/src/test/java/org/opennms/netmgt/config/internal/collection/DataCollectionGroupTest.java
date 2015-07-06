@@ -32,10 +32,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 import org.opennms.netmgt.snmp.SnmpObjId;
 
-public class DataCollectionGroupTest extends XmlTestNoCastor<DataCollectionGroupImpl> {
+public class DataCollectionGroupTest extends JaxbTestNoCastor<DataCollectionGroupImpl> {
 
     public DataCollectionGroupTest(final DataCollectionGroupImpl sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);

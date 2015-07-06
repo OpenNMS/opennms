@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.JaxbTest;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.ncs.northbounder.NCSNorthbounderConfig.HttpMethod;
@@ -143,7 +143,7 @@ public class NCSNorthbounderIT {
         List<NorthboundAlarm> alarms = Arrays.asList(alarm(1), alarm(2), alarm(3), alarm(4));
         nb.forwardAlarms(alarms);
 
-        XmlTest.assertXmlEquals(xml, TestServlet.getPosted());
+        JaxbTest.assertXmlEquals(xml, TestServlet.getPosted());
 
     }
 
@@ -178,7 +178,7 @@ public class NCSNorthbounderIT {
         List<NorthboundAlarm> alarms = Arrays.asList(alarm(1), alarm(2), alarm(3), alarm(4));
         nb.forwardAlarms(alarms);
 
-        XmlTest.assertXmlEquals(xml, TestServlet.getPosted());
+        JaxbTest.assertXmlEquals(xml, TestServlet.getPosted());
 
     }
 }

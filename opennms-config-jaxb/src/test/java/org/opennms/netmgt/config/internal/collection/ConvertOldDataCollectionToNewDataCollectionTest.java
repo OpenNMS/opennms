@@ -37,7 +37,7 @@ import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.JaxbTest;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 
@@ -80,7 +80,7 @@ public class ConvertOldDataCollectionToNewDataCollectionTest {
         oldConfig.visit(generator);
         final DataCollectionConfigImpl actualNewConfig = generator.getDataCollectionConfig();
 
-        XmlTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
+        JaxbTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
     }
 
     @Test
@@ -97,9 +97,9 @@ public class ConvertOldDataCollectionToNewDataCollectionTest {
         final DataCollectionConfigImpl actualNewConfig = generator.getDataCollectionConfig();
 
         //final String newXml = JaxbUtils.marshal(actualNewConfig);
-        //XmlTest.assertXmlEquals(expectedXml, newXml);
+        //JaxbTest.assertXmlEquals(expectedXml, newXml);
 
-        XmlTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
+        JaxbTest.assertDepthEquals(expectedNewConfig, actualNewConfig);
     }
 
     @Test

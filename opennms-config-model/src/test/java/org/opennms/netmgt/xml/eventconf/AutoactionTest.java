@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class AutoactionTest extends XmlTestNoCastor<Autoaction> {
+public class AutoactionTest extends JaxbTestNoCastor<Autoaction> {
 
 	public AutoactionTest(final Autoaction sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);

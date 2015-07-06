@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class OutagesTest extends XmlTestNoCastor<Outages> {
+public class OutagesTest extends JaxbTestNoCastor<Outages> {
 
     public OutagesTest(final Outages sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

@@ -42,14 +42,14 @@ import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockLogger;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration> {
+public class PollerConfigurationTest extends JaxbTestNoCastor<PollerConfiguration> {
     private static final Logger LOG = LoggerFactory.getLogger(PollerConfigurationTest.class);
 
     public PollerConfigurationTest(final PollerConfiguration sampleObject, final Object sampleXml) {

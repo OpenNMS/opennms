@@ -49,6 +49,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
@@ -64,6 +65,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -77,6 +79,12 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public abstract class JaxbUtils {
+    public enum FileType {
+        XML,
+        JSON
+
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(JaxbUtils.class);
 
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
@@ -95,8 +103,8 @@ public abstract class JaxbUtils {
     }
 
     private static final MarshallingExceptionTranslator EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
-    private static ThreadLocal<Map<Class<?>, Marshaller>> m_marshallers = new ThreadLocal<Map<Class<?>, Marshaller>>();
-    private static ThreadLocal<Map<Class<?>, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<Class<?>, Unmarshaller>>();
+    private static ThreadLocal<Map<ClassMarshallerRef, Marshaller>> m_marshallers = new ThreadLocal<Map<ClassMarshallerRef, Marshaller>>();
+    private static ThreadLocal<Map<ClassMarshallerRef, Unmarshaller>> m_unMarshallers = new ThreadLocal<Map<ClassMarshallerRef, Unmarshaller>>();
     private static final Map<Class<?>,JAXBContext> m_contexts = Collections.synchronizedMap(new WeakHashMap<Class<?>,JAXBContext>());
     private static final Map<Class<?>,Schema> m_schemas = Collections.synchronizedMap(new WeakHashMap<Class<?>,Schema>());
     private static final Map<String,Class<?>> m_elementClasses = Collections.synchronizedMap(new WeakHashMap<String,Class<?>>());
@@ -106,8 +114,12 @@ public abstract class JaxbUtils {
     }
 
     public static String marshal(final Object obj) {
+        return marshal(obj, FileType.XML);
+    }
+
+    public static String marshal(final Object obj, final FileType type) {
         final StringWriter jaxbWriter = new StringWriter();
-        marshal(obj, jaxbWriter);
+        marshal(obj, jaxbWriter, type);
         return jaxbWriter.toString();
     }
 
@@ -152,7 +164,11 @@ public abstract class JaxbUtils {
     }
 
     public static void marshal(final Object obj, final Writer writer) {
-        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null);
+        marshal(obj, writer, FileType.XML);
+    }
+
+    public static void marshal(final Object obj, final Writer writer, final FileType type) {
+        final Marshaller jaxbMarshaller = getMarshallerFor(obj, null, type);
         try {
             jaxbMarshaller.marshal(obj, writer);
         } catch (final JAXBException e) {
@@ -186,15 +202,23 @@ public abstract class JaxbUtils {
         return unmarshal(clazz, new InputSource(reader), null, validate);
     }
 
-    public static <T> T unmarshal(final Class<T> clazz, final String xml) {
-        return unmarshal(clazz, xml, VALIDATE_IF_POSSIBLE);
+    public static <T> T unmarshal(final Class<T> clazz, final String text) {
+        return unmarshal(clazz, text, VALIDATE_IF_POSSIBLE);
     }
 
-    public static <T> T unmarshal(final Class<T> clazz, final String xml, final boolean validate) {
-        final StringReader sr = new StringReader(xml);
+    public static <T> T unmarshal(final Class<T> clazz, final String text, final FileType type) {
+        return unmarshal(clazz, text, type, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String text, final boolean validate) {
+        return unmarshal(clazz, text, FileType.XML, validate);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final String text, final FileType type, final boolean validate) {
+        final StringReader sr = new StringReader(text);
         final InputSource is = new InputSource(sr);
         try {
-            return unmarshal(clazz, is, null, validate);
+            return unmarshal(clazz, is, null, type, validate);
         } finally {
             IOUtils.closeQuietly(sr);
         }
@@ -224,20 +248,40 @@ public abstract class JaxbUtils {
         return unmarshal(clazz, inputSource, jaxbContext, VALIDATE_IF_POSSIBLE);
     }
 
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final FileType type) {
+        return unmarshal(clazz, inputSource, jaxbContext, type, VALIDATE_IF_POSSIBLE);
+    }
+
     public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final boolean validate) {
-        final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, validate);
+        return unmarshal(clazz, inputSource, jaxbContext, FileType.XML, VALIDATE_IF_POSSIBLE);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource, final JAXBContext jaxbContext, final FileType type, final boolean validate) {
+        final Unmarshaller um = getUnmarshallerFor(clazz, jaxbContext, type, validate);
 
         LOG.trace("unmarshalling class {} from input source {} with unmarshaller {}", clazz.getSimpleName(), inputSource, um);
+        Source source = null;
+        if (type == FileType.XML) {
+            LOG.debug("type = XML");
+            try {
+                final XMLFilter filter = getXMLFilterForClass(clazz);
+                source = new SAXSource(filter, inputSource);
+                um.setEventHandler(new LoggingValidationEventHandler());
+            } catch (final SAXException | JAXBException e) {
+                throw EXCEPTION_TRANSLATOR.translate("creating an XML reader object", e);
+            }
+        } else if (type == FileType.JSON) {
+            LOG.debug("type = JSON");
+            source = new StreamSource(inputSource.getByteStream());
+        }
+
+        if (source == null) {
+            throw new MarshallingResourceFailureException("Failed to unmarshal file: unable to determine input source.");
+        }
+
         try {
-            final XMLFilter filter = getXMLFilterForClass(clazz);
-            final SAXSource source = new SAXSource(filter, inputSource);
-
-            um.setEventHandler(new LoggingValidationEventHandler());
-
             final JAXBElement<T> element = um.unmarshal(source, clazz);
             return element.getValue();
-        } catch (final SAXException e) {
-            throw EXCEPTION_TRANSLATOR.translate("creating an XML reader object", e);
         } catch (final JAXBException e) {
             throw EXCEPTION_TRANSLATOR.translate("unmarshalling an object (" + clazz.getSimpleName() + ")", e);
         }
@@ -266,21 +310,22 @@ public abstract class JaxbUtils {
         return filter;
     }
 
-    public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext) {
+    public static Marshaller getMarshallerFor(final Object obj, final JAXBContext jaxbContext, final FileType type) {
         final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
+        final ClassMarshallerRef ref = new ClassMarshallerRef(clazz, type);
 
-        Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
+        Map<ClassMarshallerRef, Marshaller> marshallers = m_marshallers.get();
         if (jaxbContext == null) {
             if (marshallers == null) {
-                marshallers = new WeakHashMap<Class<?>, Marshaller>();
+                marshallers = new WeakHashMap<ClassMarshallerRef, Marshaller>();
                 m_marshallers.set(marshallers);
             }
-            if (marshallers.containsKey(clazz)) {
-                LOG.trace("found unmarshaller for {}", clazz);
-                return marshallers.get(clazz);
+            if (marshallers.containsKey(ref)) {
+                LOG.trace("found marshaller for {}", ref);
+                return marshallers.get(ref);
             }
         }
-        LOG.trace("creating unmarshaller for {}", clazz);
+        LOG.trace("creating marshaller for {}", ref);
 
         try {
             final JAXBContext context;
@@ -293,13 +338,23 @@ public abstract class JaxbUtils {
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
-                marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
-                marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, true);
+            marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, false);
+            marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+            marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
+            marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, true);
+
+            switch(type) {
+            case XML:
+                marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
+                break;
+            case JSON:
+                marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+                break;
             }
+
             final Schema schema = getValidatorFor(clazz);
             marshaller.setSchema(schema);
-            if (jaxbContext == null) marshallers.put(clazz, marshaller);
+            if (jaxbContext == null) marshallers.put(ref, marshaller);
 
             return marshaller;
         } catch (final JAXBException e) {
@@ -315,26 +370,27 @@ public abstract class JaxbUtils {
      * @param validate TODO
      * @return an Unmarshaller
      */
-    public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext, boolean validate) {
+    public static Unmarshaller getUnmarshallerFor(final Object obj, final JAXBContext jaxbContext, final FileType type, final boolean validate) {
         final Class<?> clazz = (Class<?>)(obj instanceof Class<?> ? obj : obj.getClass());
+        final ClassMarshallerRef ref = new ClassMarshallerRef(clazz, type);
 
         Unmarshaller unmarshaller = null;
 
-        Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
+        Map<ClassMarshallerRef, Unmarshaller> unmarshallers = m_unMarshallers.get();
         if (jaxbContext == null) {
             if (unmarshallers == null) {
-                unmarshallers = new WeakHashMap<Class<?>, Unmarshaller>();
+                unmarshallers = new WeakHashMap<ClassMarshallerRef, Unmarshaller>();
                 m_unMarshallers.set(unmarshallers);
             }
-            if (unmarshallers.containsKey(clazz)) {
-                LOG.trace("found unmarshaller for {}", clazz);
-                unmarshaller = unmarshallers.get(clazz);
+            if (unmarshallers.containsKey(ref)) {
+                LOG.trace("found unmarshaller for {}", ref);
+                unmarshaller = unmarshallers.get(ref);
             }
         }
 
+        JAXBContext context = null;
         if (unmarshaller == null) {
             try {
-                final JAXBContext context;
                 if (jaxbContext == null) {
                     context = getContextFor(clazz);
                 } else {
@@ -342,20 +398,38 @@ public abstract class JaxbUtils {
                 }
                 unmarshaller = context.createUnmarshaller();
             } catch (final JAXBException e) {
-                throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
+                throw EXCEPTION_TRANSLATOR.translate("creating unmarshaller", e);
             }
-        }
 
-        LOG.trace("created unmarshaller for {}", clazz);
-
-        if (validate) {
-            final Schema schema = getValidatorFor(clazz);
-            if (schema == null) {
-                LOG.trace("Validation is enabled, but no XSD found for class {}", clazz.getSimpleName());
+            if (type == FileType.XML) {
+                if (validate) {
+                    final Schema schema = getValidatorFor(clazz);
+                    if (schema == null) {
+                        LOG.trace("Validation is enabled, but no XSD found for class {}", clazz.getSimpleName());
+                    }
+                    try {
+                        unmarshaller.setSchema(schema);
+                        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+                    } catch (final PropertyException e) {
+                        throw EXCEPTION_TRANSLATOR.translate("setting XML unmarshaller properties", e);
+                    }
+                }
+            } else if (type == FileType.JSON) {
+                try {
+                    unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+                    unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new EmptyNamespacePrefixMapper());
+                    unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+                } catch (final PropertyException e) {
+                    throw EXCEPTION_TRANSLATOR.translate("setting JSON unmarshaller properties", e);
+                }
             }
-            unmarshaller.setSchema(schema);
+
+            if (jaxbContext == null) {
+                unmarshallers.put(ref, unmarshaller);
+            }
+
+            LOG.trace("created unmarshaller for {}", ref);
         }
-        if (jaxbContext == null) unmarshallers.put(clazz, unmarshaller);
 
         return unmarshaller;
     }

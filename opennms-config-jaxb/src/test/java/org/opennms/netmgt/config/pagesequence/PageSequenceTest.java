@@ -37,9 +37,9 @@ import org.junit.Before;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockLogger;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
+public class PageSequenceTest extends JaxbTestNoCastor<PageSequence> {
     public PageSequenceTest(final PageSequence sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);
     }

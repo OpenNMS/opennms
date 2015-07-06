@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class RangeTest extends XmlTestNoCastor<Range> {
+public class RangeTest extends JaxbTestNoCastor<Range> {
 
 	public RangeTest(final Range sampleObject, final String sampleXml,
 			final String schemaFile) {

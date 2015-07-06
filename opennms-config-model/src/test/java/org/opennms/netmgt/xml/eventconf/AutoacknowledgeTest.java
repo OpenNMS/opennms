@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class AutoacknowledgeTest extends XmlTestNoCastor<Autoacknowledge> {
+public class AutoacknowledgeTest extends JaxbTestNoCastor<Autoacknowledge> {
 
 	public AutoacknowledgeTest(final Autoacknowledge sampleObject, final String sampleXml, final String schemaFile) {
 		super(sampleObject, sampleXml, schemaFile);

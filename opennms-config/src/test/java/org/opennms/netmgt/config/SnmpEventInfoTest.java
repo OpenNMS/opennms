@@ -34,7 +34,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.opennms.core.test.xml.XmlTest.assertXmlEquals;
+import static org.opennms.core.test.xml.JaxbTest.assertXmlEquals;
 
 import java.io.File;
 import java.io.FileInputStream;

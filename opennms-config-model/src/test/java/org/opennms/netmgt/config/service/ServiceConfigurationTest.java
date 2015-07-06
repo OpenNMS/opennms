@@ -35,11 +35,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
 
 public class ServiceConfigurationTest extends
-        XmlTestNoCastor<ServiceConfiguration> {
+        JaxbTestNoCastor<ServiceConfiguration> {
 
     public ServiceConfigurationTest(final ServiceConfiguration sampleObject,
             final String sampleXml, final String schemaFile) {

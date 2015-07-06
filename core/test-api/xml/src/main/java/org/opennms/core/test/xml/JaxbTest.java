@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 package org.opennms.core.test.xml;
-
+import static net.javacrumbs.jsonunit.JsonAssert.assertJsonEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +74,7 @@ import org.junit.runners.Parameterized;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils.FileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -83,8 +84,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 @RunWith(Parameterized.class)
-abstract public class XmlTest<T> {
-    private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
+abstract public class JaxbTest<T> {
+    private static final Logger LOG = LoggerFactory.getLogger(JaxbTest.class);
 
     static {
         initXmlUnit();
@@ -100,11 +101,13 @@ abstract public class XmlTest<T> {
 
     private T m_sampleObject;
     private Object m_sampleXml;
+    private Object m_sampleJson;
     private String m_schemaFile;
 
-    public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
+    public JaxbTest(final T sampleObject, final Object sampleXml, final Object sampleJson, final String schemaFile) {
         m_sampleObject = sampleObject;
         m_sampleXml = sampleXml;
+        m_sampleJson = sampleJson;
         m_schemaFile = schemaFile;
     }
 
@@ -132,8 +135,26 @@ abstract public class XmlTest<T> {
         }
     }
 
+    protected String getSampleJson() throws IOException {
+        if (m_sampleJson instanceof File) {
+            return IOUtils.toString(((File)m_sampleJson).toURI());
+        } else if (m_sampleJson instanceof URI) {
+            return IOUtils.toString((URI)m_sampleJson);
+        } else if (m_sampleJson instanceof URL) {
+            return IOUtils.toString((URL)m_sampleJson);
+        } else if (m_sampleJson instanceof InputStream) {
+            return IOUtils.toString((InputStream)m_sampleJson);
+        } else {
+            return m_sampleJson.toString();
+        }
+    }
+
     protected ByteArrayInputStream getSampleXmlInputStream() throws IOException {
         return new ByteArrayInputStream(getSampleXml().getBytes());
+    }
+
+    protected ByteArrayInputStream getSampleJsonInputStream() throws IOException {
+        return new ByteArrayInputStream(getSampleJson().getBytes());
     }
 
     protected String getSchemaFile() {
@@ -203,6 +224,10 @@ abstract public class XmlTest<T> {
         return marshalToXmlWithJaxb(getSampleObject());
     }
 
+    protected String marshalToJsonWithJaxb() {
+        return marshalToJsonWithJaxb(getSampleObject());
+    }
+
     @Test
     public void marshalCastorAndCompareToXml() throws Exception {
         final String xml = marshalToXmlWithCastor();
@@ -216,6 +241,14 @@ abstract public class XmlTest<T> {
     }
 
     @Test
+    public void marshalJaxbAndCompareToJson() throws Exception {
+        final String json = marshalToJsonWithJaxb();
+        LOG.debug("marshalled JSON:\n{}", json);
+        LOG.debug("sample JSON:\n{}", getSampleJson());
+        assertJsonEquals(getSampleJson(), json);
+    }
+
+    @Test
     public void unmarshalXmlAndCompareToCastor() throws Exception {
         final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
         LOG.debug("Sample object: {}\n\nCastor object: {}", getSampleObject(), obj);
@@ -223,21 +256,50 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void unmarshalJaxbMarshalJaxb() throws Exception {
-        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
-        final String remarshaled = JaxbUtils.marshal(obj);
+    public void unmarshalJaxbXmlMarshalJaxbXml() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null, FileType.XML);
+        final String remarshaled = JaxbUtils.marshal(obj, FileType.XML);
         _assertXmlEquals(getSampleXml(), remarshaled);
     }
 
     @Test
-    public void marshalJaxbUnmarshalJaxb() throws Exception {
+    public void unmarshalJaxbJsonMarshalJaxbJson() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleJsonInputStream()), null, FileType.JSON);
+        final String remarshaled = JaxbUtils.marshal(obj, FileType.JSON);
+        assertJsonEquals(getSampleJson(), remarshaled);
+    }
+
+    @Test
+    public void unmarshalJaxbJsonMarshalJaxbXml() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleJsonInputStream()), null, FileType.JSON);
+        final String remarshaled = JaxbUtils.marshal(obj, FileType.XML);
+        _assertXmlEquals(getSampleXml(), remarshaled);
+    }
+
+    @Test
+    public void unmarshalJaxbXmlMarshalJaxbJson() throws Exception {
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null, FileType.XML);
+        final String remarshaled = JaxbUtils.marshal(obj, FileType.JSON);
+        assertJsonEquals(getSampleJson(), remarshaled);
+    }
+
+    @Test
+    public void marshalJaxbXmlUnmarshalJaxbXml() throws Exception {
         final String xml = marshalToXmlWithJaxb();
-        final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), xml, FileType.XML);
         assertDepthEquals(getSampleObject(), obj);
     }
 
     @Test
-    public void unmarshalCastorMarshalCastor() throws Exception {
+    public void marshalJaxbJsonUnmarshalJaxbJson() throws Exception {
+        final String json = marshalToJsonWithJaxb();
+        LOG.debug("marshalled JSON: {}", json);
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), json, FileType.JSON);
+        assertDepthEquals(getSampleObject(), obj);
+    }
+
+    @Test
+    public void unmarshalCastorXmlMarshalCastorXml() throws Exception {
         final T obj = CastorUtils.unmarshal(getSampleClass(), getSampleXmlInputStream());
         final StringWriter writer = new StringWriter();
         CastorUtils.marshalWithTranslatedExceptions(obj, writer);
@@ -245,7 +307,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalCastorUnmarshalCastor() throws Exception {
+    public void marshalCastorXmlUnmarshalCastorXml() throws Exception {
         final String xml = marshalToXmlWithCastor();
         final ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
         final T obj = CastorUtils.unmarshal(getSampleClass(), is, false);
@@ -253,7 +315,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void unmarshalXmlAndCompareToJaxb() throws Exception {
+    public void unmarshalXmlAndCompareToJaxbXml() throws Exception {
         LOG.debug("xml: {}", getSampleXml());
         final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleXmlInputStream()), null);
         LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
@@ -261,7 +323,15 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalCastorUnmarshalJaxb() throws Exception {
+    public void unmarshalJsonAndCompareToJaxbJson() throws Exception {
+        LOG.debug("json: {}", getSampleJson());
+        final T obj = JaxbUtils.unmarshal(getSampleClass(), new InputSource(getSampleJsonInputStream()), null, FileType.JSON);
+        LOG.debug("Sample object: {}\n\nJAXB object: {}", getSampleObject(), obj);
+        assertDepthEquals(getSampleObject(), obj);
+    }
+
+    @Test
+    public void marshalCastorXmlUnmarshalJaxbXml() throws Exception {
         final String xml = marshalToXmlWithCastor();
         final T obj = JaxbUtils.unmarshal(getSampleClass(), xml);
         LOG.debug("Generated Object: {}", obj);
@@ -269,7 +339,7 @@ abstract public class XmlTest<T> {
     }
 
     @Test
-    public void marshalJaxbUnmarshalCastor() throws Exception {
+    public void marshalJaxbXmlUnmarshalCastorXml() throws Exception {
         final String xml = marshalToXmlWithJaxb();
         final T obj = CastorUtils.unmarshal(getSampleClass(), new ByteArrayInputStream(xml.getBytes()));
         LOG.debug("Generated Object: {}", obj);
@@ -293,7 +363,7 @@ abstract public class XmlTest<T> {
             return;
         }
         LOG.debug("Validating against XSD: {}", schemaFile);
-        javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, true);
+        javax.xml.bind.Unmarshaller unmarshaller = JaxbUtils.getUnmarshallerFor(getSampleClass(), null, FileType.XML, true);
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
@@ -320,7 +390,17 @@ abstract public class XmlTest<T> {
         LOG.debug("Reference Object: {}", sampleObject);
 
         final StringWriter writer = new StringWriter();
-        JaxbUtils.marshal(sampleObject, writer);
+        JaxbUtils.marshal(sampleObject, writer, FileType.XML);
+        final String xml = writer.toString();
+        LOG.debug("JAXB XML: {}", xml);
+        return xml;
+    }
+
+    public static <T> String marshalToJsonWithJaxb(T sampleObject) {
+        LOG.debug("Reference Object: {}", sampleObject);
+
+        final StringWriter writer = new StringWriter();
+        JaxbUtils.marshal(sampleObject, writer, FileType.JSON);
         final String xml = writer.toString();
         LOG.debug("JAXB XML: {}", xml);
         return xml;
@@ -328,7 +408,7 @@ abstract public class XmlTest<T> {
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         // ugly hack alert!
-        final XmlTest<Object> test = new XmlTest<Object>(null, null, null) {
+        final JaxbTest<Object> test = new JaxbTest<Object>(null, null, null, null) {
         };
         test._assertXmlEquals(expectedXml, actualXml);
     }

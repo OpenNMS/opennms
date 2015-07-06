@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
+public class SnmpConfigTest extends JaxbTestNoCastor<SnmpConfig> {
 
     public SnmpConfigTest(final SnmpConfig sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

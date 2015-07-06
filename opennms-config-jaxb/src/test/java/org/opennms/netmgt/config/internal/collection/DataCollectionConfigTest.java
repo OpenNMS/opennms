@@ -32,9 +32,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class DataCollectionConfigTest extends XmlTestNoCastor<DataCollectionConfigImpl> {
+public class DataCollectionConfigTest extends JaxbTestNoCastor<DataCollectionConfigImpl> {
 
     public DataCollectionConfigTest(final DataCollectionConfigImpl sampleObject, final Object sampleXml) {
         super(sampleObject, sampleXml, null);

@@ -38,9 +38,9 @@ import java.util.Map;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.network.IPAddress;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class AgentResponseCollectionTest extends XmlTestNoCastor<AgentResponseCollection> {
+public class AgentResponseCollectionTest extends JaxbTestNoCastor<AgentResponseCollection> {
 
     public AgentResponseCollectionTest(AgentResponseCollection sampleObject, String sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

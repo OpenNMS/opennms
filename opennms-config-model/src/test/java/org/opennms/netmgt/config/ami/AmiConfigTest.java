@@ -35,9 +35,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class AmiConfigTest extends XmlTestNoCastor<AmiConfig> {
+public class AmiConfigTest extends JaxbTestNoCastor<AmiConfig> {
 
     public AmiConfigTest(final AmiConfig sampleObject,
             final String sampleXml, final String schemaFile) {

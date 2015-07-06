@@ -33,9 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.test.xml.JaxbTestNoCastor;
 
-public class PersistenceSelectorStrategyTest extends XmlTestNoCastor<PersistenceSelectorStrategy> {
+public class PersistenceSelectorStrategyTest extends JaxbTestNoCastor<PersistenceSelectorStrategy> {
 
     public PersistenceSelectorStrategyTest(final PersistenceSelectorStrategy sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);

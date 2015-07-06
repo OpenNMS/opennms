@@ -31,8 +31,8 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.xml.XmlTest.assertXpathDoesNotMatch;
-import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
+import static org.opennms.core.test.xml.JaxbTest.assertXpathDoesNotMatch;
+import static org.opennms.core.test.xml.JaxbTest.assertXpathMatches;
 
 import java.util.Comparator;
 import java.util.Date;

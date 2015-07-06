@@ -2,7 +2,7 @@ package org.opennms.netmgt.model;
 
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.JaxbTest;
 
 import java.io.IOException;
 
@@ -15,8 +15,8 @@ public class OnmsApplicationTest {
         application.setId(100);
         application.setName("Dummy");
 
-        String applicationString = XmlTest.marshalToXmlWithJaxb(application);
-        XmlTest.assertXmlEquals(
+        String applicationString = JaxbTest.marshalToXmlWithJaxb(application);
+        JaxbTest.assertXmlEquals(
                 "<application id=\"100\">\n" +
                 "   <name>Dummy</name>\n" +
                 "</application>\n",

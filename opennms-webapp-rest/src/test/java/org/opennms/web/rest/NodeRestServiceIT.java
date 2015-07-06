@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
+import static org.opennms.core.test.xml.JaxbTest.assertXpathMatches;
 
 import java.io.StringReader;
 import java.nio.file.Files;

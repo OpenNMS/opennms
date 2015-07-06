@@ -62,6 +62,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.springframework.context.ApplicationContext;

@@ -1,7 +1,7 @@
 package org.opennms.netmgt.model;
 
 import org.junit.Test;
-import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.test.xml.JaxbTest;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.utils.InetAddressUtils;
 
@@ -13,9 +13,9 @@ public class OnmsOutageTest {
     @Test
     public void testMarshalXml() {
         final OnmsOutage outage = createOutage();
-        final String outageString = XmlTest.marshalToXmlWithJaxb(outage);
+        final String outageString = JaxbTest.marshalToXmlWithJaxb(outage);
 
-        XmlTest.assertXmlEquals("<outage id=\"1\">\n" +
+        JaxbTest.assertXmlEquals("<outage id=\"1\">\n" +
                 "   <ipAddress>127.0.0.1</ipAddress>\n" +
                 "   <monitoredService down=\"false\" id=\"1\">\n" +
                 "      <applications>\n" +
