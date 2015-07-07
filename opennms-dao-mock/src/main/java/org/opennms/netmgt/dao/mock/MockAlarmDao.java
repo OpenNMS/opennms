@@ -41,9 +41,10 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsAlarm alarm) {
-        super.save(alarm);
+    public Integer save(final OnmsAlarm alarm) {
+        Integer retval = super.save(alarm);
         updateSubObjects(alarm);
+        return retval;
     }
 
     @Override
