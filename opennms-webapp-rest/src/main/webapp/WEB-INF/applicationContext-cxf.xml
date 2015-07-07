@@ -15,29 +15,12 @@
 
     <tx:annotation-driven />
     <context:annotation-config/>
+
     <!-- Automatically scan for @Component beans -->
-    <context:component-scan base-package="org.opennms.web.rest, org.opennms.netmgt.ncs.rest" />
+    <context:component-scan base-package="org.opennms.web.rest.v1,org.opennms.netmgt.ncs.rest" />
 
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-
-    <!-- Serialization @Provider classes -->
-    <bean id="lenientJaxbProvider"   class="org.opennms.web.rest.ValidatingMessageBodyReader"/>
-    <bean id="jaxbProvider"          class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
-    <!-- Jettison JSON provider -->
-    <!--
-    <bean id="jsonProvider"          class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
-    -->
-    <bean id="jsonProvider"          class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
-    <bean id="atomEntryProvider"     class="org.apache.cxf.jaxrs.provider.atom.AtomEntryProvider"/>
-    <bean id="atomFeedProvider"      class="org.apache.cxf.jaxrs.provider.atom.AtomFeedProvider"/>
-    <bean id="atomPojoProvider"      class="org.apache.cxf.jaxrs.provider.atom.AtomPojoProvider"/>
-
-    <!-- FIQL search @Provider class -->
-    <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
-
-    <!-- Interceptors -->
-    <bean id="gzipOutInterceptor" class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor" />
 
     <!-- Create a Spring bus -->
     <!--
@@ -55,7 +38,7 @@
     -->
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
-    <jaxrs:server id="cxf-jax-rs" address="/" basePackages="org.opennms.web.rest,org.opennms.netmgt.ncs.rest">
+    <jaxrs:server id="cxf-rest-v1" address="/" basePackages="org.opennms.web.rest.v1,org.opennms.netmgt.ncs.rest">
       <jaxrs:properties>
         <!-- Use the ResourceContextProvider defined above -->
         <entry key="org.apache.cxf.jaxrs.resource.context.provider" value-ref="springResourceContextProvider"/>
@@ -65,50 +48,6 @@
         <entry key="xml" value="application/xml" />
         <entry key="atom" value="application/atom+xml" />
       </jaxrs:extensionMappings>
-      <!-- Specifying jaxrs:providers breaks autowiring of Spring service beans :/ -->
-      <!--
-      <jaxrs:serviceBeans>
-        <ref bean="acknowledgmentRestService"/>
-        <ref bean="agentConfigurationResource"/>
-        <ref bean="alarmRestService"/>
-        <ref bean="alarmStatsRestService"/>
-        <ref bean="assetRecordResource"/>
-        <ref bean="availabilityRestService"/>
-        <ref bean="categoryRestService"/>
-        <ref bean="collectionConfigurationResource"/>
-        <ref bean="configRestService"/>
-        <ref bean="dataLinkInterfaceRestService"/>
-        <ref bean="eventRestService"/>
-        <ref bean="foreignSourceRestService"/>
-        <ref bean="foreignSourceConfigRestService"/>
-        <ref bean="graphRestService"/>
-        <ref bean="groupRestService"/>
-        <ref bean="hardwareInventoryResource"/>
-        <ref bean="ifServicesRestService"/>
-        <ref bean="infoRestService"/>
-        <ref bean="jmxDataCollectionConfigResource"/>
-        <ref bean="kscRestService"/>
-        <ref bean="minionRestService"/>
-        <ref bean="monitoringLocationsRestService"/>
-        <ref bean="nodeRestService"/>
-        <ref bean="notificationRestService"/>
-        <ref bean="onmsIpInterfaceResource"/>
-        <ref bean="onmsMapElementResource"/>
-        <ref bean="onmsMapRestService"/>
-        <ref bean="onmsMonitoredServiceResource"/>
-        <ref bean="onmsSnmpInterfaceResource"/>
-        <ref bean="outageRestService"/>
-        <ref bean="pollerConfigurationResource"/>
-        <ref bean="remotePollerAvailabilityService"/>
-        <ref bean="requisitionRestService"/>
-        <ref bean="resourceRestService"/>
-        <ref bean="scheduledOutagesRestService"/>
-        <ref bean="snmpConfigRestService"/>
-        <ref bean="snmpConfigurationResource"/>
-        <ref bean="timelineRestService"/>
-        <ref bean="userRestService"/>
-      </jaxrs:serviceBeans>
-      -->
       <jaxrs:providers>
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
@@ -116,8 +55,6 @@
         <ref bean="atomEntryProvider"/>
         <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
-
-        <ref bean="searchContextProvider"/>
       </jaxrs:providers>
       <jaxrs:outInterceptors>
         <ref bean="gzipOutInterceptor" />
