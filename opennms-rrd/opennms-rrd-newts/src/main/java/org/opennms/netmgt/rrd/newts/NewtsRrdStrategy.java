@@ -59,7 +59,7 @@ public class NewtsRrdStrategy implements RrdStrategy<RrdDef, RrdDb> {
 
     public static final int TTL = Integer.getInteger("org.opennms.newts.config.ttl", 31536000);
 
-    public static final boolean ENABLE_HIERARCHICAL_INDEXING = true;
+    public static final boolean ENABLE_HIERARCHICAL_INDEXING = false;
 
     protected static final String FILE_EXTENSION = ".newts";
 
