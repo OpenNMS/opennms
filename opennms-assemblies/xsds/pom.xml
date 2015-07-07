@@ -79,23 +79,9 @@
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-monitor</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jasper-extensions</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

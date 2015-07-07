@@ -28,18 +28,11 @@
 
 package org.opennms.web.rest;
 
-import com.google.common.collect.Lists;
-import com.sun.jersey.spi.resource.PerRequest;
-import org.json.JSONObject;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.HeatMapElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,15 +40,20 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-@Component
-@PerRequest
-@Scope("prototype")
+import org.json.JSONObject;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.HeatMapElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+
+@Component("heatMapRestService")
 @Path("heatmap")
 public class HeatMapRestService extends OnmsRestService {
     /**

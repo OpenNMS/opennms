@@ -154,11 +154,6 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public List<OnmsNode> findNodes(OnmsDistPoller dp) {
-		return null;
-	}
-
-	@Override
 	public OnmsNode getHierarchy(Integer id) {
 		return null;
 	}

@@ -41,13 +41,13 @@ public interface PollerSettings {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getMonitorId();
+    public String getMonitorId();
 
     /**
      * <p>setMonitorId</p>
      *
      * @param monitorId a {@link java.lang.Integer} object.
      */
-    public void setMonitorId(Integer monitorId);
+    public void setMonitorId(String monitorId);
 
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -189,6 +190,39 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 
         assertEquals("r-ro-suce-pict-001.infra.u-ssi.net",cdpGlobalGroup.getCdpDeviceId());
         assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
+        assertNull(cdpGlobalGroup.getCdpGlobalDeviceFormat());
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host = CISCO_WS_C2948_IP, port = 161, resource = CISCO_WS_C2948_SNMP_RESOURCE )
+    })
+    public void testCdpGlobalGroupCollectionWithGlobalIdFormat() throws Exception {
+        SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(CISCO_WS_C2948_IP));
+
+        String trackerName = "cdpGlobalGroup";
+
+        final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();
+        SnmpWalker walker =  SnmpUtils.createWalker(config, trackerName, cdpGlobalGroup);
+
+        walker.start();
+
+        try {
+            walker.waitFor();
+            if (walker.timedOut()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
+            }  else if (walker.failed()) {
+                LOG.info("run:Aborting Cdp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
+            }
+        } catch (final InterruptedException e) {
+            LOG.error("run: Cdp Linkd collection interrupted, exiting",e);
+            return;
+        }
+
+        assertEquals("JAB043408B7",cdpGlobalGroup.getCdpDeviceId());
+        assertEquals(1,cdpGlobalGroup.getCdpGlobalRun().intValue());
+        assertEquals(3,cdpGlobalGroup.getCdpGlobalDeviceFormat().intValue());
 
     }
 

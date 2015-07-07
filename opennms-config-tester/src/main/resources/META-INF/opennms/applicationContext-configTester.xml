@@ -33,14 +33,10 @@
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigFactory"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
-        <!-- <entry key="linkd-configuration.xml" value="linkdConfigFactory"/> --><!-- database access -->
         <entry key="magic-users.properties" value="userDao"/>
-        <entry key="map.properties" value="mapPropertiesFactory"/>
-        <!-- <entry key="mapsadapter-configuration.xml" value="mapsAdapterConfigFactory"/> --><!--  database access -->
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
         <entry key="model-importer.properties" value="modelImporterProperties"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
-        <!--  <entry key="monitoring-locations.xml" value="locationMonitorDaoHibernate"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
         <!-- <entry key="notifications.xml" value="notificationFactory"/> --><!-- database access -->
@@ -179,11 +175,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="dhcpdConfigFactory" class="org.opennms.netmgt.config.DhcpdConfigFactory" depends-on="dhcpdConfigFactory-init" factory-method="getInstance"/>
 -->
   
-  <bean id="discoveryConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="discoveryConfigFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="discoveryConfigFactory-init" factory-method="getInstance"/>
+  <bean id="discoveryConfigFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory"/>
 
   <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
     <property name="configResource" value="file:${opennms.home}/etc/eventconf.xml"/>
@@ -235,8 +227,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="kscReportFactory" class="org.opennms.netmgt.config.KSC_PerformanceReportFactory" depends-on="kscReportFactory-init" factory-method="getInstance"/>
     
-  <bean id="linkdConfigFactory" class="org.opennms.netmgt.config.LinkdConfigFactory"/>
-
   <bean id="groupManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
   </bean>
@@ -263,12 +253,6 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
   </bean>
-
-  <bean id="mapsAdapterConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.MapsAdapterConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="mapsAdapterConfigFactory" class="org.opennms.netmgt.config.MapsAdapterConfigFactory" depends-on="mapsAdapterConfigFactory-init" factory-method="getInstance"/>
 
   <bean id="modelImporterProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="location">

@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,9 +77,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml",
-
-        "classpath:/org/opennms/web/rest/applicationContext-test.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -190,14 +189,15 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
         final long startTime = System.currentTimeMillis();
         final String url = BASE_REST_URL + "/RDU";
         final Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("resolution", "minute");
         addStartTime(parameters);
         addEndTime(parameters);
 
-        final String responseString = sendRequest(GET, url, parameters, 200);
-
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("IPv4"));
+        for (String resolution : new String[] {"minute", "hourly", "daily", "Minute", "hOURly", "daiLY"}){
+            parameters.put("resolution", resolution);
+            final String responseString = sendRequest(GET, url, parameters, 200);
+            assertTrue(responseString.contains("IPv6"));
+            assertTrue(responseString.contains("IPv4"));
+        }
 
         System.err.println("total time taken: " + (System.currentTimeMillis() - startTime));
     }
@@ -211,23 +211,22 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
     }
 
     @Test
-    public void testRemotePollerAvailabilityFiveMinutes() throws Exception {
+    public void testRemotePollerAvailabilityTimePeriods() throws Exception {
         String url = BASE_REST_URL;
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("startTime", "" + (new Date().getTime() - (86400000 * 2)));
         parameters.put("endTime", "" + (new Date().getTime() - 86400000));
-        parameters.put("resolution", "minute");
 
-        String responseString = sendRequest(GET, url, parameters, 200);
-
-        assertTrue(responseString.contains("IPv6"));
-        assertTrue(responseString.contains("IPv4"));
-
+        for (String resolution : new String[] {"minute", "hourly", "daily", "Minute", "hOURly", "daiLY"}){
+            parameters.put("resolution", resolution);
+            String responseString = sendRequest(GET, url, parameters, 200);
+            assertTrue(responseString.contains("IPv6"));
+            assertTrue(responseString.contains("IPv4"));
+        }
     }
 
 
     private void createLocationMonitors() throws InterruptedException {
-
         m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -235,8 +234,9 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
 
                 System.err.println("======= Starting createLocationMonitors() ======");
                 OnmsLocationMonitor locMon1 = new OnmsLocationMonitor();
-                locMon1.setDefinitionName("RDU");
-                locMon1.setLastCheckInTime(new Date());
+                locMon1.setId(UUID.randomUUID().toString());
+                locMon1.setLocation("RDU");
+                locMon1.setLastUpdated(new Date());
                 locMon1.setStatus(MonitorStatus.STARTED);
                 m_locationMonitorDao.save(locMon1);
 

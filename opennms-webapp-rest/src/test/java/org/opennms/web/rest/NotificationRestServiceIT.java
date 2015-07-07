@@ -28,7 +28,10 @@
 
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -71,7 +74,17 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
 
     @Test
     public void testNotifications() throws Exception {
+
         String xml = sendRequest(GET, "/notifications", 200);
         assertTrue(xml.contains("This is a test notification"));
+
+        xml = sendRequest(GET, "/notifications/count", 200);
+        assertEquals("1", xml);
+
+        sendPut("/notifications/1", "ack=true", 303, null);
+        sendPut("/notifications/1", "ack=false", 303, null);
+
+        sendPut("/notifications", "notifyId=1&ack=true", 303, "/notifications");
+        sendPut("/notifications", "notifyId=1&ack=false", 303, "/notifications");
     }
 }

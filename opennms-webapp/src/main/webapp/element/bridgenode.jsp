@@ -127,8 +127,6 @@
             httpIp = lowest.getHostAddress();
         }
     }
-
-    boolean isRouteIP = NetworkElementFactory.getInstance(getServletContext()).isRouteInfoNode(nodeId);
 %>
 
 <% pageContext.setAttribute("nodeId", nodeId); %>
@@ -187,11 +185,6 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-          <% if( isRouteIP ) { %>
-          <li>
-            <a href="element/routeipnode.jsp?node=<%=nodeId%>">View Node IP Route Info</a>
-          </li>
-          <% }%>
           <li>
             <a href="element/linkednode.jsp?node=<%=nodeId%>">View Node Link Detailed Info</a>
           </li>

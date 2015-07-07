@@ -44,7 +44,7 @@ public abstract class EventdConstants {
      * into the database.
      */
     public static final String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, " +
-    		"eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, " +
+    		"eventHost, ipAddr, systemId, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, " +
     		"eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, " +
     		"eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, " +
     		"eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource, ifIndex) " +

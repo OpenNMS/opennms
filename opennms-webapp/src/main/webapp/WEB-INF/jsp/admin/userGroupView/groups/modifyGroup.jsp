@@ -47,7 +47,6 @@
     }
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
-    String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
 	String[] categoryListInGroup = group.getAuthorizedCategories().toArray(new String[0]);
     String[] categoryListNotInGroup = group.getUnauthorizedCategories(Arrays.asList(allCategories)).toArray(new String[0]);
     String[] selectedUsers = group.getUsers().toArray(new String[0]);
@@ -293,35 +292,6 @@
 <form role="form" class="form-horizontal" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Modifying Group: <%=group.getName()%></h3>
-      </div>
-      <div class="panel-body">
-        <p>Assign a default map to group selecting from selection list.</p>
-        <div class="row">
-          <div class="col-sm-4">
-            <select class="form-control" name="groupDefaultMap">
-            	<option selected><%=group.getDefaultMap()%></option>
-            	<%
-            	for (String mapname: allVisibleMaps) {
-                  if (!mapname.equals(group.getDefaultMap())) {
-            	%>
-                <option><%=mapname%></option>
-                <%
-                  }
-            	}
-                %>
-            </select>
-          </div> <!-- column -->
-        </div> <!-- row -->
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
 
 <div class="row">
   <div class="col-md-12">

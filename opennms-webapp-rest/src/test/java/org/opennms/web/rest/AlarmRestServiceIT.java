@@ -77,7 +77,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -309,7 +309,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsEvent event = getEventDao().findAll().get(0);
 
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_databasePopulator.getNode1());

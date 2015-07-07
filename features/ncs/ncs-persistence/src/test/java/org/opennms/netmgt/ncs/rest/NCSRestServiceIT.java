@@ -36,13 +36,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -53,12 +58,38 @@ import org.opennms.netmgt.ncs.persistence.NCSComponentDao;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.context.WebApplicationContext;
 
-public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
+        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml"
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase(reuseDatabase=false)
+public class NCSRestServiceIT extends AbstractSpringJerseyRestTestCase {
 	private static final Logger LOG = LoggerFactory.getLogger(NCSRestServiceIT.class);
+
+	@Autowired
+	private WebApplicationContext m_webApplicationContext;
+
+	@Autowired
+	private ServletContext m_servletContext;
 
 	private static void setupLogging(final String level) {
 		final Properties config = new Properties();
@@ -66,6 +97,10 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 		config.setProperty("log4j.logger.org.springframework", "ERROR");
 		config.setProperty("log4j.logger.org.hibernate", "ERROR");
 		MockLogAppender.setupLogging(true, level, config);
+	}
+
+	public NCSRestServiceIT() {
+		super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml");
 	}
 
 	@BeforeClass
@@ -186,14 +221,15 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 			"    <name>Blah</name>\n" +
 			"</component>\n";
 
+	@Autowired
 	private MockEventIpcManager m_eventIpcManager;
+
 	private EventAnticipator m_eventAnticipator;
 
 	@Override
 	protected void afterServletStart() throws Exception {
-		m_eventIpcManager = getWebAppContext().getBean("eventProxy", MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
-		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
+		final NCSComponentService service = m_webApplicationContext.getBean(NCSComponentService.class);
 		service.setEventProxy(m_eventIpcManager);
 	}
 
@@ -209,7 +245,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 		m_eventAnticipator.verifyAnticipated();
 		m_eventAnticipator.reset();
 
-		final NCSComponentDao dao = getWebAppContext().getBean(NCSComponentDao.class);
+		final NCSComponentDao dao = m_webApplicationContext.getBean(NCSComponentDao.class);
 		dao.flush();
 		
 		super.tearDown();
@@ -221,9 +257,9 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 		anticipateEvents(EventConstants.COMPONENT_ADDED_UEI);
 
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
-		final NCSComponentRepository repo = getBean("ncsComponentRepository", NCSComponentRepository.class);
+		final NCSComponentRepository repo = m_webApplicationContext.getBean("ncsComponentRepository", NCSComponentRepository.class);
 		for (final NCSComponent component : repo.findAll()) {
 			LOG.debug("Found Component: {}/{}/{}", component.getType(), component.getForeignSource(), component.getForeignId());
 		}
@@ -237,7 +273,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 	@Test
 	public void testDeleteAComponent() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
 		m_eventAnticipator.reset();
 
@@ -272,7 +308,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 	@Test
 	public void testFindAServiceByAttribute() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
 		m_eventAnticipator.reset();
 
@@ -287,7 +323,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 	@Test
 	public void testAddComponents() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
 		m_eventAnticipator.reset();
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElement",          "PE2,ge-3/1/4", "NA-ServiceElement", "9876,4321" });
@@ -298,7 +334,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 		String url = "/NCS/ServiceElement/NA-ServiceElement:9876,4321";
 
-		sendPost(url, m_extraXML);
+		sendPost(url, m_extraXML, 200, null);
 
 		String xml = sendRequest(GET, url, 200);
 		assertTrue(xml.contains("monkey1"));
@@ -307,7 +343,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 	@Test
 	public void testDeleteOrphans() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
 		m_eventAnticipator.reset();
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "ServiceElementComponent", "PE2,vcid(50)", "NA-SvcElementComp", "9876,vcid(50)" });
@@ -316,7 +352,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 
 		setupLogging("DEBUG");
 
-		final MockHttpServletRequest request = createRequest(POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(m_servletContext, POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");
@@ -328,7 +364,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 	 */
 	@Test
 	public void testDeleteOrphansRecursive() throws Exception {
-		sendPost("/NCS", m_serviceXML);
+		sendPost("/NCS", m_serviceXML, 200, null);
 
 		m_eventAnticipator.reset();
 
@@ -340,7 +376,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 		}
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "Service", "CokeP2P", "NA-Service", "123" });
 
-		final MockHttpServletRequest request = createRequest(POST, "/NCS");
+		final MockHttpServletRequest request = createRequest(m_servletContext, POST, "/NCS");
 		request.setContentType(MediaType.APPLICATION_XML);
 		request.setContent(m_serviceXMLTopFragment.getBytes());
 		request.setQueryString("deleteOrphans=true");
@@ -409,7 +445,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI, new String[] { "top",    "Top1",     "topFs1",    "topFd1" });
 		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI, new String[] { "child1", "Child1-1", "child1Fs1", "child1Fd1" });
 		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI, new String[] { "child2", "Child2-1", "child2Fs1", "child2Fd1" });
-		sendPost("/NCS", text, 200);
+		sendPost("/NCS", text, 200, null);
 
 		// create another "child1" type with the same "child2" type under it
 		text = "" +
@@ -425,7 +461,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "top",    "Top1",     "topFs1",    "topFd1" });
 		anticipateEvent(EventConstants.COMPONENT_ADDED_UEI,   new String[] { "child1", "Child1-2", "child1Fs1", "child1Fd2" });
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "child2", "Child2-1", "child2Fs1", "child2Fd1" });
-		sendPost("/NCS/top/topFs1:topFd1", text, 200);
+		sendPost("/NCS/top/topFs1:topFd1", text, 200, null);
 	}
 
 	private String formatParms(final List<Parm> parms) {
@@ -447,13 +483,13 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestITCase {
 	@Test
 	@Ignore("allowing this for now")
 	public void testInvalidForeignSource() throws Exception {
-		sendPost("/NCS", m_badForeignSourceXML, 400);
+		sendPost("/NCS", m_badForeignSourceXML, 400, null);
 	}
 
 	@Test
 	@Ignore("allowing this for now")
 	public void testInvalidForeignId() throws Exception {
-		sendPost("/NCS", m_badForeignIdXML, 400);
+		sendPost("/NCS", m_badForeignIdXML, 400, null);
 	}
 
 	private void anticipateEvents(final String uei) {

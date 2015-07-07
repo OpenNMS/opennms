@@ -341,6 +341,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="nodeId")
     //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
+    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -356,7 +357,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     @XmlTransient
     @Transient
-    @JsonIgnore
     public Integer getNodeId() {
         if (m_node != null) {
             return m_node.getId();
@@ -385,6 +385,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_monitoredServices = ifServices;
     }
 
+    // TODO: Why are these annotations here?
     @Transient
     @JsonIgnore
     public void addMonitoredService(final OnmsMonitoredService svc) {

@@ -84,37 +84,28 @@ public class EventBuilder {
         setCreationTime(date);
         setSource(source);
     }
-    
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public EventBuilder(final Event event) {
-        this(event, new Date());
+        m_event = event;
+        Date now = new Date();
+        setTime(now);
+        setCreationTime(now);
     }
 
     /**
-     * <p>Constructor for EventBuilder.</p>
+     * <p>getEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public EventBuilder(final Event event, final Date date) {
-    	m_event = event;
-	    setTime(date);
-	    setCreationTime(date);
-	}
-
-	/**
-	 * <p>getEvent</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event getEvent() {
+    public Event getEvent() {
         return m_event;
     }
-	
+
     public EventBuilder setUei(final String uei) {
         m_event.setUei(uei);
         return this;
@@ -296,7 +287,7 @@ public class EventBuilder {
         }
 
         for(final Parm parm : m_event.getParmCollection()) {
-            if (parm.getParmName().equals(val)) {
+            if (parm.getParmName().equals(parmName)) {
             	final Value value = new Value();
                 value.setContent(val);
                 parm.setValue(value);

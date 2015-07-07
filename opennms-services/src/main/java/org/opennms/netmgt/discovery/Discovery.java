@@ -64,10 +64,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
- * This class is the main interface to the OpenNMS discovery service. The class
- * implements the <em>singleton</em> design pattern, in that there is only one
- * instance in any given virtual machine. The service delays the reading of
- * configuration information until the service is started.
+ * This class is the main interface to the OpenNMS discovery service. The service 
+ * delays the reading of configuration information until the service is started.
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
@@ -172,7 +170,7 @@ public class Discovery extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
         
         //Wiring doesn't seem to be working.
-        Assert.state(m_discoveryFactory != null, "must set the Discovery Factory propertly");
+        Assert.state(m_discoveryFactory != null, "must set the Discovery Factory property");
         cb.setDiscoveryFactory(m_discoveryFactory);
         
         try {
@@ -188,8 +186,7 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     private void initializeConfiguration() throws MarshalException, ValidationException, IOException {
-        DiscoveryConfigFactory.reload();
-        setDiscoveryFactory(DiscoveryConfigFactory.getInstance());
+        m_discoveryFactory.reload();
     }
     
     private void doPings() {
@@ -435,7 +432,7 @@ public class Discovery extends AbstractServiceDaemon {
         if(event.getInterface() != null) {
             // remove from known nodes
             final String iface = event.getInterface();
-			m_alreadyDiscovered.remove(iface);
+            m_alreadyDiscovered.remove(iface);
 
             LOG.debug("Removed {} from known node list", iface);
         }
@@ -476,7 +473,7 @@ public class Discovery extends AbstractServiceDaemon {
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
         final String iface = event.getInterface();
-		m_alreadyDiscovered.add(iface);
+        m_alreadyDiscovered.add(iface);
 
         LOG.debug("Added {} as discovered", iface);
     }

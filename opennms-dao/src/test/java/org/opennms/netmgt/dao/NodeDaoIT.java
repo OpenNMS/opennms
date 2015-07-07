@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -55,7 +54,6 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -137,9 +135,8 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSave() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+
+        OnmsNode node = new OnmsNode("MyFirstNode");
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -148,9 +145,8 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithPathElement() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+
+        OnmsNode node = new OnmsNode("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -161,9 +157,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -179,16 +173,11 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        OnmsDistPoller distPoller = getDistPoller();
-
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstLldpNode");
+        OnmsNode node = new OnmsNode("MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
-        OnmsDistPoller dp = getDistPoller();
-        assertSame(distPoller, dp);
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
+        Collection<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(7, nodes.size());
         Integer nodeid = null;
         for (OnmsNode retrieved : nodes) {
@@ -261,10 +250,8 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testCreate() throws InterruptedException {
-        OnmsDistPoller distPoller = getDistPoller();
 
-        OnmsNode node = new OnmsNode(distPoller);
-        node.setLabel("MyFirstNode");
+        OnmsNode node = new OnmsNode("MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -273,10 +260,7 @@ public class NodeDaoIT implements InitializingBean {
 
 
         System.out.println("BEFORE GET");
-        OnmsDistPoller dp = getDistPoller();
-        assertSame(distPoller, dp);
-        System.out.println("AFTER GET");
-        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
+        Collection<OnmsNode> nodes = getNodeDao().findAll();
         assertEquals(7, nodes.size());
         System.out.println("AFTER GETNODES");
         for (OnmsNode retrieved : nodes) {
@@ -532,7 +516,7 @@ public class NodeDaoIT implements InitializingBean {
 
     private static void assertNodeEquals(OnmsNode expected, OnmsNode actual) throws Exception {
         assertEquals("Unexpected nodeId", expected.getId(), actual.getId());
-        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "distPoller.name", "sysContact", "sysName", "sysObjectId" };
+        String[] properties = { "id", "label", "labelSource", "assetRecord.assetNumber", "location", "sysContact", "sysName", "sysObjectId" };
         assertPropertiesEqual(properties, expected, actual);
 
         assertInterfaceSetsEqual(expected.getIpInterfaces(), actual.getIpInterfaces());
@@ -634,11 +618,5 @@ public class NodeDaoIT implements InitializingBean {
         assertEquals(3, n.getIpInterfaces().size());
         assertNotNull(n.getAssetRecord());
         assertEquals("category1", n.getAssetRecord().getDisplayCategory());
-    }
-
-    private OnmsDistPoller getDistPoller() {
-        OnmsDistPoller distPoller = getDistPollerDao().load("localhost");
-        assertNotNull(distPoller);
-        return distPoller;
     }
 }
