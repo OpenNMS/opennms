@@ -108,7 +108,7 @@ It is currently not possible for the Remote Poller to have access to the SNMP co
 | `${observedValue}` | Polled value that made the monitor succeed or fail.
 | `${oid}`           | Value of the `oid` parameter.
 | `${operand}`       | Value of the `operand` parameter.
-| `${operantor}`     | Value of the `operator` parameter.
+| `${operator}`      | Value of the `operator` parameter.
 | `${port}`          | Value of the `port` parameter.
 | `${retry}`         | Value of the `retry` parameter.
 | `${timeout}`       | Value of the `timeout` parameter.

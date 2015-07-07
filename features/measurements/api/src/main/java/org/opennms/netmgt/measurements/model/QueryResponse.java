@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.google.common.collect.Maps;
 
 /**
@@ -135,6 +137,7 @@ public class QueryResponse {
     }
 
     @XmlElement(name="columns")
+    @JsonProperty("columns")
     public WrappedPrimitive[] getColumns() {
         return columns;
     }
@@ -227,6 +230,7 @@ public class QueryResponse {
         }
 
         @XmlElement(name="values")
+        @JsonProperty("values")
         public double[] getList() {
             return values;
         }

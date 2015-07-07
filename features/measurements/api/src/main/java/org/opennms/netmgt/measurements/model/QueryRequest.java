@@ -28,13 +28,17 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.google.common.collect.Lists;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-import java.util.List;
+import com.google.common.collect.Lists;
 
 /**
  * Query request attributes.
@@ -43,6 +47,7 @@ import java.util.List;
  * @author Dustin Frisch <fooker@lab.sh>
  */
 @XmlRootElement(name = "query-request")
+@XmlAccessorType(XmlAccessType.NONE)
 public class QueryRequest {
 
     /**
@@ -106,6 +111,7 @@ public class QueryRequest {
     }
 
     @XmlElement(name = "source")
+    @JsonProperty("source")
     public List<Source> getSources() {
         return sources;
     }
@@ -115,6 +121,7 @@ public class QueryRequest {
     }
 
     @XmlElement(name = "expression")
+    @JsonProperty("expression")
     public List<Expression> getExpressions() {
         return expressions;
     }

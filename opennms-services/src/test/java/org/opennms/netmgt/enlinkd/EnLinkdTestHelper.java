@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.OnmsNode;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 /**
@@ -67,8 +68,6 @@ public abstract class EnLinkdTestHelper {
         System.err.println("----------cdp element --------");
         System.err.println("Nodeid: " + cdpElement.getNode().getId());
         System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
-        if (cdpElement.getCdpGlobalDeviceIdFormat() !=  null)
-            System.err.println("Cdp Global Device Id Format: " + CdpGlobalDeviceIdFormat.getTypeString(cdpElement.getCdpGlobalDeviceIdFormat().getValue()));
         System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
     }
 

@@ -49,6 +49,7 @@
   <event-file>events/Avocent.DSR.events.xml</event-file>
   <event-file>events/Avocent.DSR1021.events.xml</event-file>
   <event-file>events/Avocent.DSR2010.events.xml</event-file>
+  <event-file>events/Avocent-DSView.events.xml</event-file>
   <event-file>events/Avocent.Mergepoint.events.xml</event-file>
   <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
@@ -89,6 +90,11 @@
   <event-file>events/DellEquallogic.events.xml</event-file>
   <event-file>events/Dell-DRAC2.events.xml</event-file>
   <event-file>events/Dell-ITassist.events.xml</event-file>
+  <event-file>events/Dell-F10-bgb4-v2.events.xml</event-file>
+  <event-file>events/Dell-F10-chassis.events.xml</event-file>
+  <event-file>events/Dell-F10-copy-config.events.xml</event-file>
+  <event-file>events/Dell-F10-mstp.events.xml</event-file>
+  <event-file>events/Dell-F10-system-component.events.xml</event-file>
   <event-file>events/DellOpenManage.events.xml</event-file>
   <event-file>events/DellRacHost.events.xml</event-file>
   <event-file>events/DellStorageManagement.events.xml</event-file>
@@ -101,6 +107,10 @@
   <event-file>events/EMC.events.xml</event-file>
   <event-file>events/EMC-Celerra.events.xml</event-file>
   <event-file>events/EMC-Clariion.events.xml</event-file>
+  <event-file>events/Evertz.7780ASI-IP2.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP.events.xml</event-file>
+  <event-file>events/Evertz.7880IP-ASI-IP-FR.events.xml</event-file>
+  <event-file>events/Evertz.7881DEC-MP2-HD.events.xml</event-file>
   <event-file>events/Extreme.events.xml</event-file>
   <event-file>events/F5.events.xml</event-file>
   <event-file>events/fcmgmt.events.xml</event-file>
@@ -125,6 +135,7 @@
   <event-file>events/IBM-UMS.events.xml</event-file>
   <event-file>events/IBMRSA2.events.xml</event-file>
   <event-file>events/IEEE802dot11.events.xml</event-file>
+  <event-file>events/Infoblox.events.xml</event-file>
   <event-file>events/Intel.events.xml</event-file>
   <event-file>events/INTEL-LAN-ADAPTERS-MIB.events.xml</event-file>
   <event-file>events/InteractiveIntelligence.events.xml</event-file>
@@ -180,6 +191,7 @@
   <event-file>events/Powerware.events.xml</event-file>
   <event-file>events/Primecluster.events.xml</event-file>
   <event-file>events/Quintum.events.xml</event-file>
+  <event-file>events/Raytheon.events.xml</event-file>
   <event-file>events/RADLAN-MIB.events.xml</event-file>
   <event-file>events/RAPID-CITY.events.xml</event-file>
   <event-file>events/Redline.events.xml</event-file>
