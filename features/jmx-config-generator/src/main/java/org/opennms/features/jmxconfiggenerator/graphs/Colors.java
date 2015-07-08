@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.jmxconfiggenerator.helper;
+package org.opennms.features.jmxconfiggenerator.graphs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,9 @@ import java.util.List;
  *
  * @author Markus Neumann <markus@opennms.com>
  */
-public abstract class Colors {
+abstract class Colors {
 
-    private static List<String> tangoColors = new ArrayList<String>();
+    private static final List<String> tangoColors = new ArrayList<>();
     private static int colorIndex = 0;
 
     static {
@@ -84,7 +84,7 @@ public abstract class Colors {
         return color;
     }
 
-    public static void restetColor() {
+    public static void resetColor() {
         colorIndex = 0;
     }
 }
