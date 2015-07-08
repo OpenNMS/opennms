@@ -22,15 +22,6 @@
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-    <!-- Create a Spring bus -->
-    <!--
-    <cxf:bus>
-      <cxf:features>
-        <cxf:logging/>
-      </cxf:features>
-    </cxf:bus>
-    -->
-
     <!--
       This ResourceContextProvider will manually tell CXF to use the Spring context to 
       fetch subresource instances. I'm not sure exactly WHY this is necessary but I can't

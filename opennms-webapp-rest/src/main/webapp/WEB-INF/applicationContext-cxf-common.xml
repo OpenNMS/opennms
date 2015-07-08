@@ -20,30 +20,17 @@
     <bean id="lenientJaxbProvider"   class="org.opennms.web.rest.support.ValidatingMessageBodyReader"/>
     <bean id="jaxbProvider"          class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
     <!-- Jettison JSON provider -->
-    <!--
-    <bean id="jsonProvider"          class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
-    -->
+    <!-- <bean id="jsonProvider"          class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/> -->
+    <!-- Jackson JSON provider -->
     <bean id="jsonProvider"          class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
     <bean id="atomEntryProvider"     class="org.apache.cxf.jaxrs.provider.atom.AtomEntryProvider"/>
     <bean id="atomFeedProvider"      class="org.apache.cxf.jaxrs.provider.atom.AtomFeedProvider"/>
-    <bean id="atomPojoProvider"      class="org.apache.cxf.jaxrs.provider.atom.AtomPojoProvider"/>
+    <!-- <bean id="atomPojoProvider"      class="org.apache.cxf.jaxrs.provider.atom.AtomPojoProvider"/> -->
 
     <!-- FIQL search @Provider class -->
     <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
 
     <!-- Interceptors -->
     <bean id="gzipOutInterceptor" class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor" />
-
-<!--     <cxf:bus id="cxf-bus-rest" bus="cxf-bus-rest"> -->
-<!--       <cxf:features> -->
-<!--         <cxf:logging/> -->
-<!--       </cxf:features> -->
-<!--     </cxf:bus> -->
-
-<!--     <cxf:bus id="cxf-bus-rest2" bus="cxf-bus-rest2"> -->
-<!--       <cxf:features> -->
-<!--         <cxf:logging/> -->
-<!--       </cxf:features> -->
-<!--     </cxf:bus> -->
 
 </beans>
