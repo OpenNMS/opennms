@@ -14,6 +14,7 @@
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.3" instance="0" alias="fgSysCpuUsage" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.4" instance="0" alias="fgSysMemUsage" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.6" instance="0" alias="fgSysDiskUsage" type="Gauge32" />
+    <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.7" instance="0" alias="fgSysDiskCapacity" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.8" instance="0" alias="fgSysSesCount" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.9" instance="0" alias="fgSysLowMemUsage" type="Gauge32" />
     <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.11" instance="0" alias="fgSysSesRate1" type="Gauge32" />
