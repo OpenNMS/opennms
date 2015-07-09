@@ -68,13 +68,20 @@
                   Camel Context
        ************************************** -->
 
-  <camelContext autoStartup="true" id="elasticsearchEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext autoStartup="true" id="elasticsearchEventForwarder" xmlns="http://camel.apache.org/schema/blueprint">
     <!--<propertyPlaceholder id="properties" location="blueprint:esEventForwarderProperties"/>-->
     <propertyPlaceholder id="funcBasedProperties" location="none" ignoreMissingLocation="true">
       <propertiesFunction ref="indexNameFunction"/>
     </propertyPlaceholder>
 
-    <route id="elastisearchTemplateMapping" autoStartup="true" startupOrder="1">
+    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
+
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
+    </onException>
+
+    <route id="updateElastisearchTemplateMappingRunOnlyOnce" autoStartup="true" startupOrder="1">
         <from uri="timer://runOnce?repeatCount=1&amp;delay=0"/>
         <setHeader headerName="CamelHttpMethod">
           <constant>PUT</constant>
@@ -87,14 +94,20 @@
         <log message="${body}"/>
     </route>
 
-    <route id="forwardEventToElasticsearch" autoStartup="true" startupOrder="2">
-      <from uri="seda:elasticsearchForwardEvent"/>
-      <bean ref="elasticsearchHeaders" method="process"/>
-      <!-- Log -->
-      <log message="event: ${body.toString()}"/>
-      <!-- Send to ES -->
-      <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>
+    <route id="forwardAndEnrichEventForElasticsearch" autoStartup="true" startupOrder="2">
+        <from uri="seda:elasticsearchForwardEvent"/>
+        <bean ref="elasticsearchHeaders" method="process"/>
+        <!-- Log -->
+        <log message="event: ${body.toString()}"/>
+        <to uri="direct:ES"/>
     </route>
+
+    <route id="submitEventsToElasticsearch" autoStartup="true" startupOrder="3" errorHandlerRef="noErrorHandler">
+        <from uri="direct:ES"/>
+        <!-- Send to ES -->
+        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>
+    </route>
+
   </camelContext>
 
 </blueprint>
