@@ -109,11 +109,9 @@ public class ESHeaders {
         }
         body.put("nodeid", event.getNodeid());
         body.put("host",event.getHost());
-        StringBuilder params=new StringBuilder();
         for(Parm parm : event.getParmCollection()) {
-            params.append(parm.getParmName()).append("=").append(parm.getValue().getContent()).append(" ");
+            body.put("p_"+parm.getParmName(), parm.getValue().getContent());
         }
-        body.put("eventparms", params.toString());
         body.put("source", event.getSource());
         body.put("interface", event.getInterface());
         body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
