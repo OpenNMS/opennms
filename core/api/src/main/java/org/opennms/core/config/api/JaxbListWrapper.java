@@ -70,6 +70,7 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
 
     private List<T> m_objects = new ArrayList<T>();
     private Integer m_totalCount;
+    private Integer m_offset;
 
     public List<T> getObjects() {
         return m_objects;
@@ -119,6 +120,16 @@ public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     public void setTotalCount(final Integer totalCount) {
         m_totalCount = totalCount;
     }
+
+    @XmlAttribute(name="offset")
+    public Integer getOffset() {
+        return m_offset;
+    }
+
+    public void setOffset(final Integer offset) {
+        m_offset = offset;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
