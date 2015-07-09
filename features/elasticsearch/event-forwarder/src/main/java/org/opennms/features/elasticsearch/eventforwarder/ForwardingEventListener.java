@@ -110,7 +110,8 @@ public class ForwardingEventListener implements EventListener {
 	 */
 	@Override
 	public void onEvent(final Event event) {
-		if(event.getDbid()!=null) {
+		// only process events persisted to database
+		if(event.getDbid()!=null && event.getDbid()!=0) {
 			// Send the event to the event forwarder
 			eventForwarder.sendNow(event);
 		}
