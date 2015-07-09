@@ -99,10 +99,14 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		final CriteriaBuilder builder = getCriteriaBuilder();
 
 		if (searchContext != null) {
-			SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
-			if (condition != null) {
-				SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
-				condition.accept(visitor);
+			try {
+				SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
+				if (condition != null) {
+					SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
+					condition.accept(visitor);
+				}
+			} catch (ArrayIndexOutOfBoundsException e) {
+				LOG.warn("Error while parsing FIQL search: " + e.getMessage());
 			}
 		}
 
@@ -301,22 +305,22 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		builder.distinct();
 		builder.limit(defaultLimit);
 
-		if (params.containsKey("limit")) {
-			builder.limit(Integer.valueOf(params.getFirst("limit")));
+		if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
+			builder.limit(Integer.valueOf(params.getFirst("limit").trim()));
 			params.remove("limit");
 		}
 
-		if (params.containsKey("offset")) {
-			builder.offset(Integer.valueOf(params.getFirst("offset")));
+		if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
+			builder.offset(Integer.valueOf(params.getFirst("offset").trim()));
 			params.remove("offset");
 		}
 
-		if(params.containsKey("orderBy")) {
-			builder.orderBy(params.getFirst("orderBy"));
+		if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
+			builder.orderBy(params.getFirst("orderBy").trim());
 			params.remove("orderBy");
 
-			if(params.containsKey("order")) {
-				if("desc".equalsIgnoreCase(params.getFirst("order"))) {
+			if (params.containsKey("order") && params.getFirst("order") != null && !"".equals(params.getFirst("order").trim())) {
+				if("desc".equalsIgnoreCase(params.getFirst("order").trim())) {
 					builder.desc();
 				} else {
 					builder.asc();

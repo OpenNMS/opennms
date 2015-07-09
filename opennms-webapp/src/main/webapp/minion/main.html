@@ -1,4 +1,12 @@
 <div ng-controller="MinionListCtrl">
+	<form class="form-inline" ng-submit="addSearchClause(clause)">
+		<input class="form-control" type="text" ng-model="clause.property"/>
+		<input class="form-control" type="text" ng-model="clause.operator"/>
+		<input class="form-control" type="text" ng-model="clause.value"/>
+		<button class="btn btn-default" type="submit">Submit</button>
+		<a class="btn btn-default" ng-click="clearSearch()">Clear search</a>
+	</form>
+	<h3>{{searchParam}}</h3>
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h3 class="panel-title">Monitoring Systems</h3>
@@ -20,13 +28,13 @@
 					<td class="noWrap">{{minion.id}}</td>
 					<td class="noWrap">
 						<form ng-show="enableEditLabel" ng-submit="update(minion)">
-							<input type="text" ng-model="minion.label"/>
+							<input class="form-control" type="text" ng-model="minion.label"/>
 						</form>
 						<span ng-hide="enableEditLabel" ng-click="editLabel(minion.id)">{{minion.label}}</span>
 					</td>
 					<td class="noWrap">
 						<form ng-show="enableEditLocation" ng-submit="update(minion)">
-							<input type="text" ng-model="minion.location"/>
+							<input class="form-control" type="text" ng-model="minion.location"/>
 						</form>
 						<span ng-hide="enableEditLocation" ng-click="editLocation(minion.id)">{{minion.location}}</span>
 					</td>
