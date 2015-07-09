@@ -17,13 +17,22 @@
 				</tr>
 
 				<tr ng-repeat="minion in minions">
-					<td class="noWrap"><a href="GO TO DETAILS PAGE">{{minion.id}}</a>
+					<td class="noWrap">{{minion.id}}</td>
+					<td class="noWrap">
+						<form ng-show="enableEditLabel" ng-submit="update(minion)">
+							<input type="text" ng-model="minion.label"/>
+						</form>
+						<span ng-hide="enableEditLabel" ng-click="editLabel(minion.id)">{{minion.label}}</span>
 					</td>
-					<td class="noWrap">{{minion.label}}</td>
-					<td class="noWrap">{{minion.location}}</td>
+					<td class="noWrap">
+						<form ng-show="enableEditLocation" ng-submit="update(minion)">
+							<input type="text" ng-model="minion.location"/>
+						</form>
+						<span ng-hide="enableEditLocation" ng-click="editLocation(minion.id)">{{minion.location}}</span>
+					</td>
 					<td class="noWrap">{{minion.type}}</td>
 					<td class="noWrap">{{minion.status}}</td>
-					<td class="noWrap">{{minion.date | date:'MMM d, yyyy h:mm:ss a'}}</td>
+					<td class="noWrap">{{minion.lastUpdated | date:'MMM d, yyyy h:mm:ss a'}}</td>
 					<td class="noWrap">
 						<span ng-repeat="(key,value) in minion.properties">
 						<span class="label label-default">

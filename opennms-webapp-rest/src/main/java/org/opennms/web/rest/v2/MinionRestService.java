@@ -34,45 +34,45 @@ import javax.ws.rs.Path;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+import org.opennms.netmgt.dao.api.MinionDao;
+import org.opennms.netmgt.model.OnmsMinionCollection;
+import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Basic Web Service using REST for {@link LocationDef} entity
+ * Basic Web Service using REST for {@link OnmsMinion} entity
  *
  * @author Seth
  */
 @Component
-@Path("monitoringLocations")
+@Path("minions")
 @Transactional
-public class MonitoringLocationsService extends AbstractDaoRestService<LocationDef,String> {
+public class MinionRestService extends AbstractDaoRestService<OnmsMinion,String> {
 
 	@Autowired
-	private MonitoringLocationDao m_dao;
+	private MinionDao m_dao;
 
-	protected MonitoringLocationDao getDao() {
+	protected MinionDao getDao() {
 		return m_dao;
 	}
 
-	protected Class<LocationDef> getDaoClass() {
-		return LocationDef.class;
+	protected Class<OnmsMinion> getDaoClass() {
+		return OnmsMinion.class;
 	}
 
 	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(LocationDef.class);
+		final CriteriaBuilder builder = new CriteriaBuilder(OnmsMinion.class);
 
-		// Order by location name by default
-		builder.orderBy("locationName").asc();
+		// Order by label by default
+		builder.orderBy("label").desc();
 
 		return builder;
 	}
 
 	@Override
-	protected JaxbListWrapper<LocationDef> createListWrapper(Collection<LocationDef> list) {
-		return new OnmsMonitoringLocationDefinitionList(list);
+	protected JaxbListWrapper<OnmsMinion> createListWrapper(Collection<OnmsMinion> list) {
+		return new OnmsMinionCollection(list);
 	}
 }

@@ -39,6 +39,11 @@
 	<jsp:param name="headTitle" value="Minion Control Panel" />
 	<jsp:param name="breadcrumb" value="Minion" />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.0.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.0.min.js"></script>' />
+	<!--
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.0.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.0.js"></script>' />
+	-->
 	<jsp:param name="script" value='<script type="text/javascript" src="minion/minion.js"></script>' />
 </jsp:include>
 

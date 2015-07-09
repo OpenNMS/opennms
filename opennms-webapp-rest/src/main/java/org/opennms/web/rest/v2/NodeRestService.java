@@ -28,12 +28,16 @@
 
 package org.opennms.web.rest.v2;
 
+import java.util.Collection;
+
 import javax.ws.rs.Path;
 
-import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNodeList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +76,10 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
 		builder.orderBy("label").desc();
 
 		return builder;
+	}
+
+	@Override
+	protected JaxbListWrapper<OnmsNode> createListWrapper(Collection<OnmsNode> list) {
+		return new OnmsNodeList(list);
 	}
 }

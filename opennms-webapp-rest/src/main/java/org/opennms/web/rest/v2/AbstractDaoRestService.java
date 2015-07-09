@@ -31,6 +31,8 @@ package org.opennms.web.rest.v2;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -53,8 +55,10 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -62,10 +66,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
+@Transactional
 public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoRestService.class);
 
@@ -77,6 +83,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	protected abstract OnmsDao<T,K> getDao();
 	protected abstract Class<T> getDaoClass();
 	protected abstract CriteriaBuilder getCriteriaBuilder();
+	protected abstract JaxbListWrapper<T> createListWrapper(Collection<T> list);
 
 	protected final void writeLock() {
 		m_writeLock.lock();
@@ -122,51 +129,26 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
 	public Response get(@Context final UriInfo uriInfo, @Context final SearchContext searchContext) {
-		final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
-		final CriteriaBuilder builder = getCriteriaBuilder();
-
-		if (searchContext != null) {
-			SearchCondition<T> condition = searchContext.getCondition(getDaoClass());
-			if (condition != null) {
-				SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
-				condition.accept(visitor);
-			}
-		}
-
-		// Apply limit, offset, orderBy, order params
-		applyLimitOffsetOrderBy(params, builder);
-
-		Criteria crit = builder.toCriteria();
-
-		/*
-		TODO: Figure out how to do stuff like this
-
-		// Don't include deleted nodes by default
-		final String type = params.getFirst("type");
-		if (type == null) {
-			final List<Restriction> restrictions = new ArrayList<Restriction>(crit.getRestrictions());
-			restrictions.add(Restrictions.ne("type", "D"));
-			crit.setRestrictions(restrictions);
-		}
-		 */
+		Criteria crit = getCriteria(uriInfo, searchContext);
 
 		final List<T> coll = getDao().findMatching(crit);
-
-		// TODO: Figure out how to encapsulate lists in a wrapper object
-		// Remove limit, offset and ordering for count
-		/*
-		crit.setLimit(null);
-		crit.setOffset(null);
-		crit.setOrders(new ArrayList<Order>());
-
-		coll.setTotalCount(getDao().countMatching(crit));
-		 */
 
 		if (coll == null || coll.size() < 1) {
 			return Response.status(Status.NOT_FOUND).build();
 		} else {
-			return Response.ok(coll).build();
+			Integer offset = crit.getOffset();
+
+			// Remove limit, offset and ordering when fetching count
+			crit.setLimit(null);
+			crit.setOffset(null);
+			crit.setOrders(new ArrayList<Order>());
+
+			JaxbListWrapper<T> list = createListWrapper(coll);
+			list.setTotalCount(getDao().countMatching(crit));
+			list.setOffset(offset);
+
+			return Response.ok(list).build();
 		}
 	}
 
@@ -211,9 +193,31 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 	}
 
 	@PUT
+	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	@Path("{id}")
+	public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final T object) {
+		writeLock();
+
+		try {
+			// TODO: Assert that the ID of the path equals the ID of the object
+
+			if (object == null) {
+				return Response.status(Status.NOT_FOUND).build();
+			}
+
+			LOG.debug("update: updating object {}", object);
+
+			getDao().saveOrUpdate(object);
+			return Response.noContent().build();
+		} finally {
+			writeUnlock();
+		}
+	}
+
+	@PUT
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Path("{id}")
-	public Response update(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
+	public Response updateProperties(@Context final UriInfo uriInfo, @PathParam("id") final K id, final MultivaluedMapImpl params) {
 		writeLock();
 
 		try {
@@ -247,7 +251,9 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		writeLock();
 
 		try {
-			List<T> objects = (List<T>)get(uriInfo, searchContext).getEntity();
+			Criteria crit = getCriteria(uriInfo, searchContext);
+
+			final List<T> objects = getDao().findMatching(crit);
 
 			if (objects == null || objects.size() == 0) {
 				return Response.status(Status.NOT_FOUND).build();
