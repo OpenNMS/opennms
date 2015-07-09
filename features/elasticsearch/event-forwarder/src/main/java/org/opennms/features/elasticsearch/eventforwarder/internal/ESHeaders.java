@@ -4,8 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
 import org.apache.camel.component.bean.BeanInvocation;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -34,7 +33,7 @@ public class ESHeaders {
     Logger logger = LoggerFactory.getLogger(ESHeaders.class);
 
     private boolean logEventDescription=false;
-    private GuavaCache cache;
+    private NodeCache cache;
 
     IndexNameFunction idxName = new IndexNameFunction();
 
@@ -57,6 +56,8 @@ public class ESHeaders {
 
                 if(event.getNodeid()!=null) {
                     try {
+                        // if the event is a uei.opennms.org/nodes/*updated,changed,deleted then force a refresh
+                        maybeRefreshCache(event);
 
                         // will cache on first access
                         body.putAll(cache.getEntry(event.getNodeid()));
@@ -84,6 +85,20 @@ public class ESHeaders {
         exchange.getOut().setBody(body);
     }
 
+    private void maybeRefreshCache(Event event) {
+        String uei=event.getUei();
+        if(uei!=null && uei.startsWith("uei.opennms.org/nodes/")) {
+            if (
+                    uei.endsWith("Added")
+                    || uei.endsWith("Deleted")
+                    || uei.endsWith("Updated")
+                    || uei.endsWith("Changed")
+                    ) {
+                cache.refreshEntry(event.getNodeid());
+            }
+        }
+    }
+
     /**
      * utility method to populate a Map with the most import event attributes
      *
@@ -91,28 +106,29 @@ public class ESHeaders {
      * @param event the event object
      */
     private void populateBodyFromEvent(Map body, Event event) {
+        body.put("id",event.getDbid());
+        body.put("eventuei",event.getUei());
         body.put("@timestamp", event.getCreationTime());
         Calendar cal=Calendar.getInstance();
         cal.setTime(event.getCreationTime());
         body.put("dow", cal.get(Calendar.DAY_OF_WEEK));
         body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
-        body.put("dom", cal.get(Calendar.DAY_OF_MONTH));
-        body.put("uei",event.getUei());
-        body.put("id",event.getDbid());
+        body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
+        body.put("eventsource", event.getSource());
+        body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
+        body.put("servicename", event.getService());
+        // params are exported as attributes, see below
         body.put("eventseverity_text", event.getSeverity());
         body.put("eventseverity", OnmsSeverity.get(event.getSeverity()).getId());
 
-        body.put("service", event.getService());
-        body.put("ipaddr", event.getInterfaceAddress()!=null ? event.getInterfaceAddress().toString() : null );
         if(isLogEventDescription()) {
-            body.put("description", event.getDescr());
+            body.put("eventdescr", event.getDescr());
         }
         body.put("nodeid", event.getNodeid());
         body.put("host",event.getHost());
         for(Parm parm : event.getParmCollection()) {
-            body.put("p_"+parm.getParmName(), parm.getValue().getContent());
+            body.put("p_" + parm.getParmName(), parm.getValue().getContent());
         }
-        body.put("source", event.getSource());
         body.put("interface", event.getInterface());
         body.put("logmsg", ( event.getLogmsg()!=null ? event.getLogmsg().getContent() : null ));
         body.put("logmsgdest", ( event.getLogmsg()!=null ? event.getLogmsg().getDest() : null ));
@@ -139,11 +155,11 @@ public class ESHeaders {
         this.logEventDescription = Boolean.parseBoolean(logEventDescription);
     }
 
-    public GuavaCache getCache() {
+    public NodeCache getCache() {
         return cache;
     }
 
-    public void setCache(GuavaCache cache) {
+    public void setCache(NodeCache cache) {
         this.cache = cache;
     }
 }

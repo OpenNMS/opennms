@@ -24,8 +24,8 @@
         <cm:property name="elasticsearchCluster" value="opennms"/>
         <cm:property name="elasticsearchIp" value="127.0.0.1"/>
         <cm:property name="logEventDescription" value="false"/>
-        <cm:property name="cache_max_ttl" value="10"/>
-        <cm:property name="cache_max_size" value="10000"/>
+        <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
+        <cm:property name="cache_max_size" value="10000"/> <!-- set to zero to disable max size -->
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -45,7 +45,7 @@
     <argument value="seda:elasticsearchForwardEvent"/>
   </bean>
 
-    <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.GuavaCache"
+    <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.NodeCache"
             init-method="init">
         <property name="nodeDao" ref="nodeDao"/>
         <property name="transactionOperations" ref="transactionOperations"/>
