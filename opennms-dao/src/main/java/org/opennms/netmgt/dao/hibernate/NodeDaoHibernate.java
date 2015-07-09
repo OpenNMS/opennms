@@ -107,12 +107,6 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @Override
-    public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
-        return find("from OnmsNode where distPoller = ?", distPoller);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                                    "select distinct n from OnmsNode as n "

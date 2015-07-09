@@ -52,6 +52,7 @@ import org.junit.Test;
  *
  * @author brozow
  */
+@Ignore
 public class NativeSocketTest {
 
     private static final Charset UTF_8 = Charset.forName("UTF-8");

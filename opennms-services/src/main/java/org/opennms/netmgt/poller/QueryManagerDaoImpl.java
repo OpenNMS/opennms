@@ -33,7 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -52,9 +51,9 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,21 +89,11 @@ public class QueryManagerDaoImpl implements QueryManager {
     /** {@inheritDoc} */
     @Override
     public String getNodeLabel(int nodeId) {
-        return m_nodeDao.get(nodeId).getLabel();
-    }
-
-    /**
-     * <p>convertEventTimeToTimeStamp</p>
-     *
-     * @param time a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    private static Date convertEventTimeToTimeStamp(String time) {
-        try {
-            return EventConstants.parseToDate(time);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + time, e);
+        final OnmsNode onmsNode = m_nodeDao.get(nodeId);
+        if (onmsNode == null) {
+            return null;
         }
+        return onmsNode.getLabel();
     }
 
     /** {@inheritDoc} */

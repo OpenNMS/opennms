@@ -11,8 +11,7 @@
     <reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy" availability="mandatory" />
     <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory" />
     <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
-
-    <bean id="mibParser" class="org.opennms.features.vaadin.mibcompiler.services.JsmiMibParser" />
+    <reference id="mibParser" interface="org.opennms.features.mibcompiler.api.MibParser" availability="mandatory" />
 
     <bean id="mibCompilerApplicationFactory" class="org.opennms.features.vaadin.mibcompiler.MibCompilerApplicationFactory" >
         <property name="eventProxy" ref="eventProxy" />

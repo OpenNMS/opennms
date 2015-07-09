@@ -55,7 +55,6 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
@@ -94,18 +93,16 @@ public class EnhancedLinkdMockDataPopulator {
     private OnmsNode m_node8;
 
     private List<OnmsNode> m_nodes;
-    //private List<DataLinkInterface> m_links;
     private List<LldpLink> m_links;
     private List<OspfLink> m_ospfLinks;
 
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
         final String icmp = "ICMP";
         final String snmp = "SNMP";
         final String http = "HTTP";
 
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
 
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(OnmsNode.NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());
@@ -155,7 +152,6 @@ public class EnhancedLinkdMockDataPopulator {
         builder.addService(http);
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(icmp);
-        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         OnmsNode node2 = builder.getCurrentNode();
         node2.setLldpElement(new LldpElement(node2, "node2ChassisId", "node2SysName", LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_LOCAL));
         setNode2(node2);
@@ -250,16 +246,7 @@ public class EnhancedLinkdMockDataPopulator {
         nodes.add(node7);
         nodes.add(node8);
         setNodes(nodes);
-/*
-        final DataLinkInterface dli12 = new DataLinkInterface(getNode2(), -1, getNode1().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli23 = new DataLinkInterface(getNode3(), -1, getNode2().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli34 = new DataLinkInterface(getNode4(), -1, getNode3().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli45 = new DataLinkInterface(getNode5(), -1, getNode4().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli56 = new DataLinkInterface(getNode6(), -1, getNode5().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli67 = new DataLinkInterface(getNode7(), -1, getNode6().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli78 = new DataLinkInterface(getNode8(), -1, getNode7().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-        final DataLinkInterface dli81 = new DataLinkInterface(getNode1(), -1, getNode8().getId(), -1, OnmsArpInterface.StatusType.ACTIVE, new Date());
-*/
+
         //final OnmsNode node, final int ifIndex, final int nodeParentId, final int parentIfIndex, final StatusType status,final Date lastPollTime
         /*OnmsNode node, Integer localPortNum, Integer portIfIndex, String portId,
                 String portDescr, String remChassisId, String remSysname, LldpElement.LldpChassisIdSubType
@@ -383,7 +370,6 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void setUpMock() {
-        //EasyMock.expect(m_dataLinkInterfaceDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_lldpLinkDao.findAll()).andReturn(getLinks()).anyTimes();
         EasyMock.expect(m_ospfLinkDao.findAll()).andReturn(getOspfLinks()).anyTimes();
         EasyMock.expect(m_nodeDao.getAllLabelsById());
@@ -396,7 +382,6 @@ public class EnhancedLinkdMockDataPopulator {
             EasyMock.expect(m_ipInterfaceDao.findByNodeId(i)).andReturn(getList(getNode(i).getIpInterfaces())).anyTimes();
         }
 
-        //EasyMock.replay(m_dataLinkInterfaceDao);
         EasyMock.replay(m_lldpLinkDao);
         EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
@@ -429,7 +414,6 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     public void tearDown() {
-//        EasyMock.reset(m_dataLinkInterfaceDao);
         EasyMock.reset(m_lldpLinkDao);
         EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
@@ -513,10 +497,6 @@ public class EnhancedLinkdMockDataPopulator {
         m_links=links;
     }
 
-    /*public List<DataLinkInterface> getLinks() {
-        return m_links;
-    }*/
-
     public List<LldpLink> getLinks(){
         return m_links;
     }
@@ -529,15 +509,6 @@ public class EnhancedLinkdMockDataPopulator {
         return m_ospfLinks;
     }
 
-/*
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-*/
     public LldpLinkDao getLldpLinkDao(){
         return m_lldpLinkDao;
     }

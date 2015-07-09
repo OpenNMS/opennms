@@ -190,16 +190,20 @@ public final class HibernateEventWriter implements EventWriter {
         	ovent.setIfIndex(null);
         }
 
-        // eventDpName
-        String dpName = event.getDistPoller();
-        if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName())) {
-            dpName = EventDatabaseConstants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE);
-        } else if (event.getDistPoller() != null && !"".equals(event.getDistPoller())) {
-            dpName = EventDatabaseConstants.format(event.getDistPoller(), EVENT_DPNAME_FIELD_SIZE);
-        } else {
-            dpName = "localhost";
+        // systemId
+
+        // If available, use the header's distPoller
+        if (eventHeader != null && eventHeader.getDpName() != null && !"".equals(eventHeader.getDpName().trim())) {
+            ovent.setDistPoller(distPollerDao.get(eventHeader.getDpName()));
         }
-        ovent.setDistPoller(distPollerDao.get(dpName));
+        // Otherwise, use the event's distPoller
+        if (ovent.getDistPoller() == null && event.getDistPoller() != null && !"".equals(event.getDistPoller().trim())) {
+            ovent.setDistPoller(distPollerDao.get(event.getDistPoller()));
+        } 
+        // And if both are unavailable, use the local system as the event's source system
+        if (ovent.getDistPoller() == null) {
+            ovent.setDistPoller(distPollerDao.whoami());
+        }
 
         // eventSnmpHost
         ovent.setEventSnmpHost(EventDatabaseConstants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));

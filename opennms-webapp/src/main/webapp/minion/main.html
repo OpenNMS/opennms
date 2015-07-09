@@ -1,19 +1,36 @@
-<div class="minion-main">
-	<h3>Minion Control Panel</h3>
-	<div ng-controller="MinionListCtrl">
-		<table>
-			<thead>
+<div ng-controller="MinionListCtrl">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Monitoring Systems</h3>
+		</div>
+		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
+		<table class="table table-bordered table-condensed" style="font-size:100%">
+			<tbody>
 				<tr>
 					<th>ID</th>
+					<th>Label</th>
 					<th>Location</th>
+					<th>Type</th>
 					<th>Status</th>
+					<th>Date</th>
+					<th>Properties</th>
 				</tr>
-			</thead>
-			<tbody>
+
 				<tr ng-repeat="minion in minions">
-					<td>{{minion.id}}</td>
-					<td>{{minion.location}}</td>
-					<td>{{minion.status}}</td>
+					<td class="noWrap"><a href="GO TO DETAILS PAGE">{{minion.id}}</a>
+					</td>
+					<td class="noWrap">{{minion.label}}</td>
+					<td class="noWrap">{{minion.location}}</td>
+					<td class="noWrap">{{minion.type}}</td>
+					<td class="noWrap">{{minion.status}}</td>
+					<td class="noWrap">{{minion.date | date:'MMM d, yyyy h:mm:ss a'}}</td>
+					<td class="noWrap">
+						<span ng-repeat="(key,value) in minion.properties">
+						<span class="label label-default">
+							{{key}}: {{value}}
+						</span>&nbsp;
+						</span>
+					</td>
 				</tr>
 			</tbody>
 		</table>

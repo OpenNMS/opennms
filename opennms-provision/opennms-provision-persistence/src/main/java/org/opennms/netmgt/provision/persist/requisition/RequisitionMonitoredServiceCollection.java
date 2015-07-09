@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="services")
+@JsonRootName("services")
 public class RequisitionMonitoredServiceCollection extends JaxbListWrapper<RequisitionMonitoredService> {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class RequisitionMonitoredServiceCollection extends JaxbListWrapper<Requi
     }
 
     @XmlElement(name="monitored-service")
+    @JsonProperty("monitored-service")
     public List<RequisitionMonitoredService> getObjects() {
         return super.getObjects();
     }

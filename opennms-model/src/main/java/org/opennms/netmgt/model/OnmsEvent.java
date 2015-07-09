@@ -462,8 +462,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="eventDpName", nullable=false)
+	@ManyToOne
+	@JoinColumn(name="systemId", nullable=false)
 	public OnmsDistPoller getDistPoller() {
 		return m_distPoller;
 	}

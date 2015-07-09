@@ -1284,6 +1284,7 @@ public abstract class NmsNetworkBuilder {
 
     public static final String CISCO_WS_C2948_NAME         = "ciscoswitch";
     public static final String CISCO_WS_C2948_IP       = "192.0.2.7";
+    public static final String CISCO_WS_C2948_GLOBAL_DEVICEID       = "JAB043408B7";
     public static final String CISCO_WS_C2948_BRIDGEID      = "0002baaacc00";
     public static final String CISCO_WS_C2948_SYSOID        = ".1.3.6.1.4.1.9.5.42";
     public static final String CISCO_WS_C2948_ROOT          = "CISCO_WS_C2948";

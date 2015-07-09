@@ -1,0 +1,536 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.7779.3.1.1.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Infoblox/ibEquipmentFailureTrap</uei>
+        <event-label>IB-TRAPONE-MIB defined trap event: ibEquipmentFailureTrap</event-label>
+        <descr>
+            &lt;p&gt;This event is generated for any equipment failure.
+            &lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            indetermined(1)
+            info(2)
+            minor(3)
+            major(4)
+            critical(5)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibObjectName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            ibClear(0)
+            ibUnknown(1)
+            ibPrimaryDiskFailure(2)
+            ibFanFailure-old(3)
+            ibPowerSupplyFailure(4)
+            ibDBFailure(5)
+            ibApacheSoftwareFailure(6)
+            ibSerialConsoleFailure(7)
+            ibControldSoftwareFailure(11)
+            ibUpgradeFailure(12)
+            ibSNMPDFailure(13)
+            ibSSHDSoftwareFailure(15)
+            ibNTPDSoftwareFailure(16)
+            ibClusterdSoftwarFailure(17)
+            ibLCDSoftwareFailure(18)
+            ibDHCPdSoftwareFailure(19)
+            ibNamedSoftwareFailure(20)
+            ibUNUSED21(21)
+            ibUNUSED22(22)
+            ibRadiusdSoftwareFailure(23)
+            ibNTLMSoftwareFailure(24)
+            ibNetBIOSDaemonFailure(25)
+            ibWindowBindDaemonFailure(26)
+            ibTFTPDSoftwareFailure(27)
+            ibQIPRemoteServerSoftwareFailure(28)
+            ibBackupSoftwareFailure(29)
+            ibBackupDatabaseSoftwareFailure(30)
+            ibBackupModuleSoftwareFailure(31)
+            ibBackupSizeSoftwareFailure(32)
+            ibBackupLockSoftwareFailure(33)
+            ibHTTPFileDistSoftwareFailure(34)
+            ibOSPFSoftwareFailure(35)
+            ibAuthDHCPNamedSoftwareFailure(36)
+            ibFan1Failure(37)
+            ibFan2Failure(38)
+            ibFan3Failure(39)
+            ibFan1OK(40)
+            ibFan2OK(41)
+            ibFan3OK(42)
+            ibFTPDSoftwareFailure(43)
+            ibRAIDIsOptimal(3001)
+            ibRAIDIsDegraded(3002)
+            ibRAIDIsRebuilding(3003)
+            ibRAIDStatusUnknown(3004)
+            ibRAIDBatteryIsOK(3005)
+            ibRAIDBatteryFailed(3006)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ibEquipmentFailureTrap trap received
+            ibNodeName=%parm[#1]%
+            ibTrapSeverity=%parm[#2]%
+            ibObjectName=%parm[#3]%
+            ibProbableCause=%parm[#4]%
+            ibTrapDesc=%parm[#5]%&lt;/p&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="indetermined"/>
+            <decode varbindvalue="2" varbinddecodedstring="info"/>
+            <decode varbindvalue="3" varbinddecodedstring="minor"/>
+            <decode varbindvalue="4" varbinddecodedstring="major"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#4]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="ibClear"/>
+            <decode varbindvalue="1" varbinddecodedstring="ibUnknown"/>
+            <decode varbindvalue="2" varbinddecodedstring="ibPrimaryDiskFailure"/>
+            <decode varbindvalue="3" varbinddecodedstring="ibFanFailure-old"/>
+            <decode varbindvalue="4" varbinddecodedstring="ibPowerSupplyFailure"/>
+            <decode varbindvalue="5" varbinddecodedstring="ibDBFailure"/>
+            <decode varbindvalue="6" varbinddecodedstring="ibApacheSoftwareFailure"/>
+            <decode varbindvalue="7" varbinddecodedstring="ibSerialConsoleFailure"/>
+            <decode varbindvalue="11" varbinddecodedstring="ibControldSoftwareFailure"/>
+            <decode varbindvalue="12" varbinddecodedstring="ibUpgradeFailure"/>
+            <decode varbindvalue="13" varbinddecodedstring="ibSNMPDFailure"/>
+            <decode varbindvalue="15" varbinddecodedstring="ibSSHDSoftwareFailure"/>
+            <decode varbindvalue="16" varbinddecodedstring="ibNTPDSoftwareFailure"/>
+            <decode varbindvalue="17" varbinddecodedstring="ibClusterdSoftwarFailure"/>
+            <decode varbindvalue="18" varbinddecodedstring="ibLCDSoftwareFailure"/>
+            <decode varbindvalue="19" varbinddecodedstring="ibDHCPdSoftwareFailure"/>
+            <decode varbindvalue="20" varbinddecodedstring="ibNamedSoftwareFailure"/>
+            <decode varbindvalue="21" varbinddecodedstring="ibUNUSED21"/>
+            <decode varbindvalue="22" varbinddecodedstring="ibUNUSED22"/>
+            <decode varbindvalue="23" varbinddecodedstring="ibRadiusdSoftwareFailure"/>
+            <decode varbindvalue="24" varbinddecodedstring="ibNTLMSoftwareFailure"/>
+            <decode varbindvalue="25" varbinddecodedstring="ibNetBIOSDaemonFailure"/>
+            <decode varbindvalue="26" varbinddecodedstring="ibWindowBindDaemonFailure"/>
+            <decode varbindvalue="27" varbinddecodedstring="ibTFTPDSoftwareFailure"/>
+            <decode varbindvalue="28" varbinddecodedstring="ibQIPRemoteServerSoftwareFailure"/>
+            <decode varbindvalue="29" varbinddecodedstring="ibBackupSoftwareFailure"/>
+            <decode varbindvalue="30" varbinddecodedstring="ibBackupDatabaseSoftwareFailure"/>
+            <decode varbindvalue="31" varbinddecodedstring="ibBackupModuleSoftwareFailure"/>
+            <decode varbindvalue="32" varbinddecodedstring="ibBackupSizeSoftwareFailure"/>
+            <decode varbindvalue="33" varbinddecodedstring="ibBackupLockSoftwareFailure"/>
+            <decode varbindvalue="34" varbinddecodedstring="ibHTTPFileDistSoftwareFailure"/>
+            <decode varbindvalue="35" varbinddecodedstring="ibOSPFSoftwareFailure"/>
+            <decode varbindvalue="36" varbinddecodedstring="ibAuthDHCPNamedSoftwareFailure"/>
+            <decode varbindvalue="37" varbinddecodedstring="ibFan1Failure"/>
+            <decode varbindvalue="38" varbinddecodedstring="ibFan2Failure"/>
+            <decode varbindvalue="39" varbinddecodedstring="ibFan3Failure"/>
+            <decode varbindvalue="40" varbinddecodedstring="ibFan1OK"/>
+            <decode varbindvalue="41" varbinddecodedstring="ibFan2OK"/>
+            <decode varbindvalue="42" varbinddecodedstring="ibFan3OK"/>
+            <decode varbindvalue="43" varbinddecodedstring="ibFTPDSoftwareFailure"/>
+            <decode varbindvalue="3001" varbinddecodedstring="ibRAIDIsOptimal"/>
+            <decode varbindvalue="3002" varbinddecodedstring="ibRAIDIsDegraded"/>
+            <decode varbindvalue="3003" varbinddecodedstring="ibRAIDIsRebuilding"/>
+            <decode varbindvalue="3004" varbinddecodedstring="ibRAIDStatusUnknown"/>
+            <decode varbindvalue="3005" varbinddecodedstring="ibRAIDBatteryIsOK"/>
+            <decode varbindvalue="3006" varbinddecodedstring="ibRAIDBatteryFailed"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.7779.3.1.1.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Infoblox/ibProcessingFailureTrap</uei>
+        <event-label>IB-TRAPONE-MIB defined trap event: ibProcessingFailureTrap</event-label>
+        <descr>
+            &lt;p&gt;This trap is generated whenever a software failure is detected.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            indetermined(1)
+            info(2)
+            minor(3)
+            major(4)
+            critical(5)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibSubsystemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibProbableCause&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            ibClear(0)
+            ibUnknown(1)
+            ibPrimaryDiskFailure(2)
+            ibFanFailure-old(3)
+            ibPowerSupplyFailure(4)
+            ibDBFailure(5)
+            ibApacheSoftwareFailure(6)
+            ibSerialConsoleFailure(7)
+            ibControldSoftwareFailure(11)
+            ibUpgradeFailure(12)
+            ibSNMPDFailure(13)
+            ibSSHDSoftwareFailure(15)
+            ibNTPDSoftwareFailure(16)
+            ibClusterdSoftwarFailure(17)
+            ibLCDSoftwareFailure(18)
+            ibDHCPdSoftwareFailure(19)
+            ibNamedSoftwareFailure(20)
+            ibUNUSED21(21)
+            ibUNUSED22(22)
+            ibRadiusdSoftwareFailure(23)
+            ibNTLMSoftwareFailure(24)
+            ibNetBIOSDaemonFailure(25)
+            ibWindowBindDaemonFailure(26)
+            ibTFTPDSoftwareFailure(27)
+            ibQIPRemoteServerSoftwareFailure(28)
+            ibBackupSoftwareFailure(29)
+            ibBackupDatabaseSoftwareFailure(30)
+            ibBackupModuleSoftwareFailure(31)
+            ibBackupSizeSoftwareFailure(32)
+            ibBackupLockSoftwareFailure(33)
+            ibHTTPFileDistSoftwareFailure(34)
+            ibOSPFSoftwareFailure(35)
+            ibAuthDHCPNamedSoftwareFailure(36)
+            ibFan1Failure(37)
+            ibFan2Failure(38)
+            ibFan3Failure(39)
+            ibFan1OK(40)
+            ibFan2OK(41)
+            ibFan3OK(42)
+            ibFTPDSoftwareFailure(43)
+            ibRAIDIsOptimal(3001)
+            ibRAIDIsDegraded(3002)
+            ibRAIDIsRebuilding(3003)
+            ibRAIDStatusUnknown(3004)
+            ibRAIDBatteryIsOK(3005)
+            ibRAIDBatteryFailed(3006)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ibProcessingFailureTrap trap received
+            ibNodeName=%parm[#1]%
+            ibTrapSeverity=%parm[#2]%
+            ibSubsystemName=%parm[#3]%
+            ibProbableCause=%parm[#4]%
+            ibTrapDesc=%parm[#5]%&lt;/p&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="indetermined"/>
+            <decode varbindvalue="2" varbinddecodedstring="info"/>
+            <decode varbindvalue="3" varbinddecodedstring="minor"/>
+            <decode varbindvalue="4" varbinddecodedstring="major"/>
+            <decode varbindvalue="5" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#4]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="ibClear"/>
+            <decode varbindvalue="1" varbinddecodedstring="ibUnknown"/>
+            <decode varbindvalue="2" varbinddecodedstring="ibPrimaryDiskFailure"/>
+            <decode varbindvalue="3" varbinddecodedstring="ibFanFailure-old"/>
+            <decode varbindvalue="4" varbinddecodedstring="ibPowerSupplyFailure"/>
+            <decode varbindvalue="5" varbinddecodedstring="ibDBFailure"/>
+            <decode varbindvalue="6" varbinddecodedstring="ibApacheSoftwareFailure"/>
+            <decode varbindvalue="7" varbinddecodedstring="ibSerialConsoleFailure"/>
+            <decode varbindvalue="11" varbinddecodedstring="ibControldSoftwareFailure"/>
+            <decode varbindvalue="12" varbinddecodedstring="ibUpgradeFailure"/>
+            <decode varbindvalue="13" varbinddecodedstring="ibSNMPDFailure"/>
+            <decode varbindvalue="15" varbinddecodedstring="ibSSHDSoftwareFailure"/>
+            <decode varbindvalue="16" varbinddecodedstring="ibNTPDSoftwareFailure"/>
+            <decode varbindvalue="17" varbinddecodedstring="ibClusterdSoftwarFailure"/>
+            <decode varbindvalue="18" varbinddecodedstring="ibLCDSoftwareFailure"/>
+            <decode varbindvalue="19" varbinddecodedstring="ibDHCPdSoftwareFailure"/>
+            <decode varbindvalue="20" varbinddecodedstring="ibNamedSoftwareFailure"/>
+            <decode varbindvalue="21" varbinddecodedstring="ibUNUSED21"/>
+            <decode varbindvalue="22" varbinddecodedstring="ibUNUSED22"/>
+            <decode varbindvalue="23" varbinddecodedstring="ibRadiusdSoftwareFailure"/>
+            <decode varbindvalue="24" varbinddecodedstring="ibNTLMSoftwareFailure"/>
+            <decode varbindvalue="25" varbinddecodedstring="ibNetBIOSDaemonFailure"/>
+            <decode varbindvalue="26" varbinddecodedstring="ibWindowBindDaemonFailure"/>
+            <decode varbindvalue="27" varbinddecodedstring="ibTFTPDSoftwareFailure"/>
+            <decode varbindvalue="28" varbinddecodedstring="ibQIPRemoteServerSoftwareFailure"/>
+            <decode varbindvalue="29" varbinddecodedstring="ibBackupSoftwareFailure"/>
+            <decode varbindvalue="30" varbinddecodedstring="ibBackupDatabaseSoftwareFailure"/>
+            <decode varbindvalue="31" varbinddecodedstring="ibBackupModuleSoftwareFailure"/>
+            <decode varbindvalue="32" varbinddecodedstring="ibBackupSizeSoftwareFailure"/>
+            <decode varbindvalue="33" varbinddecodedstring="ibBackupLockSoftwareFailure"/>
+            <decode varbindvalue="34" varbinddecodedstring="ibHTTPFileDistSoftwareFailure"/>
+            <decode varbindvalue="35" varbinddecodedstring="ibOSPFSoftwareFailure"/>
+            <decode varbindvalue="36" varbinddecodedstring="ibAuthDHCPNamedSoftwareFailure"/>
+            <decode varbindvalue="37" varbinddecodedstring="ibFan1Failure"/>
+            <decode varbindvalue="38" varbinddecodedstring="ibFan2Failure"/>
+            <decode varbindvalue="39" varbinddecodedstring="ibFan3Failure"/>
+            <decode varbindvalue="40" varbinddecodedstring="ibFan1OK"/>
+            <decode varbindvalue="41" varbinddecodedstring="ibFan2OK"/>
+            <decode varbindvalue="42" varbinddecodedstring="ibFan3OK"/>
+            <decode varbindvalue="43" varbinddecodedstring="ibFTPDSoftwareFailure"/>
+            <decode varbindvalue="3001" varbinddecodedstring="ibRAIDIsOptimal"/>
+            <decode varbindvalue="3002" varbinddecodedstring="ibRAIDIsDegraded"/>
+            <decode varbindvalue="3003" varbinddecodedstring="ibRAIDIsRebuilding"/>
+            <decode varbindvalue="3004" varbinddecodedstring="ibRAIDStatusUnknown"/>
+            <decode varbindvalue="3005" varbinddecodedstring="ibRAIDBatteryIsOK"/>
+            <decode varbindvalue="3006" varbinddecodedstring="ibRAIDBatteryFailed"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.7779.3.1.1.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Infoblox/ibThresholdCrossingEvent</uei>
+        <event-label>IB-TRAPONE-MIB defined trap event: ibThresholdCrossingEvent</event-label>
+        <descr>
+            &lt;p&gt;This event is generated whenever a threshold crossing has
+            occurred for the first time.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibObjectName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibCurThresholdValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibThresholdHigh&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibThresholdLow&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ibThresholdCrossingEvent trap received
+            ibNodeName=%parm[#1]%
+            ibObjectName=%parm[#2]%
+            ibCurThresholdValue=%parm[#3]%
+            ibThresholdHigh=%parm[#4]%
+            ibThresholdLow=%parm[#5]%
+            ibTrapDesc=%parm[#6]%&lt;/p&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.7779.3.1.1.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Infoblox/ibStateChangeEvent</uei>
+        <event-label>IB-TRAPONE-MIB defined trap event: ibStateChangeEvent</event-label>
+        <descr>
+            &lt;p&gt;This event is generated whenever an object state change
+            has occurred.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibObjectName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibPreviousState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            ha-active(1)
+            ha-passive(2)
+            ha-initial(3)
+            grid-connected(4)
+            grid-disconnected(5)
+            enet-link-up(6)
+            enet-link-down(7)
+            replication-online(8)
+            replication-offline(9)
+            replication-snapshotting(10)
+            service-up(11)
+            service-down(12)
+            ha-replication-online(13)
+            ha-replication-offline(14)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            ha-active(1)
+            ha-passive(2)
+            ha-initial(3)
+            grid-connected(4)
+            grid-disconnected(5)
+            enet-link-up(6)
+            enet-link-down(7)
+            replication-online(8)
+            replication-offline(9)
+            replication-snapshotting(10)
+            service-up(11)
+            service-down(12)
+            ha-replication-online(13)
+            ha-replication-offline(14)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ibStateChangeEvent trap received
+            ibNodeName=%parm[#1]%
+            ibObjectName=%parm[#2]%
+            ibPreviousState=%parm[#3]%
+            ibCurrentState=%parm[#4]%
+            ibTrapDesc=%parm[#5]%&lt;/p&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="ha-active"/>
+            <decode varbindvalue="2" varbinddecodedstring="ha-passive"/>
+            <decode varbindvalue="3" varbinddecodedstring="ha-initial"/>
+            <decode varbindvalue="4" varbinddecodedstring="grid-connected"/>
+            <decode varbindvalue="5" varbinddecodedstring="grid-disconnected"/>
+            <decode varbindvalue="6" varbinddecodedstring="enet-link-up"/>
+            <decode varbindvalue="7" varbinddecodedstring="enet-link-down"/>
+            <decode varbindvalue="8" varbinddecodedstring="replication-online"/>
+            <decode varbindvalue="9" varbinddecodedstring="replication-offline"/>
+            <decode varbindvalue="10" varbinddecodedstring="replication-snapshotting"/>
+            <decode varbindvalue="11" varbinddecodedstring="service-up"/>
+            <decode varbindvalue="12" varbinddecodedstring="service-down"/>
+            <decode varbindvalue="13" varbinddecodedstring="ha-replication-online"/>
+            <decode varbindvalue="14" varbinddecodedstring="ha-replication-offline"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#4]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="ha-active"/>
+            <decode varbindvalue="2" varbinddecodedstring="ha-passive"/>
+            <decode varbindvalue="3" varbinddecodedstring="ha-initial"/>
+            <decode varbindvalue="4" varbinddecodedstring="grid-connected"/>
+            <decode varbindvalue="5" varbinddecodedstring="grid-disconnected"/>
+            <decode varbindvalue="6" varbinddecodedstring="enet-link-up"/>
+            <decode varbindvalue="7" varbinddecodedstring="enet-link-down"/>
+            <decode varbindvalue="8" varbinddecodedstring="replication-online"/>
+            <decode varbindvalue="9" varbinddecodedstring="replication-offline"/>
+            <decode varbindvalue="10" varbinddecodedstring="replication-snapshotting"/>
+            <decode varbindvalue="11" varbinddecodedstring="service-up"/>
+            <decode varbindvalue="12" varbinddecodedstring="service-down"/>
+            <decode varbindvalue="13" varbinddecodedstring="ha-replication-online"/>
+            <decode varbindvalue="14" varbinddecodedstring="ha-replication-offline"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.7779.3.1.1.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Infoblox/ibProcStartStopTrap</uei>
+        <event-label>IB-TRAPONE-MIB defined trap event: ibProcStartStopTrap</event-label>
+        <descr>
+            &lt;p&gt;This trap is generated when a process is started or
+            stopped normally.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibNodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibSubsystemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ibTrapDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ibProcStartStopTrap trap received
+            ibNodeName=%parm[#1]%
+            ibSubsystemName=%parm[#2]%
+            ibTrapDesc=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>

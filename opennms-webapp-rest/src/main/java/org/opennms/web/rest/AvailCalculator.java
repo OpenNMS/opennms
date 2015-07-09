@@ -71,10 +71,6 @@ public class AvailCalculator {
 //                m_upIntervals[i] = new TimeIntervalSequence(new TimeInterval(chunk.getStartDate(), chunk.getEndDate()));
 //            }
         }
-        
-        public Date timestamp(OnmsLocationSpecificStatus status) {
-            return new Date(status.getPollResult().getTimestamp().getTime());
-        }
 
         public void onStatusChange(OnmsLocationSpecificStatus statusChange) {
             

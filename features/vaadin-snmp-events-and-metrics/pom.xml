@@ -19,7 +19,6 @@
     <bundle.symbolicName>org.opennms.features.vaadin-snmp-events-and-metrics</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.vaadin</bundle.namespace>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jsmiparser.version>0.13</jsmiparser.version>
   </properties>
 
   <build>
@@ -60,10 +59,10 @@
       <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
     </repository>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
@@ -104,9 +103,7 @@
             <scope>provided</scope>
         </dependency>
 
-
         <!-- Vaadin Dependencies -->
-
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
@@ -118,7 +115,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- MIB Compiler Dependencies -->
+        <!-- UI Dependencies -->
         <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
@@ -146,30 +143,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jsmiparser</groupId>
-            <artifactId>jsmiparser-api</artifactId>
-            <version>${jsmiparser.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.name-cutter</artifactId>
+            <artifactId>org.opennms.features.mib-compiler</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
 
-        <!-- JsmiParser Dependencie, to avoid Karaf loading problems -->
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
-
         <!-- Tests Dependencies -->
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -405,55 +405,6 @@ public interface NetworkElementFactoryInterface {
 	 */
 	List<OnmsNode> getNodesFromPhysaddr(String atPhysAddr);
 
-	AtInterface getAtInterface(int nodeId, String ipAddr);
-
-    IpRouteInterface[] getIpRoute(int nodeId);
-
-	/**
-	 * <p>isParentNode</p>
-	 *
-	 * @param nodeID a int.
-	 * @return a boolean.
-	 */
-	boolean isParentNode(int nodeId);
-
-	/**
-	 * <p>getDataLinksOnNode</p>
-	 *
-	 * @param nodeID a int.
-	 * @return an list of {@link org.opennms.web.element.LinkInterface} objects.
-	 * @throws java.sql.SQLException if any.
-	 */
-	List<LinkInterface> getDataLinksOnNode(int nodeID);
-
-	/**
-	 * <p>getDataLinksOnInterface</p>
-	 *
-	 * @param nodeID a int.
-	 * @param ifindex a int.
-	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
-	 */
-	List<LinkInterface> getDataLinksOnInterface(int nodeID,
-			int ifindex);
-
-	/**
-	 * <p>getDataLinksOnInterface</p>
-	 *
-	 * @param ID a int identifier for interface.
-	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
-	 */
-	List<LinkInterface> getDataLinksOnInterface(int id);
-
-	/**
-	 * <p>getDataLinksOnInterface</p>
-	 *
-	 * @param nodeID a int.
-	 * @param ipaddr a String.
-	 * @return an array of {@link org.opennms.web.element.LinkInterface} objects.
-	 */
-	List<LinkInterface> getDataLinksOnInterface(int nodeID,
-			String ipaddr);
-
 	/**
 	 * Returns all non-deleted nodes with an IP address like the rule given.
 	 *
@@ -487,20 +438,6 @@ public interface NetworkElementFactoryInterface {
 	List<OnmsNode> getNodesWithCategories(String[] categories1,
 			String[] categories2, boolean onlyNodesWithDownAggregateStatus);
 
-    Set<Integer> getLinkedNodeIdOnNode(int safeParseInt) throws SQLException;
-
-    boolean isRouteInfoNode(int nodeId) throws SQLException;
-
-    boolean isBridgeNode(int nodeId) throws SQLException;
-
-    StpNode[] getStpNode(int nodeId) throws SQLException;
-
-    StpInterface[] getStpInterface(int nodeId) throws SQLException;
-
-    StpInterface[] getStpInterface(int nodeId, int ifIndex) throws SQLException;
-
-    Vlan[] getVlansOnNode(int nodeID) throws SQLException;
-    
     Integer getIfIndex(int ipinterfaceid);
     
     Integer getIfIndex(int nodeID, String ipaddr);

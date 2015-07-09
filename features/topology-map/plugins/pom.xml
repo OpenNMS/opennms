@@ -24,7 +24,6 @@
     <!-- <module>org.opennms.features.topology.plugins.ssh</module> -->
     <module>org.opennms.features.topology.plugins.topo.history</module>
     <module>org.opennms.features.topology.plugins.topo.linkd</module>
-    <module>org.opennms.features.topology.plugins.topo.onmsdao</module>
     <module>org.opennms.features.topology.plugins.topo.sfree</module>
     <module>org.opennms.features.topology.plugins.topo.simple</module>
     <module>org.opennms.features.topology.plugins.topo.vmware</module>

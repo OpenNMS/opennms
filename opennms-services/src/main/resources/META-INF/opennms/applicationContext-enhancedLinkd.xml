@@ -36,7 +36,7 @@
       <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
     </bean>
 
-    <bean id="scheduler" class="org.opennms.netmgt.linkd.scheduler.Scheduler">
+    <bean id="scheduler" class="org.opennms.netmgt.enlinkd.scheduler.Scheduler">
       <constructor-arg value="EnhancedLinkd" />
       <constructor-arg>
         <util:property-path path="enlinkdConfig.threads" />

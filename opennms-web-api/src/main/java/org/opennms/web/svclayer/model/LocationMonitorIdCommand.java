@@ -36,14 +36,14 @@ package org.opennms.web.svclayer.model;
  * @since 1.8.1
  */
 public class LocationMonitorIdCommand {
-    private Integer m_monitorId;
+    private String m_monitorId;
     
     /**
      * <p>getMonitorId</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getMonitorId() {
+    public String getMonitorId() {
         return m_monitorId;
     }
     /**
@@ -51,7 +51,7 @@ public class LocationMonitorIdCommand {
      *
      * @param monitorId a {@link java.lang.Integer} object.
      */
-    public void setMonitorId(Integer monitorId) {
+    public void setMonitorId(String monitorId) {
         m_monitorId = monitorId;
     }
 }

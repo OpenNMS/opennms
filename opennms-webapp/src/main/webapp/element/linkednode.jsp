@@ -181,9 +181,6 @@
     //find if SNMP is on this node 
     Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
 
-    boolean isBridge = factory.isBridgeNode(nodeId);
-    boolean isRouteIP = factory.isRouteInfoNode(nodeId);
-
 %>
 
 <% pageContext.setAttribute("nodeId", nodeId); %>
@@ -265,194 +262,7 @@
     <div class="panel-heading">
 			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
     </div>
-			<% if( isRouteIP || isBridge ) { %>
-			<div class="panel-body">
-			     <ul class="list-inline">
-		            <% if( isRouteIP ) { %>
-		            <li>
-		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>">View Node IP Route Info</a>
-		            </li>
-		            <% }%>
-		         
-		            <% if( isBridge ) { %>
-		            <li>
-						<a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a>
-					</li>
-		            <% }%>		
-		         </ul>	     
-			</div>
-			<% }%>
 	</div>
-
-<!-- LINKD Links -->
-
-  <div class="panel panel-default">
-<%
-   if (factory.getDataLinksOnNode(nodeId).isEmpty()) {
-%>
-  <div class="panel-heading">
-		<h3 class="panel-title">No Links found on <%=node_db.getLabel()%> by Linkd</h3>
-	</div>
-<% } else { %>
-  <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Links found by Linkd</h3>
-	</div>
-		<!-- Link box -->
-		<table class="table table-condensed">
-		
-		<thead>
-			<tr>
-			<th>L2 Interface</th> 
-            <th>L3 Interfaces</th>
-			<th width="10%">Link Type</th>
-			<th width="10%">Status</th>
-			<th>Discovery Protocol</th>
-			<th>Last Scan</th>
-			 
-<%--
-			// TODO - turning this off until the SET is verified.
-			<% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %> 
-			<th width="10%">Set Admin Status</th> 
-			<% } %>
---%>
-
-			<th>Linked to</th>
-			</tr>
-		</thead>
-				
-		<% for( LinkInterface linkInterface: factory.getDataLinksOnNode(nodeId)) { %>
-		    <tr>
-
-		    <td>
-		 	<% if (linkInterface.hasInterface()) { %>
-                
-                <% if (linkInterface.getInterface().getSnmpIfName() != null && !linkInterface.getInterface().getSnmpIfName().equals("")) { %>
-            	<a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=linkInterface.getInterface().getSnmpIfIndex()%>">
-                    <%=linkInterface.getInterface().getSnmpIfName()%>
-                </a>
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-            	(ifindex <%=linkInterface.getIfindex()%>)
-                
-                <% if (linkInterface.getInterface().getSnmpIfAlias() != null && !linkInterface.getInterface().getSnmpIfAlias().equals("")) { %>
-                    (ifAlias <%=linkInterface.getInterface().getSnmpIfAlias()%>)
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-    			
-	            <% if (linkInterface.getInterface().getSnmpIfAdminStatus() > 0 && linkInterface.getInterface().getSnmpIfOperStatus() > 0) { %>
-            		<%=ElementUtil.getIfStatusString(linkInterface.getInterface().getSnmpIfAdminStatus())%>/<%=ElementUtil.getIfStatusString(linkInterface.getInterface().getSnmpIfOperStatus())%>
-		    	<% } %>
-    			
-			<% } else { %>
-                 <c:out value="No Interface Associated"/>
-            <% } %>
-            </td>
-            
-            <td>
-            <% if (linkInterface.hasInterface() && linkInterface.getInterface().hasIpAddresses()) { %>
-                <% for (String ipaddress : linkInterface.getInterface().getIpaddresses()) { %>
-                	<c:url var="interfaceLink" value="element/interface.jsp">
-	            	<c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
-    	        	<c:param name="intf" value="<%=ipaddress%>"/>
-        			</c:url>
-                	<a href="<c:out value="${interfaceLink}"/>"> <%=ipaddress%> </a> &nbsp;
-        		<% } %> 
-            <% } %>
-            </td>
-            
-            <td>
-            <% if (linkInterface.getLinkTypeIdString() != null ) { %>
-             	<%=linkInterface.getLinkTypeIdString()%>
-            <% } else if (linkInterface.hasInterface()) { %>
-                <%=ElementUtil.getIfTypeString(linkInterface.getInterface().getSnmpIfType())%>
-		    <% } else { %>
-     			&nbsp;
-            <% } %>
-            </td>
-            
-		    <td>
-		    <% if (linkInterface.getStatus() != null ) { %>
-             	<%=linkInterface.getStatus()%>
-            <% } else { %>
-     			&nbsp;
-		    <% } %>
-		    </td>
-
-		    <td>
-             	<%=linkInterface.getProtocol()%>
-		    </td>
-
-		    <td>
-		    <% if (linkInterface.getLastPollTime() != null ) { %>
-             	<%=linkInterface.getLastPollTime()%>
-		    <% } else { %>
-     			&nbsp;
-		    <% } %>
-		    </td>
-					
-<%--
-		    // TODO - turning this off until the SET is verified.
-		    <% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-			<td align="center"> 
-				<% if(ElementUtil.getIfStatusString[linkInterface.getInterface().getSnmpIfAdminStatus()].equalsIgnoreCase("Up") ){ %>
-		            <input type="button" value="Down" onClick="setDown(<%=linkInterface.getInterface().getNodeId()%>,<%=linkInterface.getInterface().getSnmpIfIndex()%>)"> 
-		 		<% } else if (ElementUtil.getIfStatusString[snmpIntfs[i].getSnmpIfAdminStatus()].equalsIgnoreCase("Down") ){ %>
-		            <input type="button" value="Up" onClick="setUp(<%=linkInterface.getInterface().getNodeId()%>,<%=linkInterface.getInterface().getSnmpIfIndex()%>)"> 
-				<% } else { %>
-		            <b>&nbsp;</b> 
-				<% } %>
-			</td>
-		    <% } %>
---%>
-				
-			<td style="font-size:70%" width="35%">
-		       	<a href="element/linkednode.jsp?node=<%=linkInterface.getLinkedNodeId()%>"><%=factory.getNodeLabel(linkInterface.getLinkedNodeId())%></a>
-		       	&nbsp;
-		       	<%	if (linkInterface.hasLinkedInterface()) { %>
-		       	on 
-                
-                <% if (linkInterface.getLinkedInterface().getSnmpIfName() != null && !linkInterface.getLinkedInterface().getSnmpIfName().equals("")) { %>
-            	<a href="element/snmpinterface.jsp?node=<%=linkInterface.getLinkedNodeId()%>&ifindex=<%=linkInterface.getLinkedInterface().getSnmpIfIndex()%>">
-                    <%=linkInterface.getLinkedInterface().getSnmpIfName()%>
-                </a>
-                <% } else if (linkInterface.getLinkedInterface().hasIpAddresses() && linkInterface.getLinkedInterface().getIpaddresses().size() > 0 ) { %>
-	                <% for (String ipaddress : linkInterface.getLinkedInterface().getIpaddresses()) { %>
-                	<c:url var="interfaceLink" value="element/interface.jsp">
-	            	<c:param name="node" value="<%=String.valueOf(linkInterface.getLinkedNodeId())%>"/>
-    	        	<c:param name="intf" value="<%=ipaddress%>"/>
-        			</c:url>
-                	<a href="<c:out value="${interfaceLink}"/>"> <%=ipaddress%> </a> &nbsp;
-    	    		<% } %>                 
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-            	(ifindex <%=linkInterface.getLinkedIfindex()%>)
-                
-                <% if (linkInterface.getLinkedInterface().getSnmpIfAlias() != null && !linkInterface.getLinkedInterface().getSnmpIfAlias().equals("")) { %>
-                    ifAlias <%=linkInterface.getLinkedInterface().getSnmpIfAlias()%>"
-                <% } else { %> 
-                 	&nbsp;
-    			<% } %> 
-    			
-	            <% if (linkInterface.getLinkedInterface().getSnmpIfAdminStatus() > 0 && linkInterface.getLinkedInterface().getSnmpIfOperStatus() > 0) { %>
-            		<%=ElementUtil.getIfStatusString(linkInterface.getLinkedInterface().getSnmpIfAdminStatus())%>/<%=ElementUtil.getIfStatusString(linkInterface.getLinkedInterface().getSnmpIfOperStatus())%>
-		    	<% } %>
-    			
-			<% } else { %>
-                 <c:out value="No Interface Associated"/>
-            <% } %>
-		       	
-			</td>
-	
-		    </tr>
-	    <% } %>
-		    
-	    </table>
-
-<% }  %>
-</div>
 
 <!--  BRIDGE Links -->
 
@@ -660,7 +470,7 @@
 			<th>Version</th>
 			<th>Device Id</th>
 			<th>Device Port</th> 
-      <th>Platform</th>
+            <th>Platform</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>

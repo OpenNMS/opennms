@@ -1,0 +1,3015 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Evertz 7881 ASI Decoder H.264 Broadcaster from MIB DECMP2HD7881-TRAPS -->
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1000</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoPresentFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoPresentFalse</event-label>
+        <descr>&lt;p&gt;Video Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoPresentFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoPresentTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1001</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoPresentTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoPresentTrue</event-label>
+        <descr>&lt;p&gt;Video Not Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoPresentTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1002</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/pictureBlackFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultpictureBlackFalse</event-label>
+        <descr>&lt;p&gt;Video Not Black&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureBlackFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureBlackTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1003</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/pictureBlackTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultpictureBlackTrue</event-label>
+        <descr>&lt;p&gt;Video Black&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureBlackTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1004</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/pictureFreezeFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultpictureFreezeFalse</event-label>
+        <descr>&lt;p&gt;Video Not Frozen&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureFreezeFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureFreezeTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1005</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/pictureFreezeTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultpictureFreezeTrue</event-label>
+        <descr>&lt;p&gt;Video Frozen&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureFreezeTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1006</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1ServiceMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1ServiceMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio1 Service Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1ServiceMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1ServiceMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1007</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1ServiceMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1ServiceMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio1 Service Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1ServiceMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1008</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2ServiceMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2ServiceMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio2 Service Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2ServiceMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2ServiceMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1009</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2ServiceMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2ServiceMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio2 Service Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2ServiceMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1010</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1PIDMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1PIDMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio1 PID Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1PIDMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1PIDMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1011</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1PIDMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1PIDMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio1 PID Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1PIDMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1012</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2PIDMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2PIDMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio2 PID Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2PIDMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2PIDMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1013</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2PIDMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2PIDMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio2 PID Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2PIDMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1014</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentFalse</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1015</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentTrue</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="faultscte35DataPresentFalse:%dpname%:%nodeid%:%interface%" alarm-type="1"
+                    auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1016</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3ServiceMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3ServiceMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio3 Service Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3ServiceMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3ServiceMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1017</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3ServiceMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3ServiceMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio3 Service Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3ServiceMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1018</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4ServiceMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4ServiceMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio4 Service Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4ServiceMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4ServiceMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1019</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4ServiceMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4ServiceMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio4 Service Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4ServiceMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1020</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3PIDMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3PIDMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio3 PID Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3PIDMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3PIDMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1021</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3PIDMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3PIDMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio3 PID Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3PIDMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1022</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4PIDMissingFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4PIDMissingFalse</event-label>
+        <descr>&lt;p&gt;Audio4 PID Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4PIDMissingFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4PIDMissingTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1023</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4PIDMissingTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4PIDMissingTrue</event-label>
+        <descr>&lt;p&gt;Audio4 PID Missing&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4PIDMissingTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1024</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsInputMissingInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsInputMissingInputASI1False</event-label>
+        <descr>&lt;p&gt;TS Input Present on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1025</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsInputMissingInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsInputMissingInputASI1True</event-label>
+        <descr>&lt;p&gt;TS Input Missing on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1026</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsInputMissingInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsInputMissingInputIP1False</event-label>
+        <descr>&lt;p&gt;TS Input Present on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1027</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsInputMissingInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsInputMissingInputIP1True</event-label>
+        <descr>&lt;p&gt;TS Input Missing on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputIP1True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1028</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsSyncByteMissingInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsSyncByteMissingInputASI1False</event-label>
+        <descr>&lt;p&gt;TS Sync Byte Present on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1029</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsSyncByteMissingInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsSyncByteMissingInputASI1True</event-label>
+        <descr>&lt;p&gt;TS Sync Byte Missing on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1030</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsSyncByteMissingInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsSyncByteMissingInputIP1False</event-label>
+        <descr>&lt;p&gt;TS Sync Byte Present on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1031</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/tsSyncByteMissingInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faulttsSyncByteMissingInputIP1True</event-label>
+        <descr>&lt;p&gt;TS Sync Byte Missing on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1032</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioGroup1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioGroup1False</event-label>
+        <descr>&lt;p&gt;Audio Group1 Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup1False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1033</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioGroup1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioGroup1True</event-label>
+        <descr>&lt;p&gt;Audio Group1 Not Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup1True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1034</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioGroup2False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioGroup2False</event-label>
+        <descr>&lt;p&gt;Audio Group2 Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup2False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup2True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1035</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioGroup2True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioGroup2True</event-label>
+        <descr>&lt;p&gt;Audio Group2 Not Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup2True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1036</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh1OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh1OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 1 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1037</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh1OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh1OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 1 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1038</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh2OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh2OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 2 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1039</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh2OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh2OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 2 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1040</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh3OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh3OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 3 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1041</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh3OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh3OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 3 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1042</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh4OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh4OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 4 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1043</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh4OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh4OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 4 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1044</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh5OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh5OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 5 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1045</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh5OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh5OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 5 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1046</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh6OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh6OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 6 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1047</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh6OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh6OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 6 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1048</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh7OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh7OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 7 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1049</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh7OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh7OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 7 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1050</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh8OverFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh8OverFalse</event-label>
+        <descr>&lt;p&gt;Channel 8 Audio Level Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8OverFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8OverTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1051</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh8OverTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh8OverTrue</event-label>
+        <descr>&lt;p&gt;Channel 8 Audio Level Over&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8OverTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1052</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh1SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh1SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 1 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1053</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh1SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh1SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 1 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1054</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh2SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh2SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 2 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1055</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh2SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh2SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 2 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1056</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh3SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh3SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 3 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1057</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh3SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh3SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 3 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1058</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh4SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh4SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 4 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1059</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh4SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh4SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 4 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1060</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh5SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh5SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 5 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1061</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh5SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh5SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 5 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1062</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh6SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh6SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 6 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1063</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh6SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh6SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 6 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1064</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh7SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh7SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 7 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1065</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh7SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh7SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 7 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1066</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh8SilenceFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh8SilenceFalse</event-label>
+        <descr>&lt;p&gt;Channel 8 Audio Not Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8SilenceFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8SilenceTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1067</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audioCh8SilenceTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudioCh8SilenceTrue</event-label>
+        <descr>&lt;p&gt;Channel 8 Audio Silence&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8SilenceTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1068</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1PhaseReversal12False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1PhaseReversal12False</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 1 and 2 phase Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal12False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal12True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1069</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1PhaseReversal12True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1PhaseReversal12True</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 1 and 2 phase Reversed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal12True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1070</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1PhaseReversal34False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1PhaseReversal34False</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 3 and 4 phase Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal34False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal34True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1071</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1PhaseReversal34True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1PhaseReversal34True</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 3 and 4 phase Reversed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal34True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1072</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2PhaseReversal12False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2PhaseReversal12False</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 1 and 2 phase Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal12False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal12True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1073</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2PhaseReversal12True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2PhaseReversal12True</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 1 and 2 phase Reversed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal12True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1074</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2PhaseReversal34False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2PhaseReversal34False</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 3 and 4 phase Ok&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal34False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal34True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1075</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2PhaseReversal34True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2PhaseReversal34True</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 3 and 4 phase Reversed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal34True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1076</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1AudioMono12False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1AudioMono12False</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 1 and 2 Stereo&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono12False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono12True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1077</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1AudioMono12True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1AudioMono12True</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 1 and 2 Mono&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono12True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1078</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1AudioMono34False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1AudioMono34False</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 3 and 4 Stereo&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono34False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono34True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1079</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp1AudioMono34True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp1AudioMono34True</event-label>
+        <descr>&lt;p&gt;Sel Grp 1 Audio 3 and 4 Mono&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono34True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1080</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2AudioMono12False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2AudioMono12False</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 1 and 2 Stereo&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono12False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono12True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1081</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2AudioMono12True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2AudioMono12True</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 1 and 2 Mono&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono12True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1082</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2AudioMono34False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2AudioMono34False</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 3 and 4 Stereo&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono34False trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono34True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1083</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/selGrp2AudioMono34True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultselGrp2AudioMono34True</event-label>
+        <descr>&lt;p&gt;Sel Grp 2 Audio 3 and 4 Mono&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono34True trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1084</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/genlockPresentFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultgenlockPresentFalse</event-label>
+        <descr>&lt;p&gt;Genlock Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultgenlockPresentFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultgenlockPresentTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1085</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/genlockPresentTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultgenlockPresentTrue</event-label>
+        <descr>&lt;p&gt;Genlock Not Present&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultgenlockPresentTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1086</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/genlockChangeFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultgenlockChangeFalse</event-label>
+        <descr>&lt;p&gt;Genlock Standard Not Changed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultgenlockChangeFalse trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1087</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/genlockChangeTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultgenlockChangeTrue</event-label>
+        <descr>&lt;p&gt;Genlock Standard Changed&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultgenlockChangeTrue trap received
+            decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1088</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputGenlockStdMismatchFalse</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputGenlockStdMismatchFalse</event-label>
+        <descr>&lt;p&gt;Genlock Standard Match&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputGenlockStdMismatchFalse trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputGenlockStdMismatchTrue:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1089</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputGenlockStdMismatchTrue</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputGenlockStdMismatchTrue</event-label>
+        <descr>&lt;p&gt;Genlock Standard Not Match&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt; decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputGenlockStdMismatchTrue trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1090</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputBitErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputBitErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Input Bit Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; inputBitErrorID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1091</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputBitErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputBitErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Input Bit Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; inputBitErrorID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputASI1True trap received
+            decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1092</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputBitErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputBitErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Input Bit Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; inputBitErrorID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputIP1False trap received
+            decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1093</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/inputBitErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultinputBitErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Input Bit Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt; inputBitErrorID&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputIP1True trap received
+            decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1094</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoTimestampErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoTimestampErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Video Timestamp Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1095</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoTimestampErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoTimestampErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Video Timestamp Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1096</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoTimestampErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoTimestampErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Video Timestamp Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1097</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/videoTimestampErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultvideoTimestampErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Video Timestamp Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1098</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1TimestampErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1TimestampErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Audio 1 Timestamp Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1099</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1TimestampErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1TimestampErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Audio 1 Timestamp Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1100</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1TimestampErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1TimestampErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Audio 1 Timestamp Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1101</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio1TimestampErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio1TimestampErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Audio 1 Timestamp Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1102</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2TimestampErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2TimestampErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Audio 2 Timestamp Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1103</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2TimestampErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2TimestampErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Audio 2 Timestamp Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1104</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2TimestampErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2TimestampErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Audio 2 Timestamp Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1105</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio2TimestampErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio2TimestampErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Audio 2 Timestamp Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1106</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3TimestampErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3TimestampErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Audio 3 Timestamp Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1107</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3TimestampErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3TimestampErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Audio 3 Timestamp Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1108</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3TimestampErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3TimestampErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Audio 3 Timestamp Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1109</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio3TimestampErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio3TimestampErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Audio 3 Timestamp Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1110</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4TimestampErrorInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4TimestampErrorInputASI1False</event-label>
+        <descr>&lt;p&gt;Audio 4 Timestamp Error Not Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1111</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4TimestampErrorInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4TimestampErrorInputASI1True</event-label>
+        <descr>&lt;p&gt;Audio 4 Timestamp Error Detected on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1112</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4TimestampErrorInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4TimestampErrorInputIP1False</event-label>
+        <descr>&lt;p&gt;Audio 4 Timestamp Error Not Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1113</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/audio4TimestampErrorInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultaudio4TimestampErrorInputIP1True</event-label>
+        <descr>&lt;p&gt;Audio 4 Timestamp Error Detected on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1114</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentInputASI1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentInputASI1False</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Missing on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputASI1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputASI1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1115</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentInputASI1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentInputASI1True</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Present on InputASI1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputASI1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1116</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentInputIP1False</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentInputIP1False</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Missing on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputIP1False trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Cleared</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"
+                    clear-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputIP1True:%dpname%:%nodeid%:%interface%"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6827.10.201.9.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1117</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/evertz/decmp2hd7881/scte35DataPresentInputIP1True</uei>
+        <event-label>DECMP2HD7881-TRAPS defined trap event: faultscte35DataPresentInputIP1True</event-label>
+        <descr>&lt;p&gt;SCTE35 Data Present on InputIP1&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+            decmp2hdInstance&lt;/b&gt;&lt;/td&gt;&lt;td&gt; %parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest='logndisplay'>%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputIP1True trap
+            received decmp2hdInstance=%parm[#1]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>
+        <!-- End of Evertz MIB: DECMP2HD7881-TRAPS -->

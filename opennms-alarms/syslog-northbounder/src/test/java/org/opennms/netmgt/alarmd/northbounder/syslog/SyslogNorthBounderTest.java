@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -199,8 +198,7 @@ public class SyslogNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
         
-        OnmsDistPoller distpoller = new OnmsDistPoller("barbrady", "192.0.2.11");
-        OnmsNode node = new OnmsNode(distpoller, "p-brane");
+        OnmsNode node = new OnmsNode("p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(TEST_NODE_ID);

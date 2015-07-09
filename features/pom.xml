@@ -48,6 +48,7 @@
     <module>jmx-config-generator-webui</module>   
  
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
+    <module>mib-compiler</module>
     <module>vaadin-snmp-events-and-metrics</module>
 
     <!-- Near Real Time Graphing -->

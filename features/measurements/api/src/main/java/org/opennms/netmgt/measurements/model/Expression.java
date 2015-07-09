@@ -28,8 +28,14 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonValue;
 
 /**
  * Represents a JEXL expression.
@@ -37,6 +43,8 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
+@XmlRootElement(name="expression")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Expression {
     /**
      * Used to identify the results of this expression.
@@ -68,6 +76,7 @@ public class Expression {
     }
 
     @XmlAttribute(name = "label")
+    @JsonProperty("label")
     public String getLabel() {
         return this.label;
     }
@@ -77,6 +86,7 @@ public class Expression {
     }
 
     @XmlValue
+    @JsonProperty("value")
     public String getExpression() {
         return this.expression;
     }
@@ -86,6 +96,7 @@ public class Expression {
     }
 
     @XmlAttribute(name = "transient")
+    @JsonProperty("transient")
     public boolean getTransient() {
         return isTransient;
     };
