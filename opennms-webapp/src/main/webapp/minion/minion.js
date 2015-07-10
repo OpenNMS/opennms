@@ -1,17 +1,20 @@
 (function() {
 	'use strict';
 
+	// Base URL of the REST service
 	var baseUrl = 'api/v2';
 
 	String.prototype.endsWith = function(suffix) {
 		return this.indexOf(suffix, this.length - suffix.length) !== -1;
 	};
 
+	// Function used to append an extra transformer to the default $http transforms
 	function appendTransform(defaultTransform, transform) {
 		defaultTransform = angular.isArray(defaultTransform) ? defaultTransform : [ defaultTransform ];
 		return defaultTransform.concat(transform);
 	}
 
+	// Convert from a clause into a FIQL query string
 	function toFiql(clauses) {
 		var first = true;
 		var fiql = '';
@@ -43,17 +46,19 @@
 		return fiql;
 	}
 
+	// Minion module
 	angular.module('minion', [ 'ngResource' ])
 
+	// Create a minion REST $resource
 	.factory('Minions', function($resource, $log, $http) {
 		return $resource(baseUrl + '/minions/:id', { id: '@id' },
 			{
 				'query': { 
 					method: 'GET',
 					isArray: true,
-					/* Append a transformation that will unwrap the minion array */
+					// Append a transformation that will unwrap the minion array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers) {
-						/* Always return the data as an array */
+						// Always return the data as an array
 						return angular.isArray(data.minion) ? data.minion : [ data.minion ];
 					})
 				},
@@ -64,13 +69,22 @@
 		);
 	})
 
+	// Minion controller
 	.controller('MinionListCtrl', ['$scope', '$http', '$log', 'Minions', function($scope, $http, $log, Minions) {
-		$log.debug('MinionListCtrl Initialized.');
+		$log.debug('MinionListCtrl initializing...');
 
+		// Blank out the editing flags
 		$scope.enableEditLabel = false;
 		$scope.enableEditLocation = false;
 		$scope.enableEditProperties = false;
 
+		// Make = the default operator on the search form
+		// TODO: Make this work
+		$scope.clause = {
+			operator: '='
+		};
+
+		// Blank out all of the query parameters
 		$scope.searchParam = '';
 		$scope.searchClauses = new Array();
 		$scope.limit = '';
@@ -78,6 +92,7 @@
 		$scope.orderBy = '';
 		$scope.order = '';
 
+		// Load all minion resources via REST
 		Minions.query(
 			{
 				_s: $scope.searchParam, // FIQL search
@@ -92,6 +107,7 @@
 			}
 		);
 
+		// Reload all minion resources via REST
 		$scope.refresh = function() {
 			/* Fetch all of the Minions */
 			Minions.query(
@@ -115,11 +131,20 @@
 			);
 		};
 
+		// Go out of edit mode
+		$scope.unedit = function() {
+			$scope.enableEditLabel = false;
+			$scope.enableEditLocation = false;
+			$scope.refresh();
+		}
+
+		// Mark label as editable
 		$scope.editLabel = function(id) {
 			$log.debug(id);
 			$scope.enableEditLabel = true;
 		}
 
+		// Mark location as editable
 		$scope.editLocation = function(id) {
 			$log.debug(id);
 			$scope.enableEditLocation = true;
@@ -128,20 +153,21 @@
 		// Add the search clause to the list of clauses
 		$scope.addSearchClause = function(clause) {
 			// TODO: Add validation
-			$log.debug(clause);
 			$scope.searchClauses.push(angular.copy(clause));
-			$log.debug($scope.searchClauses);
 			$scope.searchParam = toFiql($scope.searchClauses);
 			$scope.refresh();
 		}
 
 		// Clear the current search
 		$scope.clearSearch = function() {
-			$scope.searchClauses = new Array();
-			$scope.searchParam = '';
-			$scope.refresh();
+			if ($scope.searchClauses.length > 0) {
+				$scope.searchClauses = new Array();
+				$scope.searchParam = '';
+				$scope.refresh();
+			}
 		}
 
+		// Save a minion by using $resource.$update
 		$scope.update = function(minion) {
 			var saveMe = Minions.get({id: minion.id}, function() {
 				saveMe.label = minion.label;
@@ -171,8 +197,7 @@
 				$log.debug(response);
 			});
 
-			//$scope.refresh();
-
+			$log.debug('MinionListCtrl initialized.');
 		};
 	}])
 

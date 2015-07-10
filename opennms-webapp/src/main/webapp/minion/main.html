@@ -1,7 +1,14 @@
 <div ng-controller="MinionListCtrl">
 	<form class="form-inline" ng-submit="addSearchClause(clause)">
 		<input class="form-control" type="text" ng-model="clause.property"/>
-		<input class="form-control" type="text" ng-model="clause.operator"/>
+		<select class="form-control" ng-model="clause.operator">
+			<option selected="selected" value="EQ">=</option>
+			<option value="NE">!=</option>
+			<option value="LT">&lt;</option>
+			<option value="LE">&lt;=</option>
+			<option value="GT">&gt;</option>
+			<option value="GE">&gt;=</option>
+		</select>
 		<input class="form-control" type="text" ng-model="clause.value"/>
 		<button class="btn btn-default" type="submit">Submit</button>
 		<a class="btn btn-default" ng-click="clearSearch()">Clear search</a>
@@ -12,36 +19,36 @@
 			<h3 class="panel-title">Monitoring Systems</h3>
 		</div>
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
-		<table class="table table-bordered table-condensed" style="font-size:100%">
+		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th>ID</th>
-					<th>Label</th>
-					<th>Location</th>
-					<th>Type</th>
-					<th>Status</th>
-					<th>Date</th>
-					<th>Properties</th>
+					<th class="col-sm-2">ID</th>
+					<th class="col-sm-2">Label</th>
+					<th class="col-sm-2">Location</th>
+					<th class="col-sm-1">Type</th>
+					<th class="col-sm-1">Status</th>
+					<th class="col-sm-2">Last Updated</th>
+					<th class="col-sm-2">Properties</th>
 				</tr>
 
 				<tr ng-repeat="minion in minions">
-					<td class="noWrap">{{minion.id}}</td>
-					<td class="noWrap">
-						<form ng-show="enableEditLabel" ng-submit="update(minion)">
-							<input class="form-control" type="text" ng-model="minion.label"/>
+					<td class="text-nowrap">{{minion.id}}</td>
+					<td class="text-nowrap">
+						<form ng-show="enableEditLabel" ng-submit="update(minion)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="minion.label" ng-blur="unedit()"/>
 						</form>
 						<span ng-hide="enableEditLabel" ng-click="editLabel(minion.id)">{{minion.label}}</span>
 					</td>
-					<td class="noWrap">
-						<form ng-show="enableEditLocation" ng-submit="update(minion)">
-							<input class="form-control" type="text" ng-model="minion.location"/>
+					<td class="text-nowrap">
+						<form ng-show="enableEditLocation" ng-submit="update(minion)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="minion.location" ng-blur="unedit()"/>
 						</form>
 						<span ng-hide="enableEditLocation" ng-click="editLocation(minion.id)">{{minion.location}}</span>
 					</td>
-					<td class="noWrap">{{minion.type}}</td>
-					<td class="noWrap">{{minion.status}}</td>
-					<td class="noWrap">{{minion.lastUpdated | date:'MMM d, yyyy h:mm:ss a'}}</td>
-					<td class="noWrap">
+					<td class="text-nowrap">{{minion.type}}</td>
+					<td class="text-nowrap">{{minion.status}}</td>
+					<td class="text-nowrap">{{minion.lastUpdated | date:'MMM d, yyyy h:mm:ss a'}}</td>
+					<td class="text-nowrap">
 						<span ng-repeat="(key,value) in minion.properties">
 						<span class="label label-default">
 							{{key}}: {{value}}

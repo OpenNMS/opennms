@@ -52,6 +52,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.cxf.jaxrs.ext.search.PropertyNotFoundException;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.SearchConditionVisitor;
 import org.apache.cxf.jaxrs.ext.search.SearchContext;
@@ -105,8 +106,8 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 					SearchConditionVisitor<T,CriteriaBuilder> visitor = new CriteriaBuilderSearchVisitor<T>(builder, getDaoClass());
 					condition.accept(visitor);
 				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				LOG.warn("Error while parsing FIQL search: " + e.getMessage());
+			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
+				LOG.warn("Error while parsing FIQL search, ignoring: " + e.getMessage());
 			}
 		}
 
