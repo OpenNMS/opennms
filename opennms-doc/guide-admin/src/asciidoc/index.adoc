@@ -89,6 +89,14 @@ include::text/poller/VmwareMonitor.adoc[]
 include::text/poller/Win32ServiceMonitor.adoc[]
 include::text/poller/XmpMonitor.adoc[]
 
+// Documentation for performance data collection
+== Performance Data
+include::text/data-collection/introduction.adoc[]
+
+// Technology specific data collectors
+=== Data Collectors
+include::text/data-collection/snmp-data-collection.adoc[]
+
 // Event description
 include::text/events.adoc[]
 

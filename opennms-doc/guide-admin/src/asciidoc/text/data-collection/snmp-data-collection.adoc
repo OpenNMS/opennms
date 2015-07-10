@@ -1,0 +1,8 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+==== SNMP Collector
+
+image::data-collection/01_snmp-dc-instances.png[]
+
+image::data-collection/02_snmp-dc-resources.png[]
