@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.rest.v1;
 
 import java.util.Date;
 import java.util.Map;

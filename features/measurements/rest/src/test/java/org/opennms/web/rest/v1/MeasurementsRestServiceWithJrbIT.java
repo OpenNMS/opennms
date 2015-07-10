@@ -26,9 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.rest.v1;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -36,7 +35,6 @@ import java.io.File;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -52,9 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 
 /**
- * Tests the Measurements API with an RRD backend.
- *
- * Requires rrdtool and binary compatibility with the test .rrds.
+ * Tests the Measurements API with an JRB backend.
  *
  * @author Jesse White <jesse@opennms.org>
  */
@@ -69,64 +65,102 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-measurements-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy"
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
 })
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase=false) // relies on setUp()
 @Transactional
-@Ignore
-public class MeasurementsRestServiceWithRrdIT extends MeasurementsRestServiceITCase {
+public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITCase {
 
     @Before
     public void setUp() {
         super.setUp();
 
-        File rrdDirectory = new File("src/test/resources/share/rrd");
+        File rrdDirectory = new File("src/test/resources/share/jrb");
         assertTrue(rrdDirectory.canRead());
 
         m_resourceStorageDao.setRrdDirectory(rrdDirectory);
         System.setProperty("rrd.base.dir", rrdDirectory.getAbsolutePath());
-        System.setProperty("rrd.binary", "rrdtool");
     }
 
     @Test
-    public void canRetrieveMeasurementsFromRrd(){
+    public void canRetrieveMeasurementsFromJrb() {
         QueryRequest request = new QueryRequest();
         request.setStart(1414602000000L);
         request.setEnd(1417046400000L);
         request.setStep(1000L);
-        request.setMaxRows(350);
+        request.setMaxRows(700);
 
-        Source ifInOctets = new Source();
-        ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
-        ifInOctets.setAttribute("ifInOctets");
-        ifInOctets.setAggregation("AVERAGE");
-        ifInOctets.setLabel("octetsIn");
-        request.setSources(Lists.newArrayList(ifInOctets));
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("ifInOctets");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
 
-        Expression eightAsConstant = new Expression();
-        eightAsConstant.setLabel("eight");
-        eightAsConstant.setExpression("8");
-        eightAsConstant.setTransient(true);
+        // Min
+        Source ifInOctetsMin = new Source();
+        ifInOctetsMin.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMin.setAttribute("ifInOctets");
+        ifInOctetsMin.setAggregation("MIN");
+        ifInOctetsMin.setLabel("ifInOctetsMin");
 
-        Expression octetsToBytes = new Expression();
-        octetsToBytes.setLabel("Bits In");
-        octetsToBytes.setExpression("octetsIn * eight");
-        request.setExpressions(Lists.newArrayList(eightAsConstant, octetsToBytes));
+        // Max
+        Source ifInOctetsMax = new Source();
+        ifInOctetsMax.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsMax.setAttribute("ifInOctets");
+        ifInOctetsMax.setAggregation("MAX");
+        ifInOctetsMax.setLabel("ifInOctetsMax");
 
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg,
+                ifInOctetsMin,
+                ifInOctetsMax
+                ));
+
+        // Perform the query
         QueryResponse response = m_svc.query(request);
 
         // Validate the results
         long timestamps[] = response.getTimestamps();
         final Map<String, double[]> columns = response.columnsWithLabels();
 
-        assertEquals(7200000L, response.getStep());
-        assertEquals(341, timestamps.length);
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, timestamps.length);
 
         // Verify the values at an arbitrary index
-        final int idx = 1;
-        assertEquals(1414612800000L, timestamps[idx]);
-        assertEquals(4455.846126, columns.get("octetsIn")[idx], 0.0001);
-        assertEquals(4455.846126 * 8, columns.get("Bits In")[idx], 0.0001);
-        assertFalse("Transient values should be excluded.", columns.containsKey("eight"));
+        final int idx = 8;
+        assertEquals(1414630800000L, timestamps[idx]);
+        assertEquals(270.66140826873385, columns.get("ifInOctetsAvg")[idx], 0.0001);
+        assertEquals(259.54086378737543, columns.get("ifInOctetsMin")[idx], 0.0001);
+        assertEquals(67872.22455490529, columns.get("ifInOctetsMax")[idx], 0.0001);
+    }
+
+    @Test
+    public void canPerformExpressions() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        Source ifInOctets = new Source();
+        ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctets.setAttribute("ifInOctets");
+        ifInOctets.setAggregation("MAX");
+        ifInOctets.setLabel("ifInOctets");
+        request.setSources(Lists.newArrayList(ifInOctets));
+
+        Expression scale = new Expression();
+        scale.setLabel("ifUsage");
+        // References a variable from strings.properties
+        scale.setExpression("ifInOctets * 8 / ifInOctets.ifSpeed");
+        request.setExpressions(Lists.newArrayList(scale));
+
+        QueryResponse response = m_svc.query(request);
+
+        final int idx = 3;
+        final Map<String, double[]> columns = response.columnsWithLabels();
+        assertEquals(975.3053156146178, columns.get("ifInOctets")[idx], 0.0001);
+        assertEquals(975.3053156146178 * 8d / 1000.0d, columns.get("ifUsage")[idx], 0.0001);
     }
 }

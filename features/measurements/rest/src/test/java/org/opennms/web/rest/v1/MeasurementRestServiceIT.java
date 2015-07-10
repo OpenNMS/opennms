@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest;
+package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertTrue;
 
@@ -74,7 +74,7 @@ import com.google.common.collect.Maps;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-test.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml"
+        "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
@@ -94,7 +94,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
     protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
     
     public MeasurementRestServiceIT() {
-        super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf.xml");
+        super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml");
     }
 
     @Before
