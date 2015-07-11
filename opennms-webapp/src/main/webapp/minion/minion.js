@@ -78,12 +78,6 @@
 		$scope.enableEditLocation = false;
 		$scope.enableEditProperties = false;
 
-		// Make = the default operator on the search form
-		// TODO: Make this work
-		$scope.clause = {
-			operator: '='
-		};
-
 		// Blank out all of the query parameters
 		$scope.searchParam = '';
 		$scope.searchClauses = new Array();

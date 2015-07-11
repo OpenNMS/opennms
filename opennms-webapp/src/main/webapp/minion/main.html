@@ -1,8 +1,19 @@
+<h1 style="font-weight:bold;">Minion Systems</h1>
+
 <div ng-controller="MinionListCtrl">
-	<form class="form-inline" ng-submit="addSearchClause(clause)">
-		<input class="form-control" type="text" ng-model="clause.property"/>
-		<select class="form-control" ng-model="clause.operator">
-			<option selected="selected" value="EQ">=</option>
+
+	<!-- Filter form -->
+	<form class="form-inline" style="font-weight:bold;" ng-submit="addSearchClause(clause)">
+		<span>Filter:</span>
+		<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+			<option value="id">ID</option>
+			<option value="label">Label</option>
+			<option value="location">Location</option>
+			<option value="status">Status</option>
+			<option value="lastUpdated">Last Updated</option>
+		</select>
+		<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+			<option value="EQ">=</option>
 			<option value="NE">!=</option>
 			<option value="LT">&lt;</option>
 			<option value="LE">&lt;=</option>
@@ -11,13 +22,33 @@
 		</select>
 		<input class="form-control" type="text" ng-model="clause.value"/>
 		<button class="btn btn-default" type="submit">Submit</button>
-		<a class="btn btn-default" ng-click="clearSearch()">Clear search</a>
+		<a class="btn btn-default" ng-click="clearSearch()">Clear filters</a>
 	</form>
-	<h3>{{searchParam}}</h3>
+
+	<!-- Filter list -->
+	<span ng-hide="searchClauses.length == 0">
+		<span style="font-weight:bold;">Filters:</span>
+		<span ng-repeat="clause in searchClauses">
+			<div class="btn-group">
+				<button class="btn btn-primary">
+					{{clause.property}}
+					{{clause.operator}}
+					{{clause.value}}
+				</button>
+				<button class="btn btn-primary" ng-click="">X</button>
+			</div>
+		</span>
+		<br/><br/>
+	</span>
+
+
+	<!-- Filter list -->
 	<div class="panel panel-default">
+		<!--
 		<div class="panel-heading">
-			<h3 class="panel-title">Monitoring Systems</h3>
+			<h3 class="panel-title">Minion Systems</h3>
 		</div>
+		-->
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
 		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
