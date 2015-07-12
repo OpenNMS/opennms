@@ -208,10 +208,12 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     }
 
     public void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
+        LOG.warn("Alarmd.onNorthbounderRegistered: " + northbounder.getName());
         northbounder.start();
     }
     
     public void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
+        LOG.warn("Alarmd.onNorthbounderUnregistered: "+northbounder.getName());
         northbounder.stop();
     }
     
