@@ -29,6 +29,15 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
+  <bean id="elasticsearchNorthbounder" class="org.opennms.features.elasticsearch.eventforwarder.ElasticsearchNorthbounder" init-method="init">
+      <!--<property name="serviceRegistry" ref="serviceRegistry"/>-->
+      <property name="alarmForwarder" ref="alarmForwarder" />
+  </bean>
+
+  <bean id="alarmForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultAlarmForwarder">
+    <argument value="seda:elasticsearchForwardAlarm"/>
+  </bean>
+
   <!-- TODO: Fetch EventIpcManager using service registry? -->
   <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
 
@@ -37,6 +46,7 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
 
+  <!--<reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry" availability="mandatory"/>-->
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
@@ -102,7 +112,12 @@
         <to uri="direct:ES"/>
     </route>
 
-    <route id="submitEventsToElasticsearch" autoStartup="true" startupOrder="3" errorHandlerRef="noErrorHandler">
+    <route id="forwardAndEnrichAlarmsToElasticSearch" autoStartup="true" startupOrder="3">
+        <from uri="seda:elasticsearchForwardAlarm"/>
+        <log message="event: ${body.toString()}"/>
+    </route>
+
+    <route id="submitEventsToElasticsearch" autoStartup="true" startupOrder="4" errorHandlerRef="noErrorHandler">
         <from uri="direct:ES"/>
         <!-- Send to ES -->
         <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>

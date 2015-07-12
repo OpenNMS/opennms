@@ -220,6 +220,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     private void fireRegistrationAdded(ServiceRegistration registration) {
     	for(RegistrationHook hook : m_hooks) {
+            LOG.warn("ServiceRegistry.fireRegistrationAdded "+registration.getProvider().getClass().getCanonicalName()+" notifying hook: " + hook.getClass().getCanonicalName());
     		hook.registrationAdded(registration);
     	}
 	}
@@ -285,9 +286,11 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
     
     private <T> void fireProviderRegistered(Class<T> serviceInterface, Registration registration) {
+        LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider(serviceInterface).getClass().getCanonicalName()+" for interface: " + serviceInterface.getCanonicalName());
         Set<RegistrationListener<T>> listeners = getListeners(serviceInterface);
         
         for(RegistrationListener<T> listener : listeners) {
+            LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider(serviceInterface).getClass().getCanonicalName()+" notifying listener: "+listener.getClass().getCanonicalName());
             listener.providerRegistered(registration, registration.getProvider(serviceInterface));
         }
     }
