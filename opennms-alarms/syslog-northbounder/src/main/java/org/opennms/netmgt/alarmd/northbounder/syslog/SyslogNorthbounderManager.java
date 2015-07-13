@@ -37,8 +37,6 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +44,6 @@ import org.springframework.util.Assert;
 
 public class SyslogNorthbounderManager implements InitializingBean, DisposableBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SyslogNorthbounderManager.class);
-	
 	@Autowired
 	private ServiceRegistry m_serviceRegistry;
 
@@ -73,8 +69,6 @@ public class SyslogNorthbounderManager implements InitializingBean, DisposableBe
 			SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
 			nbi.setNodeDao(m_nodeDao);
 			nbi.afterPropertiesSet();
-			LOG.debug("Registering syslog destination to registry: "+m_serviceRegistry);
-			LOG.debug("Registry class name: "+m_serviceRegistry.getClass().getCanonicalName());
 			m_registration = m_serviceRegistry.register(nbi, Northbounder.class);
 		}
 
