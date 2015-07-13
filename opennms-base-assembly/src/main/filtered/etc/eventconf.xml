@@ -52,6 +52,7 @@
   <event-file>events/Avocent.Mergepoint.events.xml</event-file>
   <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
+  <event-file>events/A10.AX.events.xml</event-file>
   <event-file>events/ATMForum.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
