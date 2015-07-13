@@ -29,14 +29,13 @@ public class ElasticsearchNorthbounder extends AbstractNorthbounder {
 
     @Override
     protected boolean accepts(NorthboundAlarm alarm) {
-        LOG.debug("ElasticsearchNorthbounder accepts:"+alarm);
         return true; // accept ANY alarm
     }
 
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         for(NorthboundAlarm alarm: alarms) {
-            LOG.debug("ElasticsearchNorthbounder Forwarding alarm: "+alarm);
+            LOG.trace("ElasticsearchNorthbounder Forwarding alarm: "+alarm);
             alarmForwarder.sendNow(alarm);
         }
     }
