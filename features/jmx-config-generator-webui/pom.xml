@@ -32,6 +32,7 @@
                         <Vaadin-Application>org.opennms.features.jmxconfiggenerator.webui.JmxConfigGeneratorApplication</Vaadin-Application>
                         <Vaadin-Alias>/${project.artifactId}</Vaadin-Alias>
                         <Include-Resource>src/main/webapp,{maven-resources}</Include-Resource>
+                        <Import-Package>*;com.vaadin.data.util.converter;</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
