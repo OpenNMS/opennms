@@ -286,11 +286,11 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
     
     private <T> void fireProviderRegistered(Class<T> serviceInterface, Registration registration) {
-        LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider(serviceInterface).getClass().getCanonicalName()+" for interface: " + serviceInterface.getCanonicalName());
+        LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider().getClass().getCanonicalName()+" for interface: " + serviceInterface.getCanonicalName());
         Set<RegistrationListener<T>> listeners = getListeners(serviceInterface);
         
         for(RegistrationListener<T> listener : listeners) {
-            LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider(serviceInterface).getClass().getCanonicalName()+" notifying listener: "+listener.getClass().getCanonicalName());
+            LOG.warn("ServiceRegistry.fireProviderRegistered "+registration.getProvider().getClass().getCanonicalName()+" notifying listener: "+listener.getClass().getCanonicalName());
             listener.providerRegistered(registration, registration.getProvider(serviceInterface));
         }
     }
