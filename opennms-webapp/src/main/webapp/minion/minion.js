@@ -83,8 +83,8 @@
 		$scope.searchClauses = new Array();
 		$scope.limit = '';
 		$scope.offset = '';
-		$scope.orderBy = '';
-		$scope.order = '';
+		$scope.orderBy = 'label';
+		$scope.order = 'asc';
 
 		// Load all minion resources via REST
 		Minions.query(
@@ -121,6 +121,8 @@
 					if (response.status == 404) {
 						$scope.minions = new Array();
 					}
+					// TODO: Handle 500 Server Error by executing an undo callback?
+					// TODO: Handle session timeout by reloading page completely
 				}
 			);
 		};
@@ -146,8 +148,26 @@
 
 		// Add the search clause to the list of clauses
 		$scope.addSearchClause = function(clause) {
-			// TODO: Add validation
+			// Make sure the clause isn't already in the list of search clauses
+			for (var i = 0; i < $scope.searchClauses.length; i++) {
+				if (
+					clause.property === $scope.searchClauses[i].property &&
+					clause.operator === $scope.searchClauses[i].operator &&
+					clause.value === $scope.searchClauses[i].value
+				) {
+					return;
+				}
+			}
+			// TODO: Add validation?
 			$scope.searchClauses.push(angular.copy(clause));
+			$scope.searchParam = toFiql($scope.searchClauses);
+			$scope.refresh();
+		}
+
+		// Remove a search clause from the list of clauses
+		$scope.removeSearchClause = function(clause) {
+			// TODO: Add validation?
+			$scope.searchClauses.splice($scope.searchClauses.indexOf(clause), 1);
 			$scope.searchParam = toFiql($scope.searchClauses);
 			$scope.refresh();
 		}
@@ -159,6 +179,20 @@
 				$scope.searchParam = '';
 				$scope.refresh();
 			}
+		}
+
+		// Change the sorting of the table
+		$scope.changeOrderBy = function(property) {
+			if ($scope.orderBy === property) {
+				// TODO: Figure out if we should reset limit/offset here also
+				// If the property is already selected then reverse the sorting
+				$scope.order = ($scope.order === 'asc' ? 'desc' : 'asc');
+			} else {
+				// TODO: Figure out if we should reset limit/offset here also
+				$scope.orderBy = property;
+				$scope.order = 'asc';
+			}
+			$scope.refresh();
 		}
 
 		// Save a minion by using $resource.$update
