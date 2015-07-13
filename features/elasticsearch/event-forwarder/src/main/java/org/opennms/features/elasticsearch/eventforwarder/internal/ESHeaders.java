@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
 import org.apache.camel.component.bean.BeanInvocation;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
@@ -42,31 +43,59 @@ public class ESHeaders {
     public void process(Exchange exchange) {
         Message in = exchange.getIn();
         String indexName=null;
+        String indexType=null;
         final Map body=new HashMap();
-        Event event;
 
         try {
             Object incoming=in.getBody();
 
             if(incoming instanceof BeanInvocation) {
+                Object argument=((BeanInvocation)incoming).getArgs()[0];
 
-                event = (Event) ((BeanInvocation)incoming).getArgs()[0];
+                if(argument instanceof Event) {
+                    logger.debug("Processing event");
 
-                populateBodyFromEvent(body, event);
+                    indexType="events";
 
-                if(event.getNodeid()!=null) {
-                    try {
-                        // if the event is a uei.opennms.org/nodes/*updated,changed,deleted then force a refresh
-                        maybeRefreshCache(event);
+                    Event event = (Event) argument;
 
-                        // will cache on first access
-                        body.putAll(cache.getEntry(event.getNodeid()));
+                    populateBodyFromEvent(body, event);
 
-                    } catch(Exception e) {
-                        logger.error("error fetching nodeData categories: ", e);
+                    if (event.getNodeid() != null) {
+                        try {
+                            // if the event is a uei.opennms.org/nodes/*updated,changed,deleted then force a refresh
+                            maybeRefreshCache(event);
+
+                            // will cache on first access
+                            body.putAll(cache.getEntry(event.getNodeid()));
+
+                        } catch (Exception e) {
+                            logger.error("error fetching nodeData categories: ", e);
+                        }
+                    }
+                } else if(argument instanceof NorthboundAlarm) {
+                    logger.debug("Processing alarm");
+
+                    indexType="alarms";
+
+                    NorthboundAlarm alarm = (NorthboundAlarm) argument;
+
+                    populateBodyFromAlarm(body, alarm);
+
+                    if (alarm.getNodeId() != null) {
+                        try {
+
+                            // will cache on first access
+                            body.putAll(cache.getEntry((long) alarm.getNodeId()));
+
+                        } catch (Exception e) {
+                            logger.error("error fetching nodeData categories: ", e);
+                        }
                     }
                 }
             } else if(incoming instanceof Map) {
+                logger.debug("Processing a generic map");
+
                 body.putAll((Map) incoming);
             }
 
@@ -80,9 +109,34 @@ public class ESHeaders {
             logger.error("Cannot compute index name, failing back to default: "+e.getMessage());
             indexName = idxName.apply(remainder);
         }
-        logger.trace("Computing indexName from @timestamp: "+body.get("@timestamp")+" yelds "+indexName);
-        in.setHeader(ElasticsearchConfiguration.PARAM_INDEX_NAME, indexName);
+        logger.trace("Computing indexName from @timestamp: " + body.get("@timestamp") + " yelds " + indexName);
+        exchange.getOut().setHeader(ElasticsearchConfiguration.PARAM_INDEX_NAME, indexName);
+        exchange.getOut().setHeader(ElasticsearchConfiguration.PARAM_INDEX_TYPE, indexType);
         exchange.getOut().setBody(body);
+    }
+
+    private void populateBodyFromAlarm(Map body, NorthboundAlarm alarm) {
+        body.put("id",alarm.getId());
+        body.put("eventuei", alarm.getUei());
+        body.put("@timestamp", alarm.getLastOccurrence());
+        body.put("count", alarm.getCount());
+        Calendar cal=Calendar.getInstance();
+        cal.setTime(alarm.getLastOccurrence());
+        body.put("dow", cal.get(Calendar.DAY_OF_WEEK));
+        body.put("hour", cal.get(Calendar.HOUR_OF_DAY));
+        body.put("dom", cal.get(Calendar.DAY_OF_MONTH)); // this is not present in the original sql-based tool https://github.com/unicolet/opennms-events/blob/master/sql/opennms_events.sql#L26
+        body.put("poller", alarm.getPoller());
+        body.put("ipaddr", alarm.getIpAddr()!=null ? alarm.getIpAddr().toString() : null );
+        body.put("servicename", alarm.getService());
+        body.put("eventseverity_text", alarm.getSeverity().getLabel());
+        body.put("eventseverity", alarm.getSeverity().getId());
+
+        body.put("nodeid", alarm.getNodeId());
+        body.put("ackuser",alarm.getAckUser());
+        body.put("acktime",alarm.getAckTime());
+        body.put("appdn", alarm.getAppDn());
+        body.put("suppressedby",alarm.getSuppressedBy());
+        body.put("suppressed",alarm.getSuppressed());
     }
 
     private void maybeRefreshCache(Event event) {

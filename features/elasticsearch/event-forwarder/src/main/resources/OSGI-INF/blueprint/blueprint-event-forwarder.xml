@@ -108,23 +108,26 @@
         <log message="${body}"/>
     </route>
 
-    <route id="forwardAndEnrichEventForElasticsearch" autoStartup="true" startupOrder="2">
+    <route id="eventsFromOpennms" autoStartup="true" startupOrder="2">
         <from uri="seda:elasticsearchForwardEvent"/>
+        <to uri="direct:ES_PRE"/>
+    </route>
+
+    <route id="alarmsFromOpennms" autoStartup="true" startupOrder="3">
+        <from uri="seda:elasticsearchForwardAlarm"/>
+        <to uri="direct:ES_PRE"/>
+    </route>
+
+    <route id="enrichAlarmsAndEvents" autoStartup="true" startupOrder="4">
+        <from uri="direct:ES_PRE"/>
         <bean ref="elasticsearchHeaders" method="process"/>
-        <!-- Log -->
-        <log message="event: ${body.toString()}"/>
         <to uri="direct:ES"/>
     </route>
 
-    <route id="forwardAndEnrichAlarmsToElasticSearch" autoStartup="true" startupOrder="3">
-        <from uri="seda:elasticsearchForwardAlarm"/>
-        <log message="event: ${body.toString()}"/>
-    </route>
-
-    <route id="submitEventsToElasticsearch" autoStartup="true" startupOrder="4" errorHandlerRef="noErrorHandler">
+    <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
         <from uri="direct:ES"/>
-        <!-- Send to ES -->
-        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;indexType=events&amp;indexName={{index:opennms}}&amp;ip={{elasticsearchIp}}"/>
+        <log message="ES: ${body.toString()}"/>
+        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
     </route>
 
   </camelContext>
