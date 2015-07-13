@@ -29,10 +29,15 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <bean id="elasticsearchNorthbounder" class="org.opennms.features.elasticsearch.eventforwarder.ElasticsearchNorthbounder" init-method="init">
-      <!--<property name="serviceRegistry" ref="serviceRegistry"/>-->
+  <bean id="elasticsearchNorthbounder" class="org.opennms.features.elasticsearch.eventforwarder.ElasticsearchNorthbounder">
       <property name="alarmForwarder" ref="alarmForwarder" />
   </bean>
+
+  <service id="elasticsearchNorthbounderService" ref="elasticsearchNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder">
+      <service-properties>
+            <entry key="registration.export" value="true" />
+      </service-properties>
+  </service>
 
   <bean id="alarmForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultAlarmForwarder">
     <argument value="seda:elasticsearchForwardAlarm"/>
@@ -46,7 +51,6 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
 
-  <!--<reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry" availability="mandatory"/>-->
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
