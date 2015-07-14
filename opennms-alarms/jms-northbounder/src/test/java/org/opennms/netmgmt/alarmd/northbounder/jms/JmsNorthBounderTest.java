@@ -124,9 +124,7 @@ public class JmsNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
 
-        OnmsDistPoller distpoller = new OnmsDistPoller("barbrady",
-                                                       "192.0.2.11");
-        OnmsNode node = new OnmsNode(distpoller, TestNodeDao.NODE_LABEL);
+        OnmsNode node = new OnmsNode(TestNodeDao.NODE_LABEL);
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(TestNodeDao.NODE_ID);
