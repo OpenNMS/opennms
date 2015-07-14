@@ -9,21 +9,29 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.rrd.newts.support.SearchableResourceMetadataCache;
 import org.opennms.newts.api.Context;
+import org.opennms.newts.api.MetricType;
+import org.opennms.newts.api.Resource;
+import org.opennms.newts.api.Sample;
+import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.api.ValueType;
 import org.opennms.newts.api.search.BooleanQuery;
 import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.SearchResults.Result;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
+import org.opennms.newts.cassandra.search.CassandraIndexer;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -57,7 +65,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     private CassandraSearcher m_searcher;
 
     @Autowired
-    private MetricRegistry m_registry;
+    private CassandraIndexer m_indexer;
 
     @Autowired
     private SearchableResourceMetadataCache m_searchableCache;
@@ -99,11 +107,16 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     }
 
     @Override
+    public boolean delete(ResourcePath path) {
+        return false;
+    }
+
+    @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        Set<OnmsAttribute> attributes =  Sets.newHashSet();
+        Set<OnmsAttribute> attributes = Sets.newHashSet();
 
+        // Gather the list of metrics available under the resource path
         List<Result> results = searchFor(path, 0);
-
         for (Result result : results) {
             final String resourceId = result.getResource().getId();
             final ResourcePath resultPath = toResourcePath(resourceId);
@@ -116,16 +129,43 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 // Store the resource id in the rrdFile field
                 attributes.add(new RrdGraphAttribute(metric, "", resourceId));
             }
-
-            // TODO: Add support for StringPropertyAttribute
         }
+
+        // Gather resource level attributes (equivalent to reading values from strings.properties)
+        getStringAttributes(path).entrySet().stream()
+            .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
+            .forEach(attr -> attributes.add(attr));
 
         return attributes;
     }
 
     @Override
-    public boolean delete(ResourcePath path) {
-        return false;
+    public void setStringAttribute(ResourcePath path, String key, String value) {
+        // Create a mock sample referencing the resource
+        Map<String, String> attributes = new ImmutableMap.Builder<String, String>()
+                .put(key, value)
+                .build();
+        Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
+        Sample sample = new Sample(Timestamp.fromEpochMillis(0), m_context, resource, "strings",
+                MetricType.GAUGE, ValueType.compose(0, MetricType.GAUGE));
+
+        // Leverage the existing interface provided by the indexer to persist the attributes.
+        m_indexer.update(Lists.newArrayList(sample));
+    }
+
+    @Override
+    public String getStringAttribute(ResourcePath path, String key) {
+        return getStringAttributes(path).get(key);
+    }
+
+    @Override
+    public Map<String, String> getStringAttributes(ResourcePath path) {
+        return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+    }
+
+    @Override
+    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
+        // pass
     }
 
     @Override
@@ -267,4 +307,5 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     protected void setContext(Context context) {
         m_context = context;
     }
+
 }
