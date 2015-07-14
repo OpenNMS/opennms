@@ -38,6 +38,7 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -64,6 +65,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Service m_configService;
     private ServiceMonitor m_serviceMonitor;
     private final RrdStrategy<?, ?> m_rrdStrategy;
+    private final ResourceStorageDao m_resourceStorageDao;
 
     /**
      * <p>Constructor for PollableServiceConfig.</p>
@@ -74,7 +76,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
-    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, RrdStrategy<?, ?> rrdStrategy) {
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pollOutagesConfig = pollOutagesConfig;
@@ -82,6 +84,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_timer = timer;
         m_configService = findService(pkg);
         m_rrdStrategy = rrdStrategy;
+        m_resourceStorageDao = resourceStorageDao;
 
         ServiceMonitor monitor = getServiceMonitor();
         monitor.initialize(m_service);
@@ -109,11 +112,8 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public PollStatus poll() {
-        String packageName = null;
-        synchronized(this) {
-            packageName = m_pkg.getName();
-        }
         try {
+            String packageName = getPackageName();
             ServiceMonitor monitor = getServiceMonitor();
             LOG.debug("Polling {} using pkg {}", m_service, packageName);
             PollStatus result = monitor.poll(m_service, getParameters());
@@ -128,7 +128,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private synchronized ServiceMonitor getServiceMonitor() {
         if (m_serviceMonitor == null) {
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg, m_rrdStrategy);
+            m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg, m_rrdStrategy, m_resourceStorageDao);
 
         }
         return m_serviceMonitor;
@@ -278,4 +278,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         return false;
     }
 
+    public synchronized String getPackageName() {
+        return m_pkg.getName();
+    }
+
+    public int getNodeId() {
+        return m_service.getNodeId();
+    }
 }

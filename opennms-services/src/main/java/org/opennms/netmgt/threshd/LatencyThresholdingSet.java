@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.LatencyCollectionAttribute;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -48,7 +49,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class LatencyThresholdingSet extends ThresholdingSet {
-    
+
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * <p>Constructor for LatencyThresholdingSet.</p>
      *
@@ -58,10 +61,11 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
      */
-    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
+    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
         super(nodeId, hostAddress, serviceName, repository);
+        m_resourceStorageDao = resourceStorageDao;
     }
-    
+
     /*
      * Latency thresholds use ds-type="if"
      * Returns true if any attribute of the service is involved in any of defined thresholds.
@@ -96,10 +100,10 @@ public class LatencyThresholdingSet extends ThresholdingSet {
         //The timestamp is irrelevant; latency is never a COUNTER (which is the only reason the date is used).  
         //Yes, we have to know a little too much about the implementation details of CollectionResourceWrapper to say that, but
         // we have little choice
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(new Date(), m_nodeId, m_hostAddress, m_serviceName, m_repository, latencyResource, attributesMap);
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(new Date(), m_nodeId, m_hostAddress, m_serviceName, m_repository, latencyResource, attributesMap, m_resourceStorageDao);
         return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
     }
-    
+
     /*
      * Resource Filters don't make sense for Latency Thresholder.
      */

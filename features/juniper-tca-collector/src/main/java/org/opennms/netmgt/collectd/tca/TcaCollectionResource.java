@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collectd.tca;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.StorageStrategy;
@@ -36,7 +36,6 @@ import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.AbstractCollectionResource;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
-import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * The Class TcaCollectionResource.
@@ -113,14 +112,10 @@ public class TcaCollectionResource extends AbstractCollectionResource {
 		return "node[" + m_agent.getNodeId() + "]." + getResourceTypeName() + "[" + getInterfaceLabel() +"]";
 	}
 
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getResourceDir(org.opennms.netmgt.model.RrdRepository)
-	 */
-	@Override
-	public File getResourceDir(RrdRepository repository) {
-		String resourcePath = m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
-		return new File(repository.getRrdBaseDir(), resourcePath);
-	}
+    @Override
+    public Path getPath() {
+        return m_strategy.getRelativePathForAttribute(getParent(), getInterfaceLabel());
+    }
 
 	/* (non-Javadoc)
 	 * @see org.opennms.netmgt.collectd.AbstractCollectionResource#getTimeKeeper()

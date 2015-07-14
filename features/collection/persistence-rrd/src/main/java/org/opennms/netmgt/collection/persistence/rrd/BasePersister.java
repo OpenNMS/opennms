@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.collection.persistence.rrd;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -44,6 +41,8 @@ import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -67,6 +66,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     private final LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
     private PersistOperationBuilder m_builder;
     private final RrdStrategy<?, ?> m_rrdStrategy;
+    private final ResourceStorageDao m_resourceStorageDao;
 
     /**
      * <p>Constructor for BasePersister.</p>
@@ -74,11 +74,12 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public BasePersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
+    public BasePersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
         super();
         m_params = params;
         m_repository = repository;
         m_rrdStrategy = rrdStrategy;
+        m_resourceStorageDao = resourceStorageDao;
     }
 
     /**
@@ -187,25 +188,21 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     /** {@inheritDoc} */
     @Override
     public void persistStringAttribute(CollectionAttribute attribute) {
-            LOG.debug("Persisting {}", attribute);
-            CollectionResource resource = attribute.getResource();
-            String value = attribute.getStringValue();
-            
-            //String attrVal = (value == null ? null : value.toString());
-            //if (attrVal == null) {
-            if (value == null) {
-                LOG.info("No data collected for attribute {}.  Skipping.", attribute);
-                return;
-            }
-            String attrName = attribute.getName();
-            try {
-                File resourceDir = resource.getResourceDir(getRepository());
-                ResourceTypeUtils.updateStringProperty(resourceDir, value, attrName);
-            } catch(FileNotFoundException e) {
-                LOG.error("Unable to save string attribute {}", attribute, e);
-            } catch(IOException e) {
-                LOG.error("Unable to save string attribute {}", attribute, e);
-            }
+        LOG.debug("Persisting {}", attribute);
+        CollectionResource resource = attribute.getResource();
+        String value = attribute.getStringValue();
+
+        if (value == null) {
+            LOG.info("No data collected for attribute {}.  Skipping.", attribute);
+            return;
+        }
+
+        try {
+            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, resource.getPath());
+            m_resourceStorageDao.setStringAttribute(path, attribute.getName(), value);
+        } catch(Throwable e) {
+            LOG.error("Unable to save string attribute {}.", attribute, e);
+        }
     }
 
     /**

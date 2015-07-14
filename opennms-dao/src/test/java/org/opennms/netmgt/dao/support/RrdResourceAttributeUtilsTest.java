@@ -57,7 +57,7 @@ import org.opennms.test.ThrowableAnticipator;
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class ResourceTypeUtilsTest {
+public class RrdResourceAttributeUtilsTest {
     private FileAnticipator m_fileAnticipator;
     private File m_snmp;
     private File m_node;
@@ -78,8 +78,7 @@ public class ResourceTypeUtilsTest {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("rrdDirectory argument must not be null"));
         try {
-            //ResourceTypeUtils.loadProperties(null);
-            ResourceTypeUtils.getStringProperties(null, "something");
+            RrdResourceAttributeUtils.getStringProperties(null, "something");
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -91,8 +90,7 @@ public class ResourceTypeUtilsTest {
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("relativePath argument must not be null"));
         try {
-            //ResourceTypeUtils.loadProperties(null);
-            ResourceTypeUtils.getStringProperties(new File(""), null);
+            RrdResourceAttributeUtils.getStringProperties(new File(""), null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -104,8 +102,8 @@ public class ResourceTypeUtilsTest {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", false);
 
-        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
-        
+        Properties p = RrdResourceAttributeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+
         assertNotNull("properties should not be null", p);
         assertEquals("properties size", 0, p.size());
     }
@@ -115,8 +113,8 @@ public class ResourceTypeUtilsTest {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "foo=bar", false);
 
-        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
-        
+        Properties p = RrdResourceAttributeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+
         assertNotNull("properties should not be null", p);
         assertEquals("properties size", 1, p.size());
         assertNotNull("property 'foo' should exist", p.get("foo"));
@@ -128,7 +126,7 @@ public class ResourceTypeUtilsTest {
         OnmsResource childResource = createResource();
         createPropertiesFile(childResource, "", true);
 
-        Properties p = ResourceTypeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
+        Properties p = RrdResourceAttributeUtils.getStringProperties(m_fileAnticipator.getTempDir(), "snmp/1/eth0");
         assertNull("no properties file was created, so the properties object should be null", p);
     }
     
@@ -136,7 +134,7 @@ public class ResourceTypeUtilsTest {
     public void testGetAttributesAtRelativePathWithBogusDirectory() {
         File bogusRrdDirectory = new File("/foo/bogus/blam/cheese/this/really/should/never/exist");
         assertFalse("bogus RRD directory " + bogusRrdDirectory + " should not exist", bogusRrdDirectory.exists());
-        ResourceTypeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist", ".rrd");
+        RrdResourceAttributeUtils.getAttributesAtRelativePath(bogusRrdDirectory, "also-should-never-exist", ".rrd");
     }
 
     /*
@@ -153,8 +151,8 @@ public class ResourceTypeUtilsTest {
         propertiesFile.delete();
 
         // Creating a new strings.properties file and adding one value to it
-        ResourceTypeUtils.updateStringProperty(resourceDir, "2012", "year");
-        assertEquals("2012", ResourceTypeUtils.getStringProperty(resourceDir, "year"));
+        RrdResourceAttributeUtils.updateStringProperty(resourceDir, "2012", "year");
+        assertEquals("2012", RrdResourceAttributeUtils.getStringProperty(resourceDir, "year"));
         Thread.sleep(1000l); // Simulate a delay, to be sure that we are going to have a different lastModifyTime
 
         // Externally updating the strings.proeprties file
@@ -164,9 +162,8 @@ public class ResourceTypeUtilsTest {
         properties.store(new FileWriter(propertiesFile), "Updated!");
 
         // Verify that after the external update, we can get the updated value
-        assertEquals("2013", ResourceTypeUtils.getStringProperty(resourceDir, "year"));
+        assertEquals("2013", RrdResourceAttributeUtils.getStringProperty(resourceDir, "year"));
     }
-
 
     private OnmsResource createResource() {
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));

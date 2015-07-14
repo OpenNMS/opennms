@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -116,6 +117,9 @@ public class Poller extends AbstractServiceDaemon {
 
     @Autowired
     private RrdStrategy<Object, Object> m_rrdStrategy;
+
+    @Autowired
+    private ResourceStorageDao m_resourceStorageDao;
 
     public void setRrdStrategy(RrdStrategy<Object, Object> rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
@@ -553,7 +557,8 @@ public class Poller extends AbstractServiceDaemon {
         }
 
         PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, getScheduler(), m_rrdStrategy);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
+                getScheduler(), m_rrdStrategy, m_resourceStorageDao);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {
