@@ -230,7 +230,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         }
 
         String poller = alarm.getPoller() == null ? "localhost"
-                                                 : alarm.getPoller().getName();
+                                                 : alarm.getPoller().getId();
         mapping.put("distPoller", poller);
 
         String service = alarm.getService() == null ? "" : alarm.getService();
