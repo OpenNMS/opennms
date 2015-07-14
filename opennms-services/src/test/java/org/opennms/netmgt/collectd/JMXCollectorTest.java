@@ -100,6 +100,11 @@ public class JMXCollectorTest {
         }
 
         @Override
+        public String getNodeLabel() {
+            return null;
+        }
+
+        @Override
         public java.io.File getStorageDir() {
             return new java.io.File("");
         }
