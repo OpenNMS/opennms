@@ -91,6 +91,6 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
             adminPage();
             findElementByLink(entry[0]).click();
             findElementByXpath(entry[1]);
-        };
+        }
     }
 }

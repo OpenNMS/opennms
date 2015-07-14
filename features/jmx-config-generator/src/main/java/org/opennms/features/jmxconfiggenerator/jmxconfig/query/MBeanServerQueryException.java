@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.jmxconfiggenerator.jmxconfig;
+package org.opennms.features.jmxconfiggenerator.jmxconfig.query;
 
 /**
- *
- * @author Markus Neumann <markus@opennms.com>
+ * Exception which is thrown when an error while querying the MBean server occurs.
  */
-public interface JmxTestDummyMBean {
-
-    String getName();
-
-    int getX();
-
-    Integer getInteger();
-
-    Long getLong();
-
-    void setWritableY(int writable);
-
-    int getWritableY();
+public class MBeanServerQueryException extends Exception {
+    MBeanServerQueryException(Throwable throwable) {
+        super(throwable);
+    }
 }

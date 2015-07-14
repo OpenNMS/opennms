@@ -31,17 +31,29 @@ package org.opennms.features.jmxconfiggenerator.webui;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import org.opennms.features.jmxconfiggenerator.Starter;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.features.jmxconfiggenerator.graphs.Report;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
 import org.opennms.features.jmxconfiggenerator.webui.data.ModelChangeListener;
 import org.opennms.features.jmxconfiggenerator.webui.data.ServiceConfig;
 import org.opennms.features.jmxconfiggenerator.webui.data.UiModel;
-import org.opennms.features.jmxconfiggenerator.webui.ui.*;
+import org.opennms.features.jmxconfiggenerator.webui.ui.ConfigForm;
+import org.opennms.features.jmxconfiggenerator.webui.ui.ConfigResultView;
+import org.opennms.features.jmxconfiggenerator.webui.ui.HeaderPanel;
+import org.opennms.features.jmxconfiggenerator.webui.ui.IntroductionView;
+import org.opennms.features.jmxconfiggenerator.webui.ui.ModelChangeRegistry;
+import org.opennms.features.jmxconfiggenerator.webui.ui.ProgressWindow;
+import org.opennms.features.jmxconfiggenerator.webui.ui.UiState;
 import org.opennms.features.jmxconfiggenerator.webui.ui.mbeans.MBeansView;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.slf4j.Logger;
@@ -49,8 +61,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -204,23 +214,19 @@ public class JmxConfigGeneratorApplication extends UI implements ModelChangeList
             try {
                 ServiceConfig config = ((BeanItem<ServiceConfig>) ((ConfigForm)getView(UiState.ServiceConfigurationView)).getItemDataSource()).getBean();
 
-                // TODO loading of the dictionary should not be done via the Starter class and not in a static way!
-                JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-                JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(config.isJmxmp(), config.getHost(), config.getPort());
-                JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL);
-                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), config.isRunWritableMBeans(), Starter.loadInternalDictionary());
+                JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
+				JMXServiceURL jmxServiceURL = JmxHelper.createJmxServiceUrl(null, config.getHost(), config.getPort(), config.isJmxmp());
+				JMXConnector connector = JmxHelper.createJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL);
+
+                JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), JmxHelper.loadInternalDictionary());
                 connector.close();
 
                 model.setRawModel(generateJmxConfigModel);
                 
                 updateView(UiState.MbeansView);
                 removeWindow(getProgressWindow());
-            } catch (MalformedURLException ex) {
-                handleError(ex);
-            } catch (IOException ex) {
-                handleError(ex);
-            } catch (SecurityException ex) {
-                handleError(ex);
+            } catch (Exception ex) {
+				handleError(ex);
             }
         }
 
@@ -241,11 +247,11 @@ public class JmxConfigGeneratorApplication extends UI implements ModelChangeList
 
 			// create snmp-graph.properties
 			try {
-				GraphConfigGenerator graphConfigGenerator = new GraphConfigGenerator();
-				Collection<Report> reports = new JmxConfigReader()
+				GraphConfigGenerator graphConfigGenerator = new GraphConfigGenerator(new Slf4jLogAdapter(GraphConfigGenerator.class));
+				Collection<Report> reports = new JmxConfigReader(new Slf4jLogAdapter(JmxConfigReader.class))
 						.generateReportsByJmxDatacollectionConfig(model.getOutputConfig());
 				model.setSnmpGraphProperties(graphConfigGenerator.generateSnmpGraph(reports));
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				model.setSnmpGraphProperties(ex.getMessage()); // TODO handle Errors in UI
 				LOG.error("SNMP Graph-Properties couldn't be created.", ex);
 			}
