@@ -1,30 +1,131 @@
+<h1 style="font-weight:bold;">Minion Systems</h1>
+
 <div ng-controller="MinionListCtrl">
+
+	<!-- Filter form -->
+	<form class="form-inline" ng-submit="addSearchClause(clause)">
+		<span style="font-weight:bold;">Filter:</span>
+		<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+			<option value="id">ID</option>
+			<option value="label">Label</option>
+			<option value="location">Location</option>
+			<option value="status">Status</option>
+			<option value="lastUpdated">Last Updated</option>
+		</select>
+		<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+			<option value="EQ">=</option>
+			<option value="NE">!=</option>
+			<option value="LT">&lt;</option>
+			<option value="LE">&lt;=</option>
+			<option value="GT">&gt;</option>
+			<option value="GE">&gt;=</option>
+		</select>
+		<input class="form-control" type="text" ng-model="clause.value"/>
+		<button class="btn btn-default" type="submit">Submit</button>
+		<a class="btn btn-default" ng-click="clearSearch()">Clear filters</a>
+	</form>
+
+	<!-- Filter list -->
+	<span ng-hide="searchClauses.length == 0">
+		<span style="font-weight:bold;">Filters:</span>
+		<span ng-repeat="clause in searchClauses">
+			<div class="btn-group">
+				<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
+					{{clause.property}}
+					{{clause.operator}}
+					{{clause.value}}
+					&nbsp;
+					<i class="fa fa-close"/>
+				</button>
+			</div>
+		</span>
+		<br/><br/>
+	</span>
+
+	<!-- Filter list -->
 	<div class="panel panel-default">
+		<!--
 		<div class="panel-heading">
-			<h3 class="panel-title">Monitoring Systems</h3>
+			<h3 class="panel-title">Minion Systems</h3>
 		</div>
+		-->
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
-		<table class="table table-bordered table-condensed" style="font-size:100%">
+		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th>ID</th>
-					<th>Label</th>
-					<th>Location</th>
-					<th>Type</th>
-					<th>Status</th>
-					<th>Date</th>
-					<th>Properties</th>
+					<th class="col-sm-2">
+						<a ng-click="changeOrderBy('id')">ID</a>
+						<i ng-show="orderBy === 'id' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'id' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2">
+						<a ng-click="changeOrderBy('label')">Label</a>
+						<i ng-show="orderBy === 'label' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'label' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2">
+						<a ng-click="changeOrderBy('location')">Location</a>
+						<i ng-show="orderBy === 'location' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'location' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1">
+						<a ng-click="changeOrderBy('type')">Type</a>
+						<i ng-show="orderBy === 'type' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'type' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-1">
+						<a ng-click="changeOrderBy('status')">Status</a>
+						<i ng-show="orderBy === 'status' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'status' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2">
+						<a ng-click="changeOrderBy('lastUpdated')">Last Updated</a>
+						<i ng-show="orderBy === 'lastUpdated' && order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="orderBy === 'lastUpdated' && order === 'desc'" class="fa fa-sort-desc"/>
+					</th>
+					<th class="col-sm-2">
+						Properties
+					</th>
 				</tr>
 
 				<tr ng-repeat="minion in minions">
-					<td class="noWrap"><a href="GO TO DETAILS PAGE">{{minion.id}}</a>
+					<td class="text-nowrap">
+						{{minion.id}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:minion.id})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:minion.id})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="noWrap">{{minion.label}}</td>
-					<td class="noWrap">{{minion.location}}</td>
-					<td class="noWrap">{{minion.type}}</td>
-					<td class="noWrap">{{minion.status}}</td>
-					<td class="noWrap">{{minion.date | date:'MMM d, yyyy h:mm:ss a'}}</td>
-					<td class="noWrap">
+					<td class="text-nowrap">
+						<form ng-show="enableEditLabel" ng-submit="update(minion)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="minion.label" ng-blur="unedit()"/>
+						</form>
+						<span ng-hide="enableEditLabel" ng-click="editLabel(minion.id)">{{minion.label}}</span>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:minion.label})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:minion.label})"><i class="fa fa-minus-square-o"/></a>
+					</td>
+					<td class="text-nowrap">
+						<form ng-show="enableEditLocation" ng-submit="update(minion)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="minion.location" ng-blur="unedit()"/>
+						</form>
+						<span ng-hide="enableEditLocation" ng-click="editLocation(minion.id)">{{minion.location}}</span>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:minion.location})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:minion.location})"><i class="fa fa-minus-square-o"/></a>
+					</td>
+					<td class="text-nowrap">
+						{{minion.type}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:minion.type})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:minion.type})"><i class="fa fa-minus-square-o"/></a>
+					</td>
+					<td class="text-nowrap">
+						{{minion.status}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:minion.status})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:minion.status})"><i class="fa fa-minus-square-o"/></a>
+					</td>
+					<td class="text-nowrap">
+						{{minion.lastUpdated | date:'MMM d, yyyy h:mm:ss a'}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'lastUpdated',operator:'GE',value:minion.lastUpdated})"><i class="fa fa-toggle-left"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'lastUpdated',operator:'LE',value:minion.lastUpdated})"><i class="fa fa-toggle-right"/></a>
+					</td>
+					<td class="text-nowrap">
 						<span ng-repeat="(key,value) in minion.properties">
 						<span class="label label-default">
 							{{key}}: {{value}}

@@ -389,9 +389,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     @Override
-    public void save(final T entity) throws DataAccessException {
+    public K save(final T entity) throws DataAccessException {
         try {
-            getHibernateTemplate().save(entity);
+            return (K)getHibernateTemplate().save(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
             throw e;

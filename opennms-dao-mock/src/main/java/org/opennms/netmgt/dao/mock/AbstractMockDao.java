@@ -173,8 +173,8 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     }
 
     @Override
-    public void save(final T entity) {
-        if (entity == null) return;
+    public K save(final T entity) {
+        if (entity == null) return null;
         K id = getId(entity);
         if (id == null) {
             generateId(entity);
@@ -185,6 +185,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
             LOG.debug("save({}): id exists: {}", entity, id);
         }
         m_entries.put(id, entity);
+        return id;
     }
 
     @Override

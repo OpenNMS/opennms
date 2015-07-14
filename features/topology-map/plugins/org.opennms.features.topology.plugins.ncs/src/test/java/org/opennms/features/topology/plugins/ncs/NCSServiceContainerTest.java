@@ -135,7 +135,7 @@ public class NCSServiceContainerTest {
         }
 
         @Override
-        public void save(NCSComponent component) {}
+        public Long save(NCSComponent component) { return null; }
 
         @Override
         public void saveOrUpdate(NCSComponent component) {}
