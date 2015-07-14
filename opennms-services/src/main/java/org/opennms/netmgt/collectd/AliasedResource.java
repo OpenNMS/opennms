@@ -28,7 +28,8 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -37,11 +38,9 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.utils.NodeLabelJDBCImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * <p>AliasedResource class.</p>
@@ -107,12 +106,10 @@ public class AliasedResource extends SnmpCollectionResource {
         return m_domain;
         }
     }
- 
-    /** {@inheritDoc} */
+
     @Override
-    public File getResourceDir(final RrdRepository repository) {
-        File domainDir = new File(repository.getRrdBaseDir(), getDomain());
-        return new File(domainDir, getAliasDir());
+    public Path getPath() {
+        return Paths.get(getDomain(), getAliasDir());
     }
 
     /**
@@ -228,4 +225,5 @@ public class AliasedResource extends SnmpCollectionResource {
     public TimeKeeper getTimeKeeper() {
         return null;
     }
+
 }

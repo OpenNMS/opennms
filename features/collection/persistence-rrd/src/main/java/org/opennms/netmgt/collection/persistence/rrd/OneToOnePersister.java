@@ -30,6 +30,7 @@ package org.opennms.netmgt.collection.persistence.rrd;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
@@ -48,8 +49,8 @@ public class OneToOnePersister extends BasePersister {
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public OneToOnePersister(ServiceParameters params,  RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
-        super(params, repository, rrdStrategy);
+    public OneToOnePersister(ServiceParameters params,  RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
+        super(params, repository, rrdStrategy, resourceStorageDao);
     }
 
     /** {@inheritDoc} */

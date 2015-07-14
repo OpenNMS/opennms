@@ -1,7 +1,9 @@
 package org.opennms.netmgt.model;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,6 +44,29 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      */
     public static ResourcePath get(ResourcePath parent, String... path) {
         return new ResourcePath(parent, path);
+    }
+
+    /**
+     * Convenience method.
+     */
+    public static ResourcePath get(Path path) {
+        List<String> elements = new LinkedList<String>();
+        for (Path element : path) {
+            elements.add(element.toString());
+        }
+        return new ResourcePath(elements.toArray(new String[elements.size()]));
+    }
+
+    /**
+     * Convenience method.
+     */
+    public static ResourcePath get(String prefix, Path path) {
+        List<String> elements = new LinkedList<String>();
+        elements.add(prefix);
+        for (Path element : path) {
+            elements.add(element.toString());
+        }
+        return new ResourcePath(elements.toArray(new String[elements.size()]));
     }
 
     public String getName() {

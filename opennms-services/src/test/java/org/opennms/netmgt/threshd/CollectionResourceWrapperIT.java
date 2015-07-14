@@ -40,7 +40,9 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
@@ -65,6 +67,8 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
@@ -81,6 +85,9 @@ import org.opennms.netmgt.snmp.SnmpValue;
  */
 public class CollectionResourceWrapperIT {
     private boolean m_ignoreWarnings = false;
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -118,7 +125,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null);
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null, null);
         } catch (Throwable e) {
             //e.printStackTrace();
             throw e;
@@ -128,7 +135,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadderConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, -1, null, null, null, null, null);
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null, null);
         } catch (Throwable e) {
             e.printStackTrace();
             throw e;
@@ -483,7 +490,7 @@ public class CollectionResourceWrapperIT {
     
     // Wrapper interval value for counter rates calculation should be expressed in seconds.
     private CollectionResourceWrapper createWrapper(SnmpCollectionResource resource, Map<String, CollectionAttribute> attributes, Date timestamp) {
-        CollectionResourceWrapper wrapper = new CollectionResourceWrapper(timestamp, 1, "127.0.0.1", "SNMP", getRepository(), resource, attributes);
+        CollectionResourceWrapper wrapper = new CollectionResourceWrapper(timestamp, 1, "127.0.0.1", "SNMP", getRepository(), resource, attributes, getResourceStorageDao());
         return wrapper;    	
     }
     
@@ -538,8 +545,13 @@ public class CollectionResourceWrapperIT {
 
     private RrdRepository getRepository() {
         RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(new File("/tmp"));
+        repo.setRrdBaseDir(tempFolder.getRoot());
         return repo;		
     }
 
+    private ResourceStorageDao getResourceStorageDao() {
+        FilesystemResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
+        resourceStorageDao.setRrdDirectory(tempFolder.getRoot());
+        return resourceStorageDao;
+    }
 }

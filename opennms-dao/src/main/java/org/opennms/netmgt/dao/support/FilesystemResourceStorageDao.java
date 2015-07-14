@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -45,13 +46,15 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 
 /**
  * Used in conjunction with RRD/JRB strategies that persist
@@ -113,7 +116,32 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        return ResourceTypeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path), RRD_EXTENSION);
+        return RrdResourceAttributeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path), RRD_EXTENSION);
+    }
+
+    @Override
+    public void setStringAttribute(ResourcePath path, String key, String value) {
+        try {
+            RrdResourceAttributeUtils.updateStringProperty(toFile(path), value, key);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
+    public String getStringAttribute(ResourcePath path, String key) {
+        return RrdResourceAttributeUtils.getStringProperty(toFile(path), key);
+    }
+
+    @Override
+    public Map<String, String> getStringAttributes(ResourcePath path) {
+        Properties props = RrdResourceAttributeUtils.getStringProperties(m_rrdDirectory, toRelativePath(path));
+        return Maps.fromProperties(props);
+    }
+
+    @Override
+    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
+        RrdResourceAttributeUtils.updateDsProperties(toFile(path), metricsNameToResourceNames);
     }
 
     @Override

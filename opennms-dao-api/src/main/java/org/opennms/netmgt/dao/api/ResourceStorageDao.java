@@ -77,9 +77,40 @@ public interface ResourceStorageDao {
     public boolean delete(ResourcePath path);
 
     /**
-     * Retrieves the set of attributes stored at the given path.
+     * Retrieves the set of (resource-level) attributes stored at the given path.
      */
     public Set<OnmsAttribute> getAttributes(ResourcePath path);
+
+    /**
+     * Sets the specified (resource-level) attribute at the given path.
+     */
+    public void setStringAttribute(ResourcePath path, String key, String value);
+
+    /**
+     * Returns the value for the given (resource-level) attribute, or null if it does not exist.
+     */
+    public String getStringAttribute(ResourcePath path, String key);
+
+    /**
+     * Returns the value for the given (resource-level) attribute, or null if it does not exist.
+     */
+    public Map<String, String> getStringAttributes(ResourcePath path);
+
+    /**
+     * Maps the given metric names to the their associated resources names.
+     * The resource names are relative to the given path.
+     *
+     * When persisting to .rrd of .jrb files with storeByGroup enabled,
+     * this is used to map the data sources names (metrics) to associated
+     * .rrd files (resource names).
+     *
+     * Other strategies that can infer this information at runtime may chose
+     * to ignore calls to this method.
+     *
+     * @param path parent resource path
+     * @param metricsNameToResourceNames metric to resource mappings
+     */
+    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames);
 
     /**
      * Retrieves the meta-data stored at the given path.

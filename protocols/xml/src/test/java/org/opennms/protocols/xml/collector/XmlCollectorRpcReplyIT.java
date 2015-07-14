@@ -68,7 +68,7 @@ public class XmlCollectorRpcReplyIT extends XmlCollectorITCase {
         parameters.put("collection", "RPC");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 1);
-        File file = new File("target/snmp/1/cfmEntry/D3456_ddd11/rpc-reply.jrb");
+        File file = new File(getSnmpRoot(), "1/cfmEntry/D3456_ddd11/rpc-reply.jrb");
         String[] dsnames = new String[] { "V01", "V02", "V03", "V04", "V05", "V06", "V07", "V08", "V09", "V10", "V11",
                 "V12", "V13", "V14", "V15", "V16", "V17", "V18", "V19", "V20", "V21", "V22" };
         Double[] dsvalues = new Double[] { 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0,

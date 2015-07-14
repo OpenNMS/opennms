@@ -45,6 +45,7 @@ import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -122,6 +123,8 @@ final class CollectableService implements ReadyRunnable {
 
     private final RrdStrategy<?, ?> m_rrdStrategy;
 
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -133,7 +136,10 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr, RrdStrategy<?, ?> rrdStrategy) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
+            Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
+            RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
+
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
@@ -141,6 +147,7 @@ final class CollectableService implements ReadyRunnable {
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
         m_rrdStrategy = rrdStrategy;
+        m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
@@ -154,7 +161,7 @@ final class CollectableService implements ReadyRunnable {
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
     }
     
     /**
@@ -381,11 +388,11 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-    private static BasePersister createPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
+    private static BasePersister createPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
         if (ResourceTypeUtils.isStoreByGroup()) {
-            return new GroupPersister(params, repository, rrdStrategy);
+            return new GroupPersister(params, repository, rrdStrategy, resourceStorageDao);
         } else {
-            return new OneToOnePersister(params, repository, rrdStrategy);
+            return new OneToOnePersister(params, repository, rrdStrategy, resourceStorageDao);
         }
     }
 
@@ -400,7 +407,7 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            BasePersister persister = createPersister(m_params, m_repository, m_rrdStrategy);
+                            BasePersister persister = createPersister(m_params, m_repository, m_rrdStrategy, m_resourceStorageDao);
                             persister.setIgnorePersist(result.ignorePersist());
                             result.visit(persister);
                         } finally {
