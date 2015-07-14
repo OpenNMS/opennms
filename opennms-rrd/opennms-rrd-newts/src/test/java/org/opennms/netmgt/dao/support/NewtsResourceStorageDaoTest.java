@@ -23,6 +23,7 @@ import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.opennms.newts.cassandra.search.ResourceMetadata;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class NewtsResourceStorageDaoTest {
@@ -181,6 +182,7 @@ public class NewtsResourceStorageDaoTest {
         // Attributes are empty when the resource does not exist
         SearchResults searchResults = new SearchResults();
         EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.getResourceAttributes(EasyMock.eq(context), EasyMock.anyObject())).andReturn(Maps.newHashMap());
         EasyMock.replay(searcher);
 
         assertEquals(0, nrs.getAttributes(ResourcePath.get("should", "not", "exist")).size());
@@ -192,6 +194,7 @@ public class NewtsResourceStorageDaoTest {
         searchResults.addResult(new Resource("a:bucket1"), Sets.newHashSet("metric11", "metric12"));
         searchResults.addResult(new Resource("a:bucket2"), Sets.newHashSet("metric21", "metric22"));
         EasyMock.expect(searcher.search(EasyMock.eq(context), EasyMock.anyObject())).andReturn(searchResults);
+        EasyMock.expect(searcher.getResourceAttributes(EasyMock.eq(context), EasyMock.anyObject())).andReturn(Maps.newHashMap());
         EasyMock.replay(searcher);
 
         Set<OnmsAttribute> attributes = nrs.getAttributes(ResourcePath.get("a"));
