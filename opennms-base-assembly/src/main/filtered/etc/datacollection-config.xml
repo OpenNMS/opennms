@@ -62,6 +62,7 @@
         <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
         <include-collection dataCollectionGroup="ServerTech"/>
         <include-collection dataCollectionGroup="SofaWare"/>
+        <include-collection dataCollectionGroup="Sonicwall"/>
         <include-collection dataCollectionGroup="SUN Microsystems"/>
         <include-collection dataCollectionGroup="Trango"/>
         <include-collection dataCollectionGroup="WMI"/>
