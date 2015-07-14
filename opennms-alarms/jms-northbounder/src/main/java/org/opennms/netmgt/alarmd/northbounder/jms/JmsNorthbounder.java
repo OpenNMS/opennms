@@ -43,7 +43,6 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsDestination.DestinationType;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -83,7 +82,8 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
 
     private JmsTemplate m_template;
 
-    public JmsNorthbounder(JmsNorthbounderConfig config, ConnectionFactory jmsNorthbounderConnectionFactory,
+    public JmsNorthbounder(JmsNorthbounderConfig config,
+            ConnectionFactory jmsNorthbounderConnectionFactory,
             JmsDestination destination) {
         super(NBI_NAME + ":" + destination);
         m_config = config;
@@ -115,7 +115,8 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        LOG.debug("creating new JmsTemplate with connection to " + m_jmsNorthbounderConnectionFactory);
+        LOG.debug("creating new JmsTemplate with connection to "
+                + m_jmsNorthbounderConnectionFactory);
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
         if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {
             m_template.setPubSubDomain(true);
@@ -202,5 +203,5 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
             ConnectionFactory jmsNorthbounderConnectionFactory) {
         m_jmsNorthbounderConnectionFactory = jmsNorthbounderConnectionFactory;
     }
-    
+
 }

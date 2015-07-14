@@ -56,17 +56,19 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */
-public class SyslogNorthbounder extends AbstractNorthbounder implements InitializingBean {
+public class SyslogNorthbounder extends AbstractNorthbounder implements
+        InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogNorthbounder.class);
 
-    private static final String NBI_NAME = "SyslogNBI" ;
+    private static final String NBI_NAME = "SyslogNBI";
 
     private SyslogNorthbounderConfig m_config;
 
     private SyslogDestination m_destination;
 
-    public SyslogNorthbounder(SyslogNorthbounderConfig config, SyslogDestination destination) {
-        super(NBI_NAME+":"+destination);
+    public SyslogNorthbounder(SyslogNorthbounderConfig config,
+            SyslogDestination destination) {
+        super(NBI_NAME + ":" + destination);
         m_config = config;
         m_destination = destination;
     }
@@ -91,9 +93,8 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     }
 
     /**
-     * The abstraction makes a call here to determine if the alarm should be placed
-     * on the queue of alarms to be sent northerly.
-     * 
+     * The abstraction makes a call here to determine if the alarm should be
+     * placed on the queue of alarms to be sent northerly.
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
@@ -113,11 +114,11 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         LOG.debug("UEI: {}, rejected.", alarm.getUei());
         return false;
     }
-    
+
     /**
-     * Each implementation of the AbstractNorthbounder has a nice queue (Nagle's algorithmic) and the worker
-     * thread that processes the queue calls this method to send alarms to the northern NMS.
-     * 
+     * Each implementation of the AbstractNorthbounder has a nice queue
+     * (Nagle's algorithmic) and the worker thread that processes the queue
+     * calls this method to send alarms to the northern NMS.
      */
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms)
@@ -191,11 +192,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
             }
         }
     }
-	
+
     /**
-     * This is here, for now, until it can be properly wired and proper configuration can be created.
-     * This allows generic 127.0.0.1:UDP/514 to work with OpenNMS having no configuration.  This is
-     * trickery in its finest hour.
+     * This is here, for now, until it can be properly wired and proper
+     * configuration can be created. This allows generic 127.0.0.1:UDP/514 to
+     * work with OpenNMS having no configuration. This is trickery in its
+     * finest hour.
      */
     private void createNorthboundInstance() throws SyslogRuntimeException {
 

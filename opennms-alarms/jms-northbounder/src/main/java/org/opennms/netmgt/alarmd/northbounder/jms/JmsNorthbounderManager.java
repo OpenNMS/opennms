@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.alarmd.northbounder.jms;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
@@ -42,8 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
- * @author schlazor <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
- *
+ * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
  */
 public class JmsNorthbounderManager implements InitializingBean,
         DisposableBean {
@@ -60,7 +61,7 @@ public class JmsNorthbounderManager implements InitializingBean,
     @Autowired
     private NodeDao m_nodeDao;
 
-    private Registration m_registration = null;
+    private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -78,14 +79,17 @@ public class JmsNorthbounderManager implements InitializingBean,
                                                       jmsDestination);
             nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
-            m_registration = m_serviceRegistry.register(nbi,
-                                                        Northbounder.class);
+            m_registrations.put(nbi.getName(),
+                                m_serviceRegistry.register(nbi,
+                                                           Northbounder.class));
         }
     }
 
     @Override
     public void destroy() throws Exception {
-        m_registration.unregister();
+        for (Registration r : m_registrations.values()) {
+            r.unregister();
+        }
     }
 
 }
