@@ -84,6 +84,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
     private String m_sysObjId = null;
     private String m_foreignSource = null;
     private String m_foreignId = null;
+    private String m_nodeLabel = null;
     private File m_storageDir = null;
     
     private CollectionAgentService m_agentService;
@@ -169,6 +170,22 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Snmp
             m_nodeId = m_agentService.getNodeId();
         }
         return m_nodeId; 
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeLabel()
+     */
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Override
+    public String getNodeLabel() {
+        if (m_nodeLabel == null) {
+            m_nodeLabel = m_agentService.getNodeLabel();
+        }
+        return m_nodeLabel;
     }
 
     /* (non-Javadoc)

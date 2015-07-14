@@ -150,6 +150,19 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
     }
 
     /* (non-Javadoc)
+    * @see org.opennms.netmgt.collectd.CollectionAgent#getNodeLabel()
+    */
+   /**
+    * <p>getNodeLabel</p>
+    *
+     * @return a {@link java.lang.String} object.
+    */
+   @Override
+   public String getNodeLabel() {
+       return getIpInterface().getNode().getLabel();
+   }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.CollectionAgent#getForeignSource()
      */
     /**
@@ -159,7 +172,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public String getForeignSource() {
-       return getIpInterface().getNode().getForeignSource() == null ? null : getIpInterface().getNode().getForeignSource();
+       return getIpInterface().getNode().getForeignSource();
     }
 
     /* (non-Javadoc)
@@ -172,7 +185,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      */
     @Override
     public String getForeignId() {
-       return getIpInterface().getNode().getForeignId() == null ? null : getIpInterface().getNode().getForeignId();
+       return getIpInterface().getNode().getForeignId();
     }
     
     /* (non-Javadoc)
