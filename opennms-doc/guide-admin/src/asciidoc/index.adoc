@@ -94,3 +94,8 @@ include::text/events.adoc[]
 
 // Provisioning guide
 include::text/provisioning.adoc[]
+
+// OpenNMS operation
+== OpenNMS Operation
+include::text/operation/cassandra21x.adoc[]
+include::text/operation/newts.adoc[]

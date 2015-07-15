@@ -1,0 +1,47 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+=== Newts
+
+This section describes some of the metrics _OpenNMS_ collects for monitoring the _Newts_ keyspace on an _Apache Cassandra_ node.
+The category `Newts` is used to enable the data collection on a node.
+Also, the service name `JMX-Newts` is used to bind this data collection to a node's interface.
+The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
+
+==== Keyspace newts
+
+The following metrics will be collected by _OpenNMS_:
+
+* AllMemtablesLiveDataSize
+* AllMemtablesOffHeapDataSize
+* AllMemtablesOnHeapDataSize
+* BloomFilterDiskSpaceUsed
+* BloomFilterOffHeapMemoryUsed
+* CasCommitLatency
+* CasCommitTotalLatency
+* CasPrepareLatency
+* CasPrepareTotalLatency
+* CasProposeLatency
+* CasProposeTotalLatency
+* ColUpdateTimeDeltaHistogram
+* CompressionMetadataOffHeapMemoryUsed
+* IndexSummaryOffHeapMemoryUsed
+* LiveDiskSpaceUsed::
+* LiveScannedHistogram::
+* MemtableColumnsCount::
+* MemtableLiveDataSize
+* MemtableOffHeapDataSize
+* MemtableOnHeapDataSize
+* MemtableSwitchCount
+* PendingCompactions
+* PendingFlushes
+* RangeLatency
+* RangeTotalLatency
+* ReadLatency
+* ReadTotalLatency
+* SSTablesPerReadHistogram
+* TombstoneScannedHistogram
+* TotalDiskSpaceUsed
+* WriteLatency
+* WriteTotalLatency
+
