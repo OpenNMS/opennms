@@ -83,9 +83,8 @@ delete $ENV{'M2_HOME'};
 
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
-$OOSNMP_TRUSTSTORE = File::Spec->catfile($PREFIX, 'bin', 'oosnmp.net.trustStore');
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
+	$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
 }
 
 my $result = GetOptions(
