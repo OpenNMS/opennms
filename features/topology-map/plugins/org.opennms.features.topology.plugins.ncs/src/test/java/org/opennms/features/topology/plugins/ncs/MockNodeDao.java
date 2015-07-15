@@ -123,8 +123,8 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
-    public void save(OnmsNode entity) {
-        // TODO Auto-generated method stub
+    public Integer save(OnmsNode entity) {
+        return null;
 
     }
 

@@ -10,6 +10,6 @@
 
   <context:annotation-config />
 
-  <bean id="measurementsRestService" class="org.opennms.web.rest.MeasurementsRestService"/>
+  <bean id="measurementsRestService" class="org.opennms.web.rest.v1.MeasurementsRestService"/>
 
 </beans>
