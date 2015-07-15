@@ -1,48 +1,100 @@
-<h1 style="font-weight:bold;">Minion Systems</h1>
-
 <div ng-controller="MinionListCtrl">
 
-	<!-- Filter form -->
-	<form class="form-inline" ng-submit="addSearchClause(clause)">
-		<span style="font-weight:bold;">Filter:</span>
-		<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
-			<option value="id">ID</option>
-			<option value="label">Label</option>
-			<option value="location">Location</option>
-			<option value="status">Status</option>
-			<option value="lastUpdated">Last Updated</option>
-		</select>
-		<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
-			<option value="EQ">=</option>
-			<option value="NE">!=</option>
-			<option value="LT">&lt;</option>
-			<option value="LE">&lt;=</option>
-			<option value="GT">&gt;</option>
-			<option value="GE">&gt;=</option>
-		</select>
-		<input class="form-control" type="text" ng-model="clause.value"/>
-		<button class="btn btn-default" type="submit">Submit</button>
-		<a class="btn btn-default" ng-click="clearSearch()">Clear filters</a>
-	</form>
-
-	<!-- Filter list -->
-	<span ng-hide="searchClauses.length == 0">
-		<span style="font-weight:bold;">Filters:</span>
-		<span ng-repeat="clause in searchClauses">
-			<div class="btn-group">
-				<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
-					{{clause.property}}
-					{{clause.operator}}
-					{{clause.value}}
-					&nbsp;
-					<i class="fa fa-close"/>
-				</button>
+	<!-- Modal form for adding filters -->
+	<div id="filterModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<label>Add Filter:</label>
+					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
+						<div class="form-group">
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+							<option value="id">ID</option>
+							<option value="label">Label</option>
+							<option value="location">Location</option>
+							<option value="status">Status</option>
+							<option value="lastUpdated">Last Updated</option>
+						</select>
+						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+							<option value="EQ">=</option>
+							<option value="NE">!=</option>
+							<option value="LT">&lt;</option>
+							<option value="LE">&lt;=</option>
+							<option value="GT">&gt;</option>
+							<option value="GE">&gt;=</option>
+						</select>
+						<input class="form-control" type="text" ng-model="clause.value"/>
+						</div>
+						<br/><br/>
+						<button class="btn btn-default" type="submit">Submit</button>
+					</form>
+				</div>
 			</div>
-		</span>
-		<br/><br/>
-	</span>
+		</div>
+	</div>
+
 
 	<!-- Filter list -->
+	<nav class="navbar navbar-default">
+		<div class="navbar-brand" style="padding: 16.5px 15px !important; line-height:12px;">
+			Filters&nbsp;&nbsp;
+			<a onClick="$('#filterModal').modal()"><i class="fa fa-plus fa-lg"></i></a>
+			&nbsp;
+			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+		</div>
+		<span ng-hide="searchClauses.length == 0">
+			<span ng-repeat="clause in searchClauses">
+				<div class="btn-group">
+					<!-- TODO: Make the filter captions pretty -->
+					<button class="btn btn-primary navbar-btn" style="margin:8px 0px;" ng-click="removeSearchClause(clause)">
+						{{clause.property}}
+						{{clause.operator}}
+						{{clause.value}}
+						&nbsp;
+						<i class="fa fa-close"></i>
+					</button>
+				</div>
+			</span>
+		</span>
+	</nav>
+
+	<br/>
+
+	<!-- Paging controls -->
+	<!--
+	<div>
+		<div class="btn-toolbar">
+			<div class="btn-group">
+				<a class="btn btn-default"><i class="fa fa-backward"></i>&nbsp;&nbsp;First</a>
+			</div>
+			<div class="btn-group">
+				<a class="btn btn-default"><i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous</a>
+			</div>
+	
+			<div class="btn-group">
+				<a class="btn btn-default">1</a>
+				<a class="btn btn-default">2</a>
+				<a class="btn btn-default">3</a>
+				<a class="btn btn-default">4</a>
+				<a class="btn btn-default">5</a>
+			</div>
+
+			<div class="btn-group pull-right">
+				<a class="btn btn-default">Last&nbsp;&nbsp;<i class="fa fa-forward"></i></a>
+			</div>
+			<div class="btn-group pull-right">
+				<a class="btn btn-default">Next&nbsp;&nbsp;<i class="fa fa-play"></i></a>
+			</div>
+			<div class="pull-right">
+				<h5>Items 50 - 80 (10423 total)</h5>
+			</div>
+		</div>
+	</div>
+
+	<br/>
+	-->
+
 	<div class="panel panel-default">
 		<!--
 		<div class="panel-heading">
