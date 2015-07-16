@@ -56,10 +56,10 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.assemblies</groupId>
-                  <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>jmxconfiggenerator</artifactId>
                   <type>jar</type>
-                  <classifier>signed-jar-with-dependencies</classifier>
+                  <classifier>onejar</classifier>
                   <destFileName>opennms_jmx_config_generator.jar</destFileName>
                 </artifactItem>
               </artifactItems>

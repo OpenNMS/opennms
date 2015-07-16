@@ -43,6 +43,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -65,9 +66,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
-    
     private static final Logger LOG = LoggerFactory.getLogger(LatencyStoringServiceMonitorAdaptor.class);
-    
+
     /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
     public static final String DEFAULT_BASENAME = "response-time";
 
@@ -75,6 +75,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
     private PollerConfig m_pollerConfig;
     private Package m_pkg;
     private final RrdStrategy<?, ?> m_rrdStrategy;
+    private final ResourceStorageDao m_resourceStorageDao;
 
     private LatencyThresholdingSet m_thresholdingSet;
 
@@ -85,11 +86,12 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
      * @param config a {@link org.opennms.netmgt.config.PollerConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
-    public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg, RrdStrategy<?, ?> rrdStrategy) {
+    public LatencyStoringServiceMonitorAdaptor(ServiceMonitor monitor, PollerConfig config, Package pkg, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
         m_serviceMonitor = monitor;
         m_pollerConfig = config;
         m_pkg = pkg;
         m_rrdStrategy = rrdStrategy;
+        m_resourceStorageDao = resourceStorageDao;
     }
 
     /** {@inheritDoc} */
@@ -157,7 +159,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             if (m_thresholdingSet == null) {
                 RrdRepository repository = new RrdRepository();
                 repository.setRrdBaseDir(new File(rrdPath));
-                m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository);
+                m_thresholdingSet = new LatencyThresholdingSet(service.getNodeId(), service.getIpAddr(), service.getSvcName(), repository, m_resourceStorageDao);
             }
             LinkedHashMap<String, Double> attributes = new LinkedHashMap<String, Double>();
             for (String ds : entries.keySet()) {

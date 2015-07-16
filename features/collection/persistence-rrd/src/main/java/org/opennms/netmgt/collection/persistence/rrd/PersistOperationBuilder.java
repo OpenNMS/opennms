@@ -108,7 +108,9 @@ public class PersistOperationBuilder {
     }
 
     private File getResourceDir(ResourceIdentifier resource) throws FileNotFoundException {
-        return resource.getResourceDir(getRepository());
+        return getRepository().getRrdBaseDir().toPath()
+                .resolve(resource.getPath())
+                .toFile();
     }
 
     /**

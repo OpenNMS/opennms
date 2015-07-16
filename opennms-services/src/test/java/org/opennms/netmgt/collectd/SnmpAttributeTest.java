@@ -52,6 +52,7 @@ import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -77,6 +78,8 @@ public class SnmpAttributeTest extends TestCase {
     // that uses generics
     @SuppressWarnings("unchecked")
     private RrdStrategy<Object, Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
+
+    private ResourceStorageDao m_resourceStorageDao = m_mocks.createMock(ResourceStorageDao.class);
 
     @Override
     protected void setUp() throws Exception {
@@ -175,7 +178,7 @@ public class SnmpAttributeTest extends TestCase {
         RrdRepository repository = createRrdRepository();
         repository.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:2016"));
 
-        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository, m_rrdStrategy);
+        final BasePersister persister = new BasePersister(new ServiceParameters(new HashMap<String, Object>()), repository, m_rrdStrategy, m_resourceStorageDao);
         persister.createBuilder(nodeInfo, "baz", attributeType);
         
         final AtomicInteger count = new AtomicInteger(0);

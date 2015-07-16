@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -178,6 +179,9 @@ public class Collectd extends AbstractServiceDaemon implements
     @Autowired
     private RrdStrategy<?, ?> m_rrdStrategy;
 
+    @Autowired
+    private ResourceStorageDao m_resourceStorageDao;
+
     /**
      * Constructor.
      */
@@ -198,8 +202,7 @@ public class Collectd extends AbstractServiceDaemon implements
         Assert.notNull(m_ifaceDao, "ifaceDao must not be null");
         Assert.notNull(m_nodeDao, "nodeDao must not be null");
         Assert.notNull(m_filterDao, "filterDao must not be null");
-        
-        
+
         LOG.debug("init: Initializing collection daemon");
         
         // make sure the instrumentation gets initialized
@@ -511,7 +514,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     getScheduler(),
                     m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager(),
-                    m_rrdStrategy
+                    m_rrdStrategy,
+                    m_resourceStorageDao
                 );
 
                 // Add new collectable service to the collectable service list.

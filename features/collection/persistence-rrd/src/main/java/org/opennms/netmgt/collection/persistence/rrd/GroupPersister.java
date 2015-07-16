@@ -27,14 +27,14 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.collection.persistence.rrd;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -47,15 +47,17 @@ import org.opennms.netmgt.rrd.RrdStrategy;
  */
 public class GroupPersister extends BasePersister {
 
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * <p>Constructor for GroupPersister.</p>
      *
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public GroupPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy) {
-        super(params, repository, rrdStrategy);
-
+    public GroupPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
+        super(params, repository, rrdStrategy, resourceStorageDao);
+        m_resourceStorageDao = resourceStorageDao;
     }
 
     /** {@inheritDoc} */
@@ -70,14 +72,11 @@ public class GroupPersister extends BasePersister {
                     dsNamesToRrdNames.put(a.getName(), group.getName());
                 }
             }
-            
+
             createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
-            try {
-                File path = group.getResource().getResourceDir(getRepository());
-                ResourceTypeUtils.updateDsProperties(path, dsNamesToRrdNames);
-            } catch (FileNotFoundException e) {
-                LOG.warn("Could not update datasource properties: " + e.getMessage(), e);
-            }
+
+            ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(getRepository(), group.getResource().getPath());
+            m_resourceStorageDao.updateMetricToResourceMappings(path, dsNamesToRrdNames);
         }
     }
 
@@ -89,6 +88,4 @@ public class GroupPersister extends BasePersister {
         }
         popShouldPersist();
     }
-
-
 }

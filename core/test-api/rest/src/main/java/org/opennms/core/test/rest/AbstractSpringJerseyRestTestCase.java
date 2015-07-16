@@ -91,12 +91,15 @@ import org.springframework.web.context.WebApplicationContext;
 public abstract class AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestTestCase.class);
 
-    private static final String DEFAULT_CXF_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml";
+    public static final String CXF_REST_V1_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml";
+    public static final String CXF_REST_V2_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml";
 
     public static String GET = "GET";
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
+    
+    private static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
@@ -116,7 +119,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     private Filter filter;
 
     public AbstractSpringJerseyRestTestCase() {
-        this(DEFAULT_CXF_CONTEXT_PATH);
+        this(CXF_REST_V1_CONTEXT_PATH);
     }
 
     public AbstractSpringJerseyRestTestCase(String cxfContextPath) {
@@ -422,7 +425,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                     string.append(",");
                 }
                 final String name = i.next();
-                string.append("name=").append(response.getHeader(name));
+                string.append(name).append("=").append(response.getHeader(name));
             }
             string.append("]").append("]");
         } catch (UnsupportedEncodingException e) {
@@ -551,17 +554,21 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected void createNode() throws Exception {
-        String node = "<node type=\"A\" label=\"TestMachine\">" +
+        createNode(303);
+    }
+
+    protected void createNode(int statusCode) throws Exception {
+        String node = "<node type=\"A\" label=\"TestMachine" + nodeCounter + "\">" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
                 "<sysDescription>" +
                 "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
                 "</sysDescription>" +
                 "<sysLocation>DevJam</sysLocation>" +
-                "<sysName>TestMachine</sysName>" +
+                "<sysName>TestMachine" + nodeCounter + "</sysName>" +
                 "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
                 "</node>";
-        sendPost("/nodes", node, 303, "/nodes/1");
+        sendPost("/nodes", node, statusCode, "/nodes/" + nodeCounter++);
     }
 
     protected void createIpInterface() throws Exception {

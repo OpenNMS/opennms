@@ -29,19 +29,22 @@
 package org.opennms.netmgt.collectd.tca;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
 import org.jrobin.core.Robin;
 import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -60,6 +63,7 @@ import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -101,14 +105,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TcaCollectorIT implements InitializingBean {
 
+    @Rule
+    public TemporaryFolder m_tempFolder = new TemporaryFolder();
+
 	/** The Constant TEST_NODE_IP. */
 	public final static String TEST_NODE_IP = "127.0.0.1"; 
 
 	/** The Constant TEST_NODE_LABEL. */
 	public final static String TEST_NODE_LABEL = "TestNode"; 
-	
-	/** The Constant TEST_SNMP_DIR. */
-	public final static String TEST_SNMP_DIR = "target/snmp";
 
 	/** The collection agent. */
 	private SnmpCollectionAgent m_collectionAgent;
@@ -135,6 +139,9 @@ public class TcaCollectorIT implements InitializingBean {
 	@Autowired
 	private RrdStrategy<?, ?> m_rrdStrategy;
 
+	@Autowired
+	private FilesystemResourceStorageDao m_resourceStorageDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -149,7 +156,8 @@ public class TcaCollectorIT implements InitializingBean {
 	public void setUp() throws Exception {
 		MockLogAppender.setupLogging();
 
-		FileUtils.deleteDirectory(new File(TEST_SNMP_DIR));
+		m_tempFolder.newFolder("snmp");
+		m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
 
 		OnmsIpInterface iface = null;
 		OnmsNode testNode = null;
@@ -191,7 +199,7 @@ public class TcaCollectorIT implements InitializingBean {
 		tcadc.setRrd(rrd);
 		TcaDataCollectionConfig tcadcc = new TcaDataCollectionConfig();
 		tcadcc.addDataCollection(tcadc);
-		tcadcc.setRrdRepository(TEST_SNMP_DIR);
+		tcadcc.setRrdRepository(getSnmpRoot().getAbsolutePath());
 		EasyMock.expect(m_configDao.getConfig()).andReturn(tcadcc).atLeastOnce();
 		EasyMock.replay(m_configDao);
 	}
@@ -220,9 +228,10 @@ public class TcaCollectorIT implements InitializingBean {
 		// Create Collection Set
 		TcaCollector collector = new TcaCollector();
 		collector.setConfigDao(m_configDao);
+		collector.setResourceStorageDao(m_resourceStorageDao);
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
-		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), m_rrdStrategy);
+		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), m_rrdStrategy, m_resourceStorageDao);
 
 		// Setup SNMP Value Handling
 		SnmpValueFactory valFac = SnmpUtils.getValueFactory();
@@ -262,7 +271,9 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		RrdDb jrb = new RrdDb(TEST_SNMP_DIR + "/1/" + TcaCollectionResource.RESOURCE_TYPE_NAME + "/171.19.37.60/" + TcaCollectionSet.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension());
+		Path pathToJrbFile = getSnmpRoot().toPath().resolve(Paths.get("1", TcaCollectionResource.RESOURCE_TYPE_NAME,
+		        "171.19.37.60", TcaCollectionSet.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension()));
+		RrdDb jrb = new RrdDb(pathToJrbFile.toString());
 
 		// According with the Fixed Step
 		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());
@@ -292,4 +303,8 @@ public class TcaCollectorIT implements InitializingBean {
 		Assert.assertEquals(50, tcaCollection.getCollectionResources().size());
 	}
 
+	public File getSnmpRoot() {
+	    return new File(m_tempFolder.getRoot(), "snmp");
+	}
 }
+

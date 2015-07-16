@@ -56,6 +56,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -120,6 +121,8 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
 	private RrdStrategy<?, ?> m_rrdStrategy;
 
+    private FilesystemResourceStorageDao m_resourceStorageDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -137,6 +140,10 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(TEST_HOST_ADDRESS));
 
         m_rrdStrategy = new JRobinRrdStrategy();
+
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+        m_resourceStorageDao.setRrdDirectory(snmpRrdDirectory.getParentFile());
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;
@@ -214,7 +221,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
@@ -228,7 +235,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
@@ -238,7 +245,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
 		SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(1234567));
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +39,9 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * <p>Abstract SnmpCollectionResource class.</p>
@@ -101,10 +97,6 @@ public abstract class SnmpCollectionResource implements CollectionResource {
     public String getOwnerName() {
         return getCollectionAgent().getHostAddress();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public abstract File getResourceDir(RrdRepository repository) throws FileNotFoundException;
 
     /**
      * Returns ifType; is (but not sure if it should be) -1 for non interface type collections, otherwise

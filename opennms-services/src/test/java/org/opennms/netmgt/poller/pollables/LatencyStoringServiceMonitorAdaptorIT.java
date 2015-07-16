@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -112,6 +113,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Autowired
     private ApplicationContext m_context;
 
+    @Autowired
+    private ResourceStorageDao m_resourceStorageDao;
+
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
         m_db = database;
@@ -150,7 +154,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         NumberFormat nf = NumberFormat.getInstance();
         Assert.assertEquals("ensure that the newly set default locale (" + Locale.getDefault() + ") uses ',' as the decimal marker", "1,5", nf.format(1.5));
         
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package(), m_rrdStrategy);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(null, m_pollerConfig, new Package(), m_rrdStrategy, m_resourceStorageDao);
         LinkedHashMap<String, Number> map = new LinkedHashMap<String, Number>();
         map.put("cheese", 1.5);
         
@@ -274,7 +278,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         m_db.populate(network);
         
         m_mocks.replayAll();
-        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_rrdStrategy);
+        LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_rrdStrategy, m_resourceStorageDao);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         adaptor.poll(svc, parameters);

@@ -80,10 +80,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
-    public void save(final OnmsNode node) {
-        if (node == null) return;
-        super.save(node);
+    public Integer save(final OnmsNode node) {
+        if (node == null) return null;
+        Integer retval = super.save(node);
         updateSubObjects(node);
+        return retval;
     }
 
     @Override

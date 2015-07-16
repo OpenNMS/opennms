@@ -15,6 +15,11 @@ New Features
 Dependency Updates
 ------------------
 
+CLI changes
+------------------
+ * opennms-assemblies/jmx-config-generator-onejar does not exist anymore. The onejar is now located in features/jmx-config-generator.
+ 
+
 Internal Updates
 ----------------
 

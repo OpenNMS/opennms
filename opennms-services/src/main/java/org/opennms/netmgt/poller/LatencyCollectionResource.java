@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * <p>LatencyCollectionResource class.</p>
@@ -138,10 +138,9 @@ public class LatencyCollectionResource implements CollectionResource {
         return m_ipAddress;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public File getResourceDir(RrdRepository repository) {
-        return new File(repository.getRrdBaseDir(), m_ipAddress);
+    public Path getPath() {
+        return Paths.get(m_ipAddress);
     }
 
     /** {@inheritDoc} */
@@ -159,5 +158,6 @@ public class LatencyCollectionResource implements CollectionResource {
     public TimeKeeper getTimeKeeper() {
         return null;
     }
+
 
 }

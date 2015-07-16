@@ -48,10 +48,11 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.dao.support.RrdResourceAttributeUtils;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -77,6 +78,7 @@ public class BasePersisterTest {
     private IpInterfaceDao m_ifDao;
     private ServiceParameters m_serviceParams;
     private RrdStrategy<?, ?> m_rrdStrategy;
+    private FilesystemResourceStorageDao m_resourceStorageDao;
 
     /* erg, Rule fields must be public */
     @Rule public TestName m_testName = new TestName();
@@ -89,6 +91,8 @@ public class BasePersisterTest {
         m_fileAnticipator = new FileAnticipator();
 
         m_rrdStrategy = new JRobinRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
 
         m_intf = new OnmsIpInterface();
         m_node = new OnmsNode();
@@ -120,34 +124,34 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.tempFile(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "#just a test");
+        m_fileAnticipator.tempFile(nodeDir, RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "#just a test");
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
     }
-    
+
     @Test
     public void testPersistStringAttributeWithParentDirectory() throws Exception {
         initPersister();
         
         File nodeDir = m_fileAnticipator.tempDir(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
+        m_fileAnticipator.expecting(nodeDir, RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
     }
-    
+
     @Test
     public void testPersistStringAttributeWithNoParentDirectory() throws Exception {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
+        m_fileAnticipator.expecting(nodeDir, RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
         m_persister.persistStringAttribute(attribute);
     }
-    
+
     /**
      * Test for bug #1817 where a string attribute will get persisted to
      * both strings.properties and an RRD file if it is a numeric value.
@@ -157,7 +161,7 @@ public class BasePersisterTest {
         initPersister();
         
         File nodeDir = m_fileAnticipator.expecting(getSnmpRrdDirectory(), m_node.getId().toString());
-        m_fileAnticipator.expecting(nodeDir, ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME);
+        m_fileAnticipator.expecting(nodeDir, RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME);
         
         CollectionAttribute attribute = buildStringAttribute();
 
@@ -211,7 +215,7 @@ public class BasePersisterTest {
     }
 
     private void initPersister() throws IOException {
-        m_persister = new BasePersister(m_serviceParams, createRrdRepository(), m_rrdStrategy);
+        m_persister = new BasePersister(m_serviceParams, createRrdRepository(), m_rrdStrategy, m_resourceStorageDao);
     }
 
     private RrdRepository createRrdRepository() throws IOException {
