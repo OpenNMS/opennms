@@ -116,7 +116,7 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
         LOG.debug("creating new JmsTemplate with connection to "
-                + m_jmsNorthbounderConnectionFactory);
+                + m_jmsDestination.getJmsDestination());
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
         if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {
             m_template.setPubSubDomain(true);
