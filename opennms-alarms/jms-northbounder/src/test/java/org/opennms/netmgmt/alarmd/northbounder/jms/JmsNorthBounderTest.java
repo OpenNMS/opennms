@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,8 +50,8 @@ import org.opennms.netmgt.alarmd.northbounder.jms.JmsDestination;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -68,12 +68,20 @@ import org.springframework.test.context.ContextConfiguration;
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/test-context.xml")
+@ContextConfiguration(locations = { 
+        "classpath:/test-context.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
 public class JmsNorthBounderTest {
+    private static final String NODE_LABEL = "schlazor";
+    private static final int NODE_ID = 777;
     private JmsTemplate m_template;
     
     @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
+    
+    @Autowired
+    private MockNodeDao m_nodeDao;
     
     @Before
     public void startBroker() throws InterruptedException {
@@ -116,7 +124,7 @@ public class JmsNorthBounderTest {
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
                                                       syslogDestination);
-            nbi.setNodeDao(new TestNodeDao());
+            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }
@@ -124,10 +132,10 @@ public class JmsNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
 
-        OnmsNode node = new OnmsNode(TestNodeDao.NODE_LABEL);
+        OnmsNode node = new OnmsNode(NODE_LABEL);
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
-        node.setId(TestNodeDao.NODE_ID);
+        node.setId(NODE_ID);
 
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
@@ -143,7 +151,7 @@ public class JmsNorthBounderTest {
         onmsIf.setSnmpInterface(snmpInterface);
         onmsIf.setId(1);
         onmsIf.setIfIndex(1);
-        onmsIf.setIpHostName(TestNodeDao.NODE_LABEL);
+        onmsIf.setIpHostName(NODE_LABEL);
         onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
 
         ipInterfaces.add(onmsIf);
@@ -203,7 +211,7 @@ public class JmsNorthBounderTest {
         for (String message : messages) {
             Assert.assertTrue("ALARM ID:" +(i+1), message.contains("ALARM ID:" + (i+1) + " "));
             Assert.assertTrue(message.contains("NODE:"
-                    + TestNodeDao.NODE_LABEL));
+                    + NODE_LABEL));
             i++;
         }
     }
