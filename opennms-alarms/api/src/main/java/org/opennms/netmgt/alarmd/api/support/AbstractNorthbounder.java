@@ -175,7 +175,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
             }
 
         } catch (InterruptedException e) {
-            // thread interrupted so complete it
+            LOG.warn("Thread '{}' was interrupted unexpected.", getName());
         }
 
     }
@@ -249,7 +249,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         } catch (Exception e) {
             LOG.info("Exception caught setting X733 Cause: {}",
                      alarm.getX733Cause(), e);
-            mapping.put("x733ProbableCause", "");
+            mapping.put("x733ProbableCause", nullSafeToString(x733ProbableCause.other, ""));
         }
 
         buildParmMappings(alarm, mapping);

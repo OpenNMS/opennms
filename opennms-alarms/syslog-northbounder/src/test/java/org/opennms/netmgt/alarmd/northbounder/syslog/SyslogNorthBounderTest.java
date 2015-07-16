@@ -43,20 +43,25 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.productivity.java.syslog4j.server.SyslogServer;
 import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
 import org.productivity.java.syslog4j.server.SyslogServerEventHandlerIF;
 import org.productivity.java.syslog4j.server.SyslogServerIF;
 import org.productivity.java.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
 import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,20 +71,25 @@ import org.springframework.test.context.ContextConfiguration;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-//@RunWith(OpenNMSJUnit4ClassRunner.class)
-// context not used but we this annotation is mandatory
-@ContextConfiguration(locations = "classpath:/test-context.xml")
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/test-context.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
+})
+@JUnitConfigurationEnvironment
 // TODO:Would be great to do something like the following annotation...
 // @JUnitSyslogServer(port=8514)
 public class SyslogNorthBounderTest {
     
-
-    private static final int TEST_NODE_ID = 777;
     private static final String SERVER_HOST = "127.0.0.1";
     public static final int MESSAGE_LENGTH = 1024;
     private static final int SERVER_PORT = 8514;
     private static final String SERVER_PROTOCOL = "UDP";
     private static final String FACILITY = "LOCAL0";
+
+    @Autowired
+    private MockNodeDao m_nodeDao;
 
     public SyslogServerIF m_server;
     public TestPrintStream m_logStream;
@@ -162,7 +172,7 @@ public class SyslogNorthBounderTest {
     @After
     public void stopServer() throws InterruptedException {
         m_server.shutdown();
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     
@@ -190,7 +200,7 @@ public class SyslogNorthBounderTest {
         
         for (SyslogDestination syslogDestination : destinations) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
-            nbi.setNodeDao(new TestNodeDao());
+            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }
@@ -201,7 +211,7 @@ public class SyslogNorthBounderTest {
         OnmsNode node = new OnmsNode("p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
-        node.setId(TEST_NODE_ID);
+        node.setId(m_nodeDao.getNextNodeId());
         
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
@@ -222,7 +232,8 @@ public class SyslogNorthBounderTest {
         ipInterfaces.add(onmsIf);
         
         node.setIpInterfaces(ipInterfaces);
-
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
         for (SyslogNorthbounder nbi : nbis) {
 
             for (int i = 1; i <=j; ++i) {

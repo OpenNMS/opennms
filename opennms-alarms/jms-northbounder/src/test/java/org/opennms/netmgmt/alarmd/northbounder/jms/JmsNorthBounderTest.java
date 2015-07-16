@@ -56,6 +56,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -70,11 +71,12 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { 
         "classpath:/test-context.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
+@JUnitConfigurationEnvironment
 public class JmsNorthBounderTest {
     private static final String NODE_LABEL = "schlazor";
-    private static final int NODE_ID = 777;
     private JmsTemplate m_template;
     
     @Autowired
@@ -119,11 +121,11 @@ public class JmsNorthBounderTest {
 
         List<JmsNorthbounder> nbis = new LinkedList<JmsNorthbounder>();
 
-        for (JmsDestination syslogDestination : destinations) {
+        for (JmsDestination jmsDestination : destinations) {
             JmsNorthbounder nbi = new JmsNorthbounder(
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
-                                                      syslogDestination);
+                                                      jmsDestination);
             nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
@@ -135,7 +137,7 @@ public class JmsNorthBounderTest {
         OnmsNode node = new OnmsNode(NODE_LABEL);
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
-        node.setId(NODE_ID);
+        node.setId(m_nodeDao.getNextNodeId());
 
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
@@ -157,13 +159,15 @@ public class JmsNorthBounderTest {
         ipInterfaces.add(onmsIf);
 
         node.setIpInterfaces(ipInterfaces);
+        m_nodeDao.save(node);
+        m_nodeDao.flush();
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
 
             for (int i = 1; i <= j; ++i) {
                 OnmsAlarm onmsAlarm = new OnmsAlarm();
                 onmsAlarm.setId(i);
-                onmsAlarm.setUei("uei.opennms.org/test/syslogNorthBounder");
+                onmsAlarm.setUei("uei.opennms.org/test/jmsNorthBounder");
                 onmsAlarm.setNode(node);
                 onmsAlarm.setSeverityId(i);
                 onmsAlarm.setIpAddr(InetAddress.getByName("127.0.0.1"));
