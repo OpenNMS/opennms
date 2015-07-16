@@ -45,7 +45,7 @@
 		</div>
 		<span ng-hide="searchClauses.length == 0">
 			<span ng-repeat="clause in searchClauses">
-				<div class="btn-group">
+				<div class="btn-group" style="margin-left: 6px;">
 					<!-- TODO: Make the filter captions pretty -->
 					<button class="btn btn-primary navbar-btn" style="margin:8px 0px;" ng-click="removeSearchClause(clause)">
 						{{clause.property}}
@@ -100,7 +100,7 @@
 			</div>
 
 			<div class="btn-group pull-right">
-				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(Number.POSITIVE_INFINITY)">
+				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 					Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 				</a>
 			</div>
@@ -114,10 +114,10 @@
 				<h5>Item{{offset === lastOffset ? " " + (offset + 1) : "s " + (offset + 1) + " - " + (lastOffset + 1)}} ({{maxOffset + 1}} total)</h5>
 			</div>
 			<div class="pull-right">
-				<form class="form-inline" ng-submit="setLimit(mylimit)">
+				<form class="form-inline" ng-submit="setLimit(newLimit)">
 					<div class="input-group">
 						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
-						<input class="form-control" type="number" ng-model="mylimit"/>
+						<input class="form-control" type="number" ng-model="newLimit"/>
 					</div>
 					&nbsp;
 					&nbsp;

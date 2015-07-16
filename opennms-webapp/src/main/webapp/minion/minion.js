@@ -93,7 +93,7 @@
 		$scope.searchClauses = new Array();
 
 		$scope.limit = 20;
-		$scope.mylimit = 20;
+		$scope.newLimit = 20;
 		$scope.offset = 0;
 
 		$scope.lastOffset = 0;
@@ -116,18 +116,18 @@
 				$log.debug($scope.minions);
 
 				var contentRange = parseContentRange(headers("Content-Range"));
-				$scope.offset = contentRange.start;
 				$scope.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
 				$scope.maxOffset = contentRange.total - 1;
+				$scope.setOffset(contentRange.start);
 			},
 			function(response) {
 				// If we didn't find any elements, then clear the list
 				if (response.status == 404) {
 					$scope.minions = new Array();
-					$scope.offset = 0;
 					$scope.lastOffset = 0;
 					$scope.maxOffset = 0;
+					$scope.setOffset(0);
 				}
 				// TODO: Handle 500 Server Error by executing an undo callback?
 				// TODO: Handle session timeout by reloading page completely
@@ -150,18 +150,18 @@
 					$log.debug($scope.minions);
 
 					var contentRange = parseContentRange(headers("Content-Range"));
-					$scope.offset = contentRange.start;
 					$scope.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
 					$scope.maxOffset = contentRange.total - 1;
+					$scope.setOffset(contentRange.start);
 				},
 				function(response) {
 					// If we didn't find any elements, then clear the list
 					if (response.status == 404) {
 						$scope.minions = new Array();
-						$scope.offset = 0;
 						$scope.lastOffset = 0;
 						$scope.maxOffset = 0;
+						$scope.setOffset(0);
 					}
 					// TODO: Handle 500 Server Error by executing an undo callback?
 					// TODO: Handle session timeout by reloading page completely
@@ -238,9 +238,12 @@
 		}
 
 		$scope.setOffset = function(offset) {
+			// Offset of the last page
+			var lastPageOffset = Math.floor($scope.maxOffset / $scope.limit) * $scope.limit; 
+
 			// Bounds checking
-			offset = (offset < 0 ? 0 : offset);
-			offset = (offset > $scope.maxOffset ? $scope.maxOffset : offset);
+			offset = ((offset < 0) ? 0 : offset);
+			offset = ((offset > lastPageOffset) ? lastPageOffset : offset);
 
 			if ($scope.offset !== offset) {
 				$scope.offset = offset;
@@ -250,7 +253,7 @@
 
 		$scope.setLimit = function(limit) {
 			if (limit < 1) {
-				$scope.mylimit = $scope.limit;
+				$scope.newLimit = $scope.limit;
 				// TODO: Throw a validation error
 				return;
 			}
