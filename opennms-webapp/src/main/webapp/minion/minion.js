@@ -46,6 +46,16 @@
 		return fiql;
 	}
 
+	function parseContentRange(contentRange) {
+		// Example: items 0-14/28
+		var pattern = /items\s+?(\d+)\s*\-\s*(\d+)\s*\/\s*(\d+)/;
+		return {
+			start: Number(contentRange.replace(pattern, '$1')),
+			end: Number(contentRange.replace(pattern, '$2')),
+			total: Number(contentRange.replace(pattern, '$3'))
+		};
+	}
+
 	// Minion module
 	angular.module('minion', [ 'ngResource' ])
 
@@ -57,7 +67,7 @@
 					method: 'GET',
 					isArray: true,
 					// Append a transformation that will unwrap the minion array
-					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers) {
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
 						// Always return the data as an array
 						return angular.isArray(data.minion) ? data.minion : [ data.minion ];
 					})
@@ -81,8 +91,14 @@
 		// Blank out all of the query parameters
 		$scope.searchParam = '';
 		$scope.searchClauses = new Array();
-		$scope.limit = '';
-		$scope.offset = '';
+
+		$scope.limit = 20;
+		$scope.mylimit = 20;
+		$scope.offset = 0;
+
+		$scope.lastOffset = 0;
+		$scope.maxOffset = 0;
+
 		$scope.orderBy = 'label';
 		$scope.order = 'asc';
 
@@ -98,6 +114,23 @@
 			function(value, headers) {
 				$scope.minions = value;
 				$log.debug($scope.minions);
+
+				var contentRange = parseContentRange(headers("Content-Range"));
+				$scope.offset = contentRange.start;
+				$scope.lastOffset = contentRange.end;
+				// Subtract 1 from the value since offsets are zero-based
+				$scope.maxOffset = contentRange.total - 1;
+			},
+			function(response) {
+				// If we didn't find any elements, then clear the list
+				if (response.status == 404) {
+					$scope.minions = new Array();
+					$scope.offset = 0;
+					$scope.lastOffset = 0;
+					$scope.maxOffset = 0;
+				}
+				// TODO: Handle 500 Server Error by executing an undo callback?
+				// TODO: Handle session timeout by reloading page completely
 			}
 		);
 
@@ -115,11 +148,20 @@
 				function(value, headers) {
 					$scope.minions = value;
 					$log.debug($scope.minions);
+
+					var contentRange = parseContentRange(headers("Content-Range"));
+					$scope.offset = contentRange.start;
+					$scope.lastOffset = contentRange.end;
+					// Subtract 1 from the value since offsets are zero-based
+					$scope.maxOffset = contentRange.total - 1;
 				},
 				function(response) {
 					// If we didn't find any elements, then clear the list
 					if (response.status == 404) {
 						$scope.minions = new Array();
+						$scope.offset = 0;
+						$scope.lastOffset = 0;
+						$scope.maxOffset = 0;
 					}
 					// TODO: Handle 500 Server Error by executing an undo callback?
 					// TODO: Handle session timeout by reloading page completely
@@ -193,6 +235,30 @@
 				$scope.order = 'asc';
 			}
 			$scope.refresh();
+		}
+
+		$scope.setOffset = function(offset) {
+			// Bounds checking
+			offset = (offset < 0 ? 0 : offset);
+			offset = (offset > $scope.maxOffset ? $scope.maxOffset : offset);
+
+			if ($scope.offset !== offset) {
+				$scope.offset = offset;
+				$scope.refresh();
+			}
+		}
+
+		$scope.setLimit = function(limit) {
+			if (limit < 1) {
+				$scope.mylimit = $scope.limit;
+				// TODO: Throw a validation error
+				return;
+			}
+			if ($scope.limit !== limit) {
+				$scope.limit = limit;
+				$scope.offset = Math.floor($scope.offset / limit) * limit;
+				$scope.refresh();
+			}
 		}
 
 		// Save a minion by using $resource.$update

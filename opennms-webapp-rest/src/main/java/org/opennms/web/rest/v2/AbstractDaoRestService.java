@@ -148,12 +148,15 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 			crit.setLimit(null);
 			crit.setOffset(null);
 			crit.setOrders(new ArrayList<Order>());
+			int totalCount = getDao().countMatching(crit);
 
 			JaxbListWrapper<T> list = createListWrapper(coll);
-			list.setTotalCount(getDao().countMatching(crit));
+			list.setTotalCount(totalCount);
 			list.setOffset(offset);
 
-			return Response.ok(list).build();
+			// Make sure that offset is set to a numeric value when setting the Content-Range header
+			offset = (offset == null ? 0 : offset);
+			return Response.ok(list).header("Content-Range", String.format("items %d-%d/%d", offset, offset + coll.size() - 1, totalCount)).build();
 		}
 	}
 
@@ -317,6 +320,8 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		}
 
 		if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
+			builder.clearOrder();
+
 			builder.orderBy(params.getFirst("orderBy").trim());
 			params.remove("orderBy");
 

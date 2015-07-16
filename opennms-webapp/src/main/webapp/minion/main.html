@@ -62,38 +62,71 @@
 	<br/>
 
 	<!-- Paging controls -->
-	<!--
 	<div>
 		<div class="btn-toolbar">
 			<div class="btn-group">
-				<a class="btn btn-default"><i class="fa fa-backward"></i>&nbsp;&nbsp;First</a>
+				<a class="btn btn-default {{(offset-limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
+				</a>
 			</div>
 			<div class="btn-group">
-				<a class="btn btn-default"><i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous</a>
+				<a class="btn btn-default {{(offset-limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(offset-limit)">
+					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
+				</a>
 			</div>
-	
+
 			<div class="btn-group">
-				<a class="btn btn-default">1</a>
-				<a class="btn btn-default">2</a>
-				<a class="btn btn-default">3</a>
-				<a class="btn btn-default">4</a>
-				<a class="btn btn-default">5</a>
+				<a class="btn btn-default" ng-click="setOffset(offset-(3*limit))" ng-hide="(offset-(3*limit)) &lt; 0" style="width:4em;">
+					{{(offset/limit) - 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(offset-(2*limit))" ng-hide="(offset-(2*limit)) &lt; 0" style="width:4em;">
+					{{(offset/limit) - 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(offset-limit)" ng-hide="(offset-limit) &lt; 0" style="width:4em;">
+					{{offset/limit}}
+				</a>
+				<a class="btn btn-default active" ng-show="maxOffset &gt; 0" style="width:4em;">
+					{{(offset/limit) + 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(offset+limit)" ng-hide="(offset+limit) &gt; maxOffset" style="width:4em;">
+					{{(offset/limit) + 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(offset+(2*limit))" ng-hide="offset+(2*limit) &gt; maxOffset" style="width:4em;">
+					{{(offset/limit) + 3}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(offset+(3*limit))" ng-hide="offset+(3*limit) &gt; maxOffset" style="width:4em;">
+					{{(offset/limit) + 4}}
+				</a>
 			</div>
 
 			<div class="btn-group pull-right">
-				<a class="btn btn-default">Last&nbsp;&nbsp;<i class="fa fa-forward"></i></a>
+				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(Number.POSITIVE_INFINITY)">
+					Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+				</a>
 			</div>
 			<div class="btn-group pull-right">
-				<a class="btn btn-default">Next&nbsp;&nbsp;<i class="fa fa-play"></i></a>
+				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(offset + limit)">
+					Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+				</a>
 			</div>
 			<div class="pull-right">
-				<h5>Items 50 - 80 (10423 total)</h5>
+				<!-- Add 1 to each offset since they are zero-based -->
+				<h5>Item{{offset === lastOffset ? " " + (offset + 1) : "s " + (offset + 1) + " - " + (lastOffset + 1)}} ({{maxOffset + 1}} total)</h5>
+			</div>
+			<div class="pull-right">
+				<form class="form-inline" ng-submit="setLimit(mylimit)">
+					<div class="input-group">
+						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+						<input class="form-control" type="number" ng-model="mylimit"/>
+					</div>
+					&nbsp;
+					&nbsp;
+				</form>
 			</div>
 		</div>
 	</div>
 
 	<br/>
-	-->
 
 	<div class="panel panel-default">
 		<!--
