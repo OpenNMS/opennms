@@ -73,7 +73,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
                 new String[] { "Configure Notifications", "//h3[text()='Configure Notifications']" },
                 new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
                 new String[] { "Customize Event Configurations", "//div[@id='content']//iframe" },
-                new String[] { "Manage SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
+                new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
                 new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
                 new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
                 new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
