@@ -1,0 +1,48 @@
+{
+    "graphs_per_line": 2, 
+    "id": 14, 
+    "label": "2 per line", 
+    "m_graphs": [
+        {
+            "KscRestService$KscGraph": {
+                "domain": null, 
+                "extlink": null, 
+                "graphtype": "netsnmp.cpuUsageFull", 
+                "interfaceId": null, 
+                "nodeId": null, 
+                "nodeSource": null, 
+                "resourceId": "node[46].nodeSnmp[]", 
+                "timespan": "8_hour", 
+                "title": "data base servers cpu"
+            }
+        }, 
+        {
+            "KscRestService$KscGraph": {
+                "domain": null, 
+                "extlink": null, 
+                "graphtype": "netsnmp.cpuUsageFull", 
+                "interfaceId": null, 
+                "nodeId": null, 
+                "nodeSource": null, 
+                "resourceId": "node[29].nodeSnmp[]", 
+                "timespan": "7_day", 
+                "title": ""
+            }
+        }, 
+        {
+            "KscRestService$KscGraph": {
+                "domain": null, 
+                "extlink": null, 
+                "graphtype": "strafeping", 
+                "interfaceId": null, 
+                "nodeId": null, 
+                "nodeSource": null, 
+                "resourceId": "node[55].responseTime[24.93.73.62]", 
+                "timespan": "7_day", 
+                "title": ""
+            }
+        }
+    ], 
+    "show_graphtype_button": false, 
+    "show_timespan_button": false
+}

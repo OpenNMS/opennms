@@ -370,7 +370,7 @@ public class DatabasePopulator {
         getDataLinkInterfaceDao().flush();
         
         final OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        ack.setAckTime(new Date());
+        ack.setAckTime(new Date(1437073152156L));
         ack.setAckType(AckType.UNSPECIFIED);
         ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("admin");
@@ -546,13 +546,20 @@ public class DatabasePopulator {
     public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
+        event.setEventCreateTime(new Date(1437061537126L));
+        event.setEventDescr("This is the description of a test event.");
         event.setEventDisplay("Y");
+        event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
+        event.setEventLog("Y");
+        event.setEventLogMsg("Test Event Log Message");
+        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventSeverity(1);
+        event.setEventSource("test");
+        event.setEventTime(new Date(1437061537105L));
+        event.setEventUei("uei.opennms.org/test");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event.setNode(m_node1);
+        event.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return event;
     }
 
@@ -581,6 +588,8 @@ public class DatabasePopulator {
     }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
+        // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
@@ -593,6 +602,8 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setEventParms(event.getEventParms());
+        alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }
 

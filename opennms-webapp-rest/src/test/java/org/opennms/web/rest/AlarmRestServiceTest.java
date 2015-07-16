@@ -30,11 +30,12 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathDoesNotMatch;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
+import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +43,10 @@ import java.util.Map;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -58,7 +63,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.api.Authentication;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
@@ -113,6 +121,21 @@ public class AlarmRestServiceTest extends AbstractSpringJerseyRestTestCase {
         xml = sendRequest(GET, "/alarms/1", parseParamData("orderBy=lastEventTime&order=desc&alarmAckUser=null&limit=1"), 200);
         assertTrue(xml.contains("This is a test alarm"));
         assertTrue(xml.contains("<nodeLabel>node1</nodeLabel>"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmsJson() throws Exception {
+        String url = "/alarms";
+
+        // GET all items
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url, "admin", Arrays.asList(new String[]{ Authentication.ROLE_ADMIN }));
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/alarms.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test

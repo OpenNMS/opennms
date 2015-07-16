@@ -1,0 +1,67 @@
+{
+    "count": 1, 
+    "outage": [
+        {
+            "id": 288788, 
+            "ifLostService": 1436881548292, 
+            "ifRegainedService": 1436883714498, 
+            "ipAddress": "172.20.1.29", 
+            "monitoredService": {
+                "applications": [], 
+                "down": true, 
+                "lastFail": null, 
+                "lastGood": null, 
+                "notify": null, 
+                "qualifier": null, 
+                "serviceType": {
+                    "id": 17, 
+                    "name": "SSH"
+                }, 
+                "source": null, 
+                "status": "A", 
+                "statusLong": "Managed"
+            }, 
+            "nodeId": 73, 
+            "serviceId": 17, 
+            "serviceLostEvent": {
+                "createTime": 1436881548338, 
+                "description": "<p>All interfaces on node stan.internal.opennms.com are\n      down.</p> <p>This event is generated when node\n      outage processing determines that all interfaces on the node\n      are down.</p> <p>New outage records have been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1884532, 
+                "ifIndex": null, 
+                "log": "Y", 
+                "logMessage": "Node stan.internal.opennms.com is down. ", 
+                "nodeId": 73, 
+                "nodeLabel": "stan.internal.opennms.com", 
+                "parms": "nodelabel=stan.internal.opennms.com(string,text)", 
+                "serviceType": null, 
+                "severity": "MAJOR", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1436881548292, 
+                "uei": "uei.opennms.org/nodes/nodeDown"
+            }, 
+            "serviceRegainedEvent": {
+                "createTime": 1436883714548, 
+                "description": "<p>Node stan.internal.opennms.com which was previously down is\n      now up.</p> <p>This event is generated when node\n      outage processing determines that all interfaces on the node\n      are up.</p> <p>This event will cause any active\n      outages associated with this node to be cleared.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1884545, 
+                "ifIndex": null, 
+                "log": "Y", 
+                "logMessage": "Node stan.internal.opennms.com is up.", 
+                "nodeId": 73, 
+                "nodeLabel": "stan.internal.opennms.com", 
+                "parms": "nodelabel=stan.internal.opennms.com(string,text)", 
+                "serviceType": null, 
+                "severity": "NORMAL", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1436883714498, 
+                "uei": "uei.opennms.org/nodes/nodeUp"
+            }, 
+            "suppressTime": null, 
+            "suppressedBy": null
+        }
+    ], 
+    "totalCount": 59328
+}

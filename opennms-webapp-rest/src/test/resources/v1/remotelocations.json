@@ -1,0 +1,116 @@
+{
+    "count": 11, 
+    "locations": [
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "42.363143,-71.0072436", 
+            "geolocation": "BOS", 
+            "name": "MA", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "35.71736,-79.161814", 
+            "geolocation": "220 Chatham Business Drive, Pittsboro, NC 27312", 
+            "name": "NC", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "33.639975,-84.444032", 
+            "geolocation": "ATL", 
+            "name": "GA", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "39.9611755,-82.9987942", 
+            "geolocation": "Columbus, OH", 
+            "name": "OH", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "44.881234,-93.203111", 
+            "geolocation": "MSP", 
+            "name": "MN", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "39.6402638,-106.3741955", 
+            "geolocation": "Vail, CO", 
+            "name": "CO", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "33.9434916,-118.4089705", 
+            "geolocation": "LAX", 
+            "name": "CA", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "32.8961644,-97.0427084", 
+            "geolocation": "DFW", 
+            "name": "TX", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "25.7889689,-80.2264393", 
+            "geolocation": "MIA", 
+            "name": "FL", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "48.311389,-114.255", 
+            "geolocation": "FCA", 
+            "name": "MT", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "USA", 
+            "collectionPackageName": null, 
+            "coordinates": "33.4483771,-112.0740373", 
+            "geolocation": "PHX", 
+            "name": "AZ", 
+            "pollingPackageName": "usa", 
+            "priority": 100, 
+            "tags": []
+        }
+    ], 
+    "totalCount": 11
+}

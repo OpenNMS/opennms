@@ -1,0 +1,15 @@
+{
+    "count": 1, 
+    "monitored-service": [
+        {
+            "ipAddress": "172.20.1.32", 
+            "isDown": false, 
+            "isMonitored": true, 
+            "node": "kevin.internal.opennms.com", 
+            "serviceName": "SSH", 
+            "status": "Managed", 
+            "statusCode": "A"
+        }
+    ], 
+    "totalCount": 321
+}

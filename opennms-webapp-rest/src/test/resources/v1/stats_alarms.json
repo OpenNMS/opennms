@@ -1,0 +1,249 @@
+{
+    "acknowledgedCount": 8, 
+    "newestAcked": [
+        {
+            "ackId": 280353, 
+            "ackTime": 1428662461706, 
+            "ackUser": "demo", 
+            "count": 4881, 
+            "description": "<p>A DNS outage was identified on interface\n      2001:0470:e2f1:0000:0000:0000:0000:000a.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>", 
+            "firstAutomationTime": 1428662443775, 
+            "firstEventTime": 1428662316187, 
+            "id": 280353, 
+            "ifIndex": null, 
+            "ipAddress": "2001:0470:e2f1:0000:0000:0000:0000:000a", 
+            "lastAutomationTime": 1437063567015, 
+            "lastEvent": {
+                "createTime": 1437063476267, 
+                "description": "<p>A DNS outage was identified on interface\n      2001:0470:e2f1:0000:0000:0000:0000:000a.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1886875, 
+                "ifIndex": null, 
+                "ipAddress": "2001:0470:e2f1:0000:0000:0000:0000:000a", 
+                "log": "Y", 
+                "logMessage": "DNS outage identified on interface 2001:0470:e2f1:0000:0000:0000:0000:000a with reason code: Never received valid DNS response for address: 2001:0470:e2f1:0000:0000:0000:0000:000a.", 
+                "nodeId": 9, 
+                "nodeLabel": "cartman.internal.opennms.com", 
+                "parms": "eventReason=Never received valid DNS response for address: 2001:0470:e2f1:0000:0000:0000:0000:000a(string,text)", 
+                "serviceType": {
+                    "id": 12, 
+                    "name": "DNS"
+                }, 
+                "severity": "MINOR", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1437063476232, 
+                "uei": "uei.opennms.org/nodes/nodeLostService"
+            }, 
+            "lastEventTime": 1437063476232, 
+            "logMessage": "DNS outage identified on interface 2001:0470:e2f1:0000:0000:0000:0000:000a with reason code: Never received valid DNS response for address: 2001:0470:e2f1:0000:0000:0000:0000:000a.", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 9, 
+            "nodeLabel": "cartman.internal.opennms.com", 
+            "ossPrimaryKey": null, 
+            "parms": "eventReason=Never received valid DNS response for address: 2001:0470:e2f1:0000:0000:0000:0000:000a(string,text)", 
+            "qosAlarmState": null, 
+            "reductionKey": "uei.opennms.org/nodes/nodeLostService::9:2001:0470:e2f1:0000:0000:0000:0000:000a:DNS", 
+            "reductionKeyMemo": {
+                "author": "demo", 
+                "body": "journal memo", 
+                "created": 1365023846934, 
+                "id": 30, 
+                "reductionKey": "uei.opennms.org/nodes/nodeLostService::9:2001:0470:e2f1:0000:0000:0000:0000:000a:DNS", 
+                "updated": 1378730194742
+            }, 
+            "serviceType": {
+                "id": 12, 
+                "name": "DNS"
+            }, 
+            "severity": "CLEARED", 
+            "suppressedTime": 1428662316187, 
+            "suppressedUntil": 1428662316187, 
+            "type": 1, 
+            "uei": "uei.opennms.org/nodes/nodeLostService", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "newestUnacked": [
+        {
+            "ackId": 290072, 
+            "clearKey": "uei.opennms.org/nodes/nodeLostService::9:2001:0470:e2f1:0000:0000:0000:0000:000a:DNS", 
+            "count": 1, 
+            "description": "<p>The DNS service on interface 2001:0470:e2f1:0000:0000:0000:0000:000a was\n      previously down and has been restored.</p>\n      <p>This event is generated when a service which had\n      previously failed polling attempts is again responding to\n      polls by OpenNMS. </p> <p>This event will cause\n      any active outages associated with this service/interface\n      combination to be cleared.</p>", 
+            "firstEventTime": 1437063561327, 
+            "id": 290072, 
+            "ifIndex": null, 
+            "ipAddress": "2001:0470:e2f1:0000:0000:0000:0000:000a", 
+            "lastEvent": {
+                "createTime": 1437063561356, 
+                "description": "<p>The DNS service on interface 2001:0470:e2f1:0000:0000:0000:0000:000a was\n      previously down and has been restored.</p>\n      <p>This event is generated when a service which had\n      previously failed polling attempts is again responding to\n      polls by OpenNMS. </p> <p>This event will cause\n      any active outages associated with this service/interface\n      combination to be cleared.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1886877, 
+                "ifIndex": null, 
+                "ipAddress": "2001:0470:e2f1:0000:0000:0000:0000:000a", 
+                "log": "Y", 
+                "logMessage": "The DNS outage on interface 2001:0470:e2f1:0000:0000:0000:0000:000a has been\n      cleared. Service is restored.", 
+                "nodeId": 9, 
+                "nodeLabel": "cartman.internal.opennms.com", 
+                "serviceType": {
+                    "id": 12, 
+                    "name": "DNS"
+                }, 
+                "severity": "NORMAL", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1437063561327, 
+                "uei": "uei.opennms.org/nodes/nodeRegainedService"
+            }, 
+            "lastEventTime": 1437063561327, 
+            "logMessage": "The DNS outage on interface 2001:0470:e2f1:0000:0000:0000:0000:000a has been\n      cleared. Service is restored.", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 9, 
+            "nodeLabel": "cartman.internal.opennms.com", 
+            "ossPrimaryKey": null, 
+            "qosAlarmState": null, 
+            "reductionKey": "uei.opennms.org/nodes/nodeRegainedService::9:2001:0470:e2f1:0000:0000:0000:0000:000a:DNS", 
+            "serviceType": {
+                "id": 12, 
+                "name": "DNS"
+            }, 
+            "severity": "NORMAL", 
+            "suppressedTime": 1437063561327, 
+            "suppressedUntil": 1437063561327, 
+            "type": 2, 
+            "uei": "uei.opennms.org/nodes/nodeRegainedService", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "oldestAcked": [
+        {
+            "ackId": 261867, 
+            "ackTime": 1428301981731, 
+            "ackUser": "demo", 
+            "clearKey": "uei.opennms.org/nodes/nodeLostService::9:2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c:DNS", 
+            "count": 11424, 
+            "description": "<p>The DNS service on interface 2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c was\n      previously down and has been restored.</p>\n      <p>This event is generated when a service which had\n      previously failed polling attempts is again responding to\n      polls by OpenNMS. </p> <p>This event will cause\n      any active outages associated with this service/interface\n      combination to be cleared.</p>", 
+            "firstEventTime": 1416895551000, 
+            "id": 261867, 
+            "ifIndex": null, 
+            "ipAddress": "2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c", 
+            "lastEvent": {
+                "createTime": 1437062696777, 
+                "description": "<p>The DNS service on interface 2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c was\n      previously down and has been restored.</p>\n      <p>This event is generated when a service which had\n      previously failed polling attempts is again responding to\n      polls by OpenNMS. </p> <p>This event will cause\n      any active outages associated with this service/interface\n      combination to be cleared.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1886873, 
+                "ifIndex": null, 
+                "ipAddress": "2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c", 
+                "log": "Y", 
+                "logMessage": "The DNS outage on interface 2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c has been\n      cleared. Service is restored.", 
+                "nodeId": 9, 
+                "nodeLabel": "cartman.internal.opennms.com", 
+                "serviceType": {
+                    "id": 12, 
+                    "name": "DNS"
+                }, 
+                "severity": "NORMAL", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1437062696750, 
+                "uei": "uei.opennms.org/nodes/nodeRegainedService"
+            }, 
+            "lastEventTime": 1437062696750, 
+            "logMessage": "The DNS outage on interface 2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c has been\n      cleared. Service is restored.", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 9, 
+            "nodeLabel": "cartman.internal.opennms.com", 
+            "ossPrimaryKey": null, 
+            "qosAlarmState": null, 
+            "reductionKey": "uei.opennms.org/nodes/nodeRegainedService::9:2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c:DNS", 
+            "reductionKeyMemo": {
+                "author": "demo", 
+                "body": "What is a journal memo", 
+                "created": 1431614623881, 
+                "id": 148, 
+                "reductionKey": "uei.opennms.org/nodes/nodeRegainedService::9:2001:0470:e2f1:0000:02d0:b7ff:fe25:3e1c:DNS", 
+                "updated": 1431614623881
+            }, 
+            "serviceType": {
+                "id": 12, 
+                "name": "DNS"
+            }, 
+            "severity": "MAJOR", 
+            "stickyMemo": {
+                "author": "demo", 
+                "body": "What is a sticky memo", 
+                "created": 1420604075771, 
+                "id": 131, 
+                "updated": 1431614607218
+            }, 
+            "suppressedTime": 1416895551000, 
+            "suppressedUntil": 1416895551000, 
+            "type": 2, 
+            "uei": "uei.opennms.org/nodes/nodeRegainedService", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "oldestUnacked": [
+        {
+            "ackId": 289853, 
+            "count": 1, 
+            "description": "<p>A Update outage was identified on interface\n      66.135.60.215.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>", 
+            "firstEventTime": 1436908235348, 
+            "id": 289853, 
+            "ifIndex": null, 
+            "ipAddress": "66.135.60.215", 
+            "lastEvent": {
+                "createTime": 1436908235394, 
+                "description": "<p>A Update outage was identified on interface\n      66.135.60.215.</p> <p>A new Outage record has been\n      created and service level availability calculations will be\n      impacted until this outage is resolved.</p>", 
+                "display": "Y", 
+                "host": "mephesto.internal.opennms.com", 
+                "id": 1884829, 
+                "ifIndex": null, 
+                "ipAddress": "66.135.60.215", 
+                "log": "Y", 
+                "logMessage": "Update outage identified on interface 66.135.60.215 with reason code: Number operator used on a non-number empty String.", 
+                "nodeId": 31, 
+                "nodeLabel": "connect.opennms.com", 
+                "parms": "eventReason=Number operator used on a non-number empty String(string,text)", 
+                "serviceType": {
+                    "id": 29, 
+                    "name": "Update"
+                }, 
+                "severity": "MINOR", 
+                "source": "OpenNMS.Poller.DefaultPollContext", 
+                "time": 1436908235348, 
+                "uei": "uei.opennms.org/nodes/nodeLostService"
+            }, 
+            "lastEventTime": 1436908235348, 
+            "logMessage": "Update outage identified on interface 66.135.60.215 with reason code: Number operator used on a non-number empty String.", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 31, 
+            "nodeLabel": "connect.opennms.com", 
+            "ossPrimaryKey": null, 
+            "parms": "eventReason=Number operator used on a non-number empty String(string,text)", 
+            "qosAlarmState": null, 
+            "reductionKey": "uei.opennms.org/nodes/nodeLostService::31:66.135.60.215:Update", 
+            "serviceType": {
+                "id": 29, 
+                "name": "Update"
+            }, 
+            "severity": "MINOR", 
+            "suppressedTime": 1436908235348, 
+            "suppressedUntil": 1436908235348, 
+            "type": 1, 
+            "uei": "uei.opennms.org/nodes/nodeLostService", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "severity": null, 
+    "totalCount": 17, 
+    "unacknowledgedCount": 9
+}
