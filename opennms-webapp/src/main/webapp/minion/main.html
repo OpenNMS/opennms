@@ -99,30 +99,29 @@
 				</a>
 			</div>
 
-			<div class="btn-group pull-right">
-				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
-					Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
-				</a>
-			</div>
-			<div class="btn-group pull-right">
-				<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(offset + limit)">
-					Next&nbsp;&nbsp;<i class="fa fa-play"></i>
-				</a>
-			</div>
 			<div class="pull-right">
 				<!-- Add 1 to each offset since they are zero-based -->
-				<h5>Item{{offset === lastOffset ? " " + (offset + 1) : "s " + (offset + 1) + " - " + (lastOffset + 1)}} ({{maxOffset + 1}} total)</h5>
-			</div>
-			<div class="pull-right">
 				<form class="form-inline" ng-submit="setLimit(newLimit)">
-					<div class="input-group">
+					<div class="input-group" style="margin-left:10px;">
 						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
 						<input class="form-control" type="number" ng-model="newLimit"/>
 					</div>
-					&nbsp;
-					&nbsp;
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(offset + limit)">
+							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+						</a>
+					</div>
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+						</a>
+					</div>
 				</form>
 			</div>
+
+			<h5 class="pull-right">{{offset === lastOffset ? "Item " + (offset + 1) : "Items " + (offset + 1) + " - " + (lastOffset + 1)}} ({{maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 
