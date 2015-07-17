@@ -33,11 +33,14 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
 import java.io.StringReader;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXB;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -48,6 +51,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -108,7 +113,21 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertEquals(initialSize, categories.size());
         assertFalse(xml.contains("name=\"testCategory\""));
     }
-    
+
+    @Test
+    public void testCategoriesJson() throws Exception {
+        String url = "/categories";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/categories.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
+    }
+
     @Test
     public void testAddCategory() throws Exception {
         // add with description

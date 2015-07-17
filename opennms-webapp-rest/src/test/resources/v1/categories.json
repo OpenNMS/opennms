@@ -29,18 +29,8 @@
             "authorizedGroups": [], 
             "id": 6, 
             "name": "Development"
-        }, 
-        {
-            "authorizedGroups": [], 
-            "id": 7, 
-            "name": "Smoker"
-        }, 
-        {
-            "authorizedGroups": [], 
-            "id": 8, 
-            "name": "Remove"
-        }
+        } 
     ], 
-    "count": 8, 
-    "totalCount": 8
+    "count": 6, 
+    "totalCount": 6
 }
