@@ -26,10 +26,10 @@
                 "hdd4": null, 
                 "hdd5": null, 
                 "hdd6": null, 
-                "id": 73467, 
+                "id": 1, 
                 "inputpower": null, 
                 "lastModifiedBy": "", 
-                "lastModifiedDate": 1425950215565, 
+                "lastModifiedDate": 1316862766421, 
                 "lease": null, 
                 "leaseExpires": null, 
                 "maintContractExpiration": null, 
@@ -68,20 +68,20 @@
                 "vmwareTopologyInfo": null
             }, 
             "categories": [], 
-            "createTime": 1425950215565, 
+            "createTime": 1316862766421, 
             "foreignId": null, 
             "foreignSource": null, 
-            "id": "71", 
-            "label": "accounts.internal.opennms.com", 
+            "id": "1", 
+            "label": "TestMachine0", 
             "labelSource": "H", 
-            "lastCapsdPoll": 1435793360871, 
-            "sysContact": "Tarus Balog <tarus@opennms.com>", 
-            "sysDescription": "Hardware: Intel64 Family 6 Model 55 Stepping 8 AT/AT COMPATIBLE - Software: Windows Version 6.3 (Build 9600 Multiprocessor Free)", 
-            "sysLocation": "Tina's Desk, The OpenNMS Group, Inc. 220 Chatham Business Dr., Pittsboro, NC, 27312, USA, North America, Earth", 
-            "sysName": "Accounts", 
-            "sysObjectId": ".1.3.6.1.4.1.311.1.1.3.1.1", 
+            "lastCapsdPoll": 1316862766421, 
+            "sysContact": "The Owner", 
+            "sysDescription": "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386", 
+            "sysLocation": "DevJam", 
+            "sysName": "TestMachine0", 
+            "sysObjectId": ".1.3.6.1.4.1.8072.3.2.255", 
             "type": "A"
         }
     ], 
-    "totalCount": 55
+    "totalCount": 1
 }

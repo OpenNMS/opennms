@@ -34,6 +34,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
+import java.io.FileInputStream;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -45,9 +46,13 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -62,6 +67,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -191,6 +197,21 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         jo = ja.getJSONObject(0);
         assertEquals("A", jo.getString("type"));
         assertEquals("TestMachine0", jo.getString("label"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAnotherNodeJson() throws Exception {
+        createSnmpInterface();
+
+        final MockHttpServletRequest req = createRequest(getServletContext(), GET, "/nodes");
+        req.addHeader("Accept", MediaType.APPLICATION_JSON);
+        req.addParameter("limit", "0");
+        String json = sendRequest(req, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/nodes.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test
@@ -532,8 +553,17 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         "<sysLocation>DevJam</sysLocation>" +
         "<sysName>TestMachine" + m_nodeCounter + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+        // Add some constant values for these timestamps
+        "<createTime>2011-09-24T07:12:46.421-04:00</createTime>" +
+        "<lastCapsdPoll>2011-09-24T07:12:46.421-04:00</lastCapsdPoll>" +
         "</node>";
-        sendPost("/nodes", node, 303, null);
+
+        HttpServletResponse response = sendPost("/nodes", node, 303, null);
+
+        // Set the asset record's lastModifiedDate to a constant value as well
+        String newNodeLocation = response.getHeader("Location");
+        String nodeId = newNodeLocation.substring(newNodeLocation.lastIndexOf("/"));
+        sendPut("/nodes" + nodeId + "/assetRecord", "lastModifiedDate=2011-09-24T07:12:46.421-04:00", 303, null);
     }
 
     @Override
