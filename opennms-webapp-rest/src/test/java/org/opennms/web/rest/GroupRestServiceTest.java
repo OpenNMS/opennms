@@ -33,11 +33,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
 import java.io.StringReader;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXB;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -45,14 +49,16 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGroupList;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -97,7 +103,31 @@ public class GroupRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains(">Admin<"));
         sendRequest(GET, "/groups/idontexist", 404);
     }
-    
+
+    @Test
+    public void testGroupsJson() throws Exception {
+        String url = "/groups";
+
+        // GET all groups
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/groups.json")));
+        JSONAssert.assertNotEquals(expectedObject, restObject, true);
+
+        // Update the comment value
+        sendPut("/groups/Admin", "comments=The administrators", 303, "/groups/Admin");
+
+        // Now they should be equal
+        jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        json = sendRequest(jsonRequest, 200);
+        restObject = new JSONObject(json);
+        expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/groups.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
+    }
+
     @Test
     public void testWriteGroup() throws Exception {
         createGroup("test");

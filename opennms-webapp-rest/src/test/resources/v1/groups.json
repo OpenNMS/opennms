@@ -1,29 +1,13 @@
 {
-    "count": 3, 
+    "count": 1, 
     "group": [
         {
             "comments": "The administrators", 
             "name": "Admin", 
             "user": [
-                "admin", 
-                "david"
+                "admin"
             ]
-        }, 
-        {
-            "comments": "", 
-            "name": "Networking", 
-            "user": [
-                "af", 
-                "david"
-            ]
-        }, 
-        {
-            "comments": "Users with access for submitting remote poller management data.", 
-            "name": "Remoting Users", 
-            "user": [
-                "remoting"
-            ]
-        }
+        } 
     ], 
-    "totalCount": 3
+    "totalCount": 1
 }
