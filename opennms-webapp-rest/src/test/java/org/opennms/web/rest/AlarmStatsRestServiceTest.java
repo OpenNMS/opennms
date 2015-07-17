@@ -32,12 +32,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.test.xml.XmlTest.assertXpathMatches;
 
+import java.io.FileInputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -53,8 +58,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,6 +124,31 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         assertTrue(xml.contains(" totalCount=\"6\""));
         assertTrue(xml.contains(" unacknowledgedCount=\"3\""));
         assertTrue(xml.contains(" acknowledgedCount=\"3\""));
+    }
+
+    /**
+     * TODO: Doesn't test firstAutomationTime, lastAutomationTime, reductionKey,
+     * reductionKeyMemo, suppressedTime, suppressedUntil, clearKey, or stickyMemo
+     * fields.
+     */
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAlarmStatsJson() throws Exception {
+        createAlarm(OnmsSeverity.CLEARED, "admin");
+        createAlarm(OnmsSeverity.MAJOR, "admin");
+        createAlarm(OnmsSeverity.CRITICAL, "admin");
+        createAlarm(OnmsSeverity.CRITICAL, null);
+        createAlarm(OnmsSeverity.MINOR, null);
+        createAlarm(OnmsSeverity.NORMAL, null);
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, "/stats/alarms");
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/stats_alarms.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test
@@ -203,15 +235,17 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         alarm.setAlarmType(1);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
+        alarm.setEventParms(event.getEventParms());
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setServiceType(event.getServiceType());
         
         if (ackUser != null) {
-            alarm.setAlarmAckTime(new Date());
+            alarm.setAlarmAckTime(new Date(1282329200000L));
             alarm.setAlarmAckUser(ackUser);
         }
         
@@ -241,9 +275,12 @@ public class AlarmStatsRestServiceTest extends AbstractSpringJerseyRestTestCase 
         event.setEventLog("Y");
         event.setEventHost("es-with-the-most-es");
         event.setEventLogMsg("Test event " + count + " (log)");
+        event.setEventParms("test=parm(string,text)");
         event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AlarmStatsRestServiceTest");
+        event.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
         event.setNode(m_databasePopulator.getNode1());
+        event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
 
         getEventDao().save(event);
         getEventDao().flush();
