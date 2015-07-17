@@ -30,6 +30,12 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
+
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -38,11 +44,12 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -62,19 +69,35 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @JUnitTemporaryDatabase
 @Transactional
 public class NotificationRestServiceTest extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
     private DatabasePopulator m_databasePopulator;
 
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-        m_databasePopulator = context.getBean("databasePopulator", DatabasePopulator.class);
         m_databasePopulator.populateDatabase();
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testNotifications() throws Exception {
         String xml = sendRequest(GET, "/notifications", 200);
         assertTrue(xml.contains("This is a test notification"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNotificationsJson() throws Exception {
+        String url = "/notifications";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/notifications.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }
