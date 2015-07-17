@@ -32,12 +32,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -46,6 +50,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -94,6 +100,20 @@ public class KscRestServiceTest extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml, xml.contains("label=\"Test\""));
 
         sendRequest(GET, "/ksc/3", 404);
+    }
+
+    @Test
+    public void testKscJson() throws Exception {
+        String url = "/ksc/0";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/ksc.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test
