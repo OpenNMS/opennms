@@ -17,6 +17,6 @@
 // include::text/myFile.adoc[]
 
 // Administration related Webinterface
-= OpenNMS Concepts
+== OpenNMS Concepts
 
 // EOF
