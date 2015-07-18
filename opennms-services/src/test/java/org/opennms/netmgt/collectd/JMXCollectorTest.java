@@ -43,6 +43,8 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,6 +172,7 @@ public class JMXCollectorTest {
     public void setUp() throws Exception {
         jmxNodeInfo = new JMXNodeInfo(0);
         jmxCollector = new JMXCollectorImpl();
+        ((JMXCollectorImpl)jmxCollector).setJmxConfigDao(new JmxConfigDaoJaxb());
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         ObjectName objectName = new ObjectName("org.opennms.netmgt.collectd.jmxhelper:type=JmxTest");
         JmxTestMBean testMBean = new JmxTest();
@@ -308,6 +311,10 @@ public class JMXCollectorTest {
         @Override
         protected String getConnectionName() {
             return JmxConnectors.PLATFORM;
+        }
+
+        protected void setJmxConfigDao(JmxConfigDao jmxConfigDao) {
+            this.m_jmxConfigDao = jmxConfigDao;
         }
     }
 }

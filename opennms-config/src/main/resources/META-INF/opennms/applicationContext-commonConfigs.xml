@@ -89,11 +89,7 @@
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
   
-   <bean id="discoveryConfig-factory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" depends-on="discoveryConfig-factory-init" factory-method="getInstance"/>
+  <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />
   

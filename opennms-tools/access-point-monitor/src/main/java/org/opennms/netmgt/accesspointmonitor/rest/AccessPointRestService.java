@@ -123,7 +123,7 @@ public class AccessPointRestService {
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
-    public OnmsAccessPointCollection getAccessPoints(@Context UriInfo uriInfo) {
+    public OnmsAccessPointCollection getAccessPoints(@Context final UriInfo uriInfo) {
         readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsAccessPoint.class);

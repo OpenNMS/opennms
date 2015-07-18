@@ -62,7 +62,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private ApplicationInfo m_application;
 
-    private Map<Integer,GWTLocationMonitor> m_monitors = new HashMap<Integer,GWTLocationMonitor>();
+    private Map<String,GWTLocationMonitor> m_monitors = new HashMap<String,GWTLocationMonitor>();
 
     private Map<Integer,GWTMonitoredService> m_services = new HashMap<Integer,GWTMonitoredService>();
 
@@ -74,7 +74,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
     private StatusDetails m_statusDetails;
 
-    private Map<Integer, Map<Integer, List<GWTServiceOutage>>> m_outages;
+    private Map<Integer, Map<String, List<GWTServiceOutage>>> m_outages;
 
     /**
      * <p>Constructor for ApplicationDetails.</p>
@@ -115,25 +115,25 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         }
     }
 
-    private Map<Integer, Map<Integer, List<GWTServiceOutage>>> getOutages() {
+    private Map<Integer, Map<String, List<GWTServiceOutage>>> getOutages() {
         if (m_outages == null) {
             m_outages = getOutagesUncached();
         }
         return m_outages;
     }
 
-    private Map<Integer, Map<Integer, List<GWTServiceOutage>>> getOutagesUncached() {
+    private Map<Integer, Map<String, List<GWTServiceOutage>>> getOutagesUncached() {
         // service id -> location id -> outages
-        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = new HashMap<Integer, Map<Integer, List<GWTServiceOutage>>>();
+        final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = new HashMap<Integer, Map<String, List<GWTServiceOutage>>>();
         if (getLocationSpecificStatuses() == null) {
             return outages;
         }
 
         for (final GWTLocationSpecificStatus status : getLocationSpecificStatuses()) {
             final Integer serviceId = status.getMonitoredService().getId();
-            final Integer monitorId = status.getLocationMonitor().getId();
+            final String monitorId = status.getLocationMonitor().getId();
             GWTServiceOutage lastOutage = null;
-            Map<Integer, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
+            Map<String, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
             if (serviceOutages != null) {
                 List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
                 if (monitorOutages != null && monitorOutages.size() > 0) {
@@ -162,7 +162,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
                     lastOutage.setFrom(status.getPollResult().getTimestamp());
 
                     if (serviceOutages == null) {
-                        serviceOutages = new HashMap<Integer, List<GWTServiceOutage>>();
+                        serviceOutages = new HashMap<String, List<GWTServiceOutage>>();
                         outages.put(serviceId, serviceOutages);
                     }
                     List<GWTServiceOutage> monitorOutages = serviceOutages.get(monitorId);
@@ -176,7 +176,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         }
 
         for (final Integer serviceId : outages.keySet()) {
-            for (final Integer monitorId : outages.get(serviceId).keySet()) {
+            for (final String monitorId : outages.get(serviceId).keySet()) {
                 for (GWTServiceOutage outage : outages.get(serviceId).get(monitorId)) {
                     if (outage.getFrom() == null) {
                         outage.setFrom(getStartTime());
@@ -229,7 +229,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         }
 
         // service id -> location id -> outages
-        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
+        final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = getOutages();
 
         Set<Interval> serviceOutageIntervals = IntervalUtils.getIntervalSet();
 
@@ -253,12 +253,12 @@ public class ApplicationDetails implements Serializable, IsSerializable {
     }
 
     private Set<Interval> getServiceOutageIntervals(final Integer serviceId) {
-        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
+        final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = getOutages();
         final Set<Interval> serviceUpIntervals = IntervalUtils.getIntervalSet();
-        final Map<Integer, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
+        final Map<String, List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
         if (serviceOutages != null && serviceOutages.size() != 0) {
             for (final GWTLocationMonitor monitor : getMonitors().values()) {
-                final Integer locationId = monitor.getId();
+                final String locationId = monitor.getId();
                 Set<Interval> locationIntervals = IntervalUtils.getIntervalSet();
                 if (serviceOutages.containsKey(locationId)) {
                     for (final GWTServiceOutage outage : serviceOutages.get(locationId)) {
@@ -299,7 +299,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
      */
     public String getDetailsAsString() {
         // service id -> location id -> outages
-        final Map<Integer, Map<Integer, List<GWTServiceOutage>>> outages = getOutages();
+        final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = getOutages();
 
         StringBuilder sb = new StringBuilder();
         sb.append("<div id=\"applicationDetails\">\n");
@@ -329,9 +329,9 @@ public class ApplicationDetails implements Serializable, IsSerializable {
 
             if (serviceAvailability == 100.0) {
                 styleName = Status.UP.getStyle();
-                Map<Integer,List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
+                Map<String,List<GWTServiceOutage>> serviceOutages = outages.get(serviceId);
                 if (serviceOutages != null) {
-                    for (final Integer locationId : serviceOutages.keySet()) {
+                    for (final String locationId : serviceOutages.keySet()) {
                         final List<GWTServiceOutage> locationOutages = serviceOutages.get(locationId);
                         if (locationOutages != null) {
                             for (final GWTServiceOutage outage : locationOutages) {
@@ -393,7 +393,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
     /**
      * @return the monitors
      */
-    private Map<Integer,GWTLocationMonitor> getMonitors() {
+    private Map<String, GWTLocationMonitor> getMonitors() {
         return m_monitors;
     }
 

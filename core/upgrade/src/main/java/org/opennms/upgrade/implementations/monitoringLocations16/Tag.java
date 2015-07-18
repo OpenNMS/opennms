@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.monitoringLocations;
+package org.opennms.upgrade.implementations.monitoringLocations16;
 
 import java.io.Serializable;
 

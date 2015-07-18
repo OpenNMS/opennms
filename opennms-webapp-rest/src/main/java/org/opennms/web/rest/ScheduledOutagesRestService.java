@@ -58,10 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * <p>ScheduledOutagesRestService class.</p>
@@ -92,8 +89,6 @@ import com.sun.jersey.spi.resource.PerRequest;
  * @author Alejandro Galue <agalue@opennms.org>
  */
 @Component("scheduledOutagesRestService")
-@PerRequest
-@Scope("prototype")
 @Path("sched-outages")
 public class ScheduledOutagesRestService extends OnmsRestService {
 	
@@ -115,33 +110,23 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outages getOutages() {
-        readLock();
-        try {
-            Outages outages = new Outages();
-            outages.setOutage(m_pollOutagesConfigFactory.getOutages());
-            return outages;
-        } finally {
-            readUnlock();
-        }
+        Outages outages = new Outages();
+        outages.setOutage(m_pollOutagesConfigFactory.getOutages());
+        return outages;
     }
 
     @GET
     @Path("{outageName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
-        readLock();
-        try {
-            Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
-            if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
-            return outage;
-        } finally {
-            readUnlock();
-        }
+        Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
+        if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
+        return outage;
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response saveOrUpdateOutage(@Context UriInfo uriInfo, final Outage newOutage) {
+    public Response saveOrUpdateOutage(@Context final UriInfo uriInfo, final Outage newOutage) {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
@@ -186,7 +171,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/collectd/{packageName}")
-    public Response addOutageToCollector(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToCollector(@Context final UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
@@ -216,7 +201,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/pollerd/{packageName}")
-    public Response addOutageToPoller(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToPoller(@Context final UriInfo uriInfo, @PathParam("outageName") final String outageName, @PathParam("packageName") final String packageName) {
         writeLock();
         try {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
@@ -232,7 +217,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @DELETE
     @Path("{outageName}/pollerd/{packageName}")
-    public Response removeOutageFromPoller(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response removeOutageFromPoller(@PathParam("outageName") final String outageName, @PathParam("packageName") final String packageName) {
         writeLock();
         try {
             updatePollerd(ConfigAction.REMOVE, outageName, packageName);
@@ -247,7 +232,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/threshd/{packageName}")
-    public Response addOutageToThresholder(@Context UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response addOutageToThresholder(@Context final UriInfo uriInfo, @PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
@@ -262,7 +247,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @DELETE
     @Path("{outageName}/threshd/{packageName}")
-    public Response removeOutageFromThresholder(@PathParam("outageName") String outageName, @PathParam("packageName") String packageName) {
+    public Response removeOutageFromThresholder(@PathParam("outageName") final String outageName, @PathParam("packageName") String packageName) {
         writeLock();
         try {
             updateThreshd(ConfigAction.REMOVE, outageName, packageName);
@@ -277,7 +262,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @PUT
     @Path("{outageName}/notifd")
-    public Response addOutageToNotifications(@Context UriInfo uriInfo, @PathParam("outageName") String outageName) {
+    public Response addOutageToNotifications(@Context final UriInfo uriInfo, @PathParam("outageName") String outageName) {
         writeLock();
         try {
             updateNotifd(ConfigAction.ADD, outageName);
@@ -309,66 +294,46 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("{outageName}/nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
-        readLock();
-        try {
-            Outage outage = getOutage(outageName);
-            Boolean inOutage = m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
-            return inOutage.toString();
-        } finally {
-            readUnlock();
-        }
+        Outage outage = getOutage(outageName);
+        Boolean inOutage = m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        return inOutage.toString();
     }
 
     @GET
     @Path("nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
-    public String isNodeInOutage(@PathParam("nodeId") Integer nodeId) {
-        readLock();
-        try {
-            for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-                if (m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
-                    return Boolean.TRUE.toString();
-                }
+    public String isNodeInOutage(@PathParam("nodeId") int nodeId) {
+        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
+            if (m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+                return Boolean.TRUE.toString();
             }
-            return Boolean.FALSE.toString();
-        } finally {
-            readUnlock();
         }
+        return Boolean.FALSE.toString();
     }
 
     @GET
     @Path("{outageName}/interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
-        readLock();
-        try {
-            validateAddress(ipAddr);
-            Outage outage = getOutage(outageName);
-            Boolean inOutage = m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
-            return inOutage.toString();
-        } finally {
-            readUnlock();
-        }
+        validateAddress(ipAddr);
+        Outage outage = getOutage(outageName);
+        Boolean inOutage = m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        return inOutage.toString();
     }
 
     @GET
     @Path("interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
-        readLock();
-        try {
-            for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-                if (m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
-                    return Boolean.TRUE.toString();
-                }
+        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
+            if (m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+                return Boolean.TRUE.toString();
             }
-            return Boolean.FALSE.toString();
-        } finally {
-            readUnlock();
         }
+        return Boolean.FALSE.toString();
     }
 
-    private void validateAddress(String ipAddress) {
+    private static void validateAddress(String ipAddress) {
         boolean valid = false;
         try {
             valid = InetAddressUtils.addr(ipAddress) != null;
@@ -424,7 +389,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         PollerConfigFactory.getInstance().save();
     }
 
-    private org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) throws IllegalArgumentException {
+    private static org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.poller.Package pkg = PollerConfigFactory.getInstance().getPackage(packageName);
         if (pkg == null) throw new IllegalArgumentException("Poller package " + packageName + " does not exist.");
         return pkg;
@@ -449,7 +414,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         ThreshdConfigFactory.getInstance().saveCurrent();
     }
 
-    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) throws IllegalArgumentException {
+    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
         if (pkg == null) throw new IllegalArgumentException("Threshold package " + packageName + " does not exist.");
         return pkg;

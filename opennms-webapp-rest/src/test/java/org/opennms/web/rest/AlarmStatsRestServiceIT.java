@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-        "file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+        "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -204,7 +204,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final OnmsEvent event = createEvent();
         
         final OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setDistPoller(m_distPollerDao.load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setUei(event.getEventUei());
         alarm.setAlarmType(1);
         alarm.setNode(m_databasePopulator.getNode1());

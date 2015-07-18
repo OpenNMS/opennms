@@ -181,14 +181,9 @@
     </service>
     <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
       <parameter key="port" value="18980"/>
-      <parameter key="factory" value="PASSWORD-CLEAR"/>
-      <parameter key="username" value="admin"/>
-      <parameter key="password" value="admin"/>
       <parameter key="retry" value="2"/>
       <parameter key="timeout" value="3000"/>
       <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-      <parameter key="ds-name" value="opennms-jvm"/>
-      <parameter key="friendly-name" value="opennms-jvm"/>
     </service>
     <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2"/>

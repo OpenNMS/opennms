@@ -190,23 +190,23 @@ public class ApplicationTest {
 
         // identical overlaps
         Date date = m_from;
-        statuses.add(getUpStatus(date, "RDU", offset + 1));
-        statuses.add(getUpStatus(date, "RDU", offset + 2));
-        statuses.add(getUpStatus(date, "RDU", offset + 3));
+        statuses.add(getUpStatus(date, "RDU", Integer.toString(offset + 1)));
+        statuses.add(getUpStatus(date, "RDU", Integer.toString(offset + 2)));
+        statuses.add(getUpStatus(date, "RDU", Integer.toString(offset + 3)));
 
         date = new Date(date.getTime() + 1000);
-        statuses.add(getDownStatus(date, "RDU", offset + 1));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 1)));
         date = new Date(date.getTime() + 1000);
-        statuses.add(getDownStatus(date, "RDU", offset + 2));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 2)));
         date = new Date(date.getTime() + 1000);
-        statuses.add(getDownStatus(date, "RDU", offset + 3));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 3)));
 
         date = new Date(date.getTime() + FIVE_MINUTES);
-        statuses.add(getDownStatus(date, "RDU", offset + 1));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 1)));
         date = new Date(date.getTime() + 1000);
-        statuses.add(getDownStatus(date, "RDU", offset + 2));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 2)));
         date = new Date(date.getTime() + 1000);
-        statuses.add(getDownStatus(date, "RDU", offset + 3));
+        statuses.add(getDownStatus(date, "RDU", Integer.toString(offset + 3)));
 
         monitorOffset += offset;
         return statuses;
@@ -222,7 +222,7 @@ public class ApplicationTest {
         List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
         Date date = m_from;
         for (int i = 0; i < 5; i++) {
-            statuses.add(getStatus(date, "RDU", monitorOffset + 1, up(date)));
+            statuses.add(getStatus(date, "RDU", Integer.toString(monitorOffset + 1), up(date)));
             date = new Date(date.getTime() + FIVE_MINUTES);
         }
         monitorOffset += 1;
@@ -239,22 +239,22 @@ public class ApplicationTest {
         List<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
         Date date = m_from;
         for (int i = 0; i < 6; i++) {
-            statuses.add(getStatus(date, "RDU", monitorOffset + 1, up(date)));
-            statuses.add(getStatus(date, "RDU", monitorOffset + 2, down(date, "I'm so high, I have no idea what's going on!")));
+            statuses.add(getStatus(date, "RDU", Integer.toString(monitorOffset + 1), up(date)));
+            statuses.add(getStatus(date, "RDU", Integer.toString(monitorOffset + 2), down(date, "I'm so high, I have no idea what's going on!")));
             date = new Date(date.getTime() + FIVE_MINUTES);
         }
-        statuses.add(getStatus(date, "RDU", monitorOffset + 1, up(date)));
-        statuses.add(getStatus(date, "RDU", monitorOffset + 2, down(date, "Still totally broken.")));
+        statuses.add(getStatus(date, "RDU", Integer.toString(monitorOffset + 1), up(date)));
+        statuses.add(getStatus(date, "RDU", Integer.toString(monitorOffset + 2), down(date, "Still totally broken.")));
 
         monitorOffset += 2;
         return statuses;
     }
 
-    private GWTLocationSpecificStatus getUpStatus(Date date, String monitorName, Integer monitorId) {
+    private GWTLocationSpecificStatus getUpStatus(Date date, String monitorName, String monitorId) {
         return getStatus(date, monitorName, monitorId, up(date));
     }
 
-    private GWTLocationSpecificStatus getDownStatus(Date date, String monitorName, Integer monitorId) {
+    private GWTLocationSpecificStatus getDownStatus(Date date, String monitorName, String monitorId) {
         return getStatus(date, monitorName, monitorId, down(date, "Stuff be broke, yo!"));
     }
 
@@ -279,7 +279,7 @@ public class ApplicationTest {
         return app;
     }
 
-    private GWTLocationSpecificStatus getStatus(Date date, String monitorName, int monitorId, GWTPollResult result) {
+    private GWTLocationSpecificStatus getStatus(Date date, String monitorName, String monitorId, GWTPollResult result) {
         GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
         status.setId(count++);
         status.setLocationMonitor(getLocationMonitor(date, monitorName, monitorId, "STARTED"));
@@ -312,7 +312,7 @@ public class ApplicationTest {
         return service;
     }
 
-    private GWTLocationMonitor getLocationMonitor(Date checkinTime, String name, int id, String status) {
+    private GWTLocationMonitor getLocationMonitor(Date checkinTime, String name, String id, String status) {
         final String monitorName = name + "-" + id;
         GWTLocationMonitor monitor = m_monitors.get(monitorName);
         if (monitor == null) {

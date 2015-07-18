@@ -151,7 +151,7 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
     protected void createOutageForService(OnmsMonitoredService monSvc) {
         OnmsEvent outageEvent = new OnmsEvent();
         outageEvent.setEventUei("TEST_UEI");
-        outageEvent.setDistPoller(monSvc.getIpInterface().getNode().getDistPoller());
+        outageEvent.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         outageEvent.setEventTime(new Date());
         outageEvent.setEventSource("Me");
         outageEvent.setEventCreateTime(new Date());

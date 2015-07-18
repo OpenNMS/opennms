@@ -28,13 +28,15 @@
 
 package org.opennms.features.poller.remote.gwt.server;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,16 +56,17 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -99,6 +102,10 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDatabase>, InitializingBean {
+
+    @Autowired
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     @Autowired
     private LocationDataService m_locationDataService;
 
@@ -145,19 +152,17 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         p.setProperty("log4j.logger.org.hibernate", "INFO");
         p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(p);
-        
+
+        LocationDef location = new LocationDef("RDU", "East Coast", new String[0], new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
+        m_monitoringLocationDao.saveOrUpdate(location);
+
         OnmsApplication app = new OnmsApplication();
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
 
-        OnmsDistPoller dp = new OnmsDistPoller("localhost", "127.0.0.1");
-        m_distPollerDao.saveOrUpdate(dp);
-
-        OnmsNode localhostNode = new OnmsNode(dp);
-        localhostNode.setLabel("localhost");
+        OnmsNode localhostNode = new OnmsNode("localhost");
         m_nodeDao.saveOrUpdate(localhostNode);
-        OnmsNode googleNode = new OnmsNode(dp);
-        googleNode.setLabel("google");
+        OnmsNode googleNode = new OnmsNode("google");
         m_nodeDao.saveOrUpdate(googleNode);
 
         OnmsIpInterface localhostIpInterface = new OnmsIpInterface(addr("127.0.0.1"), localhostNode);
@@ -172,14 +177,16 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         m_googleHttpService = createService(app, googleIpInterface, httpServiceType);
 
         m_rduMonitor1 = new OnmsLocationMonitor();
-        m_rduMonitor1.setDefinitionName("RDU");
-        m_rduMonitor1.setLastCheckInTime(m_pollingEnd);
+        m_rduMonitor1.setId(UUID.randomUUID().toString());
+        m_rduMonitor1.setLocation("RDU");
+        m_rduMonitor1.setLastUpdated(m_pollingEnd);
         m_rduMonitor1.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor1);
 
         m_rduMonitor2 = new OnmsLocationMonitor();
-        m_rduMonitor2.setDefinitionName("RDU");
-        m_rduMonitor2.setLastCheckInTime(m_pollingEnd);
+        m_rduMonitor2.setId(UUID.randomUUID().toString());
+        m_rduMonitor2.setLocation("RDU");
+        m_rduMonitor2.setLastUpdated(m_pollingEnd);
         m_rduMonitor2.setStatus(MonitorStatus.STARTED);
         m_locationMonitorDao.saveOrUpdate(m_rduMonitor2);
         
@@ -245,6 +252,7 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         m_pollerBackEnd.reportResult(m_rduMonitor1.getId(), m_googleHttpService.getId(), getDown(new Date(now() - days(20) - hours(4))));
         
         LocationInfo li = m_locationDataService.getLocationInfo("RDU");
+        assertNotNull(li);
         assertEquals("RDU", li.getName());
         // Down because one of the services is down.
         assertEquals(Status.DOWN, li.getStatusDetails().getStatus());

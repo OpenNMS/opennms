@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 
 /**
  * <p>PollerFrontEnd interface.</p>
@@ -48,7 +48,7 @@ public interface PollerFrontEnd {
      *
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations();
+    Collection<LocationDef> getMonitoringLocations();
     
     /**
      * <p>getPolledServices</p>

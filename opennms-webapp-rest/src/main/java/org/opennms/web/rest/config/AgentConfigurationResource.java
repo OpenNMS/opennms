@@ -41,14 +41,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.core.ResourceContext;
-import com.sun.jersey.spi.resource.PerRequest;
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -69,13 +65,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("agentConfigurationResource")
 public class AgentConfigurationResource implements InitializingBean {
     private static Logger LOG = LoggerFactory.getLogger(AgentConfigurationResource.class);
 
@@ -90,12 +83,6 @@ public class AgentConfigurationResource implements InitializingBean {
 
     @Autowired
     private SnmpAgentConfigFactory m_agentConfigFactory;
-
-    @Context
-    private ResourceContext m_context;
-
-    @Context 
-    private UriInfo m_uriInfo;
 
     public void setCollectdConfigurationResource(final ConfigurationResource<CollectdConfiguration> resource) {
         m_collectdConfigurationResource = resource;

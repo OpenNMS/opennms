@@ -28,29 +28,9 @@
 
 package org.opennms.web.rest;
 
-import com.sun.jersey.spi.resource.PerRequest;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.netmgt.model.OnmsOutageCollection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -60,9 +40,26 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-@Component
-@PerRequest
-@Scope("prototype")
+import javax.imageio.ImageIO;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsOutageCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+@Component("timelineRestService")
 @Path("timeline")
 public class TimelineRestService extends OnmsRestService {
 
@@ -334,49 +331,35 @@ public class TimelineRestService extends OnmsRestService {
     @Autowired
     private OutageDao m_outageDao;
 
-    @Context
-    UriInfo m_uriInfo;
-
-    @Context
-    SecurityContext m_securityContext;
-
-    @Context
-    ServletContext m_servletContext;
-
-    private OnmsOutageCollection queryOutages(final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
+    private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
-        readLock();
-        try {
-            final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
-            builder.eq("node.id", nodeId);
+        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
+        builder.eq("node.id", nodeId);
 
-            final Date startDate = new Date();
-            startDate.setTime(start * 1000l);
+        final Date startDate = new Date();
+        startDate.setTime(start * 1000l);
 
-            final Date endDate = new Date();
-            endDate.setTime(end * 1000l);
+        final Date endDate = new Date();
+        endDate.setTime(end * 1000l);
 
-            builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate)); 
+        builder.or(Restrictions.isNull("ifRegainedService"), Restrictions.gt("ifRegainedService", startDate)); 
 
-            builder.le("ifLostService", endDate);
+        builder.le("ifLostService", endDate);
 
-            builder.eq("serviceType.name", serviceName);
-            builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
+        builder.eq("serviceType.name", serviceName);
+        builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
 
-            builder.alias("monitoredService", "monitoredService");
-            builder.alias("monitoredService.ipInterface", "ipInterface");
-            builder.alias("monitoredService.ipInterface.node", "node");
-            builder.alias("monitoredService.serviceType", "serviceType");
+        builder.alias("monitoredService", "monitoredService");
+        builder.alias("monitoredService.ipInterface", "ipInterface");
+        builder.alias("monitoredService.ipInterface.node", "node");
+        builder.alias("monitoredService.serviceType", "serviceType");
 
-            applyQueryFilters(m_uriInfo.getQueryParameters(), builder, null);
+        applyQueryFilters(uriInfo.getQueryParameters(), builder, null);
 
-            builder.orderBy("id").desc();
+        builder.orderBy("id").desc();
 
-            onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
-        } finally {
-            readUnlock();
-        }
+        onmsOutageCollection = new OnmsOutageCollection(m_outageDao.findMatching(builder.toCriteria()));
 
         return onmsOutageCollection;
     }
@@ -415,10 +398,10 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("text/html")
     @Transactional
     @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response html(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -475,10 +458,10 @@ public class TimelineRestService extends OnmsRestService {
     @Produces("image/png")
     @Transactional
     @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response image(@PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 

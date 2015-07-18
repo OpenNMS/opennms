@@ -41,7 +41,6 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -104,8 +103,6 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             getCategoryDao().saveOrUpdate(cat);
         }
 
-        getDistPollerDao().saveOrUpdate(node.getDistPoller());
-
         /** delete any interfaces that were removed compared to the database **/
         final OnmsNode dbNode = node.getId() == null? null : get(node.getId());
         if (dbNode != null) {
@@ -163,17 +160,6 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         for (final OnmsNode node : findAll()) {
             if (label.equals(node.getLabel())) {
-                nodes.add(node);
-            }
-        }
-        return nodes;
-    }
-
-    @Override
-    public List<OnmsNode> findNodes(final OnmsDistPoller dp) {
-        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
-        for (final OnmsNode node : findAll()) {
-            if (node.getDistPoller().equals(dp)) {
                 nodes.add(node);
             }
         }

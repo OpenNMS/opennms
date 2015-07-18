@@ -117,7 +117,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventLog("Y");
 		event.setEventDisplay("Y");
 		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
 		event.setEventSeverity(Integer.valueOf(6));
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -135,7 +135,7 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm.setFirstEventTime(event.getEventTime());
 		alarm.setLastEvent(event);
 		alarm.setCounter(1);
-		alarm.setDistPoller(m_distPollerDao.load("localhost"));
+		alarm.setDistPoller(m_distPollerDao.whoami());
 
 		m_alarmDao.save(alarm);
 
@@ -165,7 +165,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventLog("Y");
 		event.setEventDisplay("Y");
 		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
 		event.setEventSeverity(new Integer(7));
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -182,7 +182,7 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm.setFirstEventTime(event.getEventTime());
 		alarm.setLastEvent(event);
 		alarm.setCounter(1);
-		alarm.setDistPoller(m_distPollerDao.load("localhost"));
+		alarm.setDistPoller(m_distPollerDao.whoami());
 
 		m_alarmDao.save(alarm);
 		// It works we're so smart! hehe
@@ -209,7 +209,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventLog("Y");
 		event.setEventDisplay("Y");
 		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
 		event.setEventSeverity(new Integer(7));
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -246,7 +246,7 @@ public class AlarmDaoIT implements InitializingBean {
 		event.setEventLog("Y");
 		event.setEventDisplay("Y");
 		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.load("localhost"));
+		event.setDistPoller(m_distPollerDao.whoami());
 		event.setEventTime(new Date());
 		event.setEventSeverity(new Integer(7));
 		event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -263,7 +263,7 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm.setFirstEventTime(event.getEventTime());
 		alarm.setLastEvent(event);
 		alarm.setCounter(1);
-		alarm.setDistPoller(m_distPollerDao.load("localhost"));
+		alarm.setDistPoller(m_distPollerDao.whoami());
 
 		m_alarmDao.save(alarm);
 
@@ -296,7 +296,7 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm.setUei("uei://org/opennms/test/badAlarmTest");
 		alarm.setSeverityId(new Integer(7));
 		alarm.setCounter(1);
-		alarm.setDistPoller(m_distPollerDao.load("localhost"));
+		alarm.setDistPoller(m_distPollerDao.whoami());
 
 		m_alarmDao.save(alarm);
 

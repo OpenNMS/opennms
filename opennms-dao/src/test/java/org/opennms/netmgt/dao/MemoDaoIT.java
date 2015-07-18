@@ -108,7 +108,7 @@ public class MemoDaoIT implements InitializingBean {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(m_distPollerDao.load("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
@@ -125,7 +125,7 @@ public class MemoDaoIT implements InitializingBean {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(1);
-        alarm.setDistPoller(m_distPollerDao.load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey("fristReductionKey");
 
         m_alarmDao.save(alarm);

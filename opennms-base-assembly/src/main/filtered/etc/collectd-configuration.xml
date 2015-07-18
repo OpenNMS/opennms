@@ -73,11 +73,7 @@
             <parameter key="port" value="18980"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
-            <parameter key="protocol" value="rmi"/>
-            <parameter key="urlPath" value="/jmxrmi"/>
             <parameter key="rrd-base-name" value="java"/>
-            <parameter key="ds-name" value="opennms-jvm"/>
-            <parameter key="friendly-name" value="opennms-jvm"/>
             <parameter key="collection" value="jsr160"/>
             <parameter key="thresholding-enabled" value="true"/>
         </service>

@@ -33,7 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -52,7 +51,6 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -96,20 +94,6 @@ public class QueryManagerDaoImpl implements QueryManager {
             return null;
         }
         return onmsNode.getLabel();
-    }
-
-    /**
-     * <p>convertEventTimeToTimeStamp</p>
-     *
-     * @param time a {@link java.lang.String} object.
-     * @return a {@link java.sql.Timestamp} object.
-     */
-    private static Date convertEventTimeToTimeStamp(String time) {
-        try {
-            return EventConstants.parseToDate(time);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + time, e);
-        }
     }
 
     /** {@inheritDoc} */

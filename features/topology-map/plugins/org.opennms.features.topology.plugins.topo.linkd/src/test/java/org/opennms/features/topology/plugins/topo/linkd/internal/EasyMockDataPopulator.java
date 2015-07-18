@@ -49,10 +49,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -116,13 +115,12 @@ public class EasyMockDataPopulator {
     private List<DataLinkInterface> m_links;
 
     public void populateDatabase() {
-        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
 
         final String icmp = "ICMP";
         final String snmp = "SNMP";
         final String http = "HTTP";
         
-        final NetworkBuilder builder = new NetworkBuilder(distPoller);
+        final NetworkBuilder builder = new NetworkBuilder();
         
         setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE).setSysObjectId("1.3.6.1.4.1.5813.1.25").getNode());
         Assert.assertNotNull("newly built node 1 should not be null", getNode1());

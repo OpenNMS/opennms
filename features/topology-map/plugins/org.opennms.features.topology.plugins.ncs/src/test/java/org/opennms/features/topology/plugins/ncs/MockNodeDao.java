@@ -38,7 +38,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
@@ -155,12 +154,6 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public List<OnmsNode> findByLabel(String label) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<OnmsNode> findNodes(OnmsDistPoller dp) {
         // TODO Auto-generated method stub
         return null;
     }
