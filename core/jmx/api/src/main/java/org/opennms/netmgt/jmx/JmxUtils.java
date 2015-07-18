@@ -57,8 +57,8 @@ public final class JmxUtils {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
             for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
-                if (eachEntry.getValue() instanceof String) {
-                    convertedProperties.put(eachEntry.getKey(), (String) eachEntry.getValue());
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
                 }
             }
             return Collections.unmodifiableMap(convertedProperties);
@@ -80,8 +80,8 @@ public final class JmxUtils {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
             for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
-                if (eachEntry.getValue() instanceof String) {
-                    convertedProperties.put(eachEntry.getKey(), (String) eachEntry.getValue());
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
                 }
             }
             return convertedProperties;
