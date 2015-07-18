@@ -312,6 +312,8 @@ public class DatabasePopulator {
         setNode6(node6);
         
         final OnmsEvent event = buildEvent(distPoller);
+        event.setEventCreateTime(new Date(1436881548292L));
+        event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -328,11 +330,11 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         

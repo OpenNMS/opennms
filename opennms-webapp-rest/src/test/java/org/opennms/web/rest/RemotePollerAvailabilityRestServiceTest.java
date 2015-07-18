@@ -31,12 +31,17 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -56,7 +61,9 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.AvailCalculator.UptimeCalculator;
 import org.opennms.web.rest.support.TimeChunker;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
@@ -154,6 +161,20 @@ public class RemotePollerAvailabilityRestServiceTest extends AbstractSpringJerse
         String responseString = sendRequest(GET, url, 200);
 
         assertTrue(responseString != null);
+    }
+
+    @Test
+    public void testGetLocationsJson() throws Exception {
+        String url = "/remotelocations";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/remotelocations.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test
