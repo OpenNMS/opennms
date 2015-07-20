@@ -28,10 +28,12 @@
 
 package org.opennms.netmgt.measurements.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -58,6 +60,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Longs;
 
 public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
@@ -84,7 +87,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             List<Source> sources) throws Exception {
         // Limit the step with a lower bound in order to prevent
         // extremely large queries
-        step = Math.max(STEP_LOWER_BOUND_IN_MS, step);
+        final long fetchStep = Math.max(STEP_LOWER_BOUND_IN_MS, step);
 
         Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
@@ -123,21 +126,21 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         }
 
         // Used to aggregate the results
-        long[] timestamps = null;
-        final Map<String, double[]> columns = Maps.newHashMap();
-        final Map<String, Object> constants = Maps.newHashMap();
+        final AtomicReference<List<Long>> timestamps = new AtomicReference<>();
+        final Map<String, double[]> columns = Maps.newConcurrentMap();
+        final Map<String, Object> constants = Maps.newConcurrentMap();
 
-        for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
+        sourcesByNewtsResourceId.entrySet().parallelStream().forEach(entry -> {
             String newtsResourceId = entry.getKey();
             List<Source> listOfSources = entry.getValue();
 
-            ResultDescriptor resultDescriptor = new ResultDescriptor(step);
+            ResultDescriptor resultDescriptor = new ResultDescriptor(fetchStep);
             for (Source source : listOfSources) {
                 final String metricName = source.getAttribute();
                 final String name = source.getLabel();
                 final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 
-                resultDescriptor.datasource(name, metricName, HEARTBEAT_MULTIPLIER*step, fn);
+                resultDescriptor.datasource(name, metricName, HEARTBEAT_MULTIPLIER*fetchStep, fn);
                 resultDescriptor.export(name);
             }
 
@@ -148,39 +151,40 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
             Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
-                    resultDescriptor, Optional.of(Duration.millis(RESOLUTION_MULTIPLIER*step)));
+                    resultDescriptor, Optional.of(Duration.millis(RESOLUTION_MULTIPLIER*fetchStep)));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
             final int N = rows.size();
-            boolean setTimestamps = false;
-            if (timestamps == null) {
-                timestamps = new long[N];
-                setTimestamps = true;
-            }
+
+            final Map<String,Object> attributes = new HashMap<>();
+
+            final List<Long> ts = new ArrayList<>(N);
+
+            final Map<String,double[]> myColumns = Maps.newHashMap();
 
             int k = 0;
             for (Row<Measurement> row : results.getRows()) {
                 for (Measurement measurement : row.getElements()) {
-                    if (k == 0) {
-                        columns.put(measurement.getName(), new double[N]);
-                    }
-                    columns.get(measurement.getName())[k] = measurement.getValue();
-                    Map<String, String> attributes = measurement.getAttributes();
-                    if (attributes != null) {
-                        constants.putAll(measurement.getAttributes());
+                    myColumns.putIfAbsent(measurement.getName(), new double[N]);
+                    myColumns.get(measurement.getName())[k] = measurement.getValue();
+                    if (measurement.getAttributes() != null) {
+                        attributes.putAll(measurement.getAttributes());
                     }
                 }
 
-                // Only set the timestamps when processing the first resultset
-                if (setTimestamps) {
-                    timestamps[k] = row.getTimestamp().asMillis();
-                }
+                ts.add(row.getTimestamp().asMillis());
                 k += 1;
             }
-        }
 
-        FetchResults fetchResults = new FetchResults(timestamps, columns, step, constants);
+            myColumns.entrySet().stream().forEach(e -> {
+                columns.put(e.getKey(), e.getValue());
+            });
+
+            timestamps.compareAndSet(null, ts);
+        });
+
+        FetchResults fetchResults = new FetchResults(Longs.toArray(timestamps.get()), columns, fetchStep, constants);
         LOG.debug("Fetch results: {}", fetchResults);
 
         return fetchResults;
