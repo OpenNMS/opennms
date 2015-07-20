@@ -214,6 +214,6 @@ public class NetworkElementFactoryTest implements InitializingBean {
     public void testGetServicesOnInterface() {
         m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
-        assertEquals(1, svc.length);
+        assertEquals(2, svc.length);
     }
 }

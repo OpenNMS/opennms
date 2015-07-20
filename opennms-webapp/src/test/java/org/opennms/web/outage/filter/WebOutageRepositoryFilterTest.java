@@ -138,7 +138,7 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(3, outages.length);
+        assertEquals(1, outages.length);
     }
     
     @Test
@@ -154,6 +154,16 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testRegainedServiceDateAfterFilter(){
+        OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
+        // This requires every test method to have a new database instance :/
+        OnmsEvent event = m_dbPopulator.getEventDao().get(1);
+
+        // Put a resolved outage into the database so that one will match the
+        // filter below
+        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), event, event, svc2, null, null);
+        m_dbPopulator.getOutageDao().save(resolvedToday);
+        m_dbPopulator.getOutageDao().flush();
+
         RegainedServiceDateAfterFilter filter = new RegainedServiceDateAfterFilter(yesterday());
         OutageCriteria criteria = new OutageCriteria(filter);
         
@@ -174,7 +184,7 @@ public class WebOutageRepositoryFilterTest implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(3, outages.length);
+        assertEquals(2, outages.length);
     }
 
     @Test

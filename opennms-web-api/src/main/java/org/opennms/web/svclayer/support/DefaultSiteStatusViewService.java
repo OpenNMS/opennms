@@ -150,7 +150,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * {@inheritDoc}
      *
-     * Use the node id to find the value assciated with column defined in the view.  The view defines a column
+     * Use the node id to find the value associated with column defined in the view.  The view defines a column
      * and column value to be used by default.  This method determines the column value using the value associated
      * with the asset record for the given nodeid.
      * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
