@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.measurements.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +59,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.primitives.Longs;
 
 public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
@@ -126,7 +124,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         }
 
         // Used to aggregate the results
-        final AtomicReference<List<Long>> timestamps = new AtomicReference<>();
+        final AtomicReference<long[]> timestamps = new AtomicReference<>();
         final Map<String, double[]> columns = Maps.newConcurrentMap();
         final Map<String, Object> constants = Maps.newConcurrentMap();
 
@@ -159,9 +157,22 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
             final Map<String,Object> attributes = new HashMap<>();
 
-            final List<Long> ts = new ArrayList<>(N);
-
             final Map<String,double[]> myColumns = Maps.newHashMap();
+
+            timestamps.updateAndGet(existing -> {
+                if (existing == null) {
+                    // this is the first thread that has returned, build the array of timestamps
+                    // the timestamps should bet the same against all result sets
+                    final long[] tses = new long[rows.size()];
+                    int k=0;
+                    for (final Row<Measurement> row : results.getRows()) {
+                        tses[k] = row.getTimestamp().asMillis();
+                        k++;
+                    }
+                    return tses;
+                }
+                return existing;
+            });
 
             int k = 0;
             for (Row<Measurement> row : results.getRows()) {
@@ -172,19 +183,15 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                         attributes.putAll(measurement.getAttributes());
                     }
                 }
-
-                ts.add(row.getTimestamp().asMillis());
                 k += 1;
             }
 
             myColumns.entrySet().stream().forEach(e -> {
                 columns.put(e.getKey(), e.getValue());
             });
-
-            timestamps.compareAndSet(null, ts);
         });
 
-        FetchResults fetchResults = new FetchResults(Longs.toArray(timestamps.get()), columns, fetchStep, constants);
+        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, fetchStep, constants);
         LOG.debug("Fetch results: {}", fetchResults);
 
         return fetchResults;
