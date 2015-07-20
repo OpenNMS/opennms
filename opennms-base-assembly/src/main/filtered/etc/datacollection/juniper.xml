@@ -13,7 +13,7 @@
     </resourceType>
 
     <resourceType name="jnxOperatingTable" label="Juniper general monitoring" resourceLabel="${jnxOpDescr}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
             <parameter key="match-expression" value="(#jnxOpDescr matches '^.*Routing Engine.*$')" />
         </persistenceSelectorStrategy>
         <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
