@@ -21,6 +21,7 @@
         <include-collection dataCollectionGroup="Bluecoat"/>
         <include-collection dataCollectionGroup="Brocade"/>
         <include-collection dataCollectionGroup="Checkpoint"/>
+        <include-collection dataCollectionGroup="Ceragon"/>
         <include-collection dataCollectionGroup="Cisco"/>
         <include-collection dataCollectionGroup="Cisco Nexus"/>
         <include-collection dataCollectionGroup="CLAVISTER"/>
