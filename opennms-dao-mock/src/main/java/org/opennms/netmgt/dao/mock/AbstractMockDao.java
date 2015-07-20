@@ -162,14 +162,16 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
 
     @Override
     public T get(final K id) {
-        LOG.debug("get({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
     public T load(K id) {
-        LOG.debug("load({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
@@ -180,9 +182,10 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
             generateId(entity);
             id = getId(entity);
         }
-        LOG.debug("save({})", entity);
         if (m_entries.containsKey(id)) {
-            LOG.debug("save({}): id exists: {}", entity, id);
+            LOG.debug("save({}): id already exists: {}", entity, id);
+        } else {
+            LOG.debug("save({})", entity);
         }
         m_entries.put(id, entity);
     }
