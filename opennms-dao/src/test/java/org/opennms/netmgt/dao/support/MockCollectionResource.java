@@ -91,7 +91,13 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public String getStringValue() { return attrValue; }
                 @Override
-                public String getNumericValue() { return attrValue; }
+                public Double getNumericValue() {
+                    try {
+                        return Double.parseDouble(attrValue);
+                    } catch (NumberFormatException|NullPointerException e) {
+                        return null;
+                    }
+                }
                 @Override
                 public String getName() { return attrName; }
                 @Override

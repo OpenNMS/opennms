@@ -45,10 +45,10 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -83,6 +83,8 @@ public abstract class XmlCollectorITCase {
 
     private FilesystemResourceStorageDao m_resourceStorageDao;
 
+    private RrdPersisterFactory m_persisterFactory;
+
     /**
      * Sets the up.
      *
@@ -96,6 +98,10 @@ public abstract class XmlCollectorITCase {
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
         m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -167,7 +173,7 @@ public abstract class XmlCollectorITCase {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), m_rrdStrategy, m_resourceStorageDao); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams,  createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
         Assert.assertEquals(expectedFiles, FileUtils.listFiles(m_temporaryFolder.getRoot(), new String[] { m_rrdStrategy.getDefaultFileExtension().substring(1) }, true).size());

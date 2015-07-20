@@ -325,12 +325,12 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
+        public Number getNumericValue() {
             if (m_value instanceof Number) {
-                return m_value.toString();
+                return (Number)m_value;
             } else {
                 try {
-                    return Double.valueOf(m_value.toString()).toString();
+                    return Double.valueOf(m_value.toString());
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
             LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);

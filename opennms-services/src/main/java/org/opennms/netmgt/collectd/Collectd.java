@@ -50,6 +50,7 @@ import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -73,7 +74,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -177,7 +177,7 @@ public class Collectd extends AbstractServiceDaemon implements
     private volatile NodeDao m_nodeDao;
 
     @Autowired
-    private RrdStrategy<?, ?> m_rrdStrategy;
+    private PersisterFactory m_persisterFactory;
 
     @Autowired
     private ResourceStorageDao m_resourceStorageDao;
@@ -514,7 +514,7 @@ public class Collectd extends AbstractServiceDaemon implements
                     getScheduler(),
                     m_schedulingCompletedFlag,
                     m_transTemplate.getTransactionManager(),
-                    m_rrdStrategy,
+                    m_persisterFactory,
                     m_resourceStorageDao
                 );
 
@@ -1504,7 +1504,6 @@ public class Collectd extends AbstractServiceDaemon implements
     void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-    
 
     /**
      * <p>setServiceCollector</p>
@@ -1524,6 +1523,14 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     public ServiceCollector getServiceCollector(String svcName) {
         return m_collectors.get(svcName);
+    }
+
+    public PersisterFactory getPersisterFactory() {
+        return m_persisterFactory;
+    }
+
+    public void setPersisterFactory(PersisterFactory persisterFactory) {
+        m_persisterFactory = persisterFactory;
     }
 
     /**

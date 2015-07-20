@@ -36,11 +36,10 @@ import java.io.File;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -75,12 +74,12 @@ public abstract class CollectorTestUtils {
         System.err.println("repository = " + repository);
         ServiceParameters params = spec.getServiceParameters();
         System.err.println("service parameters = " + params);
-        BasePersister persister;
-        if (Boolean.getBoolean("org.opennms.rrd.storeByGroup")) {
-            persister=new GroupPersister(params, repository, rrdStrategy, resourceStorageDao);
-        } else {
-            persister=new OneToOnePersister(params, repository, rrdStrategy, resourceStorageDao);
-        }
+
+        RrdPersisterFactory persisterFactory = new RrdPersisterFactory();
+        persisterFactory.setRrdStrategy(rrdStrategy);
+        persisterFactory.setResourceStorageDao(resourceStorageDao);
+        CollectionSetVisitor persister = persisterFactory.createPersister(params, repository);
+
         System.err.println("persister = " + persister);
         collectionSet.visit(persister);
     }

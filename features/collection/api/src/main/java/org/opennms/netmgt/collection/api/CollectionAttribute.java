@@ -51,12 +51,11 @@ public interface CollectionAttribute extends CollectionVisitable, Persistable {
     String getStringValue();
     
     /**
-     * Get the numeric value of the attribute, as a String.  Assumes the underlying value is actually numeric, and will
-     * return null if it is not parseable.
+     * Get the numeric value of the attribute.
      *
-     * @return a string representation of the numeric value of this attribute
+     * @return a {@link java.lang.Number} object.
      */
-    String getNumericValue();
+    Number getNumericValue();
     
     /**
      * Gets the name of the attribute

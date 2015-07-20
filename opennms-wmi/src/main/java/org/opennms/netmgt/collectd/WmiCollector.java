@@ -167,7 +167,7 @@ public class WmiCollector implements ServiceCollector {
                             for (final Attrib attrib : wpm.getAttrib()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
-                                resource.setAttributeValue(attribType, prop.getWmiValue().toString());
+                                resource.setAttributeValue(attribType, prop.getWmiValue());
                             }
                             collectionSet.getCollectionResources().add(resource);
                         }

@@ -36,11 +36,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -62,7 +61,6 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
 import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -104,9 +102,6 @@ public class Poller extends AbstractServiceDaemon {
     private EventIpcManager m_eventMgr;
 
     @Autowired
-    private DataSource m_dataSource;
-
-    @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
 
     @Autowired
@@ -116,13 +111,13 @@ public class Poller extends AbstractServiceDaemon {
     private TransactionTemplate m_transactionTemplate;
 
     @Autowired
-    private RrdStrategy<Object, Object> m_rrdStrategy;
+    private PersisterFactory m_persisterFactory;
 
     @Autowired
     private ResourceStorageDao m_resourceStorageDao;
 
-    public void setRrdStrategy(RrdStrategy<Object, Object> rrdStrategy) {
-        m_rrdStrategy = rrdStrategy;
+    public void setPersisterFactory(PersisterFactory persisterFactory) {
+        m_persisterFactory = persisterFactory;
     }
 
     public void setOutageDao(OutageDao outageDao) {
@@ -163,14 +158,6 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     /* Getters/Setters used for dependency injection */
-    /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
-     */
-    void setDataSource(DataSource dataSource) {
-        m_dataSource = dataSource;
-    }
 
     /**
      * <p>getEventManager</p>
@@ -558,7 +545,7 @@ public class Poller extends AbstractServiceDaemon {
 
         PollableService svc = getNetwork().createService(nodeId, nodeLabel, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg,
-                getScheduler(), m_rrdStrategy, m_resourceStorageDao);
+                getScheduler(), m_persisterFactory, m_resourceStorageDao);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

@@ -70,9 +70,9 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
@@ -355,7 +355,7 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.setTimeKeeper(m_timeKeeper);
         m_backEnd.setEventIpcManager(m_eventIpcManager);
         m_backEnd.setDisconnectedTimeout(DISCONNECTED_TIMEOUT);
-        m_backEnd.setRrdStrategy(new NullRrdStrategy());
+        m_backEnd.setPersisterFactory(new MockPersisterFactory());
 
         m_startTime = new Date(System.currentTimeMillis() - 600000);
         expect(m_timeKeeper.getCurrentDate()).andReturn(m_startTime);
@@ -487,23 +487,6 @@ public class PollerBackEndTest extends TestCase {
 
 
     }
-
-    private void testGlobalConfigChange(MonitorStatus oldStatus, MonitorStatus newStatus, Event e) {
-
-        verifyPollerCheckingIn(MonitorStatus.STARTED, MonitorStatus.STARTED, MonitorStatus.STARTED);
-        updateConfiguration();
-        verifyPollerCheckingIn(oldStatus, newStatus, MonitorStatus.CONFIG_CHANGED, e);
-    }
-
-    /*
-    public void testGlobalConfigChangeFromDisconnected() {
-        testGlobalConfigChange(MonitorStatus.DISCONNECTED, MonitorStatus.STARTED, createReconnectedEvent());
-    }
-
-    public void testGlobalConfigChangeFromStarted() {
-        testGlobalConfigChange(MonitorStatus.STARTED, MonitorStatus.STARTED, null);
-    }
-    */
 
     public void testPollerCheckingInFromDisconnected() {
         verifyPollerCheckingIn(MonitorStatus.DISCONNECTED, MonitorStatus.STARTED, MonitorStatus.STARTED, createReconnectedEvent());
@@ -787,12 +770,6 @@ public class PollerBackEndTest extends TestCase {
         m_mocks.replayAll();
 
         m_backEnd.checkForDisconnectedMonitors();
-    }
-
-    private void updateConfiguration() {
-        expect(m_timeKeeper.getCurrentDate()).andReturn(new Date());
-        m_mocks.replayAll();
-        m_backEnd.configurationUpdated();
     }
 
     private void verifyPollerCheckingIn(MonitorStatus oldStatus, MonitorStatus newStatus, MonitorStatus result) {

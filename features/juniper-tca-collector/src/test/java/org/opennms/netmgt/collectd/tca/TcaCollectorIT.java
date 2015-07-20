@@ -58,8 +58,9 @@ import org.opennms.netmgt.collectd.tca.config.TcaDataCollectionConfig;
 import org.opennms.netmgt.collectd.tca.config.TcaRrd;
 import org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -136,11 +137,14 @@ public class TcaCollectorIT implements InitializingBean {
 	@Autowired
 	private TcaDataCollectionConfigDao m_configDao;
 
-	@Autowired
-	private RrdStrategy<?, ?> m_rrdStrategy;
+    @Autowired
+    private RrdPersisterFactory m_persisterFactory;
 
-	@Autowired
-	private FilesystemResourceStorageDao m_resourceStorageDao;
+    @Autowired
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
+    @Autowired
+    private FilesystemResourceStorageDao m_resourceStorageDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -231,7 +235,8 @@ public class TcaCollectorIT implements InitializingBean {
 		collector.setResourceStorageDao(m_resourceStorageDao);
 		collector.initialize(new HashMap<String,String>());
 		collector.initialize(m_collectionAgent, parameters);
-		OneToOnePersister persister = new OneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), m_rrdStrategy, m_resourceStorageDao);
+
+		CollectionSetVisitor persister = m_persisterFactory.createOneToOnePersister(new ServiceParameters(parameters), collector.getRrdRepository("default"), false, false);
 
 		// Setup SNMP Value Handling
 		SnmpValueFactory valFac = SnmpUtils.getValueFactory();

@@ -43,7 +43,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.PersistOperationBuilder;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersistOperationBuilder;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -63,7 +63,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  *  
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class PersistOperationBuilderTest {
+public class RrdPersistOperationBuilderTest {
     private FileAnticipator m_fileAnticipator;
     private File m_snmpDirectory;
     private OnmsIpInterface m_intf;
@@ -120,7 +120,7 @@ public class PersistOperationBuilderTest {
 
         CollectionResource resource = new NodeInfo(resourceType, agent);
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
+        RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.commit();
     }
 
@@ -155,7 +155,7 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
+        RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.declareAttribute(attributeType);
         builder.commit();
     }
@@ -191,15 +191,15 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
+        RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.declareAttribute(attributeType);
-        builder.setAttributeValue(attributeType, "6.022E23");
+        builder.setAttributeValue(attributeType, 6.022E23d);
         builder.commit();
     }
 
 
     @Test
-    public void testCommitWithDeclaredAttributeAndStringValue() throws Exception {
+    public void testCommitWithDeclaredAttributeAndNullValue() throws Exception {
 
         RrdRepository repository = createRrdRepository();
 
@@ -226,9 +226,9 @@ public class PersistOperationBuilderTest {
         SnmpAttributeType attributeType = new StringAttributeType(resourceType, "some-collection", mibObject, new AttributeGroupType("mibGroup", AttributeGroupType.IF_TYPE_IGNORE));
         attributeType.storeResult(collectionSet, null, new SnmpResult(mibObject.getSnmpObjId(), new SnmpInstId(mibObject.getInstance()), SnmpUtils.getValueFactory().getOctetString("hello".getBytes())));
 
-        PersistOperationBuilder builder = new PersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName");
+        RrdPersistOperationBuilder builder = new RrdPersistOperationBuilder(m_rrdStrategy, repository, resource, "rrdName", false);
         builder.declareAttribute(attributeType);
-        builder.setAttributeValue(attributeType, "THIS_IS_A_STRING");
+        builder.setAttributeValue(attributeType, null);
         builder.commit();
     }
 
