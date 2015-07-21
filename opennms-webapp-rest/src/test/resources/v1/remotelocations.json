@@ -1,0 +1,36 @@
+{
+    "count": 3, 
+    "locations": [
+        {
+            "area": "East Coast", 
+            "collectionPackageName": "example1", 
+            "coordinates": "35.715751,-79.16262", 
+            "geolocation": "Research Triangle Park, NC", 
+            "name": "RDU", 
+            "pollingPackageName": "example1", 
+            "priority": 1, 
+            "tags": []
+        }, 
+        {
+            "area": "IN", 
+            "collectionPackageName": null, 
+            "coordinates": "38.2096,-85.8704", 
+            "geolocation": "2 Open St., Network, MS 00002", 
+            "name": "00002", 
+            "pollingPackageName": "example2", 
+            "priority": 100, 
+            "tags": []
+        }, 
+        {
+            "area": "IN", 
+            "collectionPackageName": "example2", 
+            "coordinates": "38.2096,-85.8704", 
+            "geolocation": "2 Open St., Network, MS 00002", 
+            "name": "00003", 
+            "pollingPackageName": "example2", 
+            "priority": 100, 
+            "tags": []
+        }
+    ], 
+    "totalCount": 3
+}

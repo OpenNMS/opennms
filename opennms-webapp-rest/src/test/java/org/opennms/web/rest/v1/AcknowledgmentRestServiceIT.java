@@ -33,12 +33,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -51,7 +55,9 @@ import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.TransactionStatus;
@@ -81,6 +87,9 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 
+	@Autowired
+	private ServletContext m_servletContext;
+
 	@Override
 	protected void afterServletStart() {
 		m_template.execute(new TransactionCallbackWithoutResult() {
@@ -89,6 +98,21 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 				m_databasePopulator.populateDatabase();
 			}
 		});
+	}
+
+	@Test
+	@JUnitTemporaryDatabase
+	public void testGetAcksJson() throws Exception {
+		String url = "/acks";
+
+		// GET all items
+		MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+		jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+		String json = sendRequest(jsonRequest, 200);
+
+		JSONObject restObject = new JSONObject(json);
+		JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/acks.json")));
+		JSONAssert.assertEquals(expectedObject, restObject, true);
 	}
 
 	@Test

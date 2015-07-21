@@ -33,8 +33,8 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,7 +95,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
 
     private OnmsSnmpInterface m_snmpInterface;
 

@@ -242,6 +242,9 @@ public class DatabasePopulator {
         for (final LocationDef location : m_monitoringLocationDao.findAll()) {
             m_monitoringLocationDao.delete(location);
         }
+        for (final OnmsCategory category : m_categoryDao.findAll()) {
+            m_categoryDao.delete(category);
+        }
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
@@ -303,6 +306,8 @@ public class DatabasePopulator {
         setNode6(node6);
         
         final OnmsEvent event = buildEvent(builder.getDistPoller());
+        event.setEventCreateTime(new Date(1436881548292L));
+        event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -319,11 +324,11 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         
@@ -332,7 +337,7 @@ public class DatabasePopulator {
         getAlarmDao().flush();
         
         final OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        ack.setAckTime(new Date());
+        ack.setAckTime(new Date(1437073152156L));
         ack.setAckType(AckType.UNSPECIFIED);
         ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("admin");
@@ -508,13 +513,20 @@ public class DatabasePopulator {
     public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
+        event.setEventCreateTime(new Date(1437061537126L));
+        event.setEventDescr("This is the description of a test event.");
         event.setEventDisplay("Y");
+        event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
+        event.setEventLog("Y");
+        event.setEventLogMsg("Test Event Log Message");
+        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventSeverity(1);
+        event.setEventSource("test");
+        event.setEventTime(new Date(1437061537105L));
+        event.setEventUei("uei.opennms.org/test");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event.setNode(m_node1);
+        event.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return event;
     }
 
@@ -543,6 +555,8 @@ public class DatabasePopulator {
     }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
+        // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
@@ -555,6 +569,8 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setEventParms(event.getEventParms());
+        alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }
 

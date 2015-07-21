@@ -3,17 +3,22 @@ package org.opennms.web.category;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.rtc.Node;
 
 @XmlRootElement(name="node")
+@XmlAccessorType(XmlAccessType.NONE)
 public class AvailabilityNode {
     @XmlAttribute(name="id")
     private Long m_nodeId;
@@ -68,4 +73,43 @@ public class AvailabilityNode {
         m_ipInterfaces.add(iface);
     }
 
+    public Double getAvailability() {
+        return m_availability;
+    }
+
+    public List<AvailabilityIpInterface> getIpInterfaces() {
+        return m_ipInterfaces;
+    }
+
+    public Long getServiceCount() {
+        return m_serviceCount;
+    }
+
+    public Long getServiceDownCount() {
+        return m_serviceDownCount;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", this.getId())
+            .append("availability", this.getAvailability())
+            .append("serviceCount", this.getServiceCount())
+            .append("serviceDownCount", this.getServiceDownCount())
+            .append("ipInterfaces", this.getIpInterfaces())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof AvailabilityNode)) return false;
+        final AvailabilityNode that = (AvailabilityNode)o;
+        return new EqualsBuilder()
+            .append(this.getId(), that.getId())
+            .append(this.getAvailability(), that.getAvailability())
+            .append(this.getServiceCount(), that.getServiceCount())
+            .append(this.getServiceDownCount(), that.getServiceDownCount())
+            .append(this.getIpInterfaces(), that.getIpInterfaces())
+            .isEquals();
+    }
 }

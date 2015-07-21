@@ -29,6 +29,7 @@
 package org.opennms.web.event.filter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -152,7 +153,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         AfterDateFilter filter = new AfterDateFilter(yesterday());
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(2, events.length);
+        assertEquals(1, events.length);
     }
     
     @Test
@@ -179,8 +180,15 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         DescriptionSubstringFilter filter = new DescriptionSubstringFilter("test event");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
-        assertEquals("This is a test event", events[0].getDescription());
+        assertEquals(2, events.length);
+        assertTrue(
+            "This is a test event".equals(events[0].getDescription()) ||
+            "This is the description of a test event.".equals(events[0].getDescription())
+        );
+        assertTrue(
+            "This is a test event".equals(events[1].getDescription()) ||
+            "This is the description of a test event.".equals(events[1].getDescription())
+        );
     }
     
     @Test
@@ -211,8 +219,9 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         InterfaceFilter filter = new InterfaceFilter("192.168.1.1");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(2, events.length);
         assertEquals("192.168.1.1", events[0].getIpAddress());
+        assertEquals("192.168.1.1", events[1].getIpAddress());
     }
     
     @Test
@@ -221,7 +230,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         IPAddrLikeFilter filter = new IPAddrLikeFilter("192.168.*.*");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(2, events.length);
         
         filter = new IPAddrLikeFilter("193.168");
         events = getMatchingDaoEvents(filter);
@@ -282,7 +291,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         NegativeInterfaceFilter filter = new NegativeInterfaceFilter("192.168.1.1");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(0, events.length);
         
         filter = new NegativeInterfaceFilter("27.0.0.1");
         
@@ -301,7 +310,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         filter = new NegativeNodeFilter(m_dbPopulator.getNode1().getId(), m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(0, events.length);
         
         assertEquals("node is not node1", filter.getTextDescription());
     }
@@ -326,7 +335,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         NegativeServiceFilter filter = new NegativeServiceFilter(1, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(0, events.length);
         
         filter = new NegativeServiceFilter(2, m_appContext);
         
@@ -355,7 +364,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         NodeFilter filter = new NodeFilter(1, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(2, events.length);
         
         filter = new NodeFilter(2, m_appContext);
         
@@ -371,7 +380,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         NodeNameLikeFilter filter = new NodeNameLikeFilter("node1");
         
         Event[] events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(2, events.length);
         
         filter = new NodeNameLikeFilter("testNode");
         
@@ -404,7 +413,7 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
         filter = new ServiceFilter(1, m_appContext);
         
         events = getMatchingDaoEvents(filter);
-        assertEquals(1, events.length);
+        assertEquals(2, events.length);
     }
     
     @Test
