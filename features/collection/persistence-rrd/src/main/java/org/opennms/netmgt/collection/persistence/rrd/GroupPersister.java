@@ -55,7 +55,7 @@ public class GroupPersister extends BasePersister {
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public GroupPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
+    protected GroupPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
         super(params, repository, rrdStrategy, resourceStorageDao);
         m_resourceStorageDao = resourceStorageDao;
     }
@@ -73,7 +73,7 @@ public class GroupPersister extends BasePersister {
                 }
             }
 
-            createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
+            setBuilder(createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes()));
 
             ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(getRepository(), group.getResource().getPath());
             m_resourceStorageDao.updateMetricToResourceMappings(path, dsNamesToRrdNames);

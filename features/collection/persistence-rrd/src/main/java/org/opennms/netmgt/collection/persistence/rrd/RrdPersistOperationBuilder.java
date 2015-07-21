@@ -31,10 +31,12 @@ package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,6 +44,8 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.collection.api.ByNameComparator;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
+import org.opennms.netmgt.collection.api.PersistException;
+import org.opennms.netmgt.collection.api.PersistOperationBuilder;
 import org.opennms.netmgt.collection.api.ResourceIdentifier;
 import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
@@ -49,9 +53,9 @@ import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 /**
  * <p>PersistOperationBuilder class.</p>
@@ -59,14 +63,14 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @version $Id: $
  */
-public class PersistOperationBuilder {
-    private static final Logger LOG = LoggerFactory.getLogger(PersistOperationBuilder.class);
+public class RrdPersistOperationBuilder implements PersistOperationBuilder {
+    private static final Logger LOG = LoggerFactory.getLogger(RrdPersistOperationBuilder.class);
 
     private final RrdStrategy<?, ?> m_rrdStrategy;
     private final RrdRepository m_repository;
     private final String m_rrdName;
     private final ResourceIdentifier m_resource;
-    private final Map<CollectionAttributeType, String> m_declarations = new TreeMap<CollectionAttributeType, String>(new ByNameComparator());
+    private final Map<CollectionAttributeType, Number> m_declarations;
     private final Map<String, String> m_metaData = new LinkedHashMap<String, String>();
     private TimeKeeper m_timeKeeper = new DefaultTimeKeeper();
 
@@ -87,11 +91,16 @@ public class PersistOperationBuilder {
      * @param resource a {@link org.opennms.netmgt.collection.api.ResourceIdentifier} object.
      * @param rrdName a {@link java.lang.String} object.
      */
-    public PersistOperationBuilder(RrdStrategy<?, ?> rrdStrategy, RrdRepository repository, ResourceIdentifier resource, String rrdName) {
+    public RrdPersistOperationBuilder(RrdStrategy<?, ?> rrdStrategy, RrdRepository repository, ResourceIdentifier resource, String rrdName, boolean dontReorderAttributes) {
         m_rrdStrategy = rrdStrategy;
         m_repository = repository;
         m_resource = resource;
         m_rrdName = rrdName;
+        if (dontReorderAttributes) {
+            m_declarations = new LinkedHashMap<>();
+        } else {
+            m_declarations = new TreeMap<>(new ByNameComparator());
+        }
     }
 
     public RrdStrategy<?, ?> getRrdStrategy() {
@@ -119,16 +128,16 @@ public class PersistOperationBuilder {
      * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
      */
     public void declareAttribute(CollectionAttributeType attrType) {
-        m_declarations.put(attrType, "U");
+        m_declarations.put(attrType, Double.NaN);
     }
 
     /**
      * <p>setAttributeValue</p>
      *
      * @param attrType a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
-     * @param value a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Number} object.
      */
-    public void setAttributeValue(CollectionAttributeType attrType, String value) {
+    public void setAttributeValue(CollectionAttributeType attrType, Number value) {
         m_declarations.put(attrType, value);
     }
     
@@ -157,22 +166,40 @@ public class PersistOperationBuilder {
      */
     public static String mapType(String objectType) {
         if (objectType.toLowerCase().startsWith("counter")) {
-            return PersistOperationBuilder.DST_COUNTER;
+            return RrdPersistOperationBuilder.DST_COUNTER;
         } else if ("string".equalsIgnoreCase(objectType)) {
             return null;
         } else if ("octetstring".equalsIgnoreCase(objectType)) {
             return null;
         } else {
-            return PersistOperationBuilder.DST_GAUGE;
+            return RrdPersistOperationBuilder.DST_GAUGE;
         }
+    }
+
+    public static String mapValue(Number num) {
+        if (num == null) {
+            return "U";
+        }
+
+        if (!Double.isFinite(num.doubleValue())) {
+            return "U";
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        nf.setGroupingUsed(false);
+        nf.setMinimumFractionDigits(0);
+        nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+        nf.setMinimumIntegerDigits(0);
+        nf.setMaximumIntegerDigits(Integer.MAX_VALUE);
+        return nf.format(num);
     }
 
     /**
      * <p>commit</p>
      *
-     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     * @throws org.opennms.netmgt.collection.api.PersistException if any.
      */
-    public void commit() throws RrdException {
+    public void commit() throws PersistException {
         if (m_declarations.size() == 0) {
             // Nothing to do.  In fact, we'll get an error if we try to create an RRD file with no data sources            
             return;
@@ -183,12 +210,14 @@ public class PersistOperationBuilder {
             final String absolutePath = getResourceDir(m_resource).getAbsolutePath();
             List<RrdDataSource> dataSources = getDataSources();
             if (dataSources != null && dataSources.size() > 0) {
-                RrdUtils.createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
-                RrdUtils.updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
+                createRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, getRepository().getStep(), dataSources, getRepository().getRraList(), m_metaData);
+                updateRRD(m_rrdStrategy, ownerName, absolutePath, m_rrdName, m_timeKeeper.getCurrentTime(), getValues());
             }
         } catch (FileNotFoundException e) {
             LoggerFactory.getLogger(getClass()).warn("Could not get resource directory: " + e.getMessage(), e);
             return;
+        } catch (RrdException e) {
+            throw new PersistException(e);
         }
     }
 
@@ -197,13 +226,13 @@ public class PersistOperationBuilder {
         StringBuffer values = new StringBuffer();
         for (Iterator<CollectionAttributeType> iter = m_declarations.keySet().iterator(); iter.hasNext();) {
         	CollectionAttributeType attrDef = iter.next();
-            String value = m_declarations.get(attrDef);
+            Number value = m_declarations.get(attrDef);
             if (!first) {
                 values.append(':');
             } else {
                 first = false;
             }
-            values.append(value);
+            values.append(mapValue(value));
         }
         return values.toString();
     }
@@ -218,14 +247,97 @@ public class PersistOperationBuilder {
                 minval = ((NumericCollectionAttributeType) attrDef).getMinval() != null ? ((NumericCollectionAttributeType) attrDef).getMinval() : "U";
                 maxval = ((NumericCollectionAttributeType) attrDef).getMaxval() != null ? ((NumericCollectionAttributeType) attrDef).getMaxval() : "U";
             }
-            String type = PersistOperationBuilder.mapType(attrDef.getType());
+            String type = RrdPersistOperationBuilder.mapType(attrDef.getType());
             // If the type is supported by RRD...
             if (type != null) {
-                RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), type, getRepository().getHeartBeat(), minval, maxval);
+                if (attrDef.getName().length() > MAX_DS_NAME_LENGTH) {
+                    LOG.warn("Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", attrDef.getName());
+                }
+                RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrDef.getName(), RrdPersistOperationBuilder.MAX_DS_NAME_LENGTH), type, getRepository().getHeartBeat(), minval, maxval);
                 dataSources.add(rrdDataSource);
             }
         }
         return dataSources;
+    }
+
+    /**
+     * <p>createRRD</p>
+     *
+     * @param creator a {@link java.lang.String} object.
+     * @param directory a {@link java.lang.String} object.
+     * @param rrdName a {@link java.lang.String} object.
+     * @param step a int.
+     * @param dataSources a {@link java.util.List} object.
+     * @param rraList a {@link java.util.List} object.
+     * @param attributeMappings a {@link Map<String, String>} that represents the mapping of attributeId to rrd track names
+     * @return a boolean.
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
+    private static boolean createRRD(RrdStrategy<?, ?> rrdStrategy, String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList, Map<String, String> attributeMappings) throws RrdException {
+        Object def = null;
+
+        try {
+            RrdStrategy<Object, Object> strategy = toGenericType(rrdStrategy);
+
+            def = strategy.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
+            // def can be null if the rrd-db exists already, but doesn't have to be (see MultiOutput/QueuingRrdStrategy
+            strategy.createFile(def, attributeMappings);
+
+            return true;
+        } catch (Throwable e) {
+            String path = directory + File.separator + rrdName + rrdStrategy.getDefaultFileExtension();
+            LOG.error("createRRD: An error occurred creating rrdfile {}", path, e);
+            throw new org.opennms.netmgt.rrd.RrdException("An error occurred creating rrdfile " + path + ": " + e, e);
+        }
+    }
+
+    /**
+     * Add datapoints to a round robin database.
+     *
+     * @param owner the owner of the file. This is used in log messages
+     * @param repositoryDir the directory the file resides in
+     * @param rrdName the name for the rrd file.
+     * @param timestamp the timestamp in millis to use for the rrd update (this
+     * gets rounded to the nearest second)
+     * @param val a colon separated list of values representing the updates for
+     * datasources for this rrd
+     * @throws org.opennms.netmgt.rrd.RrdException if any.
+     */
+    private static void updateRRD(RrdStrategy<?, ?> rrdStrategy, String owner, String repositoryDir, String rrdName, long timestamp, String val) throws RrdException {
+        // Issue the RRD update
+        String rrdFile = repositoryDir + File.separator + rrdName + rrdStrategy.getDefaultFileExtension();
+        long time = (timestamp + 500L) / 1000L;
+
+        String updateVal = Long.toString(time) + ":" + val;
+
+        LOG.info("updateRRD: updating RRD file {} with values '{}'", rrdFile, updateVal);
+
+        RrdStrategy<Object, Object> strategy = toGenericType(rrdStrategy);
+        Object rrd = null;
+        try {
+            rrd = strategy.openFile(rrdFile);
+            strategy.updateFile(rrd, owner, updateVal);
+        } catch (Throwable e) {
+            LOG.error("updateRRD: Error updating RRD file {} with values '{}'", rrdFile, updateVal, e);
+            throw new org.opennms.netmgt.rrd.RrdException("Error updating RRD file " + rrdFile + " with values '" + updateVal + "': " + e, e);
+        } finally {
+            try {
+                if (rrd != null) {
+                    strategy.closeFile(rrd);
+                }
+            } catch (Throwable e) {
+                LOG.error("updateRRD: Exception closing RRD file {}", rrdFile, e);
+                throw new org.opennms.netmgt.rrd.RrdException("Exception closing RRD file " + rrdFile + ": " + e, e);
+            }
+        }
+
+        LOG.debug("updateRRD: RRD update command completed.");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static RrdStrategy<Object, Object> toGenericType(RrdStrategy<?, ?> rrdStrategy) {
+        Assert.notNull(rrdStrategy);
+        return (RrdStrategy<Object, Object>) rrdStrategy;
     }
 
     /**

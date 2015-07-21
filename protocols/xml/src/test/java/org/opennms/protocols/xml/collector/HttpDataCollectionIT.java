@@ -49,10 +49,10 @@ import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -95,6 +95,8 @@ public class HttpDataCollectionIT {
 
     private FilesystemResourceStorageDao m_resourceStorageDao;
 
+    private RrdPersisterFactory m_persisterFactory;
+
     /**
      * Sets the up.
      *
@@ -113,6 +115,10 @@ public class HttpDataCollectionIT {
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
         m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -166,7 +172,7 @@ public class HttpDataCollectionIT {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy, m_resourceStorageDao); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/count-stats.jrb"));
@@ -204,7 +210,7 @@ public class HttpDataCollectionIT {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy, m_resourceStorageDao); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/market.jrb"));
@@ -242,7 +248,7 @@ public class HttpDataCollectionIT {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy, m_resourceStorageDao); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/person-stats.jrb"));
@@ -280,7 +286,7 @@ public class HttpDataCollectionIT {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, repository, m_rrdStrategy, m_resourceStorageDao); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
         RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/solarisZoneStats/global/solaris-zone-stats.jrb"));

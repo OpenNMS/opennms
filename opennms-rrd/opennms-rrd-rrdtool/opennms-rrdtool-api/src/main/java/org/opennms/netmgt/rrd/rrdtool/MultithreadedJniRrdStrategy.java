@@ -42,7 +42,7 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
@@ -194,8 +194,8 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
         String filenameWithoutExtension = createCommand.getFilename().replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
         
-        RrdUtils.createMetaDataFile(
-            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+        RrdMetaDataUtils.createMetaDataFile(
+            new File(filenameWithoutExtension.substring(0, lastIndexOfSeparator)),
             filenameWithoutExtension.substring(lastIndexOfSeparator),
             attributeMappings
         );

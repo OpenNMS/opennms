@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -53,7 +51,12 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
@@ -79,13 +82,10 @@ import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.RemoteHostThreadLocal;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -99,6 +99,8 @@ import org.springframework.util.Assert;
 @Transactional
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerBackEnd.class);
+
+    public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
@@ -175,7 +177,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private int m_disconnectedTimeout;
 
     @Autowired
-    private RrdStrategy<?, ?> m_rrdStrategy;
+    private PersisterFactory m_persisterFactory;
 
     private long m_minimumConfigurationReloadInterval;
     
@@ -195,7 +197,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         Assert.notNull(m_timeKeeper, "The timeKeeper must be set");
         Assert.notNull(m_eventIpcManager, "The eventIpcManager must be set");
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
-        Assert.notNull(m_rrdStrategy, "The rrdStrategy must be set");
+        Assert.notNull(m_persisterFactory, "The persisterFactory must be set");
 
         m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
         
@@ -630,37 +632,43 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     /**
      * <p>saveResponseTimeData</p>
      *
-     * @param locationMonitor a {@link java.lang.String} object.
+     * @param locationMonitorId a {@link java.lang.String} object.
      * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      * @param responseTime a double.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      */
     @Override
-    public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
+    public void saveResponseTimeData(final String locationMonitorId, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
         final String svcName = monSvc.getServiceName();
         final Service svc = m_pollerConfig.getServiceInPackage(svcName, pkg);
-        
+
         final String dsName = getServiceParameter(svc, "ds-name");
         if (dsName == null) {
             return;
         }
-        
+
         final String rrdRepository = getServiceParameter(svc, "rrd-repository");
         if (rrdRepository == null) {
             return;
         }
-        
-        final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+str(monSvc.getIpAddress());
 
-        try {
-            final File rrdFile = new File(rrdDir, dsName);
-            if (!rrdFile.exists()) {
-                RrdUtils.createRRD(m_rrdStrategy, locationMonitor, rrdDir, dsName, m_pollerConfig.getStep(pkg), "GAUGE", 600, "U", "U", m_pollerConfig.getRRAList(pkg));
-            }
-            RrdUtils.updateRRD(m_rrdStrategy, locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
-        } catch (final RrdException e) {
-            throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
-        }
+        RrdRepository repository = new RrdRepository();
+        repository.setStep(m_pollerConfig.getStep(pkg));
+        repository.setHeartBeat(repository.getStep() * HEARTBEAT_STEP_MULTIPLIER);
+        repository.setRraList(m_pollerConfig.getRRAList(pkg));
+        repository.setRrdBaseDir(new File(rrdRepository));
+
+        DistributedLatencyCollectionResource distributedLatencyResource = new DistributedLatencyCollectionResource(locationMonitorId, InetAddressUtils.toIpAddrString(monSvc.getIpAddress()));
+        DistributedLatencyCollectionAttributeType distributedLatencyType = new DistributedLatencyCollectionAttributeType(dsName, dsName);
+        distributedLatencyResource.addAttribute(new DistributedLatencyCollectionAttribute(distributedLatencyResource,
+                distributedLatencyType, responseTime));
+
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        CollectionSetVisitor persister = m_persisterFactory.createPersister(params, repository, false, true, true);
+
+        SingleResourceCollectionSet collectionSet = new SingleResourceCollectionSet(distributedLatencyResource, new Date());
+        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.visit(persister);
     }
 
     private String getServiceParameter(final Service svc, final String key) {
@@ -781,8 +789,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_timeKeeper = timeKeeper;
     }
 
-    public void setRrdStrategy(final RrdStrategy<?, ?> rrdStrategy) {
-        m_rrdStrategy = rrdStrategy;
+    public void setPersisterFactory(final PersisterFactory persisterFactory) {
+        m_persisterFactory = persisterFactory;
     }
 
     private MonitorStatus updateMonitorState(final OnmsLocationMonitor mon, final Date currentConfigurationVersion) {

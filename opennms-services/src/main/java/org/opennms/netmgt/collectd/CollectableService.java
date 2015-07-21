@@ -37,11 +37,10 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -49,10 +48,8 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
@@ -121,7 +118,7 @@ final class CollectableService implements ReadyRunnable {
     
     private final RrdRepository m_repository;
 
-    private final RrdStrategy<?, ?> m_rrdStrategy;
+    private final PersisterFactory m_persisterFactory;
 
     private final ResourceStorageDao m_resourceStorageDao;
 
@@ -138,7 +135,7 @@ final class CollectableService implements ReadyRunnable {
      */
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
             Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
-            RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
+            PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
 
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
@@ -146,7 +143,7 @@ final class CollectableService implements ReadyRunnable {
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
-        m_rrdStrategy = rrdStrategy;
+        m_persisterFactory = persisterFactory;
         m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
@@ -388,17 +385,9 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-    private static BasePersister createPersister(ServiceParameters params, RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
-        if (ResourceTypeUtils.isStoreByGroup()) {
-            return new GroupPersister(params, repository, rrdStrategy, resourceStorageDao);
-        } else {
-            return new OneToOnePersister(params, repository, rrdStrategy, resourceStorageDao);
-        }
-    }
-
-        /**
-         * Perform data collection.
-         */
+    /**
+     * Perform data collection.
+     */
 	private void doCollection() throws CollectionException {
 		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
@@ -407,13 +396,12 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            BasePersister persister = createPersister(m_params, m_repository, m_rrdStrategy, m_resourceStorageDao);
-                            persister.setIgnorePersist(result.ignorePersist());
+                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
                             result.visit(persister);
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
-                        
+
                         /*
                          * Do the thresholding; this could be made more generic (listeners being passed the collectionset), but frankly, why bother?
                          * The first person who actually needs to configure that sort of thing on the fly can code it up.
