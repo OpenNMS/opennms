@@ -1,9 +1,11 @@
 {
     "count": 1, 
+    "offset": null, 
     "resource": [
         {
             "children": {
                 "count": 1, 
+                "offset": null, 
                 "resource": [
                     {
                         "externalValueAttributes": {}, 
@@ -24,6 +26,7 @@
                                 "rrdFile": "SwapOut.jrb"
                             }
                         }, 
+                        "typeLabel": "SNMP Node Data", 
                         "stringPropertyAttributes": {}
                     }
                 ], 
@@ -36,6 +39,7 @@
             "name": "1", 
             "parentId": null, 
             "rrdGraphAttributes": {}, 
+            "typeLabel": "Node", 
             "stringPropertyAttributes": {}
         }
     ], 

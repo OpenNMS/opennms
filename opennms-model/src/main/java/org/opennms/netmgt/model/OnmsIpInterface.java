@@ -341,7 +341,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="nodeId")
     //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
-    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -355,8 +354,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
-    @XmlTransient
     @Transient
+    @XmlTransient
     public Integer getNodeId() {
         if (m_node != null) {
             return m_node.getId();

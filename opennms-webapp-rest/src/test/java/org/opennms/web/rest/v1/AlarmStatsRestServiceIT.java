@@ -276,7 +276,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final Date date = new Date(time + (count * 60 * 60 * 1000));
 
         final OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.load("localhost"));
+        event.setDistPoller(m_distPollerDao.whoami());
         event.setEventUei("uei.opennms.org/test/" + count);
         event.setEventCreateTime(date);
         event.setEventTime(date);

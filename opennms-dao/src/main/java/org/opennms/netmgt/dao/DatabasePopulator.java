@@ -348,10 +348,12 @@ public class DatabasePopulator {
         def.setLocationName("RDU");
         def.setMonitoringArea("East Coast");
         def.setPollingPackageNames(Collections.singletonList("example1"));
+        def.setCollectionPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
         def.setLatitude(35.715751f);
         def.setLongitude(-79.16262f);
         def.setPriority(1L);
+        def.setTags(Collections.singletonList("blah"));
         m_monitoringLocationDao.save(def);
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
