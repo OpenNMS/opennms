@@ -138,6 +138,7 @@ public class OnmsRestService {
     	}
     	
 	    if(params.containsKey("orderBy")) {
+	    	builder.clearOrder();
 	    	builder.orderBy(params.getFirst("orderBy"));
 			params.remove("orderBy");
 			

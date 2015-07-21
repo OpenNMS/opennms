@@ -9,12 +9,12 @@
             "services": [
                 {
                     "id": 2,
-                    "name": "SNMP",
+                    "name": "ICMP",
                     "availability": -1.0
                 },
                 {
                     "id": 3,
-                    "name": "ICMP",
+                    "name": "SNMP",
                     "availability": -1.0
                 }
             ]

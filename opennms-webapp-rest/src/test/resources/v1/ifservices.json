@@ -6,7 +6,7 @@
             "isDown": false, 
             "isMonitored": true, 
             "node": "node1", 
-            "serviceName": "SNMP", 
+            "serviceName": "ICMP", 
             "status": "Managed", 
             "statusCode": "A"
         },
@@ -15,7 +15,7 @@
             "isDown": false, 
             "isMonitored": true, 
             "node": "node1", 
-            "serviceName": "ICMP", 
+            "serviceName": "SNMP", 
             "status": "Managed", 
             "statusCode": "A"
         },
@@ -60,7 +60,7 @@
             "isDown": false, 
             "isMonitored": true, 
             "node": "node2", 
-            "serviceName": "SNMP", 
+            "serviceName": "ICMP", 
             "status": "Managed", 
             "statusCode": "A"
         },
@@ -69,7 +69,7 @@
             "isDown": false, 
             "isMonitored": true, 
             "node": "node2", 
-            "serviceName": "ICMP", 
+            "serviceName": "SNMP", 
             "status": "Managed", 
             "statusCode": "A"
         },

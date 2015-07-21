@@ -107,6 +107,7 @@ public class IfServicesRestServiceTest extends AbstractSpringJerseyRestTestCase 
         // GET all users
         MockHttpServletRequest jsonRequest = createRequest(getServletContext(), GET, url);
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("orderBy=id");
         String json = sendRequest(jsonRequest, 200);
 
         JSONObject restObject = new JSONObject(json);

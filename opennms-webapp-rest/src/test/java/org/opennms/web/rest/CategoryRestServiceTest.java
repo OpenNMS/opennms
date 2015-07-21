@@ -83,6 +83,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testCategories() throws Exception {
         // get initial categories
         String xml = sendRequest("GET", "/categories", 200);
@@ -115,6 +116,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testCategoriesJson() throws Exception {
         String url = "/categories";
 
@@ -129,6 +131,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testAddCategory() throws Exception {
         // add with description
         OnmsCategory createMe = new OnmsCategory();
@@ -175,6 +178,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     // does not test in detail, just checks if methods are still there
     // the tests should be done in NodeRestServiceTest
     public void testNodeCategories() throws Exception {
@@ -185,6 +189,7 @@ public class CategoryRestServiceTest extends AbstractSpringJerseyRestTestCase {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     // does not test in detail, just checks if methods are there.
     // the tests should be done in GroupRestServiceTest
     public void testGroupCategories() throws Exception {

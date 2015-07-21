@@ -175,7 +175,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
         parameters.put("limit", "50");
         parameters.put("node.id", "1");
         xml = sendRequest(GET, "/events", parameters, 200);
-        assertTrue(xml.contains("totalCount=\"0\""));
+        assertTrue(xml, xml.contains("totalCount=\"1\""));
     }
 
     @Test
@@ -210,8 +210,8 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
         parameters.put("limit", "50");
         parameters.put("node.id", "1");
         String xml = sendRequest(GET, "/events", parameters, 200);
-        assertTrue(xml.contains("totalCount=\"1\""));
-        assertTrue(xml.contains("uei.opennms.org/test"));
+        assertTrue(xml, xml.contains("totalCount=\"2\""));
+        assertTrue(xml, xml.contains("uei.opennms.org/test"));
     }
 
     @Test
