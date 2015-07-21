@@ -42,7 +42,7 @@
       <jaxrs:providers>
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
-        <ref bean="jsonProvider"/>
+        <ref bean="jacksonJaxbJsonProvider"/>
         <ref bean="atomEntryProvider"/>
         <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->

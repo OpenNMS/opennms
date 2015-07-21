@@ -28,6 +28,20 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.FileInputStream;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,19 +60,6 @@ import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.io.FileInputStream;
-import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -90,17 +91,17 @@ public class JMXCollectorTest {
         }
 
         @Override
+        public String getNodeLabel() {
+            return null;
+        }
+
+        @Override
         public String getForeignSource() {
             return null;
         }
 
         @Override
         public String getForeignId() {
-            return null;
-        }
-
-        @Override
-        public String getNodeLabel() {
             return null;
         }
 

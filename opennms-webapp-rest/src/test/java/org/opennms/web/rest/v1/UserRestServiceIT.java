@@ -33,12 +33,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -50,7 +56,9 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -79,6 +87,9 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     @Autowired
     UserManager m_userManager;
 
+    @Autowired
+    private ServletContext m_servletContext;
+
     @Test
     public void testUser() throws Exception {
         String url = "/users";
@@ -96,6 +107,21 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
         // GET invalid URL
         sendRequest(GET, url + "/idontexist", 404);
+    }
+
+    @Test
+    public void testUserJson() throws Exception {
+        String url = "/users";
+        createUser("foobar", "foobar@opennms.org", 303, null);
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/users.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test

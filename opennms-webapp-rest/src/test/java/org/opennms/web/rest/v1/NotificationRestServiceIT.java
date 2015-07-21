@@ -31,14 +31,24 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileInputStream;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,12 +75,17 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
     @Autowired
     private DatabasePopulator m_databasePopulator;
 
+    @Autowired
+    private ServletContext m_servletContext;
+
     @Override
     protected void afterServletStart() {
+        MockLogAppender.setupLogging(true, "DEBUG");
         m_databasePopulator.populateDatabase();
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testNotifications() throws Exception {
 
         String xml = sendRequest(GET, "/notifications", 200);
@@ -84,5 +99,20 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
 
         sendPut("/notifications", "notifyId=1&ack=true", 303, "/notifications");
         sendPut("/notifications", "notifyId=1&ack=false", 303, "/notifications");
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testNotificationsJson() throws Exception {
+        String url = "/notifications";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/notifications.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }

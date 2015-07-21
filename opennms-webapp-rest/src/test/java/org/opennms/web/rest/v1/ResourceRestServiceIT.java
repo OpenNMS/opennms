@@ -31,9 +31,15 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URLEncoder;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +53,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +78,9 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
+    @Autowired
+    private ServletContext m_servletContext;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -103,6 +114,7 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testResources() throws Exception {
         // Top level
         String url = "/resources";
@@ -127,5 +139,20 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // 404 on invalid Node ID
         url = "/resources/fornode/99";
         xml = sendRequest(GET, url, 404);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testResourcesJson() throws Exception {
+        String url = "/resources";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/resources.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }
