@@ -79,7 +79,7 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
 
         assertNotNull(config);
 
-        assertEquals(2, config.getJmxCollectionCount());
+        assertEquals(4, config.getJmxCollectionCount());
         assertEquals(config.getJmxCollection(0).getRrd().getStep(), 300);
         assertEquals("jboss", config.getJmxCollection(0).getName());
         assertEquals(4, config.getJmxCollection("jboss").getMbeanCount());
@@ -88,6 +88,12 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
         assertEquals("jsr160", config.getJmxCollection(1).getName());
         assertEquals(23, config.getJmxCollection("jsr160").getMbeanCount());
         assertEquals(23, config.getJmxCollection(1).getMbeanCount());
+
+        assertEquals(config.getJmxCollection(2).getRrd().getStep(), 300);
+        assertEquals("cassandra21x", config.getJmxCollection(2).getName());
+
+        assertEquals(config.getJmxCollection(3).getRrd().getStep(), 300);
+        assertEquals("newts-cassandra21x", config.getJmxCollection(3).getName());
     }
 
 }
