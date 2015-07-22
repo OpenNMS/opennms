@@ -49,19 +49,22 @@ public class MeasurementFetchStrategyFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementFetchStrategyFactory.class);
 
+    private static final String TIMESERIES_STRATEGY_PROPERTY = "org.opennms.timeseries.strategy";
+
     private static ServiceLoader<MeasurementFetchStrategyProvider> providerLoader = ServiceLoader.load(MeasurementFetchStrategyProvider.class);
 
     @Bean(name="measurementFetchStrategy")
     public MeasurementFetchStrategy getStrategy() throws InstantiationException, IllegalAccessException {
+        final String timeSeriesStrategyName = System.getProperty(TIMESERIES_STRATEGY_PROPERTY, RrdConfig.RRD_TIME_SERIES_STRATEGY_NAME);
         final String rrdStrategyClass = System.getProperty(RrdConfig.RRD_STRATEGY_CLASS_PROPERTY, RrdConfig.DEFAULT_RRD_STRATEGY_CLASS);
         for (MeasurementFetchStrategyProvider provider : providerLoader) {
-            Class<? extends MeasurementFetchStrategy> strategy = provider.getStrategyClass(rrdStrategyClass);
+            Class<? extends MeasurementFetchStrategy> strategy = provider.getStrategyClass(timeSeriesStrategyName, rrdStrategyClass);
             if (strategy != null) {
                 return strategy.newInstance();
             }
         }
 
-        LOG.error("No supported fetch strategy found for {}. Defaulting to NullFetchStrategy.", rrdStrategyClass);
+        LOG.error("No supported fetch strategy found for {}/{}. Defaulting to NullFetchStrategy.", timeSeriesStrategyName, rrdStrategyClass);
         return new NullFetchStrategy();
     }
 }

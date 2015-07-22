@@ -31,6 +31,13 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.FileInputStream;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -42,9 +49,13 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetail;
 import org.opennms.netmgt.model.OnmsMonitoredServiceDetailList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -62,10 +73,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
+@Transactional
 public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
-    DatabasePopulator m_databasePopulator;
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
+    private TransactionTemplate m_template;
+
+    @Autowired
+    private ServletContext m_servletContext;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -74,6 +92,7 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetServices() throws Exception {
         String url = "/ifservices";
         OnmsMonitoredServiceDetailList list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);
@@ -90,4 +109,21 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
             assertEquals("F", detail.getStatusCode());
         }
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetServicesJson() throws Exception {
+        String url = "/ifservices";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("orderBy=id");
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/ifservices.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
+    }
+
 }

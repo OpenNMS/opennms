@@ -188,13 +188,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         if (m_thresholdingSet.hasThresholds(attribute)) {
             String name = attribute.getName();
             m_attributesMap.put(name, attribute);
-            if (LOG.isDebugEnabled()) {
-                String value = attribute.getNumericValue();
-                if (value == null) {
-                    value = attribute.getStringValue();
-                }
-                LOG.debug("visitAttribute: storing value {} for attribute named {}", value, name);
-            }
+            LOG.debug("visitAttribute: storing value {} for attribute named {}",
+                    attribute.getNumericValue() != null ? attribute.getNumericValue() : attribute.getStringValue(), name);
         }
     }
 

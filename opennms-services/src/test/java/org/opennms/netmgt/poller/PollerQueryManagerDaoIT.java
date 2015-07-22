@@ -215,7 +215,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		PollableNetwork network = new PollableNetwork(pollContext);
 
 		m_poller = new Poller();
-        m_poller.setDataSource(m_db);
         m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
         m_poller.setTransactionTemplate(m_transactionTemplate);
 		m_poller.setEventIpcManager(m_eventMgr);

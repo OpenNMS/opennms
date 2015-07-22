@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1;
 
+import java.util.Date;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -48,6 +50,7 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +115,7 @@ public class AssetRecordResource extends OnmsRestService {
         }
         LOG.debug("updateAssetRecord: updating category {}", assetRecord);
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
+        wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);

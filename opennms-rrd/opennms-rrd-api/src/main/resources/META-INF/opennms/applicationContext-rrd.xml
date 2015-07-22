@@ -112,4 +112,17 @@
 
     <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
 
+    <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
+        <property name="rrdDirectory" value="${rrd.base.dir}" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+    <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory">
+        <property name="rrdStrategy" ref="rrdStrategy" />
+        <property name="resourceStorageDao" ref="resourceStorageDao" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
 </beans>

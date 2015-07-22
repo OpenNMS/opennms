@@ -1,10 +1,41 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.web.rest.v1;
 
+import java.io.FileInputStream;
 import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +53,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
@@ -79,6 +111,8 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
                 OnmsDistPoller distPoller = populator.getDistPollerDao().whoami();
                 outageEvent = populator.buildEvent(distPoller);
+                outageEvent.setEventCreateTime(new Date(1436881548292L));
+                outageEvent.setEventTime(new Date(1436881548292L));
                 populator.getEventDao().save(outageEvent);
                 populator.getEventDao().flush();
 
@@ -95,7 +129,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 populator.getMonitoredServiceDao().flush();
 
                 // create a unresolved outage
-                unresolvedOutage = new OnmsOutage(new Date(), outageEvent, svc);
+                unresolvedOutage = new OnmsOutage(new Date(1436881548292L), outageEvent, svc);
                 populator.getOutageDao().save(unresolvedOutage);
                 populator.getOutageDao().flush();
             }
@@ -121,6 +155,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetAllOutages() throws Exception {
         String xml = sendRequest(GET, "/outages", 200);
 
@@ -130,5 +165,21 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         Assert.assertNotNull(xml);
         Assert.assertNotNull(json);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testOutagesJson() throws Exception {
+        String url = "/outages";
+
+        // GET all users
+        MockHttpServletRequest jsonRequest = createRequest(m_context, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        jsonRequest.setQueryString("limit=1&orderBy=id");
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/outages.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }

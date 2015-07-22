@@ -392,20 +392,14 @@ public class CollectionResourceWrapper {
             LOG.info("getAttributeValue: can't find attribute called {} on {}", ds, m_resource);
             return null;
         }
-        String numValue = m_attributes.get(ds).getNumericValue();
+        Number numValue = m_attributes.get(ds).getNumericValue();
         if (numValue == null) {
             LOG.info("getAttributeValue: can't find numeric value for {} on {}", ds, m_resource);
             return null;
         }
         // Generating a unique ID for the node/resourceType/resource/metric combination.
         String id =  "node[" + m_nodeId + "].resourceType[" + m_resource.getResourceTypeName() + "].instance[" + m_resource.getInterfaceLabel() + "].metric[" + ds + "]";
-        Double current = null;
-        try {
-            current = Double.parseDouble(numValue);
-        } catch (NumberFormatException e) {
-            LOG.error("{} does not have a numeric value: {}", id, numValue);
-            return null;
-        }
+        Double current = numValue.doubleValue();
         if (m_attributes.get(ds).getType().toLowerCase().startsWith("counter") == false) {
             LOG.debug("getAttributeValue: id={}, value= {}", id, current);
             return current;

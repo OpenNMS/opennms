@@ -226,7 +226,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         PollableNetwork network = new PollableNetwork(pollContext);
 
         m_poller = new Poller();
-        m_poller.setDataSource(m_db);
         m_poller.setMonitoredServiceDao(m_monitoredServiceDao);
         m_poller.setOutageDao(m_outageDao);
         m_poller.setTransactionTemplate(m_transactionTemplate);

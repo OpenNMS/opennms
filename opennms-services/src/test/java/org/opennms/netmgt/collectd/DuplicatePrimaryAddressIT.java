@@ -68,6 +68,7 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -86,8 +87,8 @@ import org.springframework.core.io.Resource;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
-public class DuplicatePrimaryAddressTest {
-    private static final Logger LOG = LoggerFactory.getLogger(DuplicatePrimaryAddressTest.class);
+public class DuplicatePrimaryAddressIT {
+    private static final Logger LOG = LoggerFactory.getLogger(DuplicatePrimaryAddressIT.class);
 
     /** The event IPC manager instance. */
     private EventIpcManager m_eventIpcManager;
@@ -244,6 +245,7 @@ public class DuplicatePrimaryAddressTest {
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
+        m_collectd.setPersisterFactory(new MockPersisterFactory());
 
         m_collectd.afterPropertiesSet();
         m_collectd.start();

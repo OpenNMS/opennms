@@ -246,12 +246,14 @@ public class NetworkBuilder {
         m_serviceTypeCache.put(serviceType.getName(), serviceType);
         if (m_currentIf != null) {
             m_currentMonSvc = new OnmsMonitoredService(m_currentIf, serviceType);
+            m_currentMonSvc.setStatus("A");
             return m_currentMonSvc;
         } else {
             final Set<OnmsIpInterface> ipInterfaces = m_currentSnmpIf.getIpInterfaces();
             if (m_currentSnmpIf != null && ipInterfaces != null && ipInterfaces.size() > 0) {
                 final OnmsIpInterface current = ipInterfaces.toArray(new OnmsIpInterface[]{})[ipInterfaces.size() - 1];
                 m_currentMonSvc = new OnmsMonitoredService(current, serviceType);
+                m_currentMonSvc.setStatus("A");
                 return m_currentMonSvc;
             }
         }

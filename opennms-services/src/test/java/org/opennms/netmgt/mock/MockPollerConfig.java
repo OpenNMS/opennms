@@ -64,6 +64,8 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.core.io.ByteArrayResource;
 
+import com.google.common.collect.Maps;
+
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 
     private String m_criticalSvcName;
@@ -89,6 +91,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private Service m_currentSvc;
 
     private MockNetwork m_network;
+
+    private Map<Package, List<String>> m_rraLists = Maps.newHashMap();
 
     public MockPollerConfig(final MockNetwork network) {
         m_network = network;
@@ -301,9 +305,13 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
+    public void setRRAList(Package pkg, List<String> rraList) {
+        m_rraLists.put(pkg, rraList);
+    }
+
     @Override
     public List<String> getRRAList(Package pkg) {
-        return null;
+        return m_rraLists.get(pkg);
     }
 
     @Override
@@ -318,7 +326,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public int getStep(Package pkg) {
-        return 0;
+        return 300;
     }
 
     @Override

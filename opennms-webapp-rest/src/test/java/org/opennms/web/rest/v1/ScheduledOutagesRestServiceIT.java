@@ -32,10 +32,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Collections;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.easymock.EasyMock;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,8 +60,10 @@ import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -84,6 +90,9 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
     private String m_onmsHome;
 
     @Autowired
+    private ServletContext m_servletContext;
+
+    @Autowired
     private PollOutagesConfigManager m_pollOutagesConfigManager;
 
     @Override
@@ -102,6 +111,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<outage name='my-junit-test' type='weekly'>"
                 + "<time day='monday' begins='13:30:00' ends='14:45:00'/>"
                 + "<interface address='match-any'/>"
+                + "<node id='18'/><node id='40'/>"
                 + "</outage>"
                 + "</outages>");
         m_pollOutagesConfigManager.setConfigResource(new FileSystemResource(outagesConfig));
@@ -204,6 +214,20 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         Outage outage = getXmlObject(m_jaxbContext, url, 200, Outage.class);
         Assert.assertNotNull(outage);
         Assert.assertEquals("match-any", outage.getInterface(0).getAddress());
+    }
+
+    @Test
+    public void testGetOutageJson() throws Exception {
+        String url = "/sched-outages";
+
+        // GET all items
+        MockHttpServletRequest jsonRequest = createRequest(m_servletContext, GET, url);
+        jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        String json = sendRequest(jsonRequest, 200);
+
+        JSONObject restObject = new JSONObject(json);
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/sched-outages.json")));
+        JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
     @Test

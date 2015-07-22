@@ -177,6 +177,7 @@ public class IfServicesRestService extends OnmsRestService {
         builder.alias("ipInterface.node", "node", JoinType.LEFT_JOIN);
         builder.alias("ipInterface.node.categories", "category", JoinType.LEFT_JOIN);
         builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.orderBy("id");
         applyQueryFilters(params, builder);
 
         return builder.toCriteria();

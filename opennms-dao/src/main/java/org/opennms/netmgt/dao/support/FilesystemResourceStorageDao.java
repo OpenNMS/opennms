@@ -47,7 +47,7 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -146,7 +146,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return RrdUtils.readMetaDataFile(getRrdDirectory().getAbsolutePath(), toRelativePath(path));
+        return RrdMetaDataUtils.readMetaDataFile(getRrdDirectory(), toRelativePath(path));
     }
 
     @Override

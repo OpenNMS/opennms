@@ -26,10 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.support;
+package org.opennms.netmgt.rrd;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -37,56 +36,56 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
+/**
+ * A {@link org.opennms.netmgt.rrd.RrdStrategy} implementation that does nothing.
+ *
+ * Used in cases where an instance of {@link org.opennms.netmgt.rrd.RrdStrategy} is required 
+ * but no implementations are available.
+ *
+ */
 public class NullRrdStrategy implements RrdStrategy<Object,Object> {
-	
-	// THIS IS USED FOR TESTS SO RrdUtils can be initialized
-	// but doesn't need to do anything
 
     @Override
     public void setConfigurationProperties(Properties configurationParameters) {
-        // Do nothing
+        // pass
     }
 
     @Override
-	public void closeFile(Object rrd) throws Exception {
+	public void closeFile(Object rrd) {
+        // pass
 	}
 
     @Override
 	public Object createDefinition(String creator, String directory,
-			String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList)
-			throws Exception {
+			String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) {
 		return null;
 	}
 
     @Override
-	public void createFile(Object rrdDef, Map<String, String> attrMapping) throws Exception {
+	public void createFile(Object rrdDef, Map<String, String> attrMapping) {
+        // pass
 	}
 
     @Override
-    public InputStream createGraph(String command, File workDir)
-            throws IOException, RrdException {
+    public InputStream createGraph(String command, File workDir) {
         return null;
     }
-    
+
     @Override
-    public RrdGraphDetails createGraphReturnDetails(String command, File workDir)
-            throws IOException, RrdException {
+    public RrdGraphDetails createGraphReturnDetails(String command, File workDir) {
         return null;
     }
-    
+
     @Override
-	public Double fetchLastValue(String rrdFile, String ds, int interval)
-			throws NumberFormatException, RrdException {
+	public Double fetchLastValue(String rrdFile, String ds, int interval) {
 		return null;
 	}
 
     @Override
-	public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range)
-			throws NumberFormatException, RrdException {
+	public Double fetchLastValueInRange(String rrdFile, String ds, int interval, int range) {
 		return null;
 	}
 
@@ -95,20 +94,14 @@ public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 		return null;
 	}
 
-	public void graphicsInitialize() throws Exception {
-	}
-
-	public void initialize() throws Exception {
-	}
-
     @Override
-	public Object openFile(String fileName) throws Exception {
+	public Object openFile(String fileName) {
 		return null;
 	}
 
     @Override
-	public void updateFile(Object rrd, String owner, String data)
-			throws Exception {
+	public void updateFile(Object rrd, String owner, String data) {
+        // pass
 	}
 
     @Override
@@ -118,13 +111,13 @@ public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 
     @Override
     public Double fetchLastValue(String rrdFile, String ds,
-            String consolidationFunction, int interval)
-            throws NumberFormatException, RrdException {
+            String consolidationFunction, int interval) {
         return null;
     }
 
     @Override
     public void promoteEnqueuedFiles(Collection<String> rrdFiles) {
+        // pass
     }
 
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +42,15 @@ import org.junit.rules.TestName;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collectd.DefaultCollectionAgent;
+import org.opennms.netmgt.collectd.NodeInfo;
+import org.opennms.netmgt.collectd.NodeResourceType;
+import org.opennms.netmgt.collectd.OnmsSnmpCollection;
+import org.opennms.netmgt.collectd.SnmpAttribute;
+import org.opennms.netmgt.collectd.SnmpAttributeType;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
+import org.opennms.netmgt.collectd.SnmpCollectionResource;
+import org.opennms.netmgt.collectd.StringAttributeType;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -61,6 +70,8 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import com.google.common.collect.Sets;
 
 /**
  * JUnit TestCase for the BasePersister.
@@ -169,7 +180,7 @@ public class BasePersisterTest {
         
         m_persister.pushShouldPersist(attribute);
 
-        m_persister.createBuilder(attribute.getResource(), attribute.getName(), attribute.getAttributeType());
+        m_persister.setBuilder(m_persister.createBuilder(attribute.getResource(), attribute.getName(), Sets.newHashSet(attribute.getAttributeType())));
 
         // This will end up calling m_persister.persistStringAttribute(attribute);
         m_persister.storeAttribute(attribute);

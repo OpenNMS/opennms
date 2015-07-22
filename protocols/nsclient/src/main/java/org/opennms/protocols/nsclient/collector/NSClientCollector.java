@@ -120,13 +120,17 @@ public class NSClientCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
-            return m_value;
+        public Double getNumericValue() {
+            try {
+                return Double.parseDouble(m_value);
+            } catch (NumberFormatException|NullPointerException e) {
+                return null;
+            }
         }
 
         @Override
         public String getStringValue() {
-            return m_value; //Should this be null instead?
+            return m_value;
         }
 
         @Override

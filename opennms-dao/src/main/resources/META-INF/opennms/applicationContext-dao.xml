@@ -454,11 +454,12 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
-  <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
-    <property name="rrdDirectory" value="${rrd.base.dir}" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+  <!-- The time-series strategy specific context should provide beans that implement:
+            org.opennms.netmgt.collection.api.PersisterFactory
+            org.opennms.netmgt.dao.api.ResourceStorageDao
+            org.opennms.netmgt.rrd.RrdStrategy
+   -->
+  <import resource="classpath*:/META-INF/opennms/applicationContext-${org.opennms.timeseries.strategy:rrd}.xml"/>
 
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
@@ -470,8 +471,6 @@
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceDao" ref="resourceDao" />
-
-  <import resource="classpath*:/META-INF/opennms/applicationContext-rrd.xml"/>
 
   <bean id="rrdDao" class="org.opennms.netmgt.dao.support.DefaultRrdDao">
     <property name="rrdStrategy" ref="rrdStrategy" />
