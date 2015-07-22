@@ -644,10 +644,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private void getBridgeLinks(){
 
-        List<BridgeMacTopologyLink> bridgeMacLinks = m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes();
-
         Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
-        for (BridgeMacTopologyLink macLink : bridgeMacLinks) {
+        for (BridgeMacTopologyLink macLink : m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
             multimap.put(String.valueOf(macLink.getNodeId()) + "|" +String.valueOf(macLink.getBridgePort()), macLink);
         }
 
@@ -669,6 +667,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 edge.setTooltipText(getEdgeTooltipText(detail));
             }
 
+        }
+        
+        for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll()) {
+            String id = Math.min(link.getNode().getId(), link.getDesignatedNode().getId()) + "|" + Math.max(link.getNode().getId(), link.getDesignatedNode().getId());
+            BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,
+                        getVertex(m_nodeDao.get(link.getNode().getId())), link.getId(), getVertex(m_nodeDao.get(link.getDesignatedNode().getId())), link.getId());
+           AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
+           edge.setTooltipText(getEdgeTooltipText(detail));
         }
     }
 

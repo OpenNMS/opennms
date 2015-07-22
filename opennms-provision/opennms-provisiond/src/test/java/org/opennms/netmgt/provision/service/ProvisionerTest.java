@@ -281,8 +281,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testNoIPAddrTable() throws Exception {
         importFromResource("classpath:/no-ipaddrtable.xml", Boolean.TRUE.toString());
 
-        OnmsNode node = getNodeDao().findByForeignId("empty", "123");
-
         assertEquals(1, getNodeDao().countAll());
 
         //Verify ipinterface count
@@ -297,8 +295,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
+        runPendingScans();
 
         assertEquals(1, getNodeDao().countAll());
 
@@ -322,8 +319,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testLameForce10Agent() throws Exception {
         importFromResource("classpath:/lameForce10.xml", Boolean.TRUE.toString());
 
-        OnmsNode node = getNodeDao().findByForeignId("empty", "123");
-
         assertEquals(1, getNodeDao().countAll());
 
         //Verify ipinterface count
@@ -338,14 +333,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-
-        // wait up to 10 seconds for the node scan to run
-        final long end = System.currentTimeMillis() + 10000;
-        while(getInterfaceDao().countAll() < 4 && System.currentTimeMillis() < end) {
-            Thread.sleep(500);
-        }
+        runPendingScans();
 
         assertEquals(1, getNodeDao().countAll());
 
@@ -454,12 +442,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
     public void testNonSnmpImportAndScan() throws Exception {
         importFromResource("classpath:/import_localhost.xml", Boolean.TRUE.toString());
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-
-        runScan(scan);
+        runPendingScans();
 
         final OnmsNode scannedNode = getNodeDao().findAll().get(0);
         assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
@@ -543,16 +526,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-
-        // Make sure that we wait long enough for the node scan to run
-        while(getInterfaceDao().countAll() < 2) {
-            Thread.sleep(500);
-        }
+        runPendingScans();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -571,7 +545,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-
 
         // Node Delete
         importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
@@ -605,16 +578,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(0, getMonitoredServiceDao().countAll());
         assertEquals(0, getServiceTypeDao().countAll());
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-
-        // Make sure that we wait long enough for the node scan to run
-        while(getInterfaceDao().countAll() < 2) {
-            Thread.sleep(500);
-        }
+        runPendingScans();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -674,17 +638,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
 
-
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-
-        // Make sure that we wait long enough for the node scan to run
-        while(getInterfaceDao().countAll() < 3) {
-            Thread.sleep(500);
-        }
+        runPendingScans();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -741,16 +695,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify snmpInterface count
         assertEquals(1, getSnmpInterfaceDao().countAll());
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
-
-        // Make sure that we wait long enough for the node scan to run
-        while(getInterfaceDao().countAll() < 3) {
-            Thread.sleep(500);
-        }
+        runPendingScans();
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -779,28 +724,25 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         @JUnitSnmpAgent(host="198.51.100.204", port=161, resource="classpath:snmpTestData4.properties")
     })
     public void testImportAddrThenChangeAddr() throws Exception {
+        // Node has 198.51.100.201 as a primary IP address
         importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
 
-        final List<OnmsNode> nodes = getNodeDao().findAll();
-        final OnmsNode node = nodes.get(0);
-
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
+        runPendingScans();
 
         m_nodeDao.flush();
 
         assertEquals(2, getInterfaceDao().countAll());
 
         System.err.println("-------------------------------------------------------------------------");
-        // wait long enough for dates to roll over
+
+        // Wait long enough for the previously discovered interfaces services
+        // to become obsolete (the milliseconds are trimmed when comparing the dates)
         Thread.sleep(1000);
 
-        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(InetAddressUtils.addr("198.51.100.201"), 161), m_resourceLoader.getResource("classpath:snmpTestData4.properties"));
-
+        // Node has 198.51.100.202 as a primary IP address
         importFromResource("classpath:/requisition_primary_addr_changed.xml", Boolean.TRUE.toString());
 
-        final NodeScan scan2 = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan2);
+        runPendingScans();
 
         m_nodeDao.flush();
 
@@ -810,10 +752,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         //Verify node count
         assertEquals(1, getNodeDao().countAll());
 
-        LOG.debug("found: {}", getInterfaceDao().findAll());
-
         //Verify ipinterface count
-        assertEquals(2, getInterfaceDao().countAll());
+        assertEquals("Unexpected number of interfaces found: "+getInterfaceDao().findAll(), 2, getInterfaceDao().countAll());
 
         //Verify ifservices count - discover snmp service on other if
         assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
@@ -823,7 +763,6 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         //Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
-
 
         // Node Delete
         importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
@@ -841,8 +780,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final List<OnmsNode> nodes = getNodeDao().findAll();
         final OnmsNode node = nodes.get(0);
 
-        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
-        runScan(scan);
+        runPendingScans();
 
         m_nodeDao.flush();
 
@@ -863,7 +801,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         m_mockSnmpDataProvider.updateIntValue(new SnmpAgentAddress(InetAddressUtils.addr("198.51.100.201"), 161), ".1.3.6.1.2.1.4.20.1.2.198.51.100.204", 5);
 
         // Rescan
-        runScan(scan);
+        m_mockEventIpcManager.sendEventToListeners(nodeUpdated(node.getId()));
+        runPendingScans();
 
         m_nodeDao.flush();
 
@@ -1128,6 +1067,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
         runScan(scan);
+
         assertEquals(2, m_ipInterfaceDao.findAll().size());
         LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
         final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("198.51.100.201");
@@ -1160,6 +1100,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         final NewSuspectScan scan = m_provisioner.createNewSuspectScan(addr("198.51.100.201"), null);
         runScan(scan);
+
         assertEquals(1, m_ipInterfaceDao.findAll().size());
         LOG.debug("ifaces = {}", m_ipInterfaceDao.findAll());
         final List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("198.51.100.201");
@@ -1201,6 +1142,28 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
     private DistPollerDao getDistPollerDao() {
         return m_distPollerDao;
+    }
+
+    /**
+     * NodeScans are automatically created and scheduled
+     * in response to nodeCreated/nodeUpdated events, sent when
+     * the provisioning requisitions are imported.
+     *
+     * Instead of creating an additional scan, we should opt
+     * to use the one that was automatically created in order
+     * to avoid running multiple scans for a given
+     * node in parallel. Running multiple scans for a single node
+     * in parallel can lead to undefined and intermittent behavior.
+     *
+     * If a new scan must be created, care must be taken to delete
+     * the schedule for the scan that was automatically created.
+     *
+     */
+    private void runPendingScans() throws InterruptedException, ExecutionException {
+        final boolean paused = getScheduledExecutor().isPaused();
+        if (paused) getScheduledExecutor().resume();
+        waitForEverything();
+        if (paused) getScheduledExecutor().pause();
     }
 
     private void runScan(final Scan scan) throws InterruptedException, ExecutionException {
@@ -1615,8 +1578,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
 
         m_eventAnticipator.anticipateEvent(nodeScanCompleted(nextNodeId));
         m_eventAnticipator.setDiscardUnanticipated(true);
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
-        runScan(scan);
+
+        runPendingScans();
 
         m_eventAnticipator.verifyAnticipated();
         m_eventAnticipator.reset();
@@ -1631,7 +1594,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(1, n.getCategories().size());
         assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
 
-        runScan(scan);
+        runPendingScans();
+
         n = getNodeDao().get(nextNodeId);
         assertEquals(1, n.getCategories().size());
         assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
@@ -1656,8 +1620,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals("TotallyMadeUpCategoryName", n.getCategories().iterator().next().getName());
         assertEquals(0, n.getRequisitionedCategories().size());
 
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
-        runScan(scan);
+        runPendingScans();
 
         // when the scan has completed, both categories should have been applied
         n = getNodeDao().get(nextNodeId);
@@ -1672,8 +1635,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
-        runScan(scan);
+
+        runPendingScans();
 
         // make sure we have the 1 category we expect
         OnmsNode n = getNodeDao().get(nextNodeId);
@@ -1688,7 +1651,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         getNodeDao().save(n);
 
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
-        runScan(scan);
+
+        runPendingScans();
 
         // when the scan has completed, both categories should have been applied
         n = getNodeDao().get(nextNodeId);
@@ -1703,8 +1667,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
-        runScan(scan);
+
+        runPendingScans();
 
         // make sure we have the 1 category we expect
         OnmsNode n = getNodeDao().get(nextNodeId);
@@ -1712,7 +1676,8 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertTrue(n.hasCategory("TotallyMadeUpCategoryName"));
 
         importFromResource("classpath:/provisioner-testCategories-noCategories.xml", Boolean.TRUE.toString());
-        runScan(scan);
+
+        runPendingScans();
 
         // when the scan has completed, the category should be removed
         n = getNodeDao().get(nextNodeId);
@@ -1725,8 +1690,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         final int nextNodeId = m_nodeDao.getNextNodeId();
 
         importFromResource("classpath:/provisioner-testCategories-oneCategory.xml", Boolean.TRUE.toString());
-        final NodeScan scan = m_provisioner.createNodeScan(nextNodeId, "empty", "1");
-        runScan(scan);
+        runPendingScans();
 
         // make sure we have the 1 category we expect
         OnmsNode n = getNodeDao().get(nextNodeId);
@@ -1741,7 +1705,7 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         getNodeDao().save(n);
 
         importFromResource("classpath:/provisioner-testCategories-noCategories.xml", Boolean.TRUE.toString());
-        runScan(scan);
+        runPendingScans();
 
         // when the scan has completed, the requisitioned category should be removed, but the user-added one should remain
         n = getNodeDao().get(nextNodeId);
@@ -1840,6 +1804,12 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         bldr.setNodeid(nodeid);
         bldr.setInterface(addr(ipaddr));
         bldr.setService(svc);
+        return bldr.getEvent();
+    }
+
+    private static Event nodeUpdated(int nodeid) {
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_UPDATED_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
         return bldr.getEvent();
     }
 

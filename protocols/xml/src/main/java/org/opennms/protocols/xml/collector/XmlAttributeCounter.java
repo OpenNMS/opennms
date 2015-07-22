@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,33 +28,33 @@
 
 package org.opennms.protocols.xml.collector;
 
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+
 /**
- * The Class XmlCollectorException.
+ * The Class XmlAttributeCounter.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class XmlCollectorException extends RuntimeException {
-    
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1315895761910431343L;
+public class XmlAttributeCounter extends AbstractCollectionSetVisitor {
 
-    /**
-     * Instantiates a new XML collector exception.
-     *
-     * @param message the message
-     * @param cause the cause
+    /** The count of attributes. */
+    private int count = 0;
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor#visitAttribute(org.opennms.netmgt.collection.api.CollectionAttribute)
      */
-    public XmlCollectorException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public void visitAttribute(CollectionAttribute attribute) {
+        count++;
     }
 
     /**
-     * Instantiates a new XML collector exception.
+     * Gets the count of attributes.
      *
-     * @param message the message
+     * @return the count
      */
-    public XmlCollectorException(String message) {
-        super(message);
+    public int getCount() {
+        return count;
     }
-
 }

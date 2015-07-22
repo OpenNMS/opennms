@@ -57,9 +57,7 @@ public class ProvisioningTest extends OpenNMSSeleniumTestCase {
     Setter type(final String suffix, final String value) {
         return new Setter() {
             public void setField(final String prefix) {
-                final WebElement element = findElementByName(prefix + "." + suffix);
-                element.clear();
-                element.sendKeys(value);
+                enterText(By.name(prefix + "." + suffix), value);
             }
         };
     }

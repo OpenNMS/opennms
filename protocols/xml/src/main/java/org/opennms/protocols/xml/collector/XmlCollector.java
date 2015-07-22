@@ -157,7 +157,7 @@ public class XmlCollector implements ServiceCollector {
             if (collectionName == null) {
                 throw new CollectionException("Parameter collection is required for the XML Collector!");
             }
-            LOG.debug("collect: collecting XML data using collection {}", collectionName);
+            LOG.debug("collect: collecting XML data using collection {} for {}", collectionName, agent);
             XmlDataCollection collection = m_xmlCollectionDao.getDataCollectionByName(collectionName);
             if (collection == null) {
                 throw new CollectionException("XML Collection " + collectionName +" does not exist.");

@@ -81,6 +81,7 @@ import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.TestCapsdConfigManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -1185,6 +1186,37 @@ public class PollerTest implements TemporaryDatabaseAware<MockDatabase> {
         }
         assertTrue(0 < svc.getPollCount());
 
+    }
+
+    /**
+     * Test for NMS-7761
+     */
+    @Test
+    public void testNoSpuriousNodeDownsOnNodeCategoryMembershipChanged() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+
+        MockNode node = m_network.getNode(1);
+
+        // Start the poller
+        startDaemons();
+
+        resetAnticipated();
+        anticipateDown(node);
+
+        // Bring down the node (duh)
+        node.bringDown();
+
+        // Make sure the correct events are received
+        verifyAnticipated(10000);
+
+        // Send a uei.opennms.org/nodes/nodeCategoryMembershipChanged
+        EventBuilder eventBuilder = MockEventUtil.createEventBuilder("Test", EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+        eventBuilder.setNodeid(node.getNodeId());
+        Event nodeCatMemChangedEvent = eventBuilder.getEvent();
+        m_eventMgr.sendEventToListeners(nodeCatMemChangedEvent);
+
+        // We shouldn't receive any other events
+        verifyAnticipated(2000, true);
     }
 
     //

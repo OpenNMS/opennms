@@ -18,7 +18,7 @@
 				<prop key="org.opennms.rrd.queuing.sigHighWaterMark">0</prop>
 				<prop key="org.opennms.rrd.queuing.queueHighWaterMark">0</prop>
 				<prop key="org.opennms.rrd.queuing.modulus">10000</prop>
-				<prop key="org.opennms.rrd.queuing.category">OpenNMS.Queued</prop>
+				<prop key="org.opennms.rrd.queuing.category">queued</prop>
 				<prop key="org.opennms.rrd.queuing.maxInsigUpdateSeconds">0</prop>
 				<prop key="org.opennms.rrd.queuing.writethread.sleepTime">50</prop>
 				<prop key="org.opennms.rrd.queuing.writethread.exitDelay">60000</prop>
