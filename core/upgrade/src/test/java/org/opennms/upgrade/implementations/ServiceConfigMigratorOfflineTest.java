@@ -81,7 +81,7 @@ public class ServiceConfigMigratorOfflineTest {
         // Checking parsing the fixed file (it should contain all the services)
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
         ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
-        Assert.assertEquals(36, cfg.getServiceCount());
+        Assert.assertEquals(35, cfg.getServiceCount());
 
         // Checking Service Factory (it should return only the enabled services)
         ServiceConfigFactory factory = new ServiceConfigFactory();

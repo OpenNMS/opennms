@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<link-adapter-configuration xmlns="http://xmlns.opennms.org/xsd/config/map-link-adapter">
-<!--
-	<for match="^link-(.*?)-to-(.*?)$">
-		<link>link-$2-to-$1</link>
-	</for>
--->
-</link-adapter-configuration>

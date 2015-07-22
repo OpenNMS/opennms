@@ -75,6 +75,7 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
@@ -153,15 +154,13 @@ public class CollectdTest extends TestCase {
 
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(m_eventIpcManager);
-        //m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setIpInterfaceDao(m_ipIfDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setScheduler(m_scheduler);
         m_collectd.setTransactionTemplate(transTemplate);
-        //m_collectd.afterPropertiesSet();
+        m_collectd.setPersisterFactory(new MockPersisterFactory());
 
-        
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
     }
 

@@ -20,7 +20,7 @@
       <!-- WARMERGE: begin contextConfigLocation -->
       classpath*:/META-INF/opennms/component-service.xml
       <!-- /WEB-INF/applicationContext-jersey.xml -->
-      /WEB-INF/applicationContext-cxf.xml
+      /WEB-INF/applicationContext-cxf-common.xml
       <!-- WARMERGE: end contextConfigLocation -->
     </param-value>
   </context-param>
@@ -109,8 +109,21 @@
   </servlet>
   -->
   <servlet>
-    <servlet-name>opennmsCxfWebServices</servlet-name>
+    <servlet-name>cxfRestServlet</servlet-name>
     <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/applicationContext-cxf-rest-v1.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>cxfRest2Servlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/applicationContext-cxf-rest-v2.xml</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <!-- WARMERGE: end servlet -->
@@ -124,8 +137,12 @@
   </servlet-mapping>
   -->
   <servlet-mapping>
-    <servlet-name>opennmsCxfWebServices</servlet-name>
+    <servlet-name>cxfRestServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cxfRest2Servlet</servlet-name>
+    <url-pattern>/api/v2/*</url-pattern>
   </servlet-mapping>
   <!-- WARMERGE: end servlet-mapping -->
 

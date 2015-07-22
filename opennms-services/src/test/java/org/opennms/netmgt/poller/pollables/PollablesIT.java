@@ -55,12 +55,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -76,6 +78,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
+import org.opennms.netmgt.rrd.NullRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
@@ -134,7 +137,8 @@ public class PollablesIT {
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
 
-    private RrdStrategy<?, ?> m_rrdStrategy = new NullRrdStrategy();
+    private PersisterFactory m_persisterFactory = null;
+    private ResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
     private int m_lockCount = 0;
 
@@ -1501,7 +1505,8 @@ public class PollablesIT {
         //        m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg,
+                m_timer, m_persisterFactory, m_resourceStorageDao);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1533,7 +1538,8 @@ public class PollablesIT {
 
         // mDot3Http/pDot3Http
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
-        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
+        final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig, m_pollerConfig,
+                pkg, m_timer, m_persisterFactory, m_resourceStorageDao);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1711,7 +1717,8 @@ public class PollablesIT {
     public void testComputeScheduledOutageTime() {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
-        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer, m_rrdStrategy);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig,
+                pkg, m_timer, m_persisterFactory, m_resourceStorageDao);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2584,10 +2591,10 @@ public class PollablesIT {
             return null;
         }
 
-
-
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, addr, serviceName);
-        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler, m_rrdStrategy);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg,
+                scheduler, m_persisterFactory, m_resourceStorageDao);
+
         svc.setPollConfig(pollConfig);
         synchronized (svc) {
             if (svc.getSchedule() == null) {

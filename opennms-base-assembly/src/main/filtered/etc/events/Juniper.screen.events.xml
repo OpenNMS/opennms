@@ -1,0 +1,256 @@
+<!-- Start of auto generated data from MIB: JUNIPER-JS-SCREENING-MIB -->
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.2636.3.39.1.8.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/jnxJsScreenAttack</uei>
+        <event-label>JUNIPER-JS-SCREENING-MIB defined trap event: jnxJsScreenAttack</event-label>
+        <descr>
+            &lt;p&gt;A per min bytes exceed trap signifies that the number of
+            bytes per minutes has exceeds the specified threshold.
+
+            jnxJsScreenZoneName: the zone name under which the attack
+            is occuring.
+            ifName the interface at which the attack is occuring.
+            jnxJsScreenAttackType: type of attack.
+            jnxJsScreenAttackCounter: the number of attacks recorded
+            based on the particular screening options enabled. The
+            value of this counter is the aggregated statistic of all
+            the interfaces bound to the mentioned zone.
+            jnxJsScreenAttackDescr: a general text description of the
+            this attack or the trap.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ifName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenAttackType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            icmpFlood(1)
+            udpFlood(2)
+            portScanning(3)
+            ipSweeping(4)
+            synfloodSrcIP(5)
+            synfloodDstIP(6)
+            sessLimitSrcBased(7)
+            sessLimitDestBased(8)
+            synAckAck(9)
+            synAttack(10)
+            winNuke(11)
+            tearDrop(12)
+            ipAddressSpoof(13)
+            pingDeath(14)
+            sourceRoute(15)
+            landAttack(16)
+            synFragmentation(17)
+            tcpNoFlag(18)
+            ipUnknownProtocol(19)
+            ipOptionBad(20)
+            ipOptionRecRt(21)
+            ipOptionTimeStamp(22)
+            ipOptionSecurity(23)
+            ipOptionLSR(24)
+            ipOptionSRR(25)
+            ipOptionStream(26)
+            icmpFragmentation(27)
+            icmpLarge(28)
+            tcpSynFin(29)
+            tcpFinNoAck(30)
+            ipFragmentation(31)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenAttackCounter&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenAttackDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            jnxJsScreenAttack trap received
+            jnxJsScreenZoneName=%parm[#1]%
+            ifName=%parm[#2]%
+            jnxJsScreenAttackType=%parm[#3]%
+            jnxJsScreenAttackCounter=%parm[#4]%
+            jnxJsScreenAttackDescr=%parm[#5]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbinddecodedstring="icmpFlood" varbindvalue="1"/>
+            <decode varbinddecodedstring="udpFlood" varbindvalue="2"/>
+            <decode varbinddecodedstring="portScanning" varbindvalue="3"/>
+            <decode varbinddecodedstring="ipSweeping" varbindvalue="4"/>
+            <decode varbinddecodedstring="synfloodSrcIP" varbindvalue="5"/>
+            <decode varbinddecodedstring="synfloodDstIP" varbindvalue="6"/>
+            <decode varbinddecodedstring="sessLimitSrcBased" varbindvalue="7"/>
+            <decode varbinddecodedstring="sessLimitDestBased" varbindvalue="8"/>
+            <decode varbinddecodedstring="synAckAck" varbindvalue="9"/>
+            <decode varbinddecodedstring="synAttack" varbindvalue="10"/>
+            <decode varbinddecodedstring="winNuke" varbindvalue="11"/>
+            <decode varbinddecodedstring="tearDrop" varbindvalue="12"/>
+            <decode varbinddecodedstring="ipAddressSpoof" varbindvalue="13"/>
+            <decode varbinddecodedstring="pingDeath" varbindvalue="14"/>
+            <decode varbinddecodedstring="sourceRoute" varbindvalue="15"/>
+            <decode varbinddecodedstring="landAttack" varbindvalue="16"/>
+            <decode varbinddecodedstring="synFragmentation" varbindvalue="17"/>
+            <decode varbinddecodedstring="tcpNoFlag" varbindvalue="18"/>
+            <decode varbinddecodedstring="ipUnknownProtocol" varbindvalue="19"/>
+            <decode varbinddecodedstring="ipOptionBad" varbindvalue="20"/>
+            <decode varbinddecodedstring="ipOptionRecRt" varbindvalue="21"/>
+            <decode varbinddecodedstring="ipOptionTimeStamp" varbindvalue="22"/>
+            <decode varbinddecodedstring="ipOptionSecurity" varbindvalue="23"/>
+            <decode varbinddecodedstring="ipOptionLSR" varbindvalue="24"/>
+            <decode varbinddecodedstring="ipOptionSRR" varbindvalue="25"/>
+            <decode varbinddecodedstring="ipOptionStream" varbindvalue="26"/>
+            <decode varbinddecodedstring="icmpFragmentation" varbindvalue="27"/>
+            <decode varbinddecodedstring="icmpLarge" varbindvalue="28"/>
+            <decode varbinddecodedstring="tcpSynFin" varbindvalue="29"/>
+            <decode varbinddecodedstring="tcpFinNoAck" varbindvalue="30"/>
+            <decode varbinddecodedstring="ipFragmentation" varbindvalue="31"/>
+        </varbindsdecode>
+        <alarm-data reduction-key="%source%:%snmphost%:%id%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%"
+                    alarm-type="1"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.2636.3.39.1.8.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/Juniper/traps/jnxJsScreenCfgChange</uei>
+        <event-label>JUNIPER-JS-SCREENING-MIB defined trap event: jnxJsScreenCfgChange</event-label>
+        <descr>
+            &lt;p&gt;The screening configuration change trap signifies that
+            an screening option has been changed(enabled or disabled).
+
+            A disable feature may implies a security hole.
+
+            jnxJsScreenZoneName is the zone at which the changed option
+            is applicable to.
+            jnxJsScreenAttackType the screen feature.
+            jnxJsScreenCfgStatus: either enabled or disabled&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenZoneName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenAttackType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            icmpFlood(1)
+            udpFlood(2)
+            portScanning(3)
+            ipSweeping(4)
+            synfloodSrcIP(5)
+            synfloodDstIP(6)
+            sessLimitSrcBased(7)
+            sessLimitDestBased(8)
+            synAckAck(9)
+            synAttack(10)
+            winNuke(11)
+            tearDrop(12)
+            ipAddressSpoof(13)
+            pingDeath(14)
+            sourceRoute(15)
+            landAttack(16)
+            synFragmentation(17)
+            tcpNoFlag(18)
+            ipUnknownProtocol(19)
+            ipOptionBad(20)
+            ipOptionRecRt(21)
+            ipOptionTimeStamp(22)
+            ipOptionSecurity(23)
+            ipOptionLSR(24)
+            ipOptionSRR(25)
+            ipOptionStream(26)
+            icmpFragmentation(27)
+            icmpLarge(28)
+            tcpSynFin(29)
+            tcpFinNoAck(30)
+            ipFragmentation(31)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            jnxJsScreenCfgStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            disabled(1)
+            enabled(2)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            jnxJsScreenCfgChange trap received
+            jnxJsScreenZoneName=%parm[#1]%
+            jnxJsScreenAttackType=%parm[#2]%
+            jnxJsScreenCfgStatus=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbinddecodedstring="icmpFlood" varbindvalue="1"/>
+            <decode varbinddecodedstring="udpFlood" varbindvalue="2"/>
+            <decode varbinddecodedstring="portScanning" varbindvalue="3"/>
+            <decode varbinddecodedstring="ipSweeping" varbindvalue="4"/>
+            <decode varbinddecodedstring="synfloodSrcIP" varbindvalue="5"/>
+            <decode varbinddecodedstring="synfloodDstIP" varbindvalue="6"/>
+            <decode varbinddecodedstring="sessLimitSrcBased" varbindvalue="7"/>
+            <decode varbinddecodedstring="sessLimitDestBased" varbindvalue="8"/>
+            <decode varbinddecodedstring="synAckAck" varbindvalue="9"/>
+            <decode varbinddecodedstring="synAttack" varbindvalue="10"/>
+            <decode varbinddecodedstring="winNuke" varbindvalue="11"/>
+            <decode varbinddecodedstring="tearDrop" varbindvalue="12"/>
+            <decode varbinddecodedstring="ipAddressSpoof" varbindvalue="13"/>
+            <decode varbinddecodedstring="pingDeath" varbindvalue="14"/>
+            <decode varbinddecodedstring="sourceRoute" varbindvalue="15"/>
+            <decode varbinddecodedstring="landAttack" varbindvalue="16"/>
+            <decode varbinddecodedstring="synFragmentation" varbindvalue="17"/>
+            <decode varbinddecodedstring="tcpNoFlag" varbindvalue="18"/>
+            <decode varbinddecodedstring="ipUnknownProtocol" varbindvalue="19"/>
+            <decode varbinddecodedstring="ipOptionBad" varbindvalue="20"/>
+            <decode varbinddecodedstring="ipOptionRecRt" varbindvalue="21"/>
+            <decode varbinddecodedstring="ipOptionTimeStamp" varbindvalue="22"/>
+            <decode varbinddecodedstring="ipOptionSecurity" varbindvalue="23"/>
+            <decode varbinddecodedstring="ipOptionLSR" varbindvalue="24"/>
+            <decode varbinddecodedstring="ipOptionSRR" varbindvalue="25"/>
+            <decode varbinddecodedstring="ipOptionStream" varbindvalue="26"/>
+            <decode varbinddecodedstring="icmpFragmentation" varbindvalue="27"/>
+            <decode varbinddecodedstring="icmpLarge" varbindvalue="28"/>
+            <decode varbinddecodedstring="tcpSynFin" varbindvalue="29"/>
+            <decode varbinddecodedstring="tcpFinNoAck" varbindvalue="30"/>
+            <decode varbinddecodedstring="ipFragmentation" varbindvalue="31"/>
+        </varbindsdecode>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbinddecodedstring="disabled" varbindvalue="1"/>
+            <decode varbinddecodedstring="enabled" varbindvalue="2"/>
+        </varbindsdecode>
+    </event>
+</events>
+<!-- End of auto generated data from MIB: JUNIPER-JS-SCREENING-MIB -->

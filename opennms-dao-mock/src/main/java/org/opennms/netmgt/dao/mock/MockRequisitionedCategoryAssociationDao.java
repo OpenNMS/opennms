@@ -39,9 +39,10 @@ public class MockRequisitionedCategoryAssociationDao extends AbstractMockDao<Req
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final RequisitionedCategoryAssociation cat) {
-        super.save(cat);
+    public Integer save(final RequisitionedCategoryAssociation cat) {
+        Integer retval = super.save(cat);
         updateSubObjects(cat);
+        return retval;
     }
 
     private void updateSubObjects(final RequisitionedCategoryAssociation cat) {

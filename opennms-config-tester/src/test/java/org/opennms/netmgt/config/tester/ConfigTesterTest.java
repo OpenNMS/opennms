@@ -230,14 +230,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testLinkdConfiguration() {
-        ignoreConfigFile("linkd-configuration.xml");
-    }
-
-    @Test
     public void testEnLinkdConfiguration() {
         ignoreConfigFile("enlinkd-configuration.xml");
     }
@@ -250,11 +242,6 @@ public class ConfigTesterTest {
     @Test
     public void testMagicUsers() {
         testConfigFile("magic-users.properties");
-    }
-
-    @Test
-    public void testMap() {
-        testConfigFile("map.properties");
     }
 
     @Test

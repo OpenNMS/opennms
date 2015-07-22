@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.jrobin.core.RrdDb;
@@ -60,10 +59,11 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -120,6 +120,8 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
     private RrdStrategy<?, ?> m_rrdStrategy;
 
+    private FilesystemResourceStorageDao m_resourceStorageDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -130,6 +132,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         MockLogAppender.setupLogging();
 
         m_rrdStrategy = new JRobinRrdStrategy();
+
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+        m_resourceStorageDao.setRrdDirectory(snmpRrdDirectory.getParentFile());
 
         m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
 
@@ -217,7 +223,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         assertEquals("collection status",
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -270,7 +276,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         // don't forget to initialize the agent
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
         //.1.3.6.1.2.1.6.9.0 = Gauge32: 123
@@ -284,7 +290,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.6.9.0"), SnmpUtils.getValueFactory().getInt32(456));
         SnmpUtils.set(m_agentConfig, SnmpObjId.get(".1.3.6.1.2.1.2.2.1.10.6"), SnmpUtils.getValueFactory().getCounter32(7654321));
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
@@ -386,7 +392,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
 
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -459,7 +465,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
                      ServiceCollector.COLLECTION_SUCCEEDED,
                      collectionSet.getStatus());
 
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
         System.err.println("FIRST COLLECTION FINISHED");
 
@@ -533,19 +539,18 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
                 collectionSet.getStatus());
 
         // Persist
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
         // Verify results on disk
-        File snmpDir = (File)m_context.getAttribute("rrdDirectory");
-        Properties properties = ResourceTypeUtils.getStringProperties(snmpDir, "1/brocadeFCPortIndex/1");
+        Map<String, String> properties = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "brocadeFCPortIndex", "1"));
 
         // "string" attributes should convert the octets directly to a string
-        String value = properties.getProperty("swFCPortName");
+        String value = properties.get("swFCPortName");
         assertTrue(value.startsWith("..3DUfw"));
 
         // "hexstring" attributes should convert the octets to a hex string
         // see http://issues.opennms.org/browse/NMS-7367
-        value = properties.getProperty("swFCPortWwn");
+        value = properties.get("swFCPortWwn");
         assertEquals("1100334455667788", value);
     }
 

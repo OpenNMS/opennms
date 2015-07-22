@@ -28,7 +28,10 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Measurement source.
@@ -36,6 +39,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author Jesse White <jesse@opennms.org>
  * @author Dustin Frisch <fooker@lab.sh>
  */
+@XmlRootElement(name = "source")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Source {
     /**
      * Used to identify the values of this source.

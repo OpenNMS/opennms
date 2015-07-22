@@ -938,6 +938,11 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.18.1</version>
@@ -2342,8 +2347,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>jmxconfiggenerator</artifactId>
+        <classifier>onejar</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3590,7 +3596,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </repository>
 -->
   </repositories>
@@ -3608,7 +3614,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>true</enabled></snapshots>
@@ -3622,11 +3628,11 @@
       <releases><enabled>true</enabled></releases>
       <id>java-net-repo</id>
       <name>Java.net Repository</name>
-      <url>http://maven.opennms.org/content/groups/java.net-release</url>
+      <url>http://maven.opennms.org/content/repositories/maven2-repository.dev.java.net/</url>
     </pluginRepository>
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
-      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+      <url>http://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>

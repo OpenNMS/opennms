@@ -66,10 +66,6 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-map-provisioning-adapter</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-otrs</artifactId>
     </dependency>

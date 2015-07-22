@@ -132,7 +132,8 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public void save(OnmsNode entity) {
+	public Integer save(OnmsNode entity) {
+		return null;
 	}
 
 	@Override

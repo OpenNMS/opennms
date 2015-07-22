@@ -370,6 +370,8 @@
     </feature>
 
     <feature name="opennms-config-jaxb" description="OpenNMS :: Configuration :: JAXB" version="${project.version}">
+      <!-- Required for javax.persistence - some of the classes are annotated with JPA annotations -->
+      <feature>hibernate36</feature>
       <feature>commons-lang</feature>
 
       <feature>opennms-core</feature>

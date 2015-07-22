@@ -41,7 +41,6 @@ import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -51,25 +50,19 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMap;
-import org.opennms.netmgt.model.OnmsMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -155,9 +148,6 @@ public class DatabasePopulator {
     private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
-    private OnmsMapDao m_onmsMapDao;
-    private OnmsMapElementDao m_onmsMapElementDao;
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
     
@@ -222,9 +212,6 @@ public class DatabasePopulator {
 
     public void resetDatabase() {
         LOG.debug("==== DatabasePopulator Reset ====");
-        for (final DataLinkInterface iface : m_dataLinkInterfaceDao.findAll()) {
-            m_dataLinkInterfaceDao.delete(iface);
-        }
         for (final OnmsOutage outage : m_outageDao.findAll()) {
             m_outageDao.delete(outage);
         }
@@ -255,6 +242,9 @@ public class DatabasePopulator {
         for (final LocationDef location : m_monitoringLocationDao.findAll()) {
             m_monitoringLocationDao.delete(location);
         }
+        for (final OnmsCategory category : m_categoryDao.findAll()) {
+            m_categoryDao.delete(category);
+        }
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
@@ -268,7 +258,6 @@ public class DatabasePopulator {
     	}
     	LOG.debug("= DatabasePopulatorExtension Reset Finished =");
         
-        m_dataLinkInterfaceDao.flush();
         m_outageDao.flush();
         m_userNotificationDao.flush();
         m_notificationDao.flush();
@@ -317,6 +306,8 @@ public class DatabasePopulator {
         setNode6(node6);
         
         final OnmsEvent event = buildEvent(builder.getDistPoller());
+        event.setEventCreateTime(new Date(1436881548292L));
+        event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -333,11 +324,11 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         
@@ -345,37 +336,8 @@ public class DatabasePopulator {
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
         
-        final OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
-        map.setBackground("fake_background.jpg");
-        map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
-        map.setType(OnmsMap.USER_GENERATED_MAP);
-        map.setMapGroup("admin");
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        
-        final OnmsMapElement mapElement = new OnmsMapElement(map, 1,
-                OnmsMapElement.NODE_TYPE,
-                "Test Node",
-                OnmsMapElement.defaultNodeIcon,
-                0,
-                10);
-        getOnmsMapElementDao().save(mapElement);
-        getOnmsMapElementDao().flush();
-        
-        final DataLinkInterface dli = new DataLinkInterface(node1, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli);
-        getDataLinkInterfaceDao().flush();
-        
-        final DataLinkInterface dli2 = new DataLinkInterface(node1, 2, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli2);
-        getDataLinkInterfaceDao().flush();
-        
-        final DataLinkInterface dli3 = new DataLinkInterface(node2, 1, node1.getId(), 1, StatusType.ACTIVE, new Date());
-        getDataLinkInterfaceDao().save(dli3);
-        getDataLinkInterfaceDao().flush();
-        
         final OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        ack.setAckTime(new Date());
+        ack.setAckTime(new Date(1437073152156L));
         ack.setAckType(AckType.UNSPECIFIED);
         ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("admin");
@@ -386,10 +348,12 @@ public class DatabasePopulator {
         def.setLocationName("RDU");
         def.setMonitoringArea("East Coast");
         def.setPollingPackageNames(Collections.singletonList("example1"));
+        def.setCollectionPackageNames(Collections.singletonList("example1"));
         def.setGeolocation("Research Triangle Park, NC");
         def.setLatitude(35.715751f);
         def.setLongitude(-79.16262f);
         def.setPriority(1L);
+        def.setTags(Collections.singletonList("blah"));
         m_monitoringLocationDao.save(def);
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
@@ -486,7 +450,6 @@ public class DatabasePopulator {
         builder.addService(getService("HTTP"));
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
-        builder.addAtInterface(getNode1(), "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         return builder.getCurrentNode();
     }
 
@@ -552,13 +515,20 @@ public class DatabasePopulator {
     public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
+        event.setEventCreateTime(new Date(1437061537126L));
+        event.setEventDescr("This is the description of a test event.");
         event.setEventDisplay("Y");
+        event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
+        event.setEventLog("Y");
+        event.setEventLogMsg("Test Event Log Message");
+        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventSeverity(1);
+        event.setEventSource("test");
+        event.setEventTime(new Date(1437061537105L));
+        event.setEventUei("uei.opennms.org/test");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event.setNode(m_node1);
+        event.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return event;
     }
 
@@ -587,6 +557,8 @@ public class DatabasePopulator {
     }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
+        // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
         alarm.setUei(event.getEventUei());
@@ -599,6 +571,8 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setEventParms(event.getEventParms());
+        alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }
 
@@ -795,30 +769,6 @@ public class DatabasePopulator {
         m_locationMonitorDao = locationMonitorDao;
     }
 
-    public OnmsMapDao getOnmsMapDao() {
-        return m_onmsMapDao;
-    }
-
-    public void setOnmsMapDao(final OnmsMapDao onmsMapDao) {
-        this.m_onmsMapDao = onmsMapDao;
-    }
-
-    public OnmsMapElementDao getOnmsMapElementDao() {
-        return m_onmsMapElementDao;
-    }
-
-    public void setOnmsMapElementDao(final OnmsMapElementDao onmsMapElementDao) {
-        this.m_onmsMapElementDao = onmsMapElementDao;
-    }
-
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-    
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_acknowledgmentDao;
     }

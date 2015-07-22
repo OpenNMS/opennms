@@ -53,9 +53,9 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      * <p>setAttributeValue</p>
      *
      * @param type a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
-     * @param value a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
      */
-    public void setAttributeValue(final CollectionAttributeType type, final String value) {
+    public void setAttributeValue(final CollectionAttributeType type, final Object value) {
         final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, value);
         addAttribute(attr);
     }

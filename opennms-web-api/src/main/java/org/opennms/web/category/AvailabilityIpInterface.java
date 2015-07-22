@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 
 @XmlRootElement(name="ipinterface")
@@ -44,5 +46,43 @@ public class AvailabilityIpInterface {
 
     public void addService(final AvailabilityMonitoredService service) {
         m_services.add(service);
+    }
+
+    public Integer getId() {
+        return m_id;
+    }
+
+    public double getAvailability() {
+        return m_availability;
+    }
+
+    public String getAddress() {
+        return m_address;
+    }
+
+    public List<AvailabilityMonitoredService> getServices() {
+        return m_services;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", this.getId())
+            .append("availability", this.getAvailability())
+            .append("address", this.getAddress())
+            .append("services", this.getServices())
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof AvailabilityIpInterface)) return false;
+        final AvailabilityIpInterface that = (AvailabilityIpInterface)o;
+        return new EqualsBuilder()
+            .append(this.getId(), that.getId())
+            .append(this.getAvailability(), that.getAvailability())
+            .append(this.getAddress(), that.getAddress())
+            .append(this.getServices(), that.getServices())
+            .isEquals();
     }
 }

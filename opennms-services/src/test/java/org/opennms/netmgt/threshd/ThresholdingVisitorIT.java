@@ -37,7 +37,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -51,7 +50,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -87,9 +85,9 @@ import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.datacollection.MibObject;
-import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -100,7 +98,7 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -125,6 +123,8 @@ public class ThresholdingVisitorIT {
     FileAnticipator m_fileAnticipator;
     Map<Integer, File> m_hrStorageProperties;
     List<Event> m_anticipatedEvents;
+    private FilesystemResourceStorageDao m_resourceStorageDao;
+
     private static final Comparator<Parm> PARM_COMPARATOR = new Comparator<Parm>() {
         @Override
         public int compare(Parm o1, Parm o2) {
@@ -205,6 +205,9 @@ public class ThresholdingVisitorIT {
 
         m_fileAnticipator = new FileAnticipator();
         m_hrStorageProperties = new HashMap<Integer, File>();
+
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(new File(m_fileAnticipator.getTempDir(), "snmp"));
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
@@ -466,20 +469,17 @@ public class ThresholdingVisitorIT {
         addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
 
 
-        File nodeDir = m_fileAnticipator.tempDir("1");
-        File resourceDir = m_fileAnticipator.tempDir(nodeDir, ifName);
-        File propertiesFile = m_fileAnticipator.tempFile(resourceDir, "strings.properties");
-        Properties p = new Properties();
-        p.put("myMockParam", "myMockValue");
-        ResourceTypeUtils.saveUpdatedProperties(propertiesFile, p);
-        
+        // Creating strings.properties file
+        ResourcePath path = ResourcePath.get("snmp", "1", ifName);
+        m_resourceStorageDao.setStringAttribute(path, "myMockParam", "myMockValue");
+
         ThresholdingVisitor visitor = createVisitor();
         visitor.visitCollectionSet(createAnonymousCollectionSet(new Date().getTime()));
 
         runInterfaceResource(visitor, "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
-    
+
     /*
      * Before call visitor.reload(), this test uses this files from src/test/resources:
      * - threshd-configuration.xml
@@ -582,11 +582,11 @@ public class ThresholdingVisitorIT {
         List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
-            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams);
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams, m_resourceStorageDao);
             assertNotNull(visitor);
             visitors.add(visitor);
             if (i == 5) {
-                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), svcParams);
+                ThresholdingVisitor httpVisitor = ThresholdingVisitor.create(i, ipAddress, "HTTP", getRepository(), svcParams, m_resourceStorageDao);
                 assertNotNull(httpVisitor);
                 visitors.add(httpVisitor);
             }
@@ -1177,7 +1177,7 @@ public class ThresholdingVisitorIT {
         for (int i=1; i<=numOfNodes; i++) {
             System.err.println("----------------------------------------------------------------------------------- visitor #" + i);
             String ipAddress = baseIpAddress + i;
-            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), svcParams);
+            ThresholdingVisitor visitor = ThresholdingVisitor.create(1, ipAddress, "SNMP", getRepository(), svcParams, m_resourceStorageDao);
             assertNotNull(visitor);
             assertEquals(4, visitor.getThresholdGroups().size()); // mib2, cisco, ciscoIPRA, ciscoNAS
         }
@@ -1489,14 +1489,11 @@ public class ThresholdingVisitorIT {
         NodeResourceType resourceType = new NodeResourceType(agent, collection);
 
         // Creating strings.properties file
-        Properties p = new Properties();
-        p.put("hda1_hrStorageDescr", "/home");
-        p.put("hda2_hrStorageDescr", "/opt");
-        p.put("hda3_hrStorageDescr", "/usr");
-	File nodeDir = m_fileAnticipator.tempDir("1");
-	File propertiesFile = m_fileAnticipator.tempFile(nodeDir, "strings.properties");
-        ResourceTypeUtils.saveUpdatedProperties(propertiesFile, p);
-        
+        ResourcePath path = ResourcePath.get("snmp", "1");
+        m_resourceStorageDao.setStringAttribute(path, "hda1_hrStorageDescr", "/home");
+        m_resourceStorageDao.setStringAttribute(path, "hda2_hrStorageDescr", "/opt");
+        m_resourceStorageDao.setStringAttribute(path, "hda3_hrStorageDescr", "/usr");
+
         // Creating Resource
         SnmpCollectionResource resource = new NodeInfo(resourceType, agent);
         addAttributeToCollectionResource(resource, resourceType, "hda1_hrStorageUsed", "gauge", "node", 50);
@@ -1520,7 +1517,7 @@ public class ThresholdingVisitorIT {
 
     private ThresholdingVisitor createVisitor(Map<String,Object> params) {
         ServiceParameters svcParams = new ServiceParameters(params);
-        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), svcParams);
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), svcParams, m_resourceStorageDao);
         assertNotNull(visitor);
         return visitor;
     }
@@ -1561,10 +1558,9 @@ public class ThresholdingVisitorIT {
         // Creating Generic ResourceType
         GenericIndexResourceType resourceType = createGenericIndexResourceType(agent, "hrStorageIndex");
         // Creating strings.properties file
-        Properties p = new Properties();
-        p.put("hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
-        p.put("hrStorageDescr", fs);
-        ResourceTypeUtils.saveUpdatedProperties(createHrStoragePropertiesFile(resourceId), p);
+        ResourcePath path = ResourcePath.get("snmp", "1", "hrStorageIndex", Integer.toString(resourceId));
+        m_resourceStorageDao.setStringAttribute(path, "hrStorageType", ".1.3.6.1.2.1.25.2.1.4");
+        m_resourceStorageDao.setStringAttribute(path, "hrStorageDescr", fs);
         // Creating Resource
         SnmpInstId inst = new SnmpInstId(resourceId);
         SnmpCollectionResource resource = new GenericIndexResource(resourceType, "hrStorageIndex", inst);
@@ -1574,23 +1570,6 @@ public class ThresholdingVisitorIT {
         // Run Visitor
         resource.visit(visitor);
         EasyMock.verify(agent);
-    }
-
-    private File createHrStoragePropertiesFile(int resourceId) throws IOException {
-        if (!m_hrStorageProperties.containsKey(resourceId)) {
-            File nodeDir;
-            if (!(nodeDir = new File(m_fileAnticipator.getTempDir(), "1")).exists()) {
-                nodeDir = m_fileAnticipator.tempDir("1");
-            }
-            File hrStorageDir;
-            if (!(hrStorageDir = new File(nodeDir,  "hrStorageIndex")).exists()) {
-                hrStorageDir = m_fileAnticipator.tempDir(nodeDir, "hrStorageIndex");
-            }
-            File resourceDir = m_fileAnticipator.tempDir(hrStorageDir, String.valueOf(resourceId));
-            m_hrStorageProperties.put(resourceId, m_fileAnticipator.tempFile(resourceDir, "strings.properties"));
-        }
-
-        return m_hrStorageProperties.get(resourceId);
     }
 
     /*
@@ -1695,8 +1674,8 @@ public class ThresholdingVisitorIT {
 
     private RrdRepository getRepository() {
         RrdRepository repo = new RrdRepository();
-        repo.setRrdBaseDir(m_fileAnticipator.getTempDir());
-        return repo;		
+        repo.setRrdBaseDir(new File(m_fileAnticipator.getTempDir(), "snmp"));
+        return repo;
     }
 
     private void addHighThresholdEvent(int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
@@ -1811,40 +1790,7 @@ public class ThresholdingVisitorIT {
         snmpIface.setCollectionEnabled(collectionEnabled);
         return new SnmpIfData(snmpIface);
     }
-    
-    private static void setupSnmpInterfaceDatabase(String ipAddress, String ifName) throws Exception {
-        MockNetwork network = new MockNetwork();
-        network.setCriticalService("ICMP");
-        network.addNode(1, "testNode");
-        network.addInterface(ipAddress);
-        if (ifName != null)
-            network.setIfAlias(ifName);
-        network.addService("ICMP");
-        network.addService("SNMP");
-        network.addService("HTTP");
-        network.addPathOutage(1, InetAddressUtils.addr("192.168.1.1"), "ICMP");
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-        if (ifName != null)
-            db.update("update snmpinterface set snmpifname=?, snmpifdescr=? where id=?", ifName, ifName, 1);
-        DataSourceFactory.setInstance(db);
-    }
 
-    private boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for(int i=0; i<files.length; i++) {
-                if(files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                }
-                else {
-                    files[i].delete();
-                }
-            }
-        }
-        return path.delete();
-    }
-    
     private static CollectionSet createAnonymousCollectionSet(long timestamp) {
     	final Date internalTimestamp = new Date(timestamp);
     	return new CollectionSet() {
