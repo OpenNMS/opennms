@@ -5,7 +5,7 @@
 
     <package name="cassandra21x">
         <filter><![CDATA[(IPADDR != '0.0.0.0') & (categoryName == 'Cassandra21x')]]></filter>
-        <service name="JMX-Cassandra21x" interval="300000" user-defined="false" status="on">
+        <service name="JMX-Cassandra" interval="300000" user-defined="false" status="on">
             <parameter key="port" value="7199"/>
             <parameter key="retry" value="2"/>
             <parameter key="timeout" value="3000"/>
@@ -127,7 +127,7 @@
     </package>
 
 
-    <collector service="JMX-Cassandra21x" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+    <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
     <collector service="JMX-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
     <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
     <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
