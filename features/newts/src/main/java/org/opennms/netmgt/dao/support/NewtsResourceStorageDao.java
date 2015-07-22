@@ -37,18 +37,14 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * Resource Storage Dao implementation for Newts that leverages
- * the Search API for walking the resource tree.
+ * Resource Storage Dao implementation for Newts that leverages the Search API for walking the resource tree.
  *
- * In Newts, samples are associated with metrics, which are in
- * turn associated with resource.
+ * In Newts, samples are associated with metrics, which are in turn associated with resources.
  *
  * Here we split the resource id into two parts:
  *   bucket: last element of the resource id
  *   resource path: all the elements before the bucket
- * 
- * Relating this to .rrd file on disk, the bucket would
- * be the filename, and the resource path would be its folder.
+ * Relating this to .rrd file on disk, the bucket would be the filename, and the resource path would be its folder.
  *
  * @author jwhite
  */
