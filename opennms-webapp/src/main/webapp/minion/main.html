@@ -35,19 +35,54 @@
 		</div>
 	</div>
 
+	<!-- Modal form for adding filters -->
+	<div id="helpModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<h3>Help</h3>
+
+					<h4>Filtering</h4>
+					<p>
+						Click on the <i class="fa fa-search-plus"></i> icon to filter the list. You can match a portion of a value by using
+						the '*' character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
+					</p>
+
+					<h4>Filter by Example</h4>
+					<p>
+						You can click on the <i class="fa fa-plus-square-o"></i> icon next to a value to only show rows that contain that value. 
+						If you click on the <i class="fa fa-minus-square-o"></i> icon, it will remove rows with that value from the results.
+						For timestamp values, clicking on the <i class="fa fa-toggle-left"></i> icon will show timestamps newer than the specified
+						value and clicking on the <i class="fa fa-toggle-right"></i> icon will show timestamps older than the value.
+					</p>
+
+					<h4>Sorting</h4>
+					<p>Click on a column header to sort by that column. Click the same column again to reverse the sort order.</p>
+
+					<h4>Items per Page</h4>
+					<p>You can change the number of items per page by entering a numeric value in the <i class="fa fa-th-list"></i> box.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<!-- Filter list -->
-	<nav class="navbar navbar-default">
-		<div class="navbar-brand" style="padding: 16.5px 15px !important; line-height:12px;">
+	<div class="well well-sm">
+		<span class="h4" style="line-height:2.8;">
 			Filters&nbsp;&nbsp;
-			<a onClick="$('#filterModal').modal()"><i class="fa fa-plus fa-lg"></i></a>
+			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			&nbsp;
+			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
 			&nbsp;
 			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
-		</div>
+			&nbsp;
+		</span>
 		<span ng-hide="query.searchClauses.length == 0">
 			<span ng-repeat="clause in query.searchClauses">
-				<div class="btn-group" style="margin-left: 6px;">
-					<button class="btn btn-primary navbar-btn" style="margin:8px 0px;" ng-click="removeSearchClause(clause)">
+				<div class="btn-group" style="margin:3px;">
+					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
 						{{clause.property | property}}
 						{{clause.operator | operator : clause.value}}
 						{{clause.value | value : clause.property}}
@@ -57,9 +92,7 @@
 				</div>
 			</span>
 		</span>
-	</nav>
-
-	<br/>
+	</div>
 
 	<!-- Paging controls -->
 	<div>

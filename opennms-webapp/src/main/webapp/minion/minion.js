@@ -117,7 +117,12 @@
 	angular.module('minion', [ 'ngResource', 'minionListFilters' ])
 
 	.config(function($locationProvider) {
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode({
+			// Use HTML5 
+			enabled: true,
+			// Don't rewrite all <a> links on the page
+			rewriteLinks: false
+		});
 	})
 
 	// Create a minion REST $resource
