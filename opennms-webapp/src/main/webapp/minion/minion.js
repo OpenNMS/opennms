@@ -116,6 +116,10 @@
 	// Minion module
 	angular.module('minion', [ 'ngResource', 'minionListFilters' ])
 
+	.config(function($locationProvider) {
+		$locationProvider.html5Mode(true);
+	})
+
 	// Create a minion REST $resource
 	.factory('Minions', function($resource, $log, $http) {
 		return $resource(baseUrl + '/minions/:id', { id: '@id' },
@@ -140,6 +144,11 @@
 	.controller('MinionListCtrl', ['$scope', '$location', '$http', '$log', 'Minions', function($scope, $location, $http, $log, Minions) {
 		$log.debug('MinionListCtrl initializing...');
 
+		var DEFAULT_LIMIT = 20;
+		var DEFAULT_OFFSET = 0;
+		var DEFAULT_ORDERBY = 'label';
+		var DEFAULT_ORDER = 'asc';
+
 		// Blank out the editing flags
 		$scope.enableEditLabel = false;
 		$scope.enableEditLocation = false;
@@ -151,29 +160,42 @@
 			// TODO: Figure out how to parse and restore the FIQL search param
 			searchParam: '',
 			searchClauses: new Array(),
-			limit: typeof $location.search().limit === 'undefined' ? 20 : $location.search().limit,
-			newLimit: typeof $location.search().limit === 'undefined' ? 20 : $location.search().limit,
-			offset: typeof $location.search().offset === 'undefined' ? 0 : $location.search().offset,
+			limit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
+			newLimit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
+			offset: typeof $location.search().offset === 'undefined' ? DEFAULT_OFFSET : (Number($location.search().offset) > 0 ? Number($location.search().offset) : DEFAULT_OFFSET),
 
 			lastOffset: 0,
 			maxOffset: 0,
 
-			orderBy: typeof $location.search.orderBy === 'undefined' ? 'label' : $location.search.orderBy,
-			order: typeof $location.search.order === 'undefined' ? 'asc' : $location.search.order
+			orderBy: typeof $location.search().orderBy === 'undefined' ? DEFAULT_ORDERBY : $location.search().orderBy,
+			order: typeof $location.search().order === 'undefined' ? DEFAULT_ORDER : ($location.search().order === 'asc' ? 'asc' : 'desc')
 		};
 
 		// Sync the query hash with the $location query string
-		$scope.$watch("query", function() {
-			var queryParms = angular.copy($scope.query);
-			delete queryParms.searchClauses;
-			delete queryParms.newLimit;
-			delete queryParms.lastOffset;
-			delete queryParms.maxOffset;
-			queryParms._s = queryParms.searchParam;
-			delete queryParms.searchParam;
+		$scope.$watch('query', function() {
+			var queryParams = angular.copy($scope.query);
 
-			//$location.search(queryParms);
-		}, true);
+			// Delete params that we don't need on the query string
+			delete queryParams.searchClauses;
+			delete queryParams.newLimit;
+			delete queryParams.lastOffset;
+			delete queryParams.maxOffset;
+
+			// Rename searchParam to _s
+			queryParams._s = queryParams.searchParam === '' ? null : queryParams.searchParam;
+			delete queryParams.searchParam;
+
+			// Delete any parameters that have default values
+			if (queryParams.limit === DEFAULT_LIMIT) { delete queryParams.limit; }
+			if (queryParams.offset === DEFAULT_OFFSET) { delete queryParams.offset; }
+			if (queryParams.orderBy === DEFAULT_ORDERBY) { delete queryParams.orderBy; }
+			if (queryParams.order === DEFAULT_ORDER) { delete queryParams.order; }
+			if (queryParams._s === '') { delete queryParams._s; }
+
+			$location.search(queryParams);
+		}, 
+		true // Use object equality because the reference doesn't change
+		);
 
 		// Load all minion resources via REST
 		Minions.query(
@@ -188,7 +210,7 @@
 				$scope.items = value;
 				$log.debug($scope.items);
 
-				var contentRange = parseContentRange(headers("Content-Range"));
+				var contentRange = parseContentRange(headers('Content-Range'));
 				$scope.query.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
 				$scope.query.maxOffset = contentRange.total - 1;
@@ -199,7 +221,7 @@
 				if (response.status == 404) {
 					$scope.items = new Array();
 					$scope.query.lastOffset = 0;
-					$scope.query.maxOffset = 0;
+					$scope.query.maxOffset = -1;
 					$scope.setOffset(0);
 				}
 				// TODO: Handle 500 Server Error by executing an undo callback?
@@ -222,7 +244,7 @@
 					$scope.items = value;
 					$log.debug($scope.items);
 
-					var contentRange = parseContentRange(headers("Content-Range"));
+					var contentRange = parseContentRange(headers('Content-Range'));
 					$scope.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
 					$scope.query.maxOffset = contentRange.total - 1;
@@ -233,7 +255,7 @@
 					if (response.status == 404) {
 						$scope.items = new Array();
 						$scope.query.lastOffset = 0;
-						$scope.query.maxOffset = 0;
+						$scope.query.maxOffset = -1;
 						$scope.setOffset(0);
 					}
 					// TODO: Handle 500 Server Error by executing an undo callback?
@@ -305,14 +327,20 @@
 			} else {
 				// TODO: Figure out if we should reset limit/offset here also
 				$scope.query.orderBy = property;
-				$scope.query.order = 'asc';
+				$scope.query.order = DEFAULT_ORDER;
 			}
 			$scope.refresh();
 		}
 
 		$scope.setOffset = function(offset) {
 			// Offset of the last page
-			var lastPageOffset = Math.floor($scope.query.maxOffset / $scope.query.limit) * $scope.query.limit; 
+			var lastPageOffset;
+			if ($scope.query.maxOffset < 0) { 
+				offset = 0;
+				lastPageOffset = 0; 
+			} else {
+				lastPageOffset = Math.floor($scope.query.maxOffset / $scope.query.limit) * $scope.query.limit; 
+			}
 
 			// Bounds checking
 			offset = ((offset < 0) ? 0 : offset);

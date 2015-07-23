@@ -120,7 +120,8 @@
 				</form>
 			</div>
 
-			<h5 class="pull-right">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
+			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 
