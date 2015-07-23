@@ -300,8 +300,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             // Only return non-deleted nodes - see NMS-2977
             .filter(node -> node.getType() == null || !node.getType().equals("D"))
             .map(node -> getResourceForNode(node))
-            .filter(resource -> resource.getChildResources().size() > 0)
+            .filter(resource -> hasAnyChildResources(resource))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Used to determine whether or not the given (parent) resource
+     * has any child resources.
+     */
+    protected boolean hasAnyChildResources(OnmsResource resource) {
+        // The order of the resource types matter here since we want to
+        // check for the types are most likely occur first.
+        return getResourceTypes().stream()
+                .anyMatch(t -> t.isResourceTypeOnParent(resource));
     }
 
     /**
