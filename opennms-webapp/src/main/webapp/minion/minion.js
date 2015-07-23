@@ -167,6 +167,7 @@
 			lastOffset: 0,
 			maxOffset: 0,
 
+			// TODO: Validate that the orderBy is in a list of supported properties
 			orderBy: typeof $location.search().orderBy === 'undefined' ? DEFAULT_ORDERBY : $location.search().orderBy,
 			order: typeof $location.search().order === 'undefined' ? DEFAULT_ORDER : ($location.search().order === 'asc' ? 'asc' : 'desc')
 		};
@@ -175,7 +176,7 @@
 		$scope.$watch('query', function() {
 			var queryParams = angular.copy($scope.query);
 
-			// Delete params that we don't need on the query string
+			// Delete derived values that we don't need in the query string
 			delete queryParams.searchClauses;
 			delete queryParams.newLimit;
 			delete queryParams.lastOffset;
@@ -198,6 +199,7 @@
 		);
 
 		// Load all minion resources via REST
+		// TODO: Figure out how to eliminate redundancy with $scope.refresh()
 		Minions.query(
 			{
 				_s: $scope.query.searchParam, // FIQL search
@@ -237,7 +239,7 @@
 
 		// Reload all minion resources via REST
 		$scope.refresh = function() {
-			/* Fetch all of the Minions */
+			// Fetch all of the Minions
 			Minions.query(
 				{
 					_s: $scope.query.searchParam, // FIQL search
@@ -284,12 +286,14 @@
 		}
 
 		// Mark label as editable
+		// TODO: Change this so that it uniquely edits one table cell
 		$scope.editLabel = function(id) {
 			$log.debug(id);
 			$scope.enableEditLabel = true;
 		}
 
 		// Mark location as editable
+		// TODO: Change this so that it uniquely edits one table cell
 		$scope.editLocation = function(id) {
 			$log.debug(id);
 			$scope.enableEditLocation = true;
