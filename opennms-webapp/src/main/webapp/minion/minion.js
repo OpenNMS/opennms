@@ -141,7 +141,7 @@
 	})
 
 	// Minion controller
-	.controller('MinionListCtrl', ['$scope', '$location', '$http', '$log', 'Minions', function($scope, $location, $http, $log, Minions) {
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', 'Minions', function($scope, $location, $window, $http, $log, Minions) {
 		$log.debug('MinionListCtrl initializing...');
 
 		var DEFAULT_LIMIT = 20;
@@ -159,7 +159,7 @@
 		$scope.query = {
 			// TODO: Figure out how to parse and restore the FIQL search param
 			searchParam: '',
-			searchClauses: new Array(),
+			searchClauses: [],
 			limit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
 			newLimit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
 			offset: typeof $location.search().offset === 'undefined' ? DEFAULT_OFFSET : (Number($location.search().offset) > 0 ? Number($location.search().offset) : DEFAULT_OFFSET),
@@ -217,15 +217,21 @@
 				$scope.setOffset(contentRange.start);
 			},
 			function(response) {
-				// If we didn't find any elements, then clear the list
-				if (response.status == 404) {
-					$scope.items = new Array();
+				switch(response.status) {
+				case 404:
+					// If we didn't find any elements, then clear the list
+					$scope.items = [];
 					$scope.query.lastOffset = 0;
 					$scope.query.maxOffset = -1;
 					$scope.setOffset(0);
+					break;
+				case 401:
+				case 403:
+					// Handle session timeout by reloading page completely
+					$window.location.href = $location.absUrl();
+					break;
 				}
 				// TODO: Handle 500 Server Error by executing an undo callback?
-				// TODO: Handle session timeout by reloading page completely
 			}
 		);
 
@@ -251,15 +257,21 @@
 					$scope.setOffset(contentRange.start);
 				},
 				function(response) {
-					// If we didn't find any elements, then clear the list
-					if (response.status == 404) {
-						$scope.items = new Array();
+					switch(response.status) {
+					case 404:
+						// If we didn't find any elements, then clear the list
+						$scope.items = [];
 						$scope.query.lastOffset = 0;
 						$scope.query.maxOffset = -1;
 						$scope.setOffset(0);
+						break;
+					case 401:
+					case 403:
+						// Handle session timeout by reloading page completely
+						$window.location.href = $location.absUrl();
+						break;
 					}
 					// TODO: Handle 500 Server Error by executing an undo callback?
-					// TODO: Handle session timeout by reloading page completely
 				}
 			);
 		};
@@ -312,7 +324,7 @@
 		// Clear the current search
 		$scope.clearSearch = function() {
 			if ($scope.query.searchClauses.length > 0) {
-				$scope.query.searchClauses = new Array();
+				$scope.query.searchClauses = [];
 				$scope.query.searchParam = '';
 				$scope.refresh();
 			}
