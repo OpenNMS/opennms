@@ -82,6 +82,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     private static final Pattern RESOURCE_ID_PATTERN = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
 
+    /**
+     * Largest depth at which we will find node related metrics:
+     * [0] will catch node-level resources
+     * [1] will catch interface-level resources
+     * [2] will catch generic index type resources
+     */
+    private static final int MAXIMUM_NODE_METRIC_RESOURCE_DEPTH = 2;
+
     private ResourceStorageDao m_resourceStorageDao;
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
@@ -353,9 +361,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         // If the nodeSource directory does not exist, but the node directory does
         // then create the resource using the node type instead of the nodeSource type
         if (createUsingNodeSourceType) {
-            final boolean nodeSourcePathExists = m_resourceStorageDao.exists(m_nodeSourceResourceType.getResourcePathForNode(node));
+            final boolean nodeSourcePathExists = m_resourceStorageDao.existsWithin(m_nodeSourceResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
             if (!nodeSourcePathExists) {
-                final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
+                final boolean nodePathExists = m_resourceStorageDao.existsWithin(m_nodeResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
                 createUsingNodeSourceType = !nodePathExists;
             }
         }
