@@ -14,7 +14,7 @@
 							<option value="label">Label</option>
 							<option value="location">Location</option>
 							<option value="status">Status</option>
-							<option value="lastUpdated">Last Updated</option>
+							<option value="date">Last Updated</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -43,14 +43,13 @@
 			&nbsp;
 			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
 		</div>
-		<span ng-hide="searchClauses.length == 0">
-			<span ng-repeat="clause in searchClauses">
+		<span ng-hide="query.searchClauses.length == 0">
+			<span ng-repeat="clause in query.searchClauses">
 				<div class="btn-group" style="margin-left: 6px;">
-					<!-- TODO: Make the filter captions pretty -->
 					<button class="btn btn-primary navbar-btn" style="margin:8px 0px;" ng-click="removeSearchClause(clause)">
-						{{clause.property}}
-						{{clause.operator}}
-						{{clause.value}}
+						{{clause.property | property}}
+						{{clause.operator | operator : clause.value}}
+						{{clause.value | value : clause.property}}
 						&nbsp;
 						<i class="fa fa-close"></i>
 					</button>
@@ -65,63 +64,63 @@
 	<div>
 		<div class="btn-toolbar">
 			<div class="btn-group">
-				<a class="btn btn-default {{(offset-limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
 					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
 				</a>
 			</div>
 			<div class="btn-group">
-				<a class="btn btn-default {{(offset-limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(offset-limit)">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
 					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
 				</a>
 			</div>
 
 			<div class="btn-group">
-				<a class="btn btn-default" ng-click="setOffset(offset-(3*limit))" ng-hide="(offset-(3*limit)) &lt; 0" style="width:4em;">
-					{{(offset/limit) - 2}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:4em;">
+					{{(query.offset/query.limit) - 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(offset-(2*limit))" ng-hide="(offset-(2*limit)) &lt; 0" style="width:4em;">
-					{{(offset/limit) - 1}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:4em;">
+					{{(query.offset/query.limit) - 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(offset-limit)" ng-hide="(offset-limit) &lt; 0" style="width:4em;">
-					{{offset/limit}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:4em;">
+					{{query.offset/query.limit}}
 				</a>
-				<a class="btn btn-default active" ng-show="maxOffset &gt; 0" style="width:4em;">
-					{{(offset/limit) + 1}}
+				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:4em;">
+					{{(query.offset/query.limit) + 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(offset+limit)" ng-hide="(offset+limit) &gt; maxOffset" style="width:4em;">
-					{{(offset/limit) + 2}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:4em;">
+					{{(query.offset/query.limit) + 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(offset+(2*limit))" ng-hide="offset+(2*limit) &gt; maxOffset" style="width:4em;">
-					{{(offset/limit) + 3}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:4em;">
+					{{(query.offset/query.limit) + 3}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(offset+(3*limit))" ng-hide="offset+(3*limit) &gt; maxOffset" style="width:4em;">
-					{{(offset/limit) + 4}}
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:4em;">
+					{{(query.offset/query.limit) + 4}}
 				</a>
 			</div>
 
 			<div class="pull-right">
 				<!-- Add 1 to each offset since they are zero-based -->
-				<form class="form-inline" ng-submit="setLimit(newLimit)">
+				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
 					<div class="input-group" style="margin-left:10px;">
 						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
-						<input class="form-control" type="number" ng-model="newLimit"/>
+						<input class="form-control" type="number" ng-model="query.newLimit"/>
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(offset + limit)">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
 							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
 						</a>
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(offset+limit) &gt; maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 						</a>
 					</div>
 				</form>
 			</div>
 
-			<h5 class="pull-right">{{offset === lastOffset ? "Item " + (offset + 1) : "Items " + (offset + 1) + " - " + (lastOffset + 1)}} ({{maxOffset + 1}} total)</h5>
+			<h5 class="pull-right">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 
@@ -139,78 +138,78 @@
 				<tr>
 					<th class="col-sm-2">
 						<a ng-click="changeOrderBy('id')">ID</a>
-						<i ng-show="orderBy === 'id' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'id' && order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'id' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'id' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2">
 						<a ng-click="changeOrderBy('label')">Label</a>
-						<i ng-show="orderBy === 'label' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'label' && order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'label' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'label' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2">
 						<a ng-click="changeOrderBy('location')">Location</a>
-						<i ng-show="orderBy === 'location' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'location' && order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'location' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'location' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1">
 						<a ng-click="changeOrderBy('type')">Type</a>
-						<i ng-show="orderBy === 'type' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'type' && order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'type' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'type' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1">
 						<a ng-click="changeOrderBy('status')">Status</a>
-						<i ng-show="orderBy === 'status' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'status' && order === 'desc'" class="fa fa-sort-desc"/>
+						<i ng-show="query.orderBy === 'status' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'status' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2">
-						<a ng-click="changeOrderBy('lastUpdated')">Last Updated</a>
-						<i ng-show="orderBy === 'lastUpdated' && order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="orderBy === 'lastUpdated' && order === 'desc'" class="fa fa-sort-desc"/>
+						<a ng-click="changeOrderBy('date')">Last Updated</a>
+						<i ng-show="query.orderBy === 'date' && query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'date' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2">
 						Properties
 					</th>
 				</tr>
 
-				<tr ng-repeat="minion in minions">
+				<tr ng-repeat="item in items">
 					<td class="text-nowrap">
-						{{minion.id}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:minion.id})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:minion.id})"><i class="fa fa-minus-square-o"/></a>
+						{{item.id}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						<form ng-show="enableEditLabel" ng-submit="update(minion)" style="margin: 0;">
-							<input class="form-control input-sm" type="text" ng-model="minion.label" ng-blur="unedit()"/>
+						<form ng-show="enableEditLabel" ng-submit="update(item)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="item.label" ng-blur="unedit()"/>
 						</form>
-						<span ng-hide="enableEditLabel" ng-click="editLabel(minion.id)">{{minion.label}}</span>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:minion.label})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:minion.label})"><i class="fa fa-minus-square-o"/></a>
+						<span ng-hide="enableEditLabel" ng-click="editLabel(item.id)">{{item.label}}</span>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						<form ng-show="enableEditLocation" ng-submit="update(minion)" style="margin: 0;">
-							<input class="form-control input-sm" type="text" ng-model="minion.location" ng-blur="unedit()"/>
+						<form ng-show="enableEditLocation" ng-submit="update(item)" style="margin: 0;">
+							<input class="form-control input-sm" type="text" ng-model="item.location" ng-blur="unedit()"/>
 						</form>
-						<span ng-hide="enableEditLocation" ng-click="editLocation(minion.id)">{{minion.location}}</span>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:minion.location})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:minion.location})"><i class="fa fa-minus-square-o"/></a>
+						<span ng-hide="enableEditLocation" ng-click="editLocation(item.id)">{{item.location}}</span>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						{{minion.type}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:minion.type})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:minion.type})"><i class="fa fa-minus-square-o"/></a>
+						{{item.type}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						{{minion.status}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:minion.status})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:minion.status})"><i class="fa fa-minus-square-o"/></a>
+						{{item.status}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						{{minion.lastUpdated | date:'MMM d, yyyy h:mm:ss a'}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'lastUpdated',operator:'GE',value:minion.lastUpdated})"><i class="fa fa-toggle-left"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'lastUpdated',operator:'LE',value:minion.lastUpdated})"><i class="fa fa-toggle-right"/></a>
+						{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'date',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'date',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
 					</td>
 					<td class="text-nowrap">
-						<span ng-repeat="(key,value) in minion.properties">
+						<span ng-repeat="(key,value) in item.properties">
 						<span class="label label-default">
 							{{key}}: {{value}}
 						</span>&nbsp;

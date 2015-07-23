@@ -56,8 +56,65 @@
 		};
 	}
 
+	// $filters that can be used to create human-readable versions of filter values
+	angular.module('minionListFilters', [])
+	.filter('property', function() {
+		return function(input) {
+			switch (input) {
+			case 'id':
+				return 'ID';
+			case 'label':
+				return 'Label';
+			case 'location':
+				return 'Location';
+			case 'type':
+				return 'Type';
+			case 'status':
+				return 'Status';
+			case 'date':
+				return 'Last updated';
+			}
+			// If no match, return the input
+			return input;
+		}
+	})
+	.filter('operator', function() {
+		return function(input, value) {
+			// See if the string contains a wildcard
+			var fuzzy = (value.indexOf('*') > -1);
+
+			switch (input) {
+			case 'EQ':
+				return fuzzy ? 'is like' : 'equals';
+			case 'NE':
+				return fuzzy ? 'is not like' : 'does not equal';
+			case 'LT':
+				return 'is less than';
+			case 'LE':
+				return 'is less than or equal';
+			case 'GT':
+				return 'is greater than';
+			case 'GE':
+				return 'is greater than or equal';
+			}
+			// If no match, return the input
+			return input;
+		}
+	})
+	.filter('value', function($filter) {
+		return function(input, property) {
+			switch (property) {
+			case 'date':
+				// Return the date in our preferred format
+				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+			}
+			return input;
+		}
+	});
+
+
 	// Minion module
-	angular.module('minion', [ 'ngResource' ])
+	angular.module('minion', [ 'ngResource', 'minionListFilters' ])
 
 	// Create a minion REST $resource
 	.factory('Minions', function($resource, $log, $http) {
@@ -80,7 +137,7 @@
 	})
 
 	// Minion controller
-	.controller('MinionListCtrl', ['$scope', '$http', '$log', 'Minions', function($scope, $http, $log, Minions) {
+	.controller('MinionListCtrl', ['$scope', '$location', '$http', '$log', 'Minions', function($scope, $location, $http, $log, Minions) {
 		$log.debug('MinionListCtrl initializing...');
 
 		// Blank out the editing flags
@@ -88,45 +145,61 @@
 		$scope.enableEditLocation = false;
 		$scope.enableEditProperties = false;
 
-		// Blank out all of the query parameters
-		$scope.searchParam = '';
-		$scope.searchClauses = new Array();
+		// Restore any query parameters that you can from the 
+		// query string, blank out the rest
+		$scope.query = {
+			// TODO: Figure out how to parse and restore the FIQL search param
+			searchParam: '',
+			searchClauses: new Array(),
+			limit: typeof $location.search().limit === 'undefined' ? 20 : $location.search().limit,
+			newLimit: typeof $location.search().limit === 'undefined' ? 20 : $location.search().limit,
+			offset: typeof $location.search().offset === 'undefined' ? 0 : $location.search().offset,
 
-		$scope.limit = 20;
-		$scope.newLimit = 20;
-		$scope.offset = 0;
+			lastOffset: 0,
+			maxOffset: 0,
 
-		$scope.lastOffset = 0;
-		$scope.maxOffset = 0;
+			orderBy: typeof $location.search.orderBy === 'undefined' ? 'label' : $location.search.orderBy,
+			order: typeof $location.search.order === 'undefined' ? 'asc' : $location.search.order
+		};
 
-		$scope.orderBy = 'label';
-		$scope.order = 'asc';
+		// Sync the query hash with the $location query string
+		$scope.$watch("query", function() {
+			var queryParms = angular.copy($scope.query);
+			delete queryParms.searchClauses;
+			delete queryParms.newLimit;
+			delete queryParms.lastOffset;
+			delete queryParms.maxOffset;
+			queryParms._s = queryParms.searchParam;
+			delete queryParms.searchParam;
+
+			//$location.search(queryParms);
+		}, true);
 
 		// Load all minion resources via REST
 		Minions.query(
 			{
-				_s: $scope.searchParam, // FIQL search
-				limit: $scope.limit,
-				offset: $scope.offset,
-				orderBy: $scope.orderBy,
-				order: $scope.order
+				_s: $scope.query.searchParam, // FIQL search
+				limit: $scope.query.limit,
+				offset: $scope.query.offset,
+				orderBy: $scope.query.orderBy,
+				order: $scope.query.order
 			}, 
 			function(value, headers) {
-				$scope.minions = value;
-				$log.debug($scope.minions);
+				$scope.items = value;
+				$log.debug($scope.items);
 
 				var contentRange = parseContentRange(headers("Content-Range"));
-				$scope.lastOffset = contentRange.end;
+				$scope.query.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
-				$scope.maxOffset = contentRange.total - 1;
+				$scope.query.maxOffset = contentRange.total - 1;
 				$scope.setOffset(contentRange.start);
 			},
 			function(response) {
 				// If we didn't find any elements, then clear the list
 				if (response.status == 404) {
-					$scope.minions = new Array();
-					$scope.lastOffset = 0;
-					$scope.maxOffset = 0;
+					$scope.items = new Array();
+					$scope.query.lastOffset = 0;
+					$scope.query.maxOffset = 0;
 					$scope.setOffset(0);
 				}
 				// TODO: Handle 500 Server Error by executing an undo callback?
@@ -139,28 +212,28 @@
 			/* Fetch all of the Minions */
 			Minions.query(
 				{
-					_s: $scope.searchParam, // FIQL search
-					limit: $scope.limit,
-					offset: $scope.offset,
-					orderBy: $scope.orderBy,
-					order: $scope.order
+					_s: $scope.query.searchParam, // FIQL search
+					limit: $scope.query.limit,
+					offset: $scope.query.offset,
+					orderBy: $scope.query.orderBy,
+					order: $scope.query.order
 				}, 
 				function(value, headers) {
-					$scope.minions = value;
-					$log.debug($scope.minions);
+					$scope.items = value;
+					$log.debug($scope.items);
 
 					var contentRange = parseContentRange(headers("Content-Range"));
-					$scope.lastOffset = contentRange.end;
+					$scope.query.lastOffset = contentRange.end;
 					// Subtract 1 from the value since offsets are zero-based
-					$scope.maxOffset = contentRange.total - 1;
+					$scope.query.maxOffset = contentRange.total - 1;
 					$scope.setOffset(contentRange.start);
 				},
 				function(response) {
 					// If we didn't find any elements, then clear the list
 					if (response.status == 404) {
-						$scope.minions = new Array();
-						$scope.lastOffset = 0;
-						$scope.maxOffset = 0;
+						$scope.items = new Array();
+						$scope.query.lastOffset = 0;
+						$scope.query.maxOffset = 0;
 						$scope.setOffset(0);
 					}
 					// TODO: Handle 500 Server Error by executing an undo callback?
@@ -191,75 +264,75 @@
 		// Add the search clause to the list of clauses
 		$scope.addSearchClause = function(clause) {
 			// Make sure the clause isn't already in the list of search clauses
-			for (var i = 0; i < $scope.searchClauses.length; i++) {
+			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
 				if (
-					clause.property === $scope.searchClauses[i].property &&
-					clause.operator === $scope.searchClauses[i].operator &&
-					clause.value === $scope.searchClauses[i].value
+					clause.property === $scope.query.searchClauses[i].property &&
+					clause.operator === $scope.query.searchClauses[i].operator &&
+					clause.value === $scope.query.searchClauses[i].value
 				) {
 					return;
 				}
 			}
 			// TODO: Add validation?
-			$scope.searchClauses.push(angular.copy(clause));
-			$scope.searchParam = toFiql($scope.searchClauses);
+			$scope.query.searchClauses.push(angular.copy(clause));
+			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
 		}
 
 		// Remove a search clause from the list of clauses
 		$scope.removeSearchClause = function(clause) {
 			// TODO: Add validation?
-			$scope.searchClauses.splice($scope.searchClauses.indexOf(clause), 1);
-			$scope.searchParam = toFiql($scope.searchClauses);
+			$scope.query.searchClauses.splice($scope.query.searchClauses.indexOf(clause), 1);
+			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
 		}
 
 		// Clear the current search
 		$scope.clearSearch = function() {
-			if ($scope.searchClauses.length > 0) {
-				$scope.searchClauses = new Array();
-				$scope.searchParam = '';
+			if ($scope.query.searchClauses.length > 0) {
+				$scope.query.searchClauses = new Array();
+				$scope.query.searchParam = '';
 				$scope.refresh();
 			}
 		}
 
 		// Change the sorting of the table
 		$scope.changeOrderBy = function(property) {
-			if ($scope.orderBy === property) {
+			if ($scope.query.orderBy === property) {
 				// TODO: Figure out if we should reset limit/offset here also
 				// If the property is already selected then reverse the sorting
-				$scope.order = ($scope.order === 'asc' ? 'desc' : 'asc');
+				$scope.query.order = ($scope.query.order === 'asc' ? 'desc' : 'asc');
 			} else {
 				// TODO: Figure out if we should reset limit/offset here also
-				$scope.orderBy = property;
-				$scope.order = 'asc';
+				$scope.query.orderBy = property;
+				$scope.query.order = 'asc';
 			}
 			$scope.refresh();
 		}
 
 		$scope.setOffset = function(offset) {
 			// Offset of the last page
-			var lastPageOffset = Math.floor($scope.maxOffset / $scope.limit) * $scope.limit; 
+			var lastPageOffset = Math.floor($scope.query.maxOffset / $scope.query.limit) * $scope.query.limit; 
 
 			// Bounds checking
 			offset = ((offset < 0) ? 0 : offset);
 			offset = ((offset > lastPageOffset) ? lastPageOffset : offset);
 
-			if ($scope.offset !== offset) {
-				$scope.offset = offset;
+			if ($scope.query.offset !== offset) {
+				$scope.query.offset = offset;
 				$scope.refresh();
 			}
 		}
 
 		$scope.setLimit = function(limit) {
 			if (limit < 1) {
-				$scope.newLimit = $scope.limit;
+				$scope.query.newLimit = $scope.query.limit;
 				// TODO: Throw a validation error
 				return;
 			}
-			if ($scope.limit !== limit) {
-				$scope.limit = limit;
-				$scope.offset = Math.floor($scope.offset / limit) * limit;
+			if ($scope.query.limit !== limit) {
+				$scope.query.limit = limit;
+				$scope.query.offset = Math.floor($scope.query.offset / limit) * limit;
 				$scope.refresh();
 			}
 		}
@@ -277,7 +350,7 @@
 
 				// Read-only fields
 				// saveMe.type = minion.type;
-				// saveMe.lastUpdated = minion.lastUpdated;
+				// saveMe.date = minion.date;
 
 				saveMe.$update({}, function() {
 					// Reset the editing flags
@@ -286,7 +359,7 @@
 					$scope.enableEditProperties = false;
 
 					// If there's a search in effect, refresh the view
-					if ($scope.searchParam !== '') {
+					if ($scope.query.searchParam !== '') {
 						$scope.refresh();
 					}
 				});
