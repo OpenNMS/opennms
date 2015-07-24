@@ -2,7 +2,8 @@
 	'use strict';
 
 	// Base URL of the REST service
-	var baseUrl = 'api/v2';
+	var BASE_REST_URL = 'api/v2';
+	var ISO_8601_DATE_FORMAT_WITHOUT_MILLIS = 'yyyy-MM-ddTHH:mm:ssZ';
 
 	String.prototype.endsWith = function(suffix) {
 		return this.indexOf(suffix, this.length - suffix.length) !== -1;
@@ -71,7 +72,7 @@
 				return 'Type';
 			case 'status':
 				return 'Status';
-			case 'date':
+			case 'lastUpdated':
 				return 'Last updated';
 			}
 			// If no match, return the input
@@ -81,7 +82,7 @@
 	.filter('operator', function() {
 		return function(input, value) {
 			// See if the string contains a wildcard
-			var fuzzy = (value.indexOf('*') > -1);
+			var fuzzy = (typeof value === 'String' && value.indexOf('*') > -1);
 
 			switch (input) {
 			case 'EQ':
@@ -104,7 +105,7 @@
 	.filter('value', function($filter) {
 		return function(input, property) {
 			switch (property) {
-			case 'date':
+			case 'lastUpdated':
 				// Return the date in our preferred format
 				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
 			}
@@ -127,7 +128,7 @@
 
 	// Create a minion REST $resource
 	.factory('Minions', function($resource, $log, $http) {
-		return $resource(baseUrl + '/minions/:id', { id: '@id' },
+		return $resource(BASE_REST_URL + '/minions/:id', { id: '@id' },
 			{
 				'query': { 
 					method: 'GET',
@@ -146,7 +147,7 @@
 	})
 
 	// Minion controller
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', 'Minions', function($scope, $location, $window, $http, $log, Minions) {
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', 'Minions', function($scope, $location, $window, $http, $log, $filter, Minions) {
 		$log.debug('MinionListCtrl initializing...');
 
 		var DEFAULT_LIMIT = 20;
@@ -306,6 +307,16 @@
 
 		// Add the search clause to the list of clauses
 		$scope.addSearchClause = function(clause) {
+			if(angular.isDate(clause.value)) {
+				// Returns a value in yyyy-MM-ddTHH:mm:ss.sssZ format
+				// Unfortunately, I don't think CXF will like this because
+				// it includes the millisecond portion of the date.
+				//clause.value = new Date(clause.value).toISOString();
+
+				// TODO: Add milliseconds to this timestamp once CXF can parse it
+				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+			}
+
 			// Make sure the clause isn't already in the list of search clauses
 			for (var i = 0; i < $scope.query.searchClauses.length; i++) {
 				if (
@@ -320,6 +331,13 @@
 			$scope.query.searchClauses.push(angular.copy(clause));
 			$scope.query.searchParam = toFiql($scope.query.searchClauses);
 			$scope.refresh();
+		}
+
+		// Convert an epoch timestamp into String format before adding the search clause
+		$scope.addEpochTimestampSearchClause = function(clause) {
+			// TODO: Add milliseconds to this timestamp once CXF can parse it
+			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+			$scope.addSearchClause(clause);
 		}
 
 		// Remove a search clause from the list of clauses

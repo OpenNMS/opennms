@@ -14,7 +14,7 @@
 							<option value="label">Label</option>
 							<option value="location">Location</option>
 							<option value="status">Status</option>
-							<option value="date">Last Updated</option>
+							<option value="lastUpdated">Last Updated</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -24,8 +24,8 @@
 							<option value="GT">&gt;</option>
 							<option value="GE">&gt;=</option>
 						</select>
-						<!-- TODO: Change the type of form control based on the property we are querying (string, number, date) -->
-						<input class="form-control" type="text" ng-model="clause.value"/>
+						<input class="form-control" type="text" ng-model="clause.value" ng-show="clause.property !== 'lastUpdated'" />
+						<input class="form-control" type="datetime-local" ng-model="clause.value" ng-show="clause.property === 'lastUpdated'"/>
 						</div>
 						<br/><br/>
 						<button class="btn btn-default" type="submit">Submit</button>
@@ -46,7 +46,7 @@
 					<h4>Filtering</h4>
 					<p>
 						Click on the <i class="fa fa-search-plus"></i> icon to filter the list. You can match a portion of a value by using
-						the '*' character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
+						the * character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
 					</p>
 
 					<h4>Filter by Example</h4>
@@ -240,8 +240,8 @@
 					</td>
 					<td class="text-nowrap">
 						{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'date',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'date',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
+						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
 					</td>
 					<td class="text-nowrap">
 						<span ng-repeat="(key,value) in item.properties">
