@@ -6,12 +6,12 @@ import org.opennms.newts.api.Context;
 import org.opennms.newts.cassandra.search.ResourceMetadataCache;
 
 /**
- * A cache with search support.
+ * A cache that supports searching by resource id prefix.
  *
  * @author jwhite
  */
 public interface SearchableResourceMetadataCache extends ResourceMetadataCache {
 
-    public List<String> getEntriesWithPrefix(Context context, String resourceIdPrefix);
+    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix);
 
 }

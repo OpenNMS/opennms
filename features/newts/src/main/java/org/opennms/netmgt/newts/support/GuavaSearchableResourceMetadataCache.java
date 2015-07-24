@@ -4,6 +4,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,20 +21,31 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
+import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharArrayNodeFactory;
 
 /**
  * A copy of {@link org.opennms.newts.cassandra.search.GuavaResourceMetadataCache} with support 
  * for searching resources within the cache.
  *
+ * Cached entries are maintained two structures, a Guava Cache and a Radix Tree. The main caching
+ * functionality is provided by the Guava Cache and the Radix Tree is used for searching by prefix.
+ * The additional memory usage should be minimal since we duplicate the keys, but reference the same nodes.
+ *
+ * Both structures are kept in synch via a {@link RemovalListener}.
+ *
  * @author jwhite
  */
-public class GuavaSearchableResourceMetadataCache implements SearchableResourceMetadataCache {
+public class GuavaSearchableResourceMetadataCache implements SearchableResourceMetadataCache, RemovalListener<String, ResourceMetadata> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GuavaSearchableResourceMetadataCache.class);
 
     private static final Joiner m_keyJoiner = Joiner.on(':');
 
     private final Cache<String, ResourceMetadata> m_cache;
+    private final ConcurrentRadixTree<ResourceMetadata> m_radixTree;
     private final Meter m_metricReqs;
     private final Meter m_attributeReqs;
     private final Meter m_metricMisses;
@@ -41,8 +53,10 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
 
     @Inject
     public GuavaSearchableResourceMetadataCache(@Named("search.resourceMetadata.maxCacheEntries") long maxSize, MetricRegistry registry) {
+        m_radixTree = new ConcurrentRadixTree<>(new DefaultCharArrayNodeFactory());
+
         LOG.info("Initializing resource metadata cache ({} max entries)", maxSize);
-        m_cache = CacheBuilder.newBuilder().maximumSize(maxSize).build();
+        m_cache = CacheBuilder.newBuilder().maximumSize(maxSize).removalListener(this).build();
 
         m_metricReqs = registry.meter(name(getClass(), "metric-reqs"));
         m_metricMisses = registry.meter(name(getClass(), "metric-misses"));
@@ -51,13 +65,13 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
     }
 
     @Override
-    public Optional<ResourceMetadata> get(Context context, Resource resourceId) {
-        ResourceMetadata r = m_cache.getIfPresent(key(context, resourceId));
+    public Optional<ResourceMetadata> get(Context context, Resource resource) {
+        ResourceMetadata r = m_cache.getIfPresent(key(context, resource.getId()));
         return (r != null) ? Optional.of(r) : Optional.<ResourceMetadata>absent();
     }
 
-    private String key(Context context, Resource resource) {
-        return m_keyJoiner.join(context.getId(), resource.getId());
+    private String key(Context context, String resourceId) {
+        return m_keyJoiner.join(context.getId(), resourceId);
     }
 
     private String resourceId(Context context, String key) {
@@ -72,7 +86,9 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
         if (!o.isPresent()) {
             ResourceMetadata newMetadata = new ResourceMetadata(m_metricReqs, m_attributeReqs, m_metricMisses, m_attributeMisses);
             newMetadata.merge(metadata);
-            m_cache.put(key(context, resource), newMetadata);
+            String key = key(context, resource.getId());
+            m_cache.put(key, newMetadata);
+            m_radixTree.put(key, newMetadata);
             return;
         }
 
@@ -81,12 +97,14 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
     }
 
     @Override
-    public List<String> getEntriesWithPrefix(Context context, String resourceIdPrefix) {
-        String prefix = m_keyJoiner.join(context.getId(), resourceIdPrefix);
-        return m_cache.asMap().keySet().stream()
-            .filter(key -> key.startsWith(prefix))
-            .map(key -> resourceId(context, key))
-            .collect(Collectors.toList());
+    public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
+        return StreamSupport.stream(m_radixTree.getKeysStartingWith(key(context, resourceIdPrefix)).spliterator(), false)
+                .map(cs -> resourceId(context, cs.toString()))
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public void onRemoval(RemovalNotification<String, ResourceMetadata> notification) {
+        m_radixTree.remove(notification.getKey());
+    }
 }

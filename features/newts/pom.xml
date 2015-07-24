@@ -48,6 +48,11 @@
       <artifactId>newts-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.concurrent-trees</groupId>
+      <artifactId>concurrent-trees</artifactId>
+      <version>2.4.0</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

@@ -174,13 +174,10 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     }
 
     private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {
-        List<String> resourceIds = m_searchableCache.getEntriesWithPrefix(
-                Context.DEFAULT_CONTEXT, toResourceId(path));
-        for (String resourceId : resourceIds) {
+        List<String> cachedResourceIds = m_searchableCache.getResourceIdsWithPrefix(
+                m_context, toResourceId(path));
+        for (String resourceId : cachedResourceIds) {
             int relativeDepth = path.relativeDepth(toResourcePath(resourceId));
-            if (relativeDepth < 0) {
-                continue;
-            }
             if (relativeDepth >= minDepth && relativeDepth <= maxDepth) {
                 return true;
             }
