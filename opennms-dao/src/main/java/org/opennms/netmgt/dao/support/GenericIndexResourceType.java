@@ -129,7 +129,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
         if (parent == null) {
             return false;
         }
-        return m_resourceStorageDao.exists(new ResourcePath(parent.getPath(), m_name));
+        return m_resourceStorageDao.exists(new ResourcePath(parent.getPath(), m_name), 1);
     }
 
     /** {@inheritDoc} */
@@ -157,7 +157,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
         }
 
         final ResourcePath path = ResourcePath.get(parent.getPath(), getName(), index);
-        if (!m_resourceStorageDao.exists(path)) {
+        if (!m_resourceStorageDao.exists(path, 0)) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, path, "Generic resource with label " + m_label + " could not find resource at path: " + path, null);
 
         }
@@ -178,7 +178,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
      * @return a {@link java.util.List} object.
      */
     private List<String> getQueryableIndexes(ResourcePath path) {
-        return m_resourceStorageDao.children(path).stream()
+        return m_resourceStorageDao.children(path, 1).stream()
                 .map(rp -> rp.getName())
                 .collect(Collectors.toList());
     }

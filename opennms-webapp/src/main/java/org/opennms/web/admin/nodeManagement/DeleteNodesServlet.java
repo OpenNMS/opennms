@@ -93,7 +93,7 @@ public class DeleteNodesServlet extends HttpServlet {
                     Integer.toString(nodeId)
             );
 
-            if (m_resourceStorageDao.exists(nodeSnmpPath)) {
+            if (m_resourceStorageDao.exists(nodeSnmpPath, 0)) {
                 LOG.debug("Attempting to delete node data directory: {}", nodeSnmpPath);
                 if (m_resourceStorageDao.delete(nodeSnmpPath)) {
                     LOG.info("Node SNMP data directory deleted successfully: {}", nodeSnmpPath);
@@ -109,7 +109,7 @@ public class DeleteNodesServlet extends HttpServlet {
                         ipAddr
                 );
 
-                if (m_resourceStorageDao.exists(ifResponseTimePath)) {
+                if (m_resourceStorageDao.exists(ifResponseTimePath, 0)) {
                     LOG.debug("Attempting to delete node response time data directory: {}", ifResponseTimePath);
                     if (m_resourceStorageDao.delete(ifResponseTimePath)) {
                         LOG.info("Node response time data directory deleted successfully: {}", ifResponseTimePath);

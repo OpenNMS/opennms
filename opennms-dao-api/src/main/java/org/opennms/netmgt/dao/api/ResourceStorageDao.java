@@ -35,36 +35,70 @@ import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 
 /**
- * This interface is used to abstract the I/O operations used
- * to walk the resource tree and retrieve or manipulate resource
- * details.
+ * This interface is used to abstract the I/O operations used to walk the resource tree
+ * and retrieve or manipulate resource details.
  *
  * @author jwhite
+ * @see org.opennms.netmgt.dao.api.ResourceDao
  * @see org.opennms.netmgt.model.ResourcePath
  */
 public interface ResourceStorageDao {
 
     /**
-     * Returns true if the path, or any of its children contain
-     * one or more metrics.
-     */
-    public boolean exists(ResourcePath path);
-
-    /**
-     * Returns true if the path, or any of its children contain
-     * one or more metrics within the given depth.
+     * Verifies if a path contains one or more metrics
+     * at the given depth.
+     * <p>
+     * For example, assume we are working with file-system paths,
+     * and we have the following file on disk /a/b/c/some.metric.
+     * The function should behave as follows:
+     * <ul>
+     * <li> exists('/a/b/c', 0) -> true
+     * <li> exists('/a/b', 1) -> true
+     * <li> exists('/a/b', 2) -> false
+     * </ul>
+     *
+     * @param path resource path used as the root of the check
+     * @param depth a non-negative integer
+     * @return true if one or more metrics exist, false otherwise
      */
     public boolean exists(ResourcePath path, int depth);
 
     /**
-     * Retrieves the set of child paths one level bellow the given
-     * path which contain one or more metrics.
+     * Verifies if a path contains one or more metrics within
+     * the given depth.
+     * <p>
+     * For example, assume we are working with file-system paths,
+     * and we have the following file on disk /a/b/c/some.metric.
+     * The function should behave as follows:
+     * <ul>
+     * <li> exists('/a/b/c', 0) -> true
+     * <li> exists('/a/b', 1) -> true
+     * <li> exists('/a/b', 2) -> true
+     * <li> exists('/a', 1) -> false
+     * </ul>
+     *
+     * @param path resource path used as the root of the check
+     * @param depth a non-negative integer
+     * @return true if one or more metrics exist, false otherwise
      */
-    public Set<ResourcePath> children(ResourcePath path);
+    public boolean existsWithin(ResourcePath path, int depth);
 
     /**
      * Retrieves the set of child paths one level bellow the given
-     * path which contain one or more metrics within the given depth.
+     * path which contain one or more metrics at the given depth.
+     * <p>
+     * For example, assume we are working with file-system paths,
+     * and we have the following file on disk /a/b/c/some.metric.
+     * The function should behave as follows:
+     * <ul>
+     * <li> children('/a/b', 1) -> {'/a/b/c'}
+     * <li> children('/a/b', 2) -> {}
+     * <li> children('/a', 2) -> {'b'}
+     * </ul>
+     *
+     * @param path resource path used as the root of the check
+     * @param depth a positive integer
+     * @return the set of child paths containing metrics
      */
     public Set<ResourcePath> children(ResourcePath path, int depth);
 

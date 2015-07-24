@@ -334,7 +334,6 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(Collections.emptyList());
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();
@@ -394,7 +393,6 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(nodeDir, "foo" + m_rrdFileExtension);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(Collections.emptyList());
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();
@@ -420,7 +418,6 @@ public class DefaultResourceDaoTest {
         m_fileAnticipator.tempFile(intfDir, "foo" + m_rrdFileExtension);
 
         expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
-        expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(Collections.emptyList());
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();

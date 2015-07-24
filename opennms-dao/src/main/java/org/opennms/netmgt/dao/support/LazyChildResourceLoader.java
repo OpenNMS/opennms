@@ -10,7 +10,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
     private final ResourceDao m_resourceDao;
@@ -27,20 +26,21 @@ public class LazyChildResourceLoader implements LazyList.Loader<OnmsResource> {
     @Override
     public List<OnmsResource> load() {
         Preconditions.checkNotNull(m_parent, "parent attribute");
-        final List<OnmsResource> children = Lists.newLinkedList();
-        for (OnmsResourceType resourceType : getAvailableResourceTypes()) {
-            for (OnmsResource resource : resourceType.getResourcesForParent(m_parent)) {
-                resource.setParent(m_parent);
-                children.add(resource);
-            }
-        }
+        // Gather the lists of children from all the available resource types and merge them
+        // into a single list
+        List<OnmsResource> children = getAvailableResourceTypes().parallelStream()
+                .map(t -> t.getResourcesForParent(m_parent))
+                .flatMap(rs -> rs.stream())
+                .collect(Collectors.toList());
+
+        // Set the parent field on all of the resources
+        children.stream().forEach(c -> c.setParent(m_parent));
         return children;
     }
 
     private Collection<OnmsResourceType> getAvailableResourceTypes() {
-        return m_resourceDao.getResourceTypes().stream()
+        return m_resourceDao.getResourceTypes().parallelStream()
                 .filter(t -> t.isResourceTypeOnParent(m_parent))
                 .collect(Collectors.toList());
     }
-
 }
