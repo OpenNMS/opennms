@@ -3,6 +3,7 @@ package org.opennms.netmgt.dao.support;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
@@ -52,6 +53,10 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsResourceStorageDao.class);
 
+    // Constants used when building mock samples in setStringAttribute()
+    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
+
     @Autowired
     private Context m_context;
 
@@ -67,26 +72,26 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @Override
     public boolean exists(ResourcePath path, int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        if (!hasCachedEntry(path, depth, depth)) {
-            return searchFor(path, depth, false).size() > 0;
-        } else {
-            return true;
+        if (hasCachedEntry(path, depth, depth)) {
+            return true; // cache hit!
         }
+
+        return searchFor(path, depth, false).size() > 0;
     }
 
     @Override
-    public boolean existsWithin(ResourcePath path, int depth) {
+    public boolean existsWithin(final ResourcePath path, final int depth) {
         Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
-        if (!hasCachedEntry(path, 0, depth)) {
-            for (int i = 0; i <= depth; i++) {
-                if (searchFor(path, i, false).size() > 0) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return true;
+        if (hasCachedEntry(path, 0, depth)) {
+            return true; // cache hit!
         }
+
+        // The indices are structured in such a way that we need specify the depth
+        // so here we need to iterate over all the possibilities. We could add
+        // additional indices to avoid this, but it's not worth the additional
+        // writes, since the specified depth should be relatively small.
+        return IntStream.rangeClosed(0, depth)
+            .anyMatch(i -> searchFor(path, i, false).size() > 0);
     }
 
     @Override
@@ -95,9 +100,13 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         Set<ResourcePath> matches = Sets.newTreeSet();
 
         SearchResults results = searchFor(path, depth, false);
-        for (Result res : results) {
-            ResourcePath child = toChildResourcePath(path, res.getResource().getId());
+        for (Result result : results) {
+            // Relativize the path
+            ResourcePath child = toChildResourcePath(path, result.getResource().getId());
             if (child == null) {
+                // This shouldn't happen
+                LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. Ignoring resource.",
+                        result.getResource(), path, depth);
                 continue;
             }
             matches.add(child);
@@ -108,6 +117,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public boolean delete(ResourcePath path) {
+        // Deletes are not supported
         return false;
     }
 
@@ -121,6 +131,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
             final String resourceId = result.getResource().getId();
             final ResourcePath resultPath = toResourcePath(resourceId);
             if (!path.equals(resultPath)) {
+                // This shouldn't happen
+                LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. Ignoring resource.",
+                        result.getResource(), path, 0);
                 continue;
             }
 
@@ -146,10 +159,10 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 .put(key, value)
                 .build();
         Resource resource = new Resource(toResourceId(path), Optional.of(attributes));
-        Sample sample = new Sample(Timestamp.fromEpochMillis(0), m_context, resource, "strings",
-                MetricType.GAUGE, ValueType.compose(0, MetricType.GAUGE));
+        Sample sample = new Sample(EPOCH, m_context, resource, "strings", MetricType.GAUGE, ZERO);
 
         // Leverage the existing interface provided by the indexer to persist the attributes.
+        // The key/value pair specified in the attributes map will be merged with the others.
         m_indexer.update(Lists.newArrayList(sample));
     }
 
@@ -160,17 +173,17 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getStringAttributes(ResourcePath path) {
-        return m_searcher.getResourceAttributes(m_context, toResourceId(path));
-    }
-
-    @Override
-    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
-        // pass
+        return getMetaData(path);
     }
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
         return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+    }
+
+    @Override
+    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
+        // These are already stored by the indexer
     }
 
     private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {

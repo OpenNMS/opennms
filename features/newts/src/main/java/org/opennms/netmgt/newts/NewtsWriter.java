@@ -32,16 +32,12 @@ public class NewtsWriter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsWriter.class);
 
+    @Autowired
+    private SampleRepository m_sampleRepository;
+
     private final int m_maxBatchSize;
 
     private final int m_maxBatchDelayInMs;
-
-    /////////
-    // Newts
-    /////////
-
-    @Autowired
-    private SampleRepository m_sampleRepository;
 
     // Batch the samples up for insertion
     private List<Sample> sampleBatch = Lists.newLinkedList();

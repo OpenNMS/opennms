@@ -32,7 +32,8 @@ import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharArrayNodeFa
  *
  * Cached entries are maintained two structures, a Guava Cache and a Radix Tree. The main caching
  * functionality is provided by the Guava Cache and the Radix Tree is used for searching by prefix.
- * The additional memory usage should be minimal since we duplicate the keys, but reference the same nodes.
+ * The additional memory usage should be minimal since we only need to duplicate the keys, the nodes
+ * references the same objects.
  *
  * Both structures are kept in synch via a {@link RemovalListener}.
  *
