@@ -61,12 +61,11 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.CriteriaBuilderSearchVisitor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
@@ -237,14 +236,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 
 			LOG.debug("update: updating object {}", object);
 
-			final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
-			for(final String key : params.keySet()) {
-				if (wrapper.isWritableProperty(key)) {
-					final String stringValue = params.getFirst(key);
-					final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-					wrapper.setPropertyValue(key, value);
-				}
-			}
+			RestUtils.setBeanProperties(object, params);
 
 			LOG.debug("update: object {} updated", object);
 			getDao().saveOrUpdate(object);
