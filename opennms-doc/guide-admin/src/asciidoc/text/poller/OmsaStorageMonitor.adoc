@@ -1,4 +1,5 @@
 
+[[OmsaStorageMonitor]]
 ==== OmsaStorageMonitor
 
 With OmsaStorageMonitor you are able to monitor your http://de.community.dell.com/techcenter/systems-management/w/wiki/438.dell-openmanage-server-administrator-omsa.aspx[Dell OpenManaged] servers RAID array status.
