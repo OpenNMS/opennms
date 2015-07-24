@@ -48,6 +48,9 @@
 	}
 
 	function parseContentRange(contentRange) {
+		if (typeof contentRange === 'undefined' || contentRange === null) {
+			return {start: 0, end: 0, total: 0};
+		}
 		// Example: items 0-14/28
 		var pattern = /items\s+?(\d+)\s*\-\s*(\d+)\s*\/\s*(\d+)/;
 		return {
@@ -127,7 +130,7 @@
 	})
 
 	// Create a minion REST $resource
-	.factory('Minions', function($resource, $log, $http) {
+	.factory('Minions', function($resource, $log, $http, $location) {
 		return $resource(BASE_REST_URL + '/minions/:id', { id: '@id' },
 			{
 				'query': { 
@@ -135,6 +138,14 @@
 					isArray: true,
 					// Append a transformation that will unwrap the minion array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						// TODO: Figure out how to handle session timeouts that redirect to 
+						// the login screen
+						/*
+						if (status === 302) {
+							$window.location.href = $location.absUrl();
+							return [];
+						}
+						*/
 						// Always return the data as an array
 						return angular.isArray(data.minion) ? data.minion : [ data.minion ];
 					})
@@ -146,9 +157,9 @@
 		);
 	})
 
-	// Minion controller
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', 'Minions', function($scope, $location, $window, $http, $log, $filter, Minions) {
-		$log.debug('MinionListCtrl initializing...');
+	// Generic list controller
+	.controller('ListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', function($scope, $location, $window, $http, $log, $filter) {
+		$log.debug('ListCtrl initializing...');
 
 		var DEFAULT_LIMIT = 20;
 		var DEFAULT_OFFSET = 0;
@@ -203,86 +214,6 @@
 		}, 
 		true // Use object equality because the reference doesn't change
 		);
-
-		// Load all minion resources via REST
-		// TODO: Figure out how to eliminate redundancy with $scope.refresh()
-		Minions.query(
-			{
-				_s: $scope.query.searchParam, // FIQL search
-				limit: $scope.query.limit,
-				offset: $scope.query.offset,
-				orderBy: $scope.query.orderBy,
-				order: $scope.query.order
-			}, 
-			function(value, headers) {
-				$scope.items = value;
-				$log.debug($scope.items);
-
-				var contentRange = parseContentRange(headers('Content-Range'));
-				$scope.query.lastOffset = contentRange.end;
-				// Subtract 1 from the value since offsets are zero-based
-				$scope.query.maxOffset = contentRange.total - 1;
-				$scope.setOffset(contentRange.start);
-			},
-			function(response) {
-				switch(response.status) {
-				case 404:
-					// If we didn't find any elements, then clear the list
-					$scope.items = [];
-					$scope.query.lastOffset = 0;
-					$scope.query.maxOffset = -1;
-					$scope.setOffset(0);
-					break;
-				case 401:
-				case 403:
-					// Handle session timeout by reloading page completely
-					$window.location.href = $location.absUrl();
-					break;
-				}
-				// TODO: Handle 500 Server Error by executing an undo callback?
-			}
-		);
-
-		// Reload all minion resources via REST
-		$scope.refresh = function() {
-			// Fetch all of the Minions
-			Minions.query(
-				{
-					_s: $scope.query.searchParam, // FIQL search
-					limit: $scope.query.limit,
-					offset: $scope.query.offset,
-					orderBy: $scope.query.orderBy,
-					order: $scope.query.order
-				}, 
-				function(value, headers) {
-					$scope.items = value;
-					$log.debug($scope.items);
-
-					var contentRange = parseContentRange(headers('Content-Range'));
-					$scope.query.lastOffset = contentRange.end;
-					// Subtract 1 from the value since offsets are zero-based
-					$scope.query.maxOffset = contentRange.total - 1;
-					$scope.setOffset(contentRange.start);
-				},
-				function(response) {
-					switch(response.status) {
-					case 404:
-						// If we didn't find any elements, then clear the list
-						$scope.items = [];
-						$scope.query.lastOffset = 0;
-						$scope.query.maxOffset = -1;
-						$scope.setOffset(0);
-						break;
-					case 401:
-					case 403:
-						// Handle session timeout by reloading page completely
-						$window.location.href = $location.absUrl();
-						break;
-					}
-					// TODO: Handle 500 Server Error by executing an undo callback?
-				}
-			);
-		};
 
 		// Go out of edit mode
 		$scope.unedit = function() {
@@ -404,8 +335,65 @@
 			}
 		}
 
+		// Override this to implement updates to an object
+		$scope.refresh = function() {
+			$log.warn("You need to override $scope.$parent.refresh() in your controller");
+		}
+
+		// Override this to implement updates to an object
+		$scope.update = function() {
+			$log.warn("You need to override $scope.$parent.update() in your controller");
+		}
+
+		$log.debug('ListCtrl initialized');
+	}])
+
+	// Minion controller
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', 'Minions', function($scope, $location, $window, $http, $log, $filter, Minions) {
+		$log.debug('MinionListCtrl initializing...');
+
+		// Reload all minion resources via REST
+		$scope.$parent.refresh = function() {
+			// Fetch all of the Minions
+			Minions.query(
+				{
+					_s: $scope.query.searchParam, // FIQL search
+					limit: $scope.query.limit,
+					offset: $scope.query.offset,
+					orderBy: $scope.query.orderBy,
+					order: $scope.query.order
+				}, 
+				function(value, headers) {
+					$scope.items = value;
+
+					var contentRange = parseContentRange(headers('Content-Range'));
+					$scope.query.lastOffset = contentRange.end;
+					// Subtract 1 from the value since offsets are zero-based
+					$scope.query.maxOffset = contentRange.total - 1;
+					$scope.setOffset(contentRange.start);
+				},
+				function(response) {
+					switch(response.status) {
+					case 404:
+						// If we didn't find any elements, then clear the list
+						$scope.items = [];
+						$scope.query.lastOffset = 0;
+						$scope.query.maxOffset = -1;
+						$scope.setOffset(0);
+						break;
+					case 401:
+					case 403:
+						// Handle session timeout by reloading page completely
+						$window.location.href = $location.absUrl();
+						break;
+					}
+					// TODO: Handle 500 Server Error by executing an undo callback?
+				}
+			);
+		};
+
 		// Save a minion by using $resource.$update
-		$scope.update = function(minion) {
+		$scope.$parent.update = function(minion) {
 			var saveMe = Minions.get({id: minion.id}, function() {
 				saveMe.label = minion.label;
 				saveMe.location = minion.location;
@@ -434,8 +422,12 @@
 				$log.debug(response);
 			});
 
-			$log.debug('MinionListCtrl initialized.');
 		};
+
+		// Refresh the item list;
+		$scope.$parent.refresh();
+
+		$log.debug('MinionListCtrl initialized');
 	}])
 
 	.run(['$rootScope', '$log', function($rootScope, $log) {
