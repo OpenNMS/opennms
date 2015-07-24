@@ -1,9 +1,12 @@
 package org.opennms.netmgt.dao.support;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
+import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
+import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetricsAtDepth;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -17,12 +20,9 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
-import org.opennms.newts.api.search.BooleanQuery;
-import org.opennms.newts.api.search.Operator;
+import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.SearchResults.Result;
-import org.opennms.newts.api.search.Term;
-import org.opennms.newts.api.search.TermQuery;
 import org.opennms.newts.cassandra.search.CassandraIndexer;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
 import org.slf4j.Logger;
@@ -31,9 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -52,8 +52,6 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsResourceStorageDao.class);
 
-    private static final int INFINITE_DEPTH = -1;
-
     @Autowired
     private Context m_context;
 
@@ -67,30 +65,36 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     private SearchableResourceMetadataCache m_searchableCache;
 
     @Override
-    public boolean exists(ResourcePath path) {
-        return exists(path, INFINITE_DEPTH);
-    }
-
-    @Override
     public boolean exists(ResourcePath path, int depth) {
-        if (!hasCachedEntry(path, depth)) {
-            return searchFor(path, depth).size() > 0;
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
+        if (!hasCachedEntry(path, depth, depth)) {
+            return searchFor(path, depth, false).size() > 0;
         } else {
             return true;
         }
     }
 
     @Override
-    public Set<ResourcePath> children(ResourcePath path) {
-        return children(path, INFINITE_DEPTH);
+    public boolean existsWithin(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
+        if (!hasCachedEntry(path, 0, depth)) {
+            for (int i = 0; i <= depth; i++) {
+                if (searchFor(path, i, false).size() > 0) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
     public Set<ResourcePath> children(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
         Set<ResourcePath> matches = Sets.newTreeSet();
-        
-        List<Result> results = searchFor(path, depth);
 
+        SearchResults results = searchFor(path, depth, false);
         for (Result res : results) {
             ResourcePath child = toChildResourcePath(path, res.getResource().getId());
             if (child == null) {
@@ -112,7 +116,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         Set<OnmsAttribute> attributes = Sets.newHashSet();
 
         // Gather the list of metrics available under the resource path
-        List<Result> results = searchFor(path, 0);
+        SearchResults results = searchFor(path, 0, true);
         for (Result result : results) {
             final String resourceId = result.getResource().getId();
             final ResourcePath resultPath = toResourcePath(resourceId);
@@ -166,78 +170,30 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        Map<String, String> attributes = Maps.newHashMap();
-
-        List<Result> results = searchFor(path, 0);
-
-        for (Result result : results) {
-            final String resourceId = result.getResource().getId();
-            final ResourcePath resultPath = toResourcePath(resourceId);
-            if (!path.equals(resultPath)) {
-                continue;
-            }
-
-            final Map<String, String> resourceAttributes = result.getResource().getAttributes().orNull();
-            if (resourceAttributes != null) {
-                attributes.putAll(resourceAttributes);
-            }
-        }
-
-        return attributes;
+        return m_searcher.getResourceAttributes(m_context, toResourceId(path));
     }
 
-    private boolean hasCachedEntry(ResourcePath path, int depth) {
+    private boolean hasCachedEntry(ResourcePath path, int minDepth, int maxDepth) {
         List<String> resourceIds = m_searchableCache.getEntriesWithPrefix(
                 Context.DEFAULT_CONTEXT, toResourceId(path));
         for (String resourceId : resourceIds) {
-            Integer relativeDepth = getRelativeDepth(path, toResourcePath(resourceId));
-            if (relativeDepth == null) {
+            int relativeDepth = path.relativeDepth(toResourcePath(resourceId));
+            if (relativeDepth < 0) {
                 continue;
             }
-            if(depth == INFINITE_DEPTH || relativeDepth <= depth) {
+            if (relativeDepth >= minDepth && relativeDepth <= maxDepth) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Result> searchFor(ResourcePath path, int depth) {
-        BooleanQuery q = new BooleanQuery();
-        q.add(toTermQuery(path), Operator.OR);
-        List<Result> matchingResults = Lists.newArrayList();
-
+    private SearchResults searchFor(ResourcePath path, int depth, boolean fetchMetrics) {
+        final Query q = findResourcesWithMetricsAtDepth(path, depth);
         LOG.trace("Searching for '{}'.", q);
-        SearchResults results = m_searcher.search(m_context, q);
+        final SearchResults results = m_searcher.search(m_context, q, fetchMetrics);
         LOG.trace("Found {} results.", results.size());
-        for (final Result result : results) {
-            Integer relativeDepth = getRelativeDepth(path, toResourcePath(result.getResource().getId()));
-            if (relativeDepth == null) {
-                continue;
-            }
-            if(depth == INFINITE_DEPTH || relativeDepth <= depth) {
-                LOG.trace("Found match with {}.", result.getResource().getId());
-                matchingResults.add(result);
-            }
-        }
-
-        return matchingResults;
-    }
-
-    protected static TermQuery toTermQuery(ResourcePath path) {
-        String els[] = path.elements();
-        int idx = els.length - 1;
-        return new TermQuery(new Term("_parent"+idx, toResourceId(path)));
-    }
-
-    protected static String toResourceId(ResourcePath path) {
-        StringBuilder sb = new StringBuilder();
-        for (final String entry : path) {
-            if (sb.length() != 0) {
-                sb.append(":");
-            }
-            sb.append(entry);
-        }
-        return sb.toString();
+        return results;
     }
 
     protected static ResourcePath toChildResourcePath(ResourcePath parent, String resourceId) {
@@ -255,38 +211,6 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         }
 
         return ResourcePath.get(els);
-    }
-
-    protected static ResourcePath toResourcePath(String resourceId) {
-        if (resourceId == null) {
-            return null;
-        }
-
-        String els[] = resourceId.split(":");
-        if (els.length == 0) {
-            return null;
-        }
-
-        return ResourcePath.get(Arrays.copyOf(els, els.length-1));
-    }
-
-    protected static Integer getRelativeDepth(ResourcePath parent, ResourcePath child) {
-        final String childEls[] = child.elements();
-        final String parentEls[] = parent.elements();
-        
-        if (childEls.length < parentEls.length) {
-            // Not a child
-            return null;
-        }
-
-        // Verify the path elements up to the parents
-        for (int i = 0; i < parentEls.length ; i++) {
-            if (!parentEls[i].equals(childEls[i])) {
-                return null;
-            }
-        }
-
-        return childEls.length - parentEls.length; 
     }
 
     @VisibleForTesting

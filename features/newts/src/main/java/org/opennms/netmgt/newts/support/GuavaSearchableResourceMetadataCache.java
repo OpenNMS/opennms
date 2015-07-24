@@ -32,7 +32,7 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
     private static final Logger LOG = LoggerFactory.getLogger(GuavaSearchableResourceMetadataCache.class);
 
     private static final Joiner m_keyJoiner = Joiner.on(':');
-    
+
     private final Cache<String, ResourceMetadata> m_cache;
     private final Meter m_metricReqs;
     private final Meter m_attributeReqs;

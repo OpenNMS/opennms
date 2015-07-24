@@ -115,7 +115,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath().resolve(m_name));
 
         // Add extra attributes that can be used to walk the resource tree.
-        NewtsUtils.addParentPathAttributes(path, m_metaData);
+        NewtsUtils.addIndicesToAttributes(path, m_metaData);
         Resource resource = new Resource(NewtsUtils.toResourceId(path), Optional.of(m_metaData));
 
         // Convert numeric attributes to samples

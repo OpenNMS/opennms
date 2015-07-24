@@ -1,8 +1,14 @@
 package org.opennms.netmgt.newts.support;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.newts.api.search.BooleanQuery;
+import org.opennms.newts.api.search.Operator;
+import org.opennms.newts.api.search.Query;
+import org.opennms.newts.api.search.Term;
+import org.opennms.newts.api.search.TermQuery;
 
 /**
  * Utility functions and constants.
@@ -31,19 +37,51 @@ public abstract class NewtsUtils {
 
     public static final String DEFAULT_TTL = "" + 86400 * 365;
 
-    public static void addParentPathAttributes(ResourcePath path, Map<String, String> attributes) {
-        // Add all of the parent paths as attributes
+    /**
+     * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
+     *
+     * A resource path of the form [a, b, c, d] will be indexed with:
+     * <ul>
+     * <li> _idx1: (a, 4)
+     * <li> _idx2: (a:b, 4)
+     * <li> _idx3: (a:b:c, 4)
+     */
+    public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
         StringBuffer sb = new StringBuffer();
-        int i = 0;
-        for (String el : path) {
-            if (sb.length() > 0) {
-                sb.append(":");
-            }
-            sb.append(el);
-            attributes.put("_parent" + i++, sb.toString());
+        String[] els = path.elements();
+        for (int i = 0; i < els.length-1; i++) {
+            if (i > 0) { sb.append(":"); }
+            sb.append(els[i]);
+            attributes.put("_idx" + i, String.format("(%s,%d)", sb.toString(), els.length));
         }
     }
 
+    /**
+     * Constructs a query used to find all of the resources that have
+     * one or more metrics at the given depth bellow the path.
+     *
+     * Requires resources to have been indexed using {@link #addIndicesToAttributes}.
+     */
+    public static Query findResourcesWithMetricsAtDepth(ResourcePath path, int depth) {
+        // Numeric suffix for the index name, based on the length of parent path
+        int idxSuffix = path.elements().length - 1;
+        // The length of the resource ids we're interested in finding
+        int targetLen = idxSuffix + depth + 2;
+        TermQuery tq = new TermQuery(new Term(
+                        "_idx"+idxSuffix, // key
+                        String.format("(%s,%d)", toResourceId(path), targetLen) // value
+                        ));
+        BooleanQuery q = new BooleanQuery();
+        q.add(tq, Operator.OR);
+        return q;
+    }
+
+    /**
+     * Converts a {@link org.opennms.netmgt.model.ResourcePath} to a Newts resource id.
+     *
+     * @param path path to convert
+     * @return Newts resource id
+     */
     public static String toResourceId(ResourcePath path) {
         StringBuilder sb = new StringBuilder();
         for (final String entry : path) {
@@ -54,4 +92,24 @@ public abstract class NewtsUtils {
         }
         return sb.toString();
     }
+
+    /**
+     * Converts a Newts resource id to a {@link org.opennms.netmgt.model.ResourcePath}.
+     *
+     * @param resourceId Newts resource id
+     * @return path
+     */
+    public static ResourcePath toResourcePath(String resourceId) {
+        if (resourceId == null) {
+            return null;
+        }
+
+        String els[] = resourceId.split(":");
+        if (els.length == 0) {
+            return null;
+        }
+
+        return ResourcePath.get(Arrays.copyOf(els, els.length-1));
+    }
+
 }

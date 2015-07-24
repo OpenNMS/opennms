@@ -33,7 +33,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -62,6 +61,9 @@ import com.google.common.collect.Sets;
  * Used to verify the {@link org.opennms.netmgt.dao.support.ResourceStorageDao} interface implemented
  * by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
  *
+ * Resources are indexed using {@link NewtsUtils#addIndicesToAttributes} and primitive searching is
+ * performed using a mock {@link org.opennms.newts.cassandra.search.CassandraSearcher}.
+ *
  * @author jwhite
  */
 public class NewtsResourceStorageDaoTest {
@@ -83,48 +85,60 @@ public class NewtsResourceStorageDaoTest {
     }
 
     @Test
-    public void exists() throws IOException {
+    public void exists() {
         // Path is missing when the resource does not exist
         replay();
-        assertFalse(m_nrs.exists(ResourcePath.get("should", "not", "exist")));
+        assertFalse(m_nrs.exists(ResourcePath.get("should", "not", "exist"), 1));
         verify();
 
         // Path is missing when the resource exists, but does not have a bucket
         index(ResourcePath.get("a"));
         replay();
-        assertFalse(m_nrs.exists(ResourcePath.get("a")));
+        assertFalse(m_nrs.exists(ResourcePath.get("a"), 1));
         verify();
 
         // Path exists when a child resource with a bucket exists
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        assertTrue(m_nrs.exists(ResourcePath.get("a")));
+        assertTrue(m_nrs.exists(ResourcePath.get("a"), 1));
         verify();
 
         // Path exists when the resource with a bucket exists
         index(ResourcePath.get("a", "bucket"));
         replay();
-        assertTrue(m_nrs.exists(ResourcePath.get("a")));
+        assertTrue(m_nrs.exists(ResourcePath.get("a"), 0));
         verify();
     }
 
     @Test
-    public void children() throws IOException {
+    public void existsWithin() {
+        index(ResourcePath.get("a", "b", "c", "bucket"));
+        replay();
+        assertTrue(m_nrs.exists(ResourcePath.get("a", "b", "c"), 0));
+        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b", "c"), 0));
+        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b", "c"), 1));
+        assertTrue(m_nrs.existsWithin(ResourcePath.get("a", "b"), 1));
+        assertFalse(m_nrs.existsWithin(ResourcePath.get("a", "b"), 0));
+        verify();
+    }
+
+    @Test
+    public void children() {
         // Children are empty when the resource id does not exist
         replay();
-        assertEquals(0, m_nrs.children(ResourcePath.get("should", "not", "exist")).size());
+        assertEquals(0, m_nrs.children(ResourcePath.get("should", "not", "exist"), 1).size());
         verify();
 
         // Children are empty when there are no child resources
         index(ResourcePath.get("a"));
         replay();
-        assertEquals(0, m_nrs.children(ResourcePath.get("a")).size());
+        assertEquals(0, m_nrs.children(ResourcePath.get("a"), 1).size());
         verify();
 
         // Child exists when the is a child resource
         index(ResourcePath.get("a", "b", "bucket"));
         replay();
-        Set<ResourcePath> children = m_nrs.children(ResourcePath.get("a"));
+        Set<ResourcePath> children = m_nrs.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
         verify();
@@ -140,7 +154,7 @@ public class NewtsResourceStorageDaoTest {
         // Only returns the next level
         index(ResourcePath.get("a", "b", "c", "bucket"));
         replay();
-        children = m_nrs.children(ResourcePath.get("a"));
+        children = m_nrs.children(ResourcePath.get("a"), 2);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
         verify();
@@ -154,7 +168,7 @@ public class NewtsResourceStorageDaoTest {
     }
 
     @Test
-    public void getAttributes() throws IOException {
+    public void getAttributes() {
         // Attributes are empty when the resource does not exist
         replay();
         assertEquals(0, m_nrs.getAttributes(ResourcePath.get("should", "not", "exist")).size());
@@ -191,7 +205,7 @@ public class NewtsResourceStorageDaoTest {
     }
 
     private void replay() {
-        EasyMock.expect(m_searcher.search(EasyMock.eq(m_context), EasyMock.anyObject())).andAnswer(new IAnswer<SearchResults>() {
+        EasyMock.expect(m_searcher.search(EasyMock.eq(m_context), EasyMock.anyObject(), EasyMock.anyBoolean())).andAnswer(new IAnswer<SearchResults>() {
             public SearchResults answer() throws Throwable {
                 // Assume there is a single term query
                 Query q = (Query)EasyMock.getCurrentArguments()[1];
@@ -204,7 +218,7 @@ public class NewtsResourceStorageDaoTest {
                 for (Entry<ResourcePath, Set<String>> entry : m_indexedPaths.entrySet()) {
                     Map<String, String> attributes = Maps.newHashMap();
                     // Build the indexed attributes and attempt to match them against the given query
-                    NewtsUtils.addParentPathAttributes(entry.getKey(), attributes);
+                    NewtsUtils.addIndicesToAttributes(entry.getKey(), attributes);
                     if (value.equals(attributes.get(field))) {
                         searchResults.addResult(new Resource(NewtsUtils.toResourceId(entry.getKey())), entry.getValue());
                     }
