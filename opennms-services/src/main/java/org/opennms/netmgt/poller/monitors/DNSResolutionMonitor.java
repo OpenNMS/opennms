@@ -60,7 +60,14 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        final String nodeLabel = svc.getNodeLabel();
+        // Get the name to query for
+        final Name name;
+        try {
+            name = new Name(svc.getNodeLabel());
+
+        } catch (final TextParseException e) {
+            return PollStatus.unavailable("Invalid record name '" + svc.getNodeLabel() + "': " + e.getMessage());
+        }
 
         // Determine if records for IPv4 and/or IPv6 re required
         final String resolutionType = ParameterMap.getKeyedString(parameters,
@@ -86,45 +93,38 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
             }
 
         } catch (final UnknownHostException e) {
-            return PollStatus.unavailable("Unable to resolve " + nameserver + ": " + e.getMessage());
+            return PollStatus.unavailable("Unable to resolve nameserver '" + nameserver + "': " + e.getMessage());
         }
 
         // Start resolving the records
         final long start = System.currentTimeMillis();
 
-        final boolean ipv4Found;
-        final boolean ipv6Found;
-        try {
-            ipv4Found = resolve(nodeLabel, resolver, Type.A);
-            ipv6Found = resolve(nodeLabel, resolver, Type.AAAA);
-
-        } catch (final TextParseException e) {
-            return PollStatus.unavailable("Unable to resolve " + nodeLabel + ": " + e.getMessage());
-        }
+        // Resolve the name
+        final boolean ipv4Found = resolve(name, resolver, Type.A);
+        final boolean ipv6Found = resolve(name, resolver, Type.AAAA);
 
         // Resolving succeeded - checking results
         final long end = System.currentTimeMillis();
 
+        // Check if result is valid
         if (!ipv4Found && !ipv6Found) {
-            return PollStatus.unavailable("No result returned for query '" + nodeLabel + "'");
-        }
+            return PollStatus.unavailable("Unable to resolve host '" + name + "'");
 
-        if (ipv4Required && !ipv4Found) {
-            return PollStatus.unavailable("No IPv4 Address result (A record) returned for query '" + nodeLabel + "'");
-        }
+        } else  if (ipv4Required && !ipv4Found) {
+            return PollStatus.unavailable("No IPv4 Address result (A record) returned for '" + name + "'");
 
-        if (ipv6Required && !ipv6Found) {
-            return PollStatus.unavailable(
-                    "No IPv6 Address result (AAAA record) returned for query '" + nodeLabel + "'");
-        }
+        } else if (ipv6Required && !ipv6Found) {
+            return PollStatus.unavailable("No IPv6 Address result (AAAA record) returned for '" + name + "'");
 
-        return PollStatus.available((double) (end - start));
+        } else {
+            return PollStatus.available((double) (end - start));
+        }
     }
 
-    private static boolean resolve(final String hostname,
+    private static boolean resolve(final Name name,
                                    final Resolver resolver,
-                                   final int type) throws TextParseException {
-        final Lookup lookup = new Lookup(hostname, type);
+                                   final int type) {
+        final Lookup lookup = new Lookup(name, type);
         lookup.setResolver(resolver);
 
         final Record[] records = lookup.run();
