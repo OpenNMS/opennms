@@ -109,7 +109,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
 
     @Override
     public boolean isResourceTypeOnParent(OnmsResource parent) {
-        return getQueryableInterfaces(parent).size() > 0;
+        return m_resourceStorageDao.exists(parent.getPath(), 1);
     }
 
     @Override

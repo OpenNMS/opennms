@@ -66,51 +66,66 @@ public class FilesystemResourceStorageDaoTest {
     @Test
     public void exists() throws IOException {
         // Path is missing when the folder is missing
-        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("should", "not", "exist")));
+        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("should", "not", "exist"), 0));
 
         // Path is missing when the folder is empty
         File folder = tempFolder.newFolder("a");
-        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 0));
 
         // Path is missing when it only contains an empty sub-folder
         File subFolder = tempFolder.newFolder("a", "b");
-        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 1));
 
         // Path exists when the sub-folder contains an RRD file
         File rrd = new File(subFolder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
-        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 1));
         assertTrue(rrd.delete());
 
         // Path exists when the folder contains an RRD file
         rrd = new File(folder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
-        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 0));
+    }
+
+    @Test
+    public void existsWithin() throws IOException {
+        File folder = tempFolder.newFolder("a", "b", "c");
+        File rrd = new File(folder, "ds" + m_rrdFileExtension);
+        rrd.createNewFile();
+
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a", "b"), 1));
+        assertTrue(m_fsResourceStorageDao.existsWithin(ResourcePath.get("a", "b"), 1));
+
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 2));
+        assertFalse(m_fsResourceStorageDao.existsWithin(ResourcePath.get("a"), 1));
+        assertTrue(m_fsResourceStorageDao.existsWithin(ResourcePath.get("a"), 2));
+        assertTrue(m_fsResourceStorageDao.existsWithin(ResourcePath.get("a"), 3));
     }
 
     @Test
     public void children() throws IOException {
         // Children are empty when the folder is missing
-        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("should", "not", "exist")).size());
+        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("should", "not", "exist"), 1).size());
 
         // Children are empty when the folder is emtpy
         File folder = tempFolder.newFolder("a");
-        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
+        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a"), 1).size());
 
         // Children are empty when the folder only contains an RRD file
         File rrd = new File(folder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
-        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
+        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a"), 1).size());
         assertTrue(rrd.delete());
 
         // Children are empty when the folder only contains an empty sub-folder
         File subFolder = tempFolder.newFolder("a", "b");
-        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a")).size());
+        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a"), 1).size());
 
         // Child exists when the sub-folder contains an RRD file
         rrd = new File(subFolder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
-        Set<ResourcePath> children = m_fsResourceStorageDao.children(ResourcePath.get("a"));
+        Set<ResourcePath> children = m_fsResourceStorageDao.children(ResourcePath.get("a"), 1);
         assertEquals(1, children.size());
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
 
@@ -120,18 +135,17 @@ public class FilesystemResourceStorageDaoTest {
         assertEquals(ResourcePath.get("a", "b"), children.iterator().next());
 
         // No children when depth is 0
-        assertEquals(0, m_fsResourceStorageDao.children(ResourcePath.get("a"), 0).size());
         assertTrue(rrd.delete());
     }
 
     @Test
     public void getAttributes() throws IOException {
         File subFolder = tempFolder.newFolder("a");
-        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertFalse(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 0));
 
         File rrd = new File(subFolder, "ds" + m_rrdFileExtension);
         rrd.createNewFile();
-        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a")));
+        assertTrue(m_fsResourceStorageDao.exists(ResourcePath.get("a"), 0));
 
         Set<OnmsAttribute> attributes = m_fsResourceStorageDao.getAttributes(ResourcePath.get("a"));
         assertEquals(1, attributes.size());

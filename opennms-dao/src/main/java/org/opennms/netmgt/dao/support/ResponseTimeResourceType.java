@@ -117,7 +117,7 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
 
         // Verify the path
         final ResourcePath path = getInterfacePath(ipAddress);
-        if (!m_resourceStorageDao.exists(path)) {
+        if (!m_resourceStorageDao.exists(path, 0)) {
             throw new ObjectRetrievalFailureException(OnmsResource.class, "No metrics found in parent path '" + parent.getPath() + "'");
         }
 
@@ -141,7 +141,7 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
             String ipAddr = InetAddressUtils.str(i.getIpAddress());
 
             final ResourcePath path = getInterfacePath(ipAddr);
-            if (m_resourceStorageDao.exists(path)) {
+            if (m_resourceStorageDao.exists(path, 0)) {
                 resources.add(createResource(i, ipAddr, path));
                 if (stopAfterFirst) {
                     break;

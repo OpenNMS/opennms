@@ -67,9 +67,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -131,12 +129,6 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
     @Autowired
     private LocationMonitorDao m_locationMonitorDao;
-
-    @Autowired
-    private ServiceTypeDao m_serviceTypeDao;
-
-    @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
  
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
