@@ -1,0 +1,40 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-cassandra-debian]]
+==== Installing on Debian-based systems
+
+This section describes how to install the latest _Cassandra 2.1.x_ release on a _Debian_ based systems for _Newts_.
+The first steps add the _DataStax_ community repository and install the required _GPG Key_ to verify the integrity of the _DEB packages_.
+Installation of the package is done with _apt_ and the _Cassandra_ service is added to the run level configuration.
+
+NOTE: This description is build on _Debian 8_ and _Ubuntu 14.04 LTS_.
+
+.Add DataStax repository
+[source, bash]
+----
+vi /etc/apt/sources.list.d/cassandra.sources.list
+----
+
+.Content of the cassandra.sources.list file
+[source, bash]
+----
+deb http://debian.datastax.com/community stable main
+----
+
+.Install GPG key to verify DEB packages
+[source, bash]
+----
+wget -O - http://debian.datastax.com/debian/repo_key | apt-key add -
+----
+
+.Install latest Cassandra 2.1.x package
+[source, bash]
+----
+dsc21=2.1.8-1 cassandra=2.1.8
+----
+
+The _Cassandra_ service is added to the run level configuration and is automatically started after installing the package.
+
+TIP: Verify if the _Cassandra_ service is automatically started after rebooting the server.
