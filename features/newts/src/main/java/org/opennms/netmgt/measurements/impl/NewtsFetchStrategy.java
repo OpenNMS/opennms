@@ -117,6 +117,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                     .getRrdGraphAttributes().get(source.getAttribute());
             if (rrdGraphAttribute == null) {
                 LOG.error("No attribute with name: {}", source.getAttribute());
+                return null;
             }
 
             final String newtsResourceId = rrdGraphAttribute.getRrdRelativePath();
