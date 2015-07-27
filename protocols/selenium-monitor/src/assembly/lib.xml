@@ -16,6 +16,7 @@
         <include>org.seleniumhq.selenium:selenium*</include>
         <include>org.codehaus.groovy:groovy-all</include>
         <include>com.codeborne:phantomjsdriver</include>
+        <include>com.google.code.gson:gson</include>
         <include>junit:junit</include>
       </includes>
       <fileMode>0644</fileMode>
