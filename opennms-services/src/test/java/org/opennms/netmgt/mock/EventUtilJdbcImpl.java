@@ -333,4 +333,59 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         }
     }
 
+	/**
+	 * Retrieve foreignSource from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @deprecated Replace with standard DAO calls instead of using JDBC
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return foreignSource Retrieved foreignSource
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+    @Override
+    protected String getForeignSource(long nodeId) throws SQLException {
+        String foreignSource = null;
+        java.sql.Connection dbConn = null;
+        try {
+            Statement stmt = null;
+            try {
+                // Get datbase connection from the factory
+                dbConn = DataSourceFactory.getInstance().getConnection();
+
+                // Issue query and extract nodeLabel from result set
+                stmt = dbConn.createStatement();
+                ResultSet rs = stmt
+                        .executeQuery("SELECT foreignsource FROM node WHERE nodeid="
+                                + String.valueOf(nodeId));
+                if (rs.next()) {
+                    foreignSource = rs.getString("foreignsource");
+                }
+            } finally {
+                // Close the statement
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (Throwable e) {
+                        // do nothing
+                    }
+                }
+            }
+        } finally {
+
+          // Close the database connection
+          if (dbConn != null) {
+            try {
+              dbConn.close();
+            } catch (Throwable t) {
+              // do nothing
+            }
+          }
+        }
+
+        return foreignSource;
+    }
 }
