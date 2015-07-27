@@ -116,6 +116,60 @@
 		}
 	});
 
+	// $filters that can be used to create human-readable versions of filter values
+	angular.module('monitoringLocationsListFilters', [])
+	.filter('property', function() {
+		return function(input) {
+			switch (input) {
+			case 'locationName':
+				return 'Location name';
+			case 'monitoringArea':
+				return 'Monitoring area';
+			case 'geolocation':
+				return 'Geolocation';
+			case 'latitude':
+				return 'Latitude';
+			case 'longitude':
+				return 'Longitude';
+			case 'priority':
+				return 'Priority';
+			}
+			// If no match, return the input
+			return input;
+		}
+	})
+	.filter('operator', function() {
+		return function(input, value) {
+			// See if the string contains a wildcard
+			var fuzzy = (typeof value === 'String' && value.indexOf('*') > -1);
+
+			switch (input) {
+			case 'EQ':
+				return fuzzy ? 'is like' : 'equals';
+			case 'NE':
+				return fuzzy ? 'is not like' : 'does not equal';
+			case 'LT':
+				return 'is less than';
+			case 'LE':
+				return 'is less than or equal';
+			case 'GT':
+				return 'is greater than';
+			case 'GE':
+				return 'is greater than or equal';
+			}
+			// If no match, return the input
+			return input;
+		}
+	})
+	.filter('value', function($filter) {
+		return function(input, property) {
+			switch (property) {
+				// There is no special formatting
+			}
+			return input;
+		}
+	});
+
 
 	// Minion module
 	angular.module('minion', [ 'ngResource', 'minionListFilters' ])
@@ -129,7 +183,9 @@
 		});
 	})
 
-	// Create a minion REST $resource
+	/**
+	 * OnmsMinion REST $resource
+	 */
 	.factory('Minions', function($resource, $log, $http, $location) {
 		return $resource(BASE_REST_URL + '/minions/:id', { id: '@id' },
 			{
@@ -157,14 +213,46 @@
 		);
 	})
 
-	// Generic list controller
-	.controller('ListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', function($scope, $location, $window, $http, $log, $filter) {
+	/**
+	 * OnmsMonitoringLocation REST $resource
+	 */
+	.factory('MonitoringLocations', function($resource, $log, $http, $location) {
+		return $resource(BASE_REST_URL + '/monitoringLocations/:id', { id: '@id' },
+			{
+				'query': { 
+					method: 'GET',
+					isArray: true,
+					// Append a transformation that will unwrap the minion array
+					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
+						// TODO: Figure out how to handle session timeouts that redirect to 
+						// the login screen
+						/*
+						if (status === 302) {
+							$window.location.href = $location.absUrl();
+							return [];
+						}
+						*/
+						// Always return the data as an array
+						return angular.isArray(data.location) ? data.location : [ data.location ];
+					})
+				},
+				'update': { 
+					method: 'PUT'
+				}
+			}
+		);
+	})
+
+	/**
+	 * Generic list controller
+	 */
+	.controller('ListCtrl', ['$scope', '$location', '$window', '$log', '$filter', function($scope, $location, $window, $log, $filter) {
 		$log.debug('ListCtrl initializing...');
 
-		var DEFAULT_LIMIT = 20;
-		var DEFAULT_OFFSET = 0;
-		var DEFAULT_ORDERBY = 'label';
-		var DEFAULT_ORDER = 'asc';
+		$scope.DEFAULT_LIMIT = 20;
+		$scope.DEFAULT_OFFSET = 0;
+		$scope.DEFAULT_ORDERBY = '';
+		$scope.DEFAULT_ORDER = 'asc';
 
 		// Blank out the editing flags
 		$scope.enableEditLabel = false;
@@ -177,16 +265,16 @@
 			// TODO: Figure out how to parse and restore the FIQL search param
 			searchParam: '',
 			searchClauses: [],
-			limit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
-			newLimit: typeof $location.search().limit === 'undefined' ? DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : DEFAULT_LIMIT),
-			offset: typeof $location.search().offset === 'undefined' ? DEFAULT_OFFSET : (Number($location.search().offset) > 0 ? Number($location.search().offset) : DEFAULT_OFFSET),
+			limit: typeof $location.search().limit === 'undefined' ? $scope.DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.DEFAULT_LIMIT),
+			newLimit: typeof $location.search().limit === 'undefined' ? $scope.DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.DEFAULT_LIMIT),
+			offset: typeof $location.search().offset === 'undefined' ? $scope.DEFAULT_OFFSET : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.DEFAULT_OFFSET),
 
 			lastOffset: 0,
 			maxOffset: 0,
 
 			// TODO: Validate that the orderBy is in a list of supported properties
-			orderBy: typeof $location.search().orderBy === 'undefined' ? DEFAULT_ORDERBY : $location.search().orderBy,
-			order: typeof $location.search().order === 'undefined' ? DEFAULT_ORDER : ($location.search().order === 'asc' ? 'asc' : 'desc')
+			orderBy: typeof $location.search().orderBy === 'undefined' ? $scope.DEFAULT_ORDERBY : $location.search().orderBy,
+			order: typeof $location.search().order === 'undefined' ? $scope.DEFAULT_ORDER : ($location.search().order === 'asc' ? 'asc' : 'desc')
 		};
 
 		// Sync the query hash with the $location query string
@@ -203,11 +291,11 @@
 			queryParams._s = queryParams.searchParam === '' ? null : queryParams.searchParam;
 			delete queryParams.searchParam;
 
-			// Delete any parameters that have default values
-			if (queryParams.limit === DEFAULT_LIMIT) { delete queryParams.limit; }
-			if (queryParams.offset === DEFAULT_OFFSET) { delete queryParams.offset; }
-			if (queryParams.orderBy === DEFAULT_ORDERBY) { delete queryParams.orderBy; }
-			if (queryParams.order === DEFAULT_ORDER) { delete queryParams.order; }
+			// Delete any parameters that have default or blank values
+			if (queryParams.limit === $scope.DEFAULT_LIMIT || queryParams.limit === '') { delete queryParams.limit; }
+			if (queryParams.offset === $scope.DEFAULT_OFFSET || queryParams.offset === '') { delete queryParams.offset; }
+			if (queryParams.orderBy === $scope.DEFAULT_ORDERBY || queryParams.orderBy === '') { delete queryParams.orderBy; }
+			if (queryParams.order === $scope.DEFAULT_ORDER || queryParams.order === '') { delete queryParams.order; }
 			if (queryParams._s === '') { delete queryParams._s; }
 
 			$location.search(queryParams);
@@ -297,7 +385,7 @@
 			} else {
 				// TODO: Figure out if we should reset limit/offset here also
 				$scope.query.orderBy = property;
-				$scope.query.order = DEFAULT_ORDER;
+				$scope.query.order = $scope.DEFAULT_ORDER;
 			}
 			$scope.refresh();
 		}
@@ -348,13 +436,17 @@
 		$log.debug('ListCtrl initialized');
 	}])
 
-	// Minion controller
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$http', '$log', '$filter', 'Minions', function($scope, $location, $window, $http, $log, $filter, Minions) {
+	/**
+	 * Minion list controller
+	 */
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'Minions', function($scope, $location, $window, $log, $filter, Minions) {
 		$log.debug('MinionListCtrl initializing...');
 
-		// Reload all minion resources via REST
+		$scope.parent.DEFAULT_ORDERBY = 'label';
+
+		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
-			// Fetch all of the Minions
+			// Fetch all of the items
 			Minions.query(
 				{
 					_s: $scope.query.searchParam, // FIQL search
@@ -392,7 +484,7 @@
 			);
 		};
 
-		// Save a minion by using $resource.$update
+		// Save an item by using $resource.$update
 		$scope.$parent.update = function(minion) {
 			var saveMe = Minions.get({id: minion.id}, function() {
 				saveMe.label = minion.label;
@@ -428,6 +520,84 @@
 		$scope.$parent.refresh();
 
 		$log.debug('MinionListCtrl initialized');
+	}])
+
+	/**
+	 * MonitoringLocations list controller
+	 */
+	.controller('MonitoringLocationsListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'MonitoringLocations', function($scope, $location, $window, $log, $filter, MonitoringLocations) {
+		$log.debug('MonitoringLocationsListCtrl initializing...');
+
+		$scope.$parent.DEFAULT_ORDERBY = 'locationName';
+
+		// Reload all resources via REST
+		$scope.$parent.refresh = function() {
+			// Fetch all of the items
+			MonitoringLocations.query(
+				{
+					_s: $scope.query.searchParam, // FIQL search
+					limit: $scope.query.limit,
+					offset: $scope.query.offset,
+					orderBy: $scope.query.orderBy,
+					order: $scope.query.order
+				}, 
+				function(value, headers) {
+					$scope.items = value;
+
+					var contentRange = parseContentRange(headers('Content-Range'));
+					$scope.query.lastOffset = contentRange.end;
+					// Subtract 1 from the value since offsets are zero-based
+					$scope.query.maxOffset = contentRange.total - 1;
+					$scope.setOffset(contentRange.start);
+				},
+				function(response) {
+					switch(response.status) {
+					case 404:
+						// If we didn't find any elements, then clear the list
+						$scope.items = [];
+						$scope.query.lastOffset = 0;
+						$scope.query.maxOffset = -1;
+						$scope.setOffset(0);
+						break;
+					case 401:
+					case 403:
+						// Handle session timeout by reloading page completely
+						$window.location.href = $location.absUrl();
+						break;
+					}
+					// TODO: Handle 500 Server Error by executing an undo callback?
+				}
+			);
+		};
+
+		// Save an item by using $resource.$update
+		$scope.$parent.update = function(minion) {
+			var saveMe = MonitoringLocations.get({id: minion.id}, function() {
+				// Update fields
+				saveMe.label = minion.label;
+				saveMe.location = minion.location;
+
+				saveMe.$update({}, function() {
+					// Reset the editing flags
+					$scope.enableEditLabel = false;
+					$scope.enableEditLocation = false;
+					$scope.enableEditProperties = false;
+
+					// If there's a search in effect, refresh the view
+					if ($scope.query.searchParam !== '') {
+						$scope.refresh();
+					}
+				});
+			}, function(response) {
+				$log.debug(response);
+			});
+
+		};
+
+		// Refresh the item list;
+		$scope.$parent.refresh();
+
+		$log.debug('MonitoringLocationsListCtrl initialized');
 	}])
 
 	.run(['$rootScope', '$log', function($rootScope, $log) {
