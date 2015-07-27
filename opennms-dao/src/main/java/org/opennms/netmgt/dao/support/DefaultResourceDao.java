@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -252,8 +253,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         m_nodeResourceType = new NodeResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeResourceType.getName(), m_nodeResourceType);
 
-        resourceType = new DomainResourceType(this, m_resourceStorageDao);
-        resourceTypes.put(resourceType.getName(), resourceType);
+        if (isDomainResourceTypeUsed()) {
+            LOG.debug("One or more packages are configured with storeByIfAlias=true. Enabling the domain resource type.");
+            resourceType = new DomainResourceType(this, m_resourceStorageDao);
+            resourceTypes.put(resourceType.getName(), resourceType);
+        } else {
+            LOG.debug("No packages are configured with storeByIfAlias=true. Excluding the domain resource type.");
+        }
 
         m_nodeSourceResourceType = new NodeSourceResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeSourceResourceType.getName(), m_nodeSourceResourceType);
@@ -450,5 +456,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             // UTF-8 should *never* throw this
             throw Throwables.propagate(e);
         }
+    }
+
+    /**
+     * For performance reasons, we only enable the {@link DomainResourceType} if
+     * one or more packages use it. Here we iterator over all of defined packages,
+     * return true if a package uses the domain types, and false otherwise.
+     */
+    private boolean isDomainResourceTypeUsed() {
+        for (Package pkg : m_collectdConfig.getCollectdConfig().getPackages()) {
+            if ("true".equalsIgnoreCase(pkg.getStoreByIfAlias())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
