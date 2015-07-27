@@ -28,11 +28,13 @@
 
 package org.opennms.netmgt.measurements.impl;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -77,7 +79,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final int RESOLUTION_MULTIPLIER = 2;
 
-    private static final int STEP_LOWER_BOUND_IN_MS = 120 * 1000;
+    private static final int STEP_LOWER_BOUND_IN_MS = 30 * 1000;
 
     @Autowired
     private Context m_context;
@@ -89,57 +91,78 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private SampleRepository m_sampleRepository;
 
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows,
-            List<Source> sources) throws Exception {
-        // Limit the step with a lower bound in order to prevent
-        // extremely large queries
+    public FetchResults fetch(long start, long end, long step, int maxrows, List<Source> sources) {
+        // Limit the step with a lower bound in order to prevent extremely large queries
         final long fetchStep = Math.max(STEP_LOWER_BOUND_IN_MS, step);
-
-        Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
-        Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
-
-        // Newts only allows to to perform a query using single resource id
-        // To work around this, we group the sources by resource id,
-        // perform multiple queries and aggregate the results
-        Map<String, List<Source>> sourcesByNewtsResourceId = Maps.newHashMap();
-
-        for (Source source : sources) {
-            // Grab the resource
-            final OnmsResource resource = m_resourceDao.getResourceById(source
-                    .getResourceId());
-            if (resource == null) {
-                LOG.error("No resource with id: {}", source.getResourceId());
-                return null;
-            }
-
-            // Grab the attribute
-            final RrdGraphAttribute rrdGraphAttribute = resource
-                    .getRrdGraphAttributes().get(source.getAttribute());
-            if (rrdGraphAttribute == null) {
-                LOG.error("No attribute with name: {}", source.getAttribute());
-                return null;
-            }
-
-            final String newtsResourceId = rrdGraphAttribute.getRrdRelativePath();
-
-            List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
-            // Create the list if it doesn't exist
-            if (listOfSources == null) {
-                listOfSources = Lists.newArrayList();
-                sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
-            }
-
-            listOfSources.add(source);
+        if (fetchStep != step) {
+            LOG.warn("Requested step size {} is too small. Using {}.", step, fetchStep);
         }
 
-        // Used to aggregate the results
+        final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
+        final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
+
+        // Group the sources by resource id to avoid calling the ResourceDao
+        // multiple times for the same resource
+        Map<String, List<Source>> sourcesByResourceId = sources.stream()
+                .collect(Collectors.groupingBy(Source::getResourceId));
+
+        // Lookup the resources in parallel
+        Map<OnmsResource, List<Source>> sourcesByResource = sourcesByResourceId.entrySet()
+                .parallelStream()
+                .collect(Collectors.toMap(
+                    e -> {
+                        final OnmsResource resource = m_resourceDao.getResourceById(e.getKey());
+                        if (resource == null) {
+                            LOG.error("No resource with id: {}", e.getKey());
+                            throw new IllegalArgumentException("No resource with id: " + e.getKey());
+                        }
+                        // The attributes are typically lazy loaded, so we trigger the load here
+                        // while we're in a parallel context
+                        resource.getAttributes();
+                        return resource;
+                    },
+                    e -> e.getValue()
+                    ));
+
+        // Now group the sources by Newts Resource ID, which differs from the OpenNMS Resource ID.
+        Map<String, List<Source>> sourcesByNewtsResourceId = Maps.newHashMap();
+        for (Entry<OnmsResource, List<Source>> entry : sourcesByResource.entrySet()) {
+            final OnmsResource resource = entry.getKey();
+            for (Source source : entry.getValue()) {
+                // Grab the attribute that matches the source
+                final RrdGraphAttribute rrdGraphAttribute = resource
+                        .getRrdGraphAttributes().get(source.getAttribute());
+                if (rrdGraphAttribute == null) {
+                    LOG.error("No attribute with name: {}", source.getAttribute());
+                    return null;
+                }
+
+                // The Newts Resource ID is stored in the rrdFile attribute
+                String newtsResourceId = rrdGraphAttribute.getRrdRelativePath();
+                // Remove the file separator prefix, added by the RrdGraphAttribute class
+                if (newtsResourceId.startsWith(File.separator)) {
+                    newtsResourceId = newtsResourceId.substring(File.separator.length(), newtsResourceId.length());
+                }
+
+                List<Source> listOfSources = sourcesByNewtsResourceId.get(newtsResourceId);
+                // Create the list if it doesn't exist
+                if (listOfSources == null) {
+                    listOfSources = Lists.newLinkedList();
+                    sourcesByNewtsResourceId.put(newtsResourceId, listOfSources);
+                }
+                listOfSources.add(source);
+            }
+        }
+
+        // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
+        // so we perform multiple queries in parallel, and aggregate the results.
         final AtomicReference<long[]> timestamps = new AtomicReference<>();
         final Map<String, double[]> columns = Maps.newConcurrentMap();
         final Map<String, Object> constants = Maps.newConcurrentMap();
 
         sourcesByNewtsResourceId.entrySet().parallelStream().forEach(entry -> {
-            String newtsResourceId = entry.getKey();
-            List<Source> listOfSources = entry.getValue();
+            final String newtsResourceId = entry.getKey();
+            final List<Source> listOfSources = entry.getValue();
 
             ResultDescriptor resultDescriptor = new ResultDescriptor(fetchStep);
             for (Source source : listOfSources) {
@@ -151,11 +174,6 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                 resultDescriptor.export(name);
             }
 
-            // HACK - not sure where the / is coming from right meow
-            if (newtsResourceId.startsWith("/")) {
-                newtsResourceId = newtsResourceId.substring(1, newtsResourceId.length());
-            }
-
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
             Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
                     resultDescriptor, Optional.of(Duration.millis(RESOLUTION_MULTIPLIER*fetchStep)));
@@ -163,10 +181,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             LOG.debug("Found {} rows.", rows.size());
 
             final int N = rows.size();
-
-            final Map<String,Object> attributes = new HashMap<>();
-
-            final Map<String,double[]> myColumns = Maps.newHashMap();
+            final Map<String, Object> myConstants = Maps.newHashMap();
+            final Map<String, double[]> myColumns = Maps.newHashMap();
 
             timestamps.updateAndGet(existing -> {
                 if (existing == null) {
@@ -189,20 +205,18 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                     myColumns.putIfAbsent(measurement.getName(), new double[N]);
                     myColumns.get(measurement.getName())[k] = measurement.getValue();
                     if (measurement.getAttributes() != null) {
-                        attributes.putAll(measurement.getAttributes());
+                        myConstants.putAll(measurement.getAttributes());
                     }
                 }
                 k += 1;
             }
 
-            myColumns.entrySet().stream().forEach(e -> {
-                columns.put(e.getKey(), e.getValue());
-            });
+            columns.putAll(myColumns);
+            constants.putAll(myConstants);
         });
 
         FetchResults fetchResults = new FetchResults(timestamps.get(), columns, fetchStep, constants);
         LOG.debug("Fetch results: {}", fetchResults);
-
         return fetchResults;
     }
 

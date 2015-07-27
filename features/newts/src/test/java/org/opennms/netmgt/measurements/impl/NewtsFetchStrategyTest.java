@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.easymock.EasyMock;
@@ -55,6 +57,7 @@ import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class NewtsFetchStrategyTest {
@@ -63,6 +66,8 @@ public class NewtsFetchStrategyTest {
     private SampleRepository m_sampleRepository;
 
     private NewtsFetchStrategy m_newtsFetchStrategy;
+
+    private Map<String, OnmsResource> m_resources = Maps.newHashMap();
 
     @Before
     public void setUp() throws Exception {
@@ -88,7 +93,7 @@ public class NewtsFetchStrategyTest {
             createMockResource("snmplocalhost", "snmp", "127.0.0.1"),
             createMockResource("snmp192", "snmp", "192.168.0.1")
         );
-        EasyMock.replay(m_resourceDao, m_sampleRepository);
+        replay();
 
         FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, sources);
         assertEquals(3, fetchResults.getColumns().keySet().size());
@@ -104,7 +109,7 @@ public class NewtsFetchStrategyTest {
             createMockResource("icmp", "icmp", "127.0.0.1"),
             createMockResource("icmp", "icmp", "192.168.0.1")
         );
-        EasyMock.replay(m_resourceDao, m_sampleRepository);
+        replay();
 
         FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, sources);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
@@ -115,13 +120,15 @@ public class NewtsFetchStrategyTest {
         OnmsResourceType type = EasyMock.createNiceMock(OnmsResourceType.class);
 
         final int nodeId = node.hashCode();
-
         final String newtsResourceId = "response:" + node + ":" + attr;
-        RrdGraphAttribute attribute = new RrdGraphAttribute(attr, "", newtsResourceId);
-        Set<OnmsAttribute> attributes = Sets.newHashSet(attribute);
-        OnmsResource resource = new OnmsResource(attr, label, type, attributes, ResourcePath.get("foo"));
         final String resourceId = "nodeSource[NODES:" + nodeId + "].responseTime[" + node + "]";
-        EasyMock.expect(m_resourceDao.getResourceById(resourceId)).andReturn(resource);
+        OnmsResource resource = m_resources.get(resourceId);
+        if (resource == null) {
+            resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
+            m_resources.put(resourceId, resource);
+        }
+        Set<OnmsAttribute> attributes = resource.getAttributes();
+        attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
 
         Results<Measurement> results = new Results<Measurement>();
         Resource res = new Resource(newtsResourceId);
@@ -141,5 +148,13 @@ public class NewtsFetchStrategyTest {
         source.setResourceId(resourceId);
         source.setTransient(false);
         return source;
+    }
+
+    private void replay() {
+        for (Entry<String, OnmsResource> entry : m_resources.entrySet()) {
+            EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue());
+        }
+
+        EasyMock.replay(m_resourceDao, m_sampleRepository);
     }
 }
