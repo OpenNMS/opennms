@@ -19,6 +19,7 @@
         <include-collection dataCollectionGroup="Asterisk"/>
         <include-collection dataCollectionGroup="Bluecat"/>
         <include-collection dataCollectionGroup="Bluecoat"/>
+        <include-collection dataCollectionGroup="Bridgewave"/>
         <include-collection dataCollectionGroup="Brocade"/>
         <include-collection dataCollectionGroup="Checkpoint"/>
         <include-collection dataCollectionGroup="Cisco"/>

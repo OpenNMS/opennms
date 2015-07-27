@@ -27,7 +27,7 @@
             <id>vaadin-snapshots</id>
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
-            <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+            <url>http://maven.opennms.org/content/repositories/vaadin-snapshost/</url>
         </repository>
     </repositories>
 
