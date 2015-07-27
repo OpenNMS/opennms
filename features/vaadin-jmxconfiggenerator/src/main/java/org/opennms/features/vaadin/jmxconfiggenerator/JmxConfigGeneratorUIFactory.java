@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator;
 
+import org.opennms.vaadin.extender.AbstractApplicationFactory;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
+import com.vaadin.ui.UI;
+
+public class JmxConfigGeneratorUIFactory extends AbstractApplicationFactory {
+
+    /* (non-Javadoc)
+     * @see org.opennms.vaadin.extender.ApplicationFactory#createApplication(javax.servlet.http.HttpServletRequest)
      */
-    String getName();
+    @Override
+    public UI createUI() {
+        return new JmxConfigGeneratorUI();
+    }
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
+    /* (non-Javadoc)
+     * @see org.opennms.vaadin.extender.ApplicationFactory#getApplicationClass()
      */
-    String getUrl();
+    @Override
+    public Class<? extends UI> getUIClass() {
+        return JmxConfigGeneratorUI.class;
+    }
 }

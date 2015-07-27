@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+public class ButtonPanel extends HorizontalLayout {
+	private final Button next;
+	private final Button previous;
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	public ButtonPanel(ClickListener listener) {
+		next = UIHelper.createButton("", "next", Config.Icons.BUTTON_NEXT, listener);
+		previous = UIHelper.createButton("", "previous", Config.Icons.BUTTON_PREVIOUS, listener);
+
+		next.setId("next");
+		previous.setId("previous");
+
+		setMargin(true);
+		setSpacing(true);
+
+		addComponent(previous);
+		addComponent(next);
+	}
+
+	public Button getNext() {
+		return next;
+	}
+	
+	public Button getPrevious() {
+		return previous;
+	}
 }

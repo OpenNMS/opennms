@@ -26,21 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
+import com.vaadin.data.validator.RegexpValidator;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+/**
+ *
+ * @author Markus von Rüden
+ */
+public class AttributeNameValidator extends RegexpValidator {
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	protected static final String ERROR_MESSAGE = "You must specify a valid attribute name. Only characters a-z, A-Z and 0-9 are allowed.";
+
+	public AttributeNameValidator() {
+		super("[a-zA-Z0-9]+", ERROR_MESSAGE);
+	}
 }

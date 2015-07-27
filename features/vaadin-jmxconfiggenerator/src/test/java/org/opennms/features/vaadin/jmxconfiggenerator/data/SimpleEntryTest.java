@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SimpleEntry;
+import org.junit.Assert;
+import org.junit.Test;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+/**
+ *
+ * @author Markus von Rüden
+ */
+public class SimpleEntryTest {
+	
+	@Test
+	public void testHashCodeAndEquals() {
+		SimpleEntry one = new SimpleEntry("123", "456");
+		SimpleEntry two = new SimpleEntry("123", "456");
+		Assert.assertEquals(one, two);
+		Assert.assertEquals(one.hashCode(), two.hashCode());
+	}
 }

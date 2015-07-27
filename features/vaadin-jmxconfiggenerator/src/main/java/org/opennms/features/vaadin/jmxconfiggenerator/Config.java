@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator;
 
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
+/**
+ * Config class.
+ *
+ * @author Markus von Rüden
+ */
+public interface Config {
+
+    int ATTRIBUTES_ALIAS_MAX_LENGTH = 19;
+    int NAME_EDIT_FORM_HEIGHT = 150;
+    int NOTIFICATION_DELAY = 3000;
+
+	/**
+     * This class provides the application with icons. If any icon changes or new
+     * icons are needed, please put them below.
      *
-     * @return a {@link java.lang.String} object.
+     * @author Markus von Rüden
      */
-    String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+    interface Icons {
+        Resource DUMMY = FontAwesome.SQUARE;
+       	Resource BUTTON_SAVE = FontAwesome.FLOPPY_O;
+        Resource BUTTON_NEXT = FontAwesome.CHEVRON_RIGHT;
+        Resource BUTTON_PREVIOUS = FontAwesome.CHEVRON_LEFT;
+		Resource SELECTED = FontAwesome.CHECK_SQUARE_O;
+		Resource NOT_SELECTED = FontAwesome.SQUARE_O;
+        Resource HELP = FontAwesome.QUESTION;
+    }
 }

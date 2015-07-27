@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
+import com.vaadin.data.Validator;
+import org.junit.Test;
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
+/**
+ *
+ * @author Markus von Rüden
+ */
+public class AttributeNameValidatorTest {
 
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	@Test
+	public void testValidate() {
+		final String[] OK = new String[]{
+			"com", "comwebserver", "someEntry",
+			"HELLOWORLD", "HellowoRlD", "a", "ab"
+			};
+		final String[] FAIL = new String[]{
+			"", ".", ".org", "opennms.", ".serviceopennms.org", "servicename!",
+			"someadditional-entry", "some_Entry",
+			"com.java.op-erating-system","some.entry.separated.by_.dots.a__.lot.of_.dots",
+			"ab.cd", "a.bc", "ab.c",
+			"service name", "service,name", "service, name", "straße", "schädel", "hühner", "hölle"};
+		Validator validator = new AttributeNameValidator();
+		NameValidatorTest.validate(validator, OK, true);
+		NameValidatorTest.validate(validator, FAIL, false);
+	}
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
+/**
+ * StringRenderer which renders any object of type <code>T</code> to a String
+ * representation. Usually a {@linkplain StringRenderer} is used when a specific
+ * representation of an object is needed and toString() cannot be overwritten or
+ * does not fulfill the requirements.<br/>
+ * <br/>
+ * 
+ * @author Markus von Rüden
+ * @param <T>
+ *            the type of the object which needs to be rendered as a String
+ */
+public interface StringRenderer<T> {
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	/**
+	 * Transforms the input-object to a String.
+	 * 
+	 * @param input
+	 *            The input object.
+	 * @return The formatted string of the input object.
+	 */
+	String render(T input);
 }

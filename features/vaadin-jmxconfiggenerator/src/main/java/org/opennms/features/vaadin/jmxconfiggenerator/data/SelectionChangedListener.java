@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,21 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.vaadin.jmxconfiggenerator.data;
+
+import com.vaadin.data.Item;
+
+/**
+ * One part of the observer pattern. It indicates if the given model <code>T</code> has changed.
+ * In future releases a ModelChangeEvent may be introduced.
+ * 
+ * @author Markus von Rüden
+ */
+public interface SelectionChangedListener<T> {
+
+	class SelectionChangedEvent<T> {
+
+		private final Item selectedItem;
+		private T selectedBean;
+
+		public SelectionChangedEvent(Item selectedItem, T selectedBean) {
+			this.selectedItem = selectedItem;
+			this.selectedBean = selectedBean;
+		}
+
+		public Item getSelectedItem()  {
+			return selectedItem;
+		}
+
+		public T getSelectedBean() {
+			return selectedBean;
+		}
+	}
 
 
-public interface PageNavEntry {
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getName();
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    String getUrl();
+	/**
+	 * Is invoked after a selection changes.
+	 * @param changeEvent the change Event
+	 */
+	void selectionChanged(SelectionChangedEvent<T> changeEvent);
 }

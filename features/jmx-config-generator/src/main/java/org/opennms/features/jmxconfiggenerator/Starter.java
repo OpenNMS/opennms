@@ -87,7 +87,7 @@ public class Starter {
     // @Option(name = "-ssl", usage = "Use SSL for the connection")
     private boolean ssl = false;
     
-    @Option(name = "-skipDefaultVM", usage = "set to process default JavaVM Beans.")
+    @Option(name = "-skipDefaultVM", usage = "Include default JavaVM Beans.")
     private boolean skipDefaultVM = false;
     
     @Option(name = "-runWritableMBeans", usage = "include MBeans that are read- and writable.")
