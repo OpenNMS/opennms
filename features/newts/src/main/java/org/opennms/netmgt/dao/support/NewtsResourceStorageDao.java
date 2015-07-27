@@ -3,6 +3,10 @@ package org.opennms.netmgt.dao.support;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
@@ -33,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -125,6 +130,10 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
         Set<OnmsAttribute> attributes = Sets.newHashSet();
 
+        // Fetch the resource-level attributes in parallel
+        Future<Map<String, String>> stringAttributes = ForkJoinPool.commonPool()
+                .submit(getResourceAttributesCallable(path));
+
         // Gather the list of metrics available under the resource path
         SearchResults results = searchFor(path, 0, true);
         for (Result result : results) {
@@ -144,10 +153,14 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
             }
         }
 
-        // Gather resource level attributes (equivalent to reading values from strings.properties)
-        getStringAttributes(path).entrySet().stream()
-            .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-            .forEach(attr -> attributes.add(attr));
+        // Add the resource level attributes to the result set
+        try {
+            stringAttributes.get().entrySet().stream()
+                .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
+                .forEach(attr -> attributes.add(attr));
+        } catch (InterruptedException|ExecutionException e) {
+            throw Throwables.propagate(e);
+        }
 
         return attributes;
     }
@@ -179,6 +192,15 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
         return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+    }
+
+    private Callable<Map<String, String>> getResourceAttributesCallable(final ResourcePath path) {
+        return new Callable<Map<String, String>>() {
+            @Override
+            public Map<String, String> call() throws Exception {
+                return m_searcher.getResourceAttributes(m_context, toResourceId(path));
+            }
+        };
     }
 
     @Override
