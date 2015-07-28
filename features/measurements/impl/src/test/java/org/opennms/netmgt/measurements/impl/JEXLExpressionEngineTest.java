@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
-import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.Source;
@@ -50,29 +49,125 @@ public class JEXLExpressionEngineTest {
 
     @Test(expected=ExpressionException.class)
     public void failsWhenExpressionHasInvalidSyntax() throws ExpressionException {
-        peformExpression("/");
+        performExpression("/");
     }
 
     @Test(expected=ExpressionException.class)
     public void failsWhenExpressionDoesNotReturnADouble() throws ExpressionException {
-        peformExpression("!(!true)");
+        performExpression("!(!true)");
     }
 
     @Test
     public void canPerformLinearCombination() throws ExpressionException {
-        double results[] = peformExpression("x * 5 + 7");
+        double results[] = performExpression("x * 5 + 7");
         assertEquals(12, results[1], 0.0001);
     }
 
     @Test
     public void canPerformSin() throws ExpressionException {
-        double results[] = peformExpression("math:sin(x)");
+        double results[] = performExpression("math:sin(x)");
         assertEquals(Math.sin(1.0d), results[1], 0.0001);
+    }
+
+    /*
+     * LIMIT
+     * 
+     * Pops two elements from the stack and uses them to define a range.
+     * Then it pops another element and if it falls inside the range, it is
+     * pushed back. If not, an unknown is pushed. The range defined includes
+     * the two boundaries (so: a number equal to one of the boundaries will be
+     * pushed back). If any of the three numbers involved is either unknown or
+     * infinite this function will always return an unknown
+     * 
+     * Example: CDEF:a=alpha,0,100,LIMIT will return unknown if alpha is
+     * lower than 0 or if it is higher than 100.
+     */
+    @Test
+    public void canPerformLimit() throws ExpressionException {
+        final String limitExpression = "( ( (a == __inf) || (a == __neg_inf) || (b == __inf) || (b == __neg_inf) || (c == __inf) || (c == __neg_inf) || (c < a) || (c > b) ) ? NaN : c )";
+
+        // a = min, b = max, c = value
+        final double a = 0.0;
+        final double b = 0.14290626;
+        final double withinRange = 0.1;
+        final double delta = 0.001;
+
+        final Map<String,Object> entries = Maps.newHashMap();
+
+        // value is within the range (value)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", 0.01);
+        double results[] = performExpression(limitExpression, entries);
+        assertEquals(0.01, results[0], delta);
+
+        // value is equal to minimum (value)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", a);
+        results = performExpression(limitExpression, entries);
+        assertEquals(a, results[0], delta);
+
+        // value is less than minimum (unknown)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", a - 1.0);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // value is equal to maximum (value)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", b);
+        results = performExpression(limitExpression, entries);
+        assertEquals(b, results[0], delta);
+
+        // value is greater than maximum (unknown)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", b + 1.0);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // value is -infinity (unknown)
+        entries.put("a", a);
+        entries.put("b", b);
+        entries.put("c", Double.NEGATIVE_INFINITY);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // minimum is -infinity (unknown)
+        entries.put("a", Double.NEGATIVE_INFINITY);
+        entries.put("b", b);
+        entries.put("c", withinRange);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // minimum is infinity (unknown)
+        entries.put("a", Double.POSITIVE_INFINITY);
+        entries.put("b", b);
+        entries.put("c", withinRange);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // maximum is -infinity (unknown)
+        entries.put("a", a);
+        entries.put("b", Double.NEGATIVE_INFINITY);
+        entries.put("c", withinRange);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
+
+        // maximum is infinity (unknown)
+        entries.put("a", a);
+        entries.put("b", Double.POSITIVE_INFINITY);
+        entries.put("c", withinRange);
+        results = performExpression(limitExpression, entries);
+        assertEquals(Double.NaN, results[0], delta);
     }
 
     @Test
     public void canReferenceTimestamp() throws ExpressionException {
-        double results[] = peformExpression("timestamp / 125.0d");
+        double results[] = performExpression("timestamp / 125.0d");
         assertEquals(400.0d, results[50], 0.0001);
     }
 
@@ -81,16 +176,16 @@ public class JEXLExpressionEngineTest {
         Map<String, Object> constants = Maps.newHashMap();
         constants.put("speed", 65);
 
-        double results[] = peformExpression("speed / 0.62137", constants);
+        double results[] = performExpression("speed / 0.62137", constants);
         assertEquals(104.607560713, results[0], 0.0001);
     }
 
-    private double[] peformExpression(String expression) throws ExpressionException {
+    private double[] performExpression(String expression) throws ExpressionException {
         Map<String, Object> constants = Maps.newHashMap();
-        return peformExpression(expression, constants);
+        return performExpression(expression, constants);
     }
 
-    private double[] peformExpression(String expression, Map<String, Object> constants) throws ExpressionException {
+    private double[] performExpression(String expression, Map<String, Object> constants) throws ExpressionException {
         // Build a simple request with the given expression
         QueryRequest request = new QueryRequest();
 
