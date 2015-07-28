@@ -157,10 +157,12 @@ function parseContentRange(contentRange) {
 	.controller('ListCtrl', ['$scope', '$location', '$window', '$log', '$filter', function($scope, $location, $window, $log, $filter) {
 		$log.debug('ListCtrl initializing...');
 
-		$scope.DEFAULT_LIMIT = 20;
-		$scope.DEFAULT_OFFSET = 0;
-		$scope.DEFAULT_ORDERBY = '';
-		$scope.DEFAULT_ORDER = 'asc';
+		$scope.defaults = {
+			limit: 20,
+			offset: 0,
+			orderBy: '',
+			order: 'asc'
+		}
 
 		// Blank out the editing flags
 		$scope.enableEditLabel = false;
@@ -173,16 +175,16 @@ function parseContentRange(contentRange) {
 			// TODO: Figure out how to parse and restore the FIQL search param
 			searchParam: '',
 			searchClauses: [],
-			limit: typeof $location.search().limit === 'undefined' ? $scope.DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.DEFAULT_LIMIT),
-			newLimit: typeof $location.search().limit === 'undefined' ? $scope.DEFAULT_LIMIT : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.DEFAULT_LIMIT),
-			offset: typeof $location.search().offset === 'undefined' ? $scope.DEFAULT_OFFSET : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.DEFAULT_OFFSET),
+			limit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
+			newLimit: typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit),
+			offset: typeof $location.search().offset === 'undefined' ? $scope.defaults.offset : (Number($location.search().offset) > 0 ? Number($location.search().offset) : $scope.defaults.offset),
 
 			lastOffset: 0,
 			maxOffset: 0,
 
 			// TODO: Validate that the orderBy is in a list of supported properties
-			orderBy: typeof $location.search().orderBy === 'undefined' ? $scope.DEFAULT_ORDERBY : $location.search().orderBy,
-			order: typeof $location.search().order === 'undefined' ? $scope.DEFAULT_ORDER : ($location.search().order === 'asc' ? 'asc' : 'desc')
+			orderBy: typeof $location.search().orderBy === 'undefined' ? $scope.defaults.orderBy : $location.search().orderBy,
+			order: typeof $location.search().order === 'undefined' ? $scope.defaults.order : ($location.search().order === 'asc' ? 'asc' : 'desc')
 		};
 
 		// Sync the query hash with the $location query string
@@ -196,14 +198,14 @@ function parseContentRange(contentRange) {
 			delete queryParams.maxOffset;
 
 			// Rename searchParam to _s
-			queryParams._s = queryParams.searchParam === '' ? null : queryParams.searchParam;
+			queryParams._s = (queryParams.searchParam === '' ? null : queryParams.searchParam);
 			delete queryParams.searchParam;
 
 			// Delete any parameters that have default or blank values
-			if (queryParams.limit === $scope.DEFAULT_LIMIT || queryParams.limit === '') { delete queryParams.limit; }
-			if (queryParams.offset === $scope.DEFAULT_OFFSET || queryParams.offset === '') { delete queryParams.offset; }
-			if (queryParams.orderBy === $scope.DEFAULT_ORDERBY || queryParams.orderBy === '') { delete queryParams.orderBy; }
-			if (queryParams.order === $scope.DEFAULT_ORDER || queryParams.order === '') { delete queryParams.order; }
+			if (queryParams.limit === $scope.defaults.limit || queryParams.limit === '') { delete queryParams.limit; }
+			if (queryParams.offset === $scope.defaults.offset || queryParams.offset === '') { delete queryParams.offset; }
+			if (queryParams.orderBy === $scope.defaults.orderBy || queryParams.orderBy === '') { delete queryParams.orderBy; }
+			if (queryParams.order === $scope.defaults.order || queryParams.order === '') { delete queryParams.order; }
 			if (queryParams._s === '') { delete queryParams._s; }
 
 			$location.search(queryParams);
@@ -293,7 +295,7 @@ function parseContentRange(contentRange) {
 			} else {
 				// TODO: Figure out if we should reset limit/offset here also
 				$scope.query.orderBy = property;
-				$scope.query.order = $scope.DEFAULT_ORDER;
+				$scope.query.order = $scope.defaults.order;
 			}
 			$scope.refresh();
 		}

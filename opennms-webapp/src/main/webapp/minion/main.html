@@ -163,88 +163,94 @@
 	<br/>
 
 	<div class="panel panel-default">
-		<!--
-		<div class="panel-heading">
-			<h3 class="panel-title">Minion Systems</h3>
-		</div>
-		-->
 		<!-- The style is here to override a weird Chrome user agent stylesheet issue -->
 		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
 						<i ng-show="query.orderBy === 'id' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'id' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('label')">Label</a>
 						<i ng-show="query.orderBy === 'label' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'label' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
 						<i ng-show="query.orderBy === 'location' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'location' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('type')">Type</a>
 						<i ng-show="query.orderBy === 'type' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'type' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('status')">Status</a>
 						<i ng-show="query.orderBy === 'status' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'status' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('date')">Last Updated</a>
 						<i ng-show="query.orderBy === 'date' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'date' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						Properties
 					</th>
 				</tr>
 
 				<tr ng-repeat="item in items">
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						{{item.id}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						<form ng-show="enableEditLabel" ng-submit="update(item)" style="margin: 0;">
-							<input class="form-control input-sm" type="text" ng-model="item.label" ng-blur="unedit()"/>
+						<form class="form-inline" ng-submit="update(item)" style="margin: 0;">
+							<!-- Editing input -->
+							<input ng-show="enableEditLabel" type="text" ng-model="item.label" ng-blur="unedit()"/>
+							<!-- Text label -->
+							<span style="line-height:24px;" ng-hide="enableEditLabel" ng-click="editLabel(item.id)">{{item.label}}</span>
+							<a style="text-decoration: none;" ng-click="editLabel(item.id)"><i class="fa fa-edit"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o"/></a>
 						</form>
-						<span ng-hide="enableEditLabel" ng-click="editLabel(item.id)">{{item.label}}</span>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						<form ng-show="enableEditLocation" ng-submit="update(item)" style="margin: 0;">
-							<input class="form-control input-sm" type="text" ng-model="item.location" ng-blur="unedit()"/>
+						<!-- TODO: Figure out how to handle null/blank labels, they should still be editable -->
+						<form class="form-inline" ng-submit="update(item)" style="margin: 0;">
+							<!-- Editing input -->
+							<input ng-show="enableEditLocation" type="text" ng-model="item.location" ng-blur="unedit()"/>
+							<!-- Text label -->
+							<span style="line-height:24px;" ng-hide="enableEditLocation" ng-click="editLocation(item.id)">{{item.location}}</span>
+							<a style="text-decoration: none;" ng-click="editLocation(item.id)"><i class="fa fa-edit"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o"/></a>
 						</form>
-						<span ng-hide="enableEditLocation" ng-click="editLocation(item.id)">{{item.location}}</span>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="text-nowrap">
-						{{item.status}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o"/></a>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.status !== null">
+							{{item.status}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o"/></a>
+						</span>
 					</td>
-					<td class="text-nowrap">
-						{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
-						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
-						<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item.date !== null">
+							{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
+						</span>
 					</td>
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-repeat="(key,value) in item.properties">
 						<span class="label label-default">
 							{{key}}: {{value}}

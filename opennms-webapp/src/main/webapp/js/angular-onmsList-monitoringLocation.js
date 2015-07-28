@@ -75,7 +75,9 @@
 	.controller('MonitoringLocationsListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'MonitoringLocations', function($scope, $location, $window, $log, $filter, MonitoringLocations) {
 		$log.debug('MonitoringLocationsListCtrl initializing...');
 
-		$scope.$parent.DEFAULT_ORDERBY = 'locationName';
+		// Set the default sort and set it on $scope.$parent.query
+		$scope.$parent.defaults.orderBy = 'locationName';
+		$scope.$parent.query.orderBy = 'locationName';
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {

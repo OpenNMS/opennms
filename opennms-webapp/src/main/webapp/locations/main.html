@@ -170,68 +170,94 @@
 		<table class="table table-bordered table-striped" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('locationName')">Location Name</a>
 						<i ng-show="query.orderBy === 'locationName' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'locationName' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('monitoringArea')">Monitoring Area</a>
 						<i ng-show="query.orderBy === 'monitoringArea' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'monitoringArea' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('geolocation')">Geolocation</a>
 						<i ng-show="query.orderBy === 'geolocation' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'geolocation' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('latitude')">Latitude</a>
 						<i ng-show="query.orderBy === 'latitude' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'latitude' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('longitude')">Longitude</a>
 						<i ng-show="query.orderBy === 'longitude' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'longitude' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-2">
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('priority')">Priority</a>
 						<i ng-show="query.orderBy === 'priority' && query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'priority' && query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
+					<th class="col-sm-2 text-nowrap">
+						Polling Packages
+					</th>
+					<th class="col-sm-2 text-nowrap">
+						Collection Packages
+					</th>
 				</tr>
 
 				<tr ng-repeat="item in items">
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						{{item['location-name']}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						{{item['monitoring-area']}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="text-nowrap">
+					<td class="text-nowrap" style="line-height:24px;">
 						{{item['geolocation']}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o"/></a>
 					</td>
-					<td class="text-nowrap">
-						{{item['latitude']}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o"/></a>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item['latitude'] !== null">
+							{{item['latitude']}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o"/></a>
+						</span>
 					</td>
-					<td class="text-nowrap">
-						{{item['longitude']}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o"/></a>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item['longitude'] !== null">
+							{{item['longitude']}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o"/></a>
+						</span>
 					</td>
-					<td class="text-nowrap">
-						{{item['priority']}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o"/></a>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-show="item['priority'] !== null">
+							{{item['priority']}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o"/></a>
+						</span>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-repeat="name in item['polling-package-names']">
+							<span class="label label-default">
+								{{name}}
+							</span>&nbsp;
+						</span>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						<span ng-repeat="name in item['collection-package-names']">
+							<span class="label label-default">
+								{{name}}
+							</span>&nbsp;
+						</span>
 					</td>
 				</tr>
 			</tbody>

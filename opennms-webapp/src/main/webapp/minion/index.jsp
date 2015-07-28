@@ -35,9 +35,9 @@
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Minion Control Panel" />
-	<jsp:param name="headTitle" value="Minion Control Panel" />
-	<jsp:param name="breadcrumb" value="Minion" />
+	<jsp:param name="title" value="Minion Systems" />
+	<jsp:param name="headTitle" value="Minion Systems" />
+	<jsp:param name="breadcrumb" value="Minion Systems" />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.0.min.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.0.min.js"></script>' />
 
