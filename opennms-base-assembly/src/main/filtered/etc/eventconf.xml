@@ -53,6 +53,7 @@
   <event-file>events/Avocent.Mergepoint.events.xml</event-file>
   <event-file>events/Avocent.PMTrap.events.xml</event-file>
   <event-file>events/Audiocodes.events.xml</event-file>
+  <event-file>events/A10.AX.events.xml</event-file>
   <event-file>events/ATMForum.events.xml</event-file>
   <event-file>events/BackupExec.events.xml</event-file>
   <event-file>events/BEA.events.xml</event-file>
@@ -65,6 +66,7 @@
   <event-file>events/Brocade.events.xml</event-file>
   <event-file>events/Broadcom-BASPTrap.events.xml</event-file>
   <event-file>events/CA.ArcServe.events.xml</event-file>
+  <event-file>events/Ceragon-FA1500.events.xml</event-file>
   <event-file>events/Cisco.airespace.xml</event-file>
   <event-file>events/Cisco.CIDS.events.xml</event-file>
   <event-file>events/Cisco.5300dchan.events.xml</event-file>
@@ -145,6 +147,7 @@
   <event-file>events/IPV6.events.xml</event-file>
   <event-file>events/Juniper.mcast.events.xml</event-file>
   <event-file>events/Juniper.events.xml</event-file>
+  <event-file>events/Juniper.screen.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
   <event-file>events/K5Systems.events.xml</event-file>

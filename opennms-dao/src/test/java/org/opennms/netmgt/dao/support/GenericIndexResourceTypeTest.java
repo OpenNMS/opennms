@@ -45,7 +45,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.rrd.NullRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -113,7 +113,7 @@ public class GenericIndexResourceTypeTest {
         GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceStorageDao, "foo", "Foo Resource", "${stringAttribute}", m_storageStrategy);
 
         File rrd = touch("snmp", "1", "foo", "1", RRD_FILE_NAME);
-        m_fileAnticipator.tempFile(rrd.getParentFile(), ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+        m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
         m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource(1), "1");
@@ -128,7 +128,7 @@ public class GenericIndexResourceTypeTest {
         GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceStorageDao, "foo", "Foo Resource", "${stringAttribute}", m_storageStrategy);
 
         File rrd = touch("snmp", "fs", "source1", "123", "foo", "1", RRD_FILE_NAME);
-        m_fileAnticipator.tempFile(rrd.getParentFile(), ResourceTypeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+        m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
         m_mocks.replayAll();
         OnmsResource resource = rt.getChildByName(getNodeResource("source1", "123"), "1");

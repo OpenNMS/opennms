@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.LazySet;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -118,7 +119,8 @@ public final class NodeSnmpResourceType implements OnmsResourceType {
     }
 
     private OnmsResource getResourceForNode(OnmsResource node) {
-        final Set<OnmsAttribute> attributes = m_resourceStorageDao.getAttributes(node.getPath());
+        final LazyResourceAttributeLoader loader = new LazyResourceAttributeLoader(m_resourceStorageDao, node.getPath());
+        final Set<OnmsAttribute> attributes = new LazySet<OnmsAttribute>(loader);
         final OnmsResource resource = new OnmsResource("", "Node-level Performance Data", this, attributes, node.getPath());
         resource.setParent(node);
         return resource;

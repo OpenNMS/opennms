@@ -45,15 +45,16 @@ import org.springframework.util.Assert;
  */
 public class OnmsResource implements Comparable<OnmsResource> {
 
-    private String m_name;
-    private Set<OnmsAttribute> m_attributes;
+    private final String m_name;
+    private final Set<OnmsAttribute> m_attributes;
+    private final OnmsResourceType m_resourceType;
+    private final List<OnmsResource> m_resources;
+    private final ResourcePath m_path;
+
     private String m_label;
     private String m_link;
-    private OnmsResourceType m_resourceType;
     private OnmsEntity m_entity;
-    private List<OnmsResource> m_resources;
     private OnmsResource m_parent = null;
-    private ResourcePath m_path;
     private boolean m_attributesUpdatedWithResource = false;
 
     /**
@@ -112,6 +113,15 @@ public class OnmsResource implements Comparable<OnmsResource> {
      */
     public String getLabel() {
         return m_label;
+    }
+
+    /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
+    public void setLabel(String label) {
+        m_label = label;
     }
 
     /**

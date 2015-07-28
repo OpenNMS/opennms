@@ -40,8 +40,6 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.opennms.web.svclayer.model.ChooseResourceModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -52,9 +50,6 @@ import org.springframework.beans.factory.InitializingBean;
  * @since 1.8.1
  */
 public class DefaultChooseResourceService implements ChooseResourceService, InitializingBean {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultChooseResourceService.class);
-
 
     public ResourceDao m_resourceDao;
 
@@ -79,35 +74,25 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
 
         model.setResource(resource);
         Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
-        
-       
+
         for (OnmsResource childResource : resource.getChildResources()) {
             if (!resourceTypeMap.containsKey(childResource.getResourceType())) {
                 resourceTypeMap.put(childResource.getResourceType(), new LinkedList<OnmsResource>());
             }
-            // See bug 3760: These values have been known to contain a % sign so they are 
-            // not safe to pass to LogUtils.infof()
-            // http://bugzilla.opennms.org/show_bug.cgi?id=3760
-                LOG.info("getId(): {}", childResource.getId());
-                LOG.info("getName(): {}", childResource.getName());
-            //checkLabelForQuotes(
             resourceTypeMap.get(childResource.getResourceType()).add(checkLabelForQuotes(childResource));
         }
-        
+
         model.setResourceTypes(resourceTypeMap);
 
         return model;
     }
-    
+
     private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
-        
-        String lbl  = Util.convertToJsSafeString(childResource.getLabel());
-        
-        OnmsResource resource = new OnmsResource(childResource.getName(), lbl, childResource.getResourceType(), childResource.getAttributes(), childResource.getPath());
-        resource.setParent(childResource.getParent());
-        resource.setEntity(childResource.getEntity());
-        resource.setLink(childResource.getLink());
-        return resource;
+        // We can update the label in place instead of creating a new OnmsResource object
+        // since the object isn't shared. Also, calling childResource.getAttributes()
+        // may trigger the lazy-loading of the attribute set, which we'd like to avoid.
+        childResource.setLabel(Util.convertToJsSafeString(childResource.getLabel()));
+        return childResource;
     }
 
     /**

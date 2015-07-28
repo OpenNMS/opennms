@@ -76,6 +76,7 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.xml.config.Content;
@@ -113,6 +114,16 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
+
+    private ResourceStorageDao m_resourceStorageDao;
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)

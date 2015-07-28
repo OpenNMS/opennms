@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -81,6 +82,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultResourceDao.class);
 
     private static final Pattern RESOURCE_ID_PATTERN = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
+
+    /**
+     * Largest depth at which we will find node related metrics:
+     * [0] will catch node-level resources
+     * [1] will catch interface-level resources
+     * [2] will catch generic index type resources
+     */
+    private static final int MAXIMUM_NODE_METRIC_RESOURCE_DEPTH = 2;
 
     private ResourceStorageDao m_resourceStorageDao;
     private NodeDao m_nodeDao;
@@ -244,8 +253,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         m_nodeResourceType = new NodeResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeResourceType.getName(), m_nodeResourceType);
 
-        resourceType = new DomainResourceType(this, m_resourceStorageDao);
-        resourceTypes.put(resourceType.getName(), resourceType);
+        if (isDomainResourceTypeUsed()) {
+            LOG.debug("One or more packages are configured with storeByIfAlias=true. Enabling the domain resource type.");
+            resourceType = new DomainResourceType(this, m_resourceStorageDao);
+            resourceTypes.put(resourceType.getName(), resourceType);
+        } else {
+            LOG.debug("No packages are configured with storeByIfAlias=true. Excluding the domain resource type.");
+        }
 
         m_nodeSourceResourceType = new NodeSourceResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeSourceResourceType.getName(), m_nodeSourceResourceType);
@@ -292,8 +306,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             // Only return non-deleted nodes - see NMS-2977
             .filter(node -> node.getType() == null || !node.getType().equals("D"))
             .map(node -> getResourceForNode(node))
-            .filter(resource -> resource.getChildResources().size() > 0)
+            .filter(resource -> hasAnyChildResources(resource))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Used to determine whether or not the given (parent) resource
+     * has any child resources.
+     */
+    protected boolean hasAnyChildResources(OnmsResource resource) {
+        // The order of the resource types matter here since we want to
+        // check for the types are most likely occur first.
+        return getResourceTypes().stream()
+                .anyMatch(t -> t.isResourceTypeOnParent(resource));
     }
 
     /**
@@ -353,9 +378,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         // If the nodeSource directory does not exist, but the node directory does
         // then create the resource using the node type instead of the nodeSource type
         if (createUsingNodeSourceType) {
-            final boolean nodeSourcePathExists = m_resourceStorageDao.exists(m_nodeSourceResourceType.getResourcePathForNode(node));
+            final boolean nodeSourcePathExists = m_resourceStorageDao.existsWithin(m_nodeSourceResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
             if (!nodeSourcePathExists) {
-                final boolean nodePathExists = m_resourceStorageDao.exists(m_nodeResourceType.getResourcePathForNode(node));
+                final boolean nodePathExists = m_resourceStorageDao.existsWithin(m_nodeResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
                 createUsingNodeSourceType = !nodePathExists;
             }
         }
@@ -431,5 +456,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             // UTF-8 should *never* throw this
             throw Throwables.propagate(e);
         }
+    }
+
+    /**
+     * For performance reasons, we only enable the {@link DomainResourceType} if
+     * one or more packages use it. Here we iterator over all of defined packages,
+     * return true if a package uses the domain types, and false otherwise.
+     */
+    private boolean isDomainResourceTypeUsed() {
+        for (Package pkg : m_collectdConfig.getCollectdConfig().getPackages()) {
+            if ("true".equalsIgnoreCase(pkg.getStoreByIfAlias())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -41,6 +41,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.rrd.NullRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
 public class NodeSnmpResourceTypeTest {

@@ -58,6 +58,7 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -108,6 +109,9 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
     @Autowired
     private RrdStrategy<Object, Object> m_rrdStrategy;
+
+    @Autowired
+    private FilesystemResourceStorageDao m_resourceStorageDao;
 
     private TestContext m_context;
 
@@ -169,6 +173,9 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
         m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+
+        File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
+        m_resourceStorageDao.setRrdDirectory(snmpRrdDirectory.getParentFile());
     }
 
     @After
@@ -189,7 +196,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -222,7 +229,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
@@ -274,7 +281,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // node level collection
         File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
@@ -305,7 +312,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         m_collectionSpecification.initialize(m_collectionAgent);
 
-        CollectorTestUtils.failToCollectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+        CollectorTestUtils.failToCollectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         m_collectionSpecification.release(m_collectionAgent);
     }
@@ -353,7 +360,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
             m_collectionSpecification.initialize(m_collectionAgent);
 
-            CollectorTestUtils.collectNTimes(m_rrdStrategy, m_collectionSpecification, m_collectionAgent, numUpdates);
+            CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
             // node level collection
             File nodeDir = CollectorTestUtils.anticipatePath(anticipator, snmpRrdDirectory, "1");
@@ -420,7 +427,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, collectionSpecification, collectionSet);
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, collectionSpecification, collectionSet);
 
         collectionSpecification.release(m_collectionAgent);
     }

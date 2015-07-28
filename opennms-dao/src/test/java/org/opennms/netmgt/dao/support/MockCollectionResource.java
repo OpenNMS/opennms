@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,7 +40,6 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
 
 /**
  * MockCollectionResource
@@ -66,7 +65,7 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public File getResourceDir(RrdRepository repository) {
+    public Path getPath() {
         return null;
     }
 
@@ -92,7 +91,13 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public String getStringValue() { return attrValue; }
                 @Override
-                public String getNumericValue() { return attrValue; }
+                public Double getNumericValue() {
+                    try {
+                        return Double.parseDouble(attrValue);
+                    } catch (NumberFormatException|NullPointerException e) {
+                        return null;
+                    }
+                }
                 @Override
                 public String getName() { return attrName; }
                 @Override
