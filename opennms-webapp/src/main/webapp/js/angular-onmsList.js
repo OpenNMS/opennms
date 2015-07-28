@@ -43,11 +43,45 @@ function toFiql(clauses) {
 			fiql += '=ge='; break;
 		}
 
-		fiql += clauses[i].value;
+		fiql += escapeSearchValue(clauses[i].value);
 
 		first = false;
 	}
 	return fiql;
+}
+
+/**
+ * Escape FIQL reserved characters by URL-encoding them. Reserved characters are:
+ * <ul>
+ * <li>!</li>
+ * <li>$</li>
+ * <li>'</li>
+ * <li>(</li>
+ * <li>)</li>
+ * <li>*</li>
+ * <li>+</li>
+ * <li>,</li>
+ * <li>;</li>
+ * <li>=</li>
+ * </ul>
+ * @param value
+ * @returns String with reserved characters URL-encoded
+ */
+function escapeSearchValue(value) {
+	return value
+		.replace('!', '%21')
+		.replace('$', '%24')
+		.replace("'", '%27')
+		.replace('(', '%28')
+		.replace(')', '%29')
+		// People are going to type this in as a wildcard, so I 
+		// guess they'll have to type in '%2A' if they want to
+		// match an asterisk...
+		//.replace('*', '%2A')
+		.replace('+', '%2B')
+		.replace(',', '%2C')
+		.replace(';', '%3B')
+		.replace('=', '%3D');
 }
 
 /**
