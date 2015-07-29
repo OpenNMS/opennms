@@ -48,7 +48,7 @@
 				'query': { 
 					method: 'GET',
 					isArray: true,
-					// Append a transformation that will unwrap the minion array
+					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
 						// TODO: Figure out how to handle session timeouts that redirect to 
 						// the login screen
@@ -120,26 +120,21 @@
 		};
 
 		// Save an item by using $resource.$update
-		$scope.$parent.update = function(minion) {
-			var saveMe = Minions.get({id: minion.id}, function() {
-				saveMe.label = minion.label;
-				saveMe.location = minion.location;
+		$scope.$parent.update = function(item) {
+			var saveMe = Minions.get({id: item.id}, function() {
+				saveMe.label = item.label;
+				saveMe.location = item.location;
 
 				// TODO
-				//saveMe.status = minion.status;
+				//saveMe.status = item.status;
 				// TODO
-				//saveMe.properties = minion.properties;
+				//saveMe.properties = item.properties;
 
 				// Read-only fields
-				// saveMe.type = minion.type;
-				// saveMe.date = minion.date;
+				// saveMe.type = item.type;
+				// saveMe.date = item.date;
 
 				saveMe.$update({}, function() {
-					// Reset the editing flags
-					$scope.$parent.enableEditLabel = false;
-					$scope.$parent.enableEditLocation = false;
-					$scope.$parent.enableEditProperties = false;
-
 					// If there's a search in effect, refresh the view
 					if ($scope.$parent.query.searchParam !== '') {
 						$scope.$parent.refresh();

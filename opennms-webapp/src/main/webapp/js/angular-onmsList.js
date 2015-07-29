@@ -208,11 +208,6 @@ function parseContentRange(contentRange) {
 			order: 'asc'
 		}
 
-		// Blank out the editing flags
-		$scope.enableEditLabel = false;
-		$scope.enableEditLocation = false;
-		$scope.enableEditProperties = false;
-
 		// Restore any query parameters that you can from the 
 		// query string, blank out the rest
 		$scope.query = {
@@ -256,27 +251,6 @@ function parseContentRange(contentRange) {
 		}, 
 		true // Use object equality because the reference doesn't change
 		);
-
-		// Go out of edit mode
-		$scope.unedit = function() {
-			$scope.enableEditLabel = false;
-			$scope.enableEditLocation = false;
-			$scope.refresh();
-		}
-
-		// Mark label as editable
-		// TODO: Change this so that it uniquely edits one table cell
-		$scope.editLabel = function(id) {
-			$log.debug(id);
-			$scope.enableEditLabel = true;
-		}
-
-		// Mark location as editable
-		// TODO: Change this so that it uniquely edits one table cell
-		$scope.editLocation = function(id) {
-			$log.debug(id);
-			$scope.enableEditLocation = true;
-		}
 
 		// Add the search clause to the list of clauses
 		$scope.addSearchClause = function(clause) {

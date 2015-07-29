@@ -215,35 +215,40 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item['monitoring-area']}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o"/></a>
+						<onms-list-edit-in-place item="item" value="item['monitoring-area']" value-type="'text'" on-submit="update(item)">
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'EQ',value:item['monitoring-area']})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'monitoringArea',operator:'NE',value:item['monitoring-area']})"><i class="fa fa-minus-square-o"/></a>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item['geolocation']}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o"/></a>
+						<onms-list-edit-in-place item="item" value="item['geolocation']" value-type="'text'" on-submit="update(item)">
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'EQ',value:item['geolocation']})"><i class="fa fa-plus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'geolocation',operator:'NE',value:item['geolocation']})"><i class="fa fa-minus-square-o"/></a>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item['latitude'] !== null">
-							{{item['latitude']}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o"/></a>
-						</span>
+						<onms-list-edit-in-place item="item" value="item['latitude']" value-type="'number'" on-submit="update(item)">
+							<span ng-show="item['latitude'] !== null">
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'EQ',value:item['latitude']})"><i class="fa fa-plus-square-o"/></a>
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'latitude',operator:'NE',value:item['latitude']})"><i class="fa fa-minus-square-o"/></a>
+							</span>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item['longitude'] !== null">
-							{{item['longitude']}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o"/></a>
-						</span>
+						<onms-list-edit-in-place item="item" value="item['longitude']" value-type="'number'" on-submit="update(item)">
+							<span ng-show="item['longitude'] !== null">
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'EQ',value:item['longitude']})"><i class="fa fa-plus-square-o"/></a>
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'longitude',operator:'NE',value:item['longitude']})"><i class="fa fa-minus-square-o"/></a>
+							</span>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item['priority'] !== null">
-							{{item['priority']}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o"/></a>
-						</span>
+						<onms-list-edit-in-place item="item" value="item['priority']" value-type="'number'" on-submit="update(item)">
+							<span ng-show="item['priority'] !== null">
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'EQ',value:item['priority']})"><i class="fa fa-plus-square-o"/></a>
+								<a style="text-decoration: none;" ng-click="addSearchClause({property:'priority',operator:'NE',value:item['priority']})"><i class="fa fa-minus-square-o"/></a>
+							</span>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-repeat="name in item['polling-package-names']">

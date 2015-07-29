@@ -43,12 +43,12 @@
 	 * OnmsMonitoringLocation REST $resource
 	 */
 	.factory('MonitoringLocations', function($resource, $log, $http, $location) {
-		return $resource(BASE_REST_URL + '/monitoringLocations/:id', { id: '@id' },
+		return $resource(BASE_REST_URL + '/monitoringLocations/:id', {},
 			{
 				'query': { 
 					method: 'GET',
 					isArray: true,
-					// Append a transformation that will unwrap the minion array
+					// Append a transformation that will unwrap the item array
 					transformResponse: appendTransform($http.defaults.transformResponse, function(data, headers, status) {
 						// TODO: Figure out how to handle session timeouts that redirect to 
 						// the login screen
@@ -120,18 +120,20 @@
 		};
 
 		// Save an item by using $resource.$update
-		$scope.$parent.update = function(minion) {
-			var saveMe = MonitoringLocations.get({id: minion.id}, function() {
+		$scope.$parent.update = function(item) {
+			// We have to provide the locationName here because it has a dash in its
+			// name and we can't use dot notation to refer to it as a default param
+			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
 				// Update fields
-				saveMe.label = minion.label;
-				saveMe.location = minion.location;
+				saveMe.monitoringArea = item.monitoringArea;
+				saveMe.geolocation = item.geolocation;
+				saveMe.latitude = item.latitude;
+				saveMe.longitude = item.longitude;
+				saveMe.priority = item.priority;
 
-				saveMe.$update({}, function() {
-					// Reset the editing flags
-					$scope.enableEditLabel = false;
-					$scope.enableEditLocation = false;
-					$scope.enableEditProperties = false;
-
+				// We have to provide the locationName here because it has a dash in its
+				// name and we can't use dot notation to refer to it as a default param
+				saveMe.$update({id: item['location-name']}, function() {
 					// If there's a search in effect, refresh the view
 					if ($scope.query.searchParam !== '') {
 						$scope.refresh();
