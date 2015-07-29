@@ -107,18 +107,6 @@
         <attrib name="TasksCompleted" alias="ONMSCollectTasksCpt"  type="counter"/>
         <attrib name="CollectableServiceCount" alias="ONMSCollectSvcCount" type="gauge"/>
       </mbean>
-      <mbean name="OpenNMS.Capsd" objectname="OpenNMS:Name=Capsd">
-        <attrib name="ActiveSuspectThreads" alias="ActiveSuspecThreads" type="gauge"/>
-        <attrib name="ActiveRescanThreads" alias="ActiveRescanThreads" type="gauge"/>
-        <attrib name="SuspectCompletedTasks" alias="SuspectCompletTasks" type="counter"/>
-        <attrib name="RescanCompletedTasks" alias="RescanCompletTasks" type="counter"/>
-        <attrib name="SuspectTotalTasks" alias="SuspectTotalTasks" type="counter"/>
-        <attrib name="RescanTotalTasks" alias="RescanTotalTasks" type="counter"/>
-        <attrib name="SuspectTaskCompletionRatio" alias="SuspTaskComplRatio" type="gauge"/>
-        <attrib name="RescanTaskCompletionRatio" alias="RescTaskComplRatio" type="gauge"/>
-        <attrib name="SuspectQueueSize" alias="SuspectQueueSize" type="gauge"/>
-        <attrib name="RescanQueueSize" alias="RescanQueueSize" type="gauge"/>
-      </mbean>
       <mbean name="OpenNMS.JettyServer" objectname="OpenNMS:Name=JettyServer">
         <attrib name="HttpsConnectionsTotal" alias="HttpsConnTotal" type="counter"/>
         <attrib name="HttpsConnectionsOpen" alias="HttpsConnOpen" type="gauge"/>
