@@ -209,27 +209,18 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o"/></a>
 					</td>
 					<td class="text-nowrap">
-						<form class="form-inline" ng-submit="update(item)" style="margin: 0;">
-							<!-- Editing input -->
-							<input ng-show="enableEditLabel" type="text" ng-model="item.label" ng-blur="unedit()"/>
-							<!-- Text label -->
-							<span style="line-height:24px;" ng-hide="enableEditLabel" ng-click="editLabel(item.id)">{{item.label}}</span>
-							<a style="text-decoration: none;" ng-click="editLabel(item.id)"><i class="fa fa-edit"/></a>
+						<!-- TODO: Figure out how to handle null/blank label, it should still be editable -->
+						<onms-list-edit-in-place item="item" value="item.label" value-type="'text'" on-submit="update(item)">
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o"/></a>
-						</form>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
-						<!-- TODO: Figure out how to handle null/blank labels, they should still be editable -->
-						<form class="form-inline" ng-submit="update(item)" style="margin: 0;">
-							<!-- Editing input -->
-							<input ng-show="enableEditLocation" type="text" ng-model="item.location" ng-blur="unedit()"/>
-							<!-- Text label -->
-							<span style="line-height:24px;" ng-hide="enableEditLocation" ng-click="editLocation(item.id)">{{item.location}}</span>
-							<a style="text-decoration: none;" ng-click="editLocation(item.id)"><i class="fa fa-edit"/></a>
+						<!-- TODO: Figure out how to handle null/blank location, it should still be editable -->
+						<onms-list-edit-in-place item="item" value="item.location" value-type="'text'" on-submit="update(item)">
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o"/></a>
 							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o"/></a>
-						</form>
+						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}

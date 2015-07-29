@@ -151,6 +151,50 @@ function parseContentRange(contentRange) {
 		});
 	})
 
+	.directive('onmsListEditInPlace', function() {
+		return {
+			controller: function($scope) {
+				$scope.editing = false;
+				$scope.originalValue = angular.copy($scope.value);
+
+				// Start editing the value
+				$scope.edit = function() {
+					$scope.editing = true;
+				}
+
+				// Stop editing the value
+				$scope.unedit = function() {
+					$scope.editing = false;
+				}
+
+				$scope.submit = function() {
+					$scope.onSubmit();
+					// TODO: Handle update failures
+					// Now that we've save a new value, use it as the original value
+					$scope.originalValue = $scope.value;
+					// Switch out of edit mode
+					$scope.unedit();
+				}
+
+				$scope.cancel = function() {
+					// Restore the original value
+					$scope.value = $scope.originalValue;
+					// Switch out of edit mode
+					$scope.unedit();
+				}
+			},
+			// Use an isolated scope
+			scope: {
+				item: '=',
+				value: '=',
+				valueType: '=',
+				onSubmit: '&onSubmit'
+			},
+			templateUrl: 'js/angular-onmsListEditInPlace.html',
+			transclude: true
+		};
+	})
+
 	/**
 	 * Generic list controller
 	 */
