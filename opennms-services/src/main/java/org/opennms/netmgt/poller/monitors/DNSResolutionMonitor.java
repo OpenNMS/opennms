@@ -111,10 +111,10 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
             return PollStatus.unavailable("Unable to resolve host '" + name + "'");
 
         } else  if (ipv4Required && !ipv4Found) {
-            return PollStatus.unavailable("No IPv4 Address result (A record) returned for '" + name + "'");
+            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv6 address (AAAA record) but not an IPv4 address (A record)");
 
         } else if (ipv6Required && !ipv6Found) {
-            return PollStatus.unavailable("No IPv6 Address result (AAAA record) returned for '" + name + "'");
+            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv4 address (A record) but not an IPv6 address (AAAA record)");
 
         } else {
             return PollStatus.available((double) (end - start));
