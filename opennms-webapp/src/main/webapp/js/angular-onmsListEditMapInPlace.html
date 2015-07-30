@@ -1,7 +1,7 @@
 <!-- Show all of the current values -->
-<span ng-repeat="value in values">
-	<button class="btn btn-xs btn-default" ng-click="confirmAndRemove(values, value)" style="margin-bottom:3px;margin-right:3px;">
-		{{value}}&nbsp;<i class="fa fa-close"/>
+<span ng-repeat="(key,value) in values">
+	<button class="btn btn-xs btn-default" ng-click="confirmAndRemove(values, key)" style="margin-bottom:3px;margin-right:3px;">
+		<b>{{key}}:</b> {{value}}&nbsp;<i class="fa fa-close"/>
 	</button>
 </span>
 
@@ -11,8 +11,9 @@
 <!-- TODO: Add the ability to support select controls -->
 <!-- Input for new item -->
 <span ng-show="editing" class="text-nowrap">
+	<input type="{{keyType}}" ng-keyup="onKeyup($event)" ng-model="newKey"/>
 	<input type="{{valueType}}" ng-keyup="onKeyup($event)" ng-model="newValue"/>
-	<a style="text-decoration: none;" ng-click="add(values, newValue)"><i class="fa fa-plus"/></a>
+	<a style="text-decoration: none;" ng-click="add(values, newKey, newValue)"><i class="fa fa-plus"/></a>
 	<a style="text-decoration: none;" ng-click="unedit()"><i class="fa fa-close"/></a>
 </span>
 

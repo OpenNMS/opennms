@@ -124,6 +124,7 @@
 			var saveMe = Minions.get({id: item.id}, function() {
 				saveMe.label = item.label;
 				saveMe.location = item.location;
+				saveMe.properties = item.properties;
 
 				// TODO
 				//saveMe.status = item.status;

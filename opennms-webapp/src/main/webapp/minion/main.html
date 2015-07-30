@@ -241,12 +241,8 @@
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
 						</span>
 					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-repeat="(key,value) in item.properties">
-							<button class="btn btn-xs btn-default">
-								<b>{{key}}:</b> {{value}}&nbsp;<i class="fa fa-close"></i>
-							</button>
-						</span>
+					<td>
+						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
 					</td>
 				</tr>
 			</tbody>

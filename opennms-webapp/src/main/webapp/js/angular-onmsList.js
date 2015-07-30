@@ -167,6 +167,13 @@ function parseContentRange(contentRange) {
 					$scope.editing = false;
 				}
 
+				$scope.onKeyup = function($event) {
+					// If the user types ESC, then abort the edit
+					if($event.keyCode === 27) {
+						$scope.cancel();
+					}
+				}
+
 				$scope.submit = function() {
 					$scope.onSubmit();
 					// TODO: Handle update failures
@@ -212,10 +219,12 @@ function parseContentRange(contentRange) {
 					$scope.editing = false;
 				}
 
-				$scope.onKeyup = function($event) {
+				$scope.onKeyup = function(event) {
+					switch(event.keyCode) {
+					// If the user types Enter, then submit the edit
+					case 13: $scope.add($scope.values, $scope.newValue); break;
 					// If the user types ESC, then abort the edit
-					if($event.keyCode === 27) {
-						$scope.unedit();
+					case 27: $scope.unedit(); break;
 					}
 				}
 
@@ -243,6 +252,61 @@ function parseContentRange(contentRange) {
 				onEdit: '&onEdit'
 			},
 			templateUrl: 'js/angular-onmsListEditListInPlace.html',
+			transclude: true
+		};
+	})
+
+	.directive('onmsListEditMapInPlace', function($window) {
+		return {
+			controller: function($scope) {
+				$scope.editing = false;
+
+				// Start editing the value
+				$scope.edit = function() {
+					$scope.editing = true;
+				}
+
+				// Stop editing the value
+				$scope.unedit = function() {
+					// Undo any edits
+					$scope.newKey = null;
+					$scope.newValue = null;
+					$scope.editing = false;
+				}
+
+				$scope.onKeyup = function(event) {
+					switch(event.keyCode) {
+					// If the user types Enter, then submit the edit
+					case 13: $scope.add($scope.values, $scope.newKey, $scope.newValue); break;
+					// If the user types ESC, then abort the edit
+					case 27: $scope.unedit(); break;
+					}
+				}
+
+				$scope.confirmAndRemove = function(items, key) {
+					// Splice the value out of the array
+					if ($window.confirm('Are you sure?')) {
+						delete items[key];
+						$scope.onEdit();
+					}
+				}
+
+				$scope.add = function(items, key, value) {
+					items[key] = value;
+					// TODO: Handle update failures
+					$scope.onEdit();
+					// Switch out of edit mode
+					$scope.unedit();
+				}
+			},
+			// Use an isolated scope
+			scope: {
+				values: '=',
+				keyType: '=',
+				valueType: '=',
+				onEdit: '&onEdit'
+			},
+			templateUrl: 'js/angular-onmsListEditMapInPlace.html',
 			transclude: true
 		};
 	})
