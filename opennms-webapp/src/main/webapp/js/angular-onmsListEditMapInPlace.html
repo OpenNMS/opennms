@@ -6,15 +6,17 @@
 </span>
 
 <!-- Edit button -->
-<a style="text-decoration: none;" ng-click="edit()" ng-hide="editing"><i class="fa fa-edit"/></a>
+<span style="line-height:24px;" ng-hide="editing">
+	<a style="text-decoration: none;" ng-click="edit()" <i class="fa fa-edit fa-lg"/></a>&nbsp;
+</span>
 
 <!-- TODO: Add the ability to support select controls -->
 <!-- Input for new item -->
 <span ng-show="editing" class="text-nowrap">
 	<input type="{{keyType}}" ng-keyup="onKeyup($event)" ng-model="newKey"/>
 	<input type="{{valueType}}" ng-keyup="onKeyup($event)" ng-model="newValue"/>
-	<a style="text-decoration: none;" ng-click="add(values, newKey, newValue)"><i class="fa fa-plus"/></a>
-	<a style="text-decoration: none;" ng-click="unedit()"><i class="fa fa-close"/></a>
+	<a style="text-decoration: none;" ng-click="add(values, newKey, newValue)"><i class="fa fa-plus fa-lg"/></a>
+	<a style="text-decoration: none;" ng-click="unedit()"><i class="fa fa-close fa-lg"/></a>
 </span>
 
 <!-- Transclude any content inside the tag -->

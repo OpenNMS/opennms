@@ -205,40 +205,40 @@
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.id}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap">
 						<!-- TODO: Figure out how to handle null/blank label, it should still be editable -->
 						<onms-list-edit-in-place item="item" value="item.label" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'EQ',value:item.label})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'label',operator:'NE',value:item.label})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap">
 						<!-- TODO: Figure out how to handle null/blank location, it should still be editable -->
 						<onms-list-edit-in-place item="item" value="item.location" value-type="'text'" on-submit="update(item)">
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</onms-list-edit-in-place>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item.type}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'EQ',value:item.type})"><i class="fa fa-plus-square-o fa-lg"/></a>
+						<a style="text-decoration: none;" ng-click="addSearchClause({property:'type',operator:'NE',value:item.type})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.status !== null">
 							{{item.status}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'EQ',value:item.status})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'status',operator:'NE',value:item.status})"><i class="fa fa-minus-square-o fa-lg"/></a>
 						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.date !== null">
 							{{item.date | date:'MMM d, yyyy h:mm:ss a'}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'GE',value:item.date})"><i class="fa fa-toggle-left fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'lastUpdated',operator:'LE',value:item.date})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
 					<td>
