@@ -195,6 +195,58 @@ function parseContentRange(contentRange) {
 		};
 	})
 
+	.directive('onmsListEditListInPlace', function($window) {
+		return {
+			controller: function($scope) {
+				$scope.editing = false;
+
+				// Start editing the value
+				$scope.edit = function() {
+					$scope.editing = true;
+				}
+
+				// Stop editing the value
+				$scope.unedit = function() {
+					// Undo any edits
+					$scope.newValue = null;
+					$scope.editing = false;
+				}
+
+				$scope.onKeyup = function($event) {
+					// If the user types ESC, then abort the edit
+					if($event.keyCode === 27) {
+						$scope.unedit();
+					}
+				}
+
+				$scope.confirmAndRemove = function(items, item) {
+					// Splice the value out of the array
+					if ($window.confirm('Are you sure?')) {
+						items.splice(items.indexOf(item), 1);
+						$scope.onEdit();
+					}
+				}
+
+				$scope.add = function(items, item) {
+					items.push(item);
+					items.sort();
+					// TODO: Handle update failures
+					$scope.onEdit();
+					// Switch out of edit mode
+					$scope.unedit();
+				}
+			},
+			// Use an isolated scope
+			scope: {
+				values: '=',
+				valueType: '=',
+				onEdit: '&onEdit'
+			},
+			templateUrl: 'js/angular-onmsListEditListInPlace.html',
+			transclude: true
+		};
+	})
+
 	/**
 	 * Generic list controller
 	 */

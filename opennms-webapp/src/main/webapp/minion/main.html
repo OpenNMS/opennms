@@ -243,9 +243,9 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-repeat="(key,value) in item.properties">
-						<span class="label label-default">
-							{{key}}: {{value}}
-						</span>&nbsp;
+							<button class="btn btn-xs btn-default">
+								<b>{{key}}:</b> {{value}}&nbsp;<i class="fa fa-close"></i>
+							</button>
 						</span>
 					</td>
 				</tr>

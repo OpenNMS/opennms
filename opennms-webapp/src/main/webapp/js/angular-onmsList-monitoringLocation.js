@@ -125,11 +125,13 @@
 			// name and we can't use dot notation to refer to it as a default param
 			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
 				// Update fields
-				saveMe.monitoringArea = item.monitoringArea;
+				saveMe['monitoring-area'] = item['monitoring-area'];
 				saveMe.geolocation = item.geolocation;
 				saveMe.latitude = item.latitude;
 				saveMe.longitude = item.longitude;
 				saveMe.priority = item.priority;
+				saveMe['polling-package-names'] = item['polling-package-names'];
+				saveMe['collection-package-names'] = item['collection-package-names'];
 
 				// We have to provide the locationName here because it has a dash in its
 				// name and we can't use dot notation to refer to it as a default param

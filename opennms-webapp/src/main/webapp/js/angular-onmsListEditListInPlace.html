@@ -1,0 +1,28 @@
+<!-- Show all of the current values -->
+<span ng-repeat="value in values">
+	<button class="btn btn-xs btn-default" ng-click="confirmAndRemove(values, value)" style="margin-bottom:6px;margin-right:3px;">
+		{{value}}&nbsp;<i class="fa fa-close"/>
+	</button>
+</span>
+
+<!--
+<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'">
+	<option value="id">ID</option>
+	<option value="label">Label</option>
+	<option value="location">Location</option>
+	<option value="status">Status</option>
+	<option value="lastUpdated">Last Updated</option>
+</select>
+-->
+<!-- Edit button -->
+<a style="text-decoration: none;" ng-click="edit()" ng-hide="editing"><i class="fa fa-edit"/></a>
+
+<!-- Input for new item -->
+<form ng-show="editing" class="form-inline text-nowrap" ng-submit="add(values, newValue)" style="display:inline; margin: 0;">
+	<input type="{{valueType}}" ng-keyup="onKeyup($event)" ng-model="newValue"/>
+	<a style="text-decoration: none;" ng-click="add(values, newValue)"><i class="fa fa-plus"/></a>
+	<a style="text-decoration: none;" ng-click="unedit()"><i class="fa fa-close"/></a>
+</form>
+
+<!-- Transclude any content inside the tag -->
+<span ng-transclude/>

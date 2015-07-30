@@ -250,19 +250,11 @@
 							</span>
 						</onms-list-edit-in-place>
 					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-repeat="name in item['polling-package-names']">
-							<span class="label label-default">
-								{{name}}
-							</span>&nbsp;
-						</span>
+					<td>
+						<onms-list-edit-list-in-place values="item['polling-package-names']" value-type="'text'" on-edit="update(item)"/>
 					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-repeat="name in item['collection-package-names']">
-							<span class="label label-default">
-								{{name}}
-							</span>&nbsp;
-						</span>
+					<td>
+						<onms-list-edit-list-in-place values="item['collection-package-names']" value-type="'text'" on-edit="update(item)"/>
 					</td>
 				</tr>
 			</tbody>
