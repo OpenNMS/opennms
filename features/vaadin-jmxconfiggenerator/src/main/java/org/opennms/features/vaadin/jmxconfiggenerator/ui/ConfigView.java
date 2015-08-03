@@ -149,12 +149,6 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			((AbstractComponent) skipDefaultVMField).setDescription("Set to include/exclude default JavaVM MBeans");
 			addComponent(skipDefaultVMField);
 
-			final Field<?> runWritableMbeansField = configFieldGroup.buildAndBind(MetaConfigModel.RUN_WRITABLE_MBEANS);
-			runWritableMbeansField.setCaption("Run writable MBeans");
-			((AbstractComponent) runWritableMbeansField)
-					.setDescription("By default writable MBeans are not included, even if they are readable. Enable to exclude/include writable MBeans as well.");
-			addComponent(runWritableMbeansField);
-
 			final Field<?> jmxMpField = configFieldGroup.buildAndBind(MetaConfigModel.JMXMP);
 			jmxMpField.setCaption("JMXMP");
 			((AbstractComponent) jmxMpField).setDescription("Use JMXMP instead of JMX-RMI");

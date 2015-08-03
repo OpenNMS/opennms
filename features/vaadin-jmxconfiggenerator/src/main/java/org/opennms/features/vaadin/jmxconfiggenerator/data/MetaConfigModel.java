@@ -45,5 +45,4 @@ public interface MetaConfigModel {
 	String AUTHENTICATE = "authenticate";
 	String USER = "user";
 	String SKIP_DEFAULT_VM = "skipDefaultVM";
-	String RUN_WRITABLE_MBEANS = "runWritableMBeans";
 }
