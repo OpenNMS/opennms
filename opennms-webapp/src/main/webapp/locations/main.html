@@ -39,6 +39,46 @@
 		</div>
 	</div>
 
+	<!-- Modal form for adding a new location -->
+	<div id="addLocationModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<!-- TODO: Add client-side validation -->
+					<h3>Add a new Monitoring Location</h3>
+					<form onSubmit="$('#addLocationModal').modal('hide')" ng-submit="update(newItem)">
+						<div class="form-group">
+							<label for="locationName">Location Name</label>
+							<input class="form-control" type="text" ng-model="newItem['location-name']"/>
+						</div>
+						<div class="form-group">
+							<label for="monitoringArea">Monitoring Area</label>
+							<input class="form-control" type="text" ng-model="newItem['monitoring-area']"/>
+						</div>
+						<div class="form-group">
+							<label for="geolocation">Geolocation</label>
+							<input class="form-control" type="text" ng-model="newItem.geolocation"/>
+						</div>
+						<div class="form-group">
+							<label for="latitude">Latitude</label>
+							<input class="form-control" type="number" ng-model="newItem.latitude"/>
+						</div>
+						<div class="form-group">
+							<label for="longitude">Longitude</label>
+							<input class="form-control" type="number" ng-model="newItem.longitude"/>
+						</div>
+						<div class="form-group">
+							<label for="priority">Priority</label>
+							<input class="form-control" type="number" ng-model="newItem.priority"/>
+						</div>
+						<button class="btn btn-default" type="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Modal help window -->
 	<div id="helpModal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
@@ -260,5 +300,6 @@
 			</tbody>
 		</table>
 	</div>
+	<a class="btn btn-default" onClick="$('#addLocationModal').modal()">Add a new location</a>
 </div>
 </div>

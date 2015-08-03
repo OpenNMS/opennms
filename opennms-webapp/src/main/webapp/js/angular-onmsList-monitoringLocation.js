@@ -79,6 +79,8 @@
 		$scope.$parent.defaults.orderBy = 'locationName';
 		$scope.$parent.query.orderBy = 'locationName';
 
+		$scope.newItem = {};
+
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
 			// Fetch all of the items
@@ -121,6 +123,12 @@
 
 		// Save an item by using $resource.$update
 		$scope.$parent.update = function(item) {
+			// Check to make sure that the item has an ID
+			if (item['location-name'] === null || item['location-name'] === '') {
+				// TODO: Throw a validation error
+				return;
+			}
+
 			// We have to provide the locationName here because it has a dash in its
 			// name and we can't use dot notation to refer to it as a default param
 			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
@@ -142,7 +150,26 @@
 					}
 				});
 			}, function(response) {
-				$log.debug(response);
+				if (response.status === 404) {
+					// Create a new $resource and assign properties on it
+					var saveMe = new MonitoringLocations({});
+					saveMe['location-name'] = item['location-name'];
+					saveMe['monitoring-area'] = item['monitoring-area'];
+					saveMe.geolocation = item.geolocation;
+					saveMe.latitude = item.latitude;
+					saveMe.longitude = item.longitude;
+					saveMe.priority = item.priority;
+					saveMe['polling-package-names'] = item['polling-package-names'];
+					saveMe['collection-package-names'] = item['collection-package-names'];
+
+					// Insert the object instead of updating it
+					saveMe.$save({}, function() {
+						$scope.refresh();
+						$scope.newItem = {};
+						// Return true to indicate successful submission
+						return true;
+					});
+				}
 			});
 
 		};
