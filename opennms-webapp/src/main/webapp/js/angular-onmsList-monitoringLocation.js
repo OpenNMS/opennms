@@ -174,6 +174,26 @@
 
 		};
 
+		$scope.$parent.deleteItem = function(item) {
+			// We have to provide the locationName here because it has a dash in its
+			// name and we can't use dot notation to refer to it as a default param
+			var saveMe = MonitoringLocations.get({id: item['location-name']}, function() {
+				if ($window.confirm('Are you sure you want to remove location \"' + item['location-name'] + '\"?')) {
+					// We have to provide the locationName here because it has a dash in its
+					// name and we can't use dot notation to refer to it as a default param
+					saveMe.$delete({id: item['location-name']}, function() {
+						$scope.refresh();
+					});
+				}
+			}, function(response) {
+				if (response.status === 404) {
+					// We didn't find the item so it can't be deleted
+					// Might as well call refresh()
+					$scope.refresh();
+				}
+			});
+		};
+
 		// Refresh the item list;
 		$scope.$parent.refresh();
 

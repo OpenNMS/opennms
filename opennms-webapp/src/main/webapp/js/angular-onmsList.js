@@ -234,7 +234,7 @@ function parseContentRange(contentRange) {
 
 				$scope.confirmAndRemove = function(items, item) {
 					// Splice the value out of the array
-					if ($window.confirm('Are you sure?')) {
+					if ($window.confirm('Are you sure you want to remove \"' + item + '\"?')) {
 						items.splice(items.indexOf(item), 1);
 						$scope.onEdit();
 					}
@@ -289,7 +289,7 @@ function parseContentRange(contentRange) {
 
 				$scope.confirmAndRemove = function(items, key) {
 					// Splice the value out of the array
-					if ($window.confirm('Are you sure?')) {
+					if ($window.confirm('Are you sure you want to remove \"' + key + '\"?')) {
 						delete items[key];
 						$scope.onEdit();
 					}
@@ -479,6 +479,11 @@ function parseContentRange(contentRange) {
 		// Override this to implement updates to an object
 		$scope.update = function() {
 			$log.warn("You need to override $scope.$parent.update() in your controller");
+		}
+
+		// Override this to implement deletions
+		$scope.deleteItem = function(item) {
+			$log.warn("You need to override $scope.$parent.deleteItem() in your controller");
 		}
 
 		$log.debug('ListCtrl initialized');

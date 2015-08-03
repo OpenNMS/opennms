@@ -251,6 +251,7 @@
 				<tr ng-repeat="item in items">
 					<td class="text-nowrap" style="line-height:24px;">
 						{{item['location-name']}}
+						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'EQ',value:item['location-name']})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'locationName',operator:'NE',value:item['location-name']})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
