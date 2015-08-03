@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 
 public class OpenNMSUserDetailsService implements UserDetailsService, InitializingBean {
 	private SpringSecurityUserDao m_userDao;
+	private boolean m_trimRealm = false;
 	
         @Override
 	public void afterPropertiesSet() throws Exception {
@@ -45,7 +46,13 @@ public class OpenNMSUserDetailsService implements UserDetailsService, Initializi
 
 	/** {@inheritDoc} */
         @Override
-	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException, DataAccessException {
+	public UserDetails loadUserByUsername(final String rawUsername) throws UsernameNotFoundException, DataAccessException {
+            final String username;
+            if (m_trimRealm && rawUsername.contains("@")) {
+                username = rawUsername.substring(0, rawUsername.indexOf("@"));
+            } else {
+                username = rawUsername;
+            }
 	    final UserDetails userDetails = m_userDao.getByUsername(username);
 		
 		if (userDetails == null) {
@@ -62,5 +69,21 @@ public class OpenNMSUserDetailsService implements UserDetailsService, Initializi
 
 	public SpringSecurityUserDao getUserDao() {
 		return m_userDao;
+	}
+
+	/**
+	 * 
+	 * @param trimRealm Defaults to false. If set to true, trim the realm
+	 * portion (e.g. @EXAMPLE.ORG) from the authenticated user principal
+	 * name (e.g. user@EXAMPLE.ORG). Useful when authenticating against a
+	 * Kerberos realm or possibly other realm- / domain-aware technologies
+	 * such as OAUTH.
+	 */
+	public void setTrimRealm(boolean trimRealm) {
+	    m_trimRealm = trimRealm;
+	}
+
+	public boolean getTrimRealm() {
+	    return m_trimRealm;
 	}
 }
