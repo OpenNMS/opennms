@@ -141,6 +141,19 @@ function parseContentRange(contentRange) {
 			// If no match, return the input
 			return input;
 		}
+	})
+	.filter('isNotEmpty', function() {
+		return function(input) {
+			if (
+				typeof input !== 'undefined' &&
+				input !== null &&
+				input.trim() !== ''
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	});
 
 	// List module

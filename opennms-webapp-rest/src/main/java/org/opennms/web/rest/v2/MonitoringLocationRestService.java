@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("monitoringLocations")
 @Transactional
-public class MonitoringLocationsService extends AbstractDaoRestService<LocationDef,String> {
+public class MonitoringLocationRestService extends AbstractDaoRestService<LocationDef,String> {
 
 	@Autowired
 	private MonitoringLocationDao m_dao;
