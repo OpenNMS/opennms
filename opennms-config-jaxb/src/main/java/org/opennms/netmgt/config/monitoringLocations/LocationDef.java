@@ -41,7 +41,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -89,13 +88,6 @@ public class LocationDef implements Serializable {
      */
     @XmlAttribute(name="monitoring-area")
     private String m_monitoringArea;
-
-    /**
-     * The provisioning foreign sources associated with this monitoring location.
-     */
-    @XmlElementWrapper(name="foreign-source-names")
-    @XmlElement(name="foreign-source-name")
-    private List<String> m_foreignSourceNames;
 
     /**
      * The polling packages associated with this monitoring location.
@@ -151,13 +143,12 @@ public class LocationDef implements Serializable {
      * @param pollingPackageName
      */
     public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, null, 100L);
+        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
     }
 
-    public LocationDef(final String locationName, final String monitoringArea, final String[] foreignSourceNames, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
+    public LocationDef(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_foreignSourceNames = (foreignSourceNames == null ? null : Arrays.asList(foreignSourceNames));
         m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
         m_collectionPackageNames = (collectionPackageNames == null ? null : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
@@ -184,15 +175,6 @@ public class LocationDef implements Serializable {
 
     public void setMonitoringArea(final String monitoringArea) {
         m_monitoringArea = monitoringArea;
-    }
-
-    @Transient
-    public List<String> getForeignSourceNames() {
-        return m_foreignSourceNames;
-    }
-
-    public void setForeignSourceNames(final List<String> foreignSourceNames) {
-        m_foreignSourceNames = foreignSourceNames;
     }
 
     @ElementCollection
@@ -289,7 +271,6 @@ public class LocationDef implements Serializable {
         result = prime * result + ((m_geolocation == null) ? 0 : m_geolocation.hashCode());
         result = prime * result + ((m_locationName == null) ? 0 : m_locationName.hashCode());
         result = prime * result + ((m_monitoringArea == null) ? 0 : m_monitoringArea.hashCode());
-        result = prime * result + ((m_foreignSourceNames == null || m_foreignSourceNames.size() == 0) ? 0 : m_foreignSourceNames.hashCode());
         result = prime * result + ((m_pollingPackageNames == null || m_pollingPackageNames.size() == 0) ? 0 : m_pollingPackageNames.hashCode());
         result = prime * result + ((m_collectionPackageNames == null || m_collectionPackageNames.size() == 0) ? 0 : m_collectionPackageNames.hashCode());
         result = prime * result + ((m_priority == null) ? 0 : m_priority.hashCode());
@@ -315,7 +296,6 @@ public class LocationDef implements Serializable {
             .append(getGeolocation(), other.getGeolocation())
             .append(getLocationName(), other.getLocationName())
             .append(getMonitoringArea(), other.getMonitoringArea())
-            .append(getForeignSourceNames(), other.getForeignSourceNames())
             .append(getPollingPackageNames(), other.getPollingPackageNames())
             .append(getCollectionPackageNames(), other.getCollectionPackageNames())
             .append(getPriority(), other.getPriority())
@@ -327,7 +307,6 @@ public class LocationDef implements Serializable {
     public String toString() {
         return "LocationDef [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
-                ", foreign-source-names=" + m_foreignSourceNames +
                 ", polling-package-names=" + m_pollingPackageNames +
                 ", collection-package-names=" + m_collectionPackageNames +
                 ", geolocation=" + m_geolocation +

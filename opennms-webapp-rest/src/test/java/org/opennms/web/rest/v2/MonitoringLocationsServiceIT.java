@@ -94,6 +94,8 @@ public class MonitoringLocationsServiceIT extends AbstractSpringJerseyRestTestCa
 
         LOG.warn(sendRequest(GET, "/monitoringLocations/count", Collections.emptyMap(), 200));
 
+        LOG.warn(sendRequest(GET, "/monitoringLocations", Collections.emptyMap(), 200));
+
         LOG.warn(sendRequest(GET, "/monitoringLocations", parseParamData("_s=monitoringArea==2"), 200));
 
     }
