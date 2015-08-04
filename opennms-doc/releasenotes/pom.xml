@@ -18,6 +18,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <skipAssembly>false</skipAssembly>
+                    <tarLongFileMode>gnu</tarLongFileMode>
                 </configuration>
             </plugin>
         </plugins>
