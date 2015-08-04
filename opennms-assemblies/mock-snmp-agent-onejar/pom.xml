@@ -23,6 +23,7 @@
               <mainClass>org.opennms.mock.snmp.MockSnmpAgent</mainClass>
             </manifest>
           </archive>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

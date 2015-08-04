@@ -25,6 +25,7 @@
           <descriptors>
             <descriptor>src/assembly/liquibase.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
