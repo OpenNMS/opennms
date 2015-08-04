@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
@@ -65,8 +66,6 @@ import com.google.common.collect.Maps;
 public class FilesystemResourceStorageDao implements ResourceStorageDao, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemResourceStorageDao.class);
-
-    private static final int INFINITE_DEPTH = -1;
 
     @Autowired
     private RrdStrategy<?, ?> m_rrdStrategy;
@@ -82,24 +81,22 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
     }
 
     @Override
-    public boolean exists(ResourcePath path) {
-        return exists(path, INFINITE_DEPTH);
-    }
-
-    @Override
     public boolean exists(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
         return exists(toFile(path).toPath(), depth);
     }
 
     @Override
-    public Set<ResourcePath> children(ResourcePath path) {
-        return children(path, INFINITE_DEPTH);
+    public boolean existsWithin(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
+        return existsWithin(toFile(path).toPath(), depth);
     }
 
     @Override
     public Set<ResourcePath> children(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth > 0, "depth must be positive");
         final File root = toFile(path);
-        if (depth == 0 || !root.isDirectory()) {
+        if (!root.isDirectory()) {
             return Collections.emptySet();
         }
 
@@ -159,24 +156,28 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
             return false;
         }
 
-        if (depth < 0) {
-            try (Stream<Path> stream = Files.walk(root)) {
+        try (Stream<Path> stream = Files.list(root)) {
+            if (depth == 0) {
                 return stream.anyMatch(isRrdFile);
-            } catch (IOException e) {
-                LOG.error("Failed to walk {}. Marking path as non-existent.", root, e);
-                return false;
+            } else {
+                return stream.anyMatch(p -> exists(p, depth-1));
             }
-        } else {
-            try (Stream<Path> stream = Files.list(root)) {
-                if (depth == 0) {
-                    return stream.anyMatch(isRrdFile);
-                } else {
-                    return stream.anyMatch(p -> exists(p, depth-1));
-                }
-            } catch (IOException e) {
-                LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
-                return false;
-            }
+        } catch (IOException e) {
+            LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
+            return false;
+        }
+    }
+
+    private boolean existsWithin(Path root, int depth) {
+        if (depth < 0 || !root.toFile().isDirectory()) {
+            return false;
+        }
+
+        try (Stream<Path> stream = Files.list(root)) {
+            return stream.anyMatch(p -> (isRrdFile.test(p) || existsWithin(p, depth-1)));
+        } catch (IOException e) {
+            LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
+            return false;
         }
     }
 
@@ -222,5 +223,4 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
             return file.isFile() && file.getName().endsWith(RRD_EXTENSION);
         }
     };
-
 }

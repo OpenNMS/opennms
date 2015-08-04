@@ -28,6 +28,14 @@
 
 package org.opennms.web.tags;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsFilterFavorite;
 import org.opennms.web.filter.Filter;
@@ -35,13 +43,6 @@ import org.opennms.web.filter.NormalizedAcknowledgeType;
 import org.opennms.web.filter.NormalizedQueryParameters;
 import org.opennms.web.filter.QueryParameters;
 import org.opennms.web.tags.filters.FilterCallback;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Renders the filter area for a given set of filters.
@@ -52,9 +53,7 @@ public class FiltersTag extends TagSupport {
 
     private static final String TEMPLATE = "{LEADING}{FILTERS}";
 
-    private static final String FILTER_TEMPLATE = "<span style=\"white-space:nowrap;\"><span class=\"label label-default\">{FILTER_DESCRIPTION}</span> {REMOVE_FILTER_LINK}</span> ";
-
-    private static final String REMOVE_FILTER_TEMPLATE = "<a href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\"><i class=\"fa fa-minus-square-o\"></i></a>";
+    private static final String FILTER_TEMPLATE = "<a class=\"btn btn-primary\" style=\"white-space:nowrap;\" href=\"{REMOVE_LINK}\" title=\"{REMOVE_LINK_TITLE}\">{FILTER_DESCRIPTION}&nbsp;&nbsp;<i class=\"fa fa-close\"></i></a>&nbsp;&nbsp;";
 
     private String showRemoveLink;
 
@@ -121,7 +120,9 @@ public class FiltersTag extends TagSupport {
             params.getFilters().remove(eachFilter);
             filterBuffer.append(FILTER_TEMPLATE
                     .replaceAll("\\{FILTER_DESCRIPTION\\}", WebSecurityUtils.sanitizeString(eachFilter.getTextDescription()))
-                    .replaceAll("\\{REMOVE_FILTER_LINK\\}", getRemoveLink("Remove filter", params)));
+                    .replaceAll("\\{REMOVE_LINK\\}", isShowRemoveLink() ? filterCallback.createLink(getUrlBase(), params, favorite) : "")
+                    .replaceAll("\\{REMOVE_LINK_TITLE\\}", isShowRemoveLink() ? "Remove filter" : "")
+            );
         }
 
         out(TEMPLATE
@@ -160,15 +161,6 @@ public class FiltersTag extends TagSupport {
         return false;
     }
 
-    private String getRemoveLink(final String removeLinkTitle, final QueryParameters params) {
-        if (isShowRemoveLink()) {
-            return REMOVE_FILTER_TEMPLATE
-                    .replaceAll("\\{REMOVE_LINK\\}", filterCallback.createLink(getUrlBase(), params, favorite))
-                    .replaceAll("\\{REMOVE_LINK_TITLE\\}", removeLinkTitle);
-        }
-        return "";
-    }
-
     private String getAcknowledgeFilterPrefix() {
         return acknowledgeFilterPrefix != null ? acknowledgeFilterPrefix : "";
     }
@@ -185,12 +177,14 @@ public class FiltersTag extends TagSupport {
                 params.setAckType(NormalizedAcknowledgeType.UNACKNOWLEDGED);
                 leadingString.append(FILTER_TEMPLATE
                         .replaceAll("\\{FILTER_DESCRIPTION\\}", getAcknowledgeFilterPrefix() + " acknowledged")
-                        .replaceAll("\\{REMOVE_FILTER_LINK\\}", getRemoveLink("Show outstanding " + getAcknowledgeFilterSuffix(), params)));
+                        .replaceAll("\\{REMOVE_LINK\\}", isShowRemoveLink() ? filterCallback.createLink(getUrlBase(), params, favorite) : "")
+                        .replaceAll("\\{REMOVE_LINK_TITLE\\}", isShowRemoveLink() ? "Show outstanding " + getAcknowledgeFilterSuffix() : ""));
             } else if (isUnacknowledgeType()) {
                 params.setAckType(NormalizedAcknowledgeType.ACKNOWLEDGED);
                 leadingString.append(FILTER_TEMPLATE
                         .replaceAll("\\{FILTER_DESCRIPTION\\}", getAcknowledgeFilterPrefix() + " outstanding")
-                        .replaceAll("\\{REMOVE_FILTER_LINK\\}", getRemoveLink("Show acknowledged " + getAcknowledgeFilterSuffix(), params)));
+                        .replaceAll("\\{REMOVE_LINK\\}", isShowRemoveLink() ? filterCallback.createLink(getUrlBase(), params, favorite) : "")
+                        .replaceAll("\\{REMOVE_LINK_TITLE\\}", isShowRemoveLink() ? "Show acknowledged " + getAcknowledgeFilterSuffix() : ""));
             }
         }
         return leadingString.toString();

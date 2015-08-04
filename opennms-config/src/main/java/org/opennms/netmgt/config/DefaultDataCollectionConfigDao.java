@@ -45,8 +45,10 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
+import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -85,6 +87,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         final DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
         resourceTypes.clear();
 
+        final Map<String,DatacollectionGroup> externalGroupMap = parser.getExternalGroupMap();
+
         // Create a special collection to hold all resource types, because they should be defined only once.
         final SnmpCollection resourceTypeCollection = new SnmpCollection();
         resourceTypeCollection.setName("__resource_type_collection");
@@ -99,12 +103,17 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             }
             // Remove local resource types
             collection.setResourceTypes(new ArrayList<ResourceType>());
-        }
 
-        // Save external Resource Types
-        for (final ResourceType rt : parser.getAllResourceTypes()) {
-            resourceTypeCollection.addResourceType(rt);
-            resourceTypes.put(rt.getName(), rt);
+            // Save external Resource Types
+            for (IncludeCollection include : collection.getIncludeCollections()) {
+                if (include.getDataCollectionGroup() != null) {
+                    DatacollectionGroup group = externalGroupMap.get(include.getDataCollectionGroup());
+                    for (final ResourceType rt : group.getResourceTypes()) {
+                        resourceTypeCollection.addResourceType(rt);
+                        resourceTypes.put(rt.getName(), rt);
+                    }
+                }
+            }
         }
 
         resourceTypeCollection.setGroups(new Groups());

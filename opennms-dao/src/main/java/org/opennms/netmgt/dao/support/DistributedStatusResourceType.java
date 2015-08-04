@@ -125,7 +125,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
             final OnmsIpInterface ipInterface = status.getIpInterface();
             String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
 
-            if (m_resourceStorageDao.exists(getRelativeInterfacePath(id, ipAddr))) {
+            if (m_resourceStorageDao.exists(getRelativeInterfacePath(id, ipAddr), 0)) {
                 resources.add(createResource(definitionName, id, ipAddr));
             }
         }

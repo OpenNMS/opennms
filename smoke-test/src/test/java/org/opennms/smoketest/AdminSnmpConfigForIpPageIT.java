@@ -51,7 +51,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
 
     private void gotoPage() {
         adminPage();
-        findElementByLink("Configure SNMP Community Names by IP").click();
+        findElementByLink("Configure SNMP Community Names by IP Address").click();
     }
 
     /**

@@ -337,6 +337,7 @@
             <descriptor>src/assembly/meta-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

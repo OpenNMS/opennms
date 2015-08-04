@@ -19,6 +19,7 @@
         <include-collection dataCollectionGroup="Asterisk"/>
         <include-collection dataCollectionGroup="Bluecat"/>
         <include-collection dataCollectionGroup="Bluecoat"/>
+        <include-collection dataCollectionGroup="Bridgewave"/>
         <include-collection dataCollectionGroup="Brocade"/>
         <include-collection dataCollectionGroup="Checkpoint"/>
         <include-collection dataCollectionGroup="Ceragon"/>
@@ -63,9 +64,12 @@
         <include-collection dataCollectionGroup="pfSense"/>
         <include-collection dataCollectionGroup="Powerware"/>
         <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
+        <include-collection dataCollectionGroup="Printers"/>
         <include-collection dataCollectionGroup="Riverbed"/>
+        <include-collection dataCollectionGroup="Routers"/>
         <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
         <include-collection dataCollectionGroup="ServerTech"/>
+        <include-collection dataCollectionGroup="SNMP-Informant"/>
         <include-collection dataCollectionGroup="SofaWare"/>
         <include-collection dataCollectionGroup="Sonicwall"/>
         <include-collection dataCollectionGroup="SUN Microsystems"/>
