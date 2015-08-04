@@ -149,6 +149,11 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			((AbstractComponent) skipDefaultVMField).setDescription("Set to include/exclude default JavaVM MBeans");
 			addComponent(skipDefaultVMField);
 
+			final Field<?> skipNonNumberField = configFieldGroup.buildAndBind(MetaConfigModel.SKIP_NON_NUMBER);
+			skipNonNumberField.setCaption("Skip non-number values");
+			((AbstractComponent) skipNonNumberField).setDescription("Set to include/exclude non-number values");
+			addComponent(skipNonNumberField);
+
 			final Field<?> jmxMpField = configFieldGroup.buildAndBind(MetaConfigModel.JMXMP);
 			jmxMpField.setCaption("JMXMP");
 			((AbstractComponent) jmxMpField).setDescription("Use JMXMP instead of JMX-RMI");
