@@ -298,7 +298,6 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		final MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 		params.putAll(p);
 
-		builder.distinct();
 		builder.limit(defaultLimit);
 
 		if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
