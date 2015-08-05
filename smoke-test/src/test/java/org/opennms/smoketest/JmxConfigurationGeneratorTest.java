@@ -2,21 +2,21 @@ package org.opennms.smoketest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.io.ByteStreams;
-import org.custommonkey.xmlunit.XMLAssert;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.xml.sax.SAXException;
 
-import java.io.ByteArrayOutputStream;
+import javax.xml.bind.JAXB;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -26,15 +26,6 @@ import java.util.Collection;
 public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
 
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.mchange.v2.c3p0";
-
-    @BeforeClass
-    public static void beforeClass() {
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        XMLUnit.setIgnoreComments(true);
-        XMLUnit.setIgnoreDiffBetweenTextAndCDATA(true);
-        XMLUnit.setNormalize(true);
-    }
 
     @Before
     public void before() {
@@ -71,6 +62,14 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
     public void testNavigation() throws InterruptedException {
         // forwards
         findElementById("port").clear();
+        // we have to wait, until the field is really cleared, otherwise
+        // the port might not have been cleared
+        wait.until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return "".equals(findElementById("port").getText());
+            }
+        });
         findElementById("port").sendKeys("18980"); // Set OpenNMS JMX port
         findElementById("next").click();
 
@@ -117,10 +116,16 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
 
         // verify output
         final String jmxDatacollectionConfigContent = findElementByXpath("//textarea").getAttribute("value");
-        try ( ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            ByteStreams.copy(getClass().getResourceAsStream("/expected-jmx-datacollection-config.xml"), outputStream);
-            XMLAssert.assertXMLEqual(outputStream.toString(), jmxDatacollectionConfigContent);
-        }
+        JmxDatacollectionConfig config = JAXB.unmarshal(new ByteArrayInputStream(jmxDatacollectionConfigContent.getBytes()), JmxDatacollectionConfig.class);
+
+        Assert.assertNotNull(config);
+        Assert.assertFalse(config.getJmxCollection().isEmpty());
+        Assert.assertNotNull(config.getJmxCollection().get(0).getMbeans());
+        Assert.assertEquals(1, config.getJmxCollection().get(0).getMbeans().getMbean().size());
+
+        final Mbean mbean = config.getJmxCollection().get(0).getMbeans().getMbean().get(0);
+        Assert.assertEquals(1, mbean.getCompAttrib().size());
+        Assert.assertEquals(5, mbean.getCompAttrib().get(0).getCompMember().size());
     }
 
     // switches to the embedded vaadin iframe
