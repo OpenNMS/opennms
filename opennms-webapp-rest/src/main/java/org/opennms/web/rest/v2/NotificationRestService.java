@@ -35,6 +35,7 @@ import javax.ws.rs.Path;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
@@ -69,10 +70,9 @@ public class NotificationRestService extends AbstractDaoRestService<OnmsNotifica
 	protected CriteriaBuilder getCriteriaBuilder() {
 		final CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
 		builder.alias("node", "node", JoinType.LEFT_JOIN);
-		builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-		builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+		// Left joins on a toMany relationship need a join condition so that only one row is returned
+		builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eq("ipAddress", "ipInterface.ipAddress"), Restrictions.isNull("ipAddress")));
 		builder.alias("event", "event", JoinType.LEFT_JOIN);
-		builder.alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN);
 		builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
 
 		// Order by ID by default
