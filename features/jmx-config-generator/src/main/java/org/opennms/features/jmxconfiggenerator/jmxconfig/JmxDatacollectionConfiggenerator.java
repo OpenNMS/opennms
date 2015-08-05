@@ -59,35 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.xmlns.xsd.config.jmx_datacollection.ObjectFactory;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.openmbean.CompositeData;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import javax.xml.bind.JAXB;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
  * @author Markus Neumann <markus@opennms.com>
