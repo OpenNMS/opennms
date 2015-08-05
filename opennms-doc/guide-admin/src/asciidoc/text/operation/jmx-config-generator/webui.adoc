@@ -4,12 +4,12 @@
 
 === Web based JMX Configuration Generator
 
-Generating complex _JMX_ data collection configurations can be generated from the a web based tool.
+Complex _JMX_ data collection configurations can be generated from a web based tool.
 It collects all available _MBean Attributes_ or _Composite Data Attributes_ from a _JMX_ enabled Java application.
 
 The workflow of the tool is:
 
-. Connect with _JMX_ or _JMXMP_ against a _MBean Server_ provided from a _Java_ application
+. Connect with _JMX_ or _JMXMP_ against a _MBean Server_ provided of a _Java_ application
 . Retrieve all _MBean_ and _Composite Data_ from the application
 . Select specific _MBeans_ and _Composite Data_ objects which should be collected by _OpenNMS_
 . Generate _JMX Collectd_ configuration file and _RRD graph_ definitions for _OpenNMS_ as downloadable archive
@@ -24,18 +24,21 @@ The web based configuration tool can be used in the _OpenNMS Web Application_ in
 
 ==== Configure JMX Connection
 
-At the beginning the connection to an _MBean Server_ of an _Java_ application has to be configured.
+At the beginning the connection to an _MBean Server_ of a _Java_ application has to be configured.
 
 .JMX connection configuration window
 image::operation/jmx-config-generator/01-webui-connection.png[]
 
 * _Service name_: The name of the service to bind the _JMX_ data collection for _Collectd_
-* _Host_: IP address or _FQDN_ connecting to the _MBean Server_ and load _MBeans_ and _Composite Data_ into the generation tool
+* _Host_: IP address or _FQDN_ connecting to the _MBean Server_ to load _MBeans_ and _Composite Data_ into the generation tool
 * _Port_: Port to connect to the _MBean Server_
-* _authenticate_: Enable / Disable authentication for _JMX_ connection with username and password
+* _Authentication_: Enable / Disable authentication for _JMX_ connection with username and password
 * _Skip JVM MBeans_: Enable / Disable retrieving generic _Java JVM MBeans_
 * _Run writable MBeans_: Enable / Disable retrieving writable _MBean Attributes_
 * _JMXMP_: Enable / Disable _JMX Messaging Protocol_ instead of using _JMX_ over _RMI_
+
+NOTE: By default writable MBeans are not included, even if they are readable.
+      Enable to exclude/include writable MBeans as well.
 
 By clicking the arrow ( _>_ ) the _MBeans_ and _Composite Data_ will be retrieved with the given connection settings.
 The data is loaded into the _MBeans Configuration_ screen which allows to select metrics for the data collection configuration.
