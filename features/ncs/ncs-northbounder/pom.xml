@@ -21,7 +21,7 @@
           <descriptors>
             <descriptor>src/assembly/etc.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

@@ -54,7 +54,7 @@
               <mainClass>org.opennms.mock.snmp.MockSnmpAgent</mainClass>
             </manifest>
           </archive>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

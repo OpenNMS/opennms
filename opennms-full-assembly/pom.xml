@@ -43,7 +43,7 @@
                 <descriptor>src/assembly/default.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>gnu</tarLongFileMode>
+              <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
             </configuration>
@@ -78,7 +78,7 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>gnu</tarLongFileMode>
+              <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
             </configuration>
@@ -113,7 +113,7 @@
                 <descriptor>src/assembly/dir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>gnu</tarLongFileMode>
+              <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
             </configuration>
@@ -148,7 +148,7 @@
                 <descriptor>src/assembly/fulldir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>gnu</tarLongFileMode>
+              <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
             </configuration>
