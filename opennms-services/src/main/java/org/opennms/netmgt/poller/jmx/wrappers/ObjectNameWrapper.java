@@ -30,7 +30,10 @@ package org.opennms.netmgt.poller.jmx.wrappers;
 
 import com.google.common.base.Throwables;
 
-import javax.management.*;
+import javax.management.ObjectName;
+import javax.management.MBeanServerConnection;
+import javax.management.JMException;
+import javax.management.MalformedObjectNameException;
 import java.io.IOException;
 
 /**

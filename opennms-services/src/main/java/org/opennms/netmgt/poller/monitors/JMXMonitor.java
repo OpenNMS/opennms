@@ -30,7 +30,11 @@ package org.opennms.netmgt.poller.monitors;
 
 import org.opennms.core.spring.BeanUtils;
 import com.google.common.collect.Maps;
-import org.apache.commons.jexl2.*;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.Expression;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.ReadonlyContext;
+import org.apache.commons.jexl2.MapContext;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.jmx.MBeanServer;
@@ -65,6 +69,9 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
 
     private static final JexlEngine JEXL_ENGINE;
+    public static final String PARAM_BEAN_PREFIX = "beans.";
+    public static final String PARAM_TEST_PREFIX = "tests.";
+    public static final String PARAM_TEST = "test";
 
     static {
         JEXL_ENGINE = new JexlEngine();
@@ -138,12 +145,12 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 final Map<String, Object> variables = Maps.newHashMap();
                 for (final String key : map.keySet()) {
                     // Skip fast if it does not start with the prefix
-                    if (!key.startsWith("beans.")) {
+                    if (!key.startsWith(PARAM_BEAN_PREFIX)) {
                         continue;
                     }
 
                     // Get the variable name
-                    final String variable = key.substring("beans.".length());
+                    final String variable = key.substring(PARAM_BEAN_PREFIX.length());
 
                     // Get the variable definition
                     final String definition = ParameterMap.getKeyedString(map, key, null);
@@ -158,12 +165,12 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 final Map<String, Expression> tests = Maps.newHashMap();
                 for (final String key : map.keySet()) {
                     // Skip fast if it does not start with the prefix
-                    if (!key.startsWith("tests.")) {
+                    if (!key.startsWith(PARAM_TEST_PREFIX)) {
                         continue;
                     }
 
                     // Get the test name
-                    final String variable = key.substring("tests.".length());
+                    final String variable = key.substring(PARAM_TEST_PREFIX.length());
 
                     // Get the test definition
                     final String definition = ParameterMap.getKeyedString(map, key, null);
@@ -177,9 +184,9 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 }
 
                 // Also handle a single test
-                if (map.containsKey("test")) {
+                if (map.containsKey(PARAM_TEST)) {
                     // Get the test definition
-                    final String definition = ParameterMap.getKeyedString(map, "test", null);
+                    final String definition = ParameterMap.getKeyedString(map, PARAM_TEST, null);
 
                     // Build the expression from the definition
                     final Expression expression = JEXL_ENGINE.createExpression(definition);
