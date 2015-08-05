@@ -50,10 +50,10 @@ The _MBeans Configuration_ section is used to assign the _MBean_ and _Composite 
 .Select MBeans or Composite Data for OpenNMS data collection
 image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
 
-In the left sidebar shows the tree with the _JMX Domain_, _MBeans_ and _Composite Data_ hierarchy retrieved from the _MBean Server_.
+The left sidebar shows the tree with the _JMX Domain_, _MBeans_ and _Composite Data_ hierarchy retrieved from the _MBean Server_.
 To select or deselect all attributes use _Mouse right click -> select/deselect_.
 
-The right panel shows the _MBean Attributes_ with the _RRD_ specific mapping and allows select or deselect specific _MBean Attriubtes_ or _Composite Data Attributes_ for the data collection configuration.
+The right panel shows the _MBean Attributes_ with the _RRD_ specific mapping and allows to select or deselect specific _MBean Attriubtes_ or _Composite Data Attributes_ for the data collection configuration.
 
 .Configure MBean attributes for data collection configuration
 image::operation/jmx-config-generator/03-webui-mbean-details.png[]
@@ -80,4 +80,4 @@ The last step is generating the following configuration files for _OpenNMS_:
 
 The content of the configuration files can be copy & pasted or can be downloaded as _ZIP archive_.
 
-NOTE: If the content of the configuration file exceeds 2.500 lines, the files can only be downloaded as _ZIP archive_.
+NOTE: If the content of the configuration file exceeds 2,500 lines, the files can only be downloaded as _ZIP archive_.
