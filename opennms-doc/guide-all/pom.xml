@@ -21,7 +21,7 @@
                     <descriptors>
                         <descriptor>src/assembly/all.xml</descriptor>
                     </descriptors>
-                    <tarLongFileMode>gnu</tarLongFileMode>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>
         </plugins>

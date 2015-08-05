@@ -27,7 +27,7 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <!-- appendAssemblyId>false</appendAssemblyId -->
-                    <tarLongFileMode>gnu</tarLongFileMode>
+                    <tarLongFileMode>posix</tarLongFileMode>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

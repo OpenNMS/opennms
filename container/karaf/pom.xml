@@ -116,7 +116,7 @@
                             <descriptors>
                                 <descriptor>src/assembly/karaf.xml</descriptor>
                             </descriptors>
-                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <tarLongFileMode>posix</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>
