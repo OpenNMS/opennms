@@ -59,6 +59,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.xmlns.xsd.config.jmx_datacollection.ObjectFactory;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Rrd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.IntrospectionException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.openmbean.CompositeData;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.xml.bind.JAXB;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
  * @author Markus Neumann <markus@opennms.com>
@@ -73,9 +102,9 @@ public class JmxDatacollectionConfiggenerator {
 
     private final List<String> rras;
 
-    private final Map<String, Integer> aliasMap = new HashMap<>();
+    protected final Map<String, Integer> aliasMap = new HashMap<>();
 
-    private final List<String> aliasList = new ArrayList<>();
+    protected final List<String> aliasList = new ArrayList<>();
 
     private final Rrd rrd;
 
@@ -138,6 +167,8 @@ public class JmxDatacollectionConfiggenerator {
 
     public JmxDatacollectionConfig generateJmxConfigModel(List<String> ids, MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Map<String, String> dictionary) throws MBeanServerQueryException, IOException, JMException {
         logger.debug("Startup values: \n serviceName: " + serviceName + "\n runStandardVmBeans: " + runStandardVmBeans + "\n dictionary" + dictionary);
+        aliasList.clear();
+        aliasMap.clear();
         nameCutter.setDictionary(dictionary);
 
         final QueryResult queryResult = queryMbeanServer(ids, mBeanServerConnection, runStandardVmBeans);
@@ -283,7 +314,7 @@ public class JmxDatacollectionConfiggenerator {
         return xmlJmxAttribute;
     }
 
-    private String createAndRegisterUniqueAlias(String originalAlias) {
+    protected String createAndRegisterUniqueAlias(String originalAlias) {
         String uniqueAlias = originalAlias;
         if (!aliasMap.containsKey(originalAlias)) {
             aliasMap.put(originalAlias, 0);
@@ -292,13 +323,13 @@ public class JmxDatacollectionConfiggenerator {
             aliasMap.put(originalAlias, aliasMap.get(originalAlias) + 1);
             uniqueAlias = aliasMap.get(originalAlias).toString() + originalAlias;
         }
-        //find alias crashes caused by cutting down alias length to 19 chars
-        final String uniqueAliasShort = nameCutter.trimByCamelCase(uniqueAlias, 19);
-        if (aliasList.contains(uniqueAliasShort)) {
-            logger.warn("Ambiguous alias name '{}'\t as '{}", uniqueAlias, uniqueAliasShort);
+        //find alias crashes caused by cuting down alias length to 19 chars
+        final String uniqueAliasTrimmedTo19Chars = nameCutter.trimByCamelCase(uniqueAlias, 19);
+        if (aliasList.contains(uniqueAliasTrimmedTo19Chars)) {
+            logger.error("ALIAS CRASH AT :" + uniqueAlias + "\t as: " + uniqueAliasTrimmedTo19Chars);
             uniqueAlias = uniqueAlias + "_NAME_CRASH_AS_19_CHAR_VALUE";
         } else {
-            uniqueAlias = uniqueAliasShort;
+            uniqueAlias = uniqueAliasTrimmedTo19Chars;
             aliasList.add(uniqueAlias);
         }
         return uniqueAlias;

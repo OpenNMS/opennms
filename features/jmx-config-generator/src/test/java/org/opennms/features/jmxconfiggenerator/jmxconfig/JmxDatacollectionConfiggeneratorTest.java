@@ -29,6 +29,7 @@
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
 import com.google.common.base.Throwables;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -171,5 +172,28 @@ public class JmxDatacollectionConfiggeneratorTest {
             }
         }
         return null;
+    }
+    
+    @Test
+    public void testRunMultipleTimes() throws MBeanServerQueryException, IOException, JMException {
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, dictionary);
+        HashMap<String, Integer> aliasMapCopy = new HashMap<>(jmxConfiggenerator.aliasMap);
+        ArrayList<String> aliasListCopy = new ArrayList<>(jmxConfiggenerator.aliasList);
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, dictionary);
+
+        Assert.assertEquals(aliasMapCopy, jmxConfiggenerator.aliasMap);
+        Assert.assertEquals(aliasListCopy, jmxConfiggenerator.aliasList);
+    }
+
+    @Test
+    public void testCreateAndRegisterUniqueAlias() throws IOException {
+        Assert.assertEquals("0alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+        Assert.assertEquals("1alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+
+        String someAlias = StringUtils.rightPad("X", 20, "X") + "YYY";
+        String someOtherAlias = StringUtils.rightPad("X", 20, "X") + "XXX";
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXX", jmxConfiggenerator.createAndRegisterUniqueAlias(someAlias));
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXXXXXXX_NAME_CRASH_AS_19_CHAR_VALUE", jmxConfiggenerator.createAndRegisterUniqueAlias(someOtherAlias));
+
     }
 }

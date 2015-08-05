@@ -11,6 +11,9 @@
   <build>
     <plugins>
      <plugin>
+  <build>
+    <plugins>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
@@ -57,6 +60,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
