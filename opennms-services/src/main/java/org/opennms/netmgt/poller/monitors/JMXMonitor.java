@@ -69,9 +69,11 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
 
     private static final JexlEngine JEXL_ENGINE;
+    
     public static final String PARAM_BEAN_PREFIX = "beans.";
     public static final String PARAM_TEST_PREFIX = "tests.";
     public static final String PARAM_TEST = "test";
+    public static final String PARAM_PORT = "port";
 
     static {
         JEXL_ENGINE = new JexlEngine();
@@ -112,7 +114,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         final NetworkInterface<InetAddress> iface = svc.getNetInterface();
         final InetAddress ipv4Addr = iface.getAddress();
 
-        if (map.containsKey("port")) {
+        if (map.containsKey(PARAM_PORT)) {
             MBeanServer mBeanServer = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddrUtils.str(ipv4Addr), ParameterMap.getKeyedInteger(map, "port", -1));
             if (mBeanServer != null) {
                 map.putAll(mBeanServer.getParameterMap());
