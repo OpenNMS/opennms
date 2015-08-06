@@ -28,13 +28,12 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import org.opennms.features.vaadin.jmxconfiggenerator.data.Reflections;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SimpleEntry;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -86,11 +85,9 @@ abstract class MBeansHelper {
 			 * 
 			 * Below is the implementation of the above definition.
 			 */
-			ObjectName obj = ObjectName.getInstance(input.getObjectname());
-			names.add(obj.getDomain());
-			Map<String, String> keyProperty = obj.getKeyPropertyList();
-			addIfNotNull(names, keyProperty, "type");
-			addIfNotNull(names, keyProperty, "j2eeType");
+			final ObjectName objectname = ObjectName.getInstance(input.getObjectname());
+			final Map<String, String> keyProperty = buildKeyPropertyList(objectname);
+			names.add(objectname.getDomain());
 			names.addAll(keyProperty.entrySet());
 			if (removeLastElement) names.remove(names.size() - 1); // remove
 																	// last
@@ -101,30 +98,28 @@ abstract class MBeansHelper {
 		return names;
 	}
 
-	private static void addIfNotNull(List<Map.Entry<String, String>> names, Map<String, String> keyProperty, String key) {
-		if (keyProperty.get(key) == null) return;
-		names.add(new SimpleEntry(key, keyProperty.get(key)));
-		keyProperty.remove(key);
-	}
-
 	/**
-	 * Builds the class hierarchy of the given <code>clazz</code> and returns
-	 * the value of the given map if any class in the hierarchy of
-	 * <code>clazz</code> is registered as a key to the map.
-	 * 
-	 * @param <T>
-	 *            type of the value in the map
-	 * @param map
-	 *            a map to lookup for any class in <code>clazz</code> hierarchy.
-	 * @param clazz
-	 *            the class to look up any value in <code>map</code>
-	 * @return T if a key is found in <code>map</code>, otherwise null.
+	 * Generates the Key-Value-PropertyMap manually.
+	 * This is necessary because <code>objectName.getKeyPropertyList()</code> returns a Map, wherein the order of the
+	 * elements of the keySet may not be deterministic. The order is different than the order in <code>object.getKeyPropertyListString()</code>.
+	 *
+	 * Anyways, this method uses the <code>object.getKeyPropertyListString()</code>-method to build the KeyPropertyList-Map.
+	 * @param objectName The Objectname to build the KeyPropertyList-Map from.
+	 * @return The KeyPropertyList-Map.
 	 */
-	public static <T> T getValueForClass(Map<Class<?>, T> map, Class<?> clazz) {
-		List<Class<?>> classes = Reflections.buildClassHierarchy(clazz);
-		for (int i = classes.size() - 1; i >= 0; i--) {
-			if (map.get(classes.get(i)) != null) return map.get(classes.get(i));
+	private static Map<String, String> buildKeyPropertyList(ObjectName objectName) {
+		Map<String, String> keyValueMap = new HashMap<>();
+
+		String keyPropertyListString = objectName.getKeyPropertyListString();
+		if (keyPropertyListString != null && !keyPropertyListString.isEmpty()) {
+			String[] keyValuePairs = keyPropertyListString.split(",");
+			for (String eachKeyValue : keyValuePairs) {
+				String[] keyValue = eachKeyValue.split("=");
+				if (keyValue.length >= 1) {
+					keyValueMap.put(keyValue[0], keyValue.length == 2 ? keyValue[1] : "undefined");
+				}
+			}
 		}
-		return null;
+		return keyValueMap;
 	}
 }
