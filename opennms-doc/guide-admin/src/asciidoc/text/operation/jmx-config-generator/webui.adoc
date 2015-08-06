@@ -33,7 +33,7 @@ image::operation/jmx-config-generator/01-webui-connection.png[]
 * _Host_: IP address or _FQDN_ connecting to the _MBean Server_ to load _MBeans_ and _Composite Data_ into the generation tool
 * _Port_: Port to connect to the _MBean Server_
 * _Authentication_: Enable / Disable authentication for _JMX_ connection with username and password
-* _Skip JVM MBeans_: Enable / Disable retrieving generic _Java JVM MBeans_
+* _Skip non-number values_: Skip attributes with non-number values
 * _Run writable MBeans_: Enable / Disable retrieving writable _MBean Attributes_
 * _JMXMP_: Enable / Disable _JMX Messaging Protocol_ instead of using _JMX_ over _RMI_
 
