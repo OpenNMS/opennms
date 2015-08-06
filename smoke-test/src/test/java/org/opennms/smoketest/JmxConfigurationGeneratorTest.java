@@ -6,19 +6,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXB;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
@@ -84,7 +80,7 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
      * Verifies that selected CompMembers do show up in the generated jmx-datacollection-config.xml snippet.
      */
     @Test
-    public void verifyCompMemberSelection() throws InterruptedException, IOException, SAXException, XPathExpressionException {
+    public void verifyCompMemberSelection() throws InterruptedException {
         updatePort();
         findElementByXpath("//span[@id='skipDefaultVM']/input").click(); // deselect
 
@@ -104,16 +100,9 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
 
         // verify output
         final String jmxDatacollectionConfigContent = findElementByXpath("//textarea").getAttribute("value");
-        JmxDatacollectionConfig config = JAXB.unmarshal(new ByteArrayInputStream(jmxDatacollectionConfigContent.getBytes()), JmxDatacollectionConfig.class);
 
-        Assert.assertNotNull(config);
-        Assert.assertFalse(config.getJmxCollection().isEmpty());
-        Assert.assertNotNull(config.getJmxCollection().get(0).getMbeans());
-        Assert.assertEquals(1, config.getJmxCollection().get(0).getMbeans().getMbean().size());
-
-        final Mbean mbean = config.getJmxCollection().get(0).getMbeans().getMbean().get(0);
-        Assert.assertEquals(1, mbean.getCompAttrib().size());
-        Assert.assertEquals(5, mbean.getCompAttrib().get(0).getCompMember().size());
+        Assert.assertEquals(1, find("<comp-attrib", jmxDatacollectionConfigContent));
+        Assert.assertEquals(5, find("<comp-member", jmxDatacollectionConfigContent));
     }
 
     // switches to the embedded vaadin iframe
@@ -164,5 +153,14 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
         // deselect/select Element depending on the value of select.
         findElementByXpath(select ? selectXpath : deselectXpath).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("previous")));
+    }
+
+    private int find(String regExp, String text) {
+        Matcher matcher = Pattern.compile(regExp).matcher(text);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 }
