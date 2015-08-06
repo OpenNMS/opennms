@@ -60,17 +60,7 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testNavigation() throws InterruptedException {
-        // forwards
-        findElementById("port").clear();
-        // we have to wait, until the field is really cleared, otherwise
-        // the port might not have been cleared
-        wait.until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return "".equals(findElementById("port").getText());
-            }
-        });
-        findElementById("port").sendKeys("18980"); // Set OpenNMS JMX port
+        updatePort();
         findElementById("next").click();
 
         wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
@@ -94,10 +84,8 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
      * Verifies that selected CompMembers do show up in the generated jmx-datacollection-config.xml snippet.
      */
     @Test
-    public void verifyCompMemberSelection() throws InterruptedException, IOException, SAXException {
-        // forwards
-        findElementById("port").clear();
-        findElementById("port").sendKeys("18980"); // set OpenNMS JMX port
+    public void verifyCompMemberSelection() throws InterruptedException, IOException, SAXException, XPathExpressionException {
+        updatePort();
         findElementByXpath("//span[@id='skipDefaultVM']/input").click(); // deselect
 
         // go to next page
@@ -131,6 +119,24 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
     // switches to the embedded vaadin iframe
     private void switchToVaadinFrame() {
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
+    }
+
+    private void updatePort() {
+        findElementById("port").clear();
+        waitForPort(""); // wait until is really empty
+        findElementById("port").sendKeys("18980"); // Set OpenNMS JMX port
+        waitForPort("18980"); // wait until set
+    }
+
+    // we have to wait, until the field is really ready, otherwise
+    // the port might not have been set correctly
+    private void waitForPort(final String value) {
+        wait.until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return value.equals(findElementById("port").getAttribute("value"));
+            }
+        });
     }
 
     // go back to the content "frame"
