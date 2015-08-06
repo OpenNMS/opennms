@@ -64,7 +64,7 @@ The command line tool can be started with the following arguments:
 | `-input`             | _JMX_ data collection configuration file as input for the _RRD_ graph definition.
 | `-jmx`               | Generate _JMX_ data collection connecting to _MBean Server_ via _JMX_ over _RMI_
 | `-jmxmp`             | Generate _JMX_ data collection connecting to _MBean Server_ via _JMXMP_
-| `-out`               | Path to file to write generated _RRD_ graph definition
+| `-out`               | Path to a file to write generated _RRD_ graph definition
 | `-username`          | Username to authenticate connection
 | `-password`          | Password to authenticate connection
 | `-port`              | Port for connection
