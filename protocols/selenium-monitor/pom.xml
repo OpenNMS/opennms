@@ -35,7 +35,7 @@
             <descriptor>src/assembly/etc.xml</descriptor>
             <descriptor>src/assembly/lib.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

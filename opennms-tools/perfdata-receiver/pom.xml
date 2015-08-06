@@ -31,7 +31,7 @@
                 <mainClass>org/opennms/rrd/utils/PerfDataReceiver</mainClass>
               </manifest>
             </archive>
-            <tarLongFileMode>gnu</tarLongFileMode>
+            <tarLongFileMode>posix</tarLongFileMode>
           </configuration>
           <executions>
             <execution>

@@ -17,7 +17,7 @@
           <descriptors>
             <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>

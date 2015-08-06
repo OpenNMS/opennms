@@ -813,7 +813,7 @@
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
-             <tarLongFileMode>gnu</tarLongFileMode>
+             <tarLongFileMode>posix</tarLongFileMode>
            </configuration>
          </execution>
        </executions>
