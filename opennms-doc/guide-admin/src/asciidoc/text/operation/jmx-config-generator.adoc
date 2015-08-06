@@ -204,12 +204,6 @@ You have to define either an URL or a hostname and port to connect to a JMX serv
 ----
 $ jmx-config-generator generate-conf --host myserver --username myusername --password mypassword --port 7199 "java.lang:*" --output myconfig.xml
 Dictionary entries loaded: '18'
-WARNING: The type of attribute 'Verbose' is 'boolean', but only numbers are supported right now. Ignoring.
-WARNING: The type of attribute 'ObjectName' is 'javax.management.ObjectName', but only numbers are supported right now. Ignoring.
-WARNING: The type of attribute 'CompilationTimeMonitoringSupported' is 'boolean', but only numbers are supported right now. Ignoring.
-WARNING: The type of attribute 'Name' is 'java.lang.String', but only numbers are supported right now. Ignoring.
-WARNING: The type of attribute 'ObjectName' is 'javax.management.ObjectName', but only numbers are supported right now. Ignoring.
-<output omitted>
 ----
 
 ===== Command line options
@@ -229,6 +223,7 @@ The following options are available for this sub-command.
 | `--print-dictionary`    | Prints the used dictionary to STDOUT. May be used with `--dictionary`                                                  | false
 | `--service <value>`     | Your optional service-name, like cassandra, jboss or tomcat.                                                           | anyservice
 | `--skipDefaultVM`       | Skip default JavaVM Beans.                                                                                             | false
+| `--skipNonNumber`       | Skip attributes with non-number values                                                                                 | false
 | `--url <url>`           | JMX URL Usage: `<hostname>:<port>` or `service:jmx:<protocol>:<sap>` or `service:jmx:remoting-jmx://<hostname>:<port>` | -
 | `--username <username>` | Username for JMX-RMI authentication                                                                                    | -
 | `-h (--help)`           | Show help and usage information.                                                                                       | false
