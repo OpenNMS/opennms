@@ -206,6 +206,8 @@ public class MbeansHierarchicalContainer extends HierarchicalContainer {
 				//if we do not set childrenAllowed a "expand/collapse" icon is shown. We do not want that
 				setChildrenAllowed(childItemId, hasChildren);
 			}
+		} else {
+			LOG.debug("Child with id {} already added.", childItemId);
 		}
 	}
 
