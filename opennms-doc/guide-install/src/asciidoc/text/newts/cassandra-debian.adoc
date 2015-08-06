@@ -32,7 +32,8 @@ wget -O - http://debian.datastax.com/debian/repo_key | apt-key add -
 .Install latest Cassandra 2.1.x package
 [source, bash]
 ----
-dsc21=2.1.8-1 cassandra=2.1.8
+apt-get update
+apt-get install dsc21=2.1.8-1 cassandra=2.1.8
 ----
 
 The _Cassandra_ service is added to the run level configuration and is automatically started after installing the package.
