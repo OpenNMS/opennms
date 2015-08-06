@@ -56,7 +56,7 @@ The command line tool can be started with the following arguments:
 [options="headers, autowidth"]
 |===
 | Argument             | Description
-| `-dictionary`        | Path to an dictionary file for replacing attriubte names and part of _MBean Attributes_.
+| `-dictionary`        | Path to a dictionary file for replacing attribute names and part of _MBean attributes_.
                          The file should have for each line a replacement, e.g. `Auxillary:Auxil`.
 | `-graph`             | Mode to generate _RRD_ graph definition file from a given _JMX_ data collection configuration.
                          You can't mix `-graph` with `-jmx/-jmxmp`
@@ -80,7 +80,7 @@ The command line tool can be started with the following arguments:
 
 ==== Graph Templates
 
-It is possible to use a user-defined _RRD_ graph templates.
+It is possible to use a user-defined _RRD_ graph template.
 The option `-template` followed by a file uses an external template file.
 
 [source, bash]
