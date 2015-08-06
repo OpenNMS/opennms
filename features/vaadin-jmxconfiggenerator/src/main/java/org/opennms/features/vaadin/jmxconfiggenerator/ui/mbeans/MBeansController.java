@@ -234,12 +234,16 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 	private void updateValidState(Object data, boolean valid) {
 		final String itemId = mbeansContainer.getItemIdFor(data);
 		final Item theItem = mbeansContainer.getItem(itemId);
-		if (theItem != null && !Objects.equals(theItem.getItemProperty("valid").getValue(), valid)) {
-			theItem.getItemProperty("valid").setValue(Boolean.valueOf(valid)); // set the new validity
-		}
+		updateValidState(theItem, valid);
 		if (!valid) {
 			// make sure the error element is visible
 			mbeansTree.expandItemsUpToParent(itemId);
+		}
+	}
+
+	private void updateValidState(Item item, boolean valid) {
+		if (item != null && !Objects.equals(item.getItemProperty("valid").getValue(), valid)) {
+			item.getItemProperty("valid").setValue(Boolean.valueOf(valid)); // set the new validity
 		}
 	}
 
@@ -268,6 +272,11 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 	void handleSelectDeselect(Item item, boolean selected) {
 		item.getItemProperty(MBeansTree.MetaMBeansTreeItem.SELECTED).setValue(selected);
 		iconUpdater.updateIcon(item, selected);
+		// if we deselected and have a valid flag, we have to set the element to valid
+		// to hide the error icons.
+		if (!selected && item.getItemProperty("valid") != null) {
+			updateValidState(item, true);
+		}
 	}
 
 	private void handleSelectDeselectForSelectableBeanItemContainer(Object itemId, boolean select) {

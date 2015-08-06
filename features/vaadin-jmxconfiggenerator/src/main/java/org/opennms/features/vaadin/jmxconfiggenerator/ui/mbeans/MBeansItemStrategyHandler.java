@@ -31,11 +31,13 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 import com.vaadin.data.Item;
 import com.vaadin.server.FontAwesome;
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.Reflections;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -83,11 +85,11 @@ class MBeansItemStrategyHandler {
 	}
 
 	protected ItemStrategy getStrategy(Class<?> clazz) {
-		return MBeansHelper.getValueForClass(propertyStrategy, clazz);
+		return getValueForClass(propertyStrategy, clazz);
 	}
 
 	protected StringRenderer getStringRenderer(Class<?> clazz) {
-		return MBeansHelper.getValueForClass(extractors, clazz);
+		return getValueForClass(extractors, clazz);
 	}
 
 	protected void setItemProperties(Item item, Object itemId) {
@@ -138,5 +140,26 @@ class MBeansItemStrategyHandler {
 			item.getItemProperty(MBeansTree.MetaMBeansTreeItem.CAPTION).setValue(((CompAttrib) itemId).getName());
 			item.getItemProperty(MBeansTree.MetaMBeansTreeItem.TOOLTIP).setValue(((CompAttrib) itemId).getName());
 		}
+	}
+
+	/**
+	 * Builds the class hierarchy of the given <code>clazz</code> and returns
+	 * the value of the given map if any class in the hierarchy of
+	 * <code>clazz</code> is registered as a key to the map.
+	 *
+	 * @param <T>
+	 *            type of the value in the map
+	 * @param map
+	 *            a map to lookup for any class in <code>clazz</code> hierarchy.
+	 * @param clazz
+	 *            the class to look up any value in <code>map</code>
+	 * @return T if a key is found in <code>map</code>, otherwise null.
+	 */
+	protected static <T> T getValueForClass(Map<Class<?>, T> map, Class<?> clazz) {
+		List<Class<?>> classes = Reflections.buildClassHierarchy(clazz);
+		for (int i = classes.size() - 1; i >= 0; i--) {
+			if (map.get(classes.get(i)) != null) return map.get(classes.get(i));
+		}
+		return null;
 	}
 }

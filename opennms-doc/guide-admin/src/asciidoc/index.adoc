@@ -103,5 +103,9 @@ include::text/provisioning.adoc[]
 == OpenNMS Operation
 include::text/operation/cassandra21x.adoc[]
 include::text/operation/newts.adoc[]
+// new cli doc from develop
 include::text/operation/jmx-config-generator.adoc[]
+include::text/operation/jmx-config-generator/introduction.adoc[]
 include::text/operation/jmx-config-generator/webui.adoc[]
+// old cli doc from foundation
+include::text/operation/jmx-config-generator/cli.adoc[]

@@ -1,10 +1,14 @@
-=== JMX Config Generator
 
-The _JMX Config Generator_ is a revised and improvised version of the original _JmxConfigTool_.
-It provides a fast and easy way to generate a valid and functional `jmx-datacollection-config.xml` file from a running Java application.
-Based on this generated configuration file it can also generate a `snmp-graph.properties` file with matching graph definitions.
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== CLI based utility
+
+The command line _(CLI)_ based tool is not installed by default.
+It is available as _Debian_ and _RPM_ package in the official repositories.
 
 ==== Installation
+
 Since _OpenNMS_ version 1.12 the _JMX Config Generator_ is included as a separate installable package.
 
 ===== Installation on Ubuntu/Debian
@@ -78,10 +82,10 @@ Installed:
   opennms-jmx-config-generator-16.0.2-1.noarch 0:16.0.2-1
 
 Complete!
-
 ----
 
 ===== Installation from Source
+
 The _OpenNMS_ source is hosted on http://github.com/OpenNMS/opennms[GitHub].
 Please refer to the Wiki page http://www.opennms.org/wiki/Developing_with_Git#Getting_OpenNMS[Developing with Git] for more information.
 After cloning the repository you have to enter enter the folder `opennms/features/jmx-config-generator`.
@@ -95,6 +99,7 @@ $ java -jar target/jmxconfiggenerator-17.0.0-SNAPSHOT-onejar.jar
 ----
 
 ==== Usage
+
 After installing the the _JMX Config Generator_ the tool's wrapper script is located in the `bin` directory of the _OpenNMS_ installation.
 
 [source, shell]
@@ -235,12 +240,14 @@ This is particularly useful if an optimized configuration for the JVM already ex
 If the `--skipDefaultVM` option is not set the generated configuration will include the MBeans of the JVM and the MBeans of the Java Application.
 
 ===== Aliases for metrics
+
 Every metric in the configuration, even if it is an attribute of an MBean or a composite member, has to have a unique alias in its `jmx-collection` element.
 To meet this requirement, the aliases will be numbered.
 Additionally, the length of aliases is limited to 19 characters caused by the underlying RRDTool/JRobin technology.
 To create proper aliases the _JMX Config Generator_ automatically trims the names for the MBean attributes and composite members in two steps.
 
 ====== Dictionary for alias preparation
+
 First the names will be split into name-parts at camel-case boundaries.
 Then a dictionary with replacements for name-parts will be applied.
 It is possible to add one's own dictionary entries using the `--dictionary` option followed by a dictionary file.
@@ -361,6 +368,7 @@ report.${report.id}.command=--title="${report.title}" \
 ----
 
 ====== Types of generated graphs
+
 The _JMX Config Generator_ generates different types of graphs from the `jmx-datacollection-config.xml`.
 The different types are listed below:
 
