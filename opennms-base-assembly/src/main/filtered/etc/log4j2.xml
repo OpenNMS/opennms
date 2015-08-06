@@ -169,7 +169,6 @@
         <KeyValuePair key="alarmd"               value="DEBUG" />
         <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
         <KeyValuePair key="archiver"             value="DEBUG" />
-        <KeyValuePair key="capsd"                value="DEBUG" />
         <KeyValuePair key="collectd"             value="DEBUG" />
         <KeyValuePair key="correlator"           value="DEBUG" />
         <KeyValuePair key="dhcpd"                value="DEBUG" />
@@ -178,7 +177,6 @@
         <KeyValuePair key="event-translator"     value="DEBUG" />
         <KeyValuePair key="icmp"                 value="DEBUG" />
         <KeyValuePair key="jetty-server"         value="DEBUG" />
-        <KeyValuePair key="linkd"                value="DEBUG" />
         <KeyValuePair key="enlinkd"              value="DEBUG" />
         <KeyValuePair key="manager"              value="DEBUG" />
         <KeyValuePair key="map"                  value="DEBUG" />

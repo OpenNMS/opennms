@@ -4,11 +4,18 @@ package org.opennms.web.api;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import junit.framework.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class UtilTest {
+
+    @Before
+    public void setUp() {
+        Locale.setDefault(Locale.US);
+    }
 
     @Test
     public void testFormatDateToUIStringOK() throws ParseException {

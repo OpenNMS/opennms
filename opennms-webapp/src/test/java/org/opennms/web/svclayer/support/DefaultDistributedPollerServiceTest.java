@@ -36,6 +36,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 
@@ -53,6 +54,9 @@ import org.springframework.validation.ObjectError;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DefaultDistributedPollerServiceTest extends TestCase {
+
+    private static final String LOCATION_MONITOR_ID = UUID.randomUUID().toString();
+
     private List<Object> m_mocks;
     private LocationMonitorDao m_locationMonitorDao;
     private DefaultDistributedPollerService m_distributedPollerService;
@@ -70,13 +74,13 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     public void testPauseLocationMonitorSuccess() {
         OnmsLocationMonitor locationMonitor = new OnmsLocationMonitor();
-        locationMonitor.setId(1);
+        locationMonitor.setId(LOCATION_MONITOR_ID);
         locationMonitor.setStatus(MonitorStatus.STARTED);
         expect(m_locationMonitorDao.load(locationMonitor.getId())).andReturn(locationMonitor);
         m_locationMonitorDao.update(locationMonitor);
         
         LocationMonitorIdCommand command = new LocationMonitorIdCommand();
-        command.setMonitorId(1);
+        command.setMonitorId(LOCATION_MONITOR_ID);
         
         BindException errors = new BindException(command, "command");
         
@@ -90,12 +94,12 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     public void testPauseLocationMonitorAlreadyPaused() {
         OnmsLocationMonitor locationMonitor = new OnmsLocationMonitor();
-        locationMonitor.setId(1);
+        locationMonitor.setId(LOCATION_MONITOR_ID);
         locationMonitor.setStatus(MonitorStatus.PAUSED);
         expect(m_locationMonitorDao.load(locationMonitor.getId())).andReturn(locationMonitor);
         
         LocationMonitorIdCommand command = new LocationMonitorIdCommand();
-        command.setMonitorId(1);
+        command.setMonitorId(LOCATION_MONITOR_ID);
         
         BindException errors = new BindException(command, "command");
         
@@ -160,13 +164,13 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     public void testResumeLocationMonitorSuccess() {
         OnmsLocationMonitor locationMonitor = new OnmsLocationMonitor();
-        locationMonitor.setId(1);
+        locationMonitor.setId(LOCATION_MONITOR_ID);
         locationMonitor.setStatus(MonitorStatus.PAUSED);
         expect(m_locationMonitorDao.load(locationMonitor.getId())).andReturn(locationMonitor);
         m_locationMonitorDao.update(locationMonitor);
         
         LocationMonitorIdCommand command = new LocationMonitorIdCommand();
-        command.setMonitorId(1);
+        command.setMonitorId(LOCATION_MONITOR_ID);
         
         BindException errors = new BindException(command, "command");
         
@@ -180,12 +184,12 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     public void testResumeLocationMonitorNotPaused() {
         OnmsLocationMonitor locationMonitor = new OnmsLocationMonitor();
-        locationMonitor.setId(1);
+        locationMonitor.setId(LOCATION_MONITOR_ID);
         locationMonitor.setStatus(MonitorStatus.STARTED);
         expect(m_locationMonitorDao.load(locationMonitor.getId())).andReturn(locationMonitor);
         
         LocationMonitorIdCommand command = new LocationMonitorIdCommand();
-        command.setMonitorId(1);
+        command.setMonitorId(LOCATION_MONITOR_ID);
         
         BindException errors = new BindException(command, "command");
         
@@ -250,12 +254,12 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     public void testDeleteLocationMonitorSuccess() {
         OnmsLocationMonitor locationMonitor = new OnmsLocationMonitor();
-        locationMonitor.setId(1);
+        locationMonitor.setId(LOCATION_MONITOR_ID);
         expect(m_locationMonitorDao.load(locationMonitor.getId())).andReturn(locationMonitor);
         m_locationMonitorDao.delete(locationMonitor);
         
         LocationMonitorIdCommand command = new LocationMonitorIdCommand();
-        command.setMonitorId(1);
+        command.setMonitorId(LOCATION_MONITOR_ID);
         
         BindException errors = new BindException(command, "command");
         

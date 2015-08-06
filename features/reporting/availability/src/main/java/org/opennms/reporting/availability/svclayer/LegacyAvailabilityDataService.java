@@ -181,6 +181,7 @@ public class LegacyAvailabilityDataService implements AvailabilityDataService {
                         throw new AvailabilityDataServiceException("Failed to get nodes for category " + category, e);
                     } finally {
                         db.cleanUp();
+                        m_availConn = null;
                         m_catFactory.getReadLock().unlock();
                     }
 

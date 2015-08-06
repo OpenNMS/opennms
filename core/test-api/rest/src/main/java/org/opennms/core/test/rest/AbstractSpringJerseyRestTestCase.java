@@ -54,14 +54,17 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
@@ -78,9 +81,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
-
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * 
@@ -90,22 +91,71 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 public abstract class AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestTestCase.class);
 
+    public static final String CXF_REST_V1_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml";
+    public static final String CXF_REST_V2_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml";
+
     public static String GET = "GET";
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
+    
+    private static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
 
-    private ServletContainer dispatcher;
+    private final String m_cxfContextPath;
+
+    private HttpServlet dispatcher;
     private MockServletConfig servletConfig;
 
     @Autowired
     protected ServletContext servletContext;
 
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
+
     private ContextLoaderListener contextListener;
     private Filter filter;
+
+    public AbstractSpringJerseyRestTestCase() {
+        this(CXF_REST_V1_CONTEXT_PATH);
+    }
+
+    public AbstractSpringJerseyRestTestCase(String cxfContextPath) {
+        m_cxfContextPath = cxfContextPath;
+    }
+
+    /**
+     * Apache CXF is throwing an exception because {@link MockHttpServletRequest#getInputStream()}
+     * is returning null if there is no message body on the incoming request. This appears to be
+     * a grey area in the Servlet spec. :/  So we're going to subclass {@link MockHttpServletRequest}
+     * so that it will return an empty {@link ServletInputStream} instead.
+     */
+    private static class MockHttpServletRequestThatWorks extends MockHttpServletRequest {
+        public MockHttpServletRequestThatWorks(ServletContext context, String requestType, String string) {
+            super(context, requestType, string);
+        }
+
+        /**
+         * Return an empty {@link ServletInputStream} that immediately
+         * returns -1 on read() (EOF) instead of returning null.
+         */
+        @Override
+        public ServletInputStream getInputStream() {
+            ServletInputStream retval = super.getInputStream();
+            if (retval == null) {
+                return new ServletInputStream() {
+                    @Override
+                    public int read() throws IOException {
+                        return -1;
+                    }
+                };
+            } else {
+                return retval;
+            }
+        }
+    }
 
     // Use thread locals for the authentication information so that if
     // multithreaded tests change it, they only change their copy of it.
@@ -135,6 +185,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
             getFilter().init(filterConfig);
 
             // Jersey
+            /*
             setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
             getServletConfig().addInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
             getServletConfig().addInitParameter("com.sun.jersey.config.property.packages", "org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config");
@@ -142,14 +193,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
             getServletConfig().addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters", "com.sun.jersey.api.container.filter.GZIPContentEncodingFilter");
             setDispatcher(new SpringServlet());
             getDispatcher().init(getServletConfig());
+            */
 
             // Apache CXF
-            /*
             setServletConfig(new MockServletConfig(servletContext, "dispatcher"));
-            getServletConfig().addInitParameter("config-location", "file:src/main/webapp/WEB-INF/applicationContext-cxf.xml");
-            setDispatcher(new CXFServlet());
+            getServletConfig().addInitParameter("config-location", m_cxfContextPath);
+            CXFServlet servlet = new CXFServlet();
+            setDispatcher(servlet);
             getDispatcher().init(getServletConfig());
-            */
 
         } catch (ServletException se) {
             throw se.getRootCause();
@@ -163,7 +214,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final Iterator<File> fileIterator = FileUtils.iterateFiles(new File("target/test/opennms-home/etc/imports"), null, true);
         while (fileIterator.hasNext()) {
             if(!fileIterator.next().delete()) {
-            	LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
+                LOG.warn("Could not delete file: {}", fileIterator.next().getPath());
             }
         }
     }
@@ -226,15 +277,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
-        final MockHttpServletRequest request = new MockHttpServletRequest(context, requestType, contextPath + urlPath) {
-
-            @Override
-            // FIXME: remove when we update to Spring 3.1
-            public void setContentType(final String contentType) {
-                super.setContentType(contentType);
-            }
-
-        };
+        final MockHttpServletRequest request = new MockHttpServletRequestThatWorks(context, requestType, contextPath + urlPath);
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
         MockUserPrincipal.setName(username);
@@ -289,7 +332,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
         if (expectedUrlSuffix != null) {
             final Object header = response.getHeader("Location");
-            assertNotNull(header);
+            assertNotNull("Location header is null", header);
             final String location = URLDecoder.decode(header.toString(), "UTF-8");
             final String decodedExpectedUrlSuffix = URLDecoder.decode(expectedUrlSuffix, "UTF-8");
             assertTrue("location '" + location + "' should end with '" + decodedExpectedUrlSuffix + "'", location.endsWith(decodedExpectedUrlSuffix));
@@ -382,7 +425,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                     string.append(",");
                 }
                 final String name = i.next();
-                string.append("name=").append(response.getHeader(name));
+                string.append(name).append("=").append(response.getHeader(name));
             }
             string.append("]").append("]");
         } catch (UnsupportedEncodingException e) {
@@ -408,6 +451,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
+        request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
@@ -510,17 +554,21 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected void createNode() throws Exception {
-        String node = "<node type=\"A\" label=\"TestMachine\">" +
+        createNode(303);
+    }
+
+    protected void createNode(int statusCode) throws Exception {
+        String node = "<node type=\"A\" label=\"TestMachine" + nodeCounter + "\">" +
                 "<labelSource>H</labelSource>" +
                 "<sysContact>The Owner</sysContact>" +
                 "<sysDescription>" +
                 "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
                 "</sysDescription>" +
                 "<sysLocation>DevJam</sysLocation>" +
-                "<sysName>TestMachine</sysName>" +
+                "<sysName>TestMachine" + nodeCounter + "</sysName>" +
                 "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
                 "</node>";
-        sendPost("/nodes", node, 303, "/nodes/1");
+        sendPost("/nodes", node, statusCode, "/nodes/" + nodeCounter++);
     }
 
     protected void createIpInterface() throws Exception {
@@ -591,11 +639,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return filter;
     }
 
-    public void setDispatcher(ServletContainer dispatcher) {
+    public void setDispatcher(HttpServlet dispatcher) {
         this.dispatcher = dispatcher;
     }
 
-    public ServletContainer getDispatcher() {
+    public HttpServlet getDispatcher() {
         return dispatcher;
     }
 }

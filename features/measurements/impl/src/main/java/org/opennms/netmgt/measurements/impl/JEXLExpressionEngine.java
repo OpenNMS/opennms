@@ -88,6 +88,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         // Add some additional constants for ease of use
         jexlValues.put("__inf", Double.POSITIVE_INFINITY);
         jexlValues.put("__neg_inf", Double.NEGATIVE_INFINITY);
+        jexlValues.put("NaN", Double.NaN);
 
         final long timestamps[] = results.getTimestamps();
         final Map<String, double[]> columns = results.getColumns();

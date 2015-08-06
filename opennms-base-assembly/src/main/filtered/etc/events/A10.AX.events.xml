@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axHAStandby</uei>
+        <event-label>A10: axHAStandby</event-label>
+        <descr>Indicates that the AX device is going from HA Active mode to Standby mode.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%node%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axHAActive</uei>
+        <event-label>A10: axHAActive</event-label>
+        <descr>Indicates that the AX device is going from HA Standby mode to Active mode.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%node%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axHAActiveActive</uei>
+        <event-label>A10: axHAActiveActive</event-label>
+        <descr>Indicates that the AX device is going to Active-Active mode.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%node%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>12</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axVirtualServerPortDown</uei>
+        <event-label>A10: axVirtualServerPortDown</event-label>
+        <descr>Indicates that an SLB virtual service port has gone down.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]% VirtualServer=%parm[#2]%
+            Port=%parm[#3]% Type=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>13</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axVirtualServerPortUp</uei>
+        <event-label>A10: axVirtualServerPortUp</event-label>
+        <descr>Indicates that an SLB virtual service port has come up.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]% VirtualServer=%parm[#2]%
+            Port=%parm[#3]% Type=%parm[#4]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2"
+                    clear-key="uei.opennms.org/traps/A10/axVirtualServerPortDown:%parm[#2]%:%parm[#3]%:%parm[#4]%"
+                    auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>~.*Server\s(?!(ni|peter|san|go)\s.*).*</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axServiceDown</uei>
+        <event-label>A10: axServiceDown</event-label>
+        <descr>Indicates that an SLB service has gone down.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]% Server=%parm[#2]% Port=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>~.*Server\s(?!(ni|peter|san|go)\s.*).*</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axServiceUp</uei>
+        <event-label>A10: axServiceUp</event-label>
+        <descr>Indicates that an SLB service has come up.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]% Server=%parm[#2]% Port=%parm[#3]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%:%parm[#3]%" alarm-type="2"
+                    clear-key="uei.opennms.org/traps/A10/axServiceDown:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>~.*Server\s(?!(ni|peter|san|go)\s.*).*</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axServerDown</uei>
+        <event-label>A10: axServerDown</event-label>
+        <descr>Indicates that an SLB server has gone down.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%
+            Server=%parm[#2]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>7</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>~.*Server\s(?!(ni|peter|san|go)\s.*).*</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axServerUp</uei>
+        <event-label>A10: axServerUp</event-label>
+        <descr>Indicates that an SLB server has come up.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%
+            Server=%parm[#2]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[#2]%" alarm-type="2"
+                    clear-key="uei.opennms.org/traps/A10/axServerDown:%parm[#2]%" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemStart</uei>
+        <event-label>A10: axSystemStart</event-label>
+        <descr>Indicates that the AX device has started.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemStart</uei>
+        <event-label>A10: axSystemShutdown</event-label>
+        <descr>Indicates that the AX device has shut down.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemTempHigh</uei>
+        <event-label>A10: axSystemTempHigh</event-label>
+        <descr>Indicates that the temperature inside the AX chassis is too high (68 C or higher).</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axFan1Failure</uei>
+        <event-label>A10: axFan1Failure</event-label>
+        <descr>Indicates that system fan 1 has failed. Contact A10 Networks.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axFan2Failure</uei>
+        <event-label>A10: axFan2Failure</event-label>
+        <descr>Indicates that system fan 2 has failed. Contact A10 Networks.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axFan3Failure</uei>
+        <event-label>A10: axFan3Failure</event-label>
+        <descr>Indicates that system fan 3 has failed. Contact A10 Networks.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>9</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axUpperPowerSupplyFailure</uei>
+        <event-label>A10: axUpperPowerSupplyFailure</event-label>
+        <descr>Indicates that the upper power supply has failed. The power supply needs to be replaced.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>10</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axLowerPowerSupplyFailure</uei>
+        <event-label>A10: axLowerPowerSupplyFailure</event-label>
+        <descr>Indicates that the lower power supply has failed. The power supply needs to be replaced.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>11</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axPrimaryHardDiskFailure</uei>
+        <event-label>A10: axPrimaryHardDiskFailure</event-label>
+        <descr>Indicates that the primary Hard Disk has failed or the RAID system has failed. Contact A10 Networks. The
+            primary Hard Disk is the one on the left, as you are facing the front of the AX chassis.
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>12</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSecondaryHardDiskFailure</uei>
+        <event-label>A10: axSecondaryHardDiskFailure</event-label>
+        <descr>Indicates that the secondary Hard Disk has failed or the RAID system has failed. Contact A10 Networks.
+            The primary Hard Disk is the one on the right, as you are facing the front of the AX chassis.
+        </descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>13</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axHardDiskUsageHigh</uei>
+        <event-label>A10: axHardDiskUsageHigh</event-label>
+        <descr>Indicates that hard disk usage on the AX device is high (85&#37; or higher).</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>14</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axMemoryUsageHigh</uei>
+        <event-label>A10: axMemoryUsageHigh</event-label>
+        <descr>Indicates that memory usage on the AX device is high (95&#37; or higher).</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>15</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemRestart</uei>
+        <event-label>A10: axSystemRestart</event-label>
+        <descr>Indicates that the AX device is going to reboot or reload.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=restart&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>18</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemControlCpuHigh</uei>
+        <event-label>A10: axSystemControlCpuHigh</event-label>
+        <descr>Indicates that control CPU utilization is high.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.22610.2.4.3.12.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>19</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/A10/axSystemDataCpuHigh</uei>
+        <event-label>A10: axSystemDataCpuHigh</event-label>
+        <descr>Indicates that data CPU utilization is high.</descr>
+        <logmsg dest='logndisplay'>&lt;p&gt; A10 trap received Description=%parm[#1]%&lt;/p&gt;</logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+    </event>
+</events>

@@ -225,14 +225,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testLinkdConfiguration() {
-        ignoreConfigFile("linkd-configuration.xml");
-    }
-
-    @Test
     public void testEnLinkdConfiguration() {
         ignoreConfigFile("enlinkd-configuration.xml");
     }
@@ -245,11 +237,6 @@ public class ConfigTesterTest {
     @Test
     public void testMagicUsers() {
         testConfigFile("magic-users.properties");
-    }
-
-    @Test
-    public void testMap() {
-        testConfigFile("map.properties");
     }
 
     @Test
@@ -278,14 +265,6 @@ public class ConfigTesterTest {
      */
     public void testModemConfig() {
         ignoreConfigFile("modemConfig.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
-     */
-    public void testMonitoringLocations() {
-        ignoreConfigFile("monitoring-locations.xml");
     }
 
     @Test

@@ -36,6 +36,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -324,12 +325,12 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
+        public Number getNumericValue() {
             if (m_value instanceof Number) {
-                return m_value.toString();
+                return (Number)m_value;
             } else {
                 try {
-                    return Double.valueOf(m_value.toString()).toString();
+                    return Double.valueOf(m_value.toString());
                 } catch (NumberFormatException nfe) { /* Fall through */ }
             }
             LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);
@@ -766,8 +767,8 @@ public class HttpCollector implements ServiceCollector {
         }
 
         @Override
-        public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), getParent());
+        public Path getPath() {
+            return m_agent.getStorageDir().toPath();
         }
 
         @Override

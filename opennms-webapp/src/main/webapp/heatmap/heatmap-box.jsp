@@ -131,10 +131,18 @@
         var children;
 
         function refresh() {
+            var height = $(window).height() - 105 - $("#treemap").offset().top;
+
+            if (height < 0) {
+                height = $(window).width();
+            }
+
+            height = Math.min(height, $(window).width());
+
             $("#treemap").treemap({
                 "dimensions": [
                     $("#treemap").width(),
-                    Math.min($(window).height() - 230, $("#treemap").width())
+                    height
                 ],
                 "colorStops": [
                     {"val": 1.0, "color": "#CC0000"},

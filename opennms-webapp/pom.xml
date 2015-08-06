@@ -13,9 +13,10 @@
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
-		<!-- this is used by runInPlace.sh to get the overwise provided 
-				 onms libs into the WEB-INF/lib for jetty -->
-		<onmsLibScope>provided</onmsLibScope>
+    <!-- this is used by runInPlace.sh to get the overwise provided 
+         nms libs into the WEB-INF/lib for jetty -->
+    <onmsLibScope>provided</onmsLibScope>
+    <skipITs>true</skipITs>
   </properties>
   <build>
     <plugins>
@@ -66,6 +67,23 @@
             </property>
           </systemProperties>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <reuseForks>false</reuseForks>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -319,6 +337,7 @@
             <descriptor>src/assembly/meta-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -951,6 +970,11 @@
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.daemon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

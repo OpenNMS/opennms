@@ -132,7 +132,8 @@ public class TestNodeDao implements NodeDao {
 	}
 
 	@Override
-	public void save(OnmsNode entity) {
+	public Integer save(OnmsNode entity) {
+		return null;
 	}
 
 	@Override
@@ -150,11 +151,6 @@ public class TestNodeDao implements NodeDao {
 	
 	@Override
 	public List<OnmsNode> findByLabel(String label) {
-		return null;
-	}
-
-	@Override
-	public List<OnmsNode> findNodes(OnmsDistPoller dp) {
 		return null;
 	}
 

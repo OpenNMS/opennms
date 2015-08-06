@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -487,8 +487,12 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         @Override
-        public String getNumericValue() {
-            return m_value;
+        public Double getNumericValue() {
+            try {
+                return Double.parseDouble(m_value);
+            } catch (NumberFormatException|NullPointerException e) {
+                return null;
+            }
         }
 
         @Override
@@ -535,8 +539,8 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         @Override
-        public File getResourceDir(RrdRepository repository) {
-            return new File(repository.getRrdBaseDir(), getParent() + File.separator + m_resourceName);
+        public Path getPath() {
+            return super.getPath().resolve(m_resourceName);
         }
 
         @Override
@@ -548,6 +552,7 @@ public abstract class JMXCollector implements ServiceCollector {
         public String getInstance() {
             return null; //For node type resources, use the default instance
         }
+
     }
 
     /**

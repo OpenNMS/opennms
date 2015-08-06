@@ -39,13 +39,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.support.NullRrdStrategy;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.rrd.NullRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Timer;
 
@@ -61,7 +64,8 @@ public class PollableServiceConfigTest {
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
 
-        RrdStrategy<?, ?> rrdStrategy = new NullRrdStrategy();
+        PersisterFactory persisterFactory = null;
+        ResourceStorageDao resourceStorageDao = new FilesystemResourceStorageDao();
 
         final PollContext context = mock(PollContext.class);
         final PollableNetwork network = new PollableNetwork(context);
@@ -71,7 +75,8 @@ public class PollableServiceConfigTest {
         final PollOutagesConfig pollOutagesConfig = mock(PollOutagesConfig.class);
         final Package pkg = factory.getPackage("MapQuest");
         final Timer timer = mock(Timer.class);
-        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer, rrdStrategy);
+        final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pollOutagesConfig, pkg, timer,
+                persisterFactory, resourceStorageDao);
 
         final ServiceMonitor sm = mock(ServiceMonitor.class);
         psc.setServiceMonitor(sm);

@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Locale;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -66,6 +67,7 @@ public class JaxbUtilsTest {
 
 	@Before
 	public void setUp() {
+		Locale.setDefault(Locale.US);
 		MockLogAppender.setupLogging();
 	}
 	

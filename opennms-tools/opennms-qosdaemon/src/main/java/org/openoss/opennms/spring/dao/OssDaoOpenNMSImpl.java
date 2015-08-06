@@ -530,7 +530,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		else {
 			s=
 				"\n\t\teventUei \t" + 	alarm.getUei()+"\n"+ //eventUei
-				"\t\tdpName \t" + 	(alarm.getDistPoller() == null ? null : alarm.getDistPoller().getName())+"\n"+ //dpName
+				"\t\tdpName \t" + 	(alarm.getDistPoller() == null ? null : alarm.getDistPoller().getId())+"\n"+ //dpName
 				"\t\tnodeID \t" + 	(alarm.getNode() == null ? null : alarm.getNode().getId())+"\n"+ //nodeID
 				"\t\tipaddr \t" + 	alarm.getIpAddr()+"\n"+ //ipaddr
 				"\t\tserviceID \t" + 	(alarm.getServiceType() == null ? null : alarm.getServiceType().getId())+"\n"+ //serviceID

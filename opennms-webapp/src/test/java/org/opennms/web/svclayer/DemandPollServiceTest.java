@@ -147,10 +147,11 @@ public class DemandPollServiceTest extends TestCase {
 		}
 
                 @Override
-		public void save(DemandPoll entity) {
+		public Integer save(DemandPoll entity) {
 			if (entity.getId() == null) {
 				entity.setId(m_id);
 				m_demandPoll = entity;
+				return m_id;
 			} else {
 				throw new RuntimeException("Can't save an entity that already has an id");
 			}

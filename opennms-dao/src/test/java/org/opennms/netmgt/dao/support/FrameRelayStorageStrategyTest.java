@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 import org.junit.Assert;
 
@@ -71,7 +71,7 @@ public class FrameRelayStorageStrategyTest {
         Assert.assertEquals("2.100", strategy.getResourceNameFromIndex(resource));
 
         // Test RelativePath
-        Assert.assertEquals("1" + File.separator + "frCircuitIfIndex" + File.separator + "Se0_0.100", strategy.getRelativePathForAttribute(parentResource, resourceName));
+        Assert.assertEquals(Paths.get("1", "frCircuitIfIndex", "Se0_0.100"), strategy.getRelativePathForAttribute(parentResource, resourceName));
         
         EasyMock.verify(service);
     }

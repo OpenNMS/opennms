@@ -49,6 +49,8 @@ public abstract class RrdConfig {
 
     public static final String DEFAULT_RRD_STRATEGY_CLASS = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
 
+    public static final String RRD_TIME_SERIES_STRATEGY_NAME = "rrd";
+
     private static Properties m_properties = null;
 
     /**

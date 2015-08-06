@@ -28,15 +28,20 @@
 
 package org.opennms.features.jmxconfiggenerator.graphs;
 
+import org.apache.commons.lang.StringUtils;
+import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxCollection;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
+
+import javax.xml.bind.JAXB;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.xml.bind.JAXB;
-import org.apache.commons.lang.StringUtils;
-import org.opennms.features.jmxconfiggenerator.helper.Colors;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -44,11 +49,23 @@ import org.slf4j.LoggerFactory;
  */
 public class JmxConfigReader {
 
-    private Logger logger = LoggerFactory.getLogger(JmxConfigReader.class);
     private static final String ATTRIBUTEREPORT = "AttributeReport";
     private static final String MBEANREPORT = "MBeanReport";
     private static final String COMPOSITEREPORT = "CompositeReport";
     private static final String COMPOSITATTRIBEREPORT = "CompositeAttributeReport";
+
+    private final LogAdapter logger;
+
+    public JmxConfigReader(LogAdapter logger) {
+        this.logger = logger;
+    }
+
+    protected Collection<Report> generateReportsByJmxDatacollectionConfig(InputStream inputConfigStream) {
+        return generateReportsByJmxDatacollectionConfig(
+                JAXB.unmarshal(
+                        inputConfigStream,
+                        JmxDatacollectionConfig.class));
+    }
 
     public Collection<Report> generateReportsByJmxDatacollectionConfig(String inputConfigFileName) {
         return generateReportsByJmxDatacollectionConfig(
@@ -63,7 +80,7 @@ public class JmxConfigReader {
             logger.debug("jmxCollection: '{}'", jmxCollection.getName());
             for (Mbean mbean : jmxCollection.getMbeans().getMbean()) {
                 reports.addAll(generateMbeanReportsByMBean(mbean));
-                reports.addAll(generateAttributeReporsByMBean(mbean));
+                reports.addAll(generateAttributeReportsByMBean(mbean));
 
                 reports.addAll(generateCompositeReportsByMBean(mbean));
                 reports.addAll(generateCompositeMemberReportsByMBean(mbean));
@@ -72,15 +89,15 @@ public class JmxConfigReader {
         return reports;
     }
 
-    private Collection<Report> generateAttributeReporsByMBean(Mbean mbean) {
+    private Collection<Report> generateAttributeReportsByMBean(Mbean mbean) {
         Collection<Report> reports = new ArrayList<Report>();
         for (Attrib attrib : mbean.getAttrib()) {
-
-            String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
-            Report report = new Report(reportId, attrib.getName(), attrib.getName(), "verticalLabel");
+            final String title = String.format("%s[%s]", mbean.getObjectname().toString() , attrib.getName());
+            final String reportId = StringUtils.deleteWhitespace(mbean.getName()) + "." + attrib.getAlias() + "." + ATTRIBUTEREPORT;
+            Report report = new Report(reportId, title, title, "verticalLabel");
             report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
             reports.add(report);
-            Colors.restetColor();
+            Colors.resetColor();
         }
         return reports;
     }
@@ -95,7 +112,7 @@ public class JmxConfigReader {
                 report.addGraph(new Graph(attrib.getAlias(), attrib.getName(), attrib.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
             }
             reports.add(report);
-            Colors.restetColor();
+            Colors.resetColor();
         }
         return reports;
     }
@@ -112,7 +129,7 @@ public class JmxConfigReader {
                 report.addGraph(new Graph(compMember.getAlias(), compMember.getName(), compMember.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
             }
             reports.add(report);
-            Colors.restetColor();
+            Colors.resetColor();
         }
         return reports;
     }
@@ -128,7 +145,7 @@ public class JmxConfigReader {
                 Report report = new Report(reportId, reportId, reportId, "verticalLabel");
                 report.addGraph(new Graph(compMember.getAlias(), compMember.getName(), compMember.getAlias(), Colors.getNextColor(), Colors.getNextColor(), Colors.getNextColor()));
                 reports.add(report);
-                Colors.restetColor();
+                Colors.resetColor();
             }
         }
         return reports;

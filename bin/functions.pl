@@ -83,9 +83,20 @@ delete $ENV{'M2_HOME'};
 
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
-$OOSNMP_TRUSTSTORE = File::Spec->catfile($PREFIX, 'bin', 'oosnmp.net.trustStore');
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = "-Xmx1280m -XX:ReservedCodeCacheSize=512m -Djavax.net.ssl.trustStore=$OOSNMP_TRUSTSTORE -Djavax.net.ssl.trustStorePassword=password";
+	$MAVEN_OPTS = "-Xmx1536m -XX:ReservedCodeCacheSize=512m";
+
+	# The concurrent collector will throw an OutOfMemoryError if too much time is being spent in garbage collection: if
+	# more than 98% of the total time is spent in garbage collection and less than 2% of the heap is recovered, an
+	# OutOfMemoryError will be thrown. This feature is designed to prevent applications from running for an extended
+	# period of time while making little or no progress because the heap is too small. If necessary, this feature can
+	# be disabled by adding the option -XX:-UseGCOverheadLimit to the command line.
+	$MAVEN_OPTS .= " -XX:-UseGCOverheadLimit";
+
+	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
+	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
+	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
+	$MAVEN_OPTS .= " -XX:+UseParallelGC -XX:+UseParallelOldGC";
 }
 
 my $result = GetOptions(
@@ -118,7 +129,7 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
 	-p/--profile PROFILE   default, dir, full, or fulldir
-	-t/--enable-tests      enable tests when building
+	-t/--enable-tests      enable integration tests when building
 	-l/--log-level         log level (error/warning/info/debug)
 END
 	exit 1;
@@ -179,12 +190,10 @@ if ($MAVEN_VERSION =~ /^[12]/) {
 	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
 }
 
+unshift(@ARGS, '-DfailIfNoTests=false');
 if (defined $TESTS) {
-	debug("tests are enabled");
-	unshift(@ARGS, '-DfailIfNoTests=false');
-} else {
-	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
-	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
+	debug("integration tests are enabled");
+	unshift(@ARGS, '-DskipITs=false');
 }
 unshift(@ARGS, '-Djava.awt.headless=true');
 

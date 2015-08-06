@@ -3,8 +3,50 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <name>OpenNMS Smoke Test</name>
   <version>17.0.0-SNAPSHOT</version>
+  <name>OpenNMS Smoke Test</name>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
+  <build>
+    <plugins>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+          <optimize>true</optimize>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.18.1</version>
+        <configuration>
+          <!-- Don't specify argLine here or it will override the argLine property value -->
+          <systemPropertyVariables/>
+          <!--
+            Configure failsafe to put reports in the surefire unit test directory so that
+            Bamboo and Sonar tally the test results properly.
+
+            https://jira.atlassian.com/browse/BAM-15446
+          -->
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

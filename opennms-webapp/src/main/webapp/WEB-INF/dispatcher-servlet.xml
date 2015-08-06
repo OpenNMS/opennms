@@ -142,6 +142,7 @@
 
     <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
         <property name="applicationDao" ref="applicationDao"/>
+        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
         <property name="locationMonitorDao" ref="locationMonitorDao"/>
     </bean>
 
@@ -315,7 +316,7 @@
                     <property name="name" value="Distributed"/>
                     <property name="url" value="RemotePollerMap/index.jsp"/>
                     <property name="locationMatch" value="RemotePollerMap"/>
-                    <property name="locationMonitorDao" ref="locationMonitorDao"/>
+                    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
                 </bean>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Topology"/>
@@ -326,12 +327,6 @@
                     <property name="name" value="Geographical"/>
                     <property name="url" value="node-maps"/>
                     <property name="locationMatch" value="node-maps"/>
-                </bean>
-                <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
-                    <property name="name" value="SVG"/>
-                    <property name="url" value="map/index.jsp"/>
-                    <property name="locationMatch" value="map"/>
-                    <property name="file" value="${opennms.home}/etc/map.enable"/>
                 </bean>
             </list>
         </property>
@@ -437,7 +432,7 @@
                                 <property name="name" value="Distributed Status"/>
                                 <property name="url" value="distributedStatusSummary.htm"/>
                                 <property name="locationMatch" value="distributedstatus"/>
-                                <property name="locationMonitorDao" ref="locationMonitorDao"/>
+                                <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
                             </bean>
                         </list>
                     </property>

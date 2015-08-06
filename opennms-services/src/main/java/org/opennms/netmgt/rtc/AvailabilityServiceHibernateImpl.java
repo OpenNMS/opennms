@@ -189,7 +189,7 @@ public class AvailabilityServiceHibernateImpl implements AvailabilityService {
         return level;
     }
 
-    private double getOutageTimeInWindow(List<OnmsOutage> outages, Date start, Date end) {
+    private static double getOutageTimeInWindow(List<OnmsOutage> outages, Date start, Date end) {
         if (outages == null || outages.size() == 0) {
             return 0.0d;
         }

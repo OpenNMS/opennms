@@ -19,6 +19,9 @@
 // Administration related Webinterface
 = Administrative Webinterface
 
+== Start page
+include::text/webui/startpage/grafana-dashboard-box.adoc[]
+
 == Operator Board
 include::text/webui/opsboard/introduction.adoc[]
 include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
@@ -74,6 +77,7 @@ include::text/poller/NrpeMonitor.adoc[]
 include::text/poller/NtpMonitor.adoc[]
 include::text/poller/OmsaStorageMonitor.adoc[]
 include::text/poller/OpenManageChassisMonitor.adoc[]
+include::text/poller/PercMonitor.adoc[]
 include::text/poller/Pop3Monitor.adoc[]
 include::text/poller/PrTableMonitor.adoc[]
 include::text/poller/RadiusAuthMonitor.adoc[]
@@ -94,3 +98,9 @@ include::text/events.adoc[]
 
 // Provisioning guide
 include::text/provisioning.adoc[]
+
+// OpenNMS operation
+== OpenNMS Operation
+include::text/operation/cassandra21x.adoc[]
+include::text/operation/newts.adoc[]
+include::text/operation/jmx-config-generator.adoc[]

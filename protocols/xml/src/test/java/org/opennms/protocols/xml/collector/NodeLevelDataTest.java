@@ -44,7 +44,7 @@ import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeLevelDataTest extends AbstractXmlCollectorTest {
+public class NodeLevelDataTest extends XmlCollectorITCase {
 
     /**
      * The Class CountVisitor.
@@ -124,7 +124,7 @@ public class NodeLevelDataTest extends AbstractXmlCollectorTest {
         collectionSet.visit(visitor);
         Assert.assertEquals(1, visitor.getResourceCount());
         Assert.assertEquals(6, visitor.getAttributeCount());
-        File file = new File("target/snmp/1/node-level-stats.jrb");
+        File file = new File(getSnmpRoot(), "1/node-level-stats.jrb");
         Assert.assertTrue(file.exists());
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };

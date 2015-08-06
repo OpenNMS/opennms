@@ -10,28 +10,29 @@
 --# 2005 Mar 11: Added alarms table
 --# 2004 Aug 30: See create.sql.changes
 --#
---# Copyright (C) 2005-2006 The OpenNMS Group, Inc., Inc.  All rights reserved.
---# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+--# Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+--# OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
 --#
---# This program is free software; you can redistribute it and/or modify
---# it under the terms of the GNU General Public License as published by
---# the Free Software Foundation; either version 2 of the License, or
---# (at your option) any later version.
+--# OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 --#
---# This program is distributed in the hope that it will be useful,
+--# OpenNMS(R) is free software: you can redistribute it and/or modify
+--# it under the terms of the GNU Affero General Public License as published
+--# by the Free Software Foundation, either version 3 of the License,
+--# or (at your option) any later version.
+--#
+--# OpenNMS(R) is distributed in the hope that it will be useful,
 --# but WITHOUT ANY WARRANTY; without even the implied warranty of
 --# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
---# GNU General Public License for more details.
+--# GNU Affero General Public License for more details.
 --#
---# You should have received a copy of the GNU General Public License
---# along with this program; if not, write to the Free Software
---# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+--# You should have received a copy of the GNU Affero General Public License
+--# along with OpenNMS(R).  If not, see:
+--#      http://www.gnu.org/licenses/
 --#
 --# For more information contact:
---#      OpenNMS Licensing       <license@opennms.org>
---#      http://www.opennms.org/
---#      http://www.sortova.com/
---#
+--#     OpenNMS(R) Licensing <license@opennms.org>
+--#     http://www.opennms.org/
+--#     http://www.opennms.com/
 
 drop table accessLocks cascade;
 drop table accesspoints cascade;
@@ -49,7 +50,11 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
-drop table distPoller cascade;
+drop table monitoringlocations cascade;
+drop table monitoringlocationspollingpackages cascade;
+drop table monitoringlocationscollectionpackages cascade;
+drop table monitoringlocationstags cascade;
+drop table monitoringsystems cascade;
 drop table events cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
@@ -63,7 +68,6 @@ drop table datalinkinterface cascade;
 drop table inventory cascade;
 drop table element cascade;
 drop table map cascade;
-drop table location_monitors cascade;
 drop table location_specific_status_changes cascade;
 drop table vlan cascade;
 drop table statisticsReportData cascade;
@@ -79,8 +83,6 @@ drop table filterfavorites cascade;
 drop table hwentity cascade;
 drop table hwentityattribute cascade;
 drop table hwentityattributetype cascade;
-drop table minions_properties cascade;
-drop table minions cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -212,45 +214,110 @@ CREATE TABLE accessLocks (
 );
 
 
---# 
-
-
---########################################################################
---# distPoller table - Contains information on Distributed Pollers
---#                    installed in this OpenNMS instance.
+--#####################################################
+--# monitoringlocations Table - Contains a list of network locations
+--#   that are being monitored by OpenNMS systems in this cluster
 --#
---# This table contains the following fields:
+--# This table contains the following information:
 --#
---#  dpName      : A human-readable name for each system.  Typically,
---#                the system's hostname (not fully qualified).
---#  dpIP        : IP address of the distributed poller.
---#  dpComment   : Free-form text field
---#  dpDiscLimit : Numeric representation of percentage of interface speed
---#                available to discovery process.  See documentation for
---#                "bandwidth troll"
---#  dpLastNodePull 	: Time of last pull of new nodes from the DP
---#  dpLastEventPull	: Time of last pull of events from the DP
---#  dpLastPackagePush	: Time of last push of Package (config) to the DP
---#  dpAdminState: Reflects desired state for this distributed poller.
---#                1 = Up, 0 = Down
---#  dpRunState  : Reflects the current perceived state of the distributed
---#                poller.  1 = Up, 0 = Down
+--# id            : The unique name of the location
+--# monitoringarea: The monitoring location associated with the system
+--# geolocation   : Address used for geolocating the location
+--# coordinates   : Latitude/longitude coordinates determined by geolocating
+--#                 the value of 'geolocation'
+--# priority      : Integer priority used to layer items in the UI
 --#
---########################################################################
+--#####################################################
 
-create table distPoller (
-	dpName			varchar(12) not null,
-	dpIP			text not null,
-	dpComment		varchar(256),
-	dpDiscLimit		numeric(5,2),
-	dpLastNodePull		timestamp with time zone,
-	dpLastEventPull		timestamp with time zone,
-	dpLastPackagePush	timestamp with time zone,
-	dpAdminState 		integer,
-	dpRunState		integer,
+CREATE TABLE monitoringlocations (
+    id TEXT NOT NULL,
+    monitoringarea TEXT NOT NULL,
+    geolocation TEXT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    priority INTEGER,
 
-	constraint pk_dpName primary key (dpName)
+    CONSTRAINT monitoringlocations_pkey PRIMARY KEY (id)
 );
+
+
+CREATE TABLE monitoringlocationspollingpackages (
+    monitoringlocationid TEXT NOT NULL,
+    packagename TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
+
+
+CREATE TABLE monitoringlocationscollectionpackages (
+    monitoringlocationid TEXT NOT NULL,
+    packagename TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
+
+
+CREATE TABLE monitoringlocationstags (
+    monitoringlocationid TEXT NOT NULL,
+    tag TEXT NOT NULL,
+
+    CONSTRAINT monitoringlocationstags_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
+CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+
+
+--#####################################################
+--# monitoringsystems Table - Contains a list of OpenNMS systems
+--#    that are producing management information for this database
+--#
+--# This table contains the following information:
+--#
+--# id           : The UUID of the system
+--# label        : Human-readable label for the system
+--# location     : The monitoring location associated with the system
+--# type         : The type of monitoring system, one of "OpenNMS", 
+--#                "Remote Poller" or "Minion"
+--# status       : The status of the system
+--# last_updated : The last time the system reported in
+--#
+--#####################################################
+
+CREATE TABLE monitoringsystems (
+    id TEXT NOT NULL,
+    label TEXT,
+    location TEXT NOT NULL,
+    type TEXT NOT NULL,
+    status TEXT,
+    last_updated TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT monitoringsystems_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE monitoringsystemsproperties (
+    monitoringsystemid TEXT NOT NULL,
+    property TEXT NOT NULL,
+    propertyvalue TEXT,
+
+    CONSTRAINT monitoringsystemsproperties_fkey FOREIGN KEY (monitoringsystemid) REFERENCES monitoringsystems (id) ON DELETE CASCADE
+);
+
+CREATE INDEX monitoringsystemsproperties_id_idx on monitoringsystemsproperties(monitoringsystemid);
+CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsystemsproperties(monitoringsystemid, property);
+
+--##################################################################
+--# The following command adds the initial localhost poller entry to
+--# the 'monitoringsystems' table.
+--##################################################################
+INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
+
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially
@@ -295,7 +362,6 @@ create table distPoller (
 
 create table node (
 	nodeID		integer not null,
-	dpName		varchar(12),
 	nodeCreateTime	timestamp with time zone not null,
 	nodeParentID	integer,
 	nodeType	char(1),
@@ -313,13 +379,11 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 
-	constraint pk_nodeID primary key (nodeID),
-	constraint fk_dpName foreign key (dpName) references distPoller
+	constraint pk_nodeID primary key (nodeID)
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
-create index node_dpname_idx on node(dpName);
 create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 
 --#########################################################################
@@ -637,7 +701,7 @@ create table events (
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
 	ipAddr			text,
-	eventDpName		varchar(12) not null,
+	systemId		TEXT not null,
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
@@ -670,6 +734,7 @@ create table events (
 );
 
 create index events_uei_idx on events(eventUei);
+create index events_systemid_idx on events(systemId);
 create index events_nodeid_idx on events(nodeID);
 create index events_ipaddr_idx on events(ipaddr);
 create index events_serviceid_idx on events(serviceID);
@@ -862,7 +927,7 @@ create table memos (
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
     eventUei                VARCHAR(256) NOT NULL,
-    dpName                  VARCHAR(12) NOT NULL,
+    systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
@@ -870,7 +935,7 @@ create table alarms (
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
-    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
+    lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID) REFERENCES events (eventID) ON DELETE CASCADE,
     firstEventTime          timestamp with time zone,
     lastEventTime           timestamp with time zone,
     firstAutomationTime     timestamp with time zone,
@@ -903,7 +968,7 @@ CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_clearkey_idx ON alarms(clearKey);
-CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
+CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 CREATE INDEX alarm_eventid_idx ON alarms(lastEventID);
@@ -1234,40 +1299,6 @@ create table pollResults (
 create index pollresults_poll_id on pollResults(pollId);
 create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
 
---#####################################################
---# locaation_monitors Table - contains a list of monitors in remote
---#                            locations
---#
---# This table contains the following information:
---#
---#  id          : surrogate key generated by sequence 
---#  name        : name of the location monitor
---#  definitionName : used to reference XML configuration
---#
---#
---#####################################################
-
-CREATE TABLE location_monitors (
-    id INTEGER,
-    status VARCHAR(31) NOT NULL,
-    lastCheckInTime timestamp with time zone,
-    definitionName VARCHAR(31) NOT NULL,
-    
-    CONSTRAINT location_monitors_pkey PRIMARY KEY (id)
-);
-
-CREATE TABLE location_monitor_details (
-    locationMonitorId INTEGER NOT NULL,
-    property VARCHAR(255) NOT NULL,
-    propertyValue VARCHAR(255),
-    
-    CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE
-);
-
-create index location_monitor_details_id on location_monitor_details(locationMonitorId);
-create unique index location_monitor_details_id_property on location_monitor_details(locationMonitorId, property);
-
-
 --#############################################################################
 --# location_specific_status_changes Table - contains a list status
 --#      changed reported for a service by a monitor in a remote
@@ -1286,7 +1317,7 @@ create unique index location_monitor_details_id_property on location_monitor_det
 --#############################################################################
 CREATE TABLE location_specific_status_changes (
     id INTEGER,
-    locationMonitorId INTEGER NOT NULL,
+    systemId TEXT NOT NULL,
     ifServiceId INTEGER NOT NULL,
     statusCode INTEGER NOT NULL,
     statusTime timestamp with time zone NOT NULL,
@@ -1294,14 +1325,14 @@ CREATE TABLE location_specific_status_changes (
     responseTime DOUBLE PRECISION,
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT location_monitor_fkey2 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
+    CONSTRAINT location_specific_status_changes_systemid_fkey FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
-create index location_specific_status_changes_locationmonitorid on location_specific_status_changes(locationmonitorid);
-create index location_specific_status_changes_locationmonitorid_ifserviceid on location_specific_status_changes(locationmonitorid, ifserviceid);
-create index location_specific_status_changes_locationmonitorid_loc_if_time on location_specific_status_changes(locationmonitorid, ifserviceid, statustime);
+CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
+CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
+CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
 create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
 
 
@@ -1346,13 +1377,6 @@ CREATE INDEX appid_idx on application_service_map(appid);
 CREATE INDEX ifserviceid_idx on application_service_map(ifserviceid);
 CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifserviceid);
 
-
---##################################################################
---# The following command adds the initial loopback poller entry to
---# the 'distPoller' table.
---##################################################################
---# criteria: SELECT count(*) = 0 from distPoller where dpName = 'localhost'
-insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState) values ('localhost', '127.0.0.1', 'This is the default poller.', 0.10, null, null, null, 1, 1);
 
 --########################################################################
 --#
@@ -2106,48 +2130,6 @@ CREATE INDEX catid_idx3 on category_group(categoryId);
 CREATE INDEX catgroup_idx on category_group(groupId);
 CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
---########################################################################
---#
---# minions - table for tracking remote minions
---#
---# id           : The ID of the minion
---# location     : The monitoring location associated with the minion
---# status       : The status of the minion
---# last_updated : The last time the minion reported in
---#
---########################################################################
-
-create table minions (
-    id           varchar(36) not null,
-    location     text not null,
-    status       text,
-    last_updated timestamp with time zone default now(),
-
-    constraint pk_minions primary key (id)
-);
-
---########################################################################
---#
---# minions_properties - arbitrary properties associated with a minion
---#
---# id        : The unique ID of the property entry
---# minion_id : The ID of the minion
---# key       : The property key
---# value     : The property value
---#
---########################################################################
-
-create table minions_properties (
-    id        integer default nextval('opennmsnxtid') not null,
-    minion_id varchar(36) not null,
-    key       text not null,
-    value     text,
-
-    constraint pk_minions_properties_id primary key (id),
-    constraint fk_minions_properties foreign key (minion_id) references minions (id) ON DELETE CASCADE
-);
-
-CREATE UNIQUE INDEX minions_properties_unique_idx ON minions_properties(minion_id, key);
 
 --# Begin enlinkd table
 drop table lldpElement cascade;
@@ -2201,6 +2183,7 @@ create table cdpElement (
       nodeid          integer not null,
       cdpGlobalRun    integer not null,
       cdpGlobalDeviceId text not null,
+      cdpGlobalDeviceIdFormat integer,
       cdpNodeCreateTime	timestamp not null,
       cdpNodeLastPollTime	timestamp not null,
       constraint pk_cdpelement_id primary key (id),
@@ -2617,3 +2600,41 @@ create table hwEntityAttribute (
 );
 create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 
+
+--##################################################################
+--# NCS component tables
+--##################################################################
+
+CREATE TABLE ncscomponent (
+    id integer NOT NULL,
+    version integer,
+    name character varying(255),
+    type character varying(255),
+    foreignsource character varying(255),
+    foreignid character varying(255),
+    depsrequired character varying(12),
+    nodeforeignsource character varying(64),
+    nodeforeignid character varying(64),
+    upeventuei character varying(255),
+    downeventuei character varying(255)
+);
+
+ALTER TABLE ncscomponent ADD CONSTRAINT ncscomponent_type_foreignsource_foreignid_key UNIQUE (type, foreignsource, foreignid);
+
+
+CREATE TABLE ncs_attributes (
+    ncscomponent_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value character varying(255) NOT NULL
+);
+
+ALTER TABLE ncs_attributes ADD CONSTRAINT ncs_attributes_pkey PRIMARY KEY (ncscomponent_id, key);
+
+
+CREATE TABLE subcomponents (
+    component_id integer NOT NULL,
+    subcomponent_id integer NOT NULL
+);
+
+ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
+ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);

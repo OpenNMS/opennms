@@ -65,14 +65,17 @@ public abstract class AbstractFilterCallback implements FilterCallback {
         return "";
     }
 
-
-
+    /**
+     * This method is used to parse filter favorites that are stored in the database
+     * in "filter=foo%3Dbar&amp;filter=foo2%3Dbar2" format
+     */
     @Override
     public List<Filter> parse(String filterString) {
         String[] filterParameter = filterString.split("&amp;");
         for (int i=0; i< filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");
+                filterParameter[i] = URLDecoder.decode(filterParameter[i]);
             }
         }
         return parse(filterParameter);

@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -45,13 +46,16 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 
 /**
  * Used in conjunction with RRD/JRB strategies that persist
@@ -62,8 +66,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class FilesystemResourceStorageDao implements ResourceStorageDao, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemResourceStorageDao.class);
-
-    private static final int INFINITE_DEPTH = -1;
 
     @Autowired
     private RrdStrategy<?, ?> m_rrdStrategy;
@@ -79,24 +81,22 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
     }
 
     @Override
-    public boolean exists(ResourcePath path) {
-        return exists(path, INFINITE_DEPTH);
-    }
-
-    @Override
     public boolean exists(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
         return exists(toFile(path).toPath(), depth);
     }
 
     @Override
-    public Set<ResourcePath> children(ResourcePath path) {
-        return children(path, INFINITE_DEPTH);
+    public boolean existsWithin(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth >= 0, "depth must be non-negative");
+        return existsWithin(toFile(path).toPath(), depth);
     }
 
     @Override
     public Set<ResourcePath> children(ResourcePath path, int depth) {
+        Preconditions.checkArgument(depth > 0, "depth must be positive");
         final File root = toFile(path);
-        if (depth == 0 || !root.isDirectory()) {
+        if (!root.isDirectory()) {
             return Collections.emptySet();
         }
 
@@ -113,12 +113,37 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public Set<OnmsAttribute> getAttributes(ResourcePath path) {
-        return ResourceTypeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path), RRD_EXTENSION);
+        return RrdResourceAttributeUtils.getAttributesAtRelativePath(m_rrdDirectory, toRelativePath(path), RRD_EXTENSION);
+    }
+
+    @Override
+    public void setStringAttribute(ResourcePath path, String key, String value) {
+        try {
+            RrdResourceAttributeUtils.updateStringProperty(toFile(path), value, key);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    @Override
+    public String getStringAttribute(ResourcePath path, String key) {
+        return RrdResourceAttributeUtils.getStringProperty(toFile(path), key);
+    }
+
+    @Override
+    public Map<String, String> getStringAttributes(ResourcePath path) {
+        Properties props = RrdResourceAttributeUtils.getStringProperties(m_rrdDirectory, toRelativePath(path));
+        return Maps.fromProperties(props);
+    }
+
+    @Override
+    public void updateMetricToResourceMappings(ResourcePath path, Map<String, String> metricsNameToResourceNames) {
+        RrdResourceAttributeUtils.updateDsProperties(toFile(path), metricsNameToResourceNames);
     }
 
     @Override
     public Map<String, String> getMetaData(ResourcePath path) {
-        return RrdUtils.readMetaDataFile(getRrdDirectory().getAbsolutePath(), toRelativePath(path));
+        return RrdMetaDataUtils.readMetaDataFile(getRrdDirectory(), toRelativePath(path));
     }
 
     @Override
@@ -131,24 +156,28 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
             return false;
         }
 
-        if (depth < 0) {
-            try (Stream<Path> stream = Files.walk(root)) {
+        try (Stream<Path> stream = Files.list(root)) {
+            if (depth == 0) {
                 return stream.anyMatch(isRrdFile);
-            } catch (IOException e) {
-                LOG.error("Failed to walk {}. Marking path as non-existent.", root, e);
-                return false;
+            } else {
+                return stream.anyMatch(p -> exists(p, depth-1));
             }
-        } else {
-            try (Stream<Path> stream = Files.list(root)) {
-                if (depth == 0) {
-                    return stream.anyMatch(isRrdFile);
-                } else {
-                    return stream.anyMatch(p -> exists(p, depth-1));
-                }
-            } catch (IOException e) {
-                LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
-                return false;
-            }
+        } catch (IOException e) {
+            LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
+            return false;
+        }
+    }
+
+    private boolean existsWithin(Path root, int depth) {
+        if (depth < 0 || !root.toFile().isDirectory()) {
+            return false;
+        }
+
+        try (Stream<Path> stream = Files.list(root)) {
+            return stream.anyMatch(p -> (isRrdFile.test(p) || existsWithin(p, depth-1)));
+        } catch (IOException e) {
+            LOG.error("Failed to list {}. Marking path as non-existent.", root, e);
+            return false;
         }
     }
 
@@ -194,5 +223,4 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
             return file.isFile() && file.getName().endsWith(RRD_EXTENSION);
         }
     };
-
 }

@@ -35,7 +35,7 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,8 +170,8 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
         String filenameWithoutExtension = createCommand.filename.replace(getDefaultFileExtension(), "");
         int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
         
-        RrdUtils.createMetaDataFile(
-            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
+        RrdMetaDataUtils.createMetaDataFile(
+            new File(filenameWithoutExtension.substring(0, lastIndexOfSeparator)),
             filenameWithoutExtension.substring(lastIndexOfSeparator),
             attributeMappings
         );

@@ -49,8 +49,6 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.web.group.WebGroupRepository;
 import org.opennms.web.group.WebGroup;
 import org.slf4j.Logger;
@@ -71,10 +69,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class GroupController extends AbstractController implements InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GroupController.class);
-
-
-    @Autowired
-    private OnmsMapDao m_onmsMapDao;
     
     @Autowired
     private CategoryDao m_categoryDao;
@@ -232,19 +226,8 @@ public class GroupController extends AbstractController implements InitializingB
         userSession.setAttribute("group.modifyGroup.jsp", group);
         userSession.setAttribute("allCategories.modifyGroup.jsp", m_categoryDao.getAllCategoryNames().toArray(new String[0]));
         userSession.setAttribute("allUsers.modifyGroup.jsp", m_userManager.getUserNames().toArray(new String[0]));
-        userSession.setAttribute("allVisibleMaps.modifyGroup.jsp", getVisibleMapsName(group).toArray(new String[0]));
-            
+
         return new ModelAndView("admin/userGroupView/groups/modifyGroup");
-    }
-    
-    private Collection<String> getVisibleMapsName(WebGroup group) {
-      
-        Collection<OnmsMap> maps = m_onmsMapDao.findVisibleMapsByGroup(group.getName());
-        Collection<String> mapnames = new ArrayList<String>(maps.size());
-        for (OnmsMap map: maps) {
-            mapnames.add(map.getName());
-        }
-        return mapnames;
     }
 
     private ModelAndView saveGroup(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -277,11 +260,6 @@ public class GroupController extends AbstractController implements InitializingB
 
 
     private void updateGroup(HttpServletRequest request, WebGroup newGroup) {
-        // get the rest of the group information from the form
-        String defaultMap = request.getParameter("groupDefaultMap");
-        if (!defaultMap.equals(""))
-            newGroup.setDefaultMap(defaultMap);
-        
         String[] users = request.getParameterValues("selectedUsers");
         
         List<String> userList = users == null ? Collections.<String>emptyList() : Arrays.asList(users);
@@ -353,7 +331,4 @@ public class GroupController extends AbstractController implements InitializingB
             return editGroup(request, newGroup);
         }
     }
-
-
-
 }

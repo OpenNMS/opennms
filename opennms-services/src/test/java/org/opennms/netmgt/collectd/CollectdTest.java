@@ -75,6 +75,7 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
@@ -128,32 +129,6 @@ public class CollectdTest extends TestCase {
         m_eventIpcManager.removeEventListener(isA(EventListener.class));
         expectLastCall().anyTimes();
 
-//        MockNetwork m_network = new MockNetwork();
-//        m_network.setCriticalService("ICMP");
-//        m_network.addNode(1, "Router");
-//        m_network.addInterface("192.168.1.1");
-//        m_network.addService("ICMP");
-//        m_network.addService("SMTP");
-//        m_network.addInterface("192.168.1.2");
-//        m_network.addService("ICMP");
-//        m_network.addService("SMTP");
-//        m_network.addNode(2, "Server");
-//        m_network.addInterface("192.168.1.3");
-//        m_network.addService("ICMP");
-//        m_network.addService("HTTP");
-//        m_network.addNode(3, "Firewall");
-//        m_network.addInterface("192.168.1.4");
-//        m_network.addService("SMTP");
-//        m_network.addService("HTTP");
-//        m_network.addInterface("192.168.1.5");
-//        m_network.addService("SMTP");
-//        m_network.addService("HTTP");
-//
-//        MockDatabase m_db = new MockDatabase();
-//        m_db.populate(m_network);
-//
-//        DataSourceFactory.setInstance(m_db);
-
         // Mock the FilterDao without using EasyMockUtils so that it can be verified separately
         m_filterDao = EasyMock.createMock(FilterDao.class);
         List<InetAddress> allIps = new ArrayList<InetAddress>();
@@ -179,15 +154,13 @@ public class CollectdTest extends TestCase {
 
         m_collectd = new Collectd();
         m_collectd.setEventIpcManager(m_eventIpcManager);
-        //m_collectd.setCollectdConfigFactory(m_collectdConfigFactory);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setIpInterfaceDao(m_ipIfDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setScheduler(m_scheduler);
         m_collectd.setTransactionTemplate(transTemplate);
-        //m_collectd.afterPropertiesSet();
+        m_collectd.setPersisterFactory(new MockPersisterFactory());
 
-        
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml")));
     }
 
