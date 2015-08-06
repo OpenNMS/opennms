@@ -107,6 +107,8 @@ public class NameEditForm extends VerticalLayout implements SelectionChangedList
                 fieldGroup.getField(parameter.getEditablePropertyName()).setCaption(parameter.getEditablePropertyCaption());
                 fieldGroup.getField(parameter.getEditablePropertyName()).setReadOnly(false);
 
+                updateEnabledState();
+
                 UIHelper.validateField(editableField, true);
             } finally {
                 blockListenerOrValidators = false;
@@ -166,9 +168,7 @@ public class NameEditForm extends VerticalLayout implements SelectionChangedList
         selectedField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                nonEditableField.setEnabled(selectedField.getValue());
-                editableField.setEnabled(selectedField.getValue());
-                editableField.setComponentError(null);
+                updateEnabledState();
                 if (!selectedField.getValue()) {
                     editableField.discard();
                 }
@@ -205,5 +205,11 @@ public class NameEditForm extends VerticalLayout implements SelectionChangedList
 
     void discard() {
         fieldGroup.discard();
+    }
+
+    private void updateEnabledState() {
+        nonEditableField.setEnabled(selectedField.getValue());
+        editableField.setEnabled(selectedField.getValue());
+        editableField.setComponentError(null);
     }
 }
