@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-=== Web based JMX Configuration Generator
+=== Web based utility
 
 Complex _JMX_ data collection configurations can be generated from a web based tool.
 It collects all available _MBean Attributes_ or _Composite Data Attributes_ from a _JMX_ enabled Java application.
