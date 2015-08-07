@@ -1,0 +1,122 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== CLI based utility
+
+The command line _(CLI)_ based tool is not installed by default.
+It is available as _Debian_ and _RPM_ package in the official repositories.
+
+==== Installation
+
+.RHEL based installation with Yum
+[source, bash]
+----
+yum install opennms-jmx-config-generator
+----
+
+.Debian based installation with apt
+[source, bash]
+----
+apt-get install opennms-jmx-config-generator
+----
+
+==== Usage
+
+The installed package provides the `${OPENNMS_HOME}/bin/jmx-config-generator` executable.
+It is necessary to run the tool in two steps:
+
+.Step 1: Generate a _JMX_ data collection configuration
+.Step 2: Generate _RRD_ graph definitions based on an existing _JMX_ data collection configuration file
+
+The following example runs the tool with minimal arguments and generates a _JMX_ data collection configuration.
+
+.Generate JMX data collection for Java JVM and OpenNMS
+[source, bash]
+----
+./jmx-config-generator -jmx -host localhost -port 18980 -out myjmx-datacollection-config.xml
+----
+
+IMPORTANT: Check the file and see if there are `alias` names with more than 19 characters.
+           This errors are marked with `NAME_CRASH_AS_19_CHAR_VALUE`
+
+Based on the `myjmx-datacollection-config.xml` the _RRD_ graph definitions can be generated using the following command.
+
+.Generate RRD graph definitions for a given JMX data collection configuration
+[source, bash]
+----
+./jmx-config-generator -graph -input myjmx-datacollection-config.xml -out myjmx-graph.properties
+----
+
+NOTE: The _JMX_ data collection configuration has to be manually included in the existing _OpenNMS_ configuration.
+      If a unique file name for the _RRD_ graph definition is chosen, the file can be dropped in `${OPENNMS_HOME}/etc/snmp-graph.properties.d` directory.
+
+The command line tool can be started with the following arguments:
+
+[options="headers, autowidth"]
+|===
+| Argument             | Description
+| `-dictionary`        | Path to a dictionary file for replacing attribute names and part of _MBean attributes_.
+                         The file should have for each line a replacement, e.g. `Auxillary:Auxil`.
+| `-graph`             | Mode to generate _RRD_ graph definition file from a given _JMX_ data collection configuration.
+                         You can't mix `-graph` with `-jmx/-jmxmp`
+| `-host`              | Hostname or IP Adress of JMX-RMI host
+| `-input`             | _JMX_ data collection configuration file as input for the _RRD_ graph definition.
+| `-jmx`               | Generate _JMX_ data collection connecting to _MBean Server_ via _JMX_ over _RMI_
+| `-jmxmp`             | Generate _JMX_ data collection connecting to _MBean Server_ via _JMXMP_
+| `-out`               | Path to a file to write generated _RRD_ graph definition
+| `-username`          | Username to authenticate connection
+| `-password`          | Password to authenticate connection
+| `-port`              | Port for connection
+| `-runWritableMBeans` | Include _MBeans_ that are read- and writable.
+| `-service`           | The _Service Name_ used as _JMX_ data collection name.
+| `-skipDefaultVM`     | If this option is set, defaul Java JVM _MBeans_ are removed.
+| `-template`          | Custom template file for _RRD_ graph definitions
+| `-url`               | Custom connection _URL_: +
+                         `<hostname>:<port>` +
+                         `service:jmx:<protocol>:<sap>` +
+                         `service:jmx:remoting-jmx://<hostname>:<port>`
+|===
+
+==== Graph Templates
+
+It is possible to use a user-defined _RRD_ graph template.
+The option `-template` followed by a file uses an external template file.
+
+[source, bash]
+----
+./jmx-config-generator -graph -input myjmx-datacollection-config.xml -out myjmx-graph.properties -template myTemplate.vm
+----
+
+The template file has to be an link:http://velocity.apache.org/[Apache Velocity] template.
+The sample represents the template that is used by default:
+
+.Example custom RRD graph template
+[source]
+----
+reports=#foreach( $report in $reportsList )
+${report.id}#if( $foreach.hasNext ), \
+#end
+#end
+
+#foreach( $report in $reportsBody )
+
+#[[###########################################]]#
+#[[##]]# $report.id
+#[[###########################################]]#
+report.${report.id}.name=${report.name}
+report.${report.id}.columns=${report.graphResources}
+report.${report.id}.type=interfaceSnmp
+report.${report.id}.command=--title="${report.title}" \
+ --vertical-label="${report.verticalLabel}" \
+#foreach($graph in $report.graphs )
+ DEF:${graph.id}={rrd${foreach.count}}:${graph.resourceName}:AVERAGE \
+ AREA:${graph.id}#${graph.coloreB} \
+ LINE2:${graph.id}#${graph.coloreA}:"${graph.description}" \
+ GPRINT:${graph.id}:AVERAGE:" Avg \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MIN:" Min \\: %8.2lf %s" \
+ GPRINT:${graph.id}:MAX:" Max \\: %8.2lf %s\\n" \
+#end
+
+#end
+----
