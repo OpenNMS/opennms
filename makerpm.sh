@@ -68,7 +68,9 @@ function calcMinor()
 
 function branch()
 {
-    if use_git; then
+    if [ -n "${bamboo_planRepository_branch}" ]; then
+        echo "${bamboo_planRepository_branch}"
+    elif use_git; then
         run git branch | grep -E '^\*' | awk '{ print $2 }'
     else
         echo "source"

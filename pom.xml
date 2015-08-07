@@ -755,6 +755,7 @@
              <descriptor>src/assembly/source.xml</descriptor>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
+             <tarLongFileMode>gnu</tarLongFileMode>
            </configuration>
          </execution>
        </executions>
@@ -1144,6 +1145,7 @@
     <springWebFlowVersion>2.3.2.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.1.7.RELEASE</springSecurityVersion>
     <springLdapVersion>3.1.7.RELEASE</springLdapVersion>
+    <springSecurityKerberosVersion>1.0.0.RELEASE</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>

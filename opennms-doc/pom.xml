@@ -138,6 +138,7 @@
                         <descriptors>
                             <descriptor>${basedir}/../src/assembly/doc.xml</descriptor>
                         </descriptors>
+                        <tarLongFileMode>gnu</tarLongFileMode>
                     </configuration>
                 </plugin>
             </plugins>
