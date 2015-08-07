@@ -29,6 +29,7 @@
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
 import com.google.common.base.Throwables;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -84,8 +85,20 @@ public class JmxDatacollectionConfiggeneratorTest {
     }
 
     @Test
+    public void testGenerateJmxConfigModelSkipNonNumber() throws MBeanServerQueryException, IOException, JMException {
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false, dictionary);
+        Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
+        Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
+
+        Mbean mbean = findMbean(jmxConfigModel, "org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest");
+        Assert.assertNotNull(mbean);
+        Assert.assertEquals(5, mbean.getAttrib().size());
+        LOG.info(prettyPrint(jmxConfigModel));
+    }
+
+    @Test
     public void testGenerateJmxConfigModelSkipJvmMBeans() throws MBeanServerQueryException, IOException, JMException {
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", false, dictionary);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", false, true, dictionary);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
         Assert.assertEquals("org.opennms.tools.jmxconfiggenerator.jmxconfig.JmxTest", jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getName());
@@ -95,7 +108,7 @@ public class JmxDatacollectionConfiggeneratorTest {
 
     @Test
     public void testGenerateJmxConfigModelRunJvmMBeans() throws MBeanServerQueryException, IOException, JMException {
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, dictionary);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, true, dictionary);
         Assert.assertEquals(1, jmxConfigModel.getJmxCollection().size());
         Assert.assertTrue(10 < jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().size());
 
@@ -110,7 +123,7 @@ public class JmxDatacollectionConfiggeneratorTest {
         List<String> mbeanIds = new ArrayList<>();
         mbeanIds.add("java.lang:type=GarbageCollector,name=PS MarkSweep");
         mbeanIds.add("java.lang:type=GarbageCollector,name=PS Scavenge");
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, dictionary);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, true, dictionary);
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
@@ -126,7 +139,7 @@ public class JmxDatacollectionConfiggeneratorTest {
         List<String> mbeanIds = new ArrayList<>();
         mbeanIds.add("java.lang:type=GarbageCollector,name=PS MarkSweep:CollectionCount");
         mbeanIds.add("java.lang:type=GarbageCollector,name=PS Scavenge:CollectionTime");
-        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, dictionary);
+        JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, true, dictionary);
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
@@ -171,5 +184,28 @@ public class JmxDatacollectionConfiggeneratorTest {
             }
         }
         return null;
+    }
+    
+    @Test
+    public void testRunMultipleTimes() throws MBeanServerQueryException, IOException, JMException {
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, true, dictionary);
+        HashMap<String, Integer> aliasMapCopy = new HashMap<>(jmxConfiggenerator.aliasMap);
+        ArrayList<String> aliasListCopy = new ArrayList<>(jmxConfiggenerator.aliasList);
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, true, dictionary);
+
+        Assert.assertEquals(aliasMapCopy, jmxConfiggenerator.aliasMap);
+        Assert.assertEquals(aliasListCopy, jmxConfiggenerator.aliasList);
+    }
+
+    @Test
+    public void testCreateAndRegisterUniqueAlias() throws IOException {
+        Assert.assertEquals("0alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+        Assert.assertEquals("1alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+
+        String someAlias = StringUtils.rightPad("X", 20, "X") + "YYY";
+        String someOtherAlias = StringUtils.rightPad("X", 20, "X") + "XXX";
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXX", jmxConfiggenerator.createAndRegisterUniqueAlias(someAlias));
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXXXXXXX_NAME_CRASH_AS_19_CHAR_VALUE", jmxConfiggenerator.createAndRegisterUniqueAlias(someOtherAlias));
+
     }
 }
