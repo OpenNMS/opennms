@@ -31,8 +31,11 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,12 +149,17 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
             log("Found a problem: %s\n", e.getMessage());
             Matcher m = pattern.matcher(e.getMessage());
             if (m.find()) {
-                for (File configFile : configDirectory.listFiles()) {
-                    String group = getGroupForResourceType(configFile, m.group(1));
-                    if (group != null) {
-                        updateDataCollectionConfig(m.group(2), group);
-                        return false;
+                try {
+                    Iterator<Path> paths = Files.list(configDirectory.toPath()).filter(f -> f.getFileName().toString().toLowerCase().endsWith(".xml")).iterator();
+                    for (; paths.hasNext(); ) {
+                        String group = getGroupForResourceType(paths.next().toFile(), m.group(1));
+                        if (group != null) {
+                            updateDataCollectionConfig(m.group(2), group);
+                            return false;
+                        }
                     }
+                } catch (Exception ex) {
+                    throw new OnmsUpgradeException("Can't get datacollection-group files", ex);
                 }
             }
         } catch (Exception e) {
@@ -205,6 +213,7 @@ public class DataCollectionConfigMigrator17Offline extends AbstractOnmsUpgrade {
      */
     private DatacollectionGroup getDataCollectionGroup(File configFile) {
         if (dataCollectionGroupMap.get(configFile) == null) {
+            log("Parsing datacollection-group %s\n", configFile.getAbsolutePath());
             DatacollectionGroup grp = JaxbUtils.unmarshal(DatacollectionGroup.class, configFile);
             dataCollectionGroupMap.put(configFile, grp);
         }
