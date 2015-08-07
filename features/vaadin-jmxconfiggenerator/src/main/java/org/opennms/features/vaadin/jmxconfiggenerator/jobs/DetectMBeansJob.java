@@ -102,6 +102,7 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
                         connector.getMBeanServerConnection(),
                         "anyservice",
                         !config.isSkipDefaultVM(),
+                        config.isSkipNonNumber(),
                         JmxHelper.loadInternalDictionary());
                 applyFilters(generatedJmxConfigModel);
                 return generatedJmxConfigModel;

@@ -127,16 +127,16 @@ public class JmxDatacollectionConfiggenerator {
      * @throws MBeanServerQueryException
      * @throws IOException
      * @throws JMException
-     * @deprecated Use {@link #generateJmxConfigModel(List, MBeanServerConnection, String, Boolean, Map)} instead.
+     * @deprecated Use {@link #generateJmxConfigModel(List, MBeanServerConnection, String, Boolean, Boolean, Map)} instead.
      */
     @Deprecated
-    public JmxDatacollectionConfig generateJmxConfigModel(MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Map<String, String> dictionary) throws MBeanServerQueryException, IOException, JMException {
+    public JmxDatacollectionConfig generateJmxConfigModel(MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Boolean skipNonNumber, Map<String, String> dictionary) throws MBeanServerQueryException, IOException, JMException {
         List<String> ids = new ArrayList<>();
         ids.add("*:*");
-        return generateJmxConfigModel(ids, mBeanServerConnection, serviceName, runStandardVmBeans, dictionary);
+        return generateJmxConfigModel(ids, mBeanServerConnection, serviceName, runStandardVmBeans, skipNonNumber, dictionary);
     }
 
-    public JmxDatacollectionConfig generateJmxConfigModel(List<String> ids, MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Map<String, String> dictionary) throws MBeanServerQueryException, IOException, JMException {
+    public JmxDatacollectionConfig generateJmxConfigModel(List<String> ids, MBeanServerConnection mBeanServerConnection, String serviceName, Boolean runStandardVmBeans, Boolean skipNonNumber, Map<String, String> dictionary) throws MBeanServerQueryException, IOException, JMException {
         logger.debug("Startup values: \n serviceName: " + serviceName + "\n runStandardVmBeans: " + runStandardVmBeans + "\n dictionary" + dictionary);
         aliasList.clear();
         aliasMap.clear();
@@ -154,16 +154,16 @@ public class JmxDatacollectionConfiggenerator {
             for (MBeanAttributeInfo jmxBeanAttributeInfo : attributeResult.attributes) {
                 // check for CompositeData
                 if ("javax.management.openmbean.CompositeData".equals(jmxBeanAttributeInfo.getType())) {
-                    CompAttrib compAttrib = createCompAttrib(mBeanServerConnection, objectName, jmxBeanAttributeInfo);
+                    CompAttrib compAttrib = createCompAttrib(mBeanServerConnection, objectName, jmxBeanAttributeInfo, skipNonNumber);
                     if (compAttrib != null) {
                         xmlMbean.getCompAttrib().add(compAttrib);
                     }
                 }
-                if (numbers.contains(jmxBeanAttributeInfo.getType())) {
+                if (skipNonNumber && !numbers.contains(jmxBeanAttributeInfo.getType())) {
+                    logger.warn("The type of attribute '{}' is '{}' and '--skipNonNumber' is set. Ignoring.", jmxBeanAttributeInfo.getName(), jmxBeanAttributeInfo.getType());
+                } else {
                     Attrib xmlJmxAttribute = createAttr(jmxBeanAttributeInfo);
                     xmlMbean.getAttrib().add(xmlJmxAttribute);
-                } else {
-                    logger.warn("The type of attribute '{}' is '{}', but only numbers are supported right now. Ignoring.", jmxBeanAttributeInfo.getName(), jmxBeanAttributeInfo.getType());
                 }
             }
 
@@ -235,7 +235,8 @@ public class JmxDatacollectionConfiggenerator {
     private CompAttrib createCompAttrib(
             MBeanServerConnection jmxServerConnection,
             ObjectName objectName,
-            MBeanAttributeInfo jmxMBeanAttributeInfo) throws JMException, IOException {
+            MBeanAttributeInfo jmxMBeanAttributeInfo,
+            Boolean skipNonNumber) throws JMException, IOException {
         Boolean contentAdded = false;
 
         CompAttrib xmlCompAttrib = new CompAttrib();
@@ -252,7 +253,9 @@ public class JmxDatacollectionConfiggenerator {
             Set<String> keys = compositeData.getCompositeType().keySet();
             for (String key : keys) {
                 Object compositeEntry = compositeData.get(key);
-                if (numbers.contains(compositeEntry.getClass().getName())) {
+                if (skipNonNumber && !numbers.contains(compositeEntry.getClass().getName())) {
+                    logger.warn("The type of composite member '{}/{}' is '{}' and '--skipNonNumber' is set. Ignoring.", jmxMBeanAttributeInfo.getName(), key, compositeEntry.getClass().getName());
+                } else {
                     contentAdded = true;
                     CompMember xmlCompMember = new CompMember();
                     xmlCompMember.setName(key);
@@ -262,8 +265,6 @@ public class JmxDatacollectionConfiggenerator {
                     xmlCompMember.setAlias(alias);
                     xmlCompMember.setType("gauge");
                     xmlCompAttrib.getCompMember().add(xmlCompMember);
-                } else {
-                    logger.warn("The type of composite member '{}/{}' is '{}', but only numbers are supported right now. Ignoring.", jmxMBeanAttributeInfo.getName(), key, compositeEntry.getClass().getName());
                 }
             }
         }

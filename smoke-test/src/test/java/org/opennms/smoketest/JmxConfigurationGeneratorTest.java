@@ -101,7 +101,7 @@ public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
         final String jmxDatacollectionConfigContent = findElementByXpath("//textarea").getAttribute("value");
 
         Assert.assertEquals(1, find("<comp-attrib", jmxDatacollectionConfigContent));
-        Assert.assertEquals(5, find("<comp-member", jmxDatacollectionConfigContent));
+        Assert.assertEquals(7, find("<comp-member", jmxDatacollectionConfigContent));
     }
 
     // switches to the embedded vaadin iframe
