@@ -17,20 +17,20 @@ The setup process is described in the following steps:
 ==== Setup OpenNMS Debian repository
 
 .Content of the new _OpenNMS Debian_ repository file `/etc/apt/sources.list.d/opennms.list`
-[source, bash]
+[source, shell]
 ----
 deb http://debian.opennms.org stable main
 deb-src http://debian.opennms.org stable main
 ----
 
 .Install _GPG_ key to verify _DEB_ packages
-[source, bash]
+[source, shell]
 ----
 wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----
 
 .Update apt repository cache
-[source, bash]
+[source, shell]
 ----
 apt-get update
 ----
@@ -71,6 +71,7 @@ With the successful installed packages the _OpenNMS_ platform is installed in th
    ├── logs -> /var/log/opennms
    ├── share -> /var/lib/opennms
    └── system
+----
 
 [[gi-install-opennms-deb-prepare-pg]]
 ==== Prepare PostgreSQL
