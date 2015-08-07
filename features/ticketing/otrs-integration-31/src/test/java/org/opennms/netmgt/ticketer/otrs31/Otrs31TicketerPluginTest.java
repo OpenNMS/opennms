@@ -16,19 +16,25 @@
 
 package org.opennms.netmgt.ticketer.otrs31;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.util.Date;
+
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-
+/**
+ * This test assumes that you have a localhost OTRS service available so it is 
+ * marked as @Ignore by default.
+ */
+@Ignore
 public class Otrs31TicketerPluginTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(Otrs31TicketerPluginTest.class);
