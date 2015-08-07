@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2012-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,11 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.northbounder.syslog;
+package org.opennms.netmgt.alarmd.northbounder.jms;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.jms.ConnectionFactory;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
@@ -41,14 +43,20 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public class SyslogNorthbounderManager implements InitializingBean,
+/**
+ * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
+ */
+public class JmsNorthbounderManager implements InitializingBean,
         DisposableBean {
 
     @Autowired
     private ServiceRegistry m_serviceRegistry;
 
     @Autowired
-    private SyslogNorthbounderConfigDao m_configDao;
+    private ConnectionFactory m_jmsNorthbounderConnectionFactory;
+
+    @Autowired
+    private JmsNorthbounderConfigDao m_configDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -62,19 +70,19 @@ public class SyslogNorthbounderManager implements InitializingBean,
         Assert.notNull(m_configDao);
         Assert.notNull(m_serviceRegistry);
 
-        SyslogNorthbounderConfig config = m_configDao.getConfig();
-
-        List<SyslogDestination> destinations = config.getDestinations();
-        for (SyslogDestination syslogDestination : destinations) {
-            SyslogNorthbounder nbi = new SyslogNorthbounder(config,
-                                                            syslogDestination);
+        JmsNorthbounderConfig config = m_configDao.getConfig();
+        List<JmsDestination> destinations = config.getDestinations();
+        for (JmsDestination jmsDestination : destinations) {
+            JmsNorthbounder nbi = new JmsNorthbounder(
+                                                      config,
+                                                      m_jmsNorthbounderConnectionFactory,
+                                                      jmsDestination);
             nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(),
                                 m_serviceRegistry.register(nbi,
                                                            Northbounder.class));
         }
-
     }
 
     @Override
