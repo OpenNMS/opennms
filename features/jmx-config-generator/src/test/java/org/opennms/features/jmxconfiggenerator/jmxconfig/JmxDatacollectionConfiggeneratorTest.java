@@ -28,18 +28,7 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
-import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +36,18 @@ import org.junit.Test;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -102,6 +103,29 @@ public class JmxDatacollectionConfiggeneratorTest {
         Assert.assertEquals(3, jmxConfigModel.getJmxCollection().get(0).getMbeans().getMbean().get(0).getAttrib().size());
     }
 
+    @Test
+    public void testRunMultipleTimes() {
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false, dictionary);
+        HashMap<String, Integer> aliasMapCopy = new HashMap<>(JmxDatacollectionConfiggenerator.aliasMap);
+        ArrayList<String> aliasListCopy = new ArrayList<>(JmxDatacollectionConfiggenerator.aliasList);
+        jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "testService", true, false, dictionary);
+
+        Assert.assertEquals(aliasMapCopy, JmxDatacollectionConfiggenerator.aliasMap);
+        Assert.assertEquals(aliasListCopy, JmxDatacollectionConfiggenerator.aliasList);
+    }
+
+    @Test
+    public void testCreateAndRegisterUniqueAlias() throws IOException {
+        Assert.assertEquals("0alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+        Assert.assertEquals("1alias1", jmxConfiggenerator.createAndRegisterUniqueAlias("alias1"));
+
+        String someAlias = StringUtils.rightPad("X", 20, "X") + "YYY";
+        String someOtherAlias = StringUtils.rightPad("X", 20, "X") + "XXX";
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXX", jmxConfiggenerator.createAndRegisterUniqueAlias(someAlias));
+        Assert.assertEquals("0XXXXXXXXXXXXXXXXXXXXXXX_NAME_CRASH_AS_19_CHAR_VALUE", jmxConfiggenerator.createAndRegisterUniqueAlias(someOtherAlias));
+
+    }
+
     //@Test
     public void testGenerateJmxConfigCassandraLocal() throws MalformedURLException, IOException {
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(platformMBeanServer, "cassandra", false, false, dictionary);
@@ -112,7 +136,7 @@ public class JmxDatacollectionConfiggeneratorTest {
 
     //@Test
     public void testGenerateJmxConfigJmxMp() throws MalformedURLException, IOException {
-    	
+
     	JMXServiceURL url = jmxConfiggenerator.getJmxServiceURL(false, "connect.opennms-edu.net", "9998");
     	JMXConnector jmxConnector = jmxConfiggenerator.getJmxConnector(null, null, url);
         MBeanServerConnection mBeanServerConnection = jmxConfiggenerator.createMBeanServerConnection(jmxConnector);

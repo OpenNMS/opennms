@@ -78,6 +78,7 @@
                             <descriptors>
                                 <descriptor>src/assembly/web.xml</descriptor>
                             </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>

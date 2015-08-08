@@ -24,6 +24,7 @@
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            <tarLongFileMode>gnu</tarLongFileMode>
           </configuration>
           <executions>
             <execution>

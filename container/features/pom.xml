@@ -55,7 +55,7 @@
 
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.features/jmxconfiggenerator.webui/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
             <repository>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}/xml/features</repository>
@@ -96,7 +96,6 @@
             <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
-            <feature>jmxconfiggenerator.webui</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>
             <feature>dashlet-image</feature>
@@ -120,6 +119,7 @@
             <feature>opennms-topology-runtime-simple</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>vaadin-dashboard</feature>
+            <feature>vaadin-jmxconfiggenerator</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
@@ -177,7 +177,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>jmxconfiggenerator.webui</artifactId>
+      <artifactId>vaadin-jmxconfiggenerator</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
