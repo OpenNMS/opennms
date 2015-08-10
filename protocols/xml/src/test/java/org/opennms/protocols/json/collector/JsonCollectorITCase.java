@@ -62,6 +62,8 @@ import org.springframework.core.io.Resource;
 
 /**
  * The Abstract Class for Testing the JSON Collector.
+ * <p>This class is very similar to AbstractXmlCollectorTest.</p>
+ * <p>TODO: refactor this class to extend AbstractXmlCollectorTest.</p>
  * 
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -95,14 +97,7 @@ public abstract class JsonCollectorITCase {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
-        m_resourceStorageDao = new FilesystemResourceStorageDao();
-        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
-        m_temporaryFolder.newFolder("snmp");
-
-        m_persisterFactory = new RrdPersisterFactory();
-        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
-        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
+        initializeRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -117,6 +112,31 @@ public abstract class JsonCollectorITCase {
         MockDocumentBuilder.setJSONFileName(getJSONSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
+    }
+
+    /**
+     * Initialize RRD strategy.
+     *
+     * @throws Exception the exception
+     */
+    protected void initializeRrdStrategy() throws Exception {
+        m_rrdStrategy = new JRobinRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
+        m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
+    }
+
+    /**
+     * Gets the RRD extension.
+     *
+     * @return the RRD extension
+     */
+    protected String getRrdExtension() {
+        return "jrb";
     }
 
     /**
@@ -172,7 +192,7 @@ public abstract class JsonCollectorITCase {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRoot(), new String[] { "jrb" }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRoot(), new String[] { getRrdExtension() }, true).size());
     }
 
     /**
@@ -193,7 +213,6 @@ public abstract class JsonCollectorITCase {
             Assert.assertNotNull(ds);
             Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
         }
-
     }
 
     /**
