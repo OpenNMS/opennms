@@ -125,7 +125,11 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type) {
-        m_aliasBuilder.alias(associationPath, alias, type);
+        return alias(associationPath, alias, type, null);
+    }
+
+    public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
+        m_aliasBuilder.alias(associationPath, alias, type, joinCondition);
         return this;
     }
 

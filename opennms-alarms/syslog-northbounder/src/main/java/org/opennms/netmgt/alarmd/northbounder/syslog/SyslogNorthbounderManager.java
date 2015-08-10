@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
@@ -39,42 +41,47 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public class SyslogNorthbounderManager implements InitializingBean, DisposableBean {
-	
-	@Autowired
-	private ServiceRegistry m_serviceRegistry;
+public class SyslogNorthbounderManager implements InitializingBean,
+        DisposableBean {
 
-	@Autowired
-	private SyslogNorthbounderConfigDao m_configDao;
-	
-	@Autowired
-	private NodeDao m_nodeDao;
-	
-	private Registration m_registration = null;
+    @Autowired
+    private ServiceRegistry m_serviceRegistry;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		
-		Assert.notNull(m_nodeDao);
-		Assert.notNull(m_configDao);
-		Assert.notNull(m_serviceRegistry);
-		
-		SyslogNorthbounderConfig config = m_configDao.getConfig();
-		
-		List<SyslogDestination> destinations = config.getDestinations();
-		for (SyslogDestination syslogDestination : destinations) {
-			SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
-			nbi.setNodeDao(m_nodeDao);
-			nbi.afterPropertiesSet();
-			m_registration = m_serviceRegistry.register(nbi, Northbounder.class);
-		}
+    @Autowired
+    private SyslogNorthbounderConfigDao m_configDao;
 
-	}
-	
-	@Override
-	public void destroy() throws Exception {
-		m_registration.unregister();
-	}
+    @Autowired
+    private NodeDao m_nodeDao;
 
+    private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        Assert.notNull(m_nodeDao);
+        Assert.notNull(m_configDao);
+        Assert.notNull(m_serviceRegistry);
+
+        SyslogNorthbounderConfig config = m_configDao.getConfig();
+
+        List<SyslogDestination> destinations = config.getDestinations();
+        for (SyslogDestination syslogDestination : destinations) {
+            SyslogNorthbounder nbi = new SyslogNorthbounder(config,
+                                                            syslogDestination);
+            nbi.setNodeDao(m_nodeDao);
+            nbi.afterPropertiesSet();
+            m_registrations.put(nbi.getName(),
+                                m_serviceRegistry.register(nbi,
+                                                           Northbounder.class));
+        }
+
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        for (Registration r : m_registrations.values()) {
+            r.unregister();
+        }
+    }
 
 }

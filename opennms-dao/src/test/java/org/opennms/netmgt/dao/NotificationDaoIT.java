@@ -30,11 +30,17 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Order;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -127,5 +133,43 @@ public class NotificationDaoIT implements InitializingBean {
        
         OnmsNotification newNotification = m_notificationDao.load(notification.getNotifyId());
         assertEquals("uei://org/opennms/test/NotificationDaoTest", newNotification.getEvent().getEventUei());
+    }
+
+    /**
+     * Test to make sure that orderBy across an alias works.
+     */
+    @Test
+    @Transactional
+    public void testCriteria() {
+        Criteria criteria = new Criteria(OnmsNotification.class);
+        criteria.setAliases(Arrays.asList(new Alias[] { 
+            new Alias("node", "node", JoinType.LEFT_JOIN),
+            new Alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN),
+            new Alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN),
+            new Alias("event", "event", JoinType.LEFT_JOIN),
+            new Alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN),
+            new Alias("serviceType", "serviceType", JoinType.LEFT_JOIN)
+        }));
+        criteria.setOrders(Arrays.asList(new Order[] {
+            new Order("event.id", false),
+            new Order("event.eventSeverity", false),
+            new Order("node.label", false),
+            new Order("serviceType.name", false)
+        }));
+        m_notificationDao.findMatching(criteria);
+
+        CriteriaBuilder builder = new CriteriaBuilder(OnmsNotification.class);
+        builder.alias("node", "node", JoinType.LEFT_JOIN);
+        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
+        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
+        builder.alias("event", "event", JoinType.LEFT_JOIN);
+        builder.alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN);
+        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+        builder.orderBy("event.id", false);
+        builder.orderBy("event.eventSeverity", false);
+        builder.orderBy("node.label", false);
+        builder.orderBy("serviceType.name", false);
+
+        m_notificationDao.findMatching(builder.toCriteria());
     }
 }

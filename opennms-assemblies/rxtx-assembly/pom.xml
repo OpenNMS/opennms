@@ -46,6 +46,7 @@
           <descriptors>
             <descriptor>src/assembly/rxtx.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

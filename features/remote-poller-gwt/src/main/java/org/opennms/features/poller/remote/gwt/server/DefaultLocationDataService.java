@@ -744,7 +744,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
                 def.setLatitude(latLng.getLatitude().floatValue());
                 def.setLongitude(latLng.getLongitude().floatValue());
                 if (m_save) {
-                    m_monitoringLocationDao.save(def);
+                    m_monitoringLocationDao.saveOrUpdate(def);
                 }
             }
         }

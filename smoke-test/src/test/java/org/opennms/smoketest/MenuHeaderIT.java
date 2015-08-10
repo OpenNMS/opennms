@@ -106,7 +106,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         frontPage();
         clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
         findElementByXpath("//h3[text()='OpenNMS System']");
-        findElementByXpath("//h3[text()='Operations']");
+        findElementByXpath("//h3[text()='Provisioning']");
+        findElementByXpath("//h3[text()='Event Management']");
+        findElementByXpath("//h3[text()='Service Monitoring']");
+        findElementByXpath("//h3[text()='Performance Measurement']");
+        findElementByXpath("//h3[text()='Distributed Monitoring']");
 
         frontPage();
         clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
