@@ -9,12 +9,15 @@
 	<artifactId>opennms-integration-otrs-31</artifactId>
 	<name>OpenNMS OTRS 3.1 Integration</name>
 	<packaging>bundle</packaging>
+	<properties>
+		<cxfVersion>3.1.1</cxfVersion>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>2.7.5</version>
+				<version>${cxfVersion}</version>
 				<executions>
 					<execution>
 						<id>generate-sources</id>
@@ -128,18 +131,18 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>2.7.5</version>
+			<version>${cxfVersion}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>javax.xml.bind</groupId>
-					<artifactId>jaxb-api</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-core</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>com.sun.xml.bind</groupId>
 					<artifactId>jaxb-impl</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>asm</groupId>
+					<groupId>org.ow2.asm</groupId>
 					<artifactId>asm</artifactId>
 				</exclusion>
 			</exclusions>
@@ -147,38 +150,16 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>2.7.5</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.xml.bind</groupId>
-					<artifactId>jaxb-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>asm</groupId>
-					<artifactId>asm</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>${cxfVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf.xjc-utils</groupId>
 			<artifactId>cxf-xjc-runtime</artifactId>
-			<version>2.6.0</version>
+			<version>3.0.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.xml.bind</groupId>
 					<artifactId>jaxb-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>asm</groupId>
-					<artifactId>asm</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -186,6 +167,10 @@
 			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>jaxb-dependencies</artifactId>
 			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-all</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
