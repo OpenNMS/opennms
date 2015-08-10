@@ -49,6 +49,8 @@ import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.collector.XmlCollector;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
@@ -57,6 +59,8 @@ import org.springframework.core.io.Resource;
 
 /**
  * The Abstract Class for Testing the JSON Collector.
+ * <p>This class is very similar to AbstractXmlCollectorTest.</p>
+ * <p>TODO: refactor this class to extend AbstractXmlCollectorTest.</p>
  * 
  * @author <a href="mailto:ronald.roskens@gmail.com">Ronald Roskens</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -87,7 +91,7 @@ public abstract class AbstractJsonCollectorTest {
 
         System.setProperty("org.opennms.rrd.usetcp", "false");
         System.setProperty("org.opennms.rrd.usequeue", "false");
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+        initializeRrdStrategy();
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -102,6 +106,24 @@ public abstract class AbstractJsonCollectorTest {
         MockDocumentBuilder.setJSONFileName(getJSONSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
+    }
+
+    /**
+     * Initialize RRD strategy.
+     *
+     * @throws Exception the exception
+     */
+    protected void initializeRrdStrategy() throws Exception {
+        RrdUtils.setStrategy(new JRobinRrdStrategy());
+    }
+
+    /**
+     * Gets the RRD extension.
+     *
+     * @return the RRD extension
+     */
+    protected String getRrdExtension() {
+        return "jrb";
     }
 
     /**
@@ -156,10 +178,10 @@ public abstract class AbstractJsonCollectorTest {
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
         BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
         collectionSet.visit(persister);
-        
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
+
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { getRrdExtension() }, true).size());
     }
-    
+
     /**
      * Validates a JRB.
      * <p>It assumes storeByGroup=true</p>
@@ -178,7 +200,6 @@ public abstract class AbstractJsonCollectorTest {
             Assert.assertNotNull(ds);
             Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
         }
-
     }
 
     /**
