@@ -8,7 +8,7 @@
 This section describes how to install the _OpenNMS_ platform on _Ubuntu 14.04 LTS_.
 The setup process is described in the following steps:
 
-. Install OpenNMS YUM repository server with GPG key to verify packages
+. Install OpenNMS apt repository server with GPG key to verify packages
 . Installation of the _opennms_ meta package which handles all dependencies
 . Initialize _PostgreSQL_ database and configure access
 . Initialize _OpenNMS_ and first start of the application
