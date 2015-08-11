@@ -638,11 +638,12 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    sort >> %{_tmppath}/files.main
+# Put the etc, lib, and system subdirectories into the package
+find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUILD_ROOT%{instprefix}/system -type d | \
+	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
