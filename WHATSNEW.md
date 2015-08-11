@@ -31,11 +31,22 @@ New Features
 
 Events
 ------
-`TODO`
+* A10 AX Load Balancer
+* Infoblox
+* Raytheon NXU-2A
+* Avocent DSView
+* Evertz 7800FR Multiframe
+** 7880-IP-ASI-IP
+** 7881-DEC-MP2
+** 7780-ASI-IP2
+* Dell Force 10
+* ~50 new NetApp Events
+
 
 Data Collection
 ---------------
-`TODO`
+* Fortinet Fortigate
+* Sonicwall
 
 Retired Features
 ----------------
