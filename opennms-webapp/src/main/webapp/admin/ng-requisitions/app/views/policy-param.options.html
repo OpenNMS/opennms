@@ -1,0 +1,6 @@
+<label class="control-label">{{ parameter.key }}</label>
+<input required class="form-control" type="text"
+        placeholder="Select an option for {{ parameter.key }}"
+        ng-model="parameter.value"
+        ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false"
+        typeahead="param for param in getParameterOptions(parameter.key) | filter:$viewValue:fieldComparator"></input>

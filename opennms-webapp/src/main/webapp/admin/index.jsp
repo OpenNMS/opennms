@@ -143,7 +143,8 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-            <li><a href="admin/provisioningGroups.htm">Manage Provisioning Requisitions</a></li>
+            <li><a href="admin/ng-requisitions/app/index.jsp">Manage Provisioning Requisitions</a></li>
+            <li><a href="admin/provisioningGroups.htm">Manage Provisioning Requisitions (Old UI)</a></li>
             <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
             <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
