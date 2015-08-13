@@ -38,7 +38,7 @@ apt-get update
 [[gi-install-opennms-deb-package]]
 ==== Install OpenNMS package
 
-.Installation of the full application including all dependencies like _PostgreSQL_ or _Java_
+.Installation of the full application including all dependencies like _PostgreSQL_ and _Java_
 [source, shell]
 ----
 apt-get install -y opennms
