@@ -20,7 +20,7 @@ describe('Controller: DetectorController', function () {
   };
 
   beforeEach(module('onms-requisitions', function($provide) {
-    $provide.value('$log', console);    
+    $provide.value('$log', console);
   }));
 
   beforeEach(inject(function($rootScope, $controller, _$q_) {
@@ -58,22 +58,13 @@ describe('Controller: DetectorController', function () {
     expect(scope.availableDetectors[0].name).toBe('ICMP');
     expect(scope.availableDetectors[1].name).toBe('SNMP');
 
-    // Auto-select the class for a specific detector implementation based on the name
-    scope.setClassForName({'name': 'ICMP', 'class': 'org.opennms.netmgt.provision.detector.icmp.IcmpDetector', 'parameters': []});
-    expect(scope.detector.class).toBe('org.opennms.netmgt.provision.detector.icmp.IcmpDetector');
-
-    // Clear the detector class for an unknown or new service name.
-    scope.setClassForName({'name': 'PostgreSQL', 'class': 'org.opennms.netmgt.provision.detector.tcp.TcpDetector', 'parameters': [{'port': '5432'}]});
-    expect(scope.detector.class).toBe('org.opennms.netmgt.provision.detector.tcp.TcpDetector');
-
-    // Auto-select the name for a specific detector implementation if the name is not set.
-    scope.detector.name = null;
-    scope.setNameForClass({'name': 'ICMP', 'class': 'org.opennms.netmgt.provision.detector.snmp.SnmpDetector', 'parameters': []});
-    expect(scope.detector.name).toBe('ICMP');
-
-    // Do not touch the detector name after selecting an implementation if it was already set.
-    scope.setNameForClass({'name': 'MySQL', 'class': 'org.opennms.netmgt.provision.detector.tcp.TcpDetector', 'parameters': [{'port': '3306'}]});
-    expect(scope.detector.name).toBe('ICMP');
+    scope.updateAvailableParameters({
+      "name": "SNMP",
+      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
+      "parameters": [{"key": "port"}, {"key": "vbvalue"}, {"key": "oid"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "agentConfigFactory"}, {"key": "timeout"}]
+    });
+    expect(scope.availableParameters.length).toBe(7);
+    expect(scope.availableParameters[0].key).toBe("port");
   });
 
 });
