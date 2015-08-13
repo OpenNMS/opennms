@@ -142,37 +142,23 @@
     };
 
     /**
-    * @description Sets the detector class after choosing an implementation if it is different than the existing one.
-    * Otherwise, leaves the detector class unchanged.
+    * @description Update available detector parameters after changing the detector class.
     *
-    * The parameters list of the current detector is reinitialized after changing the class.
-    *
-    * @name DetectorController:setClassForName
+    * @name DetectorController:updateAvailableParameters
     * @ngdoc method
     * @methodOf DetectorController
-    * @param {object} selectedDetector the detector to be used as a reference
+    * @param {object} policyConfig the configuration of the selected policy
     */
-    $scope.setClassForName = function(selectedDetector) {
-      if (selectedDetector && $scope.detector.class != selectedDetector.class) {
-        $scope.detector.class = selectedDetector.class;
-        $scope.detector.parameter = [];
-        $scope.availableParameters = selectedDetector.parameters;
+    $scope.updateAvailableParameters = function(selectedDetector) {
+      if (selectedDetector == null) {
+        return;
       }
-    };
-
-    /**
-    * @description Sets the detector name after choosing an implementation if it has not been set.
-    * Otherwise, leaves the detector name unchanged.
-    *
-    * @name DetectorController:setNameForClass
-    * @ngdoc method
-    * @methodOf DetectorController
-    * @param {object} selectedDetector the detector to be used as a reference
-    */
-    $scope.setNameForClass = function(selectedDetector) {
-      if (selectedDetector && !$scope.detector.name) {
-        $scope.detector.name = selectedDetector.name;
-      }
+      $scope.detector.parameter = [];
+      angular.forEach($scope.availableDetectors, function(detector) {
+        if (detector.class == selectedDetector.class) {
+          $scope.availableParameters = detector.parameters;
+        }
+      });
     };
 
     // Initialization
