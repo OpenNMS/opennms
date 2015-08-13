@@ -30,9 +30,11 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 
 import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.bind.JAXBException;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -56,6 +58,8 @@ import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import com.google.common.collect.Lists;
 
@@ -85,10 +89,30 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
      * @throws MalformedURLException 
      */
     public void onInit() throws MalformedURLException, JAXBException {
-        LOG.debug("init: loading topology.");
-        load(null);
+        LOG.debug("init: loading linkd topology.");
+        try {
+            // @see http://issues.opennms.org/browse/NMS-7835
+            getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        load(null);
+                    } catch (MalformedURLException | JAXBException e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            });
+        } catch (UndeclaredThrowableException e) {
+            // I'm not sure if there's a more elegant way to do this...
+            Throwable t = e.getUndeclaredThrowable();
+            if (t instanceof MalformedURLException) {
+                throw (MalformedURLException)t;
+            } else if (t instanceof JAXBException) {
+                throw (JAXBException)t;
+            }
+        }
     }
-    
+
     public LinkdTopologyProvider() { }
 
     @Override
