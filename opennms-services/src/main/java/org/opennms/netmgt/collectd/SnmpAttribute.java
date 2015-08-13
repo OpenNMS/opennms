@@ -137,6 +137,9 @@ public class SnmpAttribute extends AbstractCollectionAttribute {
             }
 
             try {
+                if (getType().toLowerCase().startsWith("counter")) { // See NMS-7839: for RRDtool the raw counter value must be an integer.
+                    return Long.valueOf(getValue().toString()).toString();
+                }
                 return Double.valueOf(getValue().toString()).toString();
             } catch(NumberFormatException e) {
                 LOG.trace("Unable to process data received for attribute {} maybe this is not a number? See bug 1473 for more information. Skipping.", this);
