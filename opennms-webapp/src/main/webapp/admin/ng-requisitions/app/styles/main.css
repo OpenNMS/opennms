@@ -117,3 +117,12 @@ span .input-group-addon {
 .navbar-right {
     margin-right: 0 !important;
 }
+/* Fix drop-down menus */
+.dropdown-menu,
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  padding: 3px 20px !important;
+  cursor: pointer;
+  font-weight: bold;
+}
