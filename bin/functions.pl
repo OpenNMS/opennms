@@ -235,12 +235,21 @@ info("PATH = " . $ENV{'PATH'});
 info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
-chomp(my $git_branch=`$GIT symbolic-ref HEAD 2>/dev/null || $GIT rev-parse HEAD 2>/dev/null`);
+my $git_branch = "unknown";
+if (exists $ENV{'bamboo_planRepository_branch'}) {
+	$git_branch = $ENV{'bamboo_planRepository_branch'};
+} elsif (defined $GIT and -x $GIT) {
+	chomp($git_branch=`$GIT symbolic-ref HEAD 2>/dev/null || $GIT rev-parse HEAD 2>/dev/null`);
+}
+
 $git_branch =~ s,^refs/heads/,,;
 info("Git Branch = $git_branch");
 
 sub find_git {
-	my $git = $ENV{'GIT'};
+	my $git = undef;
+	if (exists $ENV{'GIT'}) {
+		$git = $ENV{'GIT'};
+	}
 
 	if (not defined $git or not -x $git) {
 		for my $dir (File::Spec->path()) {
@@ -254,7 +263,7 @@ sub find_git {
 		}
 	}
 
-	if ($git eq "" or ! -x $git) {
+	if (not defined $git or $git eq "" or ! -x $git) {
 		warning("Unable to locate git.");
 		$git = undef;
 	}
@@ -373,7 +382,7 @@ sub find_java_home {
 }
 
 sub clean_git {
-	if (-d '.git') {
+	if (-d '.git' and defined $GIT and -x $GIT) {
 		my @command = ($GIT, "clean", "-fdx", ".");
 		info("running:", @command);
 		handle_errors_and_exit_on_failure(system(@command));
