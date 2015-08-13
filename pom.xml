@@ -1213,7 +1213,7 @@
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
-    <asmVersion>5.0.3</asmVersion>
+    <asmVersion>5.0.4</asmVersion>
     <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
     <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
@@ -2278,6 +2278,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>opennms-integration-otrs-31</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -2653,6 +2658,12 @@
         <groupId>axis</groupId>
         <artifactId>axis</artifactId>
         <version>1.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>axis</groupId>
+            <artifactId>axis-wsdl4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>axis</groupId>
@@ -3533,6 +3544,11 @@
         <groupId>com.ximpleware</groupId>
         <artifactId>vtd-xml</artifactId>
         <version>2.11</version>
+      </dependency>
+      <dependency>
+        <groupId>wsdl4j</groupId>
+        <artifactId>wsdl4j</artifactId>
+        <version>1.6.3</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>

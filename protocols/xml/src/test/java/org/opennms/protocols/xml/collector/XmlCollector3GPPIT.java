@@ -53,7 +53,7 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
-    public String getXmlConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/3gpp-xml-datacollection-config.xml";
     }
 
@@ -61,7 +61,7 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
-    public String getXmlSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
     }
 
@@ -98,7 +98,7 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 147);
         // Test a JRB.
-        File file = new File(getSnmpRoot(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
         String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
         Double[] dsvalues = new Double[] { 1.0, 18.0 };
         validateJrb(file, dsnames, dsvalues);

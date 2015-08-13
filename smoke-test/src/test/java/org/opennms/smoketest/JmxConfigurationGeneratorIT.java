@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
  */
-public class JmxConfigurationGeneratorTest extends OpenNMSSeleniumTestCase {
+public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
     private static final String MBEANS_VIEW_TREE_WAIT_NAME = "com.mchange.v2.c3p0";
 

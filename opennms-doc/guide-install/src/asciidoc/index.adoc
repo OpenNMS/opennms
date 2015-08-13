@@ -15,4 +15,6 @@
 :version-label!:
 
 // Installation Guide for OpenNMS
+include::text/opennms/introduction.adoc[]
 include::text/opennms/rhel.adoc[]
+include::text/opennms/debian.adoc[]
