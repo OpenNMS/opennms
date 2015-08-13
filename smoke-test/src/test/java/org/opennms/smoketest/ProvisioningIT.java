@@ -129,7 +129,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
+        clickMenuItem("Info", "Nodes", BASE_URL + "element/nodeList.htm");
 
         try {
             // Disable implicitlyWait
@@ -148,6 +148,6 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         }
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
-        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
+        findElementByXpath("//a[contains(@href, BASE_URL + 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
     }
 }

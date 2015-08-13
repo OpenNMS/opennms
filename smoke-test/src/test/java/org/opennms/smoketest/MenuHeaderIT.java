@@ -38,69 +38,69 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testMenuEntries() throws Exception {
-        clickMenuItem("Search", null, "element/index.jsp");
+        clickMenuItem("Search", null, BASE_URL + "element/index.jsp");
         findElementByXpath("//h3[text()='Search for Nodes']");
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
+        clickMenuItem("Info", "Nodes", BASE_URL + "element/nodeList.htm");
         findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
 
-        clickMenuItem("Info", "Assets", "asset/index.jsp");
+        clickMenuItem("Info", "Assets", BASE_URL + "asset/index.jsp");
         findElementByXpath("//h3[text()='Search Asset Information']");
 
-        clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
+        clickMenuItem("Info", "Path Outages", BASE_URL + "pathOutage/index.jsp");
         findElementByXpath("//h3[text()='All Path Outages']");
 
-        clickMenuItem("Status", "Events", "event/index");
+        clickMenuItem("Status", "Events", BASE_URL + "event/index");
         findElementByXpath("//h3[text()='Event Queries']");
 
-        clickMenuItem("Status", "Alarms", "alarm/index.htm");
+        clickMenuItem("Status", "Alarms", BASE_URL + "alarm/index.htm");
         findElementByXpath("//h3[text()='Alarm Queries']");
 
-        clickMenuItem("Status", "Notifications", "notification/index.jsp");
+        clickMenuItem("Status", "Notifications", BASE_URL + "notification/index.jsp");
         findElementByXpath("//h3[text()='Notification queries']");
 
-        clickMenuItem("Status", "Outages", "outage/index.jsp");
+        clickMenuItem("Status", "Outages", BASE_URL + "outage/index.jsp");
         findElementByXpath("//h3[text()='Outage Menu']");
 
-        clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
+        clickMenuItem("Status", "Distributed Status", BASE_URL + "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
-        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
+        clickMenuItem("Status", "Surveillance", BASE_URL + "surveillance-view.jsp");
         m_driver.switchTo().frame("surveillance-view-ui");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         frontPage();
 
-        clickMenuItem("Reports", "Charts", "charts/index.jsp");
+        clickMenuItem("Reports", "Charts", BASE_URL + "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem("Reports", "Resource Graphs", "graph/index.jsp");
+        clickMenuItem("Reports", "Resource Graphs", BASE_URL + "graph/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
 
-        clickMenuItem("Reports", "KSC Reports", "KSC/index.htm");
+        clickMenuItem("Reports", "KSC Reports", BASE_URL + "KSC/index.htm");
         findElementByXpath("//h3[text()='Customized Reports']");
 
-        clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
+        clickMenuItem("Reports", "Statistics", BASE_URL + "statisticsReports/index.htm");
         findElementByXpath("//h3[text()='Statistics Report List']");
 
-        clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
+        clickMenuItem("Dashboards", "Dashboard", BASE_URL + "dashboard.jsp");
         m_driver.switchTo().frame("surveillance-view-ui");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         frontPage();
 
-        clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
+        clickMenuItem("Dashboards", "Ops Board", BASE_URL + "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
 
         frontPage();
-        clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
+        clickMenuItem("Maps", "Distributed", BASE_URL + "RemotePollerMap/index.jsp");
         m_driver.switchTo().frame("app");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
 
         frontPage();
-        clickMenuItem("Maps", "Topology", "topology");
+        clickMenuItem("Maps", "Topology", BASE_URL + "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 
         frontPage();
-        clickMenuItem("Maps", "Geographical", "node-maps");
+        clickMenuItem("Maps", "Geographical", BASE_URL + "node-maps");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
         frontPage();
