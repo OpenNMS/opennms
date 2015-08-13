@@ -129,7 +129,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");
 
-        clickMenuItem("Info", "Nodes", BASE_URL + "element/nodeList.htm");
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
             // Disable implicitlyWait

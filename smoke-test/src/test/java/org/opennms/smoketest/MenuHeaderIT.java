@@ -38,73 +38,73 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testMenuEntries() throws Exception {
-        clickMenuItem("Search", null, BASE_URL + "element/index.jsp");
+        clickMenuItem("Search", null, "element/index.jsp");
         findElementByXpath("//h3[text()='Search for Nodes']");
 
-        clickMenuItem("Info", "Nodes", BASE_URL + "element/nodeList.htm");
+        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
         findElementByXpath("//h3//span[text()='Nodes' or text()='Availability']");
 
-        clickMenuItem("Info", "Assets", BASE_URL + "asset/index.jsp");
+        clickMenuItem("Info", "Assets", "asset/index.jsp");
         findElementByXpath("//h3[text()='Search Asset Information']");
 
-        clickMenuItem("Info", "Path Outages", BASE_URL + "pathOutage/index.jsp");
+        clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
         findElementByXpath("//h3[text()='All Path Outages']");
 
-        clickMenuItem("Status", "Events", BASE_URL + "event/index");
+        clickMenuItem("Status", "Events", "event/index");
         findElementByXpath("//h3[text()='Event Queries']");
 
-        clickMenuItem("Status", "Alarms", BASE_URL + "alarm/index.htm");
+        clickMenuItem("Status", "Alarms", "alarm/index.htm");
         findElementByXpath("//h3[text()='Alarm Queries']");
 
-        clickMenuItem("Status", "Notifications", BASE_URL + "notification/index.jsp");
+        clickMenuItem("Status", "Notifications", "notification/index.jsp");
         findElementByXpath("//h3[text()='Notification queries']");
 
-        clickMenuItem("Status", "Outages", BASE_URL + "outage/index.jsp");
+        clickMenuItem("Status", "Outages", "outage/index.jsp");
         findElementByXpath("//h3[text()='Outage Menu']");
 
-        clickMenuItem("Status", "Distributed Status", BASE_URL + "distributedStatusSummary.htm");
+        clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
-        clickMenuItem("Status", "Surveillance", BASE_URL + "surveillance-view.jsp");
+        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         m_driver.switchTo().frame("surveillance-view-ui");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         frontPage();
 
-        clickMenuItem("Reports", "Charts", BASE_URL + "charts/index.jsp");
+        clickMenuItem("Reports", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem("Reports", "Resource Graphs", BASE_URL + "graph/index.jsp");
+        clickMenuItem("Reports", "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
 
-        clickMenuItem("Reports", "KSC Reports", BASE_URL + "KSC/index.htm");
+        clickMenuItem("Reports", "KSC Reports", "KSC/index.htm");
         findElementByXpath("//h3[text()='Customized Reports']");
 
-        clickMenuItem("Reports", "Statistics", BASE_URL + "statisticsReports/index.htm");
+        clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//h3[text()='Statistics Report List']");
 
-        clickMenuItem("Dashboards", "Dashboard", BASE_URL + "dashboard.jsp");
+        clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
         m_driver.switchTo().frame("surveillance-view-ui");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         frontPage();
 
-        clickMenuItem("Dashboards", "Ops Board", BASE_URL + "vaadin-wallboard");
+        clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
 
         frontPage();
-        clickMenuItem("Maps", "Distributed", BASE_URL + "RemotePollerMap/index.jsp");
+        clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
         m_driver.switchTo().frame("app");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
 
         frontPage();
-        clickMenuItem("Maps", "Topology", BASE_URL + "topology");
+        clickMenuItem("Maps", "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 
         frontPage();
-        clickMenuItem("Maps", "Geographical", BASE_URL + "node-maps");
+        clickMenuItem("Maps", "Geographical", "node-maps");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
+        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", "opennms/admin/index.jsp");
         findElementByXpath("//h3[text()='OpenNMS System']");
         findElementByXpath("//h3[text()='Provisioning']");
         findElementByXpath("//h3[text()='Event Management']");
@@ -113,15 +113,15 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Distributed Monitoring']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "opennms/admin/node/add.htm");
         findElementByXpath("//h3[text()='Node Quick-Add']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Help/Support", BASE_URL + "opennms/support/index.htm");
+        clickMenuItem("name=nav-admin-top", "Help/Support", "opennms/support/index.htm");
         findElementByXpath("//h3[text()='Commercial Support']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Log Out", BASE_URL + "opennms/j_spring_security_logout");
+        clickMenuItem("name=nav-admin-top", "Log Out", "opennms/j_spring_security_logout");
         findElementById("input_j_username");
     }
 
