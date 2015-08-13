@@ -109,16 +109,21 @@ vi ${OPENNMS_HOME}/etc/opennms-datasource.xml
                     database-name="opennms"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/opennms"
-                    user-name="** YOUR-OPENNMS-USERNAME **"
-                    password="** YOUR-OPENNMS-PASSWORD **" />
+                    user-name="** YOUR-OPENNMS-USERNAME **"<1>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><2>
 
 <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="** YOUR-OPENNMS-USERNAME **"
-                    password="** YOUR-OPENNMS-PASSWORD **" />
+                    user-name="** YOUR-OPENNMS-USERNAME **"<3>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><4>
 ----
+
+<1> Set the user name to access the _OpenNMS_ database table
+<2> Set the password to access the _OpenNMS_ database table
+<3> Set the user name for administrative changes of the _OpenNMS_ database table
+<4> Set the password for administrative changes of the _OpenNMS_ database table
 
 [[gi-install-opennms-deb-init]]
 ==== Initialize OpenNMS
