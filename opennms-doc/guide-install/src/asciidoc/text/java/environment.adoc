@@ -8,8 +8,8 @@
 To provide _Java_, applications use the `$JAVA_HOME` environment variable.
 The environment can be set for a specific user or globally for the whole system on boot time.
 
-.Path to Java on RHEL and Debian systems
-* RHEL: `/usr/java/jdk1.8.0_45`
+.Example path to Java on RHEL, Debian and Microsoft Windows systems
+* RHEL: `/usr/java/jdk1.8.0_51`
 * Debian: `/usr/lib/jvm/java-8-oracle`
 * Windows Server 2012: `C:\Program Files\Java\jre1.8.0_51`
 
@@ -36,11 +36,11 @@ export JAVA_HOME=/path/to/java
 .Option 1: Set JAVA_HOME as user specific system variable
 [source]
 ----
-setx "JAVA_HOME" "path\to\jre"
+setx "JAVA_HOME" "path\to\java"
 ----
 
 .Option 2: Set JAVA_HOME as a System variable
 [source]
 ----
-setx /M "JAVA_HOME" "path\to\jre"
+setx /M "JAVA_HOME" "path\to\java"
 ----
