@@ -75,7 +75,7 @@ WARNING: There is currently an open issue in the installer link:http://issues.op
          Username and password are not written to the `opennms-datasource.xml` file and has to be changed manually.
          The initialize of the database will fail with an authentication error.
 
-.Add the username and password in *both* sections
+.Configuration for database authentication in _OpenNMS_
 [source, xml]
 ----
 <jdbc-data-source name="opennms"
