@@ -14,6 +14,19 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+// Installation Guide for Java environment
+include::text/java/introduction.adoc[]
+include::text/java/rhel.adoc[]
+include::text/java/debian.adoc[]
+include::text/java/windows-server.adoc[]
+include::text/java/environment.adoc[]
+
+// Installation Guide for OpenNMS
+include::text/opennms/introduction.adoc[]
+include::text/opennms/rhel.adoc[]
+include::text/opennms/debian.adoc[]
+include::text/opennms/windows.adoc[]
+
 // Installation Guide for Time Series Database Newts
 include::text/newts/introduction.adoc[]
 include::text/newts/cassandra-rhel.adoc[]

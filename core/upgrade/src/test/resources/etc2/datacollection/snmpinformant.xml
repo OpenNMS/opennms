@@ -1,0 +1,463 @@
+<?xml version="1.0"?>
+<datacollection-group name="SNMP-Informant">
+
+    <!-- SNMP Informant Resource Types -->
+    <resourceType name="sinfCpuInstance" label="SNMP Informant CPU"
+                  resourceLabel="CPU${sinfCpuInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ainfCpuInstance" label="SNMP Informant Advanced CPU"
+                  resourceLabel="CPU${ainfCpuInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="sinfLDskInstance" label="SNMP Informant Logical Disk"
+                  resourceLabel="${sinfLDskInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ainfLDskInstance" label="SNMP Informant Advanced Logical Disk"
+                  resourceLabel="${ainfLDskInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="sinfNetInstance" label="SNMP Informant Network Interface"
+                  resourceLabel="${sinfNetInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ainfNetInstance" label="SNMP Informant Advanced Network Interface"
+                  resourceLabel="${ainfNetInstance}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+     
+      <!-- SNMP Informant MIBs -->
+      <group name="snmpinformant-cpu" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.1"  instance="sinfCpuInstance" alias="sinfCpuInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2"  instance="sinfCpuInstance" alias="sinfCpuPctDPCTime"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3"  instance="sinfCpuInstance" alias="sinfCpuPctIntrTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4"  instance="sinfCpuInstance" alias="sinfCpuPctPrivTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5"  instance="sinfCpuInstance" alias="sinfCpuPctProcTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6"  instance="sinfCpuInstance" alias="sinfCpuPctUserTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7"  instance="sinfCpuInstance" alias="sinfCpuAPCBypPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8"  instance="sinfCpuInstance" alias="sinfCpuDPCBypPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9"  instance="sinfCpuInstance" alias="sinfCpuDPCRate"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10" instance="sinfCpuInstance" alias="sinfCpuDPCsQdPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11" instance="sinfCpuInstance" alias="sinfCpuIntrsPerSec"  type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-cpu" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.1"  instance="ainfCpuInstance" alias="ainfCpuInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.5"  instance="ainfCpuInstance" alias="ainfCpuPctDPCTime"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.6"  instance="ainfCpuInstance" alias="ainfCpuPctIdleTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.7"  instance="ainfCpuInstance" alias="ainfCpuPctIntrTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.8"  instance="ainfCpuInstance" alias="ainfCpuPctPrivTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.9"  instance="ainfCpuInstance" alias="ainfCpuPctProcTime"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.14" instance="ainfCpuInstance" alias="ainfCpuDPCRate"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.15" instance="ainfCpuInstance" alias="ainfCpuDPCsQdPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.65.1.16" instance="ainfCpuInstance" alias="ainfCpuIntrsPerSec"  type="Gauge32" />
+      </group>
+
+      <group name="snmpinformant-disk" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.1"  instance="sinfLDskInstance" alias="sinfLDskInstance"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2"  instance="sinfLDskInstance" alias="sinfLDskPctDskRdTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3"  instance="sinfLDskInstance" alias="sinfLDskPctDskTm"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.4"  instance="sinfLDskInstance" alias="sinfLDskPctDskWtTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.5"  instance="sinfLDskInstance" alias="sinfLDskPctFreeSpc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.6"  instance="sinfLDskInstance" alias="sinfLDskPctIdleTm"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.7"  instance="sinfLDskInstance" alias="sinfLDskAvDskQLn"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.8"  instance="sinfLDskInstance" alias="sinfLDskAvDskRdQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.9"  instance="sinfLDskInstance" alias="sinfLDskAvDskWtQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.10" instance="sinfLDskInstance" alias="sinfLDskAvSecPerRd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.11" instance="sinfLDskInstance" alias="sinfLDskAvSecPerXf" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.12" instance="sinfLDskInstance" alias="sinfLDskAvSecPerWt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.13" instance="sinfLDskInstance" alias="sinfLDskCurrentQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.14" instance="sinfLDskInstance" alias="sinfLDskBytPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.15" instance="sinfLDskInstance" alias="sinfLDskRdBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.16" instance="sinfLDskInstance" alias="sinfLDskRdsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.17" instance="sinfLDskInstance" alias="sinfLDskXfersPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.18" instance="sinfLDskInstance" alias="sinfLDskWtBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19" instance="sinfLDskInstance" alias="sinfLDskWtsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20" instance="sinfLDskInstance" alias="sinfLDskFreeMbytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21" instance="sinfLDskInstance" alias="sinfLDskSpltIOPrSc" type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-disk" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.1"  instance="ainfLDskInstance" alias="ainfLDskInstance"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.2"  instance="ainfLDskInstance" alias="ainfLDskPctDskRdTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.3"  instance="ainfLDskInstance" alias="ainfLDskPctDskTm"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.4"  instance="ainfLDskInstance" alias="ainfLDskPctDskWtTm" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.5"  instance="ainfLDskInstance" alias="ainfLDskPctFreeSpc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.6"  instance="ainfLDskInstance" alias="ainfLDskIdleTm"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.7"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerRd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.8"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerXf" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.9"  instance="ainfLDskInstance" alias="ainfLDskAvBytPerWr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.10" instance="ainfLDskInstance" alias="ainfLDskAvDskQLn"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.11" instance="ainfLDskInstance" alias="ainfLDskAvDskRdQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.12" instance="ainfLDskInstance" alias="ainfLDskAvDskWtQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.13" instance="ainfLDskInstance" alias="ainfLDskAvSecPerRd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.14" instance="ainfLDskInstance" alias="ainfLDskAvSecPerXf" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.15" instance="ainfLDskInstance" alias="ainfLDskAvSecPerWt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.16" instance="ainfLDskInstance" alias="ainfLDskCurrentQLn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.17" instance="ainfLDskInstance" alias="ainfLDskBytPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.18" instance="ainfLDskInstance" alias="ainfLDskRdBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.19" instance="ainfLDskInstance" alias="ainfLDskRdsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.20" instance="ainfLDskInstance" alias="ainfLDskXfersPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.21" instance="ainfLDskInstance" alias="ainfLDskWtBytPerSc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.22" instance="ainfLDskInstance" alias="ainfLDskWtsPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.23" instance="ainfLDskInstance" alias="ainfLDskFreeMbytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.44.1.24" instance="ainfLDskInstance" alias="ainfLDskSpltIOPrSc" type="Gauge32" />
+      </group>
+
+      <group name="snmpinformant-exchange-is" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.1"   instance="0" alias="isACLUpgrdCompUpgrd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.2"   instance="0" alias="isACLUpgrdFailures"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.3"   instance="0" alias="isACLUpgrdHtRtryLst" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.4"   instance="0" alias="isACLUpgrdPartUpgrd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.5"   instance="0" alias="isACLUpgrdTimeAttpt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.6"   instance="0" alias="isActAnonUserCount"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.7"   instance="0" alias="isActConnCount"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.8"   instance="0" alias="isActUserCount"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.9"   instance="0" alias="isAnonUserCount"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.10"  instance="0" alias="isApptInstCrtRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.11"  instance="0" alias="isApptInstDelRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.12"  instance="0" alias="isApptInstCreated"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.13"  instance="0" alias="isApptInstDeleted"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.14"  instance="0" alias="isBgrndExpQueueLgth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.15"  instance="0" alias="isClntLat10SecRPCs"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.16"  instance="0" alias="isClntLat2SecRPCs"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.17"  instance="0" alias="isClntLat5SecRPCs"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.18"  instance="0" alias="isClntRPCsFail"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.19"  instance="0" alias="isClntRPCsFailPS"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.20"  instance="0" alias="isClntRPCsFailAcDny" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.21"  instance="0" alias="isClntRPCsFAccDnyPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.22"  instance="0" alias="isClntRPCsFOErrs"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.23"  instance="0" alias="isClntRPCsFOErrsPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.24"  instance="0" alias="isClntRPCsFCallCan"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.25"  instance="0" alias="isClntRPCsFCCanPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.26"  instance="0" alias="isClntRPCsFCallFail" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.27"  instance="0" alias="isClntRPCsFCallFPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.28"  instance="0" alias="isClntRPCsFSvrBsy"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.29"  instance="0" alias="isClntRPCsFSvrBsyPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.30"  instance="0" alias="isClntRPCsFSvrUavl"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.31"  instance="0" alias="isClntRPCFSvrUavlPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.32"  instance="0" alias="isClntRPCsAttpt"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.33"  instance="0" alias="isClntRPCsAttptPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.34"  instance="0" alias="isClntRPCsSucc"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.35"  instance="0" alias="isClntRPCsSuccPS"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.36"  instance="0" alias="isClntTotRepLat"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.37"  instance="0" alias="isConnectionCount"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.38"  instance="0" alias="isDLMemCacheEntCnt"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.39"  instance="0" alias="isDLMemCacheHits"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.40"  instance="0" alias="isDLMemCacheMisses"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.41"  instance="0" alias="isDLMemCacheSize"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.42"  instance="0" alias="isDBSessionHitRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.43"  instance="0" alias="isExchmemCurrBytAll" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.44"  instance="0" alias="isExchmemCurrNumVrt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.45"  instance="0" alias="isExchmemCurrVrtByt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.46"  instance="0" alias="isExchmemMaxBytAllc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.47"  instance="0" alias="isExchmemMaxVrtBytA" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.48"  instance="0" alias="isExchmemNumAddHeap" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.49"  instance="0" alias="isExchmemNumHeaps"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.50"  instance="0" alias="isExchmemNumHeapsME" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.51"  instance="0" alias="isExchmemNumMemErr"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.52"  instance="0" alias="isExchmemTotNumVrtA" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.53"  instance="0" alias="isFBPublishCount"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.54"  instance="0" alias="isFBPublishRate"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.55"  instance="0" alias="isMaxAnonUsers"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.56"  instance="0" alias="isMaxConn"           type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.57"  instance="0" alias="isMaxUsers"          type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.58"  instance="0" alias="isPeakPushNotCcheSz" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.59"  instance="0" alias="isPushNotCacheSize"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.60"  instance="0" alias="isPushNotGenPS"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.61"  instance="0" alias="isPushNotSkipPS"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.62"  instance="0" alias="isRPCAverLatency"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.63"  instance="0" alias="isRPCClntBytesRead"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.64"  instance="0" alias="isRPCClntBytesWrite" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.65"  instance="0" alias="isRPCClntUncompBRd"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.66"  instance="0" alias="isRPCClntUncompBWrt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.67"  instance="0" alias="isRPCNumOfSlowPckts" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.68"  instance="0" alias="isRPCOperationsPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.69"  instance="0" alias="isRPCPacketsPS"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.70"  instance="0" alias="isRPCRequests"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.71"  instance="0" alias="isRPCRequestsPeak"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.72"  instance="0" alias="isReadBytRPCClntPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.73"  instance="0" alias="isRecurApptDelRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.74"  instance="0" alias="isRecurApptModRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.75"  instance="0" alias="isRecurApptCreated"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.76"  instance="0" alias="isRecurApptDeleted"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.77"  instance="0" alias="isRecurApptModified" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.78"  instance="0" alias="isRecurApptCreateRt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.79"  instance="0" alias="isRecurMasterApptEx" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.80"  instance="0" alias="isRecurMasterExRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.81"  instance="0" alias="isSngApptCreateRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.82"  instance="0" alias="isSngApptDelRate"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.83"  instance="0" alias="isSngApptModifyRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.84"  instance="0" alias="isSngApptCreated"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.85"  instance="0" alias="isSngApptDeleted"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.86"  instance="0" alias="isSngApptModified"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.87"  instance="0" alias="isUserCount"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.88"  instance="0" alias="isVMLargestBlkSize"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.89"  instance="0" alias="isVMTotal16MBFrBlk"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.90"  instance="0" alias="isVMTotalFreeBlocks" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.91"  instance="0" alias="isVMTotalLrgFBlkByt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.92"  instance="0" alias="isVirusScanBytesScn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.93"  instance="0" alias="isVirusScanFilesCln" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.94"  instance="0" alias="isVirusScanFilClnPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.95"  instance="0" alias="isVirusScanFilesQtn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.96"  instance="0" alias="isVirusScanFilQtnPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.97"  instance="0" alias="isVirusScanFilesScn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.98"  instance="0" alias="isVirusScanFilScnPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.99"  instance="0" alias="isVirusScFoldScnBkg" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.100" instance="0" alias="isVirusScanMessCln"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.101" instance="0" alias="isVirusScanMesClnPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.102" instance="0" alias="isVirusScanMessDel"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.103" instance="0" alias="isVirusScanMesDelPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.104" instance="0" alias="isVirusScanMessProc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.105" instance="0" alias="isVirusScanMsProcPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.106" instance="0" alias="isVirusScanMessQuar" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.107" instance="0" alias="isVirusScanMsQuarPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.108" instance="0" alias="isVirusScanMsScnBkg" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.109" instance="0" alias="isVirusScnQueueLgth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.110" instance="0" alias="isWriteBytRPCClntPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.111" instance="0" alias="isClntBgRPCsFail"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.112" instance="0" alias="isClntBgRPCsFailPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.113" instance="0" alias="isClntBgRPCsSucc"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.114" instance="0" alias="isClntBgRPCsSuccPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.115" instance="0" alias="isClntFgRPCsFailed"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.116" instance="0" alias="isClntFgRPCFailedPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.117" instance="0" alias="isClientFgdRPCsSucc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.118" instance="0" alias="isClientFgRPCSuccPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.119" instance="0" alias="isOABDiffDloadAtt"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.120" instance="0" alias="isOABDiffDloadBytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.120" instance="0" alias="isOABDiffDloadBytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.121" instance="0" alias="isOABDiffDloadBytPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.122" instance="0" alias="isOABFullDloadAtt"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.123" instance="0" alias="isOABFullDloadAttBl" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.124" instance="0" alias="isOABFullDloadBytes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.125" instance="0" alias="isOABFullDloadBytPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.126" instance="0" alias="isSlowQPThreads"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.127" instance="0" alias="isSlowSearchThreads" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.128" instance="0" alias="is55FolderUpgrdCnt"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.129" instance="0" alias="is55FolderUpgrdRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.130" instance="0" alias="is55MsgUpgradeCount" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.131" instance="0" alias="is55MsgUpgradeRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.132" instance="0" alias="isActiveTempStreams" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.133" instance="0" alias="isHeapAllocations"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.134" instance="0" alias="isHeapAllocRate"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.135" instance="0" alias="isHeapAllocTotal"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.136" instance="0" alias="isHeapSize"          type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.137" instance="0" alias="isISOwnThreadCount"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.138" instance="0" alias="isISTASKDepth"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.139" instance="0" alias="isISTASKInvokeRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.140" instance="0" alias="isISTASKInvoked"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.141" instance="0" alias="isISTASKQueueRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.142" instance="0" alias="isISTASKQueued"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.143" instance="0" alias="isMBCacheHitRate"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.144" instance="0" alias="isMBCacheHitRatePct" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.145" instance="0" alias="isMBCacheHitRatePBs" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.146" instance="0" alias="isMBCacheHits"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.147" instance="0" alias="isMBCacheMissRate"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.148" instance="0" alias="isMBCacheMissRatePt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.149" instance="0" alias="isMBCacheMisses"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.150" instance="0" alias="isMBCacheQueries"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.151" instance="0" alias="isMBCacheQueryRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.152" instance="0" alias="isMailboxCacheSize"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.153" instance="0" alias="isMDBTASKIdleCount"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.154" instance="0" alias="isMDBTASKInvokeRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.155" instance="0" alias="isMDBTASKQueueDepth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.156" instance="0" alias="isMDBTASKQueueRate"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.157" instance="0" alias="isMDBTASKTasksInvkd" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.158" instance="0" alias="isMDBTASKTasksQueue" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.159" instance="0" alias="isMDBTASKThreadCnt"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.160" instance="0" alias="isNumberOfAXBEvents" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.161" instance="0" alias="isNumberOfAXBObjts"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.162" instance="0" alias="isNumOfCRITSPOOLEnt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.163" instance="0" alias="isNumOfStoreCritSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.164" instance="0" alias="isPeakTmpStreamSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.165" instance="0" alias="isPeakTmpStreams"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.166" instance="0" alias="isTotTempStreamSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.167" instance="0" alias="isTotalTempStreams"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.168" instance="0" alias="isVirusScanBytRead"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.169" instance="0" alias="isVirusScanBytWrit"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.170" instance="0" alias="isVirusScanChkTOuts" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.171" instance="0" alias="isVirusScnChkTOutPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.172" instance="0" alias="isVirusScanChkBlked" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.173" instance="0" alias="isVirusScnChksBlkPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.174" instance="0" alias="isVirusScnChkNotSat" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.175" instance="0" alias="isVirScnChkNotSatPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.176" instance="0" alias="isVirScnChkSatInStp" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.177" instance="0" alias="isVirScnCkSatInStPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.178" instance="0" alias="isVirScnCkStMtrIStp" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.179" instance="0" alias="isVrScCkSatMsInStPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.180" instance="0" alias="isVrScCkSatMFTStmp"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.181" instance="0" alias="isVrScChkStMFTStpPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.182" instance="0" alias="isVirScMsgsScanMAPI" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.183" instance="0" alias="isVirScMsgScnMAPIPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.184" instance="0" alias="isVirScMsgScnMIME"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.185" instance="0" alias="isVirScMsgScnMIMEPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.186" instance="0" alias="isVirScQLenLowPrior" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.14.187" instance="0" alias="isVirusScanThreads"  type="Gauge32" />
+      </group>
+
+      <group name="snmpinformant-exchange-mta" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.1"  instance="0" alias="mtaAdjacentmtaAssoc" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.2"  instance="0" alias="mtaAdminConnections" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.3"  instance="0" alias="mtaAdmIntRcvBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.4"  instance="0" alias="mtaAdmIntXmtBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.5"  instance="0" alias="mtaDeferredDelMsgs"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.6"  instance="0" alias="mtaDiskFileDelPS"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.7"  instance="0" alias="mtaDiskFileOpensPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.8"  instance="0" alias="mtaDiskFileReadsPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.9"  instance="0" alias="mtaDiskFileSyncsPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.10" instance="0" alias="mtaDiskFileWritesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.11" instance="0" alias="mtaExDSReadCallsPS"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.12" instance="0" alias="mtaFreeElements"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.13" instance="0" alias="mtaFreeHeaders"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.14" instance="0" alias="mtaInboundBytesTot"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.15" instance="0" alias="mtaInboundMessTot"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.16" instance="0" alias="mtaLANReceivBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.17" instance="0" alias="mtaLANXmitBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.18" instance="0" alias="mtaMessageBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.19" instance="0" alias="mtaMessagesPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.20" instance="0" alias="mtaOutboundBytesTot" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.21" instance="0" alias="mtaOutboundMessTot"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.22" instance="0" alias="mtaRASReceivBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.23" instance="0" alias="mtaRASXmitBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.24" instance="0" alias="mtaTCPpIPRcvBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.25" instance="0" alias="mtaTCPpIPXmtBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.26" instance="0" alias="mtaTP4ReceivBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.27" instance="0" alias="mtaTP4XmitBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.28" instance="0" alias="mtaThreadsInUse"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.29" instance="0" alias="mtaTotalFailedConv"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.30" instance="0" alias="mtaTotalLoopsDetect" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.31" instance="0" alias="mtaTotalReciptsIn"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.32" instance="0" alias="mtaTotalReciptsOut"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.33" instance="0" alias="mtaTotalRcptsQueued" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.34" instance="0" alias="mtaTotalSuccessConv" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.35" instance="0" alias="mtaWorkQueueBytes"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.36" instance="0" alias="mtaWorkQueueLength"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.37" instance="0" alias="mtaX25ReceivBytesPS" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.38" instance="0" alias="mtaX25XmitBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.39" instance="0" alias="mtaXAPIClients"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.40" instance="0" alias="mtaXAPIGateways"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.41" instance="0" alias="mtaXAPIRcvBytesPS"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.5.18.42" instance="0" alias="mtaXAPIXsmitBytesPS" type="Gauge32" />
+      </group>
+
+      <group name="snmpinformant-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.3"  instance="0" alias="sinfMemAvailMB"      type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.4"  instance="0" alias="sinfMemComBytes"     type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.5"  instance="0" alias="sinfMemCacheBytes"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.6"  instance="0" alias="sinfMemCacheBytesPk" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.7"  instance="0" alias="sinfMemPageFaultsPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.8"  instance="0" alias="sinfMemPagesInputPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.9"  instance="0" alias="sinfMemPagesOutPS"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.10" instance="0" alias="sinfMemPagesPerSec"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.11" instance="0" alias="sinfMemPNonpagedByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.12" instance="0" alias="sinfMemPPagedBytes"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.13" instance="0" alias="sinfMemPPagedResByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.14" instance="0" alias="sinfMemSysCacheResB" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.15" instance="0" alias="sinfMemSysCodeResB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.16" instance="0" alias="sinfMemSysCodeTotB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.17" instance="0" alias="sinfMemSysDrvResB"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.18" instance="0" alias="sinfMemSysDrvTotB"   type="Gauge" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.1"  instance="0" alias="ainfMemPctCommitUsd" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.4"  instance="0" alias="ainfMemAvailMB"      type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.12" instance="0" alias="ainfMemPageFaultsPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.15" instance="0" alias="ainfMemPagesInputPS" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.16" instance="0" alias="ainfMemPagesOutPS"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.17" instance="0" alias="ainfMemPagesPerSec"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.19" instance="0" alias="ainfMemPNonpagedByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.21" instance="0" alias="ainfMemPPagedBytes"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.22" instance="0" alias="ainfMemPPagedResByt" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.23" instance="0" alias="ainfMemSysCacheResB" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.24" instance="0" alias="ainfMemSysCodeResB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.25" instance="0" alias="ainfMemSysCodeTotB"  type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.26" instance="0" alias="ainfMemSysDrvResB"   type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.46.27" instance="0" alias="ainfMemSysDrvTotB"   type="Gauge" />
+      </group>
+
+      <group name="snmpinformant-processes" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.1" instance="0" alias="sinfProcesses" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.2" instance="0" alias="sinfThreads"   type="Gauge" />
+      </group>
+
+      <group name="snmpinformant-sqlserver" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.1"  instance="0" alias="ascAuthPerSec"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.2"  instance="0" alias="ascCompletionPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.3"  instance="0" alias="ascCurrAgents"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.4"  instance="0" alias="ascCurrAuth"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.5"  instance="0" alias="ascCurrConn"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.6"  instance="0" alias="ascCurrConnInProg"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.7"  instance="0" alias="ascCurrHttpConn"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.8"  instance="0" alias="ascFailuresPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.9"  instance="0" alias="ascRequestsPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.10" instance="0" alias="ascSuccessesPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.11" instance="0" alias="ascTotalAuth"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.12" instance="0" alias="ascTotalCompletions" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.13" instance="0" alias="ascTotalFailures"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.14" instance="0" alias="ascTotalRequests"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.3.2.15" instance="0" alias="ascTotalSuccesses"   type="Gauge32" />
+      </group>
+
+      <group name="snmpinformant-network" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.1"  instance="sinfNetInstance" alias="sinfNetInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.2"  instance="sinfNetInstance" alias="netBytesRcvdPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.3"  instance="sinfNetInstance" alias="netBytesSentPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.4"  instance="sinfNetInstance" alias="netBytesTotalPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.5"  instance="sinfNetInstance" alias="netCurrentBandwidth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.6"  instance="sinfNetInstance" alias="netOutputQueueLen"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.7"  instance="sinfNetInstance" alias="netPktsOutDiscard"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.8"  instance="sinfNetInstance" alias="netPktsOutErrors"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.9"  instance="sinfNetInstance" alias="netPktsRcvdDiscard"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.10" instance="sinfNetInstance" alias="netPktsRcvdErrors"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.11" instance="sinfNetInstance" alias="netPktsRcvdUnknown"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.12" instance="sinfNetInstance" alias="netPktsRcvdPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.13" instance="sinfNetInstance" alias="netPktsSentPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.1.3.1.14" instance="sinfNetInstance" alias="netPktsPerSec"       type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-network" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.1"  instance="ainfNetInstance" alias="ainfNetInstance"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.2"  instance="ainfNetInstance" alias="ainBytesRcvdPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.3"  instance="ainfNetInstance" alias="ainBytesSentPerSec"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.4"  instance="ainfNetInstance" alias="ainBytesTotalPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.5"  instance="ainfNetInstance" alias="ainCurrentBandwidth" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.6"  instance="ainfNetInstance" alias="ainOutputQueueLen"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.7"  instance="ainfNetInstance" alias="ainPktsOutDiscard"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.8"  instance="ainfNetInstance" alias="ainPktsOutErrors"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.9"  instance="ainfNetInstance" alias="ainPktsRcvdDiscard"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.10" instance="ainfNetInstance" alias="ainPktsRcvdErrors"   type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.11" instance="ainfNetInstance" alias="ainPktsRcvdNUPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.12" instance="ainfNetInstance" alias="ainPktsRcvdUCPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.13" instance="ainfNetInstance" alias="ainPktsRcvdUnknown"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.14" instance="ainfNetInstance" alias="ainPktsRcvdPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.15" instance="ainfNetInstance" alias="ainPktsSentNUPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.16" instance="ainfNetInstance" alias="ainPktsSentUCPerSec" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.17" instance="ainfNetInstance" alias="ainPktsSentPerSec"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.52.1.18" instance="ainfNetInstance" alias="ainPktsPerSec"       type="Gauge32" />
+      </group>
+
+      <!-- This group requires the pay-for SNMP Informant Advanced agent -->
+      <group name="snmpinformant-adv-termsvc-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.1" instance="0" alias="sinfTsActiveSess"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.2" instance="0" alias="sinfTsInactiveSess" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9600.1.2.81.3" instance="0" alias="sinfTsTotalSess"    type="gauge" />
+      </group>
+
+</datacollection-group>

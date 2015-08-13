@@ -191,6 +191,8 @@ disparate nodes.
 %package plugins
 Summary:	All Plugins
 Group:		Applications/System
+Requires(pre):	%{name}-plugin-northbounder-jms
+Requires:	%{name}-plugin-northbounder-jms
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
 Requires(pre):	%{name}-plugin-provisioning-rancid
@@ -222,6 +224,19 @@ Requires:	%{name}-plugin-collector-vtdxml-handler
 
 %description plugins
 This installs all optional plugins.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-northbounder-jms
+Summary:	JMS Alarm Northbounder
+Group:		Applications/System
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-northbounder-jms
+This northbounder allows you to send OpenNMS alarms to an 
+external JMS listener.
 
 %{extrainfo}
 %{extrainfo2}
@@ -559,6 +574,8 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
@@ -570,7 +587,6 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
@@ -582,6 +598,8 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v '3gpp' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
@@ -593,7 +611,6 @@ find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -618,31 +635,33 @@ find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v 'ncs-' | \
-	grep -v 'provisioning-adapter' | \
-	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
+	grep -v 'gnu-crypto' | \
 	grep -v 'jdhcp' | \
 	grep -v 'jira' | \
-	grep -v 'org.opennms.protocols.nsclient' | \
-	grep -v 'org.opennms.protocols.radius' | \
-	grep -v 'gnu-crypto' | \
 	grep -v 'jradius' | \
+	grep -v 'ncs-' | \
+	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
-	grep -v 'org.opennms.protocols.xml' | \
-	grep -v 'opennms-vtdxml-collector-handler' | \
-	grep -v 'vtd-xml' | \
-	grep -v 'org.opennms.protocols.xmp' | \
-	grep -v 'xmp' | \
-	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
-	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+	grep -v 'org.opennms.features.juniper-tca-collector' | \
+	grep -v 'org.opennms.protocols.cifs' | \
+	grep -v 'org.opennms.protocols.dhcp' | \
+	grep -v 'org.opennms.protocols.nsclient' | \
+	grep -v 'org.opennms.protocols.radius' | \
+	grep -v 'org.opennms.protocols.xml' | \
+	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'opennms-vtdxml-collector-handler' | \
+	grep -v 'provisioning-adapter' | \
+	grep -v 'vtd-xml' | \
+	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    sort >> %{_tmppath}/files.main
+# Put the etc, lib, and system subdirectories into the package
+find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUILD_ROOT%{instprefix}/system -type d | \
+	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
@@ -715,6 +734,12 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 
 %files plugins
+
+%files plugin-northbounder-jms
+%defattr(644 root root 755)
+%{instprefix}/lib/opennms-alarm-northbounder-jms-*.jar
+%config(noreplace) %{instprefix}/etc/jms-northbounder-configuration.xml
+%{sharedir}/etc-pristine/jms-northbounder-configuration.xml
 
 %files plugin-provisioning-dns
 %defattr(664 root root 775)

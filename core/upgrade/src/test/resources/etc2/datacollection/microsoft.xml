@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<datacollection-group name="Microsoft">
+
+      <group name="windows-host" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+        <!-- Memory in KBytes -->
+        <mibObj oid=".1.3.6.1.2.1.25.2.2"     instance="0" alias="memorySize"     type="integer" />
+      </group>
+
+      <!-- Microsoft MIBs -->
+      <group name="microsoft-http" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.5"  instance="0" alias="totalFilesSent"      type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.6"  instance="0" alias="currAnonUsers"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.7"  instance="0" alias="currNonAnonUsers"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.12" instance="0" alias="currentConnections"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.13" instance="0" alias="maxConnections"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.14" instance="0" alias="connectionAttempts"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.15" instance="0" alias="logonAttempts"       type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.16" instance="0" alias="totalGets"           type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.17" instance="0" alias="totalPosts"          type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.18" instance="0" alias="totalHeads"          type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.19" instance="0" alias="totalOthers"         type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.20" instance="0" alias="totalCGIRequests"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.21" instance="0" alias="totalBGIRequests"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.311.1.7.3.1.22" instance="0" alias="totalNotFoundErrors" type="Counter" />
+      </group>
+
+      <systemDef name="Microsoft Windows NT/2000">
+        <sysoidMask>.1.3.6.1.4.1.311.1.1.3.1.</sysoidMask>
+        <collect>
+          <includeGroup>checkpoint</includeGroup>
+          <includeGroup>cisco-ccm</includeGroup>
+          <includeGroup>compaq-insight-manager-stats</includeGroup>
+          <includeGroup>domino-stats</includeGroup>
+          <includeGroup>microsoft-http</includeGroup>
+          <includeGroup>openmanage-coolingdevices</includeGroup>
+          <includeGroup>openmanage-temperatureprobe</includeGroup>
+          <includeGroup>openmanage-powerusage</includeGroup>
+          <includeGroup>snmpinformant-cpu</includeGroup>
+          <includeGroup>snmpinformant-adv-cpu</includeGroup>
+          <includeGroup>snmpinformant-disk</includeGroup>
+          <includeGroup>snmpinformant-adv-disk</includeGroup>
+          <includeGroup>snmpinformant-exchange-mta</includeGroup>
+          <includeGroup>snmpinformant-exchange-is</includeGroup>
+          <includeGroup>snmpinformant-memory</includeGroup>
+          <includeGroup>snmpinformant-adv-memory</includeGroup>
+          <includeGroup>snmpinformant-processes</includeGroup>
+          <includeGroup>snmpinformant-sqlserver</includeGroup>
+          <includeGroup>snmpinformant-network</includeGroup>
+          <includeGroup>snmpinformant-adv-network</includeGroup>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>windows-host</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
