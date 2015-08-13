@@ -96,6 +96,8 @@ createuser -P opennms
 createdb -O opennms opennms
 ----
 
+To allow _OpenNMS_ access to the database over the local network _PostgreSQL_ has to be configured.
+
 [source, shell]
 ----
 vi /var/lib/pgsql/data/pg_hba.conf
@@ -115,6 +117,8 @@ host    all             all             ::1/128                 md5<1>
 ----
 systemctl reload postgresql
 ----
+
+In the next step configure the _OpenNMS_ database configuration.
 
 [source, shell]
 ----
