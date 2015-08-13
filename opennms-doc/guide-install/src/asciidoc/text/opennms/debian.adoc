@@ -16,7 +16,7 @@ The setup process is described in the following steps:
 [[gi-install-opennms-deb-repo]]
 ==== Setup OpenNMS Debian repository
 
-.Content of the new _OpenNMS Debian_ repository file `/etc/apt/sources.list.d/opennms.list`
+.Create a new file `/etc/apt/sources.list.d/opennms.list` for the _OpenNMS Debian_ repository.
 [source, shell]
 ----
 deb http://debian.opennms.org stable main
