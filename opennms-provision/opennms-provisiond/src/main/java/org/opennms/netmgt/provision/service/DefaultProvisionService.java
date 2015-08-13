@@ -525,6 +525,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     monSvcs.clear();
                 }
 
+                dbIface.updateSnmpInterface(scannedIface);
                 dbIface.mergeInterfaceAttributes(scannedIface);
                 LOG.info("Updating IpInterface {}", dbIface);
                 m_ipInterfaceDao.update(dbIface);
