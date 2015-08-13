@@ -51,7 +51,7 @@ To install a different release the repository files have to be installed and man
 
 ==== Specific Release on RHEL-based system
 
-.RHEL-based system change the repository base URL in the file
+.Change the directory in the base URL to select a release to install
 [source, shell]
 ----
 [opennms-stable-common]
