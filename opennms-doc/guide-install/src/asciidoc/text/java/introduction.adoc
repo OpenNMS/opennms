@@ -6,10 +6,10 @@
 == Installing Oracle Java Environment
 
 Installing _Oracle Java 8_ requires external installation packages.
-These packages are provided from _Oracle_ or 3rd party maintainer for the _Debian_ and _Ubuntu_ based _Linux Distributions_.
+These packages are provided from _Oracle_ or 3rd party maintainer for the _Debian_ and _Ubuntu-based_ _Linux Distributions_.
 The following tools should be installed to follow this installation manual:
 
-* download files requires in some scripts `wget` and `curl`
+* download files and tools with `wget` and `curl`
 * extract archives with `tar`
 * text manipulation with `sed`
 * Editor, e.g. `vi`, `nano` or `joe`
