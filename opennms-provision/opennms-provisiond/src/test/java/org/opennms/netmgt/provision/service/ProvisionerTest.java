@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
@@ -116,6 +117,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
@@ -813,6 +815,50 @@ public class ProvisionerTest extends ProvisioningTestCase implements Initializin
         assertEquals(4, getInterfaceDao().get(node, "198.51.100.201").getSnmpInterface().getIfIndex().intValue());
         assertEquals(5, getInterfaceDao().get(node, "198.51.100.204").getIfIndex().intValue());
         assertEquals(5, getInterfaceDao().get(node, "198.51.100.204").getSnmpInterface().getIfIndex().intValue());
+    }
+
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    // Start the test with an empty SNMP agent
+    @JUnitSnmpAgent(host="198.51.100.201", port=161, resource="classpath:snmpwalk-empty.properties")
+    public void testProvisionerServiceRescanAfterAddingSnmpNms7838() throws Exception {
+        importFromResource("classpath:/requisition_then_scan2.xml", Boolean.TRUE.toString());
+
+        final List<OnmsNode> nodes = getNodeDao().findAll();
+        final OnmsNode node = nodes.get(0);
+
+        runPendingScans();
+
+        m_nodeDao.flush();
+
+        assertEquals(1, getInterfaceDao().countAll());
+
+        // Make sure that the OnmsIpInterface doesn't have an ifIndex
+        assertNull(getInterfaceDao().get(node, "198.51.100.201").getIfIndex());
+
+        // Make sure that no OnmsSnmpInterface records exist for the node
+        assertNull(getSnmpInterfaceDao().findByNodeIdAndIfIndex(node.getId(), 4));
+        assertNull(getSnmpInterfaceDao().findByNodeIdAndIfIndex(node.getId(), 5));
+
+        LOG.info("******************** ADDING SNMP DATA ********************");
+
+        // Add some SNMP data to the agent
+        m_mockSnmpDataProvider.setDataForAddress(new SnmpAgentAddress(addr("198.51.100.201"), 161), new DefaultResourceLoader().getResource("classpath:snmpTestData3.properties"));
+
+        // Rescan
+        m_mockEventIpcManager.sendEventToListeners(nodeUpdated(node.getId()));
+        runPendingScans();
+
+        m_nodeDao.flush();
+
+        // Make sure that a second interface was added from the SNMP agent data
+        assertEquals(2, getInterfaceDao().countAll());
+
+        // Verify the ifIndex entries
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.201").getIfIndex().intValue());
+        assertEquals(5, getInterfaceDao().get(node, "198.51.100.201").getSnmpInterface().getIfIndex().intValue());
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.204").getIfIndex().intValue());
+        assertEquals(4, getInterfaceDao().get(node, "198.51.100.204").getSnmpInterface().getIfIndex().intValue());
     }
 
     @Test
