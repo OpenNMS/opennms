@@ -34,7 +34,7 @@ The configuration of the repository decides which _OpenNMS_ release will be inst
 
 The following release are available to be installed
 
-.Names used in repositories to install different _OpenNMS_ releases.
+._OpenNMS_ release name convention
 [options="header, autowidth"]
 |===
 | Release    | Description
@@ -51,37 +51,33 @@ To install a different release the repository files have to be installed and man
 
 ==== Specific Release on RHEL-based system
 
-.Change the directory in the base URL to select a release to install
+.Installation of release specific repositories
 [source, shell]
 ----
-[opennms-stable-common]
-name=RPMs Common to All OpenNMS Architectures (snapshot)<1>
-baseurl=http://yum.opennms.org/snapshot/common<2>
-failovermethod=roundrobin
-gpgcheck=1
-gpgkey=file:///etc/yum.repos.d/OPENNMS-GPG-KEY
-
-[opennms-stable-rhel7]
-name=RedHat Enterprise Linux 7.x and CentOS 7.x (snapshot)<1>
-baseurl=http://yum.opennms.org/snapshot/rhel7<2>
-failovermethod=roundrobin
-gpgcheck=1
-gpgkey=file:///etc/yum.repos.d/OPENNMS-GPG-KEY
+rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-${RELEASE}-rhel7.noarch.rpm<1>
+rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-<1> Changed description in this example from `stable` to `snapshot`
-<2> Changed the _URL_ to use _RPM_ packages in subdirectory `snapshot` instead of `stable`
+<1> Replace `${RELEASE}` with a release name like `testing` or `snapshot`.
 
 Install _OpenNMS_ with _YUM_ following the normal installation procedure.
 
+.Installation of the full _OpenNMS_ application with all dependencies
+[source, shell]
+----
+yum install opennms
+----
+
+TIP: Verify the release of _OpenNMS_ packages with `yum info opennms`.
+
 ==== Specific Release on Debian-based system
 
-.Change the _Debian_ repository file
 [source, shell]
 ----
 vi /etc/apt/sources.list.d/opennms.list
 ----
 
+.Package repository configuration for RHEL-based systems
 [source, shell]
 ----
 deb http://debian.opennms.eu snapshot main <1>
@@ -91,3 +87,5 @@ deb-src http://debian.opennms.eu snapshot main <1>
 <1> Changed repository path in this example from `stable` to `snapshot`
 
 Run `apt-get update`and install _OpenNMS_ with _apt_ following the normal installation procedure.
+
+TIP: Verify the release of _OpenNMS_ packages with `apt-cache show opennms`.
