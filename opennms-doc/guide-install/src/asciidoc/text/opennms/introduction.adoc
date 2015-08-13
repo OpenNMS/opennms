@@ -69,8 +69,8 @@ gpgcheck=1
 gpgkey=file:///etc/yum.repos.d/OPENNMS-GPG-KEY
 ----
 
-<1> Change description in this example from `stable` to `snapshot`
-<2> Change the _URL_ to use _RPM_ packages in subdirectory `snapshot` instead of `stable`
+<1> Changed description in this example from `stable` to `snapshot`
+<2> Changed the _URL_ to use _RPM_ packages in subdirectory `snapshot` instead of `stable`
 
 Install _OpenNMS_ with _YUM_ following the normal installation procedure.
 
@@ -88,6 +88,6 @@ deb http://debian.opennms.eu snapshot main <1>
 deb-src http://debian.opennms.eu snapshot main <1>
 ----
 
-<1> Change repository path in this example from `stable` to `snapshot`
+<1> Changed repository path in this example from `stable` to `snapshot`
 
 Run `apt-get update`and install _OpenNMS_ with _apt_ following the normal installation procedure.
