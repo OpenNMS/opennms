@@ -16,14 +16,16 @@ The setup process is described in the following steps:
 [[gi-install-opennms-deb-repo]]
 ==== Setup OpenNMS Debian repository
 
-.Create a new file `/etc/apt/sources.list.d/opennms.list` for the _OpenNMS Debian_ repository.
+_OpenNMS_ can be installed with Installation of stable repository and GPG key
+
+.Installation of _OpenNMS Debian_ repository
 [source, shell]
 ----
 deb http://debian.opennms.org stable main
 deb-src http://debian.opennms.org stable main
 ----
 
-.Install _GPG_ key to verify _DEB_ packages
+.Installation of repository GPG key
 [source, shell]
 ----
 wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
@@ -38,7 +40,7 @@ apt-get update
 [[gi-install-opennms-deb-package]]
 ==== Install OpenNMS package
 
-.Installation of the full application including all dependencies like _PostgreSQL_ and _Java_
+.Installation of the full application with all dependencies like PostgreSQL and Java
 [source, shell]
 ----
 apt-get install -y opennms
@@ -79,6 +81,7 @@ With the successful installed packages the _OpenNMS_ platform is installed in th
 The _Debian_ package installs also _PostgreSQL_ database and is already initialized and added in the runlevel configuration.
 It is only necessary to start the _PostgreSQL_ database without a restart.
 
+.Startup PostgreSQL database
 [source, shell]
 ----
 service postgresql start
@@ -86,7 +89,7 @@ service postgresql start
 
 The next step is creating an _opennms_ database user with password and configure the authentication method.
 
-.Create database user _opennms_ and a database _opennms_ with the owner of the created user.
+.Accounting and database management for _OpenNMS_
 [source, shell]
 ----
 su - postgres
@@ -96,13 +99,12 @@ createdb -O opennms opennms
 
 NOTE: It is not necessary to change the authentication method in `pg_hba.conf`, it is by default set to `md5` for localhost connections.
 
-.Configure the authentication credentials in the _OpenNMS_ data configuration.
 [source, shell]
 ----
 vi ${OPENNMS_HOME}/etc/opennms-datasource.xml
 ----
 
-.Add the username and password in *both* sections
+.Configuration for database authentication in _OpenNMS_
 [source, xml]
 ----
 <jdbc-data-source name="opennms"
@@ -131,13 +133,13 @@ vi ${OPENNMS_HOME}/etc/opennms-datasource.xml
 _OpenNMS_ is now configured to access the database.
 It is required to set the _Java_ environment running _OpenNMS_ and initialize the database schema.
 
-.Set _Java_ environment
+.Configuration of _Java_ environment for _OpenNMS_ 
 [source, shell]
 ----
 ${OPENNMS_HOME}/bin/runjava -s
 ----
 
-.Initialize database and detect path to libraries
+.Initialization of database and system libraries
 [source, shell]
 ----
 ${OPENNMS_HOME}/bin/install -dis
@@ -145,7 +147,7 @@ ${OPENNMS_HOME}/bin/install -dis
 
 NOTE: It is not necessary to add _OpenNMS_ to the run level manually, it is automatically added after setup.
 
-.Start _OpenNMS_ without restarting the system
+.Startup _OpenNMS_
 [source, shell]
 ----
 service opennms start
