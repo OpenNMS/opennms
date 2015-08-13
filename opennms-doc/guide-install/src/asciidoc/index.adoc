@@ -20,3 +20,9 @@ include::text/java/rhel.adoc[]
 include::text/java/debian.adoc[]
 include::text/java/windows-server.adoc[]
 include::text/java/environment.adoc[]
+
+// Installation Guide for OpenNMS
+include::text/opennms/introduction.adoc[]
+include::text/opennms/rhel.adoc[]
+include::text/opennms/debian.adoc[]
+include::text/opennms/windows.adoc[]

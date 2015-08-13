@@ -53,7 +53,7 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
-    public String getXmlConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/node-level-datacollection-config.xml";
     }
 
@@ -61,7 +61,7 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
-    public String getXmlSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/node-level.xml";
     }
 

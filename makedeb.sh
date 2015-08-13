@@ -2,6 +2,8 @@
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`
+BRANCH=""
+COMMIT=""
 
 cd "$TOPDIR"
 
@@ -45,6 +47,8 @@ function usage()
     tell "\t-d : disable downloading snapshots when doing an assembly-only build"
     tell "\t-s <password> : sign the deb using this password for the gpg key"
     tell "\t-g <gpg_id> : signing using this gpg_id (default: opennms@opennms.org)"
+    tell "\t-b <branch> : the name of the branch"
+    tell "\t-c <commit> : the commit revision hash from git"
     tell "\t-M <major> : default 0 (0 means a snapshot release)"
     tell "\t-m <minor> : default <datestamp> (ignored unless major is 0)"
     tell "\t-u <micro> : default 1 (ignore unless major is 0)"
@@ -62,7 +66,11 @@ function calcMinor()
 
 function branch()
 {
-    if use_git; then
+    if [ -n "${BRANCH}" ]; then
+        echo "${BRANCH}"
+    elif [ -n "${bamboo_planRepository_branch}" ]; then
+        echo "${bamboo_planRepository_branch}"
+    elif use_git; then
         run git branch | grep -E '^\*' | awk '{ print $2 }'
     else
         echo "source"
@@ -71,7 +79,11 @@ function branch()
 
 function commit()
 {
-    if use_git; then
+    if [ -n "${COMMIT}" ]; then
+        echo "${COMMIT}"
+    elif [ -n "${bamboo_repository_revision_number}" ]; then
+        echo "${bamboo_repository_revision_number}"
+    elif use_git; then
         run git log -1 | grep -E '^commit' | cut -d' ' -f2
     else
         echo ""
@@ -80,9 +92,10 @@ function commit()
 
 function extraInfo()
 {
-    if use_git; then
+    branchname="$(branch)"
+    if [ -n "${branchname}" ]; then
         if [ "$RELEASE_MAJOR" = "0" ] ; then
-            echo "This is an OpenNMS build from the $(branch) branch.  For a complete log, see:"
+            echo "This is an OpenNMS build from the ${branchname} branch.  For a complete log, see:"
         else
             echo "This is an OpenNMS build from Git.  For a complete log, see:"
         fi
@@ -93,8 +106,9 @@ function extraInfo()
 
 function extraInfo2()
 {
-    if use_git; then
-        echo "  https://github.com/OpenNMS/opennms/commit/$(commit)"
+    commithash="$(commit)"
+    if [ -n "${commithash}" ]; then
+        echo "  https://github.com/OpenNMS/opennms/commit/${commithash}"
     else
         echo ""
     fi
@@ -133,7 +147,7 @@ function main()
     local RELEASE_MICRO=1
 
 
-    while getopts adhrs:g:M:m:u: OPT; do
+    while getopts adhrs:g:M:m:u:b:c: OPT; do
         case $OPT in
             a)  ASSEMBLY_ONLY=true
                 ;;
@@ -151,6 +165,10 @@ function main()
             m)  RELEASE_MINOR="$OPTARG"
                 ;;
             u)  RELEASE_MICRO="$OPTARG"
+                ;;
+            b)  BRANCH="$OPTARG"
+                ;;
+            c)  COMMIT="$OPTARG"
                 ;;
             *)  usage
                 ;;
