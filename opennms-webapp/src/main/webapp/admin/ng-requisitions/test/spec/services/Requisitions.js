@@ -328,8 +328,10 @@ describe('Service: RequisitionsService', function () {
     var r = requisitionsService.internal.getCachedRequisition(foreignSource);
     expect(r).not.toBe(null);
 
-    var deleteUrl = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
-    $httpBackend.expect('DELETE', deleteUrl).respond({});
+    var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
+    var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
+    $httpBackend.expect('DELETE', deletePendingUrl).respond({});
+    $httpBackend.expect('DELETE', deleteDeployedUrl).respond({});
 
     requisitionsService.deleteRequisition(foreignSource).then(function() {}, function() {
       throw 'This is not expected';
@@ -353,10 +355,12 @@ describe('Service: RequisitionsService', function () {
     r.nodes = [];
     r.nodesInDatabase = 0;
 
-    var deleteUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
-    $httpBackend.expect('DELETE', deleteUrl).respond({});
+    var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
+    var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
+    $httpBackend.expect('DELETE', deletePendingUrl).respond({});
+    $httpBackend.expect('DELETE', deleteDeployedUrl).respond({});
 
-    requisitionsService.deleteRequisition(foreignSource, true).then(function() {}, function(msg) {
+    requisitionsService.deleteRequisition(foreignSource).then(function() {}, function(msg) {
       throw msg;
     });
     $httpBackend.flush();

@@ -399,15 +399,15 @@
     * If the cache is defined and the requisition is not there, the operation will be rejected.
     * If the requisition exist on the cache and it is not empty, the operation will be rejected.
     * The internal cache will be updated after the request is completed successfully if exist.
+    * The requisition will be deleted from the pending list and the deployed list.
     *
     * @name RequisitionsService:deleteRequisition
     * @ngdoc method
     * @methodOf RequisitionsService
     * @param {string} foreignSource The requisition's name (a.k.a. foreign source)
-    * @param {boolean} deployed true, if the requisition is deployed
     * @returns {object} a promise.
     */
-    requisitionsService.deleteRequisition = function(foreignSource, deployed) {
+    requisitionsService.deleteRequisition = function(foreignSource) {
       var deferred = $q.defer();
 
       var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
@@ -424,20 +424,24 @@
         }
       }
 
-      var url = requisitionsService.internal.requisitionsUrl + (deployed ? '/deployed/' : '/') + foreignSource;
-      $log.debug('deleteRequisition: deleting ' + (deployed ? 'deployed' : 'pending') + ' requisition ' + foreignSource);
-      $http.delete(url)
-      .success(function(data) {
-        $log.debug('deleteRequisition: deleted ' + (deployed ? 'deployed' : 'pending')+ ' requisition ' + foreignSource);
+      $log.debug('deleteRequisition: deleting requisition ' + foreignSource);
+      var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
+      var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
+      var deferredPending  = $http.delete(deletePendingUrl);
+      var deferredDeployed = $http.delete(deleteDeployedUrl);
+      $q.all([ deferredPending, deferredDeployed ])
+      .then(function(results) {
+        $log.debug('deleteRequisition: deleted requisition ' + foreignSource);
         if (requisitionsData != null) {
           $log.debug('deleteRequisition: removing requisition ' + foreignSource + ' from the internal cache');
           requisitionsData.requisitions.splice(reqIdx, 1);
         }
-        deferred.resolve(data);
-      }).error(function(error, status) {
+        deferred.resolve(results);
+      }, function(error, status) {
         $log.error('deleteRequisition: DELETE ' + url + ' failed:', error, status);
         deferred.reject('Cannot delete the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
       });
+
       return deferred.promise;
     };
 
@@ -528,7 +532,7 @@
     * @description Updates a node on an existing requisition on the OpenNMS server.
     *
     * The controller must ensure that the foreignId is unique within the requisition when adding a new node.
-    * 
+    *
     * The internal cache will be updated after the request is completed successfully if exist,
     * depending if the save operation is related with the update of an existing node, or if it
     * is related with the creation of a new node.

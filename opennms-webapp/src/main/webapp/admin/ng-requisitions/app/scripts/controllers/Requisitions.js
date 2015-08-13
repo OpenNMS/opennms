@@ -56,7 +56,7 @@
     * @returns {array} The filtered array
     */
     $scope.filteredRequisitions = [];
- 
+
     /**
     * @description The amount of items per page for pagination (defaults to 10)
     *
@@ -66,7 +66,7 @@
     * @returns {integer} The page size
     */
     $scope.pageSize = 10;
- 
+
     /**
     * @description The maximum size of pages for pagination (defaults to 5)
     *
@@ -76,7 +76,7 @@
     * @returns {integer} The maximum size
     */
     $scope.maxSize = 5;
- 
+
     /**
     * @description The total amount of items for pagination (defaults to 0)
     *
@@ -221,8 +221,7 @@
       bootbox.confirm('Are you sure you want to remove the requisition ' + foreignSource + '?', function(ok) {
         if (ok) {
           var idx = $scope.indexOfRequisition(foreignSource);
-          var deployed = $scope.requisitions[idx].deployed;
-          RequisitionsService.deleteRequisition(foreignSource, deployed).then(
+          RequisitionsService.deleteRequisition(foreignSource).then(
             function() { // success
               growl.success('The requisition ' + foreignSource + ' has been deleted.');
             },
