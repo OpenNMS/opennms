@@ -18,3 +18,4 @@
 include::text/opennms/introduction.adoc[]
 include::text/opennms/rhel.adoc[]
 include::text/opennms/debian.adoc[]
+include::text/opennms/windows.adoc[]
