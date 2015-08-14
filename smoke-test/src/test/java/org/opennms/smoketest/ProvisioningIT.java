@@ -148,6 +148,6 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         }
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
-        findElementByXpath("//a[contains(@href, BASE_URL + 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
+        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
     }
 }
