@@ -39,7 +39,7 @@
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="location" value="admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='../../../admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Provisioning Requisitions" />
 
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/bootstrap.css" media="screen" />' />
@@ -71,6 +71,8 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Synchronize.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/filters/startFrom.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/emptyTypeAhead.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/uniqueForeignId.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/validIpAddress.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Detector.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Policy.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/ForeignSource.js"></script>' />

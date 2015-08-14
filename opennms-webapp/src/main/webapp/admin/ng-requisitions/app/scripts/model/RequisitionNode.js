@@ -47,6 +47,9 @@ function RequisitionNode(foreignSource, node, isDeployed) {
    * @returns {string} The foreign Id
    */
   self.foreignId = node['foreign-id'];
+  if (self.foreignId == null || self.foreignId == undefined) {
+    self.foreignId = new Date().getTime() + ''
+  }
 
   /**
    * @description The node's label
@@ -150,7 +153,15 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   * @returns {object} the new interface Object
   */
   self.addNewInterface = function() {
-    self.interfaces.push(new RequisitionInterface({}));
+    var found = false;
+    angular.forEach(self.interfaces, function(intf) {
+      if (intf.snmpPrimary == 'P') {
+        found = true;
+      }
+    })
+    self.interfaces.push(new RequisitionInterface({
+      'snmp-primary': (found ? 'N' : 'P')
+    }));
     return self.interfaces.length - 1;
   };
 

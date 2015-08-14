@@ -8,9 +8,10 @@
 
   <div class="modal-body">
     <form name="intfForm">
-      <div class="form-group">
+      <div class="form-group" ng-class="{ 'has-error' : intfForm.ipAddress.$invalid }">
         <label class="control-label" for="ipAddress">IP Address</label>
-        <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="IP Address" ng-model="requisitionInterface.ipAddress" required></input>
+        <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="requisitionInterface.ipAddress" required valid-ip-address></input>
+        <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required.</p>
       </div>
       <div class="form-group">
         <label class="control-label" for="descr">Description</label>

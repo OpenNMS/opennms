@@ -42,6 +42,7 @@
     /**
     * @description The foreign ID
     * The default value is obtained from the $routeParams.
+    * For new nodes, the content must be '__new__'.
     *
     * @ngdoc property
     * @name NodeController#foreignId
@@ -49,6 +50,16 @@
     * @returns {string} The foreign ID
     */
     $scope.foreignId = $routeParams.foreignId;
+
+    /**
+    * @description The isNew flag
+    *
+    * @ngdoc property
+    * @name NodeController#isNew
+    * @propertyOf NodeController
+    * @returns {boolean} true, if the foreign ID is equal to '__new__'
+    */
+    $scope.isNew = $scope.foreignId === '__new__';
 
     /**
     * @description The node object
@@ -69,6 +80,19 @@
     * @returns {array} The categories
     */
     $scope.availableCategories = [];
+
+    /**
+    * @description The list of black-listed foreign IDs.
+    * The foreignId must be unique within the requisition.
+    * For an existing node, the foreignId should not be changed.
+    * For new nodes, the foreignId must be validated.
+    *
+    * @ngdoc property
+    * @name NodeController#foreignIdBlackList
+    * @propertyOf NodeController
+    * @returns {array} The list of black-listed foreign IDs.
+    */
+    $scope.foreignIdBlackList = [];
 
     /**
     * @description fieldComparator method from EmptyTypeaheadService
@@ -131,6 +155,19 @@
     $scope.errorHandler = function(message) {
       growl.error(message, {ttl: 10000});
     };
+
+    /**
+    * @description Generates a foreign Id
+    *
+    * @name NodeController:generateForeignId
+    * @ngdoc method
+    * @methodOf NodeController
+    * @param {object} the form object associated with the foreignId
+    */
+    $scope.generateForeignId = function(formObj) {
+        $scope.node.foreignId = new Date().getTime() + '';
+        formObj.$invalid = false;
+    }
 
     /**
     * @description Shows the dialog for add/edit an asset field
@@ -308,14 +345,26 @@
 
     // Initialization of the node's page for either adding a new node or editing an existing node
 
-    if ($scope.foreignId === '__new__') {
+    if ($scope.isNew) {
       $scope.node = new RequisitionNode($scope.foreignSource, {});
     } else {
       $scope.refresh();
     }
+
+    // Initialize categories
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
         $scope.availableCategories = categories;
+      },
+      $scope.errorHandler
+    );
+
+    // Initialize foreign-id black list (thanks to the cache, this call is not expensive)
+    RequisitionsService.getRequisition($scope.foreignSource).then(
+      function(requisition) { // success
+        angular.forEach(requisition.nodes, function(node) {
+          $scope.foreignIdBlackList.push(node.foreignId);
+        });
       },
       $scope.errorHandler
     );
