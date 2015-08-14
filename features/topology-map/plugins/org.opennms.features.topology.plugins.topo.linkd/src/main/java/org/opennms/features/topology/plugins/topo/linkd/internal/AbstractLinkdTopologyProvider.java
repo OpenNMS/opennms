@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -101,6 +102,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     protected final boolean m_aclEnabled;
     protected String m_configurationFile;
+    protected TransactionOperations m_transactionOperations;
     protected NodeDao m_nodeDao;
     protected SnmpInterfaceDao m_snmpInterfaceDao;
     protected IpInterfaceDao m_ipInterfaceDao;
@@ -226,6 +228,14 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     public void setConfigurationFile(String configurationFile) {
         m_configurationFile = configurationFile;
+    }
+
+    public TransactionOperations getTransactionOperations() {
+        return m_transactionOperations;
+    }
+
+    public void setTransactionOperations(TransactionOperations transactionOperations) {
+    	m_transactionOperations = transactionOperations;
     }
 
     public SnmpInterfaceDao getSnmpInterfaceDao() {
