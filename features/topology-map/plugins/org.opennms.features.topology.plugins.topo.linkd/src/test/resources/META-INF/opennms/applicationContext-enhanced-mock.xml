@@ -7,6 +7,23 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.DataLinkInterfaceDao"/>
     </bean>
     -->
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeBridgeLinkDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeMacLinkDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.BridgeMacLinkDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="cdpLinkDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.CdpLinkDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="isisLinkDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.IsIsLinkDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="lldpLinkDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.LldpLinkDao"/>
     </bean>
@@ -44,6 +61,10 @@
     </bean>
 
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
+        <property name="cdpLinkDao" ref="cdpLinkDao" />
+        <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
         <property name="nodeDao" ref="nodeDao" />

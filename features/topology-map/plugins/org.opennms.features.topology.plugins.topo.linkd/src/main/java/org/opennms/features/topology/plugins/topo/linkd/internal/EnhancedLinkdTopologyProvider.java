@@ -28,9 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import java.io.File;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -39,20 +45,42 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.*;
-import org.opennms.netmgt.model.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.SearchQuery;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.WrappedGraph;
+import org.opennms.features.topology.api.topo.WrappedVertex;
+import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
+import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.dao.api.IsIsLinkDao;
+import org.opennms.netmgt.dao.api.LldpElementDao;
+import org.opennms.netmgt.dao.api.LldpLinkDao;
+import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.opennms.netmgt.model.LldpElement;
+import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import javax.xml.bind.JAXBException;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
 
@@ -389,8 +417,28 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
      * @throws MalformedURLException
      */
     public void onInit() throws MalformedURLException, JAXBException {
-        LOG.debug("init: loading topology.");
-        load(null);
+        LOG.debug("init: loading enlinkd topology.");
+        try {
+            // @see http://issues.opennms.org/browse/NMS-7835
+            getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        load(null);
+                    } catch (MalformedURLException | JAXBException e) {
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            });
+        } catch (UndeclaredThrowableException e) {
+            // I'm not sure if there's a more elegant way to do this...
+            Throwable t = e.getUndeclaredThrowable();
+            if (t instanceof MalformedURLException) {
+                throw (MalformedURLException)t;
+            } else if (t instanceof JAXBException) {
+                throw (JAXBException)t;
+            }
+        }
     }
 
     @Override
@@ -600,53 +648,59 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private void getCdpLinks() {
         List<CdpTopologyLink> cdpLinks = m_cdpLinkDao.findLinksForTopology();
 
-        for (CdpTopologyLink link : cdpLinks) {
-            LOG.debug("loadtopology: adding cdp link: '{}'", link );
-            String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
-            CdpLinkDetail linkDetail = new CdpLinkDetail(id,
-                    getVertex(m_nodeDao.get(link.getSrcNodeId())),
-                    link.getSrcIfIndex(),
-                    link.getSrcIfName(),
-                    getVertex(m_nodeDao.get(link.getTargetNodeId())),
-                    link.getTargetIfName());
+        if (cdpLinks != null && cdpLinks.size() > 0) {
+            for (CdpTopologyLink link : cdpLinks) {
+                LOG.debug("loadtopology: adding cdp link: '{}'", link );
+                String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
+                CdpLinkDetail linkDetail = new CdpLinkDetail(id,
+                        getVertex(m_nodeDao.get(link.getSrcNodeId())),
+                        link.getSrcIfIndex(),
+                        link.getSrcIfName(),
+                        getVertex(m_nodeDao.get(link.getTargetNodeId())),
+                        link.getTargetIfName());
 
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), CDP_EDGE_NAMESPACE);
-            edge.setTooltipText(getEdgeTooltipText(linkDetail));
-
+                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), CDP_EDGE_NAMESPACE);
+                edge.setTooltipText(getEdgeTooltipText(linkDetail));
+            }
         }
     }
 
     private void getIsIsLinks(){
         List<Object[]> isislinks = m_isisLinkDao.getLinksForTopology();
 
-        for (Object[] linkObj : isislinks) {
-            LOG.debug("loadtopology: adding isis link: '{}'", linkObj );
-            Integer link1Id = (Integer) linkObj[1];
-            Integer link1Nodeid = (Integer) linkObj[2];
-            Integer link1IfIndex = (Integer) linkObj[3];
-            Integer link2Id = (Integer) linkObj[4];
-            Integer link2Nodeid = (Integer) linkObj[5];
-            Integer link2IfIndex = (Integer) linkObj[6];
-            IsIsLinkDetail linkDetail = new IsIsLinkDetail(
-                    Math.min(link1Id, link2Id) + "|" + Math.max(link1Id, link2Id),
-                    getVertex(m_nodeDao.get(link1Nodeid)),
-                    link1Id,
-                    link1IfIndex,
-                    getVertex(m_nodeDao.get(link2Nodeid)),
-                    link2Id,
-                    link2IfIndex
-            );
+        if (isislinks != null && isislinks.size() > 0) {
+            for (Object[] linkObj : isislinks) {
+                LOG.debug("loadtopology: adding isis link: '{}'", linkObj );
+                Integer link1Id = (Integer) linkObj[1];
+                Integer link1Nodeid = (Integer) linkObj[2];
+                Integer link1IfIndex = (Integer) linkObj[3];
+                Integer link2Id = (Integer) linkObj[4];
+                Integer link2Nodeid = (Integer) linkObj[5];
+                Integer link2IfIndex = (Integer) linkObj[6];
+                IsIsLinkDetail linkDetail = new IsIsLinkDetail(
+                        Math.min(link1Id, link2Id) + "|" + Math.max(link1Id, link2Id),
+                        getVertex(m_nodeDao.get(link1Nodeid)),
+                        link1Id,
+                        link1IfIndex,
+                        getVertex(m_nodeDao.get(link2Nodeid)),
+                        link2Id,
+                        link2IfIndex
+                );
 
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);
-            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);
+                edge.setTooltipText(getEdgeTooltipText(linkDetail));
+            }
         }
     }
 
     private void getBridgeLinks(){
 
         Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
-        for (BridgeMacTopologyLink macLink : m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
-            multimap.put(String.valueOf(macLink.getNodeId()) + "|" +String.valueOf(macLink.getBridgePort()), macLink);
+        List<BridgeMacTopologyLink> macLinks = m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes();
+        if (macLinks != null && macLinks.size() > 0) {
+            for (BridgeMacTopologyLink macLink : macLinks) {
+                multimap.put(String.valueOf(macLink.getNodeId()) + "|" +String.valueOf(macLink.getBridgePort()), macLink);
+            }
         }
 
         //if multimap entry has more than one item, check bridgeBridgeLink and add cloud vertex
@@ -669,12 +723,15 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         }
         
-        for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll()) {
-            String id = Math.min(link.getNode().getId(), link.getDesignatedNode().getId()) + "|" + Math.max(link.getNode().getId(), link.getDesignatedNode().getId());
-            BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,
-                        getVertex(m_nodeDao.get(link.getNode().getId())), link.getId(), getVertex(m_nodeDao.get(link.getDesignatedNode().getId())), link.getId());
-           AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
-           edge.setTooltipText(getEdgeTooltipText(detail));
+        List<BridgeBridgeLink> links = m_bridgeBridgeLinkDao.findAll();
+        if (links != null && links.size() > 0) {
+            for (BridgeBridgeLink link : links) {
+                String id = Math.min(link.getNode().getId(), link.getDesignatedNode().getId()) + "|" + Math.max(link.getNode().getId(), link.getDesignatedNode().getId());
+                BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,
+                            getVertex(m_nodeDao.get(link.getNode().getId())), link.getId(), getVertex(m_nodeDao.get(link.getDesignatedNode().getId())), link.getId());
+               AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
+               edge.setTooltipText(getEdgeTooltipText(detail));
+            }
         }
     }
 
