@@ -44,22 +44,22 @@
 
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/bootstrap.css" media="screen" />' />
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/opennms-theme.css" media="screen" />' />
-    <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
-	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-loading-bar/src/loading-bar.css" />' />
+  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="../../../css/font-awesome-4.4.0/css/font-awesome.min.css" />' />
+	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-loading-bar/build/loading-bar.min.css" />' />
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-growl-v2/build/angular-growl.min.css" />' />
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="styles/main.css" />' />
 
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-resource/angular-resource.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-loading-bar/src/loading-bar.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-growl-v2/build/angular-growl.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-resource/angular-resource.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-route/angular-route.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-growl-v2/build/angular-growl.min.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootbox/bootbox.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="scripts/app.js"></script>' />
