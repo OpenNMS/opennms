@@ -28,21 +28,33 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
+import java.awt.Point;
+
+import com.google.common.collect.Table;
+
 /**
- * Used to instantiate a {@link org.opennms.netmgt.jasper.analytics.Filter}
- * from the corresponding command in the query string.
+ * Helper class for converting RRD-based data sources to and from
+ * table representations.
  *
- * @see {@link org.opennms.netmgt.jasper.helper.RrdDataSourceFilter}
  * @author jwhite
  */
-public interface FilterFactory {
-    /**
-     * Retrieves the appropriate Filter for the given command.
-     *
-     * @param cmd
-     *   a command parsed from the query string
-     * @return
-     *   null if this factory doesn't support the command in question
-     */
-    public Filter getFilter(AnalyticsCommand cmd);
+public class AnalyticsFilterUtils {
+
+    public static Point getRowsWithValues(Table<Integer, String, Double> table, String... columnNames) {
+        int firstRowWithValues = -1, lastRowWithValues = -1;
+        for (int k : table.rowKeySet()) {
+            for (String columnName : columnNames) {
+                Double value = table.get(k, columnName);
+                
+                if (value != null && !Double.isNaN(value)) {
+                    if (firstRowWithValues < 0) {
+                        firstRowWithValues = k;
+                    }
+                    lastRowWithValues = k;
+                }
+            }
+        }
+
+        return new Point(firstRowWithValues, lastRowWithValues);
+    }
 }

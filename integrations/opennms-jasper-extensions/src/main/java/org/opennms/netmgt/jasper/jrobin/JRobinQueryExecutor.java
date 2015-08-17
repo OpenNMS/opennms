@@ -31,7 +31,7 @@ package org.opennms.netmgt.jasper.jrobin;
 import java.util.Date;
 import java.util.Map;
 
-import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;

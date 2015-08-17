@@ -35,12 +35,12 @@ import org.slf4j.LoggerFactory;
  * Used to store the options of an ANALYTICS command
  * that has been parsed on the RRD query string.
  *
- * @see {@link org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter}
+ * @see {@link org.opennms.netmgt.jasper.helper.RrdDataSourceFilter}
  * @author jwhite
  */
 public class AnalyticsCommand {
     private static final Logger LOG = LoggerFactory.getLogger(AnalyticsCommand.class);
-    protected static final String CMD_IN_RRD_QUERY_STRING = "ANALYTICS";
+    public static final String CMD_IN_RRD_QUERY_STRING = "ANALYTICS";
 
     private final String m_module;
     private final  String m_columnNameOrPrefix;

@@ -74,7 +74,7 @@ public class Chomp implements Filter {
             // completely NaN values
             Set<String> columnNamesNoTs = Sets.newHashSet(dsAsTable.columnKeySet());
             columnNamesNoTs.remove("Timestamp");
-            Point rowsWithValues = DataSourceUtils.getRowsWithValues(dsAsTable, columnNamesNoTs.toArray(new String[0]));
+            Point rowsWithValues = AnalyticsFilterUtils.getRowsWithValues(dsAsTable, columnNamesNoTs.toArray(new String[0]));
             firstRowToKeep = Math.max(firstRowToKeep, rowsWithValues.x);
             lastRowToKeep = Math.min(lastRowToKeep, rowsWithValues.y);
         }

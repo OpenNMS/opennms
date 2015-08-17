@@ -36,7 +36,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 
-import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
 import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutor;
 
 public class RrdtoolQueryExecutor extends JRobinQueryExecutor {

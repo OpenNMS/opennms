@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;

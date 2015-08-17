@@ -26,12 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.analytics;
+package org.opennms.netmgt.jasper.helper;
 
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
+import org.opennms.netmgt.jasper.analytics.Filter;
+import org.opennms.netmgt.jasper.analytics.FilterFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.RowSortedTable;
@@ -182,14 +186,14 @@ public class RrdDataSourceFilter {
     /**
      * Used for testing.
      */
-    protected List<AnalyticsCommand> getAnalyticsCommands() {
+    List<AnalyticsCommand> getAnalyticsCommands() {
         return m_analyticsCommands;
     }
 
     /**
      * Used for testing.
      */
-    protected String[] getFieldNames() {
+    String[] getFieldNames() {
         return m_fieldNames;
     }
 }
