@@ -58,131 +58,116 @@ public class JRobinDirectoryUtilTest {
     @Test
     @Ignore
     public void testJRobinDirectoryLookupLocal() throws FileNotFoundException, IOException {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
         String rrdDirectory = "/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp";
         String nodeId = "48";
-        String iFace = lookup.getInterfaceDirectory("", "mgi1", "90840dd40a7d");
-        String jrb = lookup.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace);
+        String iFace = JRobinDirectoryUtil.getInterfaceDirectory("", "mgi1", "90840dd40a7d");
+        String jrb = JRobinDirectoryUtil.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace);
         System.out.println("path and file: " + jrb);
         
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace));
-        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace));
+        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace));
+        assertEquals("/Users/thedesloge/git/opennms/target/opennms-1.9.93-SNAPSHOT/share/rrd/snmp/48/mgi1-90840dd40a7d/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(rrdDirectory, nodeId, null, null, iFace));
         
-        assertEquals("ifInOctets", lookup.getIfInOctetsDataSource(rrdDirectory, nodeId, null, null, iFace));
-        assertEquals("ifOutOctets", lookup.getIfOutOctetsDataSource(rrdDirectory, nodeId, null, null, iFace));
+        assertEquals("ifInOctets", JRobinDirectoryUtil.getIfInOctetsDataSource(rrdDirectory, nodeId, null, null, iFace));
+        assertEquals("ifOutOctets", JRobinDirectoryUtil.getIfOutOctetsDataSource(rrdDirectory, nodeId, null, null, iFace));
     }
     
     @Test
     public void testJRobinDirectoryLookup() throws IOException {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfOutOctetsJrb( JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb( JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
         
         System.setProperty("org.opennms.rrd.storeByGroup", "false");
         
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCInOctets.jrb", lookup.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCOutOctets.jrb", lookup.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCInOctets.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCOutOctets.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
     }
     
     @Test
     public void testJRobinDirectoryUtilRrdExtension() throws FileNotFoundException, IOException {
         System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JniRrdStrategy");
-        JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
-        
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfInOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfOutOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", JRobinDirectoryUtil.getIfInOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", JRobinDirectoryUtil.getIfOutOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
         
         System.setProperty("org.opennms.rrd.storeByGroup", "false");
         
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCInOctets.rrd", lookupUtil.getIfInOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCOutOctets.rrd", lookupUtil.getIfOutOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCInOctets.rrd", JRobinDirectoryUtil.getIfInOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCOutOctets.rrd", JRobinDirectoryUtil.getIfOutOctetsJrb(RRD_TOOL_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
     }
     
     @Test
     public void testJRobinDirectoryUtilCustomExtension() throws FileNotFoundException, IOException {
         System.setProperty("org.opennms.rrd.fileExtension", ".jrb");
-        JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
-        
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
         
         System.setProperty("org.opennms.rrd.fileExtension", ".bogus");
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.bogus", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.bogus", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.bogus", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.bogus", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
         
         System.setProperty("org.opennms.rrd.fileExtension", ".rrd");
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.rrd", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.rrd", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
         
     }
     
     @Test
     public void testUseByForeignSource() throws FileNotFoundException, IOException {
         System.setProperty("org.opennms.rrd.fileExtension", ".jrb");
-        JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
-
         System.setProperty("org.opennms.rrd.storeByForeignSource", "false");
-        assertEquals("src/test/resources/share/rrd/snmp/9", lookupUtil.getNodeLevelResourceDirectory(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID));
-        assertEquals("ifInOctets", lookupUtil.getIfInOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("ifOutOctets", lookupUtil.getIfOutOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+
+        assertEquals("src/test/resources/share/rrd/snmp/9", JRobinDirectoryUtil.getNodeLevelResourceDirectory(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID));
+        assertEquals("ifInOctets", JRobinDirectoryUtil.getIfInOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("ifOutOctets", JRobinDirectoryUtil.getIfOutOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
 
         System.setProperty("org.opennms.rrd.storeByForeignSource", "true");
-        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001", lookupUtil.getNodeLevelResourceDirectory(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID));
-        assertEquals("ifHCInOctets", lookupUtil.getIfInOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("ifHCOutOctets", lookupUtil.getIfOutOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/mib2-X-interfaces.jrb", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/mib2-X-interfaces.jrb", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001", JRobinDirectoryUtil.getNodeLevelResourceDirectory(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID));
+        assertEquals("ifHCInOctets", JRobinDirectoryUtil.getIfInOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("ifHCOutOctets", JRobinDirectoryUtil.getIfOutOctetsDataSource(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/mib2-X-interfaces.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/mib2-X-interfaces.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
 
         System.setProperty("org.opennms.rrd.storeByGroup", "false");
-        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/ifHCInOctets.jrb", lookupUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/ifHCOutOctets.jrb", lookupUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/ifHCInOctets.jrb", JRobinDirectoryUtil.getIfInOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/fs/Servers/S001/me1-0002baaacffe/ifHCOutOctets.jrb", JRobinDirectoryUtil.getIfOutOctetsJrb(JRB_DIRECTORY, NODE_ID, FOREIGN_SOURCE, FOREIGN_ID, INTERFACE));
     }
     
     @Test
     public void testGetInterfaceDirectory() {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
         String snmpphysaddr = "0002baaacffe";
         String snmpifname = "me1";
         String snmpifdescr = "me1";
-        assertEquals("me1-0002baaacffe", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        assertEquals("me1-0002baaacffe", JRobinDirectoryUtil.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
     @Test
     public void testGetInterfaceDirectoryNoSnmpPhysAddr() {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
         String snmpphysaddr = null;
         String snmpifname = "me1";
         String snmpifdescr = "me1";
-        assertEquals("me1", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        assertEquals("me1", JRobinDirectoryUtil.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
         
         snmpifdescr = null;
-        assertEquals("me1", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        assertEquals("me1", JRobinDirectoryUtil.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
     @Test
     public void testGetInterfaceDirectoryNoSnmpIfName() {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
         String snmpphysaddr = "0002baaacffe";
         String snmpifname = null;
         String snmpifdescr = "me1";
-        assertEquals("me1-0002baaacffe", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        assertEquals("me1-0002baaacffe", JRobinDirectoryUtil.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
     @Test
     public void testGetInterfaceDirectoryATM() {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
         String snmpphysaddr = "00e0817xxxxx";
         String snmpifname = "";
         String snmpifdescr = "eth0";
-        assertEquals("eth0-00e0817xxxxx", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        assertEquals("eth0-00e0817xxxxx", JRobinDirectoryUtil.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
 }

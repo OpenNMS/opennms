@@ -56,7 +56,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
  *   - otherOptions are optional and specific to the module in question
  *
  * Once the data source has been loaded, the modules are invoked
- * in the same order as they appear in the query stirng.
+ * in the same order as they appear in the query string.
  *
  * The module factories are loaded at run-time using the
  * ServiceLoader paradigm.
