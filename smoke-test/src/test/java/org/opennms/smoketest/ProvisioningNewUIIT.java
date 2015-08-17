@@ -40,6 +40,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -64,7 +65,12 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         @Override
         public Boolean apply(final WebDriver driver) {
             driver.get(BASE_URL + "opennms/rest/nodes/");
-            return driver.findElement(By.xpath("//node[@label='" + NODE_LABEL + "' and @foreignSource='" + REQUISITION_NAME + "']")) != null;
+            try {
+                WebElement e = driver.findElement(By.xpath("//node[@label='" + NODE_LABEL + "' and @foreignSource='" + REQUISITION_NAME + "']"));
+                return e != null;
+            } catch (NoSuchElementException ex) {
+                return false;
+            }
         }
     }
 
