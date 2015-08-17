@@ -30,23 +30,23 @@ package org.opennms.netmgt.jasper.rrdtool;
 
 import java.util.Map;
 
-import net.sf.jasperreports.engine.JRValueParameter;
-
-import org.opennms.netmgt.jasper.analytics.RrdDataSourceFilter;
-import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutor;
-
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
+
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
+import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutor;
 
 public class RrdtoolQueryExecutor extends JRobinQueryExecutor {
 
-	protected RrdtoolQueryExecutor(JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
-		super(dataset, parametersMap);
-	}
+    protected RrdtoolQueryExecutor(JasperReportsContext context, JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
+        super(context, dataset, parametersMap);
+    }
 
-	@Override
-	public JRRewindableDataSource createDatasource() throws JRException {
+    @Override
+    public JRRewindableDataSource createDatasource() throws JRException {
         RrdDataSourceFilter dse = new RrdDataSourceFilter(getQueryString());
         try {
             JRRewindableDataSource ds = new RrdtoolXportCmd().executeCommand(dse.getRrdQueryString());

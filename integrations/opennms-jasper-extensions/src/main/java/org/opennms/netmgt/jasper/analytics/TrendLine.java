@@ -68,7 +68,7 @@ public class TrendLine implements Filter {
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
-        Point rowsWithValues = DataSourceUtils.getRowsWithValues(table, m_config.getInputColumn());
+        Point rowsWithValues = AnalyticsFilterUtils.getRowsWithValues(table, m_config.getInputColumn());
         int firstRowWithValues = rowsWithValues.x;
         int lastRowWithValues = rowsWithValues.y;
 

@@ -42,8 +42,6 @@ public class ResourceQuery {
     private String[] m_filters;
     private String[] m_strProperties;
 
-    private JRobinDirectoryUtil m_dirUtil = new JRobinDirectoryUtil();
-
     public ResourceQuery() {
     }
     
@@ -85,11 +83,11 @@ public class ResourceQuery {
     }
     
     public String constructBasePath() {
-        if (!m_dirUtil.isStoreByForeignSource()) {
+        if (!JRobinDirectoryUtil.isStoreByForeignSource()) {
             return getRrdDir() + File.separator + getNodeId() + File.separator + getResourceName();
         }
         else {
-            return m_dirUtil.getNodeLevelResourceDirectory(getRrdDir(), getNodeId(), getForeignSource(), getForeignId()) + File.separator + getResourceName();
+            return JRobinDirectoryUtil.getNodeLevelResourceDirectory(getRrdDir(), getNodeId(), getForeignSource(), getForeignId()) + File.separator + getResourceName();
         }
     }
 

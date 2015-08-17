@@ -26,16 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.analytics;
+package org.opennms.netmgt.jasper.helper;
 
-import java.awt.Point;
 import java.util.Date;
 import java.util.List;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 
 import net.sf.jasperreports.data.cache.ColumnValues;
 import net.sf.jasperreports.data.cache.ColumnValuesDataSource;
@@ -44,6 +38,11 @@ import net.sf.jasperreports.data.cache.ObjectArrayValues;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 
 /**
  * Helper class for converting RRD-based data sources to and from
@@ -120,23 +119,5 @@ public class DataSourceUtils {
             throw new RuntimeException("Invalid value type. "
                     + "Does the datasource originate from an RRD or JRB file?", e);
         }
-    }
-
-    public static Point getRowsWithValues(Table<Integer, String, Double> table, String... columnNames) {
-        int firstRowWithValues = -1, lastRowWithValues = -1;
-        for (int k : table.rowKeySet()) {
-            for (String columnName : columnNames) {
-                Double value = table.get(k, columnName);
-                
-                if (value != null && !Double.isNaN(value)) {
-                    if (firstRowWithValues < 0) {
-                        firstRowWithValues = k;
-                    }
-                    lastRowWithValues = k;
-                }
-            }
-        }
-
-        return new Point(firstRowWithValues, lastRowWithValues);
     }
 }
