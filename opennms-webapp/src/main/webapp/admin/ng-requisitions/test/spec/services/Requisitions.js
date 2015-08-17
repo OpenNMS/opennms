@@ -328,10 +328,10 @@ describe('Service: RequisitionsService', function () {
     var r = requisitionsService.internal.getCachedRequisition(foreignSource);
     expect(r).not.toBe(null);
 
-    var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
-    var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
-    $httpBackend.expect('DELETE', deletePendingUrl).respond({});
-    $httpBackend.expect('DELETE', deleteDeployedUrl).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
     requisitionsService.deleteRequisition(foreignSource).then(function() {}, function() {
       throw 'This is not expected';
@@ -355,10 +355,10 @@ describe('Service: RequisitionsService', function () {
     r.nodes = [];
     r.nodesInDatabase = 0;
 
-    var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
-    var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
-    $httpBackend.expect('DELETE', deletePendingUrl).respond({});
-    $httpBackend.expect('DELETE', deleteDeployedUrl).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
+    $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
     requisitionsService.deleteRequisition(foreignSource).then(function() {}, function(msg) {
       throw msg;

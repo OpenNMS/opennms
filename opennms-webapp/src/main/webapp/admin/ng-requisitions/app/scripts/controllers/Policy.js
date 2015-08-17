@@ -152,7 +152,7 @@
     * @returns {boolean} true, if the object is a non empty array
     */
     $scope.isNonEmptyArray = function(myArray) {
-      return myArray.constructor.toString().indexOf("Array") > -1 && myArray.length > 0;
+      return myArray.constructor.toString().indexOf('Array') > -1 && myArray.length > 0;
     };
 
     /**
@@ -176,9 +176,9 @@
             if (paramCfg.key == parameter.key) { // Checking current parameter
               if (paramCfg.required) {
                 if ($scope.isNonEmptyArray(paramCfg.options)) {
-                  return "views/policy-param.options.html";
+                  return 'views/policy-param.options.html';
                 } else {
-                  return "views/policy-param.string.html";
+                  return 'views/policy-param.string.html';
                 }
               }
             }
@@ -189,7 +189,7 @@
         }
       }
 
-      return parameter.key ? "views/policy-param.fixed.html" : "views/policy-param.editable.html";
+      return parameter.key ? 'views/policy-param.fixed.html' : 'views/policy-param.editable.html';
     };
 
     /**

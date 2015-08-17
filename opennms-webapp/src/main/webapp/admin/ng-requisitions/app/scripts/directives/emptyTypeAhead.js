@@ -1,3 +1,5 @@
+/*global $:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -69,5 +71,3 @@
   }]);
 
 }());
-
-

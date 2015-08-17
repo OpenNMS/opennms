@@ -17,6 +17,7 @@ describe('Controller: NodeController', function () {
   var foreignId = '1001';
   var categories = ['Production', 'Testing'];
   var node = new RequisitionNode(foreignSource, { 'foreign-id': foreignId });
+  var requisition = { foreignSource: foreignSource, nodes: [] };
 
   function createController() {
     return controllerFactory('NodeController', {
@@ -40,13 +41,17 @@ describe('Controller: NodeController', function () {
 
   beforeEach(function() {
     mockRequisitionsService.getNode = jasmine.createSpy('getNode');
+    mockRequisitionsService.getRequisition = jasmine.createSpy('getRequisition');
     mockRequisitionsService.getAvailableCategories = jasmine.createSpy('getAvailableCategories');
     var nodeDefer = $q.defer();
     nodeDefer.resolve(node);
+    mockRequisitionsService.getNode.andReturn(nodeDefer.promise);
     var categoriesDefer = $q.defer();
     categoriesDefer.resolve(categories);
     mockRequisitionsService.getAvailableCategories.andReturn(categoriesDefer.promise);
-    mockRequisitionsService.getNode.andReturn(nodeDefer.promise);
+    var reqDefer = $q.defer();
+    reqDefer.resolve(requisition);
+    mockRequisitionsService.getRequisition.andReturn(reqDefer.promise);
 
     mockGrowl = {
       warn: function(msg) { console.warn(msg); },

@@ -1,4 +1,4 @@
-/*global RequisitionNode:true */
+/*global bootbox:true, RequisitionNode:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -122,7 +122,7 @@
     $scope.goBack = function() {
       var doGoBack = function() {
         $window.location.href = '#/requisitions/' + $scope.foreignSource;
-      }
+      };
       if (this.nodeForm.$dirty) {
         bootbox.dialog({
           message: 'There are changes on the current node. Are you sure you want to cancel ?',
@@ -165,9 +165,9 @@
     * @param {object} the form object associated with the foreignId
     */
     $scope.generateForeignId = function(formObj) {
-        $scope.node.foreignId = new Date().getTime() + '';
-        formObj.$invalid = false;
-    }
+      $scope.node.foreignId = new Date().getTime() + '';
+      formObj.$invalid = false;
+    };
 
     /**
     * @description Shows the dialog for add/edit an asset field
@@ -244,7 +244,7 @@
         controller: 'InterfaceController',
         templateUrl: 'views/interface.html',
         resolve: {
-          foreignSource: function() { return foreignSource },
+          foreignSource: function() { return foreignSource; },
           requisitionInterface: function() { return angular.copy(intfToEdit); }
         }
       });

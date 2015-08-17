@@ -83,7 +83,7 @@
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
     };
-  
+
     // Initialization
 
     RequisitionsService.getAvailableAssets().then(function(assets) {

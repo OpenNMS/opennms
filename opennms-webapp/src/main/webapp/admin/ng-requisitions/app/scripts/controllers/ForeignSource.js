@@ -1,3 +1,5 @@
+/*global bootbox:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -79,7 +81,7 @@
         } else {
           $window.location.href = '#/requisitions/' + $scope.foreignSource;
         }
-      }
+      };
       if (this.fsForm.$dirty) {
         bootbox.dialog({
           message: 'There are changes on the current requisition. Are you sure you want to cancel ?',

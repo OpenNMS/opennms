@@ -48,7 +48,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
    */
   self.foreignId = node['foreign-id'];
   if (self.foreignId == null || self.foreignId == undefined) {
-    self.foreignId = new Date().getTime() + ''
+    self.foreignId = new Date().getTime() + '';
   }
 
   /**
@@ -158,7 +158,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
       if (intf.snmpPrimary == 'P') {
         found = true;
       }
-    })
+    });
     self.interfaces.push(new RequisitionInterface({
       'snmp-primary': (found ? 'N' : 'P')
     }));

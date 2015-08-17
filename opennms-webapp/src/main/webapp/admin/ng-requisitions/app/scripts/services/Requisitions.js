@@ -1,4 +1,5 @@
-/*global RequisitionsData:true,Requisition:true,RequisitionNode:true */
+/*jshint undef: false */
+/*global RequisitionsData:true, Requisition:true, RequisitionNode:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -425,11 +426,12 @@
       }
 
       $log.debug('deleteRequisition: deleting requisition ' + foreignSource);
-      var deletePendingUrl  = requisitionsService.internal.requisitionsUrl + '/' + foreignSource;
-      var deleteDeployedUrl = requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource;
-      var deferredPending  = $http.delete(deletePendingUrl);
-      var deferredDeployed = $http.delete(deleteDeployedUrl);
-      $q.all([ deferredPending, deferredDeployed ])
+      var deferredReqPending  = $http.delete(requisitionsService.internal.requisitionsUrl + '/' + foreignSource);
+      var deferredReqDeployed = $http.delete(requisitionsService.internal.requisitionsUrl + '/deployed/' + foreignSource);
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource);
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource);
+
+      $q.all([ deferredReqPending, deferredReqDeployed, deferredFSPending, deferredFSDeployed ])
       .then(function(results) {
         $log.debug('deleteRequisition: deleted requisition ' + foreignSource);
         if (requisitionsData != null) {
@@ -438,7 +440,7 @@
         }
         deferred.resolve(results);
       }, function(error, status) {
-        $log.error('deleteRequisition: DELETE ' + url + ' failed:', error, status);
+        $log.error('deleteRequisition: DELETE operation failed:', error, status);
         deferred.reject('Cannot delete the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
       });
 

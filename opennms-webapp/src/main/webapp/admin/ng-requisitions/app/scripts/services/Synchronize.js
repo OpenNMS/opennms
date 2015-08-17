@@ -1,3 +1,5 @@
+/*global bootbox:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -19,7 +21,7 @@
   *
   * @description The SynchronizeService provides a way to request a requisition synchronization asking the user how the scan process will be processed.
   */
-  .factory('SynchronizeService', ['RequisitionsService', 'growl', function(RequisitionsService, growl) {  
+  .factory('SynchronizeService', ['RequisitionsService', 'growl', function(RequisitionsService, growl) {
     return {
       /**
       * @description Requests the synchronization/import of a requisition on the server
@@ -81,4 +83,3 @@
   }]);
 
 }());
-
