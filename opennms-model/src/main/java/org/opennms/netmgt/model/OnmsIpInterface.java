@@ -632,8 +632,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param deleteMissing a boolean.
      */
     public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
-        mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
+        mergeInterfaceAttributes(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
     }
 

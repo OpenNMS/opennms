@@ -45,7 +45,7 @@ public class XmlCollectorNodeLevelIT extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
-    public String getXmlConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/node-level-datacollection-config.xml";
     }
     
@@ -53,7 +53,7 @@ public class XmlCollectorNodeLevelIT extends XmlCollectorITCase {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
-    public String getXmlSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/node-level.xml";
     }
 
@@ -68,7 +68,7 @@ public class XmlCollectorNodeLevelIT extends XmlCollectorITCase {
         parameters.put("collection", "NodeLevel");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 1);
-        File file = new File(getSnmpRoot(), "1/node-level-stats.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/node-level-stats.jrb");
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };
         validateJrb(file, dsnames, dsvalues);
