@@ -45,12 +45,6 @@ import org.slf4j.LoggerFactory;
 public abstract class RrdConfig {
     private static final Logger LOG = LoggerFactory.getLogger(RrdConfig.class);
 
-    public static final String RRD_STRATEGY_CLASS_PROPERTY = "org.opennms.rrd.strategyClass";
-
-    public static final String DEFAULT_RRD_STRATEGY_CLASS = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
-
-    public static final String RRD_TIME_SERIES_STRATEGY_NAME = "rrd";
-
     private static Properties m_properties = null;
 
     /**
