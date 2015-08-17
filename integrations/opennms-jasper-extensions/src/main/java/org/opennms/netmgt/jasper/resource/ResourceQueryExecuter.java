@@ -33,13 +33,14 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 public class ResourceQueryExecuter extends JRAbstractQueryExecuter {
 
-    @SuppressWarnings("rawtypes")
-    protected ResourceQueryExecuter(JRDataset dataset, Map parametersMap) {
-        super(dataset, parametersMap);
+    protected ResourceQueryExecuter(JasperReportsContext context, JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
+        super(context, dataset, parametersMap);
         parseQuery();
     }
 

@@ -37,12 +37,13 @@ import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
 
-    protected JRobinQueryExecutor(JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
-        super(dataset, parametersMap);
+    protected JRobinQueryExecutor(JasperReportsContext context, JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
+        super(context, dataset, parametersMap);
         parseQuery();
     }
 
