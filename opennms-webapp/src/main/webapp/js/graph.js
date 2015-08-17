@@ -93,11 +93,14 @@ GraphContainers = (function () {
         .then(waitForLibraries(["holder"], dfd));
     } else if (graphingEngine == "backshift") {
       loadCSS("lib/c3/c3.min.css");
+      loadCSS("lib/dcjs/dc.css");
       loadJS("js/holder.min.js")
         .then(loadJS("lib/d3/d3.min.js"))
         .then(loadJS("lib/c3/c3.min.js"))
+        .then(loadJS("lib/crossfilter/crossfilter.min.js"))
+        .then(loadJS("lib/dcjs/dc.min.js"))
         .then(loadJS("js/backshift.onms.min.js"))
-        .then(waitForLibraries(["holder", "d3", "c3", "rsvp", "backshift"], dfd));
+        .then(waitForLibraries(["holder", "d3", "c3", "crossfilter", "dc", "rsvp", "backshift"], dfd));
     } else {
       // Nothing to load
       dfd.resolve();
@@ -194,7 +197,7 @@ GraphContainers = (function () {
       });
 
       // Build and render the graph
-      var graph = new Backshift.Graph.C3({
+      var graph = new Backshift.Graph.DC({
         element: el[0],
         width: dim.width,
         height: dim.height,
