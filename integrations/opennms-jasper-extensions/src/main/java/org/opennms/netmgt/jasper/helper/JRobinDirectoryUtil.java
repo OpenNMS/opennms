@@ -38,7 +38,10 @@ import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.opennms.core.utils.RrdLabelUtils;
 
-public abstract class JRobinDirectoryUtil {
+/**
+ * <p>NOTE: Don't make this class <i>abstract</i> because some .jrxml reports call its constructor.</p>
+ */
+public class JRobinDirectoryUtil {
 
     public static boolean isStoreByGroup() {
         return JRProperties.getBooleanProperty("org.opennms.rrd.storeByGroup") || Boolean.getBoolean("org.opennms.rrd.storeByGroup");
