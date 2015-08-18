@@ -31,6 +31,7 @@ package org.opennms.netmgt.jasper.analytics;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
@@ -70,8 +71,25 @@ public class HWForecastIT {
 
     @Test
     public void canCheckForecastSupport() throws Exception {
-        HWForecast.checkForecastSupport();
+        // Verify the HW filter
+        String qs = "ANALYTICS:HoltWinters=HW:X:12:1:0.95";
+        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
 
-        // No exception should be thrown
+        // Use constant values for the Y column
+        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+        for (int i = 0; i < 100; i++) {
+            table.put(i, "Timestamp", (double)(i * 1000));
+            table.put(i, "X", 1.0d);
+        }
+
+        // Apply the filter
+        dse.filter(table);
+
+        // Verify the outlier filter
+        qs = "ANALYTICS:OutlierFilter=X:0.99";
+        dse = new RrdDataSourceFilter(qs);
+
+        // Apply the filter
+        dse.filter(table);
     }
 }

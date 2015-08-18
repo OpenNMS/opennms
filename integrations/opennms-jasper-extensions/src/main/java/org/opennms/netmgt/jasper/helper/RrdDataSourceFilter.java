@@ -26,12 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.analytics;
+package org.opennms.netmgt.jasper.helper;
 
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
+import org.opennms.netmgt.jasper.analytics.Filter;
+import org.opennms.netmgt.jasper.analytics.FilterFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.RowSortedTable;
@@ -56,7 +60,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
  *   - otherOptions are optional and specific to the module in question
  *
  * Once the data source has been loaded, the modules are invoked
- * in the same order as they appear in the query stirng.
+ * in the same order as they appear in the query string.
  *
  * The module factories are loaded at run-time using the
  * ServiceLoader paradigm.
@@ -182,14 +186,14 @@ public class RrdDataSourceFilter {
     /**
      * Used for testing.
      */
-    protected List<AnalyticsCommand> getAnalyticsCommands() {
+    List<AnalyticsCommand> getAnalyticsCommands() {
         return m_analyticsCommands;
     }
 
     /**
      * Used for testing.
      */
-    protected String[] getFieldNames() {
+    String[] getFieldNames() {
         return m_fieldNames;
     }
 }

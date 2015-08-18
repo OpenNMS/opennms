@@ -45,6 +45,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory
 	"%>
@@ -115,7 +116,7 @@
       <!-- Graphing -->
       <script type="text/javascript">
         // Global scope
-        window.onmsGraphContainers = {'engine': '<%= System.getProperty("org.opennms.web.graphs.engine") %>'};
+        window.onmsGraphContainers = {'engine': '<%= TimeSeries.getGraphEngine() %>'};
         window.onmsGraphContainers.baseHref = '<%= baseHref %>';
       </script>
       <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>

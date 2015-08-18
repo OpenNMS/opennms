@@ -30,8 +30,8 @@ package org.opennms.netmgt.measurements.api;
 
 import java.util.ServiceLoader;
 
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.measurements.impl.NullFetchStrategy;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -49,14 +49,12 @@ public class MeasurementFetchStrategyFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementFetchStrategyFactory.class);
 
-    private static final String TIMESERIES_STRATEGY_PROPERTY = "org.opennms.timeseries.strategy";
-
     private static ServiceLoader<MeasurementFetchStrategyProvider> providerLoader = ServiceLoader.load(MeasurementFetchStrategyProvider.class);
 
     @Bean(name="measurementFetchStrategy")
     public MeasurementFetchStrategy getStrategy() throws InstantiationException, IllegalAccessException {
-        final String timeSeriesStrategyName = System.getProperty(TIMESERIES_STRATEGY_PROPERTY, RrdConfig.RRD_TIME_SERIES_STRATEGY_NAME);
-        final String rrdStrategyClass = System.getProperty(RrdConfig.RRD_STRATEGY_CLASS_PROPERTY, RrdConfig.DEFAULT_RRD_STRATEGY_CLASS);
+        final String timeSeriesStrategyName = System.getProperty(TimeSeries.TIMESERIES_STRATEGY_PROPERTY, TimeSeries.RRD_TIME_SERIES_STRATEGY_NAME);
+        final String rrdStrategyClass = System.getProperty(TimeSeries.RRD_STRATEGY_CLASS_PROPERTY, TimeSeries.DEFAULT_RRD_STRATEGY_CLASS);
         for (MeasurementFetchStrategyProvider provider : providerLoader) {
             Class<? extends MeasurementFetchStrategy> strategy = provider.getStrategyClass(timeSeriesStrategyName, rrdStrategyClass);
             if (strategy != null) {

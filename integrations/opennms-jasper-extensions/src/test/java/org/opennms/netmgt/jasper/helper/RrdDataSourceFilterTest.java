@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.analytics;
+package org.opennms.netmgt.jasper.helper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
@@ -43,6 +43,8 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.junit.Test;
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
+import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
 
 public class RrdDataSourceFilterTest {
     @Test

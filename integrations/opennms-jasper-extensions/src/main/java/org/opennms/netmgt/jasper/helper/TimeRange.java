@@ -38,7 +38,7 @@ import java.util.GregorianCalendar;
  * 
  * @author ronny
  */
-public class TimeRange {
+public abstract class TimeRange {
 
     /**
      * Implement last year, last month, this year, this month
@@ -94,11 +94,6 @@ public class TimeRange {
 
 
     /**
-     * Constructor init now
-     */
-    public TimeRange() {}
-
-    /**
      * <p>
      * getStartDate
      * </p>
@@ -107,7 +102,7 @@ public class TimeRange {
      *            a {@link java.lang.String} object
      * @return a {@link java.sql.Timestamp} object
      */
-    public Date getStartDate(String range) {
+    public static Date getStartDate(String range) {
         Date date = null;
         if (TIME_RANGE.LAST_YEAR.name().equalsIgnoreCase(range)) {
             date = TIME_RANGE.LAST_YEAR.getStartDate();
@@ -132,7 +127,7 @@ public class TimeRange {
      *            a {@link java.lang.String} object
      * @return a {@link java.sql.Timestamp} object
      */
-    public Date getEndDate(String range) {
+    public static Date getEndDate(String range) {
         Date date = null;
 
         if (TIME_RANGE.LAST_YEAR.name().equalsIgnoreCase(range)) {

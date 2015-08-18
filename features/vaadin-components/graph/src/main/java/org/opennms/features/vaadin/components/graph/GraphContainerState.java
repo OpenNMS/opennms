@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.components.graph;
 
+import org.opennms.core.utils.TimeSeries;
+
 import com.vaadin.shared.ui.JavaScriptComponentState;
 
 /**
@@ -38,7 +40,7 @@ public class GraphContainerState extends JavaScriptComponentState {
     private static final long serialVersionUID = -6846721022019894325L;
 
     public String baseHref = "/opennms/";
-    public String engine = System.getProperty("org.opennms.web.graphs.engine");
+    public String engine = TimeSeries.getGraphEngine();
 
     public String graphName;
     public String resourceId;
