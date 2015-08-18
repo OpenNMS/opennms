@@ -28,20 +28,15 @@
 
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
@@ -53,26 +48,8 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
 
     /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "localNode";
-
-    /**
-     * The Class WaitForNodeInDatabase.
-     */
-    protected final class WaitForNodeInDatabase implements ExpectedCondition<Boolean> {
-
-        /* (non-Javadoc)
-         * @see com.google.common.base.Function#apply(java.lang.Object)
-         */
-        @Override
-        public Boolean apply(final WebDriver driver) {
-            driver.get(BASE_URL + "opennms/rest/nodes/");
-            try {
-                WebElement e = driver.findElement(By.xpath("//node[@label='" + NODE_LABEL + "' and @foreignSource='" + REQUISITION_NAME + "']"));
-                return e != null;
-            } catch (NoSuchElementException ex) {
-                return false;
-            }
-        }
-    }
+    private static final String NODE_FOREIGNID = "localNode";
+    private static final String NODE_IPADDR = "127.0.0.1";
 
     /**
      * Sets up the test.
@@ -150,9 +127,11 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
 
         // Add node to a requisition
         findElementByXpath("//ul/li/a[contains(@ng-click,'addNode')]").click();
-        final String nodeLabelXpath = "//input[@id='nodeLabel']";
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(nodeLabelXpath)));
-        enterText(By.xpath(nodeLabelXpath), NODE_LABEL);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nodeLabel")));
+        enterText(By.id("nodeLabel"), NODE_LABEL);
+        WebElement foreignId = m_driver.findElement(By.id("foreignId"));
+        foreignId.clear();
+        foreignId.sendKeys(NODE_FOREIGNID);
 
         // Add an IP Interface
         findElementByXpath("//ul/li/a[text()='Interfaces']").click();
@@ -161,7 +140,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByXpath(addIntfXpath).click();
         final String ipAddrXpath = "//div/input[@id='ipAddress']";
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(ipAddrXpath)));
-        enterText(By.xpath(ipAddrXpath), "::1");
+        enterText(By.xpath(ipAddrXpath), NODE_IPADDR);
         findElementByXpath("//div/button[contains(@ng-click,'addService')]").click();
 
         // Add a service to the IP Interface
@@ -171,7 +150,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
 
         // Save the IP interface
         findElementByXpath("//div/button[contains(@ng-click,'save')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='::1']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
 
         // Save the node
         final String saveNodeXpath = "//div/ul/li/button[contains(@ng-click,'save')]";
@@ -188,7 +167,16 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//div/ul/li/a[contains(@ng-click,'goBack')]").click();
 
         // Wait until the node has been added to the database, using the ReST API
-        assertTrue(wait.until(new WaitForNodeInDatabase()));
+        for (int i=0; i<5; i++) {
+            Thread.sleep(10000); // Give enough time before trying again.
+            try {
+                m_driver.get(BASE_URL + "opennms/rest/nodes/" + REQUISITION_NAME + ":" + NODE_FOREIGNID + "/ipinterfaces/" + NODE_IPADDR + "/services/ICMP");
+                WebElement e = m_driver.findElement(By.xpath("//service/serviceType/name[text()='ICMP']"));
+                if (e != null) {
+                    break;
+                }
+            } catch (Exception e) {}
+        }
 
         // Open the nodes list page
         m_driver.get(BASE_URL + "opennms/");
@@ -208,6 +196,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         }
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
-        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");
+        findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
     }
 }
