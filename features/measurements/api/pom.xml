@@ -27,6 +27,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>analytics-filters</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>

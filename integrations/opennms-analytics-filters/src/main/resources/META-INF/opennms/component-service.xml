@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+  <!-- Expose all of the analytics filter factories as OSGi services -->
+
+  <bean id="chompFactory" class="org.opennms.netmgt.jasper.analytics.ChompFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="chompFactory">
+    <onmsgi:service-properties>
+      <entry key="name" value="chomp"/>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <bean id="hwForecastFactory" class="org.opennms.netmgt.jasper.analytics.HWForecastFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="hwForecastFactory">
+    <onmsgi:service-properties>
+      <entry key="name" value="hwForecast"/>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <bean id="outlierFactory" class="org.opennms.netmgt.jasper.analytics.OutlierFilterFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="outlierFactory">
+    <onmsgi:service-properties>
+      <entry key="name" value="outlier"/>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <bean id="trendLineFactory" class="org.opennms.netmgt.jasper.analytics.TrendLineFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="trendLineFactory">
+    <onmsgi:service-properties>
+      <entry key="name" value="trendLine"/>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+</beans>

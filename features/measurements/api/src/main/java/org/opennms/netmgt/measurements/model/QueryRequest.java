@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 
 import com.google.common.collect.Lists;
 
@@ -73,6 +74,8 @@ public class QueryRequest {
     private List<Source> sources = Lists.newArrayListWithCapacity(0);
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
+
+    private AnalyticsCommand analyticsCommand = null;
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -128,6 +131,15 @@ public class QueryRequest {
 
     public void setExpressions(final List<Expression> expressions) {
         this.expressions = expressions;
+    }
+
+    @XmlElement(name = "analytics-command")
+    public AnalyticsCommand getAnalyticsCommand() {
+        return analyticsCommand;
+    }
+
+    public void setAnalyticsCommand(final AnalyticsCommand analyticsCommand) {
+        this.analyticsCommand = analyticsCommand;
     }
 
     @Override
