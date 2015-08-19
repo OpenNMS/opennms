@@ -61,6 +61,12 @@ public class AnalyticsCommand {
     @XmlElement(name="argument")
     private String[] m_arguments;
 
+    /**
+     * Zero-arg constructor only for JAXB.
+     */
+    public AnalyticsCommand() {
+    }
+
     public AnalyticsCommand(String module, String columnNameOrPrefix, String[] arguments) {
         m_module = module;
         m_columnNameOrPrefix = columnNameOrPrefix;
