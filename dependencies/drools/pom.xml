@@ -28,5 +28,10 @@
       <artifactId>drools-compiler</artifactId>
       <version>${droolsVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <version>${droolsVersion}</version>
+    </dependency>
   </dependencies>
 </project>
