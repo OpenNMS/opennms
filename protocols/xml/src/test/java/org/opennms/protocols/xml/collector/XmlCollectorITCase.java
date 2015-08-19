@@ -66,6 +66,7 @@ import org.springframework.core.io.Resource;
  */
 public abstract class XmlCollectorITCase {
 
+    /** The temporary folder. */
     @Rule
     public TemporaryFolder m_temporaryFolder = new TemporaryFolder();
 
@@ -81,8 +82,10 @@ public abstract class XmlCollectorITCase {
     /** The RRD strategy. */
     private RrdStrategy<?, ?> m_rrdStrategy;
 
+    /** The resource storage DAO. */
     private FilesystemResourceStorageDao m_resourceStorageDao;
 
+    /** The persister factory. */
     private RrdPersisterFactory m_persisterFactory;
 
     /**
@@ -94,15 +97,9 @@ public abstract class XmlCollectorITCase {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = getRrdStrategy();
-        m_resourceStorageDao = new FilesystemResourceStorageDao();
-        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
-        m_temporaryFolder.newFolder("snmp");
-
-        m_persisterFactory = new RrdPersisterFactory();
-        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
-        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
-
+        initializeRrdStrategy();
+        initializeDocumentBuilder();
+        
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
         EasyMock.expect(m_collectionAgent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
@@ -110,16 +107,53 @@ public abstract class XmlCollectorITCase {
         m_eventProxy = EasyMock.createMock(EventProxy.class);
 
         m_xmlCollectionDao = new XmlDataCollectionConfigDaoJaxb();
-        Resource resource = new FileSystemResource(getXmlConfigFileName());
+        Resource resource = new FileSystemResource(getConfigFileName());
         m_xmlCollectionDao.setConfigResource(resource);
         m_xmlCollectionDao.afterPropertiesSet();
-        MockDocumentBuilder.setXmlFileName(getXmlSampleFileName());
 
         EasyMock.replay(m_collectionAgent, m_eventProxy);
     }
 
+    /**
+     * Initialize document builder.
+     */
+    protected void initializeDocumentBuilder() {
+        MockDocumentBuilder.setXmlFileName(getSampleFileName());
+    }
+
+    /**
+     * Initialize RRD strategy.
+     *
+     * @throws Exception the exception
+     */
+    protected void initializeRrdStrategy() throws Exception {
+        m_rrdStrategy = new JRobinRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
+        m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
+    }
+
+    /**
+     * Gets the RRD strategy.
+     *
+     * @return the RRD strategy
+     * @throws Exception the exception
+     */
     protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
-        return new JRobinRrdStrategy();
+        return m_rrdStrategy;
+    }
+
+    /**
+     * Gets the RRD extension.
+     *
+     * @return the RRD extension
+     */
+    protected String getRrdExtension() {
+        return m_rrdStrategy.getDefaultFileExtension().substring(1);
     }
 
     /**
@@ -132,18 +166,18 @@ public abstract class XmlCollectorITCase {
     }
 
     /**
-     * Gets the test XML sample file name.
+     * Gets the test sample file name.
      *
-     * @return the test XML sample file name
+     * @return the test sample file name
      */
-    public abstract String getXmlSampleFileName();
+    public abstract String getSampleFileName();
 
     /**
-     * Gets the test XML configuration file name.
+     * Gets the test configuration file name.
      *
-     * @return the test XML configuration file name
+     * @return the test configuration file name
      */
-    public abstract String getXmlConfigFileName();
+    public abstract String getConfigFileName();
 
     /**
      * Tear down.
@@ -173,10 +207,10 @@ public abstract class XmlCollectorITCase {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams,  createRrdRepository((String)parameters.get("collection")), false, false);
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(m_temporaryFolder.getRoot(), new String[] { m_rrdStrategy.getDefaultFileExtension().substring(1) }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRootDirectory(), new String[] { getRrdExtension() }, true).size());
         return collectionSet;
     }
 
@@ -209,14 +243,19 @@ public abstract class XmlCollectorITCase {
     private RrdRepository createRrdRepository(String collection) throws IOException {
         XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName(collection).getXmlRrd();
         RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(getSnmpRoot());
+        repository.setRrdBaseDir(getSnmpRootDirectory());
         repository.setHeartBeat(rrd.getStep() * 2);
         repository.setStep(rrd.getStep());
         repository.setRraList(rrd.getXmlRras());
         return repository;
     }
 
-    public File getSnmpRoot() {
+    /**
+     * Gets the SNMP root directory.
+     *
+     * @return the SNMP root directory.
+     */
+    public File getSnmpRootDirectory() {
         return new File(m_temporaryFolder.getRoot(), "snmp");
     }
 }

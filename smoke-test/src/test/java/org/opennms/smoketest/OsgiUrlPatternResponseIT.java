@@ -24,7 +24,7 @@ public class OsgiUrlPatternResponseIT {
     public void testOsgiUrlPatternResponse() throws IOException {
         final String[] paths = new String[]{
                 "jmx-config-tool", "vaadin-surveillance-views?dashboard=true",
-                "vaadin-surveillance-views?dashboard=false", "jmxconfiggenerator.webui",
+                "vaadin-surveillance-views?dashboard=false",
                 "vaadin-surveillance-views-config", "wallboard-config"  };
 
         for (String eachPath : paths) {

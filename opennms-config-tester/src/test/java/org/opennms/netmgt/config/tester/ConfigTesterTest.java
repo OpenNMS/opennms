@@ -219,6 +219,10 @@ public class ConfigTesterTest {
         testConfigFile("jmx-config.xml");
     }
 
+    public void testJmsNorthbounderConfiguration() {
+        testConfigFile("jms-northbounder-configuration.xml");
+    }
+
     @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
