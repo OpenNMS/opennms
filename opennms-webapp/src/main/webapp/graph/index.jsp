@@ -159,7 +159,7 @@
       </div> <!-- panel-body -->
     </div> <!-- panel -->
 
-    <% if (org.opennms.core.utils.TimeSeries.getGraphEngine() == "rrd") { %>
+    <% if (org.opennms.core.utils.TimeSeries.getGraphEngine() == "png") { %>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Custom Resource<br/>Performance Reports</h3>
