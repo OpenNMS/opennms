@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
@@ -162,5 +163,28 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         final Map<String, double[]> columns = response.columnsWithLabels();
         assertEquals(975.3053156146178, columns.get("ifInOctets")[idx], 0.0001);
         assertEquals(975.3053156146178 * 8d / 1000.0d, columns.get("ifUsage")[idx], 0.0001);
+    }
+
+    @Test
+    public void testAnalyticsFilters() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        Source ifInOctets = new Source();
+        ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctets.setAttribute("ifInOctets");
+        ifInOctets.setAggregation("MAX");
+        ifInOctets.setLabel("ifInOctets");
+        request.setSources(Lists.newArrayList(ifInOctets));
+
+        AnalyticsCommand command = new AnalyticsCommand("OutlierFilter", "ifInOctets", new String[0]);
+        request.setAnalyticsCommand(command);
+
+        QueryResponse response = m_svc.query(request);
+
+        // TODO: Add some assertions that the analytics command worked
     }
 }

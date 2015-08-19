@@ -15,28 +15,28 @@
   <bean id="chompFactory" class="org.opennms.netmgt.jasper.analytics.ChompFactory"/>
   <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="chompFactory">
     <onmsgi:service-properties>
-      <entry key="name" value="chomp"/>
+      <entry key="name" value="Chomp"/>
     </onmsgi:service-properties>
   </onmsgi:service>
 
   <bean id="hwForecastFactory" class="org.opennms.netmgt.jasper.analytics.HWForecastFactory"/>
   <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="hwForecastFactory">
     <onmsgi:service-properties>
-      <entry key="name" value="hwForecast"/>
+      <entry key="name" value="HoltWinters"/>
     </onmsgi:service-properties>
   </onmsgi:service>
 
   <bean id="outlierFactory" class="org.opennms.netmgt.jasper.analytics.OutlierFilterFactory"/>
   <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="outlierFactory">
     <onmsgi:service-properties>
-      <entry key="name" value="outlier"/>
+      <entry key="name" value="OutlierFilter"/>
     </onmsgi:service-properties>
   </onmsgi:service>
 
   <bean id="trendLineFactory" class="org.opennms.netmgt.jasper.analytics.TrendLineFactory"/>
   <onmsgi:service interface="org.opennms.netmgt.jasper.analytics.FilterFactory" ref="trendLineFactory">
     <onmsgi:service-properties>
-      <entry key="name" value="trendLine"/>
+      <entry key="name" value="TrendLine"/>
     </onmsgi:service-properties>
   </onmsgi:service>
 </beans>
