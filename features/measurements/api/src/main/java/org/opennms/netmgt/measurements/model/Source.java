@@ -32,6 +32,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Measurement source.
@@ -61,6 +64,14 @@ public class Source {
     private String attribute;
 
     /**
+     * Data source name. Typically the same as the attribute name, but may differ
+     * if an attribute contains multiple data sources.
+     *
+     * i.e. ping1Micro
+     */
+    private String datasource;
+
+    /**
      * Aggregation function.
      * Should be one of AVERAGE, MIN, MAX, LAST.
      */
@@ -78,10 +89,12 @@ public class Source {
     public Source(final String label,
                   final String resourceId,
                   final String attribute,
+                  final String datasource,
                   final boolean isTransient) {
-        this.label = label;
-        this.resourceId = resourceId;
-        this.attribute = attribute;
+        this.label = Preconditions.checkNotNull(label, "label argument");
+        this.resourceId = Preconditions.checkNotNull(resourceId, "resourceId argument");
+        this.attribute = Preconditions.checkNotNull(attribute, "attribute argument");
+        this.datasource = datasource;
         this.isTransient = isTransient;
     }
 
@@ -110,6 +123,23 @@ public class Source {
 
     public void setAttribute(final String attribute) {
         this.attribute = attribute;
+    }
+
+    @XmlAttribute(name = "datasource")
+    public String getDataSource() {
+        return this.datasource;
+    }
+
+    public void setDataSource(final String datasource) {
+        this.datasource = datasource;
+    }
+
+    /**
+     * In order to preserve backwards compatibility, we allow the datasource field to be null.
+     */
+    @XmlTransient
+    public String getEffectiveDataSource() {
+        return this.datasource != null ? this.datasource : this.attribute;
     }
 
     @XmlAttribute(name = "aggregation")
@@ -143,13 +173,14 @@ public class Source {
        return   com.google.common.base.Objects.equal(this.label, other.label)
              && com.google.common.base.Objects.equal(this.resourceId, other.resourceId)
              && com.google.common.base.Objects.equal(this.attribute, other.attribute)
+             && com.google.common.base.Objects.equal(this.datasource, other.datasource)
              && com.google.common.base.Objects.equal(this.isTransient, other.isTransient);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.label, this.resourceId, this.attribute, this.isTransient);
+                 this.label, this.resourceId, this.attribute, this.datasource, this.isTransient);
     }
 
     @Override
@@ -158,6 +189,7 @@ public class Source {
                  .add("Label", this.label)
                  .add("Resource ID", this.resourceId)
                  .add("Attribute", this.attribute)
+                 .add("Datasource", this.datasource)
                  .add("Transient", this.isTransient)
                  .toString();
     }

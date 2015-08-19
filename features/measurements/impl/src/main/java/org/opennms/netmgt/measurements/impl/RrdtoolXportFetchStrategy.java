@@ -119,7 +119,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             labelMap.put(tempLabel, source.getLabel());
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
-                    tempLabel, rrdFile, source.getAttribute(),
+                    tempLabel, rrdFile, source.getEffectiveDataSource(),
                     source.getAggregation()));
             cmdLine.addArgument(String.format("XPORT:%s:%s", tempLabel, tempLabel));
         }

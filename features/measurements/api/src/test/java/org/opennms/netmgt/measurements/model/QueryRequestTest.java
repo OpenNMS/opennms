@@ -54,17 +54,17 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
         request.setEnd(2000);
         request.setMaxRows(1);
 
-        Source source = new Source("ifInOctets", "node[1].if", "ifInOctets", true);
+        Source source = new Source("ping1Micro", "node[1].responseTime[127.0.0.1]", "strafeping", "ping1", true);
         request.setSources(Lists.newArrayList(source));
 
-        Expression expression = new Expression("ifInBits", "ifInOctets * 8", false);
+        Expression expression = new Expression("ping1Millis", "ping1Micro / 1000", false);
         request.setExpressions(Lists.newArrayList(expression));
 
         return Arrays.asList(new Object[][]{{
                 request,
                 "<query-request step=\"300\" start=\"1000\" end=\"2000\" maxrows=\"1\">" +
-                    "<expression transient=\"false\" label=\"ifInBits\">ifInOctets * 8</expression>" +
-                    "<source aggregation=\"AVERAGE\" attribute=\"ifInOctets\" transient=\"true\" label=\"ifInOctets\" resourceId=\"node[1].if\"/>" +
+                    "<expression transient=\"false\" label=\"ping1Millis\">ping1Micro / 1000</expression>" +
+                    "<source aggregation=\"AVERAGE\" attribute=\"strafeping\" datasource=\"ping1\" transient=\"true\" label=\"ping1Micro\" resourceId=\"node[1].responseTime[127.0.0.1]\"/>" +
                 "</query-request>",
                 null
         }});
