@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -41,6 +42,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * The Test Class for the New Provisioning UI using AngularJS.
+ * <p>This test will left the current OpenNMS installation as it was before running,
+ * to avoid issues related with the execution order of the smoke-tests.</p>
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
@@ -62,6 +65,17 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         provisioningPage();
     }
 
+    /**
+     * Tears down the test.
+     * <p>Be 100% sure that there are no left-overs on the testing OpenNMS installation.</p>
+     *
+     * @throws Exception the exception
+     */
+    @After
+    public void tearDown() throws Exception {
+        deleteTestRequisition();
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.smoketest.OpenNMSSeleniumTestCase#provisioningPage()
      */
@@ -81,6 +95,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         if (responseCode == 404 || responseCode == 204) {
             return;
         }
+        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/nodes/" + REQUISITION_NAME + ':' + NODE_FOREIGNID));
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/deployed/" + REQUISITION_NAME));
         doRequest(new HttpDelete(BASE_URL + "/opennms/rest/foreignSources/" + REQUISITION_NAME));
@@ -197,5 +212,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + NODE_IPADDR + "']");
+        findElementByLink("HTTP-8980");
     }
 }
