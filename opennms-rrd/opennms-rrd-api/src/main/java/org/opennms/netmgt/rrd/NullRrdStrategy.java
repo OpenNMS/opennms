@@ -105,6 +105,21 @@ public class NullRrdStrategy implements RrdStrategy<Object,Object> {
 	}
 
     @Override
+    public int getGraphLeftOffset() {
+        return 0;
+    }
+
+    @Override
+    public int getGraphRightOffset() {
+        return 0;
+    }
+
+    @Override
+    public int getGraphTopOffsetWithText() {
+        return 0;
+    }
+
+    @Override
     public String getDefaultFileExtension() {
         return ".nullRrd";
     }

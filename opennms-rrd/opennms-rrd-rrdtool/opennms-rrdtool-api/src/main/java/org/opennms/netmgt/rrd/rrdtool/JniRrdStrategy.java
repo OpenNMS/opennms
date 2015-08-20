@@ -398,4 +398,5 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
         
         return null;
     }
+
 }
