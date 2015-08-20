@@ -166,6 +166,8 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
         final int numRows = rrdXport.getRows().size();
         final int numColumns = rrdXport.getMeta().getLegends().size();
+        final long xportStartInMs = rrdXport.getMeta().getStart() * 1000;
+        final long xportStepInMs = rrdXport.getMeta().getStep() * 1000;
 
         final long timestamps[] = new long[numRows];
         final double values[][] = new double[numColumns][numRows];
@@ -173,7 +175,9 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
         // Convert rows to columns
         int i = 0;
         for (final XRow row : rrdXport.getRows()) {
-            timestamps[i] = row.getTimestamp() * 1000;
+            // Derive the timestamp from the start and step since newer versions
+            // of rrdtool no longer include it as part of the rows
+            timestamps[i] = xportStartInMs + xportStepInMs * i;
             for (int j = 0; j < numColumns; j++) {
                 if (row.getValues() == null) {
                     // NMS-7710: Avoid NPEs, in certain cases the list of values may be null
@@ -192,7 +196,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             columns.put(labelMap.get(label), values[i++]);
         }
 
-        return new FetchResults(timestamps, columns, rrdXport.getMeta().getStep() * 1000, constants);
+        return new FetchResults(timestamps, columns, xportStepInMs, constants);
     }
 
 }
