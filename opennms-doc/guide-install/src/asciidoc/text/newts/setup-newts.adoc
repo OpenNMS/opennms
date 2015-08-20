@@ -5,7 +5,7 @@
 [[gi-setup-newts]]
 === Setting up Newts
 
-The setup for _Newts_ has two parts, the first one initializes the keyspace in the _Cassandra_ storage and the second part is the standalone running _Newts API_.
+The setup for _Newts_ has two parts: The first one initializes the keyspace in the _Cassandra_ storage and the second part is the standalone running _Newts API_.
 Both parts are packaged and maintained in the link:https://github.com/OpenNMS/newts/releases[Newts GitHub repository].
 The latest pre-compiled tarball can be downloaded as link:https://github.com/OpenNMS/newts/releases/download/1.3.0/newts-1.3.0-bin.tar.gz[newts-1.3.0-bin.tar.gz]
 
@@ -18,7 +18,7 @@ tar xvf newts-1.3.0-bin.tar.gz
 ----
 
 The default _Newts_ config (`etc/config.yaml`) will connect to _localhost_ at the default port and keyspace, but if you're using your own install of _Cassandra_ then you'll need to edit it accordingly.
-To perform a one-time initialization of _Newts_, and create the _Cassandra_ schema.
+For one-time initialization of _Newts_ and the creation of the _Cassandra_ schema perform the following steps:
 
 .Initialize Newts keyspace in Cassandra
 [source, bash]
