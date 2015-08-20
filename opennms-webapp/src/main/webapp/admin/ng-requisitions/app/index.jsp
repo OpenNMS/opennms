@@ -49,6 +49,7 @@
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="bower_components/angular-growl-v2/build/angular-growl.min.css" />' />
 	<jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="styles/main.css" />' />
 
+	<jsp:param name="script" value='<script type="text/javascript" src="basehref.jsp"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular/angular.min.js"></script>' />
