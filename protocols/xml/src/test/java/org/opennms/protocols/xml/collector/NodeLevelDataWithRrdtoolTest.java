@@ -36,7 +36,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.rrd.model.Row;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
@@ -66,13 +67,20 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectorTest#initializeRrdStrategy()
+     * @see org.opennms.protocols.xml.collector.XmlCollectorITCase#initializeRrdStrategy()
      */
     @Override
-    protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
+    protected void initializeRrdStrategy() throws Exception {
         setRrdBinary();
         setJniRrdLibrary();
-        return new JniRrdStrategy();
+        m_rrdStrategy = new JniRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
+        m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
     }
 
     /**
@@ -155,7 +163,8 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
             executeCollectorTest(parameters, 1);
             Thread.sleep(1000);
         }
-        File file = new File("target/snmp/1/node-level-stats.rrd");
+        File file = new File(m_temporaryFolder.getRoot(), "snmp/1/node-level-stats.rrd");
+        System.err.println(file.getAbsolutePath());
         Assert.assertTrue(file.exists());
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };

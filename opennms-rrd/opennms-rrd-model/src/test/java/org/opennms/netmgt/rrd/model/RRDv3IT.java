@@ -29,8 +29,11 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
@@ -59,19 +62,36 @@ public class RRDv3IT {
         Assert.assertNotNull(rrd);
         Assert.assertEquals(new Long(300), rrd.getStep());
         Assert.assertEquals(new Long(1233926670), rrd.getLastUpdate());
+
+        // Test Data Source
         Assert.assertEquals("ifInDiscards", rrd.getDataSources().get(0).getName());
         Assert.assertEquals(DSType.COUNTER, rrd.getDataSources().get(0).getType());
         Assert.assertEquals(new Long(0), rrd.getDataSources().get(0).getUnknownSec());
 
+        // Test RRA
         Assert.assertEquals(CFType.AVERAGE, rrd.getRras().get(0).getConsolidationFunction());
         Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
-
-        Assert.assertEquals(new Long(1), rrd.getRras().get(0).getPdpPerRow());
-        Assert.assertEquals(new Long(1233321900), rrd.getStartTimestamp(rrd.getRras().get(0)));
         Assert.assertEquals(new Long(12), rrd.getRras().get(1).getPdpPerRow());
-        Assert.assertEquals(new Long(1228572000), rrd.getStartTimestamp(rrd.getRras().get(1)));
         Assert.assertEquals(new Long(288), rrd.getRras().get(4).getPdpPerRow());
+
+        // Test time related functions : getEndTimestamp
+        Assert.assertEquals(new Long(1233926400), rrd.getEndTimestamp(rrd.getRras().get(0)));
+        Assert.assertEquals(new Long(1233925200), rrd.getEndTimestamp(rrd.getRras().get(1)));
+        Assert.assertEquals(new Long(1233878400), rrd.getEndTimestamp(rrd.getRras().get(4)));
+
+        // Test time related functions : getStartTimestamp
+        Assert.assertEquals(new Long(1233321900), rrd.getStartTimestamp(rrd.getRras().get(0)));
+        Assert.assertEquals(new Long(1228572000), rrd.getStartTimestamp(rrd.getRras().get(1)));
         Assert.assertEquals(new Long(1202342400), rrd.getStartTimestamp(rrd.getRras().get(4)));
+
+        // Test time related functions : findRowByTimestamp
+        AbstractRRA rra = rrd.getRras().get(0);
+        Assert.assertEquals(rra.getRows().get(0), rrd.findRowByTimestamp(rra, new Long(1233321900)));
+        Assert.assertEquals(rra.getRows().get(5), rrd.findRowByTimestamp(rra, new Long(1233323400)));
+
+        // Test time related functions : findTimestampByRow
+        Assert.assertEquals(new Long(1233321900), rrd.findTimestampByRow(rra, rra.getRows().get(0)));
+        Assert.assertEquals(new Long(1233323400), rrd.findTimestampByRow(rra, rra.getRows().get(5)));
     }
 
     /**
@@ -135,4 +155,36 @@ public class RRDv3IT {
         }
     }
 
+    /**
+     * Test merge.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMerge() throws Exception {
+        File sourceFile = new File("src/test/resources/rrd-temp-multids.xml");
+        File targetFile = new File("target/multimetric.xml");
+        RRDv3 multimetric = JaxbUtils.unmarshal(RRDv3.class, sourceFile);
+        Assert.assertNotNull(multimetric);
+        Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
+        Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
+        multimetric.getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
+            List<Double> values = new ArrayList<Double>();
+            row.getValues().forEach(d -> values.add(Double.NaN));
+            row.setValues(values);
+        });
+        List<RRDv3> singleMetricArray = new ArrayList<RRDv3>();
+        RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA.xml"));
+        Assert.assertNotNull(tempA);
+        Assert.assertEquals("tempA", tempA.getDataSource(0).getName());
+        singleMetricArray.add(tempA);
+        RRDv3 tempB = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempB.xml"));
+        Assert.assertNotNull(tempB);
+        Assert.assertEquals("tempB", tempB.getDataSource(0).getName());
+        singleMetricArray.add(tempB);
+        multimetric.merge(singleMetricArray);
+        JaxbUtils.marshal(multimetric, new FileWriter(targetFile));
+        Assert.assertTrue(FileUtils.contentEquals(sourceFile, targetFile));
+        targetFile.delete();
+    }
 }
