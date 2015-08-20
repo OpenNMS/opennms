@@ -224,4 +224,12 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     public String getPassword() {
         return m_password;
     }
+
+    public JmxConfigDao getJmxConfigDao() {
+        return m_jmxConfigDao;
+    }
+
+    public void setJmxConfigDao(final JmxConfigDao jmxConfigDao) {
+        this.m_jmxConfigDao = jmxConfigDao;
+    }
 }
