@@ -7,9 +7,9 @@
 
 Once you have _OpenNMS_, _Cassandra_ and the _Newts_ keyspace installed and up and running, the _OpenNMS_ application has to be configured.
 To be able to use _Newts_ the graphing library has to be changed from _RRDTool_ or _JRobin_ to _Backshift_.
-The following properties for _OpenNMS_ has to be changed in `/etc/opennms/opennms.properties`:
+The following properties for _OpenNMS_ has to be changed in `${OPENNMS_HOME}/etc/opennms.properties`:
 
-.Configuration properties change for OpenNMS in opennms.properties
+.Configuration for _OpenNMS_
 [source]
 ----
 # Configure storage strategy
