@@ -62,7 +62,7 @@ public final class NodeSourceResourceType extends AbstractTopLevelResourceType {
      * <p>Constructor for NodeSourceResourceType.</p>
      *
      * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
-     * @param nodeDao 
+     * @param nodeDao
      */
     public NodeSourceResourceType(ResourceDao resourceDao, NodeDao nodeDao) {
         m_resourceDao = resourceDao;
@@ -118,8 +118,14 @@ public final class NodeSourceResourceType extends AbstractTopLevelResourceType {
         return createResourceForNode(node);
     }
 
-    protected ResourcePath getResourcePathForNode(OnmsNode node) {
-        return new ResourcePath(ResourceTypeUtils.SNMP_DIRECTORY, ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, node.getForeignSource(), node.getForeignId());
+    protected static ResourcePath getResourcePathForNode(OnmsNode node) {
+        // Preserve backwards compatibility by allowing nodes to be referenced by FS:FID
+        // even when storeByFs is disabled
+        if(!ResourceTypeUtils.isStoreByForeignSource()) {
+            return NodeResourceType.getResourcePathForNode(node);
+        }
+
+        return ResourcePath.get(ResourceTypeUtils.SNMP_DIRECTORY, ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, node.getForeignSource(), node.getForeignId());
     }
 
     public OnmsResource createResourceForNode(final OnmsNode node) {

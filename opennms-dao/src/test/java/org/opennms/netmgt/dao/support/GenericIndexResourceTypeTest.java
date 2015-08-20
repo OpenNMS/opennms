@@ -125,17 +125,23 @@ public class GenericIndexResourceTypeTest {
 
     @Test
     public void testGetResourceByNodeSourceAndIndexGetLabelStringAttribute() throws IOException {
-        GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceStorageDao, "foo", "Foo Resource", "${stringAttribute}", m_storageStrategy);
+        try {
+            System.setProperty("org.opennms.rrd.storeByForeignSource", "true");
 
-        File rrd = touch("snmp", "fs", "source1", "123", "foo", "1", RRD_FILE_NAME);
-        m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
+            GenericIndexResourceType rt = new GenericIndexResourceType(m_resourceStorageDao, "foo", "Foo Resource", "${stringAttribute}", m_storageStrategy);
 
-        m_mocks.replayAll();
-        OnmsResource resource = rt.getChildByName(getNodeResource("source1", "123"), "1");
-        m_mocks.verifyAll();
+            File rrd = touch("snmp", "fs", "source1", "123", "foo", "1", RRD_FILE_NAME);
+            m_fileAnticipator.tempFile(rrd.getParentFile(), RrdResourceAttributeUtils.STRINGS_PROPERTIES_FILE_NAME, "stringAttribute=hello!!!!");
 
-        assertNotNull("resource", resource);
-        assertEquals("resource label", "hello!!!!", resource.getLabel());
+            m_mocks.replayAll();
+            OnmsResource resource = rt.getChildByName(getNodeResource("source1", "123"), "1");
+            m_mocks.verifyAll();
+
+            assertNotNull("resource", resource);
+            assertEquals("resource label", "hello!!!!", resource.getLabel());
+        } finally {
+            System.setProperty("org.opennms.rrd.storeByForeignSource", "false");
+        }
     }
 
     @Test
