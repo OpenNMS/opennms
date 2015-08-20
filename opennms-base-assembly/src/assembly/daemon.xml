@@ -19,26 +19,26 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/bin</directory>
+      <directory>${project.build.outputDirectory}/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/etc</directory>
+      <directory>${project.build.outputDirectory}/etc</directory>
       <outputDirectory>etc</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/jasper</directory>
+      <directory>${project.build.directory}/jasper</directory>
       <outputDirectory>etc/report-templates</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/contrib</directory>
+      <directory>${project.build.outputDirectory}/contrib</directory>
       <includes>
         <include>**/*.pl</include>
         <include>**/*.py</include>
@@ -49,7 +49,7 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/contrib</directory>
+      <directory>${project.build.outputDirectory}/contrib</directory>
       <excludes>
         <exclude>**/*.pl</exclude>
         <exclude>**/*.py</exclude>
@@ -60,37 +60,37 @@
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/logs</directory>
+      <directory>${project.build.outputDirectory}/logs</directory>
       <outputDirectory>logs</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/share</directory>
+      <directory>${project.build.outputDirectory}/share</directory>
       <outputDirectory>share</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/jmx</directory>
+      <directory>${project.build.directory}/jmx</directory>
       <outputDirectory>lib</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/etc</directory>
+      <directory>${project.build.directory}/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/bin</directory>
+      <directory>${project.build.directory}/remote-poller/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>0755</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/lib</directory>
+      <directory>${project.build.directory}/remote-poller/lib</directory>
       <outputDirectory>bin</outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
