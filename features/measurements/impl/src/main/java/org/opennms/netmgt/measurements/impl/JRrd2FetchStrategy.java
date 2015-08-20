@@ -73,7 +73,7 @@ public class JRrd2FetchStrategy extends AbstractRrdBasedFetchStrategy {
             labelMap.put(tempLabel, source.getLabel());
 
             argv.add(String.format("DEF:%s=%s:%s:%s",
-                    tempLabel, rrdFile, source.getEffectiveDataSource(),
+                    tempLabel, Utils.escapeColons(rrdFile), Utils.escapeColons(source.getEffectiveDataSource()),
                     source.getAggregation()));
             argv.add(String.format("XPORT:%s:%s", tempLabel,
             		tempLabel));

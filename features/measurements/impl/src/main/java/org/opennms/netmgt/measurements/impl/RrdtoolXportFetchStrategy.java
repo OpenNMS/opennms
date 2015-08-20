@@ -48,6 +48,8 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -66,6 +68,8 @@ import com.google.common.collect.Maps;
  * @author Dustin Frisch <fooker@lab.sh>
  */
 public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RrdtoolXportFetchStrategy.class);
 
     /**
      * Maximum runtime of 'rrdtool xport' in milliseconds before failing and
@@ -119,7 +123,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             labelMap.put(tempLabel, source.getLabel());
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
-                    tempLabel, rrdFile, source.getEffectiveDataSource(),
+                    tempLabel, Utils.escapeColons(rrdFile), Utils.escapeColons(source.getEffectiveDataSource()),
                     source.getAggregation()));
             cmdLine.addArgument(String.format("XPORT:%s:%s", tempLabel, tempLabel));
         }
@@ -142,6 +146,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
         // Export
         RrdXport rrdXport;
         try {
+            LOG.debug("Executing: {}", cmdLine);
             executor.execute(cmdLine);
 
             final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -189,4 +194,5 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
         return new FetchResults(timestamps, columns, rrdXport.getMeta().getStep() * 1000, constants);
     }
+
 }
