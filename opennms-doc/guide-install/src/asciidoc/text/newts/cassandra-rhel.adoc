@@ -6,12 +6,12 @@
 ==== Installing on RHEL-based systems
 
 This section describes how to install the latest _Cassandra 2.1.x_ release on a _RHEL_ based systems for _Newts_.
-The first steps add the _DataStax_ community repository and install the required _GPG Key_ to verify the integrity of the _RPM packages_.
-Installation of the package is done with _yum_ and the _Cassandra_ service is managed by _Systemd_.
+The first step is to add the _DataStax_ community repository and install the required _GPG Key_ to verify the integrity of the _RPM packages_.
+After that install the package with _yum_ and the _Cassandra_ service is managed by _Systemd_.
 
-NOTE: This description is build on _RHEL 7_ and _CentOS 7.1_.
+NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
 
-.Add DataStax repository
+.Add the DataStax repository
 [source, bash]
 ----
 vi /etc/yum.repos.d/datastax.repo
@@ -51,4 +51,4 @@ chkconfig cassandra on
 service cassandra start
 ----
 
-TIP: Verify if the _Cassandra_ service is automatically started after rebooting the server.
+TIP: Verify whether the _Cassandra_ service is automatically started after rebooting the server.
