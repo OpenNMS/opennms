@@ -1,6 +1,30 @@
 [releasenotes-16]
 === OpenNMS 16
 
+[releasenotes-changelog-16.0.3]
+==== Release 16.0.3
+
+Release 16.0.3 is the latest stable release of OpenNMS.  It contains a number of bugfixes, including a fix
+to an NPE that could cause nodes to not show in the topology UI.
+
+The codename for 16.0.3 is _Phillip Fathom_.
+
+===== Bug
+
+* IfIndex not updated in ipinterface table on change (Issue http://issues.opennms.org/browse/NMS-6567[NMS-6567])
+* build failure in opennms-doc/guide-doc on FreeBSD (Issue http://issues.opennms.org/browse/NMS-7600[NMS-7600])
+* Log messages for the Correlation Engine appear in manager.log (Issue http://issues.opennms.org/browse/NMS-7729[NMS-7729])
+* SeleniumMonitor with PhantomJS driver needs gson JAR (Issue http://issues.opennms.org/browse/NMS-7748[NMS-7748])
+* The command /opt/opennms/bin/ilr doesn't work (Issue http://issues.opennms.org/browse/NMS-7760[NMS-7760])
+* nodeCategoryChanged event on already-down node makes extra nodeDown events (Issue http://issues.opennms.org/browse/NMS-7761[NMS-7761])
+* noSuchObject duplicates links on topology map (Issue http://issues.opennms.org/browse/NMS-7762[NMS-7762])
+* OpenNMS won't start anymore with 512MB of Heap Size (Issue http://issues.opennms.org/browse/NMS-7783[NMS-7783])
+* Some weak cipher suites allowed in example jetty.xml HTTPS config (Issue http://issues.opennms.org/browse/NMS-7812[NMS-7812])
+* The reload config for Collectd might throws a ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-7824[NMS-7824])
+* KIE API JAR missing from packages (Issue http://issues.opennms.org/browse/NMS-7836[NMS-7836])
+* Fix for NMS-6567 prevents interfaces from acquiring SNMP interface records on rescan (Issue http://issues.opennms.org/browse/NMS-7838[NMS-7838])
+* Counter variables reported as strings (like Net-SNMP extent) are not stored properly when using RRDtool (Issue http://issues.opennms.org/browse/NMS-7839[NMS-7839])
+
 [releasenotes-changelog-16.0.2]
 ==== Release 16.0.2
 
@@ -11,7 +35,7 @@ The codename for 16.0.2 is **__still__** _Bananaman_.  It'll be our secret.
 [releasenotes-changelog-16.0.1]
 ==== Release 16.0.1
 
-Release 16.0.1 is the latest stable release of OpenNMS.  It contains a fe small enhancements and a number of bugfixes, including
+Release 16.0.1 is the latest stable release of OpenNMS.  It contains a few small enhancements and a number of bugfixes, including
 a fix to running OpenNMS on a system that cannot reach the public Internet.
 
 The codename for 16.0.1 is _Bananaman_.
