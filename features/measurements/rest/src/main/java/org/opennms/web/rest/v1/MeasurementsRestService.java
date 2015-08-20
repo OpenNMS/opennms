@@ -68,6 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.RowSortedTable;
 
 /**
  * The Measurements API provides read-only access to values
@@ -188,23 +189,28 @@ public class MeasurementsRestService {
             throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
         }
 
+        // If there is an analytics command, apply it to the metrics
+        if (request.getAnalyticsCommand() != null) {
+            for (FilterFactory factory : m_filterFactories) {
+                Filter filter = factory.getFilter(request.getAnalyticsCommand());
+                if (filter != null) {
+                    RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+                    try {
+                        filter.filter(table);
+                    } catch (Exception e) {
+                        throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
+                    }
+                    results = new FetchResults(table, results.getStep(), results.getConstants());
+                }
+            }
+        }
+
         final Map<String, double[]> columns = results.getColumns();
 
         // Remove any transient values belonging to sources
         for (final Source source : request.getSources()) {
             if (source.getTransient()) {
                 columns.remove(source.getLabel());
-            }
-        }
-
-        // If there is an analytics command, apply it to the metrics
-        if (request.getAnalyticsCommand() != null) {
-            for (FilterFactory factory : m_filterFactories) {
-                Filter filter = factory.getFilter(request.getAnalyticsCommand());
-                if (filter != null) {
-                    // TODO: Figure out how to apply the filter to the data set
-                    LOG.debug("TODO: Figure out how to apply this analytics filter: {}", filter);
-                }
             }
         }
 

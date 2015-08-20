@@ -64,7 +64,7 @@ public class TrendLine implements Filter {
 
     @Override
     public void filter(RowSortedTable<Integer, String, Double> table) throws RScriptException {
-        Preconditions.checkArgument(table.containsColumn("Timestamp"), "Data source must have a 'Timestamp' column.");
+        Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), "Data source must have a 'Timestamp' column.");
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
@@ -80,8 +80,8 @@ public class TrendLine implements Filter {
         }
 
         // Determine the step size
-        Date lastTimestamp = new Date(table.get(lastRowWithValues, "Timestamp").longValue());
-        long stepInMs = (long)(table.get(lastRowWithValues, "Timestamp") - table.get(lastRowWithValues-1, "Timestamp"));
+        Date lastTimestamp = new Date(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME).longValue());
+        long stepInMs = (long)(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(lastRowWithValues-1, "Timestamp"));
 
         // Num steps ahead
         int numStepsAhead = (int)Math.floor(m_config.getSecondsAhead() * 1000 / stepInMs);
@@ -107,9 +107,9 @@ public class TrendLine implements Filter {
         // and the requested number of steps ahead
         for (int i = firstRowWithValues; i <= (lastRowWithValues + numStepsAhead); i++) {
             if (i >= lastRowWithValues) {
-                table.put(i, "Timestamp", (double)new Date(lastTimestamp.getTime() + stepInMs * (i-lastRowWithValues)).getTime());
+                table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * (i-lastRowWithValues)).getTime());
             }
-            double x = table.get(i, "Timestamp");
+            double x = table.get(i, TIMESTAMP_COLUMN_NAME);
             table.put(i, m_config.getOutputColumn(), poly.eval(x));
         }
     }
