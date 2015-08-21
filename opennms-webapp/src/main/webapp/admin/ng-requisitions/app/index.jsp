@@ -34,6 +34,7 @@
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="nobase" value="true" />
 	<jsp:param name="nostyles" value="true" />
+	<jsp:param name="norequirejs" value="true" />
 	<jsp:param name="ngapp" value="onms-requisitions" />
 	<jsp:param name="title" value="Manage Provisioning Requisitions" />
 	<jsp:param name="headTitle" value="Provisioning Requisitions" />
