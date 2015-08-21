@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collection.persistence.newts;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -110,7 +109,7 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
         m_newtsWriter.insert(getSamples());
     }
 
-    public Collection<Sample> getSamples() {
+    public List<Sample> getSamples() {
         final List<Sample> samples = Lists.newLinkedList();
         ResourcePath path = ResourceTypeUtils.getResourcePathWithRepository(m_repository, m_resource.getPath().resolve(m_name));
 
