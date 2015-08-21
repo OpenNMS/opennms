@@ -124,8 +124,8 @@ public class MeasurementsRestService {
         request.setStep(step);
         request.setMaxRows(maxrows);
 
-        // Use the attribute name as the label
-        Source source = new Source(attribute, resourceId, attribute, false);
+        // Use the attribute name as the datasource and label
+        Source source = new Source(attribute, resourceId, attribute, attribute, false);
         source.setAggregation(aggregation);
         request.setSources(Lists.newArrayList(source));
 

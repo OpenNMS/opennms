@@ -83,6 +83,9 @@ public class GraphResults {
     private Map<String,List<GraphResultSet>> m_graphResultMap =
             new HashMap<String,List<GraphResultSet>>();
 
+    private int m_graphTopOffsetWithText;
+    private int m_graphLeftOffset;
+    private int m_graphRightOffset;
     private int m_resourceIndex = 0;
     
     // FIXME: this is very US-centric; can we have it use the system locale?
@@ -359,6 +362,61 @@ public class GraphResults {
         public int getHourOfDay() {
             return get(Calendar.HOUR_OF_DAY); 
         }
+    }
+
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
+    public int getGraphLeftOffset() {
+        return m_graphLeftOffset;
+    }
+
+    /**
+     * <p>setGraphLeftOffset</p>
+     *
+     * @param graphLeftOffset a int.
+     */
+    public void setGraphLeftOffset(int graphLeftOffset) {
+        m_graphLeftOffset = graphLeftOffset;
+        
+    }
+    
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
+    public int getGraphRightOffset() {
+        return m_graphRightOffset;
+    }
+
+    /**
+     * <p>setGraphRightOffset</p>
+     *
+     * @param graphRightOffset a int.
+     */
+    public void setGraphRightOffset(int graphRightOffset) {
+        m_graphRightOffset = graphRightOffset;
+    }
+
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
+    public int getGraphTopOffsetWithText() {
+        return m_graphTopOffsetWithText;
+    }
+
+    /**
+     * <p>setGraphTopOffsetWithText</p>
+     *
+     * @param graphTopOffsetWithText a int.
+     */
+    public void setGraphTopOffsetWithText(int graphTopOffsetWithText) {
+        m_graphTopOffsetWithText = graphTopOffsetWithText;
     }
 
 }

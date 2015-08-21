@@ -21,6 +21,7 @@
   *
   * @requires $q Angular promise/deferred implementation
   * @requires $cacheFactory Angular cache management
+  * @requires $window Document window
   * @requires $http Angular service that facilitates communication with the remote HTTP servers
   * @requires $log Angular log facility
   *
@@ -33,16 +34,18 @@
   *
   * If the cache is not going to be used, the controllers are responsible for maintaining the state of the data.
   */
-  .factory('RequisitionsService', ['$q', '$cacheFactory', '$http', '$log', function($q, $cacheFactory, $http, $log) {
+  .factory('RequisitionsService', ['$q', '$cacheFactory', '$window', '$http', '$log', function($q, $cacheFactory, $window, $http, $log) {
 
     $log.debug('Initializing RequisitionsService');
 
     var requisitionsService = {};
     requisitionsService.internal = {};
 
-    requisitionsService.internal.requisitionsUrl = '/opennms/rest/requisitions';
-    requisitionsService.internal.foreignSourcesUrl = '/opennms/rest/foreignSources';
-    requisitionsService.internal.foreignSourcesConfigUrl = '/opennms/rest/foreignSourcesConfig';
+    var baseHref = $window.ONMS_BASE_HREF === undefined ? '' : $window.ONMS_BASE_HREF;
+    $log.debug('baseHref = "' + baseHref + '"');
+    requisitionsService.internal.requisitionsUrl = baseHref + 'rest/requisitions';
+    requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
+    requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
     requisitionsService.internal.cache = $cacheFactory('RequisitionsService');
 
     /**
