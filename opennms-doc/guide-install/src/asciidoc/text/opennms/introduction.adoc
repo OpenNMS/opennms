@@ -16,14 +16,14 @@ Running _OpenNMS_ requires the following components:
 * Set link to section which describes to install with RRDTool.
   Optional link:http://oss.oetiker.ch/rrdtool/[RRDtool] to persist long term performance data
 
-NOTE: _OpenJDK 8_ can be used, but for production and critical environment _Oracle Java 8_ is recommended.
+NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Oracle Java 8_ is recommended.
 
 NOTE: `${OPENNMS_HOME}` is referred to the path _OpenNMS_ is installed to.
       On _RHEL-based_ systems it is `/opt/opennms` on _Debian-based_ systems it is `/usr/share/opennms`.
       The environment in _Microsoft Windows_ can refer to `C:\Program Files\opennms`
 
-With an _opennms_ meta package all dependencies for the components mentioned above are maintained.
-The following sections describe to install _OpenNMS_ on a single system.
+With the _opennms_ meta package all dependencies needed for the components mentioned above are maintained.
+The following sections describe how to install _OpenNMS_ on a single system.
 Dependencies for _Java_ and the _PostgreSQL_ data base are maintained with the _opennms_ meta installation package.
 
 [[gi-install-opennms-repo-releases]]
@@ -32,7 +32,7 @@ Dependencies for _Java_ and the _PostgreSQL_ data base are maintained with the _
 Installation packages are available for different releases of _OpenNMS_.
 The configuration of the repository decides which _OpenNMS_ release will be installed.
 
-The following release are available to be installed
+The following releases are available for installation:
 
 ._OpenNMS_ release name convention
 [options="header, autowidth"]
