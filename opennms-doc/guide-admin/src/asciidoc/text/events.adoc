@@ -67,5 +67,3 @@ The publisher and subscriber components do not need to have any knowledge of eac
 
 [[section-events-events-in-action]]
 === Events in Action
-
-[[section-events-events-in-action-notifications]]

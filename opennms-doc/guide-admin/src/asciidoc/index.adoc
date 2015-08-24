@@ -18,8 +18,8 @@
 == Administrative Webinterface
 
 [[ga-admin-ui-start-page]]
-=== Start page
-include::text/webui/startpage/grafana-dashboard-box.adoc[]
+=== Grafana Dashboard Box
+include::text/webui/grafana-dashboard-box.adoc[]
 
 [[ga-admin-ui-ops-board]]
 === Operator Board
@@ -111,7 +111,18 @@ include::text/events.adoc[]
 
 [ga-provisioning]
 == Provisioning
-include::text/provisioning.adoc[]
+include::text/provisioning/introduction.adoc[]
+include::text/provisioning/concepts.adoc[]
+include::text/provisioning/terminology.adoc[]
+include::text/provisioning/scalability.adoc[]
+include::text/provisioning/getting-started.adoc[]
+include::text/provisioning/import-handler.adoc[]
+include::text/provisioning/examples.adoc[]
+include::text/provisioning/adapters.adoc[]
+include::text/provisioning/integration.adoc[]
+include::text/provisioning/single-node.adoc[]
+include::text/provisioning/fine-grained.adoc[]
+include::text/provisioning/api-examples.adoc[]
 
 [[ga-opennms-operation]]
 == OpenNMS Operation
