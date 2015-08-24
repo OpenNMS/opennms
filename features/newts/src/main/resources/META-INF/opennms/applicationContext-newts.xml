@@ -86,6 +86,8 @@
         init-method="start"
         destroy-method="stop" />
 
+  <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
+
   <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSession" depends-on="cassandra.port" />
 
   <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />

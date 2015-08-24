@@ -2,6 +2,7 @@ package org.opennms.netmgt.model;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,12 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         }
     }
 
+    public ResourcePath(Collection<String> pathElements) {
+        for (String el : pathElements) {
+            m_elements.add(el);
+        }
+    }
+
     public ResourcePath(ResourcePath parent, String... path) {
         m_elements.addAll(parent.m_elements);
         for (String el : path) {
@@ -37,6 +44,13 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      */
     public static ResourcePath get(String... path) {
         return new ResourcePath(path);
+    }
+
+    /**
+     * Convenience method.
+     */
+    public static ResourcePath get(Collection<String> pathElements) {
+        return new ResourcePath(pathElements);
     }
 
     /**

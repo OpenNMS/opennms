@@ -29,6 +29,7 @@
 package org.opennms.netmgt.newts.support;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.ResourcePath;
@@ -37,6 +38,9 @@ import org.opennms.newts.api.search.Operator;
 import org.opennms.newts.api.search.Query;
 import org.opennms.newts.api.search.Term;
 import org.opennms.newts.api.search.TermQuery;
+import org.opennms.newts.cassandra.search.EscapableResourceIdSplitter;
+import org.opennms.newts.cassandra.search.ResourceIdSplitter;
+
 
 /**
  * Utility functions and constants.
@@ -65,6 +69,8 @@ public abstract class NewtsUtils {
 
     public static final String DEFAULT_TTL = "" + 86400 * 365;
 
+    private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
+
     /**
      * Extends the attribute map with indices used by the {@link org.opennms.netmgt.dao.support.NewtsResourceStorageDao}.
      *
@@ -75,12 +81,11 @@ public abstract class NewtsUtils {
      * <li> _idx3: (a:b:c, 4)
      */
     public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
-        StringBuffer sb = new StringBuffer();
-        String[] els = path.elements();
-        for (int i = 0; i < els.length-1; i++) {
-            if (i > 0) { sb.append(":"); }
-            sb.append(els[i]);
-            attributes.put("_idx" + i, String.format("(%s,%d)", sb.toString(), els.length));
+        final List<String> els = Arrays.asList(path.elements());
+        final int N = els.size();
+        for (int i = 0; i < N; i++) {
+            final String id = s_splitter.joinElementsToId(els.subList(0, i+1));
+            attributes.put("_idx" + i, String.format("(%s,%d)", id, N));
         }
     }
 
@@ -111,14 +116,7 @@ public abstract class NewtsUtils {
      * @return Newts resource id
      */
     public static String toResourceId(ResourcePath path) {
-        StringBuilder sb = new StringBuilder();
-        for (final String entry : path) {
-            if (sb.length() != 0) {
-                sb.append(":");
-            }
-            sb.append(entry);
-        }
-        return sb.toString();
+        return s_splitter.joinElementsToId(Arrays.asList(path.elements()));
     }
 
     /**
@@ -132,12 +130,8 @@ public abstract class NewtsUtils {
             return null;
         }
 
-        String els[] = resourceId.split(":");
-        if (els.length == 0) {
-            return null;
-        }
-
-        return ResourcePath.get(Arrays.copyOf(els, els.length-1));
+        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        return ResourcePath.get(els.subList(0, els.size() - 1));
     }
 
 }
