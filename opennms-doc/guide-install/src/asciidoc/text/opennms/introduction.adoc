@@ -77,8 +77,8 @@ Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and a
 .Package repository configuration for Debian-based systems
 [source, shell]
 ----
-deb http://debian.opennms.eu ${RELEASE} main <1>
-deb-src http://debian.opennms.eu ${RELEASE} main <1>
+deb http://debian.opennms.org ${RELEASE} main <1>
+deb-src http://debian.opennms.org ${RELEASE} main <1>
 ----
 
 <1> Replace `${RELEASE}` with a release name like `testing` or `snapshot`.
@@ -88,7 +88,7 @@ Import the packages' authentication key with the following command:
 .GPG key import for Debian-based systems
 [source, shell]
 ----
-wget -O - http://debian.opennms.eu/OPENNMS-GPG-KEY | apt-key add -
+wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----
 
 Run `apt-get update`and install _OpenNMS_ with _apt_ following the normal installation procedure.
