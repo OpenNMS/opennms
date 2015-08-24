@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 === Newts
 
 This section describes some of the metrics _OpenNMS_ collects for monitoring the _Newts_ keyspace on an _Apache Cassandra_ node.
