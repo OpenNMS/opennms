@@ -91,6 +91,6 @@ Import the packages' authentication key with the following command:
 wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----
 
-Run `apt-get update`and install _OpenNMS_ with _apt_ following the normal installation procedure.
+Run `apt-get update` and install _OpenNMS_ with _apt_ following the normal installation procedure.
 
 TIP: Verify the release of _OpenNMS_ packages with `apt-cache show opennms`.
