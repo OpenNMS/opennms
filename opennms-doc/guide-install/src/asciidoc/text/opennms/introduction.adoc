@@ -72,19 +72,24 @@ TIP: Verify the release of _OpenNMS_ packages with `yum info opennms`.
 
 ==== Specific Release on Debian-based system
 
+Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and add the following 2 lines:
+
+.Package repository configuration for Debian-based systems
 [source, shell]
 ----
-vi /etc/apt/sources.list.d/opennms.list
+deb http://debian.opennms.eu ${RELEASE} main <1>
+deb-src http://debian.opennms.eu ${RELEASE} main <1>
 ----
 
-.Package repository configuration for RHEL-based systems
+<1> Replace `${RELEASE}` with a release name like `testing` or `snapshot`.
+
+Import the packages' authentication key with the following command:
+
+.GPG key import for Debian-based systems
 [source, shell]
 ----
-deb http://debian.opennms.eu snapshot main <1>
-deb-src http://debian.opennms.eu snapshot main <1>
+wget -O - http://debian.opennms.eu/OPENNMS-GPG-KEY | apt-key add -
 ----
-
-<1> Changed repository path in this example from `stable` to `snapshot`
 
 Run `apt-get update`and install _OpenNMS_ with _apt_ following the normal installation procedure.
 
