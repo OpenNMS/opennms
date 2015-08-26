@@ -219,6 +219,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
 
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
+  </bean>
   
   <bean name="jmsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/jms-northbounder-configuration.xml" />
