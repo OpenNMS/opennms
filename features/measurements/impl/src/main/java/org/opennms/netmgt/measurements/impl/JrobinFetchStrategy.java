@@ -71,8 +71,7 @@ public class JrobinFetchStrategy extends AbstractRrdBasedFetchStrategy {
         for (final Map.Entry<Source, String> entry : rrdsBySource.entrySet()) {
             final Source source = entry.getKey();
             final String rrdFile = entry.getValue();
-
-            dproc.addDatasource(source.getLabel(), rrdFile, source.getAttribute(),
+            dproc.addDatasource(source.getLabel(), rrdFile, source.getEffectiveDataSource(),
                     source.getAggregation());
         }
 

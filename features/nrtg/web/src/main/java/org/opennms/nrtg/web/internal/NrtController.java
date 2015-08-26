@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
@@ -320,7 +321,19 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(attr.getResource().getPath()).entrySet();
+            // The ResourceStorageDao expects a ResourcePath that points to meta-data attributes
+            final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+            String metaFileNameWithoutExtension = attr.getRrdFile();
+            for (final String ext : knownExtensions) {
+                if (metaFileNameWithoutExtension.endsWith(ext)) {
+                    metaFileNameWithoutExtension = metaFileNameWithoutExtension.substring(0,
+                            metaFileNameWithoutExtension.lastIndexOf(ext));
+                    break;
+                }
+            }
+            final ResourcePath pathToMetaFile = ResourcePath.get(attr.getResource().getPath(), metaFileNameWithoutExtension);
+
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(pathToMetaFile).entrySet();
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();

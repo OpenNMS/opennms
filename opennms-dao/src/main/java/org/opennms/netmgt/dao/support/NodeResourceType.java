@@ -124,8 +124,8 @@ public final class NodeResourceType extends AbstractTopLevelResourceType {
         return createResourceForNode(node);
     }
 
-    protected ResourcePath getResourcePathForNode(OnmsNode node) {
-        return new ResourcePath(ResourceTypeUtils.SNMP_DIRECTORY, Integer.toString(node.getId()));
+    protected static ResourcePath getResourcePathForNode(OnmsNode node) {
+        return ResourcePath.get(ResourceTypeUtils.SNMP_DIRECTORY, Integer.toString(node.getId()));
     }
 
     protected OnmsResource createResourceForNode(OnmsNode node) {

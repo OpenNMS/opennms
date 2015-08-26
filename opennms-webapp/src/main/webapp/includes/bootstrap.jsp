@@ -94,10 +94,14 @@
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+  <c:if test="${param.norequirejs != 'true' }">
+    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.min.js"></script>
+  </c:if>
+
+    <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
@@ -116,8 +120,10 @@
       <!-- Graphing -->
       <script type="text/javascript">
         // Global scope
-        window.onmsGraphContainers = {'engine': '<%= TimeSeries.getGraphEngine() %>'};
-        window.onmsGraphContainers.baseHref = '<%= baseHref %>';
+        window.onmsGraphContainers = {
+          'engine': '<%= TimeSeries.getGraphEngine() %>',
+          'baseHref': '<%= baseHref %>'
+        };
       </script>
       <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
     </c:if>
@@ -144,6 +150,9 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
+<c:if test="${param.ngapp != null}">
+  ng-app="${param.ngapp}"
+</c:if>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>

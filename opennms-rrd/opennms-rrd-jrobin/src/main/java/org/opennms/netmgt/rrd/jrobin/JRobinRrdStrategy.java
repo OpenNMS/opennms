@@ -880,6 +880,39 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         return "";
     }
 
+    /*
+     * These offsets work for ranger@ with Safari and JRobin 1.5.8.
+     */
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphLeftOffset() {
+        return 74;
+    }
+
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphRightOffset() {
+        return -15;
+    }
+
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphTopOffsetWithText() {
+        return -61;
+    }
+
     /**
      * <p>getDefaultFileExtension</p>
      *
