@@ -16,13 +16,13 @@
     <componentDescriptor>src/assembly/components/juniper-tca.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/ncs.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/nsclient.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/selenium-monitor.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>
