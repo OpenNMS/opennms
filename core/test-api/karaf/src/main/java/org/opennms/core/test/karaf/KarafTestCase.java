@@ -173,6 +173,7 @@ public abstract class KarafTestCase {
 
     protected void installFeature(String featureName) {
         try {
+            LOG.info("Installing feature {}", featureName);
             featuresService.installFeature(featureName);
         } catch (Exception e) {
             throw new RuntimeException(e);
