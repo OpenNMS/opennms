@@ -28,6 +28,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -243,9 +244,10 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public void promoteGraphAttributesForResource(OnmsResource resource) {
+        final String rrdBaseDir = System.getProperty("rrd.base.dir");
         List<String> rrdFiles = new LinkedList<String>();
         for(RrdGraphAttribute attribute : resource.getRrdGraphAttributes().values()) {
-            rrdFiles.add(attribute.getRrdRelativePath());
+            rrdFiles.add(rrdBaseDir+File.separator+attribute.getRrdRelativePath());
         }
         EventBuilder bldr = new EventBuilder(EventConstants.PROMOTE_QUEUE_DATA_UEI, "OpenNMS.Webapp");
         bldr.addParam(EventConstants.PARM_FILES_TO_PROMOTE, rrdFiles);
