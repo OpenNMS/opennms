@@ -203,7 +203,8 @@ public class JMXDataSource implements Cloneable {
 
                 // Truncate MIB object name/alias if it exceeds the 19 char max for
                 // RRD data source names.
-                this.setName(org.opennms.netmgt.jmx.JmxUtils.trimAttributeName(this.getName()));
+                // this.setName(org.opennms.netmgt.jmx.JmxUtils.trimAttributeName(this.getName()));
+                this.setName(this.getName());
 //                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
 //                        LOG.warn("buildDataSourceList: Mib object name/alias '{}' exceeds 19 char maximum for RRD data source names, truncating.", obj.getAlias());
 //                        char[] temp = this.getName().toCharArray();

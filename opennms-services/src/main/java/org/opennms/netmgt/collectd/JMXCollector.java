@@ -424,8 +424,8 @@ public abstract class JMXCollector implements ServiceCollector {
                      * Truncate MBean object name/alias if it exceeds 19 char
                      * max for RRD data source names.
                      */
-                    String ds_name = JmxUtils.trimAttributeName(attr.getAlias());
-                    ds.setName(ds_name);
+                    // String ds_name = JmxUtils.trimAttributeName(attr.getAlias());
+                    ds.setName(attr.getAlias());
 
                     // Map MBean object data type to RRD data type
                     ds.setType(ds_type);
