@@ -58,6 +58,11 @@
       <artifactId>disruptor</artifactId>
       <version>3.3.2</version>
     </dependency>
+    <dependency>
+      <groupId>args4j</groupId>
+      <artifactId>args4j</artifactId>
+      <version>2.32</version>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
