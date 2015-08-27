@@ -41,16 +41,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URI;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
+import javax.security.auth.Subject;
 
 import org.apache.felix.service.command.CommandProcessor;
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.features.FeaturesService;
+import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
@@ -188,13 +191,20 @@ public abstract class KarafTestCase {
             final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             final PrintStream printStream = new PrintStream(byteArrayOutputStream);
         ) {
-            final CommandProcessor commandProcessor = getOsgiService(CommandProcessor.class);
-            final CommandSession commandSession = commandProcessor.createSession(System.in, printStream, System.err);
-            LOG.info("{}", command);
-            Object response = commandSession.execute(command);
-            LOG.info("Response: {}", response);
-            printStream.flush();
-            return byteArrayOutputStream.toString();
+            Subject subject = new Subject();
+            subject.getPrincipals().add(new RolePrincipal("admin"));
+            return Subject.doAs(subject, new PrivilegedExceptionAction<String>() {
+                @Override
+                public String run() throws Exception {
+                    final CommandProcessor commandProcessor = getOsgiService(CommandProcessor.class);
+                    final CommandSession commandSession = commandProcessor.createSession(System.in, printStream, System.err);
+                    LOG.info("{}", command);
+                    Object response = commandSession.execute(command);
+                    LOG.info("Response: {}", response);
+                    printStream.flush();
+                    return byteArrayOutputStream.toString();
+                }
+            });
         } catch (Exception e) {
             LOG.error("Error while executing command", e);
             throw new RuntimeException(e);
