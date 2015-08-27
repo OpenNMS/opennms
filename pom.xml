@@ -1252,7 +1252,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
-    <paxExamVersion>4.5.0</paxExamVersion>
+    <paxExamVersion>4.6.0</paxExamVersion>
     <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
