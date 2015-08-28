@@ -10,13 +10,12 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-    <outputDirectory>.</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <directory>src/main/webapp</directory>
       <includes>
         <include>WEB-INF/jsp/**/*.jsp</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
 </assembly>

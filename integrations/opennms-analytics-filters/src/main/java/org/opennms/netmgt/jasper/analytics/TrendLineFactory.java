@@ -35,9 +35,12 @@ package org.opennms.netmgt.jasper.analytics;
  * @author jwhite
  */
 public class TrendLineFactory implements FilterFactory {
+
+    public static final String FILTER_NAME = "TrendLine";
+
     @Override
     public Filter getFilter(AnalyticsCommand cmd)  {
-        if (!"TrendLine".equalsIgnoreCase(cmd.getModule())) {
+        if (!FILTER_NAME.equalsIgnoreCase(cmd.getModule())) {
             return null;
         }
         return new TrendLine(TrendLineConfig.parse(cmd));

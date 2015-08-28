@@ -35,9 +35,12 @@ package org.opennms.netmgt.jasper.analytics;
  * @author jwhite
  */
 public class HWForecastFactory implements FilterFactory {
+
+    public static final String FILTER_NAME = "HoltWinters";
+
     @Override
     public Filter getFilter(AnalyticsCommand cmd) {
-        if (!"HoltWinters".equalsIgnoreCase(cmd.getModule())) {
+        if (!FILTER_NAME.equalsIgnoreCase(cmd.getModule())) {
             return null;
         }
         return new HWForecast(HWForecastConfig.parse(cmd));

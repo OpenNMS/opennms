@@ -35,9 +35,12 @@ package org.opennms.netmgt.jasper.analytics;
  * @author jwhite
  */
 public class ChompFactory implements FilterFactory {
+
+    public static final String FILTER_NAME = "Chomp";
+
     @Override
     public Filter getFilter(AnalyticsCommand cmd)  {
-        if (!"Chomp".equalsIgnoreCase(cmd.getModule())) {
+        if (!FILTER_NAME.equalsIgnoreCase(cmd.getModule())) {
             return null;
         }
         return new Chomp(ChompConfig.parse(cmd));

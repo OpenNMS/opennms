@@ -36,9 +36,12 @@ import com.google.common.collect.RowSortedTable;
  * @author jwhite
  */
 public class NoOpFilter implements FilterFactory {
+
+    public static final String FILTER_NAME = "NoOp";
+
     @Override
     public Filter getFilter(AnalyticsCommand cmd) {
-        if ("NoOp".equalsIgnoreCase(cmd.getModule())) {
+        if (FILTER_NAME.equalsIgnoreCase(cmd.getModule())) {
             return new Filter() {
                 @Override
                 public void filter(RowSortedTable<Integer, String, Double> dsAsTable) {

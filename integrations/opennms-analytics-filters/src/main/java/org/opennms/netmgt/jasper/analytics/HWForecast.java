@@ -61,7 +61,7 @@ public class HWForecast implements Filter {
 
     @Override
     public void filter(RowSortedTable<Integer, String, Double> table) throws RScriptException {
-        Preconditions.checkArgument(table.containsColumn("Timestamp"), "Data source must have a 'Timestamp' column.");
+        Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), "Data source must have a 'Timestamp' column.");
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
@@ -77,8 +77,8 @@ public class HWForecast implements Filter {
         }
 
         // Determine the step size
-        Date lastTimestamp = new Date(table.get(lastRowWithValues, "Timestamp").longValue());
-        long stepInMs = (long)(table.get(lastRowWithValues, "Timestamp") - table.get(lastRowWithValues-1, "Timestamp"));
+        Date lastTimestamp = new Date(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME).longValue());
+        long stepInMs = (long)(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(lastRowWithValues-1, "Timestamp"));
 
         // Calculate the number of samples per period
         int numSamplesPerPeriod = (int)Math.floor(m_config.getPeriod() * 1000 / stepInMs);
@@ -120,7 +120,7 @@ public class HWForecast implements Filter {
             table.put(idxTarget, m_config.getOutputPrefix() + "Fit", outputTable.get(i, "fit"));
             table.put(idxTarget, m_config.getOutputPrefix() + "Lwr", outputTable.get(i, "lwr"));
             table.put(idxTarget, m_config.getOutputPrefix() + "Upr", outputTable.get(i, "upr"));
-            table.put(idxTarget, "Timestamp", (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
+            table.put(idxTarget, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
         }
     }
 }

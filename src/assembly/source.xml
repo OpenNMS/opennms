@@ -10,7 +10,8 @@
   <fileSets>
     <fileSet>
       <directory>.</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <excludes>
         <exclude>**/.*.swp</exclude>
         <exclude>**/.classpath</exclude>

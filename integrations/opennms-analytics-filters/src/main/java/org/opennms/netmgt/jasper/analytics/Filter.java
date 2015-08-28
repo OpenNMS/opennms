@@ -37,5 +37,8 @@ import com.google.common.collect.RowSortedTable;
  * @author jwhite
  */
 public interface Filter {
-    public void filter(RowSortedTable<Integer, String, Double> dsAsTable) throws Exception;
+
+    public static final String TIMESTAMP_COLUMN_NAME = "Timestamp";
+
+    void filter(RowSortedTable<Integer, String, Double> dsAsTable) throws Exception;
 }
