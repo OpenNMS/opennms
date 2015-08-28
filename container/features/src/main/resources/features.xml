@@ -90,6 +90,8 @@
     </feature>
 
     <feature name="c3p0" description="c3p0" version="0.9.1.2">
+      <feature>postgresql</feature>
+
       <!-- Add all possible JDBC drivers to the c3p0 import list so that it can classload them -->
       <bundle>wrap:mvn:c3p0/c3p0/0.9.1.2$Bundle-SymbolicName=c3p0&amp;Bundle-Version=0.9.1.2&amp;Import-Package=javax.management,javax.naming,javax.naming.spi,javax.sql,javax.xml.parsers,org.apache.log4j,org.postgresql,org.w3c.dom</bundle>
     </feature>
@@ -105,6 +107,8 @@
     </feature>
 
     <feature name="commons-beanutils" description="Apache :: commons-beanutils" version="${commonsBeanutilsVersion}">
+      <feature>commons-collections</feature>
+
       <bundle>mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}</bundle>
     </feature>
 
@@ -237,7 +241,7 @@
     <feature name="json-lib" description="json-lib" version="2.2.3">
       <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
       <!-- Use the jdk15 qualifier -->
-      <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3//jdk15</bundle>
+      <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15</bundle>
     </feature>
 
     <feature name="org.json" description="org.json" version="20140107">
@@ -246,10 +250,6 @@
 
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="9.3-1100-jdbc4">
       <bundle>wrap:mvn:org.postgresql/postgresql/9.3-1100-jdbc4</bundle>
-    </feature>
-
-    <feature name="slf4j-api" description="slf4j :: API" version="${slf4jVersion}">
-      <bundle>mvn:org.slf4j/slf4j-api/${slf4jVersion}</bundle>
     </feature>
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
@@ -355,6 +355,7 @@
 
     <feature name="opennms-collection-persistence-rrd" description="OpenNMS :: Collection :: Persistence :: RRD" version="${project.version}">
       <feature>opennms-collection-api</feature>
+      <feature>opennms-dao-api</feature>
       <feature>opennms-rrd-api</feature>
 
       <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.rrd/${project.version}</bundle>
