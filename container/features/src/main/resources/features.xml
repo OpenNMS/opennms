@@ -141,6 +141,8 @@
     </feature>
 
     <feature name="commons-digester" description="Apache :: commons-digester" version="${commonsDigesterVersion}">
+      <feature>commons-beanutils</feature>
+
       <bundle>mvn:commons-digester/commons-digester/${commonsDigesterVersion}</bundle>
     </feature>
 
@@ -306,12 +308,18 @@
     <feature name="opennms-core-db" description="OpenNMS :: Core :: Database" version="${project.version}">
       <feature>atomikos</feature>
       <feature>c3p0</feature>
+      <feature>castor</feature>
+      <feature>commons-io</feature>
       <feature>postgresql</feature>
+
+      <feature>opennms-core</feature>
+
       <bundle>mvn:org.opennms.core/org.opennms.core.db/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-web" description="OpenNMS :: Core :: Web" version="${project.version}">
       <feature>opennms-core</feature>
+
       <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
       <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.web/${project.version}</bundle>
@@ -429,6 +437,7 @@
     </feature>
 
     <feature name="opennms-events-daemon" description="OpenNMS :: Events :: Daemon" version="${project.version}">
+      <feature>commons-beanutils</feature>
       <feature>spring-dm</feature>
 
       <feature>opennms-core-daemon</feature>
@@ -440,6 +449,7 @@
 
     <feature name="opennms-events-traps" description="OpenNMS :: Events :: Trap Daemon" version="${project.version}">
       <feature>opennms-core-daemon</feature>
+      <feature>opennms-dao-api</feature>
       <feature>opennms-events-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
@@ -458,6 +468,8 @@
 
     <feature name="opennms-poller-api" description="OpenNMS :: Poller API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
+
+      <feature>hibernate36</feature>
 
       <feature>opennms-core</feature>
 
