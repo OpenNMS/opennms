@@ -99,6 +99,44 @@
           </execution>
         </executions>
       </plugin>
+      <!-- We create a key for 'localhost' for test purposes -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateKeyPair</goal>
+            </goals>
+            <phase>generate-test-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <skipIfExist>true</skipIfExist>
+          <alias>localhost</alias>
+          <keysize>2048</keysize>
+          <dname>CN=localhost, OU=Measurement API Wire Mock, O=The OpenNMS Group, C=US</dname>
+          <keystore>${project.build.directory}/test-keystore.jks</keystore>
+          <storepass>password</storepass>
+          <validity>2</validity>
+        </configuration>
+      </plugin>
+      <!-- tODO MVR we need this for failsafe instead of surefire, but who cares ... :) -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <ssl.debug>true</ssl.debug>
+            <javax.net.debug>ssl,handshake,verbose</javax.net.debug>
+            <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
+            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
+            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
 
     <!-- TODO MVR we do not need this anymore, do we? -->

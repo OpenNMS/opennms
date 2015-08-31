@@ -6,6 +6,8 @@ import com.google.common.io.ByteStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,13 +19,15 @@ import java.net.URL;
  */
 class MeasurementApiConnector {
 
+    protected static final int CONNECT_TIMEOUT = 2500;
+
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiConnector.class);
 
     private HttpURLConnection connection;
 
-    public Result execute(final String url, final String username, final String password, final String query) throws IOException {
+    public Result execute(final boolean useSsl, final String url, final String username, final String password, final String query) throws IOException {
         log(url, username, password, query);
-        connect(url, username, password);
+        connect(useSsl, url, username, password);
         write(query.getBytes(), connection.getOutputStream());
         Result result = createResult(connection);
         LOG.debug("Request to URL '{}' returned with status: {} ({})", url, result.getResponseCode(), result.getResponseMessage());
@@ -42,12 +46,25 @@ class MeasurementApiConnector {
         return basicAuthHeader;
     }
 
-    private void connect(final String url, final String username, final String password) throws IOException {
+    private void connect(final boolean useSsl, final String url, final String username, final String password) throws IOException {
         connection = (HttpURLConnection) new URL(url).openConnection();
+
+        // if ssl is enabled and the connection is not an SSL-Exception abort
+        if (useSsl && !(connection instanceof HttpsURLConnection)) {
+            throw new SSLException("A secure connection is expected but was not established. Use SSL = " + useSsl + ", URL = " + url);
+        }
+
+        // if ssl is not enabled, but the connection is SSL-enabled, warn
+        if (!useSsl && connection instanceof HttpsURLConnection) {
+            LOG.warn("A secure connection was established even if it was not intended. Use SSL = {}, URL = {}", useSsl, url);
+        }
+
+        // verify if authentication is required
         if (isAuthenticationRequired(username, password)) {
             connection.setRequestProperty("Authorization", createBasicAuthHeader(username, password));
         }
-        connection.setConnectTimeout(2500);
+        connection.setAllowUserInteraction(false);
+        connection.setConnectTimeout(CONNECT_TIMEOUT);
         connection.setUseCaches(false);
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
@@ -84,6 +101,7 @@ class MeasurementApiConnector {
         Result result = new Result();
         result.setResponseCode(connection.getResponseCode());
         result.setResponseMessage(connection.getResponseMessage());
+        result.setSecureConnection(connection instanceof HttpsURLConnection);
         if (result.wasSuccessful()) {
             result.setInputStream(connection.getInputStream());
         } else {

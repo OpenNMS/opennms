@@ -10,6 +10,7 @@ class Result {
     private InputStream inputStream;
     private String responseMessage;
     private int responseCode;
+    private boolean secureConnection;
 
     public void setErrorStream(InputStream errorStream) {
         this.errorStream = errorStream;
@@ -49,5 +50,13 @@ class Result {
 
     public InputStream getErrorStream() {
         return errorStream;
+    }
+
+    public void setSecureConnection(boolean secureConnection) {
+        this.secureConnection = secureConnection;
+    }
+
+    public boolean wasSecureConnection() {
+        return secureConnection;
     }
 }

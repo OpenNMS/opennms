@@ -39,6 +39,11 @@ import java.util.Map;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
+    // TODO MVR define name for the property
+    // TODO MVR document this property
+    // TODO MVR is this the correct position for the property?
+    private static final String SSL_PROPERTY_KEY = "org.opennms.netmgt.jasper.measurement.ssl.enable";
+
     private RemoteMeasurementDataSourceWrapper dataSourceCreator;
 
     protected MeasurementQueryExecutor(JasperReportsContext jasperReportsContext, JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
@@ -69,7 +74,7 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
     public JRRewindableDataSource getDataSource(final String url, final String username, final String password, final String query) throws JRException {
         if (dataSourceCreator == null) {
-            dataSourceCreator = new RemoteMeasurementDataSourceWrapper(url, username, password);
+            dataSourceCreator = new RemoteMeasurementDataSourceWrapper(useSSL(), url, username, password);
         }
         return dataSourceCreator.createDataSource(query);
     }
@@ -83,6 +88,10 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
         } finally {
             dataSourceCreator = null;
         }
+    }
 
+    // TODO MVR is this the correct position for the property?
+    private static boolean useSSL() {
+        return Boolean.valueOf(System.getProperty(SSL_PROPERTY_KEY, "false")).booleanValue();
     }
 }

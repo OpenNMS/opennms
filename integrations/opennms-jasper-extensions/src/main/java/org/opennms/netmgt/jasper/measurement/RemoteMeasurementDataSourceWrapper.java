@@ -20,11 +20,13 @@ public class RemoteMeasurementDataSourceWrapper {
     private final String url;
     private final String username;
     private final String password;
+    private final boolean useSsl;
 
-    public RemoteMeasurementDataSourceWrapper(String url, String username, String password) {
+    public RemoteMeasurementDataSourceWrapper(boolean useSsl, String url, String username, String password) {
         this.username = username;
         this.password = password;
         this.url = url;
+        this.useSsl = useSsl;
     }
 
     /**
@@ -36,7 +38,7 @@ public class RemoteMeasurementDataSourceWrapper {
      */
     public JRRewindableDataSource createDataSource(String query) throws JRException {
         try {
-            Result result = connector.execute(url, username, password, query);
+            Result result = connector.execute(useSsl, url, username, password, query);
 
             // All unauthorized requests may be forwarded to another page (e.g. login.jsp) which results in 200 OK, we
             // therefore do not allow redirection at all.
