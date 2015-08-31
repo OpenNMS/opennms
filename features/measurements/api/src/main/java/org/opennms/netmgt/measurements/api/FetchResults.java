@@ -76,8 +76,8 @@ public class FetchResults {
         Preconditions.checkNotNull(values, "values argument");
         Preconditions.checkNotNull(constants, "constants argument");
 
-        //m_timestamps = ArrayUtils.toPrimitive(values.rowKeySet().toArray(new Long[0]));
-        m_timestamps = values.column(Filter.TIMESTAMP_COLUMN_NAME).values().stream().mapToLong(i -> i.longValue()).toArray();
+        m_timestamps = ArrayUtils.toPrimitive(values.rowKeySet().toArray(new Long[0]));
+        //m_timestamps = values.column(Filter.TIMESTAMP_COLUMN_NAME).values().stream().mapToLong(i -> i.longValue()).toArray();
 
         // Use a LinkedHashMap here to preserve ordering
         m_columns = new LinkedHashMap<String, double[]>();
