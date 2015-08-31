@@ -28,13 +28,9 @@
 
 package org.opennms.netmgt.measurements.model;
 
+import com.google.common.collect.Lists;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.QueryRequest;
-import org.opennms.netmgt.measurements.model.Source;
-
-import com.google.common.collect.Lists;
 
 import java.text.ParseException;
 import java.util.Arrays;

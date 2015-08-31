@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.jasper.resource;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+import org.opennms.netmgt.jasper.helper.ResourcePathFileTraversal;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,12 +42,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-
-import org.opennms.netmgt.jasper.helper.ResourcePathFileTraversal;
 
 public class ResourceDataSource implements JRDataSource {
     
@@ -164,10 +163,10 @@ public class ResourceDataSource implements JRDataSource {
             return false;
         }
     }
-    
-    private int m_currentRow = -1;
-    private List<String> m_paths;
-    private ResourceFilterFields m_filterFields;
+
+    protected int m_currentRow = -1;
+    protected List<String> m_paths;
+    protected ResourceFilterFields m_filterFields;
     
     public ResourceDataSource(ResourceQuery query) {
       extractPaths(query);

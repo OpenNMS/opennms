@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.jasper.resource;
 
+import org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.util.Arrays;
 
-import org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil;
-
-public class ResourceQuery {
+@XmlRootElement(name="resource-query")
+class ResourceQuery {
     private String m_rrdDir;
     private String m_node;
     private String m_resourceName;
@@ -44,37 +48,43 @@ public class ResourceQuery {
 
     public ResourceQuery() {
     }
-    
+
+    @XmlElement(name="rrd-directory")
     public String getRrdDir() {
         return m_rrdDir;
     }
     public void setRrdDir(String rrdDir) {
         m_rrdDir = rrdDir;
     }
+    @XmlAttribute(name="node-id")
     public String getNodeId() {
         return m_node;
     }
     public void setNodeId(String node) {
         m_node = node;
     }
+    @XmlAttribute(name="resource-name")
     public String getResourceName() {
         return m_resourceName;
     }
     public void setResourceName(String resourceName) {
         m_resourceName = resourceName;
     }
+    @XmlElement(name="filters")
     public String[] getFilters() {
         return m_filters;
     }
     public void setFilters(String[] filters) {
         m_filters = Arrays.copyOf(filters, filters.length);
     }
+    @XmlAttribute(name="foreign-source")
     public String getForeignSource() {
         return m_foreignSource;
     }
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
+    @XmlAttribute(name="foreign-id")
     public String getForeignId() {
         return m_foreignId;
     }
@@ -91,6 +101,7 @@ public class ResourceQuery {
         }
     }
 
+    @XmlElement(name="properties")
     public String[] getStringProperties() {
         return m_strProperties;
     }

@@ -28,7 +28,20 @@
 
 package org.opennms.netmgt.jasper.jrobin;
 
-import static org.junit.Assert.assertTrue;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdDef;
+import org.jrobin.core.RrdException;
+import org.jrobin.core.Sample;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,22 +49,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import static org.junit.Assert.assertTrue;
 
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdDef;
-import org.jrobin.core.RrdException;
-import org.jrobin.core.Sample;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-
+// TODO MVR entscheiden ob wir das hier noch benötigen, oder nicht
+@Ignore("This test was replaced, but due to compile issues it is kept around. Should be deleted in the future.")
 public class SpecificationTest {
 
     private static final long MILLIS_PER_HOUR = 3600L * 1000L;
@@ -61,27 +62,27 @@ public class SpecificationTest {
     private JasperPrint m_jasperPrint;
     private Date m_startDate;
     private Date m_endDate;
-    
-    interface Function {
+
+    public interface Function {
         double evaluate(long timestamp);
     }
-    
-    class Sin implements Function {
-        
+
+    public static class Sin implements Function {
+
         long m_startTime;
         double m_offset;
         double m_amplitude;
         double m_period;
         double m_factor;
-        
-        Sin(long startTime, double offset, double amplitude, double period) {
+
+        public Sin(long startTime, double offset, double amplitude, double period) {
             m_startTime = startTime;
             m_offset = offset;
             m_amplitude = amplitude;
             m_period = period;
             m_factor = 2 * Math.PI / period;
         }
-        
+
         @Override
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
@@ -90,25 +91,25 @@ public class SpecificationTest {
             return ret;
         }
     }
-    
-    class Cos implements Function {
-        
+
+    public static class Cos implements Function {
+
         long m_startTime;
         double m_offset;
         double m_amplitude;
         double m_period;
-        
+
         double m_factor;
-        
-        Cos(long startTime, double offset, double amplitude, double period) {
+
+        public Cos(long startTime, double offset, double amplitude, double period) {
             m_startTime = startTime;
             m_offset = offset;
             m_amplitude = amplitude;
             m_period = period;
-            
+
             m_factor = 2 * Math.PI / period;
         }
-        
+
         @Override
         public double evaluate(long timestamp) {
             long x = timestamp - m_startTime;
@@ -117,12 +118,12 @@ public class SpecificationTest {
             return ret;
         }
     }
-    
-    class Times implements Function {
+
+    public static class Times implements Function {
         Function m_a;
         Function m_b;
-        
-        Times(Function a, Function b) {
+
+        public Times(Function a, Function b) {
             m_a = a;
             m_b = b;
         }
@@ -132,12 +133,12 @@ public class SpecificationTest {
             return m_a.evaluate(timestamp)*m_b.evaluate(timestamp);
         }
     }
-    
-    class Counter implements Function {
+
+    public static class Counter implements Function {
         double m_prevValue;
         Function m_function;
-        
-        Counter(double initialValue, Function function) {
+
+        public Counter(double initialValue, Function function) {
             m_prevValue = initialValue;
             m_function = function;
         }
@@ -148,7 +149,7 @@ public class SpecificationTest {
             m_prevValue += m_diff;
             return m_prevValue;
         }
-        
+
     }
 
     @Before
@@ -170,9 +171,9 @@ public class SpecificationTest {
         long end = now/MILLIS_PER_DAY*MILLIS_PER_DAY + (MILLIS_PER_HOUR * 4);
         long start = end - (MILLIS_PER_DAY*7);
         m_startDate = new Date(start);
-        System.out.println("startDate: " + m_startDate.getTime()/1000);
+        //System.out.println("startDate: " + m_startDate.getTime()/1000);
         m_endDate = new Date(end);
-        System.out.println("endDate: " + m_endDate.getTime()/1000);
+        //System.out.println("endDate: " + m_endDate.getTime()/1000);
         
         RrdDef rrdDef = new RrdDef("target/rrd/mo_calls.jrb", (start/1000) - 600000, 300);
         rrdDef.addDatasource("DS:mo_call_attempts:COUNTER:600:0:U");
@@ -204,14 +205,14 @@ public class SpecificationTest {
 
         int count = 0;
         for(long timestamp = start - 300000; timestamp<= end; timestamp += 300000){
-            System.out.println("timestamp: " + new Date(timestamp));
+            //System.out.println("timestamp: " + new Date(timestamp));
             
             
             Sample sample = rrd1.createSample(timestamp/1000);
             double attemptsVal = moAttempts.evaluate(timestamp);
             double completesVal = moCompletes.evaluate(timestamp);
             
-            System.out.println("Attempts: " + attemptsVal + " Completes " + completesVal);
+            //System.out.println("Attempts: " + attemptsVal + " Completes " + completesVal);
             sample.setValue("mo_call_attempts", attemptsVal);
             sample.setValue("mo_call_completes", completesVal);
             sample.setValue("mo_mins_carried", 32 * count);

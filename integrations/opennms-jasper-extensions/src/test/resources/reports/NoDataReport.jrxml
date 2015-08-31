@@ -6,15 +6,16 @@
 	<style name="Sans_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Italic" fontName="SansSerif" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="rrdDir" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="attribute1" class="java.lang.String"/>
+	<parameter name="attribute2" class="java.lang.String"/>
 	<parameter name="startDate" class="java.util.Date"/>
 	<parameter name="endDate" class="java.util.Date"/>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/htt-8980.jrb:http-8980:AVERAGE
-		DEF:zz=$P{rrdDir}/ss.jrb:ssh:AVERAGE
-		XPORT:xx:HttpLatency
-		XPORT:zz:SshLatency]]>
+	<queryString language="measurement">
+		<![CDATA[<query-request start="$P{startDate}" end="$P{endDate}">
+      <source aggregation="AVERAGE" label="HttpLatency" attribute="$P{attribute1}" transient="false" resourceId="node[10].responseTime[192.168.1.166]"/>
+      <source aggregation="AVERAGE" label="SshLatency" attribute="$P{attribute2}" transient="false" resourceId="node[10].responseTime[192.168.1.166]"/>
+    </query-request>]]>
 	</queryString>
 	<field name="Timestamp" class="java.util.Date">
 		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>

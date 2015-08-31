@@ -28,29 +28,35 @@
 
 package org.opennms.netmgt.jasper.helper;
 
+import net.sf.jasperreports.engine.util.JRProperties;
+import org.opennms.core.utils.RrdLabelUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import net.sf.jasperreports.engine.util.JRProperties;
-
-import org.opennms.core.utils.RrdLabelUtils;
-
 /**
  * <p>NOTE: Don't make this class <i>abstract</i> because some .jrxml reports call its constructor.</p>
  */
-public class JRobinDirectoryUtil {
+@Deprecated
+public abstract class JRobinDirectoryUtil {
 
+    private JRobinDirectoryUtil() {
+
+    }
+
+    @Deprecated
     public static boolean isStoreByGroup() {
         return JRProperties.getBooleanProperty("org.opennms.rrd.storeByGroup") || Boolean.getBoolean("org.opennms.rrd.storeByGroup");
     }
-
+    @Deprecated
     public static boolean isStoreByForeignSource() {
         return JRProperties.getBooleanProperty("org.opennms.rrd.storeByForeignSource") || Boolean.getBoolean("org.opennms.rrd.storeByForeignSource");
     }
 
+    @Deprecated
     public static String getNodeLevelResourceDirectory(String rrdDirectory, String nodeId, String foreignSource, String foreignId) {
         StringBuffer directory = new StringBuffer();
         directory.append(rrdDirectory)
@@ -67,6 +73,7 @@ public class JRobinDirectoryUtil {
         return directory.toString();
     }
 
+    @Deprecated
     public static String getIfInOctetsDataSource(String rrdDirectory, String nodeId, String iFace) throws IOException {
         if (isStoreByForeignSource()) {
             throw new IllegalArgumentException("getIfInOctetsDataSource(String,String,String) can't be used if storeByForeignSource is enabled.");
@@ -74,6 +81,7 @@ public class JRobinDirectoryUtil {
         return getIfInOctetsDataSource(rrdDirectory, nodeId, null, null, iFace);
     }
 
+    @Deprecated
     public static String getIfInOctetsDataSource(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws IOException {
         StringBuffer directory = new StringBuffer();
         directory.append(getNodeLevelResourceDirectory(rrdDirectory, nodeId, foreignSource, foreignId))
@@ -95,6 +103,7 @@ public class JRobinDirectoryUtil {
         }
     }
 
+    @Deprecated
     public static String getIfOutOctetsDataSource(String rrdDirectory, String nodeId, String iFace) throws IOException {
         if (isStoreByForeignSource()) {
             throw new IllegalArgumentException("getIfOutOctetsDataSource(String,String,String) can't be used if storeByForeignSource is enabled.");
@@ -102,6 +111,7 @@ public class JRobinDirectoryUtil {
         return getIfOutOctetsDataSource(rrdDirectory, nodeId, null, null, iFace);
     }
 
+    @Deprecated
     public static String getIfOutOctetsDataSource(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws IOException {
         StringBuffer directory = new StringBuffer();
         directory.append(getNodeLevelResourceDirectory(rrdDirectory, nodeId, foreignSource, foreignId))
@@ -137,6 +147,7 @@ public class JRobinDirectoryUtil {
 
     }
 
+    @Deprecated
     public static String getIfInOctetsJrb(String rrdDirectory, String nodeId, String iFace) throws FileNotFoundException, IOException {
         if (isStoreByForeignSource()) {
             throw new IllegalArgumentException("getIfInOctetsJrb(String,String,String) can't be used if storeByForeignSource is enabled.");
@@ -144,10 +155,12 @@ public class JRobinDirectoryUtil {
         return getOctetsFile(rrdDirectory, nodeId, null, null, iFace, "ifHCInOctets", "ifInOctets");
     }
 
+    @Deprecated
     public static String getIfInOctetsJrb(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws FileNotFoundException, IOException {
         return getOctetsFile(rrdDirectory, nodeId, foreignSource, foreignId, iFace, "ifHCInOctets", "ifInOctets");
     }
 
+    @Deprecated
     public static String getIfOutOctetsJrb(String rrdDirectory, String nodeId, String iFace) throws FileNotFoundException, IOException {
         if (isStoreByForeignSource()) {
             throw new IllegalArgumentException("getIfOutOctetsJrb(String,String,String) can't be used if storeByForeignSource is enabled.");
@@ -155,6 +168,7 @@ public class JRobinDirectoryUtil {
         return getOctetsFile(rrdDirectory, nodeId, null, null, iFace, "ifHCOutOctets", "ifOutOctets");
     }
 
+    @Deprecated
     public static String getIfOutOctetsJrb(String rrdDirectory, String nodeId, String foreignSource, String foreignId, String iFace) throws FileNotFoundException, IOException {
         return getOctetsFile(rrdDirectory, nodeId, foreignSource, foreignId, iFace, "ifHCOutOctets", "ifOutOctets");
     }
@@ -212,6 +226,7 @@ public class JRobinDirectoryUtil {
         }
     }
 
+    @Deprecated
     public static String getInterfaceDirectory(String snmpifname, String snmpifdescr, String snmpphysaddr) {
         return RrdLabelUtils.computeLabelForRRD(snmpifname, snmpifdescr, snmpphysaddr);
     }
