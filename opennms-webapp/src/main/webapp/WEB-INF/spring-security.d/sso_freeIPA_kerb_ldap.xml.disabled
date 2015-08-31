@@ -74,7 +74,7 @@
   </bean>
 
   <bean id="kerberosLdapContextSource"
-    class="org.springframework.security.kerberos.client.KerberosLdapContextSource">
+    class="org.springframework.security.kerberos.client.ldap.KerberosLdapContextSource">
     <constructor-arg>
       <list>
         <!-- List one or more of your LDAP servers here -->
