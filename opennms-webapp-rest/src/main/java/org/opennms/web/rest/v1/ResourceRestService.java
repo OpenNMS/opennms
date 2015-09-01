@@ -71,7 +71,7 @@ public class ResourceRestService extends OnmsRestService {
     public ResourceDTOCollection getResources(@DefaultValue("1") @QueryParam("depth") final int depth) {
         List<ResourceDTO> resources = Lists.newLinkedList();
         for (OnmsResource resource : m_resourceDao.findTopLevelResources()) {
-            resources.add(new ResourceDTO(resource, depth));
+            resources.add(ResourceDTO.fromResource(resource, depth));
         }
         return new ResourceDTOCollection(resources);
     }
@@ -87,7 +87,7 @@ public class ResourceRestService extends OnmsRestService {
             throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
         }
 
-        return new ResourceDTO(resource, depth);
+        return ResourceDTO.fromResource(resource, depth);
     }
 
     @DELETE
@@ -118,6 +118,6 @@ public class ResourceRestService extends OnmsRestService {
             throw getException(Status.NOT_FOUND, "No resource found for node with id {}.", "" + node.getId());
         }
 
-        return new ResourceDTO(resource, depth);
+        return ResourceDTO.fromResource(resource, depth);
     }
 }
