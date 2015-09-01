@@ -49,12 +49,4 @@ public class Jsr160Detector extends AbstractJsr160Detector{
     public Jsr160Detector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
     }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onInit() {
-        expectBeanCount(greatThan(0));
-    }
-
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,37 +25,21 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.dao.jmx;
 
-package org.opennms.netmgt.provision.detector.jmx.client;
 
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
-import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
+import org.opennms.netmgt.config.jmx.JmxConfig;
 
 /**
- * <p>JBossClient class.</p>
+ * Dao class for accessing the jmx credentials config.
  *
- * @author ranger
- * @version $Id: $
+ * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class JBossClient extends JMXClient {
-    
-    /** {@inheritDoc} */
-    @Override
-    protected ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
-        return JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected Map<String, Object> generateMap(int port, int timeout) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("port", port);
-        map.put("timeout", timeout);
-        return Collections.unmodifiableMap(map);
-    }
+public interface JmxConfigDao {
+    /**
+     * Returns the loaded config object.
+     *
+     * @return the current config object
+     */
+    JmxConfig getConfig();
 }
