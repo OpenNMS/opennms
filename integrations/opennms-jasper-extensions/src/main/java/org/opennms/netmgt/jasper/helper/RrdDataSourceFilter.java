@@ -28,20 +28,18 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.RowSortedTable;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.jasper.analytics.Filter;
 import org.opennms.netmgt.jasper.analytics.FilterFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.RowSortedTable;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Allows an RRD data source to be modified by analytics modules.
@@ -67,6 +65,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
  *
  * @author jwhite
  */
+// TODO MVR delete or migrate...
 public class RrdDataSourceFilter {
     private final String m_originalQueryString;
     private final String m_rrdQueryString;

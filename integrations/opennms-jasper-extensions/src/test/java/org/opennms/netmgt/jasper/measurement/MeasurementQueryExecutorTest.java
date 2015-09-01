@@ -13,10 +13,14 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.LoggingEvent;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +58,22 @@ public class MeasurementQueryExecutorTest {
     public WireMockRule wireMockRule = new WireMockRule(9999);
 
     private List<Request> requestList = new ArrayList<Request>();
+
+    @After
+    public void after() {
+        try {
+            LoggingEvent[] errorEvents = MockLogAppender.getEventsAtLevel(Level.ERROR);
+            for (LoggingEvent eachEvent : errorEvents) {
+                if ("net.sf.jasperreports.extensions.DefaultExtensionsRegistry".equals(eachEvent.getLoggerName())
+                        && eachEvent.getMessage().contains("Error instantiating extensions registry")) {
+                    Assert.fail("Jasper Report extensions not setup correctly. " +
+                            "See http://jasperreports.sourceforge.net/api/net/sf/jasperreports/extensions/DefaultExtensionsRegistry.html for more details.");
+                }
+            }
+        } finally {
+            MockLogAppender.resetEvents();
+        }
+    }
 
     @Before
     public void before() throws IOException {
@@ -155,7 +175,7 @@ public class MeasurementQueryExecutorTest {
             });
             Assert.fail("JRException expected, but not received");
         } catch (JRException ex) {
-            Assert.assertTrue(ex.toString().contains("The provided language 'resourceQuery' is not supported"));
+            Assert.assertTrue(ex.toString().contains("No query executer factory registered for the 'resourceQuery' language."));
         }
         verifyHttpCalls(0);
     }

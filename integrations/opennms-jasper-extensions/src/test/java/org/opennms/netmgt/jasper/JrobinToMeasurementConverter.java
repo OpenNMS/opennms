@@ -5,7 +5,6 @@ import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
 import org.jrobin.core.Sample;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Function;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.rrd.model.RrdXport;
 
@@ -21,15 +20,100 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.opennms.netmgt.jasper.jrobin.SpecificationTest.Cos;
-import static org.opennms.netmgt.jasper.jrobin.SpecificationTest.Counter;
-import static org.opennms.netmgt.jasper.jrobin.SpecificationTest.Sin;
-import static org.opennms.netmgt.jasper.jrobin.SpecificationTest.Times;
-
 /**
  * Created by mvrueden on 27/08/15.
  */
+// TODO MVR delete me
 public class JrobinToMeasurementConverter {
+
+    public interface Function {
+        double evaluate(long timestamp);
+    }
+
+    private static class Sin implements Function {
+
+        long m_startTime;
+        double m_offset;
+        double m_amplitude;
+        double m_period;
+        double m_factor;
+
+        public Sin(long startTime, double offset, double amplitude, double period) {
+            m_startTime = startTime;
+            m_offset = offset;
+            m_amplitude = amplitude;
+            m_period = period;
+            m_factor = 2 * Math.PI / period;
+        }
+
+        @Override
+        public double evaluate(long timestamp) {
+            long x = timestamp - m_startTime;
+            double ret = (m_amplitude * Math.sin(m_factor * x)) + m_offset;
+            System.out.println("Sin("+ x + ") = " + ret);
+            return ret;
+        }
+    }
+
+    private static class Cos implements Function {
+
+        long m_startTime;
+        double m_offset;
+        double m_amplitude;
+        double m_period;
+
+        double m_factor;
+
+        private Cos(long startTime, double offset, double amplitude, double period) {
+            m_startTime = startTime;
+            m_offset = offset;
+            m_amplitude = amplitude;
+            m_period = period;
+
+            m_factor = 2 * Math.PI / period;
+        }
+
+        @Override
+        public double evaluate(long timestamp) {
+            long x = timestamp - m_startTime;
+            double ret = (m_amplitude * Math.cos(m_factor * x)) + m_offset;
+            System.out.println("Cos("+ x + ") = " + ret);
+            return ret;
+        }
+    }
+
+    private static class Times implements Function {
+        Function m_a;
+        Function m_b;
+
+        public Times(Function a, Function b) {
+            m_a = a;
+            m_b = b;
+        }
+
+        @Override
+        public double evaluate(long timestamp) {
+            return m_a.evaluate(timestamp)*m_b.evaluate(timestamp);
+        }
+    }
+
+    private static class Counter implements Function {
+        double m_prevValue;
+        Function m_function;
+
+        public Counter(double initialValue, Function function) {
+            m_prevValue = initialValue;
+            m_function = function;
+        }
+
+        @Override
+        public double evaluate(long timestamp) {
+            double m_diff = m_function.evaluate(timestamp);
+            m_prevValue += m_diff;
+            return m_prevValue;
+        }
+
+    }
 
     private static final long MILLIS_PER_HOUR = 3600L * 1000L;
     private static final long MILLIS_PER_DAY = 24L * MILLIS_PER_HOUR;

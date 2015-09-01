@@ -34,7 +34,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
 
-// TODO MVR migrate appropriately
 public class OnmsQueryExecutorFactoryBundleTest {
 
     @Test
@@ -64,19 +63,10 @@ public class OnmsQueryExecutorFactoryBundleTest {
 
     private static void verifyLanguage(String language, boolean supported, Class expectedFactoryClass) throws JRException {
         final OnmsQueryExecutorFactoryBundle executorBundle = new OnmsQueryExecutorFactoryBundle();
-        Assert.assertEquals(supported, executorBundle.isSupported(language));
-        try {
-            QueryExecuterFactory factory = executorBundle.getQueryExecuterFactory(language);
-            if (supported) {
-                Assert.assertEquals(expectedFactoryClass, factory.getClass());
-            }
-            if (!supported) {
-                Assert.fail("JRException expected, but was not thrown.");
-            }
-        } catch (JRException jre) {
-            if (supported) {
-                throw jre; // this should not have happended
-            }
+        final QueryExecuterFactory factory = executorBundle.getQueryExecuterFactory(language);
+        Assert.assertEquals(supported, factory != null);
+        if (supported) {
+            Assert.assertEquals(expectedFactoryClass, factory.getClass());
         }
     }
 }

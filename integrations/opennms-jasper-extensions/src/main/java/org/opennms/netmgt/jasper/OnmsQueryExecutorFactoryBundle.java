@@ -41,13 +41,10 @@ public class OnmsQueryExecutorFactoryBundle implements JRQueryExecuterFactoryBun
 
     @Override
     public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
-        if (isSupported(language)) {
-            return SupportedLanguage.createFrom(language).getExecutorFactory();
+        SupportedLanguage supportedLanguage = SupportedLanguage.createFrom(language);
+        if (supportedLanguage != null) {
+            return supportedLanguage.getExecutorFactory();
         }
-        throw new JRException("The provided language '" + language + "' is not supported");
-    }
-
-    protected boolean isSupported(String language) {
-        return SupportedLanguage.createFrom(language) != null;
+        return null;
     }
 }
