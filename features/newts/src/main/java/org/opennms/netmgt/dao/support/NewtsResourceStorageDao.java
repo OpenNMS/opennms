@@ -58,6 +58,8 @@ import org.opennms.newts.api.search.SearchResults;
 import org.opennms.newts.api.search.SearchResults.Result;
 import org.opennms.newts.cassandra.search.CassandraIndexer;
 import org.opennms.newts.cassandra.search.CassandraSearcher;
+import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
+import org.opennms.newts.persistence.cassandra.SchemaConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +97,9 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Autowired
     private CassandraSearcher m_searcher;
+
+    @Autowired
+    private CassandraSampleRepository m_sampleRepository;
 
     @Autowired
     private CassandraIndexer m_indexer;
@@ -150,8 +155,18 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
 
     @Override
     public boolean delete(ResourcePath path) {
-        // Deletes are not supported
-        return false;
+        final SearchResults results = searchFor(path, 0, true);
+
+        if (results.isEmpty()) {
+            return false;
+        }
+
+        for (final Result result : results) {
+            m_sampleRepository.delete(m_context, result.getResource());
+            m_indexer.delete(m_context, result.getResource());
+        }
+
+        return true;
     }
 
     @Override

@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,7 +45,6 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,6 +89,18 @@ public class ResourceRestService extends OnmsRestService {
 
         return new ResourceDTO(resource, depth);
     }
+
+    @DELETE
+    @Path("{resourceId}")
+    @Transactional(readOnly=false)
+    public void deleteResourceById(@PathParam("resourceId") final String resourceId) {
+        final boolean found = m_resourceDao.deleteResourceById(resourceId);
+
+        if (!found) {
+            throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
+        }
+    }
+
 
     @GET
     @Path("fornode/{nodeCriteria}")
