@@ -127,6 +127,11 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
     }
 
     @Override
+    public void delete(final Context context, final Resource resource) {
+        m_jedis.del(key(METADATA_PREFIX, context.getId(), resource.getId()));
+    }
+
+    @Override
     public Optional<ResourceMetadata> get(Context context, Resource resource) {
         final byte[] bytes = m_jedis.get(key(METADATA_PREFIX, context.getId(), resource.getId()));
         return (bytes != null) ? Optional.of((ResourceMetadata)conf.asObject(bytes)): Optional.absent();

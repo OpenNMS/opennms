@@ -81,4 +81,12 @@ public interface ResourceDao {
      */
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor);
 
+    /**
+     * Deletes the resource identified by the given resource ID.
+     *
+     * @param resourceId the ID of the resource to delete
+     *
+     * @return {@code true} iff, the resource was found and deleted
+     */
+    public boolean deleteResourceById(final String resourceId);
 }
