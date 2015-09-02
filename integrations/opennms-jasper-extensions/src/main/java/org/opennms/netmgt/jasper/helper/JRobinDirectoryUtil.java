@@ -41,6 +41,7 @@ import java.util.Properties;
  * <p>NOTE: Don't make this class <i>abstract</i> because some .jrxml reports call its constructor.</p>
  */
 @Deprecated
+// TODO MVR decide if we still need this util class, exsepcially iifOctets vs ifHcOctets
 public abstract class JRobinDirectoryUtil {
 
     private JRobinDirectoryUtil() {
