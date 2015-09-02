@@ -47,8 +47,10 @@ import org.slf4j.LoggerFactory;
  */
 @XmlRootElement(name="analytics-command")
 @XmlAccessorType(XmlAccessType.NONE)
+// TODO MVR fix javadoc
 public class AnalyticsCommand {
     private static final Logger LOG = LoggerFactory.getLogger(AnalyticsCommand.class);
+    // TODO MVR is this still used? In my opinion it can go away
     public static final String CMD_IN_RRD_QUERY_STRING = "ANALYTICS";
 
     @XmlAttribute(name="filter", required=true)

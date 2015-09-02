@@ -32,8 +32,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.RowSortedTable;
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-import org.opennms.netmgt.jasper.analytics.Filter;
 import org.opennms.netmgt.jasper.analytics.FilterFactory;
+import org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -105,6 +105,15 @@ public class MeasurementsRestService {
     private List<FilterFactory> m_filterFactories;
 
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
+
+    private DataSourceFilter dataSourceFilter;
+
+    protected DataSourceFilter getDataSourceFilter() {
+        if (dataSourceFilter == null) {
+            dataSourceFilter = new DataSourceFilter(m_filterFactories);
+        }
+        return dataSourceFilter;
+    }
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -184,23 +193,19 @@ public class MeasurementsRestService {
         try {
             expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
-            throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
+            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression.");
         }
 
+        // Apply the analytics commands to filter results
         // If there is an analytics command, apply it to the metrics
         if (request.getAnalyticsCommand() != null) {
-            for (FilterFactory factory : m_filterFactories) {
-                Filter filter = factory.getFilter(request.getAnalyticsCommand());
-                if (filter != null) {
-                    RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
-                    try {
-                        filter.filter(table);
-                    } catch (Exception e) {
-                        throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
-                    }
-                    results = new FetchResults(table, results.getStep(), results.getConstants());
-                }
+            RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+            try {
+                getDataSourceFilter().filter(request.getAnalyticsCommand(), table);
+            } catch (Exception e) {
+                throw getException(Status.BAD_REQUEST, e, "An error occurred while executing an analytics filter: " + e.getMessage());
             }
+            results = new FetchResults(table, results.getStep(), results.getConstants());
         }
 
         final Map<String, double[]> columns = results.getColumns();

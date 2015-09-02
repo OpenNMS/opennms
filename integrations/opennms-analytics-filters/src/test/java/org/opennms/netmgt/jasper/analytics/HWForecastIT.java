@@ -28,44 +28,45 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
-
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 
-public class HWForecastIT {
+import java.util.List;
+
+public class HWForecastIT extends AnalyticsFilterTest {
+
     @Test
     public void canForecastValues() throws Exception {
         final String qs = "ANALYTICS:HoltWinters=HW:X:12:1:0.95";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Use constant values for the Y column
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         for (int i = 0; i < 100; i++) {
-            table.put(i, "Timestamp", (double)(i * 1000));
+            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i * 1000));
             table.put(i, "X", 1.0d);
         }
-        assertEquals(100, table.rowKeySet().size());
+        getDataSourceFilter().filter(cmds, table);
 
         // Make the forecasts
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Original size + 12 forecasts
-        assertEquals(112, table.rowKeySet().size());
+        Assert.assertEquals(112, table.rowKeySet().size());
 
         // The timestamps should be continuous
         for (int i = 0; i < 112; i++) {
-            assertEquals((double)(i * 1000), table.get(i, "Timestamp"), 0.0001);
+            Assert.assertEquals((double) (i * 1000), table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
         }
 
         // The forecasted value should be constant
         for (int i = 100; i < 112; i++) {
-            assertEquals(1.0d, table.get(i, "HWFit"), 0.0001);
-            assertEquals(1.0d, table.get(i, "HWLwr"), 0.0001);
-            assertEquals(1.0d, table.get(i, "HWUpr"), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "HWFit"), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "HWLwr"), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "HWUpr"), 0.0001);
         }
     }
 
@@ -73,23 +74,23 @@ public class HWForecastIT {
     public void canCheckForecastSupport() throws Exception {
         // Verify the HW filter
         String qs = "ANALYTICS:HoltWinters=HW:X:12:1:0.95";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Use constant values for the Y column
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         for (int i = 0; i < 100; i++) {
-            table.put(i, "Timestamp", (double)(i * 1000));
+            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i * 1000));
             table.put(i, "X", 1.0d);
         }
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Verify the outlier filter
         qs = "ANALYTICS:OutlierFilter=X:0.99";
-        dse = new RrdDataSourceFilter(qs);
+        cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
     }
 }

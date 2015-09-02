@@ -200,6 +200,30 @@ public class MeasurementApiConnectorTest {
         new MeasurementApiConnector().execute(true, "https://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
     }
 
+    // Verify that an empty URL throws an expected IllegalArgumentException
+    @Test(expected=IllegalArgumentException.class)
+    public void testEmptyUrl() throws IOException {
+        new MeasurementApiConnector().execute(false, "", null, null, null);
+    }
+
+    // Verify that a null URL throws an expected IllegalArgumentException
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullUrl() throws IOException {
+        new MeasurementApiConnector().execute(false, null, null, null, null);
+    }
+
+    // Verify that a null query throws an expected IllegalArgumentException
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullQuery() throws IOException {
+        new MeasurementApiConnector().execute(false, "http://localhost", null, null, null);
+    }
+
+    // Verify that an empty query throws an expected IllegalArgumentException
+    @Test(expected=IllegalArgumentException.class)
+    public void testEmptyQuery() throws IOException {
+        new MeasurementApiConnector().execute(false, "http://localhost", null, null, "");
+    }
+
     private void verifyWiremock() {
        verifyWiremock("/opennms/rest/measurements");
     }

@@ -28,18 +28,17 @@
 
 package org.opennms.netmgt.jasper.jrobin;
 
-import java.io.IOException;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
-
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDbPool;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 abstract class RrdToolCmd {
     private static final Logger LOG = LoggerFactory.getLogger(RrdToolCmd.class);
@@ -67,7 +66,7 @@ abstract class RrdToolCmd {
         }
     }
 
-    JRRewindableDataSource executeCommand(String command) throws RrdException {
+    public JRRewindableDataSource executeCommand(String command) throws RrdException {
         cmdScanner = new RrdCmdScanner(command);
         try {
         	return execute();

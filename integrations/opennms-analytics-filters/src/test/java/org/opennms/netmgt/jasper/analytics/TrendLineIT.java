@@ -28,34 +28,34 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
-
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 
-public class TrendLineIT {
+import java.util.List;
+
+public class TrendLineIT extends AnalyticsFilterTest {
     @Test
     public void canTrend() throws Exception {
         final String qs = "ANALYTICS:TrendLine=Z:Y:1:3";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
     
         // Use constant values for the Y column
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         for (int i = 0; i < 100; i++) {
-            table.put(i, "Timestamp", (double)(i* 1000));
+            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i* 1000));
             table.put(i, "Y", 1.0d);
         }
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // The Z column should be constant
         for (int i = 1; i <= 100; i++) {
-            assertEquals((double)i * 1000, table.get(i, "Timestamp"), 0.0001);
-            assertEquals(1.0d, table.get(i, "Z"), 0.0001);
+            Assert.assertEquals((double) i * 1000, table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "Z"), 0.0001);
         }
     }
 }

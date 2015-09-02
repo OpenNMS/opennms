@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.jasper.jrobin;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.jasperreports.engine.JRRewindableDataSource;
-
 import org.jrobin.core.RrdException;
 import org.jrobin.core.Util;
 import org.jrobin.data.DataProcessor;
@@ -41,7 +36,11 @@ import org.jrobin.graph.RrdGraphConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
     private static final Logger LOG = LoggerFactory.getLogger(RrdXportCmd.class);
 
     private DataProcessor dproc;

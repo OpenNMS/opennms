@@ -6,13 +6,22 @@ import com.github.tomakehurst.wiremock.http.RequestListener;
 import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import com.google.common.io.ByteStreams;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,6 +38,7 @@ import javax.xml.bind.JAXB;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,6 +125,16 @@ public class MeasurementQueryExecutorTest {
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/xml")
                                 .withBody(createBodyFrom("rrd-graph.xml"))
+                ));
+
+        // Forecast
+        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/opennms/rest/measurements"))
+                .withHeader("Accept", WireMock.equalTo("application/xml"))
+                .withRequestBody(WireMock.matching(".*FORECAST-RESOURCE-ID.*"))
+                .willReturn(WireMock.aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/xml")
+                                .withBody(createBodyFrom("forecast.xml"))
                 ));
 
         // No data (404)
@@ -246,22 +266,74 @@ public class MeasurementQueryExecutorTest {
         verifyHttpCalls(0);
     }
 
+    @Test
+    public void testReportHwForecast() throws IOException, JRException {
+        createReport("Forecast", new ReportFiller() {
+            @Override
+            public void fill(Map<String, Object> params) throws Exception {
+                params.put(JRParameter.IS_IGNORE_PAGINATION, true);
+                params.put("MEASUREMENT_URL", "http://localhost:9999/opennms/rest/measurements");
+                params.put("dsName", "ifInOctets");
+                params.put("startDate", "1414602000000");
+                params.put("endDate", "1417046400000");
+            }
+        });
+
+        // Verify the results of the generated report
+        Table<Integer, String, Double> forecasts = TreeBasedTable.create();
+
+        // TODO MVR migrate to Java 7 try-resource block
+        FileReader reader = new FileReader(createFileName("Forecast", "csv"));
+        CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader());
+        int k = 0;
+        for (CSVRecord record : parser) {
+            try {
+                Double fit = Double.parseDouble(record.get("HWFit"));
+                Double lwr = Double.parseDouble(record.get("HWLwr"));
+                Double upr = Double.parseDouble(record.get("HWUpr"));
+
+                if(Double.isNaN(fit)) {
+                    continue;
+                }
+
+                forecasts.put(k, "fit", fit);
+                forecasts.put(k, "lwr", lwr);
+                forecasts.put(k, "upr", upr);
+
+                k++;
+            } catch (NumberFormatException e) {
+                // pass
+            }
+        }
+
+        Assert.assertEquals(340, forecasts.rowKeySet().size());
+        // First fitted value
+        Assert.assertEquals(432.526086422424, forecasts.get(0, "fit"), 0.00001);
+        // Last fitted value for which there is a known data point
+        Assert.assertEquals(24079.4692522087, forecasts.get(327, "fit"), 0.00001);
+        // First forecasted value
+        Assert.assertEquals(22245.5417010936, forecasts.get(328, "fit"), 0.00001);
+    }
+
     private void createReport(String reportName, ReportFiller filler) throws JRException, IOException {
         JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/" + reportName + ".jrxml"));
         JasperPrint jasperPrint = fill(jasperReport, filler);
         createPdf(jasperPrint, reportName);
         createXhtml(jasperPrint, reportName);
+        createCsv(jasperPrint, reportName);
 
         // this is ugly, but we verify that the reports exists and have a file size > 0
         verifyReport(reportName, "pdf");
         verifyReport(reportName, "html");
+        verifyReport(reportName, "csv");
     }
 
     private void verifyReport(String reportName, String extension) throws IOException {
         final Path path = Paths.get(createFileName(reportName, extension));
         Assert.assertTrue(Files.exists(path));
-        Assert.assertTrue(Files.size(path) > 0);
-
+        if (!"csv".equals(extension)) {
+            Assert.assertTrue(Files.size(path) > 0);
+        }
     }
 
     private static String createFileName(String reportName, String extension) {
@@ -289,9 +361,21 @@ public class MeasurementQueryExecutorTest {
 
     private void createXhtml(JasperPrint jasperPrint, String reportName) throws JRException {
         long start = System.currentTimeMillis();
-        File destFile = new File(createFileName(reportName, "html"));
         JasperExportManager.exportReportToHtmlFile(jasperPrint, createFileName(reportName, "html"));
         LOG.info("XHTML creation time: {} ms", (System.currentTimeMillis() - start));
     }
 
+    private void createCsv(JasperPrint jasperPrint, String reportName) throws JRException {
+        long start = System.currentTimeMillis();
+
+        SimpleExporterInput input = new SimpleExporterInput(jasperPrint);
+        SimpleWriterExporterOutput output = new SimpleWriterExporterOutput(createFileName(reportName, "csv"));
+
+        JRCsvExporter exporter = new JRCsvExporter();
+        exporter.setExporterInput(input);
+        exporter.setExporterOutput(output);
+        exporter.exportReport();
+
+        LOG.info("CSV creation time: {} ms", (System.currentTimeMillis() - start));
+    }
 }

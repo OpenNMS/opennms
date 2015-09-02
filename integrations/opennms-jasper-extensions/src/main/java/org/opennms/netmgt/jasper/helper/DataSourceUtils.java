@@ -101,7 +101,8 @@ public class DataSourceUtils {
                 field.setName(fieldName);
                 // Some data-source implementation check the value class
                 field.setValueClass(Object.class);
-                table.put(rowIndex, fieldName, getValueAsDouble(ds.getFieldValue(field)));
+                Double value = getValueAsDouble(ds.getFieldValue(field));
+                table.put(rowIndex, fieldName, value);
             }
             rowIndex++;
         }
@@ -112,6 +113,9 @@ public class DataSourceUtils {
     private static Double getValueAsDouble(Object o) {
         if (o instanceof Date) {
             return (double) ((Date)o).getTime();
+        }
+        if (o instanceof Number) {
+            return Double.valueOf(String.valueOf(o));
         }
         try {
             return (Double) o;

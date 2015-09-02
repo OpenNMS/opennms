@@ -1,5 +1,6 @@
 package org.opennms.netmgt.jasper;
 
+import com.google.common.collect.RowSortedTable;
 import org.jrobin.cmd.RrdCommander;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -7,15 +8,15 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.Sample;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.rrd.model.RrdXport;
+import org.opennms.netmgt.rrd.model.XMeta;
+import org.opennms.netmgt.rrd.model.XRow;
 
 import javax.xml.bind.JAXB;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,8 +197,8 @@ public class JrobinToMeasurementConverter {
         rrd2.close();
     }
 
-    public static void main(String[] args) throws RrdException, IOException, ParseException {
-        final DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+    public static void main(String[] args) throws Exception {
+      /*  final DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
         // All Charts Report jrobin query
         long now = System.currentTimeMillis();
@@ -230,7 +231,76 @@ public class JrobinToMeasurementConverter {
                         "        XPORT:zz:SshLatency", "src/test/resources",
                 formatter.parse("Wed Oct 13 17:25:00 EDT 2010"), formatter.parse("Wed Oct 13 21:16:30 EDT 2010"));
 
+        //Forecast jrobin query
+        transformResult("rrd-graph", "--start $P{startDate} --end $P{endDate}\n" +
+                        "        DEF:xx=$P{rrdDir}/ifInOctets.jrb:ifInOctets:AVERAGE ANALYTICS:HoltWinters=HW:Values:1:86400 XPORT:xx:Values",
+                "src/test/resources/forecasting",
+                new Date(1414602000), new Date(1417046400));
+*/
+
+        final String command = getCommand("--start $P{startDate} --end $P{endDate}\n" +
+                "        DEF:xx=$P{rrdDir}/ifInOctets.jrb:ifInOctets:AVERAGE ANALYTICS:HoltWinters=HW:Values:1:86400 XPORT:xx:Values",
+                "src/test/resources/forecasting",
+                1414602000, 1417046400);
+
+        final String name = "dummy";
+        System.out.println(command);
+
+//        RrdDataSourceFilter dsFilter = new RrdDataSourceFilter(command);
+//        JRRewindableDataSource ds = new RrdXportCmd().executeCommand(dsFilter.getRrdQueryString());
+//        RowSortedTable<Integer, String, Double> table = DataSourceUtils.fromDs(ds, dsFilter.getFieldNames());
+//        dsFilter.filter(table);
+//        RrdXport result = fromTable(table, 1414602000, 1417046400);
+
+//        JAXB.marshal(result, new FileOutputStream("/Users/mvrueden/Desktop/" + name + "-Xport-Response.xml"));
+//        QueryResponse queryResponse = convertToQueryResponse(result);
+//        JAXB.marshal(queryResponse, new FileOutputStream("/Users/mvrueden/Desktop/" + name + "-Measurement-Response.xml"));
     }
+
+    private static RrdXport fromTable(RowSortedTable<Integer, String, Double> input, long start, long end) {
+        RrdXport xport = new RrdXport();
+
+        XMeta xmeta = new XMeta();
+        xmeta.setStart(start);
+        xmeta.setEnd(end);
+        xmeta.setRows((long) input.rowKeySet().size());
+        xmeta.setLegends(new ArrayList<String>(input.columnKeySet()));
+        xmeta.setStep(input.get(0, "step").longValue());
+        xmeta.getLegends().remove("timestamp");
+        xmeta.getLegends().remove("step");
+        xmeta.setColumns((long) xmeta.getLegends().size());
+
+        xport.setMeta(xmeta);
+
+        for (int rowIndex : input.rowKeySet()) {
+            XRow row = new XRow();
+            row.setTimestamp(input.get(rowIndex, "timestamp").longValue());
+            row.setValues(new ArrayList<Double>());
+            for (String eachColumnName : xport.getMeta().getLegends()) {
+                Double value = input.get(rowIndex, eachColumnName);
+                row.getValues().add(value == null ? Double.NaN : value);
+            }
+            xport.getRows().add(row);
+        }
+
+        return xport;
+    }
+
+//    private static RowSortedTable<Integer, String, Double> fromRrdXport(RrdXport input) {
+//        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+//        // Build the table, row by row
+//        for (int rowIndex = 0; rowIndex < input.getMeta().getRows(); rowIndex++) {
+//            for (int colIndex = 0; colIndex < input.getMeta().getColumns(); colIndex++) {
+//                table.put(rowIndex, input.getMeta().getLegends().get(colIndex), input.getRows().get(rowIndex).getValues().get(colIndex));
+//            }
+//            table.put(rowIndex, "timestamp", (double) input.getRows().get(rowIndex).getTimestamp());
+//            table.put(rowIndex, "step", (double) input.getMeta().getStep());
+//            table.put(rowIndex, "start", (double) input.getMeta().getStart());
+//            table.put(rowIndex, "end", (double) input.getMeta().getEnd());
+//        }
+//
+//        return table;
+//    }
 
     private static void transformResult(final String name, final String cmd, final String rrdDir, final Date startDate, final Date endDate) throws RrdException, IOException {
         final String command = getCommand(cmd, rrdDir, startDate.getTime() / 1000, endDate.getTime() / 1000);

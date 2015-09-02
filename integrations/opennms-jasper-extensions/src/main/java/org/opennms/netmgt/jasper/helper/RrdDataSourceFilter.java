@@ -28,19 +28,6 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.RowSortedTable;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
-import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-import org.opennms.netmgt.jasper.analytics.Filter;
-import org.opennms.netmgt.jasper.analytics.FilterFactory;
-
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Allows an RRD data source to be modified by analytics modules.
  * 
@@ -65,134 +52,136 @@ import java.util.regex.Pattern;
  *
  * @author jwhite
  */
+// TODO MVR re-use javadoc?
 // TODO MVR delete or migrate...
 public class RrdDataSourceFilter {
-    private final String m_originalQueryString;
-    private final String m_rrdQueryString;
-    private final String[] m_fieldNames;
-    private final Pattern m_xportCommandPattern = Pattern.compile(
-            "XPORT:[\\w]+:([\\w]+)");
-    private final Pattern m_queryStringPattern = Pattern.compile(
-            AnalyticsCommand.CMD_IN_RRD_QUERY_STRING + 
-            ":([\\w]+)=([\\w]+)(:[^\\s]+)?");
-    private final List<AnalyticsCommand> m_analyticsCommands = Lists.newArrayList();
-    private static final ServiceLoader<FilterFactory> m_analyticsModules =
-            ServiceLoader.load(FilterFactory.class);
-
-    public RrdDataSourceFilter(String queryString) {
-        m_originalQueryString = queryString;
-        m_rrdQueryString = parseCmdsFromQs();
-        m_fieldNames = parseFieldNamesFromQs();
-    }
-
-    /**
-     * Determines all of the field names from the query string.
-     */
-    private String[] parseFieldNamesFromQs() {
-        List<String> fieldNames = Lists.newArrayList();
-        Matcher m = m_xportCommandPattern.matcher(m_rrdQueryString);
-        while (m.find()) {
-            fieldNames.add(m.group(1));
-        }
-        if (fieldNames.size() > 0) {
-            fieldNames.add("Timestamp");
-        }
-        return fieldNames.toArray(new String[]{});
-    }
-
-    /**
-     * Parses the analytics commands out of the query string
-     */
-    private String parseCmdsFromQs() {
-        Matcher m = m_queryStringPattern.matcher(m_originalQueryString);
-
-        // Build commands with all of the matches
-        while(m.find()) {
-            String arguments[] = new String[0];
-            if (m.group(3) != null) {
-                arguments = m.group(3).substring(1).split(":");
-            }
-            AnalyticsCommand cmd = new AnalyticsCommand(
-                    m.group(1), m.group(2), arguments);
-            m_analyticsCommands.add(cmd);
-        }
-
-        // Remove all of our matches/commands from the query string
-        return m.replaceAll("").trim();
-    }
-
-    /**
-     * Returns the processed query string suitable for passing
-     * to the RRD data source.
-     */
-    public String getRrdQueryString() {
-        return m_rrdQueryString;
-    }
-
-    /**
-     * Filters the given data source by successively applying
-     * all of the analytics commands.
-     */
-    public JRRewindableDataSource filter(JRRewindableDataSource ds) throws JRException {
-        // Don't bother converting the ds to and from a table if there are no
-        // commands to apply
-        if (m_analyticsCommands.isEmpty()) {
-            return ds;
-        }
- 
-        // Convert the data source to a table, making it easier for modules to manipulate
-        RowSortedTable<Integer, String, Double> dsAsTable = DataSourceUtils.fromDs(ds, m_fieldNames);
-
-        // Apply the filter modules
-        try {
-            filter(dsAsTable);
-        } catch (Exception e) {
-            throw new JRException("Failed to enrich the data source.", e);
-        }
-
-        // Convert the resulting table back to a data source
-        return DataSourceUtils.toDs(dsAsTable);
-    }
-
-    public void filter(RowSortedTable<Integer, String, Double> dsAsTable) throws Exception {
-        for (AnalyticsCommand command : m_analyticsCommands) {
-            Filter filter = getFilter(command);
-            if (filter == null) {
-                throw new JRException("No analytics module found for " + command);
-            }
-            filter.filter(dsAsTable);
-        }
-    }
-
-    /**
-     * Retrieves an Enricher that supports the given analytics command
-     *
-     * @return
-     *   null if no suitable Enricher was found
-     * @throws JRException
-     */
-    private Filter getFilter(AnalyticsCommand command) throws Exception {
-        Filter filter = null;
-        for (FilterFactory module : m_analyticsModules) {
-            filter = module.getFilter(command);
-            if (filter != null) {
-                return filter;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Used for testing.
-     */
-    List<AnalyticsCommand> getAnalyticsCommands() {
-        return m_analyticsCommands;
-    }
-
-    /**
-     * Used for testing.
-     */
-    String[] getFieldNames() {
-        return m_fieldNames;
-    }
+//    private final String m_originalQueryString;
+//    private final String m_rrdQueryString;
+//    private final String[] m_fieldNames;
+//    private final Pattern m_xportCommandPattern = Pattern.compile(
+//            "XPORT:[\\w]+:([\\w]+)");
+//    private final Pattern m_queryStringPattern = Pattern.compile(
+//            AnalyticsCommand.CMD_IN_RRD_QUERY_STRING +
+//            ":([\\w]+)=([\\w]+)(:[^\\s]+)?");
+//    private final List<AnalyticsCommand> m_analyticsCommands = Lists.newArrayList();
+//    private static final ServiceLoader<FilterFactory> m_analyticsModules =
+//            ServiceLoader.load(FilterFactory.class);
+//
+//    public RrdDataSourceFilter(String queryString) {
+//        m_originalQueryString = queryString;
+//        m_rrdQueryString = parseCmdsFromQs();
+//        m_fieldNames = parseFieldNamesFromQs();
+//    }
+//
+//    /**
+//     * Determines all of the field names from the query string.
+//     */
+//    private String[] parseFieldNamesFromQs() {
+//        List<String> fieldNames = Lists.newArrayList();
+//        Matcher m = m_xportCommandPattern.matcher(m_rrdQueryString);
+//        while (m.find()) {
+//            fieldNames.add(m.group(1));
+//        }
+//        if (fieldNames.size() > 0) {
+//            fieldNames.add("timestamp");
+//            fieldNames.add("step");
+//        }
+//        return fieldNames.toArray(new String[]{});
+//    }
+//
+//    /**
+//     * Parses the analytics commands out of the query string
+//     */
+//    private String parseCmdsFromQs() {
+//        Matcher m = m_queryStringPattern.matcher(m_originalQueryString);
+//
+//        // Build commands with all of the matches
+//        while(m.find()) {
+//            String arguments[] = new String[0];
+//            if (m.group(3) != null) {
+//                arguments = m.group(3).substring(1).split(":");
+//            }
+//            AnalyticsCommand cmd = new AnalyticsCommand(
+//                    m.group(1), m.group(2), arguments);
+//            m_analyticsCommands.add(cmd);
+//        }
+//
+//        // Remove all of our matches/commands from the query string
+//        return m.replaceAll("").trim();
+//    }
+//
+//    /**
+//     * Returns the processed query string suitable for passing
+//     * to the RRD data source.
+//     */
+//    public String getRrdQueryString() {
+//        return m_rrdQueryString;
+//    }
+//
+//    /**
+//     * Filters the given data source by successively applying
+//     * all of the analytics commands.
+//     */
+//    public JRRewindableDataSource filter(JRRewindableDataSource ds) throws JRException {
+//        // Don't bother converting the ds to and from a table if there are no
+//        // commands to apply
+//        if (m_analyticsCommands.isEmpty()) {
+//            return ds;
+//        }
+//
+//        // Convert the data source to a table, making it easier for modules to manipulate
+//        RowSortedTable<Integer, String, Double> dsAsTable = DataSourceUtils.fromDs(ds, m_fieldNames);
+//
+//        // Apply the filter modules
+//        try {
+//            filter(dsAsTable);
+//        } catch (Exception e) {
+//            throw new JRException("Failed to enrich the data source.", e);
+//        }
+//
+//        // Convert the resulting table back to a data source
+//        return DataSourceUtils.toDs(dsAsTable);
+//    }
+//
+//    public void filter(RowSortedTable<Integer, String, Double> dsAsTable) throws Exception {
+//        for (AnalyticsCommand command : m_analyticsCommands) {
+//            Filter filter = getFilter(command);
+//            if (filter == null) {
+//                throw new JRException("No analytics module found for " + command);
+//            }
+//            filter.filter(dsAsTable);
+//        }
+//    }
+//
+//    /**
+//     * Retrieves an Enricher that supports the given analytics command
+//     *
+//     * @return
+//     *   null if no suitable Enricher was found
+//     * @throws JRException
+//     */
+//    private Filter getFilter(AnalyticsCommand command) throws Exception {
+//        Filter filter = null;
+//        for (FilterFactory module : m_analyticsModules) {
+//            filter = module.getFilter(command);
+//            if (filter != null) {
+//                return filter;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * Used for testing.
+//     */
+//    List<AnalyticsCommand> getAnalyticsCommands() {
+//        return m_analyticsCommands;
+//    }
+//
+//    /**
+//     * Used for testing.
+//     */
+//    public String[] getFieldNames() {
+//        return m_fieldNames;
+//    }
 }

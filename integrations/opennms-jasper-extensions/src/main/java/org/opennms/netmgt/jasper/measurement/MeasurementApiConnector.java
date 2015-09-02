@@ -1,5 +1,6 @@
 package org.opennms.netmgt.jasper.measurement;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 import com.google.common.io.ByteStreams;
@@ -26,6 +27,8 @@ class MeasurementApiConnector {
     private HttpURLConnection connection;
 
     public Result execute(final boolean useSsl, final String url, final String username, final String password, final String query) throws IOException {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "The provided URL must not be empty or null");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(query), "The provided query must not be empty or null");
         log(url, username, password, query);
         connect(useSsl, url, username, password);
         write(query.getBytes(), connection.getOutputStream());

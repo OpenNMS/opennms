@@ -28,15 +28,14 @@
 
 package org.opennms.netmgt.jasper.jrobin;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
-
 import org.opennms.netmgt.jasper.jrobin.RrdXportCmd.XPort;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class JRobinDataSource implements JRRewindableDataSource {
 

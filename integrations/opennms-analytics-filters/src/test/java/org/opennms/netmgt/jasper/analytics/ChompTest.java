@@ -28,89 +28,88 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
-
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 
-public class ChompTest {
+import java.util.List;
+
+public class ChompTest extends AnalyticsFilterTest {
+
     @Test
     public void canCutoffRows() throws Exception {
-        final String qs = "ANALYTICS:Chomp=5";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString("ANALYTICS:Chomp=5");
 
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         int k = 0;
 
         // Add some NaNs to the table
         for (; k < 10; k++) {
-            table.put(k, "Timestamp", (double)k*1000);
+            table.put(k, Filter.TIMESTAMP_COLUMN_NAME, (double)k*1000);
             table.put(k, "X", Double.NaN);
         }
 
         // Add some values to the table
         for (; k < 90; k++) {
-            table.put(k, "Timestamp", (double)k*1000);
+            table.put(k, Filter.TIMESTAMP_COLUMN_NAME, (double)k*1000);
             table.put(k, "X", (double)k);
         }
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Verify
-        assertEquals(85, table.rowKeySet().size());
+        Assert.assertEquals(85, table.rowKeySet().size());
         for (int i = 0; i < 5; i++) {
-            assertEquals((double)(i+5)*1000, table.get(i, "Timestamp"), 0.0001);
-            assertTrue(Double.isNaN(table.get(i, "X")));
-        };
+            Assert.assertEquals((double) (i + 5) * 1000, table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
+            Assert.assertTrue(Double.isNaN(table.get(i, "X")));
+        }
     }
 
     @Test
     public void canStripNaNs() throws Exception {
         final String qs = "ANALYTICS:Chomp=0:true";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
         int k = 0;
 
         // Add some NaNs to the table
         for (; k < 10; k++) {
-            table.put(k, "Timestamp", (double)k);
+            table.put(k, Filter.TIMESTAMP_COLUMN_NAME, (double)k);
             table.put(k, "X", Double.NaN);
         }
 
         // Add some values to the table
         for (; k < 90; k++) {
-            table.put(k, "Timestamp", (double)k);
+            table.put(k, Filter.TIMESTAMP_COLUMN_NAME, (double)k);
             table.put(k, "X", (double)k);
         }
 
         // Add some more NaNs
         for (; k < 100; k++) {
-            table.put(k, "Timestamp", (double)k);
+            table.put(k, Filter.TIMESTAMP_COLUMN_NAME, (double)k);
             table.put(k, "X", Double.NaN);
         }
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Verify
-        assertEquals(80, table.rowKeySet().size());
+        Assert.assertEquals(80, table.rowKeySet().size());
         for (int i = 0; i < 80; i++) {
-            assertEquals((double)(i+10), table.get(i, "Timestamp"), 0.0001);
-            assertEquals((double)(i+10), table.get(i, "X"), 0.0001);
-        };
+            Assert.assertEquals((double) (i + 10), table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
+            Assert.assertEquals((double) (i + 10), table.get(i, "X"), 0.0001);
+        }
     }
 
     @Test
     public void doesntFailOnEmtpyDs() throws Exception {
         final String qs = "ANALYTICS:Chomp=0:true";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
     }
 }

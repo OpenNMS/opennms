@@ -28,17 +28,15 @@
 
 package org.opennms.netmgt.jasper.jrobin;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
-
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
+
+import java.util.Date;
+import java.util.Map;
 
 public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
 
@@ -59,13 +57,14 @@ public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
 
     @Override
     public JRRewindableDataSource createDatasource() throws JRException {
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(getQueryString());
-        try {
-            JRRewindableDataSource ds = new RrdXportCmd().executeCommand(dse.getRrdQueryString());
-            return dse.filter(ds);
-        } catch (Exception e) {
-            throw new JRException("Error creating JRobinDataSource with command: " + getQueryString(), e);
-        }
+        return null;
+
+//        try {
+//            JRRewindableDataSource ds = new RrdXportCmd().executeCommand(dse.getRrdQueryString());
+//            return dse.filter(ds);
+//        } catch (Exception e) {
+//            throw new JRException("Error creating JRobinDataSource with command: " + getQueryString(), e);
+//        }
     }
 
     @Override

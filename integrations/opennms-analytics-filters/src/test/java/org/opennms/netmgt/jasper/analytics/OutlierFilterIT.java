@@ -28,20 +28,19 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.opennms.netmgt.jasper.helper.RrdDataSourceFilter;
-
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 
-public class OutlierFilterIT {
+import java.util.List;
+
+public class OutlierFilterIT extends AnalyticsFilterTest {
     @Test
     public void canFilterOutliers() throws Exception {
         final String qs = "ANALYTICS:OutlierFilter=Y";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Use constant values for the Y column
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
@@ -58,24 +57,24 @@ public class OutlierFilterIT {
         table.put(42, "Y", 9999.0d);
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // The Y column should be constant - no outliers
         for (int i = 1; i < 99; i++) {
-            assertEquals((double)i, table.get(i, "X"), 0.0001);
-            assertEquals(1.0d, table.get(i, "Y"), 0.0001);
+            Assert.assertEquals((double) i, table.get(i, "X"), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "Y"), 0.0001);
         }
 
         // Outliers at the beginning and end of the series should be replaced with
         // NaN, since these can't be properly interpolated
-        assertTrue(Double.isNaN(table.get(0, "Y")));
-        assertTrue(Double.isNaN(table.get(99, "Y")));
+        Assert.assertTrue(Double.isNaN(table.get(0, "Y")));
+        Assert.assertTrue(Double.isNaN(table.get(99, "Y")));
     }
 
     @Test
     public void canInterpolateValues() throws Exception {
         final String qs = "ANALYTICS:OutlierFilter=Y:0.99";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Use non-constant values for the Y column
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
@@ -88,24 +87,24 @@ public class OutlierFilterIT {
         table.put(42, "Y", 9999.0d);
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Verify
         for (int i = 0; i < 100; i++) {
-            assertEquals((double)i, table.get(i, "X"), 0.0001);
+            Assert.assertEquals((double) i, table.get(i, "X"), 0.0001);
             double delta = 0.0001;
             if (i == 42) {
                 // Use a larger delta on the same index as the outlier
                 delta = 6;
             }
-            assertEquals(8 * Math.sin(i), table.get(i, "Y"), delta);
+            Assert.assertEquals(8 * Math.sin(i), table.get(i, "Y"), delta);
         }
     }
 
     @Test
     public void canInterpolateLargeGaps() throws Exception {
         final String qs = "ANALYTICS:OutlierFilter=Y:0.99";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Fill with NaNs
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
@@ -119,29 +118,29 @@ public class OutlierFilterIT {
         table.put(95, "Y", 1.0d);
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // Verify
         for (int i = 0; i < 42; i++) {
-            assertEquals((double)i, table.get(i, "X"), 0.0001);
-            assertEquals(Double.NaN, table.get(i, "Y"), 0.0001);
+            Assert.assertEquals((double) i, table.get(i, "X"), 0.0001);
+            Assert.assertEquals(Double.NaN, table.get(i, "Y"), 0.0001);
         }
 
         for (int i = 42; i < 96; i++) {
-            assertEquals((double)i, table.get(i, "X"), 0.0001);
-            assertEquals(1.0d, table.get(i, "Y"), 0.0001);
+            Assert.assertEquals((double) i, table.get(i, "X"), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "Y"), 0.0001);
         }
 
         for (int i = 96; i < 100; i++) {
-            assertEquals((double)i, table.get(i, "X"), 0.0001);
-            assertEquals(Double.NaN, table.get(i, "Y"), 0.0001);
+            Assert.assertEquals((double) i, table.get(i, "X"), 0.0001);
+            Assert.assertEquals(Double.NaN, table.get(i, "Y"), 0.0001);
         }
     }
 
     @Test
     public void doesntFailWhenDsOnlyContainsNaNs() throws Exception {
         final String qs = "ANALYTICS:OutlierFilter=X:0.99";
-        RrdDataSourceFilter dse = new RrdDataSourceFilter(qs);
+        List<AnalyticsCommand> cmds = AnalyticsFilterUtils.createFromQueryString(qs);
 
         // Fill with NaNs
         RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
@@ -150,7 +149,7 @@ public class OutlierFilterIT {
         }
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // No exception should be thrown
 
@@ -158,7 +157,7 @@ public class OutlierFilterIT {
         table.put(42, "X", 3.14);
 
         // Apply the filter
-        dse.filter(table);
+        getDataSourceFilter().filter(cmds, table);
 
         // No exception should be thrown
     }
