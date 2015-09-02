@@ -2,6 +2,7 @@ package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
@@ -12,16 +13,38 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryRoutingTest extends CamelTestSupport
 {
+    static public class Discoverer
+    {
+        public String[] discover( DiscoveryConfiguration config )
+        {
+            return new String[] { "1", "2", "3" };
+        }
+
+    }
+
+    static public class EventWriter
+    {
+        public void writeEvent( String[] eventData )
+        {
+            System.out.println( Arrays.toString( eventData ) );
+        }
+
+    }
+
     @Override
     protected JndiRegistry createRegistry() throws Exception
     {
         JndiRegistry registry = super.createRegistry();
+
+        registry.bind( "discoverer", new Discoverer() );
+        registry.bind( "eventWriter", new EventWriter() );
 
         // SnmpMetricRepository snmpMetricRepository = new SnmpMetricRepository( url(
         // "datacollection-config.xml" ),
@@ -67,6 +90,9 @@ public class DiscoveryRoutingTest extends CamelTestSupport
                 // .transform().constant(null)
                 .logStackTrace( true ).stop();
 
+                from( "direct:submitDiscoveryJob" ).to( "seda:discoveryJobQueue" );
+                from( "seda:discoveryJobQueue" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
+
                 // // Call this to retrieve a URL in string form or URL form into the JAXB objects
                 // they
                 // // represent
@@ -104,7 +130,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         context.start();
 
         // We should get 1 call to the scheduler endpoint
-        MockEndpoint endpoint = getMockEndpoint( "mock:seda:scheduleAgents", false );
+        MockEndpoint endpoint = getMockEndpoint( "mock:bean:eventWriter", false );
         endpoint.setExpectedMessageCount( 1 );
 
         // Create message
@@ -117,7 +143,9 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         // pkg.setName( "example1" );
         // pkg.setServices( Collections.singletonList( svc ) );
 
-        template.requestBody( "seda:loadSnmpAgents", "" ); // pass in message
+        template.requestBody( "direct:submitDiscoveryJob", new DiscoveryConfiguration() ); // pass
+                                                                                           // in
+                                                                                           // message
 
         assertMockEndpointsSatisfied();
 
