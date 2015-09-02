@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Before;
@@ -186,7 +187,7 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         request.setSources(Lists.newArrayList(ifInOctets));
 
         AnalyticsCommand command = new AnalyticsCommand("Chomp", "1416009600.0", new String[] { "true" });
-        request.setAnalyticsCommand(command);
+        request.setAnalyticsCommands(Collections.singletonList(command));
         LOG.debug(JaxbUtils.marshal(request));
 
         QueryResponse response = m_svc.query(request);

@@ -190,17 +190,19 @@ public class MeasurementsRestService {
         }
 
         // If there is an analytics command, apply it to the metrics
-        if (request.getAnalyticsCommand() != null) {
-            for (FilterFactory factory : m_filterFactories) {
-                Filter filter = factory.getFilter(request.getAnalyticsCommand());
-                if (filter != null) {
-                    RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
-                    try {
-                        filter.filter(table);
-                    } catch (Exception e) {
-                        throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
+        if (request.getAnalyticsCommands().size() > 0) {
+            for (AnalyticsCommand command : request.getAnalyticsCommands()) {
+                for (FilterFactory factory : m_filterFactories) {
+                    Filter filter = factory.getFilter(command);
+                    if (filter != null) {
+                        RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+                        try {
+                            filter.filter(table);
+                        } catch (Exception e) {
+                            throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
+                        }
+                        results = new FetchResults(table, results.getStep(), results.getConstants());
                     }
-                    results = new FetchResults(table, results.getStep(), results.getConstants());
                 }
             }
         }
@@ -257,13 +259,15 @@ public class MeasurementsRestService {
                 throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
             }
         }
-        AnalyticsCommand analyticsCommand = request.getAnalyticsCommand();
-        if (analyticsCommand != null) {
-            if (
-                analyticsCommand.getModule() == null || 
-                analyticsCommand.getColumnNameOrPrefix() == null
-            ) {
-                throw getException(Status.BAD_REQUEST, "Analytics command fields must be set: {}", analyticsCommand);
+        List<AnalyticsCommand> analyticsCommands = request.getAnalyticsCommands();
+        if (analyticsCommands.size() > 0) {
+            for (AnalyticsCommand command : analyticsCommands) {
+                if (
+                    command.getModule() == null || 
+                    command.getColumnNameOrPrefix() == null
+                ) {
+                    throw getException(Status.BAD_REQUEST, "Analytics command fields must be set: {}", analyticsCommands);
+                }
             }
         }
     }
