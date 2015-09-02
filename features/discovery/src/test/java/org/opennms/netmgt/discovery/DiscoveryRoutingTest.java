@@ -2,7 +2,6 @@ package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
@@ -13,8 +12,12 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.discovery.messages.DiscoveryJob;
+import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
@@ -22,18 +25,18 @@ public class DiscoveryRoutingTest extends CamelTestSupport
 {
     static public class Discoverer
     {
-        public String[] discover( DiscoveryConfiguration config )
+        public DiscoveryResults discover( DiscoveryJob job )
         {
-            return new String[] { "1", "2", "3" };
+            return new DiscoveryResults(Maps.newHashMap(), job.getForeignSource(), job.getLocation());
         }
 
     }
 
     static public class EventWriter
     {
-        public void writeEvent( String[] eventData )
+        public void writeEvent( DiscoveryResults results )
         {
-            System.out.println( Arrays.toString( eventData ) );
+            System.out.println( results );
         }
 
     }
@@ -111,11 +114,8 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         };
     }
 
-    /**
-     * Test loading the {@link PackageAgentList} based on a given collection package.
-     */
     @Test
-    public void testLoadServiceAgents() throws Exception
+    public void testDiscover() throws Exception
     {
         for ( RouteDefinition route : new ArrayList<RouteDefinition>( context.getRouteDefinitions() ) )
         {
@@ -143,26 +143,11 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         // pkg.setName( "example1" );
         // pkg.setServices( Collections.singletonList( svc ) );
 
-        template.requestBody( "direct:submitDiscoveryJob", new DiscoveryConfiguration() ); // pass
+        DiscoveryJob job = new DiscoveryJob(Lists.newArrayList(), "myForeignSource", "myLocation" );
+        template.requestBody( "direct:submitDiscoveryJob", job ); // pass
                                                                                            // in
                                                                                            // message
 
         assertMockEndpointsSatisfied();
-
-        // Make sure that we got one exchange to the scheduler
-        assertEquals( 1, endpoint.getReceivedCounter() );
-
-        // // That contains 3 SNMP agent instances
-        // for ( Exchange exchange : endpoint.getReceivedExchanges() )
-        // {
-        // PackageAgentList agents = exchange.getIn().getBody( PackageAgentList.class );
-        // assertNotNull( agents );
-        // assertEquals( 3, agents.getAgents().size() );
-        // }
-    }
-
-    private <T> T bean( String name, Class<T> type )
-    {
-        return context().getRegistry().lookupByNameAndType( name, type );
     }
 }
