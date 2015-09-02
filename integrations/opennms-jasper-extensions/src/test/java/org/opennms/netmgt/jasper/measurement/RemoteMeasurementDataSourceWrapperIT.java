@@ -9,11 +9,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Created by mvrueden on 26/08/15.
- */
-// TODO MVR make IT?
-public class RemoteMeasurementDataSourceWrapperTest {
+public class RemoteMeasurementDataSourceWrapperIT {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(9999);
 
@@ -77,6 +73,4 @@ public class RemoteMeasurementDataSourceWrapperTest {
             Assert.assertTrue(jre.toString().endsWith("This did not work as you might have expected, ugh?"));
         }
     }
-
-    // TODO MVR do we need to add more https tests here?
 }

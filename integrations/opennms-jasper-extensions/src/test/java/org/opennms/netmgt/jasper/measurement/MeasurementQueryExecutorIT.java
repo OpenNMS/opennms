@@ -54,9 +54,9 @@ import java.util.Map;
 /**
  * Verifies that the {@link MeasurementQueryExecutor} works correctly.
  */
-public class MeasurementQueryExecutorTest {
+public class MeasurementQueryExecutorIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementQueryExecutorTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementQueryExecutorIT.class);
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
@@ -172,7 +172,7 @@ public class MeasurementQueryExecutorTest {
 
     private static String createBodyFrom(String filename) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteStreams.copy(MeasurementQueryExecutorTest.class.getResourceAsStream("/responses/" + filename), outputStream);
+        ByteStreams.copy(MeasurementQueryExecutorIT.class.getResourceAsStream("/responses/" + filename), outputStream);
         return outputStream.toString();
     }
 

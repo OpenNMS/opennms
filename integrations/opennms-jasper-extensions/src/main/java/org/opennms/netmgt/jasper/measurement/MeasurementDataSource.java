@@ -64,6 +64,10 @@ class MeasurementDataSource implements JRRewindableDataSource {
         return numberRows;
     }
 
+    /**
+     * Returns the supported fields.
+     * @return The supported fields.
+     */
     protected List<JRField> getFields() {
         List<JRField> fields = new ArrayList<JRField>();
 
