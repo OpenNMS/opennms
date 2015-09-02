@@ -75,7 +75,7 @@ public class QueryRequest {
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
 
-    private AnalyticsCommand analyticsCommand = null;
+    private List<AnalyticsCommand> analyticsCommands = Lists.newArrayListWithCapacity(0);
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -134,12 +134,12 @@ public class QueryRequest {
     }
 
     @XmlElement(name = "analytics-command")
-    public AnalyticsCommand getAnalyticsCommand() {
-        return analyticsCommand;
+    public List<AnalyticsCommand> getAnalyticsCommands() {
+        return analyticsCommands;
     }
 
-    public void setAnalyticsCommand(final AnalyticsCommand analyticsCommand) {
-        this.analyticsCommand = analyticsCommand;
+    public void setAnalyticsCommands(final List<AnalyticsCommand> analyticsCommand) {
+        this.analyticsCommands = analyticsCommand;
     }
 
     @Override
