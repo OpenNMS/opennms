@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.jasper.analytics.helper;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
-import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-
 import java.awt.Point;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 /**
  * Helper class for converting RRD-based data sources to and from

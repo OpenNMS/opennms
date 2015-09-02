@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.jasper;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
 public class OnmsQueryExecutorFactoryBundleTest {
 

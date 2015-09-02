@@ -1,13 +1,15 @@
 package org.opennms.netmgt.jasper.measurement;
 
-import com.google.common.io.ByteStreams;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import com.google.common.io.ByteStreams;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 /**
  * Makes Measurement API requests and wraps the request in an appropriate {@link JRRewindableDataSource}.

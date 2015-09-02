@@ -1,17 +1,19 @@
 package org.opennms.netmgt.jasper.measurement;
 
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
-import net.sf.jasperreports.engine.design.JRDesignField;
-import org.opennms.netmgt.measurements.model.QueryResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXB;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.bind.JAXB;
+
+import org.opennms.netmgt.measurements.model.QueryResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
+import net.sf.jasperreports.engine.design.JRDesignField;
 
 
 class MeasurementDataSource implements JRRewindableDataSource {

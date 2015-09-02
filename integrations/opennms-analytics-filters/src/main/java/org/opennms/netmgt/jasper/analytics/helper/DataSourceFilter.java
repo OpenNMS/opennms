@@ -1,13 +1,14 @@
 package org.opennms.netmgt.jasper.analytics.helper;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.RowSortedTable;
+import java.util.Arrays;
+import java.util.List;
+
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.jasper.analytics.Filter;
 import org.opennms.netmgt.jasper.analytics.FilterFactory;
 
-import java.util.Arrays;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.RowSortedTable;
 
 /**
  * Allows an RRD data source to be modified by analytics modules.

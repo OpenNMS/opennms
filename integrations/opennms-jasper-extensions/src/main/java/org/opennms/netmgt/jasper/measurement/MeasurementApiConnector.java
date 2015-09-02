@@ -1,19 +1,21 @@
 package org.opennms.netmgt.jasper.measurement;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.io.BaseEncoding;
-import com.google.common.io.ByteStreams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
+import com.google.common.io.ByteStreams;
 
 /**
  * Posts a given query to a given url using optional username and password.

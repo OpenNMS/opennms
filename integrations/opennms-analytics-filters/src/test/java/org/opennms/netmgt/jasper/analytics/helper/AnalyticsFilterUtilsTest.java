@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.jasper.analytics.helper;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.jasper.analytics.AnalyticsFilterTest;
-
-import java.util.List;
 
 public class AnalyticsFilterUtilsTest extends AnalyticsFilterTest {
 

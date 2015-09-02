@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import net.sf.jasperreports.engine.util.JRProperties;
-import org.opennms.core.utils.RrdLabelUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+
+import org.opennms.core.utils.RrdLabelUtils;
+
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * <p>NOTE: Don't make this class <i>abstract</i> because some .jrxml reports call its constructor.</p>

@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.TreeBasedTable;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 
-import java.util.List;
+import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
 
 public class ChompTest extends AnalyticsFilterTest {
 

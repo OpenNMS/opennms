@@ -1,11 +1,11 @@
 package org.opennms.netmgt.jasper.analytics;
 
-import org.junit.BeforeClass;
-import org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+
+import org.junit.BeforeClass;
+import org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter;
 
 public abstract class AnalyticsFilterTest {
     private static List<FilterFactory> filterFactories = new ArrayList<FilterFactory>();

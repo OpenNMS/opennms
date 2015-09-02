@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.jasper.measurement;
 
+import java.util.Map;
+
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
-
-import java.util.Map;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 

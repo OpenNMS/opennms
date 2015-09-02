@@ -1,15 +1,16 @@
 package org.opennms.netmgt.jasper.analytics.helper;
 
 
-import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.TreeBasedTable;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.jasper.analytics.AnalyticsFilterTest;
 
-import java.util.Date;
-import java.util.List;
+import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
 
 public class DataSourceFilterTest extends AnalyticsFilterTest {
 

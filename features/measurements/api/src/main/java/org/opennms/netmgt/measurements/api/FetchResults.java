@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.measurements.api;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
@@ -35,10 +39,6 @@ import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.jasper.analytics.Filter;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Used to store the results of a fetch.

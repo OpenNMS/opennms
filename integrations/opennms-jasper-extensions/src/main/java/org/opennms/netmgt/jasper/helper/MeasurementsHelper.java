@@ -1,7 +1,8 @@
 package org.opennms.netmgt.jasper.helper;
 
-import com.google.common.base.Strings;
 import org.opennms.core.utils.RrdLabelUtils;
+
+import com.google.common.base.Strings;
 
 /**
  * Created by mvrueden on 24/08/15.

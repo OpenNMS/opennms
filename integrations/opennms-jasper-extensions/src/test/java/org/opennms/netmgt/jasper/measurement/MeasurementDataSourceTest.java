@@ -1,13 +1,14 @@
 package org.opennms.netmgt.jasper.measurement;
 
-import net.sf.jasperreports.engine.JRField;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
+import net.sf.jasperreports.engine.JRField;
 
 /**
  * Verifies that the {@link MeasurementDataSource} is working correctly.

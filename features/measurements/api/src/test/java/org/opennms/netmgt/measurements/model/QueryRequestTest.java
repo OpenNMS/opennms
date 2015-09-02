@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.measurements.model;
 
-import com.google.common.collect.Lists;
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.runners.Parameterized;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
+import com.google.common.collect.Lists;
 
 public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
 

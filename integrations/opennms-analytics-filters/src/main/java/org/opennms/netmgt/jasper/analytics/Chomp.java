@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
-import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.Sets;
-import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
-
 import java.awt.Point;
 import java.util.Set;
+
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
+
+import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.Sets;
 
 
 /**

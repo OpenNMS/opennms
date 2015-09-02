@@ -1,7 +1,8 @@
 package org.opennms.netmgt.jasper;
 
-import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
+
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
 /**
  * These are the supported "query languages" to be used within Jasper Report (*.jrxml) files.
