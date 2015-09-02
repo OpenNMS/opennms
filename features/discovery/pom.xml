@@ -28,6 +28,17 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>camel-test-dependencies</artifactId>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
       <type>pom</type>
     </dependency>
