@@ -3,39 +3,30 @@ package org.opennms.netmgt.jasper.analytics.helper;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.RowSortedTable;
+
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.jasper.analytics.Filter;
 import org.opennms.netmgt.jasper.analytics.FilterFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.RowSortedTable;
-
 /**
- * Allows an RRD data source to be modified by analytics modules.
+ * Allows an {@link RowSortedTable} to be modified by analytics modules.
  *
  * The list of modules to run, and their options are set with
- * additional commands in the query string. These commands are
- * removed from the query string before being passed to the actual
- * data source.
+ * additional commands.
  *
- * The commands are of the form:
- *   ANALYTICS:moduleName=columnNameOrPrefix(:otherOptions)
- * where:
+ * The commands contains the following information:
  *   - moduleName is a unique name for the module
  *   - columnNameOrPrefix identifies the name of the column, or the prefix of the
  *   column name if there are multiple where the additional values will be stored
  *   - otherOptions are optional and specific to the module in question
  *
- * Once the data source has been loaded, the modules are invoked
- * in the same order as they appear in the query string.
+ * The modules are invoked in the same order as they appear in the analyticsCommandList.
  *
- * The module factories are loaded at run-time using the
- * ServiceLoader paradigm.
  *
  * @author jwhite
  */
-// TODO MVR re-use javadoc?
-// TODO MVR rewrite javadoc
 public class DataSourceFilter {
 
     /**

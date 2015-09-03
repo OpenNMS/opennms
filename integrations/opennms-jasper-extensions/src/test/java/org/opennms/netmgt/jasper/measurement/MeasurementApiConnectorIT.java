@@ -7,19 +7,22 @@ import java.net.SocketTimeoutException;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.tomakehurst.wiremock.client.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.io.ByteStreams;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.LoggingEvent;
+import org.opennms.core.test.MockLogAppender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Verifies that the {@link MeasurementApiConnector} connects accordingly to the OpenNMS Measurement API and may
@@ -180,12 +183,23 @@ public class MeasurementApiConnectorIT {
     // Verifies that even if useSSL = false, when connecting to a valid https url the connection is secure
     @Test
     public void testHttpsUrlButUseSslNotSet() throws IOException {
-        // TODO MVR check for warn log message
         Result result = new MeasurementApiConnector().execute(false, "https://localhost:9443/opennms/rest/measurements", null, null, "<dummy request>");
         Assert.assertTrue(result.wasSuccessful());
         Assert.assertTrue(result.wasSecureConnection());
         Assert.assertNotNull(result.getInputStream());
         Assert.assertNull(result.getErrorStream());
+
+        LoggingEvent[] warnEvents = MockLogAppender.getEventsAtLevel(Level.WARN);
+        boolean found = false;
+        for (LoggingEvent eachEvent : warnEvents) {
+            if (MeasurementApiConnector.class.getName().equals(eachEvent.getLoggerName())) {
+                Assert.assertTrue(eachEvent.getMessage().contains("A secure connection was established even if it was not intended."));
+                Assert.assertTrue(eachEvent.getMessage().contains("Use SSL = true"));
+                Assert.assertTrue(eachEvent.getMessage().contains("URL = https://localhost:9443/opennms/rest/measurements"));
+                found = true;
+            }
+        }
+        Assert.assertTrue("Expected to have a warn message about using ssl even if it was not enabled manually", found);
     }
 
     // Verifies that if SSL is enabled and we connect to a HTTP connection, a SSLException is thrown by our client.

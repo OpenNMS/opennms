@@ -79,17 +79,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jrobin-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -97,21 +87,9 @@
       <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    <!-- TODO MVR brauchen wir das immer noch? -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-model</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- TODO MVR brauchen wir das immer? -->
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.api</artifactId>

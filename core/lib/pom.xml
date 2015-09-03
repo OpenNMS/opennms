@@ -12,6 +12,8 @@
   <packaging>bundle</packaging>
   <build>
     <plugins>
+      <!-- TODO MVR we have ti figure out how to deal with this.
+      We require this module to be available in jasper-extensions, but only for one little class -->
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>

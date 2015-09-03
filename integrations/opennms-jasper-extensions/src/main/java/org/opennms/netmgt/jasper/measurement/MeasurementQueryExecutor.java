@@ -39,9 +39,7 @@ import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
-    // TODO MVR define name for the property
     // TODO MVR document this property
-    // TODO MVR is this the correct position for the property?
     private static final String SSL_PROPERTY_KEY = "org.opennms.netmgt.jasper.measurement.ssl.enable";
 
     private RemoteMeasurementDataSourceWrapper dataSourceCreator;
@@ -90,7 +88,6 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
         }
     }
 
-    // TODO MVR is this the correct position for the property?
     private static boolean useSSL() {
         return Boolean.valueOf(System.getProperty(SSL_PROPERTY_KEY, "false")).booleanValue();
     }

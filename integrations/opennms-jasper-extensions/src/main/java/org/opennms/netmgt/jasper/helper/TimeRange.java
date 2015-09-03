@@ -38,7 +38,6 @@ import java.util.GregorianCalendar;
  *
  * @author ronny
  */
-// TODO MVR review this, but at first glance it looks good, except getStartDate(String range)
 public enum TimeRange {
 
     LAST_SEVEN_DAYS {
