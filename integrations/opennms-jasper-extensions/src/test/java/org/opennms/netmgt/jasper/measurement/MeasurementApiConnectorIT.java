@@ -222,7 +222,7 @@ public class MeasurementApiConnectorIT {
         for (LoggingEvent eachEvent : warnEvents) {
             if (MeasurementApiConnector.class.getName().equals(eachEvent.getLoggerName())) {
                 Assert.assertTrue(eachEvent.getMessage().contains("A secure connection was established even if it was not intended."));
-                Assert.assertTrue(eachEvent.getMessage().contains("Use SSL = true"));
+                Assert.assertTrue(eachEvent.getMessage().contains("Use SSL = false"));
                 Assert.assertTrue(eachEvent.getMessage().contains("URL = https://localhost:9443/opennms/rest/measurements"));
                 found = true;
             }
