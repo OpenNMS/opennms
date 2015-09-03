@@ -12,11 +12,13 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.collect.Lists;
 
-public class RangeChunker {
-    public static final int CHUNK_SIZE = 10;
+public class RangeChunker
+{
+    public static final int DEFAULT_CHUNK_SIZE = 100;
 
     public List<DiscoveryJob> chunk( DiscoveryConfiguration config )
     {
+        int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DEFAULT_CHUNK_SIZE;
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory( config );
 
         List<IPPollRange> ranges = new ArrayList<IPPollRange>();
@@ -27,7 +29,7 @@ public class RangeChunker {
             ranges.add( range );
         }
 
-        return Lists.partition( ranges, CHUNK_SIZE ).stream().map(
+        return Lists.partition( ranges, chunkSize ).stream().map(
                         r -> new DiscoveryJob( r, config.getForeignSource(), "" ) ).collect( Collectors.toList() );
 
     }
