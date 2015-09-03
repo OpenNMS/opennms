@@ -32,7 +32,7 @@ package org.opennms.netmgt.jasper.analytics;
  * Used to instantiate a {@link org.opennms.netmgt.jasper.analytics.Filter}
  * from the corresponding command in the query string.
  *
- * @see {@link org.opennms.netmgt.jasper.helper.DataSourceFilter}
+ * @see {@link org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter}
  * @author jwhite
  */
 public interface FilterFactory {
