@@ -459,6 +459,10 @@
       <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
+      <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 

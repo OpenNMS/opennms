@@ -155,6 +155,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-core-web");
         installFeature("opennms-dao-api");
         installFeature("opennms-dao");
+        installFeature("opennms-discovery");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
         installFeature("opennms-events-traps");
