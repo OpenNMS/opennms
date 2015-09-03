@@ -111,7 +111,12 @@
       </attribute>
       
       <attribute name="foreign-source" type="string" use="optional" />
-      
+
+      <attribute name="chunk-size" type="int" use="optional">
+        <annotation>
+          <documentation>The default chunk size used to divide up ranges to be discovered by minions.  This size determines the individual unit of work a particular discovery job sent to a minion will encompass.</documentation>
+        </annotation>
+      </attribute>      
     </complexType>
   </element>
 
