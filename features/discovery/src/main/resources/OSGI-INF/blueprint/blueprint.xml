@@ -1,7 +1,5 @@
-<blueprint
-	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
 	xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
@@ -12,28 +10,34 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-  <reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
-  <bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker" />
+	<bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker" />
 
-  <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer" >
-    <constructor-arg ref="pinger" />
-  </bean>
+	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
+		<argument ref="pinger" />
+	</bean>
 
-  <bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter" />
+	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter" />
 
-  <camelContext id="samplerSnmpCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
-     <!--
-     <route id="collectAgent">
-      <from uri="seda:collectAgent"/>
-      <bean ref="snmpAgentProcessor"/>
-      <log loggingLevel="INFO" message="sampler-snmp blueprint.xml: Collecting agent ${body.id}" />
-      <bean ref="snmpMetricRepository" method="createRequestForAgent"/>
-      <bean ref="snmpCollector" method="collect"/>
-      <log loggingLevel="DEBUG" message="sampler-snmp blueprint.xml: ${body}"/>
-      <to uri="seda:sampleSets"/>
-    </route>
-    -->
-  </camelContext>
+	<camelContext id="samplerSnmpCamelContext"
+		xmlns="http://camel.apache.org/schema/blueprint">
+		<route id="discoveryRoute">
+			<from uri="direct:submitDiscoveryTask" />
+			<bean ref="rangeChunker" />
+			<split>
+				<simple>${body}</simple>
+				<recipientList>
+					<simple>seda:Location-${body.location}</simple>
+				</recipientList>
+				<bean ref="eventWriter" />
+			</split>
+		</route>
+
+		<route id="minionDiscoveryRoute">
+			<from uri="seda:Location-LOC1" />
+			<bean ref="discoverer" />
+		</route>
+	</camelContext>
 
 </blueprint>
