@@ -106,8 +106,8 @@ public class DiscoveryRoutingTest extends CamelTestSupport
                 onException( IOException.class ).handled( true ).logStackTrace( true ).stop();
 
                 from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).recipientList(
-                                simple( "seda:Location-${body.location}" ) );
-                from( "seda:Location-LOC1" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
+                                simple( "seda:Location-${body.location}" ) ).to( "bean:eventWriter" );
+                from( "seda:Location-LOC1" ).to( "bean:discoverer" );
             }
         };
     }
