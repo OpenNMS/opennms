@@ -78,19 +78,6 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         registry.bind( "discoverer", new Discoverer() );
         registry.bind( "eventWriter", new EventWriter() );
 
-        // SnmpMetricRepository snmpMetricRepository = new SnmpMetricRepository( url(
-        // "datacollection-config.xml" ),
-        // url( "datacollection/mib2.xml" ), url( "datacollection/netsnmp.xml" ),
-        // url( "datacollection/dell.xml" ) );
-        //
-        // registry.bind( "collectdConfiguration", new
-        // SingletonBeanFactoryImpl<CollectdConfiguration>() );
-        // registry.bind( "snmpConfig", new SingletonBeanFactoryImpl<SnmpConfig>() );
-        // registry.bind( "snmpMetricRepository", snmpMetricRepository );
-        // registry.bind( "urlNormalizer", new UrlNormalizer() );
-        // registry.bind( "packageServiceSplitter", new PackageServiceSplitter() );
-        // registry.bind( "jaxbXml", DataFormatUtils.jaxbXml() );
-
         return registry;
     }
 
@@ -115,31 +102,13 @@ public class DiscoveryRoutingTest extends CamelTestSupport
             @Override
             public void configure() throws Exception
             {
-
                 // Add exception handlers
                 onException( IOException.class ).handled( true )
-
-                // .transform().constant(null)
                 .logStackTrace( true ).stop();
 
                 from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).to(
                                 "seda:discoveryJobQueue" );
                 from( "seda:discoveryJobQueue" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
-
-                // // Call this to retrieve a URL in string form or URL form into the JAXB objects
-                // they
-                // // represent
-                // from( "direct:parseJaxbXml" ).beanRef( "urlNormalizer" ).unmarshal( "jaxbXml" );
-                //
-                // // Direct route to fetch the config
-                // from( "direct:collectdConfig" ).beanRef( "collectdConfiguration", "getInstance"
-                // );
-
-                // // TODO: Create a reload timer that will check for changes to the config
-                // from( "direct:loadCollectdConfiguration" ).transform(
-                // constant( url( "collectd-configuration.xml" ) ) ).to( "direct:parseJaxbXml"
-                // ).beanRef(
-                // "collectdConfiguration", "setInstance" );
             }
         };
     }
@@ -163,21 +132,17 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         MockEndpoint endpoint = getMockEndpoint( "mock:bean:eventWriter", false );
         endpoint.setExpectedMessageCount( 1 );
 
-        // Create message
-        // DiscoveryJob job = new DiscoveryJob( Lists.newArrayList(), "myForeignSource",
-        // "myLocation" );
-        DiscoveryConfiguration config = new DiscoveryConfiguration();
-
+        // Create the config aka job
         Specific specific = new Specific();
         specific.setContent( "4.2.2.2" );
-        specific.setForeignSource( "Bogus FS" );
-        specific.setRetries( 2 );
-        specific.setTimeout( 3000 );
+
+        DiscoveryConfiguration config = new DiscoveryConfiguration();
         config.addSpecific( specific );
         config.setForeignSource( "Bogus FS" );
         config.setTimeout( 3000 );
         config.setRetries( 2 );
 
+        // Execute the job
         template.requestBody( "direct:createDiscoveryJobs", config );
 
         assertMockEndpointsSatisfied();
