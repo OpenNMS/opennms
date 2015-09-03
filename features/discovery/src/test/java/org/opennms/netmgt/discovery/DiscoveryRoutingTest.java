@@ -1,7 +1,6 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 
 import org.apache.camel.builder.AdviceWithRouteBuilder;
@@ -13,17 +12,10 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.discovery.actors.Discoverer;
+import org.opennms.netmgt.discovery.actors.EventWriter;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
-import org.opennms.netmgt.discovery.messages.DiscoveryResults;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.NullPinger;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.Lists;
@@ -32,37 +24,6 @@ import com.google.common.collect.Lists;
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryRoutingTest extends CamelTestSupport
 {
-
-    static public class EventWriter
-    {
-        private static final Logger LOG = LoggerFactory.getLogger(EventWriter.class);
-
-        public void sendEvents( DiscoveryResults results )
-        {
-            results.getResponses().entrySet()
-                .forEach(e -> sendNewSuspectEvent(e.getKey(), e.getValue(),results.getForeignSource()));
-        }
-
-        private void sendNewSuspectEvent(InetAddress address, EchoPacket response, String foreignSource) {
-            EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery");
-            eb.setInterface(address);
-            eb.setHost(InetAddressUtils.getLocalHostName());
-
-            eb.addParam("RTT", response.getReceivedTimeNanos() - response.getSentTimeNanos());
-
-            if (foreignSource != null) {
-                eb.addParam("foreignSource", foreignSource);
-            }
-
-            try {
-                EventIpcManagerFactory.getIpcManager().sendNow(eb.getEvent());
-                LOG.debug("Sent event: {}", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-            } catch (Throwable t) {
-                LOG.warn("run: unexpected throwable exception caught during send to middleware", t);
-            }
-        }
-    }
-
     @Override
     protected JndiRegistry createRegistry() throws Exception
     {
