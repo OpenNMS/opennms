@@ -75,7 +75,7 @@ public class Discoverer {
 
     private static class PingResponseTracker implements PingResponseCallback {
         private final Set<InetAddress> waitingFor = Sets.newConcurrentHashSet();
-        private final Map<InetAddress, EchoPacket> m_responses = Maps.newConcurrentMap();
+        private final Map<InetAddress, Long> m_responses = Maps.newConcurrentMap();
         private final CountDownLatch m_doneSignal = new CountDownLatch(1);
 
         public void expectCallbackFor(InetAddress address) {
@@ -85,7 +85,7 @@ public class Discoverer {
         @Override
         public void handleResponse(InetAddress address, EchoPacket response) {
             if (response != null) {
-                m_responses.put(address, response);
+                m_responses.put(address, response.getReceivedTimeNanos() - response.getSentTimeNanos());
             }
             afterHandled(address);
         }
@@ -113,7 +113,7 @@ public class Discoverer {
             return m_doneSignal;
         }
 
-        public Map<InetAddress, EchoPacket> getResponses() {
+        public Map<InetAddress, Long> getResponses() {
             return m_responses;
         }
     }

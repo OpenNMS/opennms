@@ -1,25 +1,25 @@
 package org.opennms.netmgt.discovery.messages;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.icmp.EchoPacket;
-
 import com.google.common.base.Preconditions;
 
-public class DiscoveryResults {
+public class DiscoveryResults implements Serializable {
+    private static final long serialVersionUID = -3416001085353754747L;
 
-    private final Map<InetAddress, EchoPacket> m_responses;
+    private final Map<InetAddress, Long> m_responses;
     private final String m_foreignSource;
     private final String m_location;
 
-    public DiscoveryResults(Map<InetAddress, EchoPacket> responses, String foreignSource, String location) {
+    public DiscoveryResults(Map<InetAddress, Long> responses, String foreignSource, String location) {
         m_responses = Preconditions.checkNotNull(responses, "ranges argument");
         m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
         m_location = Preconditions.checkNotNull(location, "location argument");
     }
 
-    public Map<InetAddress, EchoPacket> getResponses() {
+    public Map<InetAddress, Long> getResponses() {
         return m_responses;
     }
 

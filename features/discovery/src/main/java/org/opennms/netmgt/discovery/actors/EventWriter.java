@@ -6,7 +6,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +18,12 @@ public class EventWriter {
             .forEach(e -> sendNewSuspectEvent(e.getKey(), e.getValue(),results.getForeignSource()));
     }
 
-    private void sendNewSuspectEvent(InetAddress address, EchoPacket response, String foreignSource) {
+    private void sendNewSuspectEvent(InetAddress address, Long rtt, String foreignSource) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery");
         eb.setInterface(address);
         eb.setHost(InetAddressUtils.getLocalHostName());
 
-        eb.addParam("RTT", response.getReceivedTimeNanos() - response.getSentTimeNanos());
+        eb.addParam("RTT", rtt);
 
         if (foreignSource != null) {
             eb.addParam("foreignSource", foreignSource);
