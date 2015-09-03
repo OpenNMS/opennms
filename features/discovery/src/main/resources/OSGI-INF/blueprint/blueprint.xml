@@ -30,8 +30,14 @@
 				<recipientList>
 					<simple>seda:Location-${body.location}</simple>
 				</recipientList>
-				<bean ref="eventWriter" />
+				<to uri="direct:generateNewSuspects" />
 			</split>
+			
+		</route>
+
+		<route id="sillyHopRoute">
+			<from uri="direct:generateNewSuspects" />
+			<bean ref="eventWriter" />
 		</route>
 
 		<route id="minionDiscoveryRoute">

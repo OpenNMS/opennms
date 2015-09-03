@@ -79,7 +79,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
     public void testDiscover() throws Exception
     {
         // We should get 1 call to the scheduler endpoint
-        MockEndpoint endpoint = getMockEndpoint( "mock:bean:eventWriter", false );
+        MockEndpoint endpoint = getMockEndpoint( "mock:direct:generateNewSuspects", false );
         endpoint.setExpectedMessageCount( 1 );
 
         // Create the config aka job
@@ -94,7 +94,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
         config.setLocation( "LOC1" );
 
         // Execute the job
-        template.requestBody( "direct:createDiscoveryJobs", config );
+        template.requestBody( "direct:submitDiscoveryTask", config );
 
         assertMockEndpointsSatisfied();
     }
