@@ -64,9 +64,9 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
     @Override
     public JRRewindableDataSource createDatasource() throws JRException {
        return getDataSource(
-               (String) getParameterValue(Parameters.URL),
-               (String) getParameterValue(Parameters.USERNAME, true),
-               (String) getParameterValue(Parameters.PASSWORD, true),
+               (String) getParameterValue(Parameters.URL),  // required parameter
+               (String) getParameterValue(Parameters.USERNAME, true), // optional parameter
+               (String) getParameterValue(Parameters.PASSWORD, true), // optional parameter
                getQueryString());
     }
 

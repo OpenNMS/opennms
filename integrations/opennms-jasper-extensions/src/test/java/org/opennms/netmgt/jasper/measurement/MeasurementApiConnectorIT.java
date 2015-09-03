@@ -186,7 +186,7 @@ public class MeasurementApiConnectorIT {
     // we connect to localhost on a wrong port to trigger a ConnectException
     @Test(expected=ConnectException.class)
     public void testConnectException() throws IOException {
-        new MeasurementApiConnector().execute(false, "http://localhost/opennms/rest/measurements", null, null, "<dummy request>");
+        new MeasurementApiConnector().execute(false, "http://localhost:1234/opennms/rest/measurements", null, null, "<dummy request>");
     }
 
 

@@ -286,6 +286,8 @@ public class MeasurementQueryExecutorIT {
         verifyHttpCalls(1);
     }
 
+    // This test returns an empty data set because it uses a SQL query and we do not setup the database
+    // However we keep this test for now.
     @Test
     public void testReportNodeAvailabilityMonthly() throws JRException, IOException {
         createReport("NodeAvailabilityMonthly", new ReportFiller() {
