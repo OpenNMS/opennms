@@ -14,4 +14,18 @@
 
   <reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
+  <camelContext id="samplerSnmpCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+     <!--
+     <route id="collectAgent">
+      <from uri="seda:collectAgent"/>
+      <bean ref="snmpAgentProcessor"/>
+      <log loggingLevel="INFO" message="sampler-snmp blueprint.xml: Collecting agent ${body.id}" />
+      <bean ref="snmpMetricRepository" method="createRequestForAgent"/>
+      <bean ref="snmpCollector" method="collect"/>
+      <log loggingLevel="DEBUG" message="sampler-snmp blueprint.xml: ${body}"/>
+      <to uri="seda:sampleSets"/>
+    </route>
+    -->
+  </camelContext>
+
 </blueprint>
