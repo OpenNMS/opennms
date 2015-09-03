@@ -199,6 +199,7 @@
             <feature>opennms-events-daemon</feature>
             <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
+            <feature>opennms-icmp-jna</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>

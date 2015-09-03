@@ -307,6 +307,11 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
     </feature>
 
+    <feature name="net.java.dev.jna" description="Java Native Access (JNA)" version="3.2.7-ONMS">
+      <bundle>wrap:mvn:net.java.dev.jna/jna/3.2.7-ONMS$Export-Package=com.sun.jna</bundle>
+      <bundle>wrap:mvn:net.java.dev.jna/platform/3.2.7-ONMS$Export-Package=com.sun.jna.platform</bundle>
+    </feature>
+
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
@@ -496,11 +501,19 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-icmp-api" description="OpenNMS :: ICMP API" version="${project.version}">
+    <feature name="opennms-icmp-api" description="OpenNMS :: ICMP :: API" version="${project.version}">
       <feature>opennms-core</feature>
 
       <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/0.6</bundle>
       <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jna" description="OpenNMS :: ICMP :: JNA" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>net.java.dev.jna</feature>
+
+      <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-javamail" description="OpenNMS :: Javamail" version="${project.version}">

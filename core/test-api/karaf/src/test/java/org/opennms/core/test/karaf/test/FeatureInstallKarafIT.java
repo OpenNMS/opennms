@@ -160,6 +160,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-events-daemon");
         installFeature("opennms-events-traps");
         installFeature("opennms-icmp-api");
+        installFeature("opennms-icmp-jna");
         //installFeature("opennms-javamail");
         installFeature("opennms-model");
         installFeature("opennms-poller-api");
