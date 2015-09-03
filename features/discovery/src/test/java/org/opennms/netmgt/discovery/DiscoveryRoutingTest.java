@@ -2,8 +2,6 @@ package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
@@ -14,45 +12,18 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.discovery.actors.Discoverer;
 import org.opennms.netmgt.discovery.actors.EventWriter;
-import org.opennms.netmgt.discovery.messages.DiscoveryJob;
+import org.opennms.netmgt.discovery.actors.RangeChunker;
 import org.opennms.netmgt.icmp.NullPinger;
-import org.opennms.netmgt.model.discovery.IPPollAddress;
-import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.collect.Lists;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryRoutingTest extends CamelTestSupport
 {
-    private static final int CHUNK_SIZE = 10;
-
-    static public class RangeChunker
-    {
-        public List<DiscoveryJob> chunk( DiscoveryConfiguration config )
-        {
-            DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory( config );
-
-            List<IPPollRange> ranges = new ArrayList<IPPollRange>();
-            for ( IPPollAddress address : configFactory.getConfiguredAddresses() )
-            {
-                IPPollRange range = new IPPollRange( address.getAddress(), address.getAddress(), address.getTimeout(),
-                                address.getRetries() );
-                ranges.add( range );
-            }
-
-            return Lists.partition( ranges, CHUNK_SIZE ).stream().map(
-                            r -> new DiscoveryJob( r, config.getForeignSource(), "" ) ).collect( Collectors.toList() );
-
-        }
-
-    }
 
     @Override
     protected JndiRegistry createRegistry() throws Exception
