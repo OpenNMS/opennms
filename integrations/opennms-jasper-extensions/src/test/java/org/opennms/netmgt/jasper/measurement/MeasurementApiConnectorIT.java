@@ -30,6 +30,7 @@ package org.opennms.netmgt.jasper.measurement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLException;
@@ -104,8 +105,8 @@ public class MeasurementApiConnectorIT {
                         .withStatus(500)
                         .withBody("This did not work as you might have expected, ugh?")));
 
-        // Timeout
-        WireMock.stubFor(WireMock.post(WireMock.urlMatching("/opennms/rest/measurements/timeout"))
+        // Slow response
+        WireMock.stubFor(WireMock.post(WireMock.urlMatching("/opennms/rest/measurements/slow-response"))
                 .willReturn(WireMock.aResponse().withFixedDelay(5000)));
 
         // Everything else is automatically bound to a 404
@@ -175,18 +176,35 @@ public class MeasurementApiConnectorIT {
         verifyWiremock(requestPatternBuilder);
     }
 
-    // We connect to 127.0.0.2 and expect a timeout. We also verify that the timeout is
-    // as defined (including a tolerance)
+    // Tests a delay before receiving any result
+    @Test
+    public void testSlowConnection() throws IOException {
+        Result result = new MeasurementApiConnector().execute(false, "http://localhost:9999/opennms/rest/measurements/slow-response", null, null, "<dummy request>");
+        Assert.assertTrue(result.wasSuccessful());
+    }
+
+    // we connect to localhost on a wrong port to trigger a ConnectException
+    @Test(expected=ConnectException.class)
+    public void testConnectException() throws IOException {
+        new MeasurementApiConnector().execute(false, "http://localhost/opennms/rest/measurements", null, null, "<dummy request>");
+    }
+
+
+    // We connect and expect a timeout.
+    // We also verify that the timeout is as defined (including a tolerance)
     @Test(expected=SocketTimeoutException.class)
     public void testTimeout() throws IOException {
+        WireMock.addRequestProcessingDelay(5000);
         long start = System.currentTimeMillis();
         try {
-            new MeasurementApiConnector().execute(false, "http://127.0.0.2/opennms/rest/measurements/timeout", null, null, "<dummy request>");
+            new MeasurementApiConnector(MeasurementApiConnector.CONNECT_TIMEOUT, 2500).execute(false, "http://localhost:9999/opennms/rest/measurements", null, null, "<dummy request>");
         } catch (SocketTimeoutException ex) {
             long diff = System.currentTimeMillis() - start;
             long offset = 500; // ms
-            Assert.assertEquals(Double.valueOf(MeasurementApiConnector.CONNECT_TIMEOUT), (double) diff, (double) offset);
+            Assert.assertEquals(2500d, (double) diff, (double) offset);
             throw ex;
+        } finally {
+            WireMock.reset();
         }
     }
 

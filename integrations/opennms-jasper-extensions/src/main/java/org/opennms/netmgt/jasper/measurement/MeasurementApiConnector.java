@@ -52,9 +52,24 @@ class MeasurementApiConnector {
 
     protected static final int CONNECT_TIMEOUT = 2500;
 
+    protected static final int READ_TIMEOUT = 10000;
+
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiConnector.class);
 
+    private final int connectTimeout;
+
+    private final int readTimeout;
+
     private HttpURLConnection connection;
+
+    public MeasurementApiConnector() {
+        this(CONNECT_TIMEOUT, READ_TIMEOUT);
+    }
+
+    public MeasurementApiConnector(int connectTimeout, int readTimeout) {
+        this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
+    }
 
     public Result execute(final boolean useSsl, final String url, final String username, final String password, final String query) throws IOException {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "The provided URL must not be empty or null");
@@ -97,7 +112,8 @@ class MeasurementApiConnector {
             connection.setRequestProperty("Authorization", createBasicAuthHeader(username, password));
         }
         connection.setAllowUserInteraction(false);
-        connection.setConnectTimeout(CONNECT_TIMEOUT);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
         connection.setUseCaches(false);
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
