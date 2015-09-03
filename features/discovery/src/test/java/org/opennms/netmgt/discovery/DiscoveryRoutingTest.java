@@ -2,6 +2,8 @@ package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
@@ -9,13 +11,23 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.DiscoveryConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.discovery.actors.Discoverer;
-import org.opennms.netmgt.discovery.actors.EventWriter;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
-import org.opennms.netmgt.icmp.NullPinger;
+import org.opennms.netmgt.discovery.messages.DiscoveryResults;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.model.discovery.IPPollAddress;
+import org.opennms.netmgt.model.discovery.IPPollRange;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.collect.Lists;
@@ -24,12 +36,78 @@ import com.google.common.collect.Lists;
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryRoutingTest extends CamelTestSupport
 {
+    static public class RangeChunker
+    {
+        public List<DiscoveryJob> chunk( DiscoveryConfiguration config )
+        {
+            DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory( config );
+
+            List<IPPollRange> ranges = new ArrayList<IPPollRange>();
+            for ( IPPollAddress address : configFactory.getConfiguredAddresses() )
+            {
+                IPPollRange range = new IPPollRange( address.getAddress(), address.getAddress(), address.getTimeout(),
+                                address.getRetries() );
+                ranges.add( range );
+            }
+
+            return Lists.partition( ranges, 10 ).stream().map(
+                            r -> new DiscoveryJob( r, config.getForeignSource(), "" ) ).collect( Collectors.toList() );
+
+        }
+
+    }
+
+    static public class Discoverer
+    {
+        public DiscoveryResults discover( DiscoveryJob job )
+        {
+            return new DiscoveryResults( Maps.newHashMap(), job.getForeignSource(), job.getLocation() );
+        }
+
+    }
+
+    static public class EventWriter
+    {
+        private static final Logger LOG = LoggerFactory.getLogger( EventWriter.class );
+
+        public void sendEvents( DiscoveryResults results )
+        {
+            results.getResponses().entrySet().forEach(
+                            e -> sendNewSuspectEvent( e.getKey(), e.getValue(), results.getForeignSource() ) );
+        }
+
+        private void sendNewSuspectEvent( InetAddress address, EchoPacket response, String foreignSource )
+        {
+            EventBuilder eb = new EventBuilder( EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "OpenNMS.Discovery" );
+            eb.setInterface( address );
+            eb.setHost( InetAddressUtils.getLocalHostName() );
+
+            eb.addParam( "RTT", response.getReceivedTimeNanos() - response.getSentTimeNanos() );
+
+            if ( foreignSource != null )
+            {
+                eb.addParam( "foreignSource", foreignSource );
+            }
+
+            try
+            {
+                EventIpcManagerFactory.getIpcManager().sendNow( eb.getEvent() );
+                LOG.debug( "Sent event: {}", EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI );
+            }
+            catch ( Throwable t )
+            {
+                LOG.warn( "run: unexpected throwable exception caught during send to middleware", t );
+            }
+        }
+    }
+
     @Override
     protected JndiRegistry createRegistry() throws Exception
     {
         JndiRegistry registry = super.createRegistry();
 
-        registry.bind( "discoverer", new Discoverer(new NullPinger()) );
+        registry.bind( "rangeChunker", new RangeChunker() );
+        registry.bind( "discoverer", new Discoverer() );
         registry.bind( "eventWriter", new EventWriter() );
 
         // SnmpMetricRepository snmpMetricRepository = new SnmpMetricRepository( url(
@@ -76,7 +154,8 @@ public class DiscoveryRoutingTest extends CamelTestSupport
                 // .transform().constant(null)
                 .logStackTrace( true ).stop();
 
-                from( "direct:submitDiscoveryJob" ).to( "seda:discoveryJobQueue" );
+                from( "direct:createDiscoveryTasks" ).to( "bean:rangeChunker" ).split( body() ).to(
+                                "seda:discoveryJobQueue" );
                 from( "seda:discoveryJobQueue" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
 
                 // // Call this to retrieve a URL in string form or URL form into the JAXB objects
@@ -117,19 +196,11 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         endpoint.setExpectedMessageCount( 1 );
 
         // Create message
-        // Service svc = new Service();
-        // svc.setInterval( 1000L );
-        // svc.setName( "SNMP" );
-        // svc.setStatus( "on" );
-        // svc.setUserDefined( "false" );
-        // Package pkg = new Package();
-        // pkg.setName( "example1" );
-        // pkg.setServices( Collections.singletonList( svc ) );
+        // DiscoveryJob job = new DiscoveryJob( Lists.newArrayList(), "myForeignSource",
+        // "myLocation" );
+        DiscoveryConfig config = new DiscoveryConfig();
 
-        DiscoveryJob job = new DiscoveryJob(Lists.newArrayList(), "myForeignSource", "myLocation" );
-        template.requestBody( "direct:submitDiscoveryJob", job ); // pass
-                                                                                           // in
-                                                                                           // message
+        template.requestBody( "direct:createDiscoveryJobs", config );
 
         assertMockEndpointsSatisfied();
     }
