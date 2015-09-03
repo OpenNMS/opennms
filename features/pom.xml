@@ -28,6 +28,9 @@
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
 
+    <!-- Discovery -->
+    <module>discovery</module>
+
     <!-- OpenNMS Reporting API and implementations -->
     <module>reporting</module>
 

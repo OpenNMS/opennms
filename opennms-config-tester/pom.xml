@@ -93,6 +93,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.jmx</groupId>
+      <artifactId>org.opennms.core.jmx.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!-- Non-OpenNMS dependencies -->
     <dependency>
       <groupId>commons-cli</groupId>
