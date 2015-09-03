@@ -11,12 +11,12 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.DiscoveryConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.discovery.actors.Discoverer;
 import org.opennms.netmgt.discovery.actors.EventWriter;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
@@ -31,6 +31,8 @@ import com.google.common.collect.Lists;
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
 public class DiscoveryRoutingTest extends CamelTestSupport
 {
+    private static final int CHUNK_SIZE = 10;
+
     static public class RangeChunker
     {
         public List<DiscoveryJob> chunk( DiscoveryConfiguration config )
@@ -45,7 +47,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
                 ranges.add( range );
             }
 
-            return Lists.partition( ranges, 10 ).stream().map(
+            return Lists.partition( ranges, CHUNK_SIZE ).stream().map(
                             r -> new DiscoveryJob( r, config.getForeignSource(), "" ) ).collect( Collectors.toList() );
 
         }
@@ -105,7 +107,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
                 // .transform().constant(null)
                 .logStackTrace( true ).stop();
 
-                from( "direct:createDiscoveryTasks" ).to( "bean:rangeChunker" ).split( body() ).to(
+                from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).to(
                                 "seda:discoveryJobQueue" );
                 from( "seda:discoveryJobQueue" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
 
@@ -149,7 +151,17 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         // Create message
         // DiscoveryJob job = new DiscoveryJob( Lists.newArrayList(), "myForeignSource",
         // "myLocation" );
-        DiscoveryConfig config = new DiscoveryConfig();
+        DiscoveryConfiguration config = new DiscoveryConfiguration();
+
+        Specific specific = new Specific();
+        specific.setContent( "4.2.2.2" );
+        specific.setForeignSource( "Bogus FS" );
+        specific.setRetries( 2 );
+        specific.setTimeout( 3000 );
+        config.addSpecific( specific );
+        config.setForeignSource( "Bogus FS" );
+        config.setTimeout( 3000 );
+        config.setRetries( 2 );
 
         template.requestBody( "direct:createDiscoveryJobs", config );
 
