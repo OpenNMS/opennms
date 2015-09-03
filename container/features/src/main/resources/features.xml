@@ -473,6 +473,13 @@
     </feature>
 
     <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
+      <feature>castor</feature>
+      <feature>guava</feature>
+
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-config</feature>
+
       <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
     </feature>
 
