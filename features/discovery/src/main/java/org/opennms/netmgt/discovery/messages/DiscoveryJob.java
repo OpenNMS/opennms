@@ -1,5 +1,6 @@
 package org.opennms.netmgt.discovery.messages;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,8 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.base.Preconditions;
 
-public class DiscoveryJob {
+public class DiscoveryJob implements Serializable {
+    private static final long serialVersionUID = 3750201609939695254L;
 
     private final List<IPPollRange> m_ranges;
     private final String m_foreignSource;

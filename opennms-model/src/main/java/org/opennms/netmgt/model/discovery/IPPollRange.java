@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -43,7 +44,9 @@ import java.util.Iterator;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class IPPollRange implements Iterable<IPPollAddress> {
+public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
+    private static final long serialVersionUID = -287583115922481242L;
+
     /**
      * The range to cycle over.
      */
