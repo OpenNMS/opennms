@@ -292,8 +292,23 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list"));
 	}
 	@Test
-	public void testInstallFeature450() {
+	public void testInstallIcmpApi() {
 		installFeature("opennms-icmp-api");
+		System.out.println(executeCommand("features:list"));
+	}
+	@Test
+	public void testInstallIcmpJna() {
+		installFeature("opennms-icmp-jna");
+		System.out.println(executeCommand("features:list"));
+	}
+	@Test
+	public void testInstallIcmpJni() {
+		installFeature("opennms-icmp-jni");
+		System.out.println(executeCommand("features:list"));
+	}
+	@Test
+	public void testInstallIcmpJni6() {
+		installFeature("opennms-icmp-jni6");
 		System.out.println(executeCommand("features:list"));
 	}
 	/*
