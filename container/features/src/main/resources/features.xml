@@ -312,6 +312,14 @@
       <bundle>wrap:mvn:net.java.dev.jna/platform/3.2.7-ONMS$Export-Package=com.sun.jna.platform</bundle>
     </feature>
 
+    <feature name="jicmp" description="jicmp" version="1.4.4">
+      <bundle>wrap:mvn:org.opennms/jicmp-api/1.4.4$Export-Package=org.opennms.protocols.icmp,org.opennms.protocols.ip</bundle>
+    </feature>
+
+    <feature name="jicmp6" description="jicmp6" version="1.2.1">
+      <bundle>wrap:mvn:org.opennms/jicmp6-api/1.2.1$Export-Package=org.opennms.protocols.icmp6</bundle>
+    </feature>
+
     <!-- OpenNMS features -->
     <feature name="opennms-core" description="OpenNMS :: Core" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
@@ -514,6 +522,20 @@
 
       <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
       <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jni" description="OpenNMS :: ICMP :: JNI" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>jicmp</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-jni/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jni6" description="OpenNMS :: ICMP :: JNI (with IPv6 support)" version="${project.version}">
+      <feature>opennms-icmp-jni</feature>
+      <feature>jicmp6</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-jni6/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-javamail" description="OpenNMS :: Javamail" version="${project.version}">
