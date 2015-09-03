@@ -14,6 +14,14 @@
 
   <reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
+  <bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker" />
+
+  <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer" >
+    <constructor-arg ref="pinger" />
+  </bean>
+
+  <bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter" />
+
   <camelContext id="samplerSnmpCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
      <!--
      <route id="collectAgent">
