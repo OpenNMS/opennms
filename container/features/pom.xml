@@ -177,6 +177,8 @@
             <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
+            <feature>opennms-icmp-jni</feature>
+            <feature>opennms-icmp-jni6</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
@@ -379,6 +381,20 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni6</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
