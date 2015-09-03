@@ -17,12 +17,11 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Header_background" mode="Opaque" backcolor="#DFDFDF"/>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<parameterDescription><![CDATA[The reference to the logo.]]></parameterDescription>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
@@ -53,7 +52,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
 		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where the subreports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>

@@ -6,10 +6,9 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<subDataset name="outages_24h" uuid="584cad90-ea4d-4f92-b243-450cebb3f6c4">
-		<queryString language="SQL">
+		<queryString>
 			<![CDATA[SELECT
 	detailed_outages_24h.unresolved AS unresolved, detailed_outages_24h.resolved AS resolved, SUM(detailed_outages_24h.node_outage) AS node_outages_24h, SUM(detailed_outages_24h.interface_outage) AS interface_outage_24h, SUM(detailed_outages_24h.service_outage) AS service_outages_24h, SUM(detailed_outages_24h.management_outage) AS management_outages_24h
 FROM
@@ -612,7 +611,7 @@ WHERE
 			<groupExpression><![CDATA[$F{media}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>

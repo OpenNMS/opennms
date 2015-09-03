@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -77,11 +76,11 @@
 			<bottomPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
@@ -113,7 +112,7 @@
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), $P{startDate}.getDate() + $P{TIME_RANGE}).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_START_TIME" class="java.util.Date" isForPrompting="false">
@@ -418,9 +417,6 @@ ORDER BY
 				</subreportParameter>
 				<subreportParameter name="STATSD_REPORT">
 					<subreportParameterExpression><![CDATA["Top10_Response_Weekly"]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="NEW_PARAMETER_0">
-					<subreportParameterExpression><![CDATA[]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Response_Offenders_subreport.jasper"]]></subreportExpression>

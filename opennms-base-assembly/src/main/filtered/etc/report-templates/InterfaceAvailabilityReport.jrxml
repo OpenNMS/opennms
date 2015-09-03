@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
 		<conditionalStyle>
@@ -41,11 +40,11 @@
 			</style>
 		</conditionalStyle>
 	</style>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">

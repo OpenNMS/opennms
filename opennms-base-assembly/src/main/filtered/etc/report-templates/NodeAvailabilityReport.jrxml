@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
 		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
@@ -230,11 +229,11 @@ ORDER BY
 			<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>

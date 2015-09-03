@@ -15,7 +15,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Eventdisplay Link Style" forecolor="#000000" hAlign="Left" vAlign="Middle" fontSize="10">
 		<conditionalStyle>
@@ -420,11 +419,11 @@ ON
 			<variableExpression><![CDATA[$F{node}]]></variableExpression>
 		</variable>
 	</subDataset>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>

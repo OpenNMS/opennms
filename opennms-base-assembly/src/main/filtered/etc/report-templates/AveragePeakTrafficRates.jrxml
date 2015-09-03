@@ -6,7 +6,6 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -70,11 +69,11 @@
 	</style>
 	<style name="style1"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
@@ -105,7 +104,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>

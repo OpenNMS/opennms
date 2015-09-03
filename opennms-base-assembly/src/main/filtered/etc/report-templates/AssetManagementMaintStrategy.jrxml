@@ -5,7 +5,6 @@
 	<property name="ireport.zoom" value="1.2100000000000002"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<subDataset name="summaryNodeAge" uuid="2c371de7-9fb3-4d97-91a9-1dc79e3a2ed4">
 		<parameter name="DS_DATE_FORMAT" class="java.lang.String" isForPrompting="false">
@@ -152,7 +151,7 @@ ORDER BY
 		<field name="contractstatus" class="java.lang.String"/>
 		<field name="tally" class="java.lang.Long"/>
 	</subDataset>
-	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
@@ -160,7 +159,7 @@ ORDER BY
 		<parameterDescription><![CDATA[Your date format in maintenance contracts. Default is "YYYY-MM-DD"]]></parameterDescription>
 		<defaultValueExpression><![CDATA["YYYY-MM-DD"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Company logo]]></parameterDescription>
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
