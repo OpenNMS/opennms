@@ -52,13 +52,15 @@ abstract class GeneralSettingsLoader {
 	public static DiscoveryConfiguration load(HttpServletRequest request, DiscoveryConfiguration config){
 		String initSTStr = request.getParameter("initialsleeptime");
 		String restartSTStr = request.getParameter("restartsleeptime");
-		String threadsStr = request.getParameter("threads");
+		String foreignSource = request.getParameter("foreignsource");
+		String location = request.getParameter("location");
 		String retriesStr = request.getParameter("retries");
 		String timeoutStr = request.getParameter("timeout");
 		
 		LOG.debug("initialsleeptime: {}", initSTStr);
 		LOG.debug("restartsleeptime: {}", restartSTStr);
-		LOG.debug("threads: {}", threadsStr);
+		LOG.debug("foreignSource: {}", foreignSource);
+		LOG.debug("location: {}", location);
 		LOG.debug("retries: {}", retriesStr);
 		LOG.debug("timeout: {}", timeoutStr);
 		
@@ -68,12 +70,24 @@ abstract class GeneralSettingsLoader {
 		
 		config.setInitialSleepTime(initSt);
 		config.setRestartSleepTime(restartSt);
+
 		//set the general settings loaded into current configuration
-		if(threadsStr!=null){
-			config.setThreads(WebSecurityUtils.safeParseInt(threadsStr));
+
+		config.setInitialSleepTime(initSt);
+		config.setRestartSleepTime(restartSt);
+
+		if (foreignSource != null && !"".equals(foreignSource.trim())) {
+			config.setForeignSource(foreignSource);
+		} else {
+			config.setForeignSource(null);
 		}
-		
-		
+
+		if (location != null && !"".equals(location.trim())) {
+			config.setLocation(location);
+		} else {
+			config.setLocation(null);
+		}
+
 		if(retriesStr!=null && (!retriesStr.trim().equals("") && !retriesStr.trim().equals("3"))){
 				config.setRetries(WebSecurityUtils.safeParseInt(retriesStr));
 		}else{
