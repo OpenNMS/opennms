@@ -103,12 +103,11 @@ public class DiscoveryRoutingTest extends CamelTestSupport
             public void configure() throws Exception
             {
                 // Add exception handlers
-                onException( IOException.class ).handled( true )
-                .logStackTrace( true ).stop();
+                onException( IOException.class ).handled( true ).logStackTrace( true ).stop();
 
-                from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).to(
-                                "seda:discoveryJobQueue" );
-                from( "seda:discoveryJobQueue" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
+                from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).recipientList(
+                                simple( "seda:Location-${body.location}" ) );
+                from( "seda:Location-LOC1" ).to( "bean:discoverer" ).to( "bean:eventWriter" );
             }
         };
     }
@@ -141,6 +140,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
         config.setForeignSource( "Bogus FS" );
         config.setTimeout( 3000 );
         config.setRetries( 2 );
+        config.setLocation( "LOC1" );
 
         // Execute the job
         template.requestBody( "direct:createDiscoveryJobs", config );
