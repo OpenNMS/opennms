@@ -20,7 +20,6 @@
 		<argument ref="pinger" />
 	</bean>
 
-
 	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
 		<argument ref="ipcManager" />
 	</bean>
@@ -32,15 +31,18 @@
 			<bean ref="rangeChunker" />
 			<split>
 				<simple>${body}</simple>
+<!--				
 				<recipientList>
-					<simple>seda:Location-${body.location}</simple>
+ 					<simple>activemq:Location-${body.location}</simple>
 				</recipientList>
+-->
+				<to uri="seda:TestQueue1" />
 				<bean ref="eventWriter" />
 			</split>
 		</route>
 
 		<route id="minionDiscoveryRoute">
-			<from uri="seda:Location-LOC1" />
+			<from uri="seda:TestQueue1" />
 			<bean ref="discoverer" />
 		</route>
 	</camelContext>
