@@ -12,13 +12,18 @@
 
 	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
+	<reference id="ipcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" />
+
 	<bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker" />
 
 	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
 		<argument ref="pinger" />
 	</bean>
 
-	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter" />
+
+	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
+		<argument ref="ipcManager" />
+	</bean>
 
 	<camelContext id="samplerSnmpCamelContext"
 		xmlns="http://camel.apache.org/schema/blueprint">
@@ -30,15 +35,8 @@
 				<recipientList>
 					<simple>seda:Location-${body.location}</simple>
 				</recipientList>
-				<to uri="direct:generateNewSuspects" />
+				<bean ref="eventWriter" />
 			</split>
-			
-		</route>
-
-        <!-- This route needed separated out in order to mock it for testing -->
-		<route id="sillyHopRoute">
-			<from uri="direct:generateNewSuspects" />
-			<bean ref="eventWriter" />
 		</route>
 
 		<route id="minionDiscoveryRoute">
