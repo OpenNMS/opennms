@@ -63,6 +63,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
 
                 from( "direct:createDiscoveryJobs" ).to( "bean:rangeChunker" ).split( body() ).recipientList(
                                 simple( "seda:Location-${body.location}" ) ).to( "bean:eventWriter" );
+
                 from( "seda:Location-LOC1" ).to( "bean:discoverer" );
             }
         };

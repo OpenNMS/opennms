@@ -35,6 +35,7 @@
 			
 		</route>
 
+        <!-- This route needed separated out in order to mock it for testing -->
 		<route id="sillyHopRoute">
 			<from uri="direct:generateNewSuspects" />
 			<bean ref="eventWriter" />
