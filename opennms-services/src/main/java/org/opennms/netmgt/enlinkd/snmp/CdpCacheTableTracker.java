@@ -186,7 +186,6 @@ public class CdpCacheTableTracker extends TableTracker {
                     try {
                         cdpCacheAddressValueString =str(getCdpCacheInetAddress());
                     } catch (Exception e) {
-                        e.printStackTrace();
                         cdpCacheAddressValueString = getDisplayableCdpCacheAddress(); 
                     }
                             break;
