@@ -26,7 +26,9 @@
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<property name="brokerURL" value="tcp://localhost:61616"/>
-	</bean>
+	    <property name="userName" value="karaf" />
+  		<property name="password" value="karaf" />	
+  	</bean>
 
 	<camelContext id="samplerSnmpCamelContext"
 		xmlns="http://camel.apache.org/schema/blueprint">
@@ -40,13 +42,13 @@
  					<simple>activemq:Location-${body.location}</simple>
 				</recipientList>
 -->
-				<to uri="seda:TestQueue1" />
+				<to uri="activemq:TestQueue1" />
 				<bean ref="eventWriter" />
 			</split>
 		</route>
 
 		<route id="minionDiscoveryRoute">
-			<from uri="seda:TestQueue1" />
+			<from uri="activemq:TestQueue1" />
 			<bean ref="discoverer" />
 		</route>
 	</camelContext>
