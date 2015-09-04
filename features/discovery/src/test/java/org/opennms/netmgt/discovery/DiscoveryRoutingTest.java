@@ -32,7 +32,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
 
         registry.bind( "rangeChunker", new RangeChunker() );
         registry.bind( "discoverer", new Discoverer( new NullPinger() ) );
-        registry.bind( "eventWriter", new EventWriter() );
+        registry.bind( "eventWriter", new EventWriter( null ) );
 
         return registry;
     }
