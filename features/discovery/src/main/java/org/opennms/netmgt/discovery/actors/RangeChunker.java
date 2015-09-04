@@ -30,8 +30,8 @@ public class RangeChunker
         }
 
         return Lists.partition( ranges, chunkSize ).stream().map(
-                        r -> new DiscoveryJob( r, config.getForeignSource(), config.getLocation() ) ).collect(
-                                        Collectors.toList() );
+                        r -> new DiscoveryJob( new ArrayList<IPPollRange>( r ), config.getForeignSource(),
+                                        config.getLocation() ) ).collect( Collectors.toList() );
 
     }
 }

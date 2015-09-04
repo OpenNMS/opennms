@@ -37,18 +37,15 @@
 			<bean ref="rangeChunker" />
 			<split>
 				<simple>${body}</simple>
-<!--				
 				<recipientList>
  					<simple>activemq:Location-${body.location}</simple>
 				</recipientList>
--->
-				<to uri="activemq:TestQueue1" />
 				<bean ref="eventWriter" />
 			</split>
 		</route>
 
 		<route id="minionDiscoveryRoute">
-			<from uri="activemq:TestQueue1" />
+			<from uri="activemq:Location-LOC1" />
 			<bean ref="discoverer" />
 		</route>
 	</camelContext>
