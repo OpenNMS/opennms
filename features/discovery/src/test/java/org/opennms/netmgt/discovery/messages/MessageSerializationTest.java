@@ -4,20 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
-import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MessageSerializationTest {
 
+    /*
     @Test
     public void canSerializeJob() throws IOException {
         IPPollRange range = new IPPollRange("4.2.2.2", "4.2.2.2", 1, 1);
@@ -25,6 +22,7 @@ public class MessageSerializationTest {
         DiscoveryJob job = new DiscoveryJob(ranges, "x", "y");
         serialize(job);
     }
+    */
 
     @Test
     public void canSerializeResults() throws IOException {
