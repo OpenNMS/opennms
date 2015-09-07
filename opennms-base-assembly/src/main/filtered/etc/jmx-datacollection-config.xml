@@ -604,6 +604,7 @@
             <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
         <mbeans>
+            <!-- Newts :: AllMemmtables -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=AllMemtablesLiveDataSize">
                 <attrib name="Value" alias="keyspace.newts.AllMemtablesLiveDataSize" type="gauge"/>
@@ -616,68 +617,19 @@
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=AllMemtablesOnHeapDataSize">
                 <attrib name="Value" alias="keyspace.newts.AllMemtablesOnHeapDataSize" type="gauge"/>
             </mbean>
+
+            <!-- Memtable :: Count -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterDiskSpaceUsed">
-                <attrib name="Value" alias="keyspace.newts.BloomFilterDiskSpaceUsed" type="gauge"/>
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableSwitchCount">
+                <attrib name="Value" alias="keyspace.newts.MemtableSwitchCount" type="gauge"/>
             </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterOffHeapMemoryUsed">
-                <attrib name="Value" alias="keyspace.newts.BloomFilterOffHeapMemoryUsed" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasCommitLatency">
-                <attrib name="Count" alias="keyspace.newts.CasCommitLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.CasCommitLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasCommitTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.CasCommitTotalLatency" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasPrepareLatency">
-                <attrib name="Count" alias="keyspace.newts.CasPrepareLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.CasPrepareLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasPrepareTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.CasPrepareTotalLatency" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasProposeLatency">
-                <attrib name="Count" alias="keyspace.newts.CasProposeLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.CasProposeLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasProposeTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.CasProposeTotalLatency" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=ColUpdateTimeDeltaHistogram">
-                <attrib name="Count" alias="keyspace.newts.ColUpdateTimeDeltaHistogram" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.ColUpdateTimeDeltaHistogram.99thpercentile"
-                        type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CompressionMetadataOffHeapMemoryUsed">
-                <attrib name="Value" alias="keyspace.newts.CompressionMetadataOffHeapMemoryUsed" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=IndexSummaryOffHeapMemoryUsed">
-                <attrib name="Value" alias="keyspace.newts.IndexSummaryOffHeapMemoryUsed" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=LiveDiskSpaceUsed">
-                <attrib name="Value" alias="keyspace.newts.LiveDiskSpaceUsed" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=LiveScannedHistogram">
-                <attrib name="Count" alias="keyspace.newts.LiveScannedHistogram" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.LiveScannedHistogram.99thpercentile" type="gauge"/>
-            </mbean>
+
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableColumnsCount">
                 <attrib name="Value" alias="keyspace.newts.MemtableColumnsCount" type="gauge"/>
             </mbean>
+
+            <!-- Memtable :: Sizes -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableLiveDataSize">
                 <attrib name="Value" alias="keyspace.newts.MemtableLiveDataSize" type="gauge"/>
@@ -690,10 +642,55 @@
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableOnHeapDataSize">
                 <attrib name="Value" alias="keyspace.newts.MemtableOffHeapDataSize" type="gauge"/>
             </mbean>
+
+            <!-- Latency -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=MemtableSwitchCount">
-                <attrib name="Value" alias="keyspace.newts.MemtableSwitchCount" type="gauge"/>
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=ReadTotalLatency">
+                <attrib name="Count" alias="keyspace.newts.ReadTotalLatency" type="counter"/>
             </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=RangeLatency">
+                <attrib name="Count" alias="keyspace.newts.RangeLatency" type="gauge"/>
+                <attrib name="99thPercentile" alias="keyspace.newts.RangeLatency.99thpercentile" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+            objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=WriteTotalLatency">
+                <attrib name="Count" alias="keyspace.newts.WriteTotalLatency" type="counter"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasCommitTotalLatency">
+                <attrib name="Count" alias="keyspace.newts.CasCommitTotalLatency" type="counter"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasPrepareTotalLatency">
+                <attrib name="Count" alias="keyspace.newts.CasPrepareTotalLatency" type="counter"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CasProposeTotalLatency">
+                <attrib name="Count" alias="keyspace.newts.CasProposeTotalLatency" type="counter"/>
+            </mbean>
+
+            <!-- Bloom Filter -->
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+            objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterDiskSpaceUsed">
+                <attrib name="Value" alias="keyspace.newts.BloomFilterDiskSpaceUsed" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+            objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=BloomFilterOffHeapMemoryUsed">
+                <attrib name="Value" alias="keyspace.newts.BloomFilterOffHeapMemoryUsed" type="gauge"/>
+            </mbean>
+
+            <!-- Memory Used -->
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=CompressionMetadataOffHeapMemoryUsed">
+                <attrib name="Value" alias="keyspace.newts.CompressionMetadataOffHeapMemoryUsed" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Keyspace"
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=IndexSummaryOffHeapMemoryUsed">
+                <attrib name="Value" alias="keyspace.newts.IndexSummaryOffHeapMemoryUsed" type="gauge"/>
+            </mbean>
+
+            <!-- Pending -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=PendingCompactions">
                 <attrib name="Value" alias="keyspace.newts.PendingCompactions" type="gauge"/>
@@ -702,47 +699,15 @@
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=PendingFlushes">
                 <attrib name="Value" alias="keyspace.newts.PendingFlushes" type="gauge"/>
             </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=RangeLatency">
-                <attrib name="Count" alias="keyspace.newts.RangeLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.RangeLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=RangeTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.RangeTotalLatency" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=ReadLatency">
-                <attrib name="Count" alias="keyspace.newts.ReadLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.ReadLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=ReadTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.ReadTotalLatency" type="counter"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=SSTablesPerReadHistogram">
-                <attrib name="Count" alias="keyspace.newts." type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.SSTablesPerReadHistogram" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=TombstoneScannedHistogram">
-                <attrib name="Count" alias="keyspace.newts.TombstoneScannedHistogram" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.TombstoneScannedHistogram.99thpercentile"
-                        type="gauge"/>
-            </mbean>
+
+            <!-- Disk Space -->
             <mbean name="org.apache.cassandra.metrics.Keyspace"
                    objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=TotalDiskSpaceUsed">
                 <attrib name="Value" alias="keyspace.newts.TotalDiskSpaceUsed" type="gauge"/>
             </mbean>
             <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=WriteLatency">
-                <attrib name="Count" alias="keyspace.newts.WriteLatency" type="gauge"/>
-                <attrib name="99thPercentile" alias="keyspace.newts.WriteLatency.99thpercentile" type="gauge"/>
-            </mbean>
-            <mbean name="org.apache.cassandra.metrics.Keyspace"
-                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=WriteTotalLatency">
-                <attrib name="Count" alias="keyspace.newts.WriteTotalLatency" type="counter"/>
+                   objectname="org.apache.cassandra.metrics:type=Keyspace,keyspace=newts,name=LiveDiskSpaceUsed">
+                <attrib name="Value" alias="keyspace.newts.LiveDiskSpaceUsed" type="gauge"/>
             </mbean>
         </mbeans>
     </jmx-collection>
