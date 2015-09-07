@@ -106,3 +106,5 @@ include::text/operation/newts.adoc[]
 include::text/operation/jmx-config-generator/introduction.adoc[]
 include::text/operation/jmx-config-generator/webui.adoc[]
 include::text/operation/jmx-config-generator/cli.adoc[]
+include::text/operation/resourcecli.adoc[]
+

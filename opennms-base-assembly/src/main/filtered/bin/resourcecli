@@ -1,0 +1,26 @@
+#!/bin/sh -
+
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+RESOURCE_CLI_JAR=`ls -1 "$OPENNMS_HOME"/lib/resource-cli-*.jar | head -n 1`
+ARGS4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/args4j-*.jar | head -n 1`
+JERSEY_APACHE_CLIENT_JAR=`ls -1 "$OPENNMS_HOME"/lib/jersey-apache-client-*.jar | head -n 1`
+JERSEY_CLIENT_JAR=`ls -1 "$OPENNMS_HOME"/lib/jersey-client-*.jar | head -n 1`
+JERSEY_CORE_JAR=`ls -1 "$OPENNMS_HOME"/lib/jersey-core-*.jar | head -n 1`
+OPENNMS_WEBAPP_REST_JAR=`ls -1 "$OPENNMS_HOME"/lib/opennms-webapp-rest-*.jar | head -n 1`
+OPENNMS_MODEL_JAR=`ls -1 "$OPENNMS_HOME"/lib/opennms-model-*.jar | head -n 1`
+OPENNMS_CORE_API_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.core.api-*.jar | head -n 1`
+COMMONS_CODEC_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-codec-*.jar | head -n 1`
+COMMONS_HTTPCLIENT_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-httpclient-*.jar | head -n 1`
+SLF4J_API_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-api-*.jar | head -n 1`
+SLF4J_SIMPLE_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-simple-*.jar | head -n 1`
+JCL_OVER_SLF4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/jcl-over-slf4j-*.jar | head -n 1`
+GUAVA_JAR=`ls -1 "$OPENNMS_HOME"/lib/guava-*.jar | head -n 1`
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+        -Xmx256m \
+        -Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+        -cp "$RESOURCE_CLI_JAR:$ARGS4J_JAR:$JERSEY_APACHE_CLIENT_JAR:$JERSEY_CLIENT_JAR:$JERSEY_CORE_JAR:$OPENNMS_WEBAPP_REST_JAR:$OPENNMS_MODEL_JAR:$OPENNMS_CORE_API_JAR:$COMMONS_CODEC_JAR:$COMMONS_HTTPCLIENT_JAR:$SLF4J_API_JAR:$SLF4J_SIMPLE_JAR:$JCL_OVER_SLF4J_JAR:$GUAVA_JAR" \
+        org.opennms.features.resourcemgnt.ResourceCli \
+        "$@"
