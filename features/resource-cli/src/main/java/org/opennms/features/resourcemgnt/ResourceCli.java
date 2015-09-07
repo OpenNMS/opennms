@@ -66,7 +66,7 @@ public class ResourceCli {
         try {
             cmdLineParser.parseArgument(args);
         } catch (final CmdLineException e) {
-            System.err.println(e.getMessage() + "\n");
+            System.err.println("Error: " + e.getMessage() + "\n");
 
             displayHelp(cmdLineParser);
             System.exit(-1);
@@ -85,7 +85,16 @@ public class ResourceCli {
      * @param cmdLineParser the parser instance to be used
      */
     private void displayHelp(final CmdLineParser cmdLineParser) {
-        System.err.println("Simple resource management tool\n");
+        System.err.println("OpenNMS simple resource management tool\n");
+
+        System.err.println("--- Usage ---\n");
+        System.err.println("  Listing available resources:");
+        System.err.println("    resourcecli [options] list");
+        System.err.println("  Displaying details for given resource:");
+        System.err.println("    resourcecli [options] show <resource>");
+        System.err.println("  Deleting a resource:");
+        System.err.println("    resourcecli [options] delete <resource>\n");
+        System.err.println("--- Additional options ---\n");
         cmdLineParser.printUsage(System.err);
     }
 
