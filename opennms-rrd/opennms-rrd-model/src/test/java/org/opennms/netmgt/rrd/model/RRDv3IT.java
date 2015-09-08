@@ -200,18 +200,18 @@ public class RRDv3IT {
         Assert.assertNotNull(rrd);
         List<Sample> samples = rrd.getSamples(rrd.getRras().get(0));
         Assert.assertFalse(samples.isEmpty());
-        long ts = 1441740000000L;
-        Double v1 = 300.0;
-        Double v2 = 1.0;
+        long ts = 1441748400000L;
+        Double v1 = 600.0;
+        Double v2 = 2.0;
         for (Sample s : samples) {
             System.out.println(s);
-          //  Assert.assertEquals(2, s.getValues().size());
-          //  Assert.assertEquals(ts, s.getTimestamp());
-          //  Assert.assertEquals(v1, s.getValue(0));
-          //  Assert.assertEquals(v2, s.getValue(1));
-          //  ts += 300000L;
-          //  v1 += 300.0;
-          //  v2 += 1.0;
+            Assert.assertEquals(2, s.getValues().size());
+            Assert.assertEquals(ts, s.getTimestamp());
+            Assert.assertEquals(v1, s.getValue(0));
+            Assert.assertEquals(v2, s.getValue(1));
+            ts += 300000L;
+            v1 += 300.0 * v2;
+            v2 += 1.0;
         }
     }
 }

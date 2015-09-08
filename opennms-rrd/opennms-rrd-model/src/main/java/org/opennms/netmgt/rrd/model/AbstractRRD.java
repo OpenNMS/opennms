@@ -467,37 +467,37 @@ public abstract class AbstractRRD {
             lastValues.add(ds.getLastDs() == null ? 0.0 : ds.getLastDs());
         }
 
-        // Process Non-Counters
-        long tsGauges = start;
-        for (Row row : rra.getRows()) {
-            for (int i = 0; i < getDataSources().size(); i++) {
-                if (!getDataSource(i).isCounter() && !row.getValue(i).isNaN()) {
-                    valuesMap.get(new Long(tsGauges)).set(i, row.getValue(i));
-                }
-            }
-            tsGauges += step;
-        }
         // Set Last-Value for Counters
         for (int i = 0; i < getDataSources().size(); i++) {
             if (getDataSource(i).isCounter()) {
                 valuesMap.get(new Long(end)).set(i, lastValues.get(i));
             }
         }
-        // Process Counters
+
+        // Process
+        long tsGauges = start;
         long tsCounters = end - step;
-        for (int j = rra.getRows().size() - 1; j > 0; j--) {
-            Row row = rra.getRows().get(j);
+        for (int k = 0, j = rra.getRows().size() - 1; k < rra.getRows().size(); k++, j--) {
+            Row gaugeSrc = rra.getRows().get(k);
             for (int i = 0; i < getDataSources().size(); i++) {
                 if (getDataSource(i).isCounter()) {
-                    Double last = lastValues.get(i);
-                    Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
-                    Double value = last - current * step;
-                    lastValues.set(i, value);
-                    if (!row.getValue(i).isNaN()) {
-                        valuesMap.get(new Long(tsCounters)).set(i, value);
+                    if (j > 0) {
+                        Row counterSrc = rra.getRows().get(j);
+                        Double last = lastValues.get(i);
+                        Double current = counterSrc.getValue(i).isNaN() ? 0 : counterSrc.getValue(i);
+                        Double value = last - current * step;
+                        lastValues.set(i, value);
+                        if (!counterSrc.getValue(i).isNaN()) {
+                            valuesMap.get(new Long(tsCounters)).set(i, value);
+                        }
+                    }
+                } else {
+                    if (!gaugeSrc.getValue(i).isNaN()) {
+                        valuesMap.get(new Long(tsGauges)).set(i, gaugeSrc.getValue(i));
                     }
                 }
             }
+            tsGauges += step;
             tsCounters -= step;
         }
 
