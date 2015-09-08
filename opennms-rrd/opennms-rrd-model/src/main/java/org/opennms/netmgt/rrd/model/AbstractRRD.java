@@ -29,8 +29,9 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -445,31 +446,64 @@ public abstract class AbstractRRD {
      */
     @XmlTransient
     public List<Sample> getSamples(AbstractRRA rra) {
-        List<Sample> samples = new ArrayList<Sample>();
         long pdp = rra.getPdpPerRow();
-        long ts  = getEndTimestamp(rra);
         long step = pdp * getStep();
+        long start = getStartTimestamp(rra);
+        long end = getEndTimestamp(rra);
 
+        // Initialize Values Map
+        Map<Long,List<Double>> valuesMap = new TreeMap<Long,List<Double>>();
+        for (long ts = start; ts <= end; ts+= step) {
+            List<Double> values = new ArrayList<Double>();
+            for (int i=0; i<getDataSources().size(); i++) {
+                values.add(Double.NaN);
+            }
+            valuesMap.put(new Long(ts), values);
+        }
+
+        // Initialize Last Values
         List<Double> lastValues = new ArrayList<Double>();
         for (AbstractDS ds : getDataSources()) {
             lastValues.add(ds.getLastDs() == null ? 0.0 : ds.getLastDs());
         }
 
+        // Process Non-Counters
+        long tsGauges = start;
         for (Row row : rra.getRows()) {
-            ts -= step;
-            List<Double> values = new ArrayList<Double>(row.getValues());
             for (int i = 0; i < getDataSources().size(); i++) {
-                Double last = lastValues.get(i);
-                Double current = values.get(i).isNaN() ? 0 : values.get(i);
-                Double value = last - current * step;
-                lastValues.set(i, value);
-                if (!values.get(i).isNaN()) {
-                    values.set(i, value);
+                if (!getDataSource(i).isCounter() && !row.getValue(i).isNaN()) {
+                    valuesMap.get(new Long(tsGauges)).set(i, row.getValue(i));
                 }
             }
-            samples.add(new Sample(ts, values));
+            tsGauges += step;
         }
-        Collections.reverse(samples);
+        // Set Last-Value for Counters
+        for (int i = 0; i < getDataSources().size(); i++) {
+            if (getDataSource(i).isCounter()) {
+                valuesMap.get(new Long(end)).set(i, lastValues.get(i));
+            }
+        }
+        // Process Counters
+        long tsCounters = end - step;
+        for (int j = rra.getRows().size() - 1; j > 0; j--) {
+            Row row = rra.getRows().get(j);
+            for (int i = 0; i < getDataSources().size(); i++) {
+                if (getDataSource(i).isCounter()) {
+                    Double last = lastValues.get(i);
+                    Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
+                    Double value = last - current * step;
+                    lastValues.set(i, value);
+                    if (!row.getValue(i).isNaN()) {
+                        valuesMap.get(new Long(tsCounters)).set(i, value);
+                    }
+                }
+            }
+            tsCounters -= step;
+        }
+
+        // Update Samples
+        List<Sample> samples = new ArrayList<Sample>();
+        valuesMap.forEach((timestamp, data) -> samples.add(new Sample(timestamp,data)));
         return samples;
     }
 
