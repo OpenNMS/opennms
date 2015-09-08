@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -239,6 +240,8 @@ public class MeasurementsRestService {
      * @throws WebApplicationException if validation fails.
      */
     private static void validateQueryRequest(final QueryRequest request) {
+        final Map<String,String> labels = new HashMap<String,String>();
+
         if (request.getEnd() < 0) {
             throw getException(Status.BAD_REQUEST, "Query end must be >= 0: {}", request.getEnd());
         }
@@ -252,11 +255,22 @@ public class MeasurementsRestService {
                     || source.getAggregation() == null) {
                 throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
             }
+            if (labels.containsKey(source.getLabel())) {
+                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
+            } else {
+                labels.put(source.getLabel(), "source");
+            }
         }
         for (final Expression expression : request.getExpressions()) {
             if (expression.getExpression() == null
                     || expression.getLabel() == null) {
                 throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
+            }
+            if (labels.containsKey(expression.getLabel())) {
+                final String type = labels.get(expression.getLabel());
+                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+            } else {
+                labels.put(expression.getLabel(), "expression");
             }
         }
         List<AnalyticsCommand> analyticsCommands = request.getAnalyticsCommands();

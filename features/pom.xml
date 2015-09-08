@@ -67,6 +67,9 @@
     <!-- Measurements API -->
     <module>measurements</module>
 
+    <!-- Newts -->
+    <module>newts</module>
+
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
     <module>opennms-gwt-theme</module>

@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.measurements.api;
 
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.Map;
+
+import com.google.common.base.Objects;
+import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.netmgt.jasper.analytics.Filter;
@@ -105,6 +108,15 @@ public class FetchResults {
 
     public Map<String, Object> getConstants() {
         return m_constants;
+    }
+
+    public String toString() {
+       return Objects.toStringHelper(this.getClass())
+            .add("timestamps", Arrays.toString(m_timestamps))
+            .add("columns", m_columns)
+            .add("step", m_step)
+            .add("constants", m_constants)
+            .toString();
     }
 
     public RowSortedTable<Integer, String, Double> asRowSortedTable() {
