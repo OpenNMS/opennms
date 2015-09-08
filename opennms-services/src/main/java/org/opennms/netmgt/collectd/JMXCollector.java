@@ -419,12 +419,6 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     ds.setMax(ds_maxval);
                     ds.setInstance(collectionName);
-
-                    /*
-                     * Truncate MBean object name/alias if it exceeds 19 char
-                     * max for RRD data source names.
-                     */
-                    // String ds_name = JmxUtils.trimAttributeName(attr.getAlias());
                     ds.setName(attr.getAlias());
 
                     // Map MBean object data type to RRD data type
