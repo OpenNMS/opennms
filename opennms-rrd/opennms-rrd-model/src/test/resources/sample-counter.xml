@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rrd SYSTEM "http://oss.oetiker.ch/rrdtool/rrdtool.dtd">
+<!-- Round Robin Database Dump -->
+<rrd>
+	<version>0003</version>
+	<step>300</step> <!-- Seconds -->
+	<lastupdate>1441743600</lastupdate> <!-- 2015-09-08 16:20:00 EDT -->
+
+	<ds>
+		<name> v </name>
+		<type> COUNTER </type>
+		<minimal_heartbeat>300</minimal_heartbeat>
+		<min>NaN</min>
+		<max>NaN</max>
+
+		<!-- PDP Status -->
+		<last_ds>3900</last_ds>
+		<value>0.0000000000e+00</value>
+		<unknown_sec> 0 </unknown_sec>
+	</ds>
+
+	<!-- Round Robin Archives -->
+	<rra>
+		<cf>AVERAGE</cf>
+		<pdp_per_row>1</pdp_per_row> <!-- 300 seconds -->
+
+		<params>
+		<xff>5.0000000000e-01</xff>
+		</params>
+		<cdp_prep>
+			<ds>
+			<primary_value>1.0000000000e+00</primary_value>
+			<secondary_value>NaN</secondary_value>
+			<value>NaN</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+		</cdp_prep>
+		<database>
+			<!-- 2015-09-08 15:25:00 EDT / 1441740300 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:30:00 EDT / 1441740600 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:35:00 EDT / 1441740900 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:40:00 EDT / 1441741200 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:45:00 EDT / 1441741500 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:50:00 EDT / 1441741800 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 15:55:00 EDT / 1441742100 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 16:00:00 EDT / 1441742400 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 16:05:00 EDT / 1441742700 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 16:10:00 EDT / 1441743000 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 16:15:00 EDT / 1441743300 --> <row><v>1.0000000000e+00</v></row>
+			<!-- 2015-09-08 16:20:00 EDT / 1441743600 --> <row><v>1.0000000000e+00</v></row>
+		</database>
+	</rra>
+</rrd>

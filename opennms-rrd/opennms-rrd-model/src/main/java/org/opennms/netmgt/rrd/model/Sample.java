@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,69 +28,54 @@
 
 package org.opennms.netmgt.rrd.model;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
 /**
- * The Class Row.
+ * The Class Sample.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@XmlRootElement(name="row")
-@XmlAccessorType(XmlAccessType.PROPERTY)
-public class Row {
+public class Sample extends Row {
 
-    /** The values. */
-    private List<Double> values = new ArrayList<Double>();
+    /** The timestamp. */
+    private long timestamp;
 
     /**
-     * Gets the values.
+     * Instantiates a new sample.
      *
-     * @return the values
+     * @param timestamp the timestamp in seconds
+     * @param values the values
      */
-    @XmlElement(name="v")
-    public List<Double> getValues() {
-        return values;
+    public Sample(long timestamp, List<Double> values) {
+        setTimestamp(timestamp * 1000);
+        setValues(values);
     }
 
     /**
-     * Gets the value.
+     * Gets the timestamp in milliseconds
      *
-     * @param index the index
-     * @return the value
+     * @return the timestamp
      */
-    @XmlTransient
-    public Double getValue(int index) {
-        return values.get(index);
+    public long getTimestamp() {
+        return timestamp;
     }
 
     /**
-     * Sets the values.
+     * Sets the timestamp in milliseconds.
      *
-     * @param values the new values
+     * @param timestamp the new timestamp
      */
-    public void setValues(List<Double> values) {
-        this.values = values;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
-    /**
-     * Checks if is all the values are NaN.
-     *
-     * @return true, if all the values are NaN.
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-    @XmlTransient
-    public boolean isNan() {
-        for (Double v : values) {
-            if (!v.isNaN()) {
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public String toString() {
+        return "Sample[timestamp=" + new Date(getTimestamp()) + " (" + getTimestamp() + "), values=" + getValues() + "]";
     }
+
 }

@@ -187,4 +187,28 @@ public class RRDv3IT {
         Assert.assertTrue(FileUtils.contentEquals(sourceFile, targetFile));
         targetFile.delete();
     }
+
+    /**
+     * Test samples.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSamples() throws Exception {
+        File source = new File("src/test/resources/sample-counter.xml");
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
+        Assert.assertNotNull(rrd);
+        List<Sample> samples = rrd.getSamples(rrd.getRras().get(0));
+        Assert.assertFalse(samples.isEmpty());
+        long ts = 1441740000000L;
+        Double v = 300.0;
+        for (Sample s : samples) {
+            System.out.println(s);
+            Assert.assertEquals(1, s.getValues().size());
+            Assert.assertEquals(ts, s.getTimestamp());
+            Assert.assertEquals(v, s.getValue(0));
+            ts += 300000L;
+            v += 300.0;
+        }
+    }
 }

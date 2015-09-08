@@ -29,9 +29,11 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -419,6 +421,56 @@ public abstract class AbstractRRD {
         }
 
         return true;
+    }
+
+    /**
+     * Gets the all samples.
+     *
+     * @return the all samples
+     */
+    @XmlTransient
+    public List<Sample> getAllSamples() {
+        List<Sample> samples = new ArrayList<Sample>();
+        for (AbstractRRA rra : getRras()) {
+            samples.addAll(getSamples(rra));
+        }
+        return samples;
+    }
+
+    /**
+     * Gets the samples.
+     *
+     * @param rra the RRA
+     * @return the samples for the given RRA
+     */
+    @XmlTransient
+    public List<Sample> getSamples(AbstractRRA rra) {
+        List<Sample> samples = new ArrayList<Sample>();
+        long pdp = rra.getPdpPerRow();
+        long ts  = getEndTimestamp(rra);
+        long step = pdp * getStep();
+
+        List<Double> lastValues = new ArrayList<Double>();
+        for (AbstractDS ds : getDataSources()) {
+            lastValues.add(ds.getLastDs() == null ? 0.0 : ds.getLastDs());
+        }
+
+        for (Row row : rra.getRows()) {
+            ts -= step;
+            List<Double> values = new ArrayList<Double>(row.getValues());
+            for (int i = 0; i < getDataSources().size(); i++) {
+                Double last = lastValues.get(i);
+                Double current = values.get(i).isNaN() ? 0 : values.get(i);
+                Double value = last - current * step;
+                lastValues.set(i, value);
+                if (!values.get(i).isNaN()) {
+                    values.set(i, value);
+                }
+            }
+            samples.add(new Sample(ts, values));
+        }
+        Collections.reverse(samples);
+        return samples;
     }
 
     /**
