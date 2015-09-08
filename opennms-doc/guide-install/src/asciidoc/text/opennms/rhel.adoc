@@ -178,7 +178,7 @@ systemctl enable opennms
 systemctl start opennms
 ----
 
-You can now access the web application on http://<ip-or-fqdn-of-your-server>:8980/opennms.
+After starting _OpenNMS_ the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.
 The default login user is _admin_ and the password is initialized to _admin_.
 
 IMPORTANT: Change the default admin password to a secure password immediately.

@@ -155,7 +155,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-R</artifactId>
+      <artifactId>analytics-filters</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

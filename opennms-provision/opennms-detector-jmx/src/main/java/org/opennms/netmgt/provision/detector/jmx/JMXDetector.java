@@ -28,18 +28,41 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.netmgt.provision.support.BasicDetector;
-import org.opennms.netmgt.provision.support.ResponseValidator;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.opennms.core.utils.InetAddressUtils;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
 
 
 /**
  * <p>Abstract JMXDetector class.</p>
  *
- * @author ranger
+ * @author ranger, fooker
  * @version $Id: $
  */
-public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integer>{
+public abstract class JMXDetector extends SyncAbstractDetector {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JMXDetector.class);
+
+    /**
+     * The object name to check for, or {@code null} if no check should be performed.
+     */
+    private String m_object = null;
 
     /**
      * <p>Constructor for JMXDetector.</p>
@@ -63,31 +86,73 @@ public abstract class JMXDetector extends BasicDetector<ConnectionWrapper, Integ
         super(serviceName, port, timeout, retries);
     }
 
-    /**
-     * <p>expectBeanCount</p>
-     *
-     * @param bannerValidator a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
-     */
-    protected final void expectBeanCount(ResponseValidator<Integer> bannerValidator) {
-        getConversation().expectBanner(bannerValidator);
-    }
-    
-    /**
-     * <p>greatThan</p>
-     *
-     * @param count a int.
-     * @return a {@link org.opennms.netmgt.provision.support.ResponseValidator} object.
-     */
-    protected static final ResponseValidator<Integer> greatThan(final int count){
-        return new ResponseValidator<Integer>() {
+    abstract protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout);
 
-            @Override
-            public boolean validate(Integer response) {
-                
-                return (response >= count);
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isServiceDetected(final InetAddress address) {
+        final String ipAddr = InetAddressUtils.str(address);
+
+        final int port = getPort();
+        final int retries = getRetries();
+        final int timeout = getTimeout();
+        LOG.info("isServiceDetected: {}: Checking address: {} for capability on port {}", getServiceName(), ipAddr, port);
+
+        for (int attempts = 0; attempts < retries; attempts++) {
+
+            try (final ConnectionWrapper client = this.connect(address, port, timeout)) {
+                LOG.info("isServiceDetected: {}: Attempting to connect to address: {}, port: {}, attempt: #{}", getServiceName(), ipAddr, port, attempts);
+
+                if (client.getMBeanServer().getMBeanCount() <= 0) {
+                    return false;
+                }
+
+                if (m_object != null) {
+                    client.getMBeanServer().getObjectInstance(new ObjectName(m_object));
+                }
+
+                return true;
+
+            } catch (ConnectException e) {
+                // Connection refused!! Continue to retry.
+                LOG.info("isServiceDetected: {}: Unable to connect to address: {} port {}, attempt #{}",getServiceName(), ipAddr, port, attempts, e);
+            } catch (NoRouteToHostException e) {
+                // No Route to host!!!
+                LOG.info("isServiceDetected: {}: No route to address {} was available", getServiceName(), ipAddr, e);
+            } catch (final PortUnreachableException e) {
+                // Port unreachable
+                LOG.info("isServiceDetected: {}: Port unreachable while connecting to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
+            } catch (InterruptedIOException e) {
+                // Expected exception
+                LOG.info("isServiceDetected: {}: Did not connect to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
+            } catch (MalformedObjectNameException e) {
+                LOG.info("isServiceDetected: {}: Object instance {} is not valid on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
+            } catch (InstanceNotFoundException e) {
+                LOG.info("isServiceDetected: {}: Object instance {} does not exists on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
+            } catch (IOException e) {
+                LOG.error("isServiceDetected: {}: An unexpected I/O exception occured contacting address {} port {}",getServiceName(), ipAddr, port, e);
+            } catch (Throwable t) {
+                LOG.error("isServiceDetected: {}: Unexpected error trying to detect {} on address {} port {}", getServiceName(), getServiceName(), ipAddr, port, t);
             }
-            
-        };
+        }
+        return false;
     }
-	
+
+    @Override
+    protected void onInit() {
+        // Do nothing by default
+    }
+
+    @Override
+    public void dispose(){
+        // Do nothing by default
+    }
+
+    public String getObject() {
+        return m_object;
+    }
+
+    public void setObject(final String object) {
+        this.m_object = object;
+    }
 }

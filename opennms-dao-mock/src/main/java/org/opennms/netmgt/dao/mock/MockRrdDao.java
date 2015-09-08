@@ -52,6 +52,21 @@ public class MockRrdDao implements RrdDao {
     }
 
     @Override
+    public int getGraphTopOffsetWithText() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public int getGraphLeftOffset() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public int getGraphRightOffset() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessException {
         throw new UnsupportedOperationException("Not yet implemented!");
     }

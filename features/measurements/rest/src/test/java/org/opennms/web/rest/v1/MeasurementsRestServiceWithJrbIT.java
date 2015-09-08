@@ -28,10 +28,11 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Before;
@@ -39,11 +40,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +75,8 @@ import com.google.common.collect.Lists;
 @JUnitTemporaryDatabase(reuseDatabase=false) // relies on setUp()
 @Transactional
 public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITCase {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestServiceWithJrbIT.class);
 
     @Before
     public void setUp() {
@@ -162,5 +169,30 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         final Map<String, double[]> columns = response.columnsWithLabels();
         assertEquals(975.3053156146178, columns.get("ifInOctets")[idx], 0.0001);
         assertEquals(975.3053156146178 * 8d / 1000.0d, columns.get("ifUsage")[idx], 0.0001);
+    }
+
+    @Test
+    public void testAnalyticsFilters() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        Source ifInOctets = new Source();
+        ifInOctets.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctets.setAttribute("ifInOctets");
+        ifInOctets.setAggregation("MAX");
+        ifInOctets.setLabel("ifInOctets");
+        request.setSources(Lists.newArrayList(ifInOctets));
+
+        AnalyticsCommand command = new AnalyticsCommand("Chomp", "1416009600.0", new String[] { "true" });
+        request.setAnalyticsCommands(Collections.singletonList(command));
+        LOG.debug(JaxbUtils.marshal(request));
+
+        QueryResponse response = m_svc.query(request);
+
+        // TODO: Add some assertions that the analytics command worked
+        LOG.debug(JaxbUtils.marshal(response));
     }
 }

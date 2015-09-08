@@ -29,11 +29,27 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import javax.annotation.Resource;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
+import org.opennms.netmgt.jasper.analytics.Filter;
+import org.opennms.netmgt.jasper.analytics.FilterFactory;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -51,18 +67,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.RowSortedTable;
 
 /**
  * The Measurements API provides read-only access to values
@@ -91,6 +98,14 @@ public class MeasurementsRestService {
 
     @Autowired
     private MeasurementFetchStrategy m_fetchStrategy;
+
+    /**
+     * A list of {@link FilterFactory} services that can be used to fetch analytics
+     * filters to filter the measurements that are returned. This collection is created
+     * in the component-service.xml in the org.opennms.features.measurements.api project.
+     */
+    @Resource(name="analyticsFilters")
+    private List<FilterFactory> m_filterFactories;
 
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
 
@@ -123,8 +138,8 @@ public class MeasurementsRestService {
         request.setStep(step);
         request.setMaxRows(maxrows);
 
-        // Use the attribute name as the label
-        Source source = new Source(attribute, resourceId, attribute, false);
+        // Use the attribute name as the datasource and label
+        Source source = new Source(attribute, resourceId, attribute, attribute, false);
         source.setAggregation(aggregation);
         request.setSources(Lists.newArrayList(source));
 
@@ -175,6 +190,24 @@ public class MeasurementsRestService {
             throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
         }
 
+        // If there is an analytics command, apply it to the metrics
+        if (request.getAnalyticsCommands().size() > 0) {
+            for (AnalyticsCommand command : request.getAnalyticsCommands()) {
+                for (FilterFactory factory : m_filterFactories) {
+                    Filter filter = factory.getFilter(command);
+                    if (filter != null) {
+                        RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+                        try {
+                            filter.filter(table);
+                        } catch (Exception e) {
+                            throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
+                        }
+                        results = new FetchResults(table, results.getStep(), results.getConstants());
+                    }
+                }
+            }
+        }
+
         final Map<String, double[]> columns = results.getColumns();
 
         // Remove any transient values belonging to sources
@@ -207,6 +240,8 @@ public class MeasurementsRestService {
      * @throws WebApplicationException if validation fails.
      */
     private static void validateQueryRequest(final QueryRequest request) {
+        final Map<String,String> labels = new HashMap<String,String>();
+
         if (request.getEnd() < 0) {
             throw getException(Status.BAD_REQUEST, "Query end must be >= 0: {}", request.getEnd());
         }
@@ -220,11 +255,33 @@ public class MeasurementsRestService {
                     || source.getAggregation() == null) {
                 throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
             }
+            if (labels.containsKey(source.getLabel())) {
+                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
+            } else {
+                labels.put(source.getLabel(), "source");
+            }
         }
         for (final Expression expression : request.getExpressions()) {
             if (expression.getExpression() == null
                     || expression.getLabel() == null) {
                 throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
+            }
+            if (labels.containsKey(expression.getLabel())) {
+                final String type = labels.get(expression.getLabel());
+                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+            } else {
+                labels.put(expression.getLabel(), "expression");
+            }
+        }
+        List<AnalyticsCommand> analyticsCommands = request.getAnalyticsCommands();
+        if (analyticsCommands.size() > 0) {
+            for (AnalyticsCommand command : analyticsCommands) {
+                if (
+                    command.getModule() == null || 
+                    command.getColumnNameOrPrefix() == null
+                ) {
+                    throw getException(Status.BAD_REQUEST, "Analytics command fields must be set: {}", analyticsCommands);
+                }
             }
         }
     }

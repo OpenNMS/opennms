@@ -378,9 +378,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         // If the nodeSource directory does not exist, but the node directory does
         // then create the resource using the node type instead of the nodeSource type
         if (createUsingNodeSourceType) {
-            final boolean nodeSourcePathExists = m_resourceStorageDao.existsWithin(m_nodeSourceResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
+            final boolean nodeSourcePathExists = m_resourceStorageDao.existsWithin(NodeSourceResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
             if (!nodeSourcePathExists) {
-                final boolean nodePathExists = m_resourceStorageDao.existsWithin(m_nodeResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
+                final boolean nodePathExists = m_resourceStorageDao.existsWithin(NodeResourceType.getResourcePathForNode(node), MAXIMUM_NODE_METRIC_RESOURCE_DEPTH);
                 createUsingNodeSourceType = !nodePathExists;
             }
         }

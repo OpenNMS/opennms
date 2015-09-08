@@ -40,12 +40,19 @@
                     <directory>../../../opennms-webapp/src/main/webapp/js</directory>
                     <includes>
                       <include>graph.js</include>
+                      <include>global.js</include>
                     </includes>
                   </resource>
                   <resource>
                     <directory>../../../opennms-webapp/src/main/webapp/lib/jquery/dist</directory>
                     <includes>
                       <include>jquery.min.js</include>
+                    </includes>
+                  </resource>
+                  <resource>
+                    <directory>../../../opennms-webapp/src/main/webapp/lib/requirejs</directory>
+                    <includes>
+                      <include>require.min.js</include>
                     </includes>
                   </resource>
                 </resources>
@@ -72,6 +79,10 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.lib</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.themes</groupId>
             <artifactId>dashboard-theme</artifactId>

@@ -145,6 +145,10 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             }
         }
 
+        graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
+        graphResults.setGraphLeftOffset(m_rrdDao.getGraphLeftOffset());
+        graphResults.setGraphRightOffset(m_rrdDao.getGraphRightOffset());
+
         return graphResults;
     }
 
@@ -247,12 +251,13 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
         Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
 
+        final String rrdBaseDir = System.getProperty("rrd.base.dir");
         for(RrdGraphAttribute rrdAttr : attrs) {
             LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}", rrdAttr.getResource().getResourceType().getLabel(), rrdAttr.getResource().getParent().getResourceType().getLabel());
             if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
-                filesToPromote.add(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY+File.separator+rrdAttr.getRrdRelativePath());
+                filesToPromote.add(rrdBaseDir+File.separator+ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY+File.separator+rrdAttr.getRrdRelativePath());
             } else {
-                filesToPromote.add(rrdAttr.getRrdRelativePath());
+                filesToPromote.add(rrdBaseDir+File.separator+rrdAttr.getRrdRelativePath());
             }
         }
 

@@ -537,6 +537,7 @@ export OPENNMS_HOME PATH
 
 END
 
+# Move the docs into %{_docdir}
 rm -rf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 mkdir -p $RPM_BUILD_ROOT%{_docdir}
 mv $RPM_BUILD_ROOT%{instprefix}/docs $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
@@ -552,6 +553,7 @@ install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
 mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/share
 
+# Copy the /etc directory into /etc/pristine
 rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
 chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
 
@@ -561,6 +563,12 @@ install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.
 rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
 
 rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
+
+# Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
+for FILE in $RPM_BUILD_ROOT%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find $RPM_BUILD_ROOT%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
+# Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
+# NOTE: We can't do this because the JARs in webstart are signed
+#for FILE in $RPM_BUILD_ROOT%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find $RPM_BUILD_ROOT%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
 
 cd $RPM_BUILD_ROOT
 

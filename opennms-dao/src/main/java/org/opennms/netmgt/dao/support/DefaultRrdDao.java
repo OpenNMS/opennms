@@ -221,6 +221,39 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
        }
     }
 
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphTopOffsetWithText()
+     * @return a int.
+     */
+    @Override
+    public int getGraphTopOffsetWithText() {
+        return m_rrdStrategy.getGraphTopOffsetWithText();
+    }
+
+    /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphLeftOffset()
+     * @return a int.
+     */
+    @Override
+    public int getGraphLeftOffset() {
+        return m_rrdStrategy.getGraphLeftOffset();
+    }
+
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @see org.opennms.netmgt.dao.api.RrdDao#getGraphRightOffset()
+     * @return a int.
+     */
+    @Override
+    public int getGraphRightOffset() {
+        return m_rrdStrategy.getGraphRightOffset();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Double getLastFetchValue(OnmsAttribute attribute, int interval) throws DataAccessResourceFailureException {

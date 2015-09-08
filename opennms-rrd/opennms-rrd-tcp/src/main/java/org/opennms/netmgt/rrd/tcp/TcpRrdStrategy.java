@@ -214,6 +214,36 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     }
 
     /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphLeftOffset() {
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
+    }
+
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphRightOffset() {
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
+    }
+
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphTopOffsetWithText() {
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support graphing.");
+    }
+
+    /**
      * <p>getStats</p>
      *
      * @return a {@link java.lang.String} object.

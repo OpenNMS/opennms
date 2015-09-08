@@ -101,5 +101,10 @@ WARNING: There is currently an open issue in the installer link:http://issues.op
 After setting the username and passwords in `opennms-datasource.xml` re-run the graphical installer and also initialize the database.
 _OpenNMS_ can be started and stopped with the `start.bat` and `stop.bat` script located in `%OPENNMS_HOME%\bin` directory.
 
+After starting _OpenNMS_ with the `start.bat` file the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+IMPORTANT: Change the default admin password to a secure password immediately.
+
 TIP: The Wiki article link:http://www.opennms.org/wiki/Configuring_openNMS_as_Windows_Service[Configuring OpenNMS as Windows Service] describes how to create a _Windows Service_ from the `start.bat` files.
      There is also a link:http://yajsw.sourceforge.net/#mozTocId527639[Java Wrapper] which allows to install _Java_ applications as _Windows Service_.

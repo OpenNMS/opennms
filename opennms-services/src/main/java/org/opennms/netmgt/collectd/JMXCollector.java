@@ -56,6 +56,7 @@ import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxCollector;
 import org.opennms.netmgt.jmx.JmxCollectorConfig;
 import org.opennms.netmgt.jmx.JmxSampleProcessor;
@@ -117,6 +118,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class JMXCollector implements ServiceCollector {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollector.class);
+
+    /**
+     * the config dao to be used
+     */
+    protected JmxConfigDao m_jmxConfigDao = null;
 
     /**
      * Interface attribute key used to store a JMXNodeInfo object which holds
@@ -268,7 +274,7 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> map) {
-        final Map<String, String> stringMap = JmxUtils.convertToStringMap(map);
+        final Map<String, String> stringMap = JmxUtils.convertToUnmodifiableStringMap(map);
         final InetAddress ipaddr = agent.getAddress();
         final JMXNodeInfo nodeInfo = agent.getAttribute(NODE_INFO_KEY);
         final String collectionName = agent.getAttribute("collectionName");
@@ -293,6 +299,7 @@ public abstract class JMXCollector implements ServiceCollector {
             config.setJmxCollection(JMXDataCollectionConfigFactory.getInstance().getJmxCollection(collectionName));
 
             final JmxCollector jmxCollector = new DefaultJmxCollector();
+            ((DefaultJmxCollector) jmxCollector).setJmxConfigDao(m_jmxConfigDao);
             jmxCollector.collect(config, new JmxSampleProcessor() {
 
                 private final Map<String, AttributeGroupType> groupNameAttributeGroupTypeMap = new HashMap<>();
@@ -419,13 +426,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
                     ds.setMax(ds_maxval);
                     ds.setInstance(collectionName);
-
-                    /*
-                     * Truncate MBean object name/alias if it exceeds 19 char
-                     * max for RRD data source names.
-                     */
-                    String ds_name = JmxUtils.trimAttributeName(attr.getAlias());
-                    ds.setName(ds_name);
+                    ds.setName(attr.getAlias());
 
                     // Map MBean object data type to RRD data type
                     ds.setType(ds_type);

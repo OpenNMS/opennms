@@ -235,6 +235,34 @@ public interface RrdStrategy<D extends Object,F extends Object> {
      *             if an RRD error occurs
      */
     public RrdGraphDetails createGraphReturnDetails(String command, File workDir) throws IOException, RrdException;
+    
+    
+    /**
+     * Returns the number of pixels that the leftt-hand side of the graph is
+     * offset from the left side of the created image.  The offset should
+     * always be positive.
+     *
+     * @return offset in pixels.  Should always be positive.
+     */
+    public int getGraphLeftOffset();
+    
+    /**
+     * Returns the number of pixels that the right-hand side of the graph is
+     * offset from the right side of the created image.  The offset should
+     * always be negative.
+     *
+     * @return offset in pixels.  Should always be negative.
+     */
+    public int getGraphRightOffset();
+    
+    /**
+     * Returns the number of pixels that the top of the graph is offset from
+     * the top of the created image if there is single line of header text.
+     * The offset should always be negative.
+     *
+     * @return offset in pixels.  Should always be negative.
+     */
+    public int getGraphTopOffsetWithText();
 
     /**
      * Provides the round robin database an opportunity to contribute statistics
