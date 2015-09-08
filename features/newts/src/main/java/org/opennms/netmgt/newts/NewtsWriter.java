@@ -120,16 +120,16 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
             try {
                 LOG.debug("Inserting {} samples", batch.size());
                 m_sampleRepository.insert(batch);
+
+                if (LOG.isDebugEnabled()) {
+                    String uniqueResourceIds = batch.stream()
+                        .map(s -> s.getResource().getId())
+                        .distinct()
+                        .collect(Collectors.joining(", "));
+                    LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
+                }
             } catch (Throwable t) {
                 LOG.error("An error occurred while inserting the samples. They will be lost.", t);
-            }
-
-            if (LOG.isDebugEnabled()) {
-                String uniqueResourceIds = batch.stream()
-                    .map(s -> s.getResource().getId())
-                    .distinct()
-                    .collect(Collectors.joining(", "));
-                LOG.debug("Successfully inserted samples for resources with ids {}", uniqueResourceIds);
             }
         }
     }
