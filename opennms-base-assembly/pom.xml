@@ -99,7 +99,7 @@
           </execution>
         </executions>
         <configuration>
-          <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
+          <sourceDirectory>${project.build.outputDirectory}/etc/report-templates</sourceDirectory>
           <outputDirectory>${project.build.directory}/jasper</outputDirectory>
           <xmlValidation>true</xmlValidation>
           <forceCompile>false</forceCompile>
@@ -677,6 +677,11 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

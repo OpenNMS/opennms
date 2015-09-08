@@ -64,7 +64,7 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
         JMXServiceURL url = null;
 
         String factory = ParameterMap.getKeyedString(propertiesMap, "factory", "SASL");
-        int port = ParameterMap.getKeyedInteger(propertiesMap, "port", 11162);
+        String port = ParameterMap.getKeyedString(propertiesMap, "port", "11162");
         String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "jmxmp");
         String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath", "");
         String sunCacao = ParameterMap.getKeyedString(propertiesMap, "sunCacao", "false");
@@ -75,7 +75,7 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
-                url = new JMXServiceURL(protocol, ipAddress, port, urlPath);
+                url = new JMXServiceURL(protocol, ipAddress, Integer.parseInt(port), urlPath);
             } else {
                 // Fallback, building a URL for RMI
                 url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + ipAddress + ":" + port + urlPath);

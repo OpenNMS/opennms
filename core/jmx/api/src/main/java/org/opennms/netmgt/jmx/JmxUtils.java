@@ -47,15 +47,38 @@ public final class JmxUtils {
      * @param map The map to be converted. May be null.
      * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
      */
+    public static Map<String, String> convertToUnmodifiableStringMap(final Map<String, Object> map) {
+        if (map != null) {
+            Map<String, String> convertedProperties = new HashMap<>();
+            for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
+                }
+            }
+            return Collections.unmodifiableMap(convertedProperties);
+        }
+        return null;
+    }
+
+    /**
+     * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
+     * <p/>
+     * The returned map is modifiable.
+     * <p/>
+     * If the input map is null, null is also returned.
+     *
+     * @param map The map to be converted. May be null.
+     * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
+     */
     public static Map<String, String> convertToStringMap(final Map<String, Object> map) {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
             for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
-                if (eachEntry.getValue() instanceof String) {
-                    convertedProperties.put(eachEntry.getKey(), (String) eachEntry.getValue());
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
                 }
             }
-            return Collections.unmodifiableMap(convertedProperties);
+            return convertedProperties;
         }
         return null;
     }

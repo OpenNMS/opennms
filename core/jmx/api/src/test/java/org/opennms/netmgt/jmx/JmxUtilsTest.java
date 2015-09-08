@@ -41,15 +41,16 @@ public class JmxUtilsTest {
         Map<String, Object> input = new HashMap<>();
         input.put("1", "1 Value");
         input.put("2", "2 Value");
-        input.put("3", 3);
+        input.put("3", 99);
 
-        Map<String, String> output = JmxUtils.convertToStringMap(input);
+        Map<String, String> output = JmxUtils.convertToUnmodifiableStringMap(input);
         Assert.assertNotNull(output);
-        Assert.assertEquals(2, output.size());
+        Assert.assertEquals(3, output.size());
 
         Assert.assertEquals("1 Value", output.get("1"));
         Assert.assertEquals("2 Value", output.get("2"));
-        Assert.assertNull(output.get("3"));
+
+        Assert.assertEquals("99", output.get("3"));
     }
 
     @Test
@@ -57,7 +58,7 @@ public class JmxUtilsTest {
         Map<String, Object> input = new HashMap<>();
         input.put("A", "VALUE");
 
-        Map<String, String> output = JmxUtils.convertToStringMap(input);
+        Map<String, String> output = JmxUtils.convertToUnmodifiableStringMap(input);
 
         try {
             output.put("4", "4 Value");
@@ -69,7 +70,7 @@ public class JmxUtilsTest {
 
     @Test
     public void testNullInput() {
-        Map<String, String> output = JmxUtils.convertToStringMap(null);
+        Map<String, String> output = JmxUtils.convertToUnmodifiableStringMap(null);
         Assert.assertNull(output);
     }
 

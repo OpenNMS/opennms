@@ -28,8 +28,18 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.netmgt.provision.detector.jmx.client.JMXClient;
-import org.opennms.netmgt.provision.detector.jmx.client.Jsr160Client;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.jmx.MBeanServer;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
+
+import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * <p>Abstract AbstractJsr160Detector class.</p>
@@ -49,6 +59,8 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     private String m_urlPath = "/jmxrmi";
     private String m_username = "opennms";
     private String m_password = "OPENNMS";
+
+    protected JmxConfigDao m_jmxConfigDao = null;
     
     /**
      * <p>Constructor for AbstractJsr160Detector.</p>
@@ -63,17 +75,28 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
 
     /** {@inheritDoc} */
     @Override
-    protected JMXClient getClient() {
-        Jsr160Client client = new Jsr160Client();
-        client.setFactory(getFactory());
-        client.setFriendlyName(getFriendlyName());
-        client.setProtocol(getProtocol());
-        client.setUrlPath(getUrlPath());
-        client.setUsername(getUsername());
-        client.setPassword(getPassword());
-        client.setType(getType());
-        
-        return client;
+    protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
+        if (m_jmxConfigDao == null) {
+            m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
+        }
+
+        Map<String, Object> props = Maps.newHashMap();
+        props.put("port", port);
+        props.put("timeout", timeout);
+        props.put("factory", getFactory());
+        props.put("friendlyname", getFriendlyName());
+        props.put("username", getUsername());
+        props.put("password", getPassword());
+        props.put("urlPath", getUrlPath());
+        props.put("type", getType());
+        props.put("protocol", getProtocol());
+
+        final MBeanServer server = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddressUtils.str(address), port);
+        if (server != null) {
+            props.putAll(server.getParameterMap());
+        }
+
+        return Jsr160ConnectionFactory.getMBeanServerConnection(props, address);
     }
 
     /**
@@ -200,5 +223,13 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      */
     public String getPassword() {
         return m_password;
+    }
+
+    public JmxConfigDao getJmxConfigDao() {
+        return m_jmxConfigDao;
+    }
+
+    public void setJmxConfigDao(final JmxConfigDao jmxConfigDao) {
+        this.m_jmxConfigDao = jmxConfigDao;
     }
 }
