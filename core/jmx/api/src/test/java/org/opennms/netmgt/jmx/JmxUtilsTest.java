@@ -36,8 +36,6 @@ import org.junit.Test;
 
 public class JmxUtilsTest {
 
-    private static final int MAX_DS_NAME_LENGTH = 19;
-
     @Test
     public void testConvert() {
         Map<String, Object> input = new HashMap<>();
@@ -102,17 +100,6 @@ public class JmxUtilsTest {
 
         String collectionDir5 = JmxUtils.getCollectionDirectory(new HashMap<String, String>(), null, null);
         Assert.assertEquals(null, collectionDir5);
-    }
-
-    @Test
-    public void shouldTrimName() {
-        final String shortName = "short";
-        final String exactName = "abcdefghijklmnopqrs"; // 19 chars
-        final String exceeded = "abcdefghijklmnopqrstuvwxyz"; // 26 chars
-
-        Assert.assertEquals("short", JmxUtils.trimAttributeName(shortName));
-        Assert.assertEquals("abcdefghijklmnopqrs", JmxUtils.trimAttributeName(exactName));
-        Assert.assertEquals("abcdefghijklmnopqrs", JmxUtils.trimAttributeName(exceeded));
     }
 
 }
