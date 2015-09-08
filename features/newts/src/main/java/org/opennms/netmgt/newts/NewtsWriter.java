@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.math.DoubleMath;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
@@ -89,7 +90,9 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
     @SuppressWarnings("unchecked")
     private void setUpDisruptor() {
         // Executor that will be used to construct new threads for consumers
-        Executor executor = Executors.newCachedThreadPool(new NewtsWriterThreadFactory());
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("NewtsWriter-Consumer-%d").build();
+        Executor executor = Executors.newCachedThreadPool(namedThreadFactory);
 
         // Construct the Disruptor
         Disruptor<SampleBatchEvent> disruptor = new Disruptor<>(SampleBatchEvent::new, m_ringBufferSize, executor);
@@ -140,13 +143,4 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
                     event.setSamples(samples);
                 }
             };
-
-    private static class NewtsWriterThreadFactory implements ThreadFactory {
-        @Override
-        public Thread newThread(Runnable r) {
-            final Thread t = new Thread(r);
-            t.setName("NewtsWriter-Consumer");
-            return t;
-        }
-    }
 }
