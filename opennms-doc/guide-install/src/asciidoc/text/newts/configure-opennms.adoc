@@ -1,0 +1,28 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-configure-opennms]]
+=== Configure OpenNMS
+
+Once you have _OpenNMS_, _Cassandra_ and the _Newts_ keyspace installed and up and running, the _OpenNMS_ application has to be configured.
+To be able to use _Newts_ the graphing library has to be changed from _RRDTool_ or _JRobin_ to _Backshift_.
+The following properties for _OpenNMS_ has to be changed in `${OPENNMS_HOME}/etc/opennms.properties`:
+
+.Configuration for _OpenNMS_
+[source]
+----
+# Configure storage strategy
+org.opennms.rrd.storeByForeignSource=true
+org.opennms.timeseries.strategy=newts
+
+# Use backshift instead of RRDtool or JRobin
+org.opennms.web.graphs.engine=backshift
+
+# Configure Newts time series storage connection
+org.opennms.newts.config.hostname=$ipaddress$
+org.opennms.newts.config.keyspace=newts
+org.opennms.newts.config.port=9042
+----
+
+Restart _OpenNMS_ to apply the changes.

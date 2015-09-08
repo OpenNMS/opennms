@@ -26,3 +26,11 @@ include::text/java/rhel.adoc[]
 include::text/java/debian.adoc[]
 include::text/java/windows-server.adoc[]
 include::text/java/environment.adoc[]
+
+// Installation Guide for Time Series Database Newts
+include::text/newts/introduction.adoc[]
+include::text/newts/cassandra-rhel.adoc[]
+include::text/newts/cassandra-debian.adoc[]
+include::text/newts/cassandra-windows.adoc[]
+include::text/newts/setup-newts.adoc[]
+include::text/newts/configure-opennms.adoc[]
