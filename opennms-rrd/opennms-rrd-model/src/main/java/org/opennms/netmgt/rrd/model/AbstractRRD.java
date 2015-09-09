@@ -29,11 +29,10 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -427,29 +426,50 @@ public abstract class AbstractRRD {
     }
 
     /**
-     * Gets the all samples.
+     * Generate raw samples.
      *
      * @return the all samples
      */
     @XmlTransient
-    public Set<Sample> getAllSamples() {
-        Set<Sample> samples = new TreeSet<Sample>();
-        for (AbstractRRA rra : getRras()) {
-            samples.addAll(getSamples(rra));
-        }
+    public List<Sample> generateSamples() {
+        List<Sample> samples = new ArrayList<Sample>();
+        getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
+            generateSamples(r).forEach(s -> {
+                if (!samples.contains(s))
+                    samples.add(s);
+            });
+        });
+        Collections.sort(samples);
         return samples;
     }
 
     /**
-     * Gets the samples.
+     * Resets the row values for all the RRAs.
+     * <p>Double.NaN will be stored on each slot</p>
+     */
+    @XmlTransient
+    public void reset() {
+        getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
+            List<Double> values = new ArrayList<Double>();
+            row.getValues().forEach(d -> values.add(Double.NaN));
+            row.setValues(values);
+        });
+    }
+
+    /**
+     * Generate raw samples.
      *
-     * @param rra the RRA
+     * @param rra the source RRA to be used (it must have AVERAGE for its consolidation function)
      * @return the samples for the given RRA
      */
     @XmlTransient
-    public Set<Sample> getSamples(AbstractRRA rra) {
-        long pdp = rra.getPdpPerRow();
-        long step = pdp * getStep();
+    public List<Sample> generateSamples(AbstractRRA rra) {
+        List<Sample> samples = new ArrayList<Sample>();
+        if (!rra.hasAverageAsCF()) {
+            return samples;
+        }
+
+        long step = rra.getPdpPerRow() * getStep();
         long start = getStartTimestamp(rra);
         long end = getEndTimestamp(rra);
 
@@ -466,7 +486,8 @@ public abstract class AbstractRRD {
         // Initialize Last Values
         List<Double> lastValues = new ArrayList<Double>();
         for (AbstractDS ds : getDataSources()) {
-            lastValues.add(ds.getLastDs() == null ? 0.0 : ds.getLastDs());
+            Double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
+            lastValues.add(v - v % step);
         }
 
         // Set Last-Value for Counters
@@ -501,7 +522,6 @@ public abstract class AbstractRRD {
         }
 
         // Update Samples
-        Set<Sample> samples = new TreeSet<Sample>();
         valuesMap.forEach((timestamp, data) -> samples.add(new Sample(timestamp,data)));
         return samples;
     }

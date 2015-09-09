@@ -137,4 +137,10 @@ public abstract class AbstractRRA {
      */
     public abstract boolean formatMergeable(AbstractRRA sourceRra);
 
+    /**
+     * Checks for average as consolidation function.
+     *
+     * @return true, if the consolidation function is AVERAGE
+     */
+    public abstract boolean hasAverageAsCF();
 }

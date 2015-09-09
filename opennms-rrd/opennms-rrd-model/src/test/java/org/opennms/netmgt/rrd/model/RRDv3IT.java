@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -169,11 +168,7 @@ public class RRDv3IT {
         Assert.assertNotNull(multimetric);
         Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
         Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
-        multimetric.getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
-            List<Double> values = new ArrayList<Double>();
-            row.getValues().forEach(d -> values.add(Double.NaN));
-            row.setValues(values);
-        });
+        multimetric.reset();
         List<RRDv3> singleMetricArray = new ArrayList<RRDv3>();
         RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA-rrd.xml"));
         Assert.assertNotNull(tempA);
@@ -190,20 +185,21 @@ public class RRDv3IT {
     }
 
     /**
-     * Test samples.
+     * Test samples for a single RRA
      *
      * @throws Exception the exception
      */
     @Test
-    public void testSamples() throws Exception {
+    public void testSamplesSingleRRA() throws Exception {
         File source = new File("src/test/resources/sample-counter.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        Set<Sample> samples = rrd.getSamples(rrd.getRras().get(0));
+        List<Sample> samples = rrd.generateSamples(rrd.getRras().get(0));
         Assert.assertFalse(samples.isEmpty());
         long ts = 1441748400000L;
         Double v1 = 600.0;
         Double v2 = 2.0;
+        Assert.assertEquals(rrd.getRras().get(0).getRows().size(), samples.size());
         for (Sample s : samples) {
             System.out.println(s);
             Assert.assertEquals(2, s.getValues().size());
@@ -215,4 +211,40 @@ public class RRDv3IT {
             v2 += 1.0;
         }
     }
+
+    /**
+     * Test samples for multiple RRAs (1)
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSamplesMultipleRRAs1() throws Exception {
+        File source = new File("src/test/resources/sample-counter-rras.xml");
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
+        Assert.assertNotNull(rrd);
+        List<Sample> samples = rrd.generateSamples(rrd.getRras().get(1));
+        samples.forEach(System.out::println);
+        Assert.assertFalse(samples.isEmpty());
+        Assert.assertEquals(rrd.getRras().get(1).getRows().size(), samples.size());
+    }
+
+    /**
+     * Test samples for multiple RRAs (2)
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSamplesMultipleRRAs2() throws Exception {
+        File source = new File("src/test/resources/sample-counter-rras.xml");
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
+        Assert.assertNotNull(rrd);
+        List<Sample> samples = rrd.generateSamples();
+        Assert.assertFalse(samples.isEmpty());
+        int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
+        Assert.assertEquals(size - 3, samples.size()); // There are 3 timestamps that exist in both RRAs.
+        samples.forEach(s -> {
+            System.out.println("rrdtool update sample2.rrd '" + s.getTimestamp()/1000 + ':' + s.getValue(0).longValue() + ':' + s.getValue(1) + "'; \\");
+        });
+    }
+
 }

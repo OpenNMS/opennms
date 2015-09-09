@@ -192,4 +192,12 @@ public class RRA extends AbstractRRA {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRA#hasAverageAsCF()
+     */
+    @Override
+    public boolean hasAverageAsCF() {
+        return consolidationFunction.equals(CFType.AVERAGE);
+    }
+
 }
