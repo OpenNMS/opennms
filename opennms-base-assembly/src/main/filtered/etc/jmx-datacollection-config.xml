@@ -274,6 +274,13 @@
                 </comp-attrib>
             </mbean>
 
+            <!-- Newts specifics beans - available when using the Newts time series strategy -->
+            <mbean name="org.opennms.newts.cache.cache-size" objectname="org.opennms.newts:name=cache.cache-size">
+                <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.cache.cache-max-size" objectname="org.opennms.newts:name=cache.cache-max-size">
+                <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
+            </mbean>
         </mbeans>
     </jmx-collection>
 
