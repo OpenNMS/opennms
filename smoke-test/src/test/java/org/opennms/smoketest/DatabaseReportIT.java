@@ -146,6 +146,8 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void before() {
+        new File("target/reports").mkdirs();
+
         // we do not want to wait 2 minutes, we only want to wait n seconds
         m_driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
