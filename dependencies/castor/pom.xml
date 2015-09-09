@@ -64,16 +64,5 @@
       <name>Maven Central</name>
       <url>http://maven.opennms.org/content/repositories/central/</url>
     </pluginRepository>
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>codehaus</id>
-      <name>Maven/Codehaus Repository</name>
-      <url>http://maven.opennms.org/content/repositories/codehaus/</url>
-    </pluginRepository>
   </pluginRepositories>
 </project>
