@@ -42,7 +42,6 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConfigTester implements ApplicationContextAware {
 	private ApplicationContext m_context;
@@ -82,11 +81,8 @@ public class ConfigTester implements ApplicationContextAware {
 	}
 
 	public static void main(String[] argv) {
-		
-           FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
-           DataSourceFactory.setInstance(new ConfigTesterDataSource());
-		ApplicationContext context = BeanUtils.getFactory("configTesterContext", ClassPathXmlApplicationContext.class);
-		ConfigTester tester = context.getBean("configTester", ConfigTester.class);
+
+		ConfigTester tester = BeanUtils.getBean("configTesterContext", "configTester", ConfigTester.class);
 
 		final CommandLineParser parser = new PosixParser();
 
