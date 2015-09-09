@@ -142,7 +142,7 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>app.vm</templateFilename>
+                  <inputTemplate>app.vm</inputTemplate>
                   <outputFilename>app.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
@@ -165,7 +165,7 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>headless.vm</templateFilename>
+                  <inputTemplate>headless.vm</inputTemplate>
                   <outputFilename>headless.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
