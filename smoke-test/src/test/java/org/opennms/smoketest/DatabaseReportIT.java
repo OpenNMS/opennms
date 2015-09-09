@@ -220,7 +220,7 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
     }
 
     private File getFile() {
-        return new File(String.format("target/%s.%s", reportId, reportFormat));
+        return new File(String.format("target/reports/%s.%s", reportId, reportFormat));
     }
 
 }
