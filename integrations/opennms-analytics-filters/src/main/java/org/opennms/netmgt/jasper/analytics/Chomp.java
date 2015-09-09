@@ -45,6 +45,7 @@ import com.google.common.collect.Sets;
  * @author jwhite
  */
 public class Chomp implements Filter {
+
     private final ChompConfig m_config;
 
     public Chomp(ChompConfig config) {
@@ -62,7 +63,7 @@ public class Chomp implements Filter {
         // Determine the index of the first row with a timestamp
         // on/after the cutoff date
         for (int k : dsAsTable.rowKeySet()) {
-            if(dsAsTable.get(k, "Timestamp") >= m_config.getCutoffDate()) {
+            if(dsAsTable.get(k, TIMESTAMP_COLUMN_NAME) >= m_config.getCutoffDate()) {
                 firstRowToKeep = k;
                 break;
             }
@@ -73,7 +74,7 @@ public class Chomp implements Filter {
             // index of the first and last rows which don't contain
             // completely NaN values
             Set<String> columnNamesNoTs = Sets.newHashSet(dsAsTable.columnKeySet());
-            columnNamesNoTs.remove("Timestamp");
+            columnNamesNoTs.remove(TIMESTAMP_COLUMN_NAME);
             Point rowsWithValues = AnalyticsFilterUtils.getRowsWithValues(dsAsTable, columnNamesNoTs.toArray(new String[0]));
             firstRowToKeep = Math.max(firstRowToKeep, rowsWithValues.x);
             lastRowToKeep = Math.min(lastRowToKeep, rowsWithValues.y);

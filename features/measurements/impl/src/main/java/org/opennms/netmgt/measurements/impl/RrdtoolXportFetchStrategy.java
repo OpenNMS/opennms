@@ -48,6 +48,8 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.rrd.model.RrdXport;
 import org.opennms.netmgt.rrd.model.XRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -66,6 +68,8 @@ import com.google.common.collect.Maps;
  * @author Dustin Frisch <fooker@lab.sh>
  */
 public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RrdtoolXportFetchStrategy.class);
 
     /**
      * Maximum runtime of 'rrdtool xport' in milliseconds before failing and
@@ -119,7 +123,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             labelMap.put(tempLabel, source.getLabel());
 
             cmdLine.addArgument(String.format("DEF:%s=%s:%s:%s",
-                    tempLabel, rrdFile, source.getEffectiveDataSource(),
+                    tempLabel, Utils.escapeColons(rrdFile), Utils.escapeColons(source.getEffectiveDataSource()),
                     source.getAggregation()));
             cmdLine.addArgument(String.format("XPORT:%s:%s", tempLabel, tempLabel));
         }
@@ -142,6 +146,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
         // Export
         RrdXport rrdXport;
         try {
+            LOG.debug("Executing: {}", cmdLine);
             executor.execute(cmdLine);
 
             final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -161,6 +166,8 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
 
         final int numRows = rrdXport.getRows().size();
         final int numColumns = rrdXport.getMeta().getLegends().size();
+        final long xportStartInMs = rrdXport.getMeta().getStart() * 1000;
+        final long xportStepInMs = rrdXport.getMeta().getStep() * 1000;
 
         final long timestamps[] = new long[numRows];
         final double values[][] = new double[numColumns][numRows];
@@ -168,7 +175,9 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
         // Convert rows to columns
         int i = 0;
         for (final XRow row : rrdXport.getRows()) {
-            timestamps[i] = row.getTimestamp() * 1000;
+            // Derive the timestamp from the start and step since newer versions
+            // of rrdtool no longer include it as part of the rows
+            timestamps[i] = xportStartInMs + xportStepInMs * i;
             for (int j = 0; j < numColumns; j++) {
                 if (row.getValues() == null) {
                     // NMS-7710: Avoid NPEs, in certain cases the list of values may be null
@@ -187,6 +196,7 @@ public class RrdtoolXportFetchStrategy extends AbstractRrdBasedFetchStrategy {
             columns.put(labelMap.get(label), values[i++]);
         }
 
-        return new FetchResults(timestamps, columns, rrdXport.getMeta().getStep() * 1000, constants);
+        return new FetchResults(timestamps, columns, xportStepInMs, constants);
     }
+
 }

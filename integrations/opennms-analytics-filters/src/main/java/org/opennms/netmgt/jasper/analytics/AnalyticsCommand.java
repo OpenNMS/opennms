@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.jasper.analytics;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +45,27 @@ import org.slf4j.LoggerFactory;
  * @see {@link org.opennms.netmgt.jasper.helper.RrdDataSourceFilter}
  * @author jwhite
  */
+@XmlRootElement(name="analytics-command")
+@XmlAccessorType(XmlAccessType.NONE)
 public class AnalyticsCommand {
     private static final Logger LOG = LoggerFactory.getLogger(AnalyticsCommand.class);
     public static final String CMD_IN_RRD_QUERY_STRING = "ANALYTICS";
 
-    private final String m_module;
-    private final  String m_columnNameOrPrefix;
-    private final  String[] m_arguments;
+    @XmlAttribute(name="filter", required=true)
+    private String m_module;
+
+    @XmlAttribute(name="column-name-or-prefix", required=true)
+    private String m_columnNameOrPrefix;
+
+    @XmlElementWrapper(name="arguments")
+    @XmlElement(name="argument")
+    private String[] m_arguments;
+
+    /**
+     * Zero-arg constructor only for JAXB.
+     */
+    public AnalyticsCommand() {
+    }
 
     public AnalyticsCommand(String module, String columnNameOrPrefix, String[] arguments) {
         m_module = module;

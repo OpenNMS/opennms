@@ -35,9 +35,12 @@ package org.opennms.netmgt.jasper.analytics;
  * @author jwhite
  */
 public class OutlierFilterFactory implements FilterFactory {
+
+    public static final String FILTER_NAME = "OutlierFilter";
+
     @Override
     public Filter getFilter(AnalyticsCommand cmd)  {
-        if (!"OutlierFilter".equalsIgnoreCase(cmd.getModule())) {
+        if (!FILTER_NAME.equalsIgnoreCase(cmd.getModule())) {
             return null;
         }
         return new OutlierFilter(OutlierFilterConfig.parse(cmd));
