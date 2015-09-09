@@ -36,7 +36,7 @@ import java.util.List;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class Sample extends Row {
+public class Sample extends Row implements Comparable<Sample> {
 
     /** The timestamp. */
     private long timestamp;
@@ -53,7 +53,7 @@ public class Sample extends Row {
     }
 
     /**
-     * Gets the timestamp in milliseconds
+     * Gets the timestamp in milliseconds.
      *
      * @return the timestamp
      */
@@ -76,6 +76,46 @@ public class Sample extends Row {
     @Override
     public String toString() {
         return "Sample[timestamp=" + new Date(getTimestamp()) + " (" + getTimestamp() + "), values=" + getValues() + "]";
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Sample other = (Sample) obj;
+        if (timestamp != other.timestamp)
+            return false;
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Sample o) {
+        if (this.timestamp < o.timestamp)
+            return -1;
+        if (this.timestamp == o.timestamp)
+            return 0;
+        return 1;
     }
 
 }

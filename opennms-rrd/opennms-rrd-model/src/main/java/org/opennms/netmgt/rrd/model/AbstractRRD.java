@@ -31,7 +31,9 @@ package org.opennms.netmgt.rrd.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -430,8 +432,8 @@ public abstract class AbstractRRD {
      * @return the all samples
      */
     @XmlTransient
-    public List<Sample> getAllSamples() {
-        List<Sample> samples = new ArrayList<Sample>();
+    public Set<Sample> getAllSamples() {
+        Set<Sample> samples = new TreeSet<Sample>();
         for (AbstractRRA rra : getRras()) {
             samples.addAll(getSamples(rra));
         }
@@ -445,7 +447,7 @@ public abstract class AbstractRRD {
      * @return the samples for the given RRA
      */
     @XmlTransient
-    public List<Sample> getSamples(AbstractRRA rra) {
+    public Set<Sample> getSamples(AbstractRRA rra) {
         long pdp = rra.getPdpPerRow();
         long step = pdp * getStep();
         long start = getStartTimestamp(rra);
@@ -475,34 +477,31 @@ public abstract class AbstractRRD {
         }
 
         // Process
-        long tsGauges = start;
-        long tsCounters = end - step;
-        for (int k = 0, j = rra.getRows().size() - 1; k < rra.getRows().size(); k++, j--) {
-            Row gaugeSrc = rra.getRows().get(k);
+        long ts = end - step;
+        for (int j = rra.getRows().size() - 1; j >= 0; j--) {
+            Row counterSrc = rra.getRows().get(j);
             for (int i = 0; i < getDataSources().size(); i++) {
                 if (getDataSource(i).isCounter()) {
                     if (j > 0) {
-                        Row counterSrc = rra.getRows().get(j);
                         Double last = lastValues.get(i);
                         Double current = counterSrc.getValue(i).isNaN() ? 0 : counterSrc.getValue(i);
                         Double value = last - current * step;
                         lastValues.set(i, value);
                         if (!counterSrc.getValue(i).isNaN()) {
-                            valuesMap.get(new Long(tsCounters)).set(i, value);
+                            valuesMap.get(new Long(ts)).set(i, value);
                         }
                     }
                 } else {
-                    if (!gaugeSrc.getValue(i).isNaN()) {
-                        valuesMap.get(new Long(tsGauges)).set(i, gaugeSrc.getValue(i));
+                    if (!counterSrc.getValue(i).isNaN()) {
+                        valuesMap.get(new Long(ts + step)).set(i, counterSrc.getValue(i));
                     }
                 }
             }
-            tsGauges += step;
-            tsCounters -= step;
+            ts -= step;
         }
 
         // Update Samples
-        List<Sample> samples = new ArrayList<Sample>();
+        Set<Sample> samples = new TreeSet<Sample>();
         valuesMap.forEach((timestamp, data) -> samples.add(new Sample(timestamp,data)));
         return samples;
     }

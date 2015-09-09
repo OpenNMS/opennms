@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -198,7 +199,7 @@ public class RRDv3IT {
         File source = new File("src/test/resources/sample-counter.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        List<Sample> samples = rrd.getSamples(rrd.getRras().get(0));
+        Set<Sample> samples = rrd.getSamples(rrd.getRras().get(0));
         Assert.assertFalse(samples.isEmpty());
         long ts = 1441748400000L;
         Double v1 = 600.0;
