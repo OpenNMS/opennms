@@ -17,6 +17,18 @@
       <version>${jasperreportsVersion}</version>
       <exclusions>
         <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
         </exclusion>
