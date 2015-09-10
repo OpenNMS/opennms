@@ -51,6 +51,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 	
     private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
         "org.opennms.core.test.TestContextAwareExecutionListener",
+        "org.opennms.core.test.BeanUtilsTestContextInjectionExecutionListener",
         "org.opennms.test.OpenNMSConfigurationExecutionListener",
         "org.opennms.core.test.db.TemporaryDatabaseExecutionListener",
         "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
