@@ -110,7 +110,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         try {
                             getReportService(reportId).runAndRender(parameters.getReportParms(mode), reportId, deliveryOptions.getFormat(), bout);
                         } catch (final ReportException reportException) {
-                            LOG.error("failed to run or render report: {}", reportId, reportException);
+                            logError(reportId, reportException);
                         }
                         mailReport(deliveryOptions, out);
                     } else {
@@ -127,13 +127,17 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         }
                     }
                 } catch (final Exception e) {
-                    LOG.error("failed to run or render report: {}", reportId, e);
+                    logError(reportId, e);
                 } finally {
                     IOUtils.closeQuietly(bout);
                     IOUtils.closeQuietly(out);
                 }
             }
         });
+    }
+
+    private void logError(String reportId, Exception exception) {
+        LOG.error("failed to run or render report: {}", reportId, exception);
     }
 
     private void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
@@ -212,7 +216,12 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             }
         }
 
-        getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(mode), parameters.getReportId(), parameters.getFormat(), outputStream);
+        try {
+            getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(mode), parameters.getReportId(), parameters.getFormat(), outputStream);
+        } catch (ReportException reportException) {
+            logError(parameters.getReportId(), reportException);
+            throw reportException;
+        }
     }
 
 }
