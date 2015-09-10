@@ -164,8 +164,11 @@
                         <div class="form-group">
                             <div class="col-md-4">
                                 <div class="alert alert-danger" role="alert">
-                                        ${errorMessage}<br/>
-                                        ${errorCause.message}
+                                        ${errorMessage}
+                                        <c:if test="${errorCause != null && errorCause.message != null}">
+                                            <br/>
+                                            ${errorCause.message}
+                                        </c:if>
                                 </div>
                             </div>
                         </div>
