@@ -11,7 +11,7 @@
   <packaging>jar</packaging>
   <name>OpenNMS :: Features :: Measurements :: API</name>
   <build>
-    <!-- TODO MVR we should not have to set the compiler level here -->
+    <!-- We need to be JDK 6 compliant, because we rely on an old jasper-reports version -->
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

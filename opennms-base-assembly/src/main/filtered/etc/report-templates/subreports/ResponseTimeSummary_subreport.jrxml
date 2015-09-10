@@ -18,6 +18,8 @@
 	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
 	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
 	<parameter name="nodeid" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
 	<parameter name="startDate" class="java.util.Date"/>
 	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
@@ -27,9 +29,12 @@
 		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+	</parameter>
 	<queryString language="measurement">
-		<![CDATA[<query-request step="300" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="500">
-  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="node[$P{nodeid}].responseTime[$P{ipv4_interface}]"/>
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="$P{nodeResourceDescriptor}.responseTime[$P{ipv4_interface}]"/>
 </query-request>]]>
 	</queryString>
 	<field name="timestamp" class="java.util.Date">

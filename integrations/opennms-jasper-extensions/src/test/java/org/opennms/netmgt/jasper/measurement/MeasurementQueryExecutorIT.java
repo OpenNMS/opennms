@@ -314,7 +314,6 @@ public class MeasurementQueryExecutorIT {
         // Verify the results of the generated report
         Table<Integer, String, Double> forecasts = TreeBasedTable.create();
 
-        // TODO MVR migrate to Java 7 try-resource block
         FileReader reader = new FileReader(createFileName("Forecast", "csv"));
         CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader());
         int k = 0;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-25T11:34:27 -->
+<!-- 2015-09-10T17:12:58 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Response Time Charts" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2dff310-2fa9-4aa0-b409-ca62fd3a5835">
 	<property name="ireport.zoom" value="1.4641000000000008"/>
 	<property name="ireport.x" value="0"/>
@@ -14,6 +14,7 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -58,15 +59,20 @@
 		<parameter name="ds_startDateTime" class="java.util.Date" isForPrompting="false"/>
 		<parameter name="ds_endDateTime" class="java.util.Date" isForPrompting="false"/>
 		<parameter name="ds_nodeid" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="ds_foreignsource" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="ds_foreignid" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="ds_categoryname" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["Servers"]]></defaultValueExpression>
+		</parameter>
+		<parameter name="ds_nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{ds_nodeid}), $P{ds_foreignsource}, $P{ds_foreignid})]]></defaultValueExpression>
 		</parameter>
 		<parameter name="MEASUREMENT_URL" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="MEASUREMENT_USERNAME" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String" isForPrompting="false"/>
 		<queryString language="measurement">
-			<![CDATA[<query-request step="300" start="$P{ds_startDateTime}" end="$P{ds_endDateTime}" maxrows="500">
-  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="node[$P{ds_nodeid}].responseTime[$P{ds_ipv4_interface}]"/>
+			<![CDATA[<query-request step="300000" start="$P{ds_startDateTime}" end="$P{ds_endDateTime}" maxrows="2000">
+  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="$P{ds_nodeResourceDescriptor}.responseTime[$P{ds_ipv4_interface}]"/>
 </query-request>]]>
 		</queryString>
 		<field name="timestamp" class="java.util.Date">
@@ -134,6 +140,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	categories.categoryname,
 	node.nodelabel,
 	node.nodeid,
+	node.foreignsource,
+	node.foreignid,
 	ipinterface.ipaddr
 FROM
 	node
@@ -168,7 +176,9 @@ ORDER BY
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="ipaddr" class="java.lang.String"/>
-	<field name="nodeid" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignsource" class="java.lang.String"/>
+	<field name="foreignid" class="java.lang.String"/>
 	<group name="surveillance_category_group" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		<groupHeader>
@@ -277,7 +287,16 @@ ORDER BY
 				</chart>
 				<categoryDataset>
 					<dataset>
-						<datasetRun subDataset="Measurement_Dataset" uuid="0eb11904-02e2-4075-a2c9-f24e506f66fe">
+						<datasetRun subDataset="Measurement_Dataset" uuid="3efcb7cb-1fdd-4a2f-b0f1-05d84eaa728d">
+							<datasetParameter name="MEASUREMENT_PASSWORD">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="MEASUREMENT_URL">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="MEASUREMENT_USERNAME">
+								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></datasetParameterExpression>
+							</datasetParameter>
 							<datasetParameter name="ds_endDateTime">
 								<datasetParameterExpression><![CDATA[$P{endDate}.getTime()]]></datasetParameterExpression>
 							</datasetParameter>
@@ -290,14 +309,11 @@ ORDER BY
 							<datasetParameter name="ds_startDateTime">
 								<datasetParameterExpression><![CDATA[$P{startDate}.getTime()]]></datasetParameterExpression>
 							</datasetParameter>
-							<datasetParameter name="MEASUREMENT_URL">
-								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
+							<datasetParameter name="ds_foreignsource">
+								<datasetParameterExpression><![CDATA[$F{foreignsource}]]></datasetParameterExpression>
 							</datasetParameter>
-							<datasetParameter name="MEASUREMENT_USERNAME">
-								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></datasetParameterExpression>
-							</datasetParameter>
-							<datasetParameter name="MEASUREMENT_PASSWORD">
-								<datasetParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></datasetParameterExpression>
+							<datasetParameter name="ds_foreignid">
+								<datasetParameterExpression><![CDATA[$F{foreignid}]]></datasetParameterExpression>
 							</datasetParameter>
 						</datasetRun>
 					</dataset>

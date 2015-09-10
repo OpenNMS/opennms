@@ -28,24 +28,37 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import org.opennms.core.utils.RrdLabelUtils;
-
 import com.google.common.base.Strings;
 
 /**
- * Created by mvrueden on 24/08/15.
+ * Provides helper methods for the {@link org.opennms.netmgt.jasper.measurement.MeasurementDataSource}.
  */
-// TODO MVR ...
 public abstract class MeasurementsHelper {
 
     private MeasurementsHelper() {
 
     }
 
+    /**
+     * Returns the description of the interface (e.g. eth0-000000).
+     *
+     * @param snmpifname
+     * @param snmpifdescr
+     * @param snmpphysaddr
+     * @return the description of the interface (e.g. eth0-000000).
+     */
     public static String getInterfaceDescriptor(String snmpifname, String snmpifdescr, String snmpphysaddr) {
         return RrdLabelUtils.computeLabelForRRD(snmpifname, snmpifdescr, snmpphysaddr);
     }
 
+    /**
+     * Returns the descriptor of the node or node source, depending on the input parameters  (e.g. node[<nodeId>] or nodeSource[<foreignSource>:<foreignId>]..
+     *
+     * @param nodeId
+     * @param foreignSource
+     * @param foreignId
+     * @return the descriptor of the node or node source, depending on the input parameters (e.g. node[<nodeId>] or nodeSource[<foreignSource>:<foreignId>].
+     */
     public static String getNodeOrNodeSourceDescriptor(String nodeId, String foreignSource, String foreignId) {
         if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
             return String.format("nodeSource[%s:%s]", foreignSource, foreignId);

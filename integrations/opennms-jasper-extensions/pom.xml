@@ -75,16 +75,11 @@
       </plugin>
     </plugins>
   </build>
-  <!-- TODO MVR optimize dependencies -->
   <dependencies>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

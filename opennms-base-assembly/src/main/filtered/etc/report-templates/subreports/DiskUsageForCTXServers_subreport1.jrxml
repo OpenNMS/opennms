@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-08-24T17:50:37 -->
+<!-- 2015-09-10T17:17:13 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DiskUsageForCTXServer_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="59dc74f3-5a5f-4957-94c9-288eacb7b951">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
@@ -39,8 +39,8 @@
 	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<queryString language="measurement">
-		<![CDATA[<query-request step="300" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="500">
+	<queryString language="Measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
   <source aggregation="AVERAGE" label="total" attribute="hrStorageSize" transient="true" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>
   <source aggregation="AVERAGE" label="used" attribute="hrStorageUsed" transient="true" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>
   <source aggregation="AVERAGE" label="units" attribute="hrStorageAllocUnits" transient="false" resourceId="$P{nodeResourceDescriptor}.hrStorageIndex[C]"/>

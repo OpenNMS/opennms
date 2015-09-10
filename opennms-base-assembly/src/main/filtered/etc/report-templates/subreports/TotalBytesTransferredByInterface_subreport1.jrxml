@@ -35,10 +35,13 @@
 	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+	</parameter>
 	<queryString language="measurement">
-		<![CDATA[<query-request step="300" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="500">
-  <source aggregation="AVERAGE" label="IfHCInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
-  <source aggregation="AVERAGE" label="IfHCOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="IfHCInOctets" attribute="ifHCInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfHCOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
 	</queryString>
 	<field name="IfHCInOctets" class="java.lang.Double">

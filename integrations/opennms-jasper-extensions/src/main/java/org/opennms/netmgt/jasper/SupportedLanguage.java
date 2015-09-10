@@ -52,7 +52,7 @@ public enum SupportedLanguage {
         final SupportedLanguage[] supportedLanguages = SupportedLanguage.values();
         final String[] supportedLanguagesNames = new String[supportedLanguages.length];
         for (int i=0; i<supportedLanguages.length; i++) {
-            supportedLanguagesNames[i] = supportedLanguages[i].name();
+            supportedLanguagesNames[i] = supportedLanguages[i].name().toLowerCase();
         }
         return supportedLanguagesNames;
     }
