@@ -82,19 +82,19 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
     @Parameterized.Parameters
     public static Object[] data() {
         return new Object[][] {
-            {"EarlyMorningReport", "PDF", "Early morning report", 1},
-            {"ResponseTimeSummaryForNode", "PDF", "Response Time Summary for node", 1},
-            {"AvailabilityByNode", "PDF", "Availability by node", 1},
-            {"AvailabilitySummaryPast7Days", "PDF", "Availability Summary -Default configuration for past 7 Days", 1},
-            {"ResponseTimeByNode", "PDF", "Response time by node", 1},
-            {"SerialInterfaceUtilizationSummary", "PDF", "Serial Interface Utilization Summary", 1},
-            {"TotalBytesTransferredByInterface", "PDF", "Total Bytes Transferred by Interface ", 1},
-            {"AverageAndPeakTrafficRatesForNodesByInterface", "PDF", "Average and Peak Traffic rates for Nodes by Interface", 1},
-            {"InterfaceAvailabilityReport", "PDF", "Interface Availability Report", 2},
-            {"SnmpInterfaceAvailabilityReport", "PDF", "Snmp Interface Availability Report", 2},
-            {"MaintenanceContractsExpired", "PDF", "Maintenance contracts expired", 2},
-            {"MaintenanceContractsStrategy", "PDF", "Maintenance contracts strategy", 2},
-            {"EventAnalysisReport", "PDF", "Event Analysis report", 2},
+            {"EarlyMorningReport", "PDF", "Early morning report", 1, false},
+            {"ResponseTimeSummaryForNode", "PDF", "Response Time Summary for node", 1, true},
+            {"AvailabilityByNode", "PDF", "Availability by node", 1, true},
+            {"AvailabilitySummaryPast7Days", "PDF", "Availability Summary -Default configuration for past 7 Days", 1, true},
+            {"ResponseTimeByNode", "PDF", "Response time by node", 1, true},
+            {"SerialInterfaceUtilizationSummary", "PDF", "Serial Interface Utilization Summary", 1, true},
+            {"TotalBytesTransferredByInterface", "PDF", "Total Bytes Transferred by Interface ", 1, true},
+            {"AverageAndPeakTrafficRatesForNodesByInterface", "PDF", "Average and Peak Traffic rates for Nodes by Interface", 1, true},
+            {"InterfaceAvailabilityReport", "PDF", "Interface Availability Report", 2, true},
+            {"SnmpInterfaceAvailabilityReport", "PDF", "Snmp Interface Availability Report", 2, true},
+            {"MaintenanceContractsExpired", "PDF", "Maintenance contracts expired", 2, true},
+            {"MaintenanceContractsStrategy", "PDF", "Maintenance contracts strategy", 2, true},
+            {"EventAnalysisReport", "PDF", "Event Analysis report", 2, true},
         };
     }
 
@@ -114,6 +114,9 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
 
     @Parameterized.Parameter(3)
     public int page;
+
+    @Parameterized.Parameter(4)
+    public boolean successExpected;
 
     // setup proxy and response filter
     @Override
@@ -157,7 +160,7 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
         Assert.assertNotNull(reportFormat);
         Assert.assertNotNull(reportName);
         Assert.assertNotNull(page);
-        Assert.assertFalse("Report " + reportName + " already exist", getFile().exists());
+        Assert.assertFalse("Report '" + reportName + "' already exist", getFile().exists());
 
         LOG.info("Navigation to database reports page {}.", page);
         reportsPage();
@@ -176,27 +179,36 @@ public class DatabaseReportIT extends OpenNMSSeleniumTestCase {
         getInstantExecutionLink(reportName).click();
         findElementById("run").click(); // run report
 
+        verify();
+    }
+
+    private void verify() {
         // verify current page and look out for errors
         // we do not use findElementByXpath(...) on purpose, we explicitly want to use this
         // otherwise we have to wait 2 minutes each time an error already occurred
         List<WebElement> errorElements = m_driver.findElements(By.xpath("//div[@class=\"alert alert-danger\"]"));
-        if (!errorElements.isEmpty()) {
-            Assert.fail("An error occurred while generating the report: " + errorElements.get(0).getText());
-        }
 
-        // verify the file on disk (download might take a while, so we wait up to 2 minutes until the download or
-        // the report generation has finished
-        File file = getFile();
-        long seconds = 120;
-        int N = (int) Math.floor(seconds / 5);
-        for (int i=0; i<N && !file.exists(); i++) {
-            LOG.info("Wait 5 seconds for the report to be generated/downloaded.");
-            waitFor(5);
-        }
+        if (successExpected) {
+            if (!errorElements.isEmpty()) {
+                Assert.fail("An error occurred while generating the report: " + errorElements.get(0).getText());
+            }
 
-        // ensure it really has been downloaded and has a file size > 0
-        Assert.assertTrue("No report was generated for report '" + reportName + "'", file.exists());
-        Assert.assertTrue("The report is empty", file.length() > 0);
+            // verify the file on disk (download might take a while, so we wait up to 2 minutes until the download or
+            // the report generation has finished
+            File file = getFile();
+            long seconds = 120;
+            int N = (int) Math.floor(seconds / 5);
+            for (int i = 0; i < N && !file.exists(); i++) {
+                LOG.info("Wait 5 seconds for the report to be generated/downloaded.");
+                waitFor(5);
+            }
+
+            // ensure it really has been downloaded and has a file size > 0
+            Assert.assertTrue("No report was generated for report '" + reportName + "'", file.exists());
+            Assert.assertTrue("The report is empty", file.length() > 0);
+        } else {
+            Assert.assertFalse("An error was expected, but did not occur.", errorElements.isEmpty());
+        }
     }
 
     // find the run report link
