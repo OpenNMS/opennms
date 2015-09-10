@@ -498,6 +498,8 @@ public abstract class AbstractRRD {
         }
 
         // Process
+        // Counters must be processed in reverse order (from latest to oldest) in order to recreate the counter raw values
+        // The first sample is processed separated because the lastValues must be updated after adding each sample.
         long ts = end - step;
         for (int j = rra.getRows().size() - 1; j >= 0; j--) {
             Row counterSrc = rra.getRows().get(j);
@@ -507,6 +509,9 @@ public abstract class AbstractRRD {
                         Double last = lastValues.get(i);
                         Double current = counterSrc.getValue(i).isNaN() ? 0 : counterSrc.getValue(i);
                         Double value = last - current * step;
+                        if (value < 0) { // Counter-Wrap emulation
+                            value += Long.MAX_VALUE;
+                        }
                         lastValues.set(i, value);
                         if (!counterSrc.getValue(i).isNaN()) {
                             valuesMap.get(new Long(ts)).set(i, value);
