@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -53,6 +54,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.rrd.model.AbstractDS;
@@ -60,8 +65,6 @@ import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.RrdSample;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
-import org.opennms.newts.api.Counter;
-import org.opennms.newts.api.Gauge;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
@@ -70,9 +73,11 @@ import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
 import org.opennms.newts.cassandra.CassandraSession;
+import org.opennms.newts.cassandra.ContextConfigurations;
 import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 
 /**
  * The Class NewtsConverter.
@@ -96,6 +101,9 @@ public class NewtsConverter {
 
     /** The processed resources. */
     private int processedResources;
+
+    /** The Newts inject batch size. */
+    private int batchSize;
 
     /**
      * The main method.
@@ -166,12 +174,14 @@ public class NewtsConverter {
 
         OnmsProperties.initialize();
 
+        final String strategy = System.getProperty("org.opennms.timeseries.strategy", "rrd");
         final String host = System.getProperty("org.opennms.newts.config.hostname", "localhost");
         final String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         int ttl = Integer.parseInt(System.getProperty("org.opennms.newts.config.ttl", "31540000"));
         int port = Integer.parseInt(System.getProperty("org.opennms.newts.config.keyspace", "9042"));
-        final String strategy = System.getProperty("org.opennms.timeseries.strategy", "rrd");
-        
+
+        batchSize = Integer.parseInt(System.getProperty("org.opennms.newts.config.max_batch_size", "16"));
+
         System.out.printf("OpenNMS Home: %s\n", onmsHome);
         System.out.printf("RRD Directory: %s\n", rrdDir);
         System.out.printf("RRDtool CLI: %s\n", rrdBinary);
@@ -180,6 +190,7 @@ public class NewtsConverter {
         System.out.printf("Cassandra Host: %s\n", host);
         System.out.printf("Cassandra Port: %s\n", port);
         System.out.printf("Cassandra Keyspace: %s\n", keyspace);
+        System.out.printf("Newts Max Batch Size: %d\n", batchSize);
         System.out.printf("Newts TTL: %d\n", ttl);
 
         if (!"newts".equals(strategy)) {
@@ -190,9 +201,8 @@ public class NewtsConverter {
 
         try {
             CassandraSession session = new CassandraSession(keyspace, host, port, "NONE");
-            MetricRegistry registry = new MetricRegistry();
             SampleProcessorService processors = new SampleProcessorService(threads, Collections.emptySet());
-            repository = new CassandraSampleRepository(session, ttl, registry, processors);
+            repository = new CassandraSampleRepository(session, ttl, new MetricRegistry(), processors, new ContextConfigurations());
         } catch (Exception e) {
             e.printStackTrace(); // TODO This is not elegant, but it helps.
             System.err.printf("ERROR: Cannot connect to the Cassandra/Newts backend: %s%n", e.getMessage());
@@ -231,6 +241,9 @@ public class NewtsConverter {
 
         // Process JRB/RRD files
 
+        long start = System.currentTimeMillis();
+        System.out.println("Starting Conversion...");
+        
         processedResources = 0;
         snmpDir = new File(rrdDir, "snmp");
         System.out.println("Processing " + snmpDir);
@@ -243,6 +256,16 @@ public class NewtsConverter {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot get the RRD/JRB files: %s%n", e.getMessage()), options, null);
             System.exit(1);
         }
+
+        Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendSeconds().appendSuffix(" sec")
+                .appendMinutes().appendSuffix(" min")
+                .appendHours().appendSuffix(" hours")
+                .appendDays().appendSuffix(" days")
+                .printZeroNever()
+                .toFormatter();
+        System.out.printf("Conversion Finished. Enlapsed time %s\n", formatter.print(period));
 
         if (processedResources == 0) {
             System.err.println("ERROR: there are no multi-metric DS on your RRD directory. Newts requires that storeByGroup is enabled.\n");
@@ -368,18 +391,17 @@ public class NewtsConverter {
      */
     private void injectDataToNewts(String metricId, List<RrdSample> samples, List<? extends AbstractDS> dataSources) {
         List<Sample> newtsSamples = new ArrayList<Sample>();
-        samples.forEach(s -> {
+        for (RrdSample s : samples) {
             for (int i=0; i<dataSources.size(); i++) {
                 String ds = dataSources.get(i).getName();
                 MetricType type = dataSources.get(i).isCounter() ? MetricType.COUNTER : MetricType.GAUGE;
-                Double value = s.getValue(i);
-                ValueType<?> valueType = dataSources.get(i).isCounter() ? new Counter(value.longValue()) : new Gauge(value);
+                ValueType<?> valueType = ValueType.compose(s.getValue(i), type);
                 Timestamp ts = Timestamp.fromEpochMillis(s.getTimestamp());
                 Resource resource = new Resource(metricId);
                 newtsSamples.add(new Sample(ts, resource, ds, type, valueType));
             }
-        });
-        repository.insert(newtsSamples);
+        };
+        Lists.partition(newtsSamples, batchSize - 1).forEach(l -> repository.insert(l));
     }
 
     /**
