@@ -196,7 +196,10 @@ public class NewtsConverter {
         ClassPathXmlApplicationContext context = null;
 
         try {
-            context = new ClassPathXmlApplicationContext(new String[] { "classpath:/META-INF/opennms/applicationContext-newts.xml" });
+            context = new ClassPathXmlApplicationContext(new String[] {
+                    "classpath:/META-INF/opennms/applicationContext-soa.xml",
+                    "classpath:/META-INF/opennms/applicationContext-newts.xml"
+                    });
             repository = context.getBean(SampleRepository.class);
         } catch (Exception e) {
             e.printStackTrace(); // TODO This is not elegant, but it helps.
@@ -274,7 +277,10 @@ public class NewtsConverter {
             System.err.println("   This process could take a while. Wait until it is completely finished.");
             System.err.println("e) Use the rrd-converter tool, clean the RRD/JRB directory (i.e. remove the left-over/temporary files.");
             System.err.println("f) Execute the Newts converter again.");
+            System.exit(1);
         }
+
+        System.exit(0);
     }
 
     /**
