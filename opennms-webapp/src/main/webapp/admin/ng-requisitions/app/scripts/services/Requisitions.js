@@ -48,6 +48,8 @@
     requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
     requisitionsService.internal.cache = $cacheFactory('RequisitionsService');
 
+    requisitionService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
+
     /**
     * @description (Internal) Gets the requisitions data from the internal cache
     *
@@ -303,7 +305,7 @@
       })
       .error(function(error, status) {
         $log.error('getRequisition: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve the requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -349,7 +351,7 @@
       })
       .error(function(error, status) {
         $log.error('synchronizeRequisition: PUT ' + url + ' failed:', error, status);
-        deferred.reject('Cannot synchronize the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot synchronize the requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -391,7 +393,7 @@
         deferred.resolve(requisition);
       }).error(function(error, status) {
         $log.error('addRequisition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot add the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot add the requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -444,7 +446,7 @@
         deferred.resolve(results);
       }, function(error, status) {
         $log.error('deleteRequisition: DELETE operation failed:', error, status);
-        deferred.reject('Cannot delete the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot delete the requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
 
       return deferred.promise;
@@ -491,7 +493,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('removeAllNodesFromRequisition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -528,7 +530,7 @@
       })
       .error(function(error, status) {
         $log.error('getNode: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve node ' + foreignId + ' from requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve node ' + foreignId + ' from requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -568,7 +570,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('saveNode: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot save node ' + node.foreignId + ' on requisition ' + node.foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot save node ' + node.foreignId + ' on requisition ' + node.foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -606,7 +608,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('deleteNode: DELETE ' + url + ' failed:', error, status);
-        deferred.reject('Cannot delete node ' + node.foreignId + ' from requisition ' + node.foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot delete node ' + node.foreignId + ' from requisition ' + node.foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -632,7 +634,7 @@
       })
       .error(function(error, status) {
         $log.error('getForeignSourceDefinition: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve foreign source definition (detectors and policies) for requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -660,7 +662,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('saveForeignSourceDefinition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -696,7 +698,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableDetectors: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available detectors. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available detectors.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -732,7 +734,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailablePolicies: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available policies. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available policies.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -771,7 +773,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableServices: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available services. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available services.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -809,7 +811,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableAssets: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available assets. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available assets.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -847,7 +849,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableCategories: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available categories. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available categories.' + requisitionService.internal.errorHelp);
       });
       return deferred.promise;
     };

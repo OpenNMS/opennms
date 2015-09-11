@@ -199,13 +199,12 @@ public class NewtsConverter {
             context = new ClassPathXmlApplicationContext(new String[] {
                     "classpath:/META-INF/opennms/applicationContext-soa.xml",
                     "classpath:/META-INF/opennms/applicationContext-newts.xml"
-                    });
+            });
             repository = context.getBean(SampleRepository.class);
         } catch (Exception e) {
-            e.printStackTrace(); // TODO This is not elegant, but it helps.
             System.err.printf("ERROR: Cannot connect to the Cassandra/Newts backend: %s%n", e.getMessage());
             System.err.println("       Make sure Newts is properly configured in opennms.properties.");
-            System.err.println("       OpenNMS can be running while running the Newts converter.");
+            System.err.println("       There is no need to stop OpenNMS to execute this tool.");
             System.exit(1);
         }
 
@@ -214,7 +213,6 @@ public class NewtsConverter {
         try {
             conn = DataSourceFactory.getInstance().getConnection();
         } catch (SQLException e) {
-            e.printStackTrace(); // TODO This is not elegant, but it helps.
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot connect to the database: %s%n", e.getMessage()), options, null);
             System.exit(1);
         }
@@ -229,7 +227,6 @@ public class NewtsConverter {
                 nodes.add(new Node(rs));
             }
         } catch (Throwable t) {
-            t.printStackTrace(); // TODO This is not elegant, but it helps.
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot obtain the nodes from the database: %s%n", t.getMessage()), options, null);
             System.exit(1);
         } finally {
@@ -250,7 +247,6 @@ public class NewtsConverter {
             .filter(p -> p.toString().endsWith("ds.properties"))
             .forEach(p -> processResource(p.getParent()));
         } catch (Exception e) {
-            e.printStackTrace(); // TODO This is not elegant, but it helps.
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot get the RRD/JRB files: %s%n", e.getMessage()), options, null);
             System.exit(1);
         }
@@ -263,19 +259,20 @@ public class NewtsConverter {
                 .appendDays().appendSuffix(" days")
                 .printZeroNever()
                 .toFormatter();
-        System.out.printf("Conversion Finished. Enlapsed time %s\n", formatter.print(period));
+        System.out.printf("\nConversion Finished.\nResources updated: %d\nEnlapsed time %s\n", processedResources, formatter.print(period));
         context.close();
 
         if (processedResources == 0) {
-            System.err.println("ERROR: there are no multi-metric DS on your RRD directory. Newts requires that storeByGroup is enabled.\n");
-            System.err.println("If storeByGroup is not enabled, you must do the following:");
+            System.err.println("\nERROR: There are no multi-metric DS on your RRD directory.");
+            System.err.println("       Newts requires that storeByGroup is enabled.");
+            System.err.println("       If storeByGroup is not enabled, you must do the following:\n");
             System.err.println("a) Stop OpenNMS if it is running.");
             System.err.println("b) Enable storeByGroup.");
             System.err.println("c) Start OpenNMS and give it some time to be sure that all the multi-metric RRD/JRB files were created.");
             System.err.println("   Do not panic, the old data will be merged.");
             System.err.println("d) Use the rrd-converter tool, to merge the single-metric JRB/RRD into multi-metric JRB/RRD.");
             System.err.println("   This process could take a while. Wait until it is completely finished.");
-            System.err.println("e) Use the rrd-converter tool, clean the RRD/JRB directory (i.e. remove the left-over/temporary files.");
+            System.err.println("e) Use the rrd-converter tool again to clean the RRD/JRB directory (i.e. remove the left-over/temporary files.");
             System.err.println("f) Execute the Newts converter again.");
             System.exit(1);
         }
@@ -330,10 +327,9 @@ public class NewtsConverter {
                 return;
             }
         } catch (Exception e) {
-            System.err.printf("ERROR: Can't parse JRB/RRD for %s at %s\n", multiDsFileName, resourcePath);        
-            e.printStackTrace(); // TODO This is not elegant, but it helps.
+            System.err.printf("ERROR: Can't parse JRB/RRD for %s at %s: %s\n", multiDsFileName, resourcePath, e.getMessage());
         }
-        System.err.printf("ERROR: There are no multi-ds JRB/RRD for %s at %s\n", multiDsFileName, resourcePath);        
+        System.err.printf("ERROR: There are no multi-ds JRB/RRD for %s at %s\n", multiDsFileName, resourcePath);
     }
 
     /**
@@ -349,8 +345,7 @@ public class NewtsConverter {
             try {
                 properties.load(new FileInputStream(file));
             } catch (IOException e) {
-                System.err.printf("ERROR: Can't parse strings.properties at %s\n", resourcePath);        
-                e.printStackTrace(); // TODO This is not elegant, but it helps.
+                System.err.printf("ERROR: Can't parse strings.properties at %s: %s\n", resourcePath, e.getMessage());
             }
         }
         Map<String,String> map = new TreeMap<String,String>();
