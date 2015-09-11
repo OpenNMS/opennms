@@ -71,6 +71,12 @@
               </descriptors>
               <features>
                 <feature>opennms-${project.version}</feature>
+                <feature>opennms-activemq-config</feature>
+                <feature>opennms-activemq</feature>
+                <feature>opennms-activemq-dispatcher-config</feature>
+                <feature>opennms-activemq-dispatcher</feature>
+                <feature>opennms-activemq-event-forwarder</feature>
+                <feature>opennms-activemq-event-receiver</feature>
               </features>
               <repository>target/paxexam/test-repo</repository>
             </configuration>
@@ -192,14 +198,6 @@
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Other projects necessary to run integration tests -->
-    <dependency>
-      <groupId>org.opennms.features.activemq</groupId>
-      <artifactId>org.opennms.features.activemq.event-forwarder</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 
