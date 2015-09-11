@@ -51,7 +51,7 @@
         <executions>
           <execution>
             <id>add-features-to-repo</id>
-            <phase>process-resources</phase>
+            <phase>process-test-resources</phase>
             <goals>
               <goal>add-features-to-repo</goal>
             </goals>
@@ -192,6 +192,14 @@
       <version>${project.version}</version>
       <classifier>features</classifier>
       <type>xml</type>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Other projects necessary to run integration tests -->
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.event-forwarder</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 
