@@ -23,11 +23,6 @@
         <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>newts-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-api</artifactId>
     </dependency>
@@ -44,13 +39,14 @@
         <artifactId>opennms-rrd-jrobin</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>newts-dependencies</artifactId>
-        <type>pom</type>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.newts</artifactId>
+        <version>${project.version}</version>
     </dependency>
     <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>spring-dependencies</artifactId>
+        <type>pom</type>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>

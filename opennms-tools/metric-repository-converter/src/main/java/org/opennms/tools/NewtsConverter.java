@@ -38,8 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -68,15 +66,11 @@ import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
-import org.opennms.newts.api.SampleProcessorService;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
-import org.opennms.newts.cassandra.CassandraSession;
-import org.opennms.newts.cassandra.ContextConfigurations;
-import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 
 /**
@@ -199,10 +193,11 @@ public class NewtsConverter {
             System.exit(1);
         }
 
+        ClassPathXmlApplicationContext context = null;
+
         try {
-            CassandraSession session = new CassandraSession(keyspace, host, port, "NONE");
-            SampleProcessorService processors = new SampleProcessorService(threads, Collections.emptySet());
-            repository = new CassandraSampleRepository(session, ttl, new MetricRegistry(), processors, new ContextConfigurations());
+            context = new ClassPathXmlApplicationContext(new String[] { "classpath:/META-INF/opennms/applicationContext-newts.xml" });
+            repository = context.getBean(SampleRepository.class);
         } catch (Exception e) {
             e.printStackTrace(); // TODO This is not elegant, but it helps.
             System.err.printf("ERROR: Cannot connect to the Cassandra/Newts backend: %s%n", e.getMessage());
@@ -243,7 +238,7 @@ public class NewtsConverter {
 
         long start = System.currentTimeMillis();
         System.out.println("Starting Conversion...");
-        
+
         processedResources = 0;
         snmpDir = new File(rrdDir, "snmp");
         System.out.println("Processing " + snmpDir);
@@ -266,6 +261,7 @@ public class NewtsConverter {
                 .printZeroNever()
                 .toFormatter();
         System.out.printf("Conversion Finished. Enlapsed time %s\n", formatter.print(period));
+        context.close();
 
         if (processedResources == 0) {
             System.err.println("ERROR: there are no multi-metric DS on your RRD directory. Newts requires that storeByGroup is enabled.\n");
