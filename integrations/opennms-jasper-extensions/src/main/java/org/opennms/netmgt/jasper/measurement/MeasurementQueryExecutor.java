@@ -39,7 +39,6 @@ import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
-    // TODO MVR document this property
     private static final String SSL_PROPERTY_KEY = "org.opennms.netmgt.jasper.measurement.ssl.enable";
 
     private RemoteMeasurementDataSourceWrapper dataSourceCreator;
