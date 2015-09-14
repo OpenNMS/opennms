@@ -203,8 +203,8 @@ ORDER BY
 					<text><![CDATA[Peak Receive bps]]></text>
 				</staticText>
 				<staticText>
-					<reportElement style="Interface_Header" x="451" y="21" width="104" height="36" uuid="2469a483-786b-45ae-af35-ee6fbdef24f7"/>
-					<textElement textAlignment="Right"/>
+					<reportElement style="Table-Header" x="451" y="21" width="104" height="36" uuid="2469a483-786b-45ae-af35-ee6fbdef24f7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<text><![CDATA[Peak Transmit bps]]></text>
 				</staticText>
 				<staticText>
