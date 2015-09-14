@@ -52,12 +52,12 @@ public abstract class MeasurementsHelper {
     }
 
     /**
-     * Returns the descriptor of the node or node source, depending on the input parameters  (e.g. node[<nodeId>] or nodeSource[<foreignSource>:<foreignId>]..
+     * Returns the descriptor of the node or node source, depending on the input parameters  (e.g. node[&lt;nodeId&gt;] or nodeSource[&lt;foreignSource&gt;:&lt;foreignId&gt;].
      *
      * @param nodeId
      * @param foreignSource
      * @param foreignId
-     * @return the descriptor of the node or node source, depending on the input parameters (e.g. node[<nodeId>] or nodeSource[<foreignSource>:<foreignId>].
+     * @return the descriptor of the node or node source, depending on the input parameters (e.g. node[&lt;nodeId&gt;] or nodeSource[&lt;foreignSource&gt;:&lt;foreignId&gt;].
      */
     public static String getNodeOrNodeSourceDescriptor(String nodeId, String foreignSource, String foreignId) {
         if (!Strings.isNullOrEmpty(foreignSource) && !Strings.isNullOrEmpty(foreignId)) {
