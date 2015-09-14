@@ -51,6 +51,7 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.LtRestriction;
 import org.opennms.core.criteria.restrictions.NotNullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.collection.api.TimeKeeper;
 import org.opennms.netmgt.collection.support.SingleResourceCollectionSet;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
+import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
@@ -320,12 +322,21 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return locationMonitor.getName();
     }
 
-    private Map<String, Object> getParameterMap(final Service serviceConfig) {
+    protected static Map<String, Object> getParameterMap(final Service serviceConfig) {
         final Map<String, Object> paramMap = new HashMap<String, Object>();
         for (final Parameter serviceParm : serviceConfig.getParameters()) {
             String value = serviceParm.getValue();
             if (value == null) {
-                value = (serviceParm.getAnyObject() == null ? "" : serviceParm.getAnyObject().toString());
+                final Object o = serviceParm.getAnyObject();
+                if (o == null) {
+                    value = "";
+                } else if (o instanceof PageSequence) {
+                    // The PageSequenceMonitor uses PageSequence type parameters in the service definition
+                    // These need to be marshalled to XML before being sent to the PollerFrontEnd
+                    value = JaxbUtils.marshal(o);
+                } else {
+                    value = o.toString();
+                }
             }
 
             paramMap.put(serviceParm.getKey(), value);
@@ -340,11 +351,13 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         try {
 			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
 			if (mon == null) {
+			    LOG.warn("No location monitor found for location monitor ID {}", locationMonitorId);
 			    // the monitor has been deleted we'll pick this in up on the next config check
 			    return new EmptyPollerConfiguration();
 			}
-			
+
             List<String> pollingPackageNames = getPackageName(mon);
+            LOG.debug("Location monitor ID {} has polling packages: {}", locationMonitorId, pollingPackageNames);
 
             List<SimplePollerConfiguration> addMe = new ArrayList<SimplePollerConfiguration>();
             for (String pollingPackageName : pollingPackageNames) {
@@ -377,12 +390,20 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
         final List<PolledService> configs = new ArrayList<PolledService>(services.size());
 
-        LOG.debug("found {} services", services.size());
+        LOG.debug("Found {} services for monitor {} in polling package {}", services.size(), mon, pollingPackageName);
 
         for (final OnmsMonitoredService monSvc : services) {
             final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
             final long interval = serviceConfig.getInterval();
             final Map<String, Object> parameters = getParameterMap(serviceConfig);
+
+            if (LOG.isTraceEnabled()) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    LOG.trace("Service {} has parameter {} with type {} and value: {}",
+                            monSvc.getServiceName(), entry.getKey(), entry.getValue() != null ? entry.getValue().getClass().getCanonicalName() : "null", entry.getValue());
+                }
+            }
+
             configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
         }
 

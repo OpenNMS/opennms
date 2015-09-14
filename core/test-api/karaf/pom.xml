@@ -51,7 +51,7 @@
         <executions>
           <execution>
             <id>add-features-to-repo</id>
-            <phase>process-resources</phase>
+            <phase>process-test-resources</phase>
             <goals>
               <goal>add-features-to-repo</goal>
             </goals>
@@ -71,6 +71,12 @@
               </descriptors>
               <features>
                 <feature>opennms-${project.version}</feature>
+                <feature>opennms-activemq-config</feature>
+                <feature>opennms-activemq</feature>
+                <feature>opennms-activemq-dispatcher-config</feature>
+                <feature>opennms-activemq-dispatcher</feature>
+                <feature>opennms-activemq-event-forwarder</feature>
+                <feature>opennms-activemq-event-receiver</feature>
               </features>
               <repository>target/paxexam/test-repo</repository>
             </configuration>
