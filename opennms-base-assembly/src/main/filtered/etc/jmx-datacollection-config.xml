@@ -274,6 +274,31 @@
                 </comp-attrib>
             </mbean>
 
+            <!-- Newts specifics beans - available when using the Newts time series strategy -->
+            <mbean name="org.opennms.newts.cache.cache-size" objectname="org.opennms.newts:name=cache.size">
+                <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.cache.cache-max-size" objectname="org.opennms.newts:name=cache.max-size">
+                <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
+                <attrib name="99thPercentile" alias="NewtsInsert99" type="gauge"/>
+                <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
+            </mbean>
+            <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
+                <attrib name="99thPercentile" alias="NewtsMeasSelct99" type="gauge"/>
+                <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
+            </mbean>
+            <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
+                <attrib name="99thPercentile" alias="NewtsSmplSelct99" type="gauge"/>
+                <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
+            </mbean>
+            <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
+                <attrib name="Count" alias="NewtsSmplsInsertd" type="counter"/>
+            </mbean>
+            <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
+                <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
+            </mbean>
         </mbeans>
     </jmx-collection>
 

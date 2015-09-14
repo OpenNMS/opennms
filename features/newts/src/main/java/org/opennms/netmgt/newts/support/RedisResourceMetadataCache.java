@@ -42,6 +42,7 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.cassandra.search.ResourceIdSplitter;
 import org.opennms.newts.cassandra.search.ResourceMetadata;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Joiner;
@@ -92,10 +93,25 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
         m_jedis = new Jedis(hostname, port);
 
         Preconditions.checkNotNull(registry, "registry argument");
-        m_metricReqs = registry.meter(name(getClass(), "metric-reqs"));
-        m_metricMisses = registry.meter(name(getClass(), "metric-misses"));
-        m_attributeReqs = registry.meter(name(getClass(), "attribute-reqs"));
-        m_attributeMisses = registry.meter(name(getClass(), "attribute-misses"));
+        m_metricReqs = registry.meter(name("cache", "metric-reqs"));
+        m_metricMisses = registry.meter(name("cache", "metric-misses"));
+        m_attributeReqs = registry.meter(name("cache", "attribute-reqs"));
+        m_attributeMisses = registry.meter(name("cache", "attribute-misses"));
+
+        registry.register(MetricRegistry.name("cache", "size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return m_jedis.dbSize();
+                    }
+                });
+        registry.register(MetricRegistry.name("cache", "max-size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return 0L;
+                    }
+                });
 
         m_resourceIdSplitter = Preconditions.checkNotNull(resourceIdSplitter, "resourceIdSplitter argument");
     }

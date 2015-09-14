@@ -5,9 +5,8 @@
 [[gi-configure-opennms]]
 === Configure OpenNMS
 
-Once you have _OpenNMS_, _Cassandra_ and the _Newts_ keyspace installed and up and running, the _OpenNMS_ application has to be configured.
-To be able to use _Newts_ the graphing library has to be changed from _RRDTool_ or _JRobin_ to _Backshift_.
-The following properties for _OpenNMS_ has to be changed in `${OPENNMS_HOME}/etc/opennms.properties`:
+Once _Cassandra_ is installed, _OpenNMS_ can be configured to use _Newts_.
+To enable and configure _Newts_, set the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 .Configuration for _OpenNMS_
 [source]
@@ -16,13 +15,31 @@ The following properties for _OpenNMS_ has to be changed in `${OPENNMS_HOME}/etc
 org.opennms.rrd.storeByForeignSource=true
 org.opennms.timeseries.strategy=newts
 
-# Use backshift instead of RRDtool or JRobin
-org.opennms.web.graphs.engine=backshift
-
 # Configure Newts time series storage connection
 org.opennms.newts.config.hostname=$ipaddress$
 org.opennms.newts.config.keyspace=newts
 org.opennms.newts.config.port=9042
+----
+
+NOTE: The `org.opennms.newts.config.hostname` property also accepts a comma separated list of hostnames and or IP addresses.
+
+Once _Newts_ has been enabled, you can initialize the _Newts_ schema in _Cassandra_ with the following:
+
+.Initialize Newts keyspace in Cassandra
+[source, bash]
+----
+${OPENNMS_HOME}/bin/newts init
+----
+
+Optionally, you can now connect to your _Cassandra_ cluster and verify that the keyspace has been properly initialized:
+
+.Verify if the keyspace is initialized with cqlsh
+[source, bash]
+----
+cqlsh
+use newts;
+describe table terms;
+describe table samples;
 ----
 
 Restart _OpenNMS_ to apply the changes.

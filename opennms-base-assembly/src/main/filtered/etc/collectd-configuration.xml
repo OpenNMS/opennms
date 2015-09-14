@@ -114,6 +114,8 @@
             <parameter key="rrd-base-name" value="java"/>
             <parameter key="collection" value="jsr160"/>
             <parameter key="thresholding-enabled" value="true"/>
+            <parameter key="ds-name" value="opennms-jvm"/>
+            <parameter key="friendly-name" value="opennms-jvm"/>
         </service>
 
         <service name="PostgreSQL" interval="300000" user-defined="false" status="on">

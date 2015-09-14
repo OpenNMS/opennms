@@ -43,6 +43,7 @@ import org.opennms.newts.cassandra.search.ResourceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Joiner;
@@ -87,10 +88,25 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
         LOG.info("Initializing resource metadata cache ({} max entries)", maxSize);
         m_cache = CacheBuilder.newBuilder().maximumSize(maxSize).removalListener(this).build();
 
-        m_metricReqs = registry.meter(name(getClass(), "metric-reqs"));
-        m_metricMisses = registry.meter(name(getClass(), "metric-misses"));
-        m_attributeReqs = registry.meter(name(getClass(), "attribute-reqs"));
-        m_attributeMisses = registry.meter(name(getClass(), "attribute-misses"));
+        m_metricReqs = registry.meter(name("cache", "metric-reqs"));
+        m_metricMisses = registry.meter(name("cache", "metric-misses"));
+        m_attributeReqs = registry.meter(name("cache", "attribute-reqs"));
+        m_attributeMisses = registry.meter(name("cache", "attribute-misses"));
+
+        registry.register(MetricRegistry.name("cache", "size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return m_cache.size();
+                    }
+                });
+        registry.register(MetricRegistry.name("cache", "max-size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return maxSize;
+                    }
+                });
     }
 
     @Override
