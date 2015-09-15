@@ -1238,8 +1238,8 @@
     <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
-    <httpcoreVersion>4.3.2</httpcoreVersion>
-    <httpclientVersion>4.3.4</httpclientVersion>
+    <httpcoreVersion>4.3.3</httpcoreVersion>
+    <httpclientVersion>4.3.6</httpclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>5.6.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
