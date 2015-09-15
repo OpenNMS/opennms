@@ -1,6 +1,6 @@
 
 [[webui-opsboard-criteria-builder]]
-=== Criteria Builder
+==== Criteria Builder
 
 The _Criteria Builder_ is a generic component to filter information of a _Dashlet_.
 Some _Dashlets_ use this component to filter the shown information on a _Dashlet_ for certain use case.

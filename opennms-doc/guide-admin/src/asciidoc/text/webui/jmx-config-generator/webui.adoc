@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-=== Web based utility
+==== Web based utility
 
 Complex _JMX_ data collection configurations can be generated from a web based tool.
 It collects all available _MBean Attributes_ or _Composite Data Attributes_ from a _JMX_ enabled Java application.
@@ -22,7 +22,7 @@ The following connection settings are supported:
 
 The web based configuration tool can be used in the _OpenNMS Web Application_ in administration section _Admin -> JMX Configuration Generator_.
 
-==== Configure JMX Connection
+===== Configure JMX Connection
 
 At the beginning the connection to an _MBean Server_ of a _Java_ application has to be configured.
 
@@ -39,7 +39,7 @@ image::operation/jmx-config-generator/01-webui-connection.png[]
 By clicking the arrow ( _>_ ) the _MBeans_ and _Composite Data_ will be retrieved with the given connection settings.
 The data is loaded into the _MBeans Configuration_ screen which allows to select metrics for the data collection configuration.
 
-==== Select MBeans and Composite
+===== Select MBeans and Composite
 
 The _MBeans Configuration_ section is used to assign the _MBean_ and _Composite Data attributes_ to _RRD domain_ specific data types and data source names.
 
@@ -66,7 +66,7 @@ image::operation/jmx-config-generator/04-webui-composite-details.png[]
 The _MBean Name_, _Composite Alias_ and _Name_ are validated against special characters.
 For the _Alias_ inputs are validated to be not longer then 19 characters and have to be unique in the data collection configuration.
 
-==== Download and include configuration
+===== Download and include configuration
 
 The last step is generating the following configuration files for _OpenNMS_:
 

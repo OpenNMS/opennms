@@ -1,7 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
-=== Grafana dashboard box
+:imagesdir: ../../images
 
 link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _OpenNMS_.
 The _Grafana Dashboard Box_ on the start page shows dashboards related to _OpenNMS_.

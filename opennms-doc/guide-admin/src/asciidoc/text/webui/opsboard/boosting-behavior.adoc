@@ -1,6 +1,6 @@
 
 [[webui-opsboard-dashlet-boosting]]
-=== Boosting _Dashlet_
+==== Boosting _Dashlet_
 
 The behavior to boost a _Dashlet_ describes the behavior of a _Dashlet_ showing critical monitoring information.
 It can raise the priority in the _Ops Board_ rotation to indicate a problem.

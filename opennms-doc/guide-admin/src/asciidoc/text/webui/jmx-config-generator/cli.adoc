@@ -2,12 +2,12 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-=== CLI based utility
+==== CLI based utility
 
 The command line _(CLI)_ based tool is not installed by default.
 It is available as _Debian_ and _RPM_ package in the official repositories.
 
-==== Installation
+===== Installation
 
 .RHEL based installation with Yum
 
@@ -43,7 +43,7 @@ This file can be invoked by:
 java -jar target/jmxconfiggenerator-17.0.0-SNAPSHOT-onejar.jar
 ----
 
-==== Usage
+===== Usage
 
 After installing the the _JMX Config Generator_ the tool's wrapper script is located in the `${OPENNMS_HOME}/bin` directory.
 
@@ -76,7 +76,7 @@ The following global options are available in each of the sub-commands of the to
 | `-v (--verbose)` | Enables verbose mode for debugging purposes. | false
 |===
 
-==== Sub-command: query
+===== Sub-command: query
 
 This sub-command is used to query a _MBean Server_ for it's available _MBean_ objects.
 The following example queries the server `myserver` with the credentials `myusername/mypassword` on port `7199` for _MBean objects_ in the `java.lang` domain.
@@ -138,7 +138,7 @@ The following command line options are available for the _query_ sub-command.
 | `-v (--verbose)`             | Enables verbose mode for debugging purposes.                                                               | false
 |===
 
-==== Sub-command: generate-conf
+===== Sub-command: generate-conf
 
 This sub-command can be used to generate a valid `jmx-datacollection-config.xml` for a given set of _MBean objects_ queried from a _MBean Server_.
 
@@ -185,7 +185,7 @@ If the `--skipDefaultVM` option is not set the generated configuration will incl
 IMPORTANT: Check the file and see if there are `alias` names with more than 19 characters.
            This errors are marked with `NAME_CRASH_AS_19_CHAR_VALUE`
 
-==== Sub-command: generate-graph
+===== Sub-command: generate-graph
 
 This sub-command generates a _RRD_ graph definition file for a given configuration file.
 The following example generates a graph definition file `mygraph.properties` using the configuration in file `myconfig.xml`.
@@ -214,7 +214,7 @@ The following options are available for this sub-command.
 | `-v (--verbose)`                   | Enables verbose mode for debugging purposes.                                                       | false
 |===
 
-==== Graph Templates
+===== Graph Templates
 
 The _JMX Config Generator_ uses a template file to generate the graphs.
 It is possible to use a user-defined template.
