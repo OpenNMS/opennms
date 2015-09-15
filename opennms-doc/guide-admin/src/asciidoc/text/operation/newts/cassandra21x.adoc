@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 === Cassandra monitoring
 
 This section describes some of the metrics _OpenNMS_ collects for monitoring an _Apache Cassandra_ database infrastructure.

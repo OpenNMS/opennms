@@ -7,23 +7,25 @@
 :toclevels: 3
 :numbered:
 
+[[ga]]
 = Administrators Guide
 :author: Copyright (c) 2015 The OpenNMS Group, Inc.
 :revnumber: OpenNMS {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-// Include your documentation sections here
-// include::text/myFile.adoc[]
+[[ga-admin-ui]]
+== Administrative Webinterface
 
-// Administration related Webinterface
-= Administrative Webinterface
+[[ga-admin-ui-start-page]]
+=== Grafana Dashboard Box
+include::text/webui/grafana-dashboard-box.adoc[]
 
-== Start page
-include::text/webui/startpage/grafana-dashboard-box.adoc[]
-
-== Operator Board
+[[ga-admin-ui-ops-board]]
+=== Operator Board
 include::text/webui/opsboard/introduction.adoc[]
+
+// Dashlets
 include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
 include::text/webui/opsboard/dashlet/alarms.adoc[]
 include::text/webui/opsboard/dashlet/charts.adoc[]
@@ -36,73 +38,93 @@ include::text/webui/opsboard/dashlet/summary.adoc[]
 include::text/webui/opsboard/dashlet/surveillance.adoc[]
 include::text/webui/opsboard/dashlet/topology.adoc[]
 include::text/webui/opsboard/dashlet/url.adoc[]
-include::text/webui/opsboard/dashlet/boosting-behavior.adoc[]
-include::text/webui/opsboard/dashlet/criteria-builder.adoc[]
 
-== Heatmap
+// Generic components
+include::text/webui/opsboard/boosting-behavior.adoc[]
+include::text/webui/opsboard/criteria-builder.adoc[]
+
+[[ga-admin-ui-jmx-config-generator]]
+=== JMX Configuration Generator
+include::text/webui/jmx-config-generator/introduction.adoc[]
+include::text/webui/jmx-config-generator/webui.adoc[]
+include::text/webui/jmx-config-generator/cli.adoc[]
+
+[[ga-admin-ui-heatmap]]
+=== Heatmap
 include::text/webui/heatmap/introduction.adoc[]
 
-// Include monitor documentation here
+[[ga-service-assurance]]
 == Service Assurance
 
 // Included in alphabetical order
+[[ga-service-monitors]]
 === Service monitors
-include::text/poller/AvailabilityMonitor.adoc[]
-include::text/poller/BgpSessionMonitor.adoc[]
-include::text/poller/BSFMonitor.adoc[]
-include::text/poller/CiscoIpSlaMonitor.adoc[]
-include::text/poller/CiscoPingMibMonitor.adoc[]
-include::text/poller/CitrixMonitor.adoc[]
-include::text/poller/DhcpMonitor.adoc[]
-include::text/poller/DiskUsageMonitor.adoc[]
-include::text/poller/DnsMonitor.adoc[]
-include::text/poller/DNSResolutionMonitor.adoc[]
-include::text/poller/FtpMonitor.adoc[]
-include::text/poller/HostResourceSwRunMonitor.adoc[]
-include::text/poller/HttpMonitor.adoc[]
-include::text/poller/HttpPostMonitor.adoc[]
-include::text/poller/HttpsMonitor.adoc[]
-include::text/poller/IcmpMonitor.adoc[]
-include::text/poller/ImapMonitor.adoc[]
-include::text/poller/JCifsMonitor.adoc[]
-include::text/poller/JDBCMonitor.adoc[]
-include::text/poller/JDBCStoredProcedureMonitor.adoc[]
-include::text/poller/JDBCQueryMonitor.adoc[]
-include::text/poller/JolokiaBeanMonitor.adoc[]
-include::text/poller/LdapMonitor.adoc[]
-include::text/poller/LdapsMonitor.adoc[]
-include::text/poller/MemcachedMonitor.adoc[]
-include::text/poller/NetScalerGroupHealthMonitor.adoc[]
-include::text/poller/NrpeMonitor.adoc[]
-include::text/poller/NtpMonitor.adoc[]
-include::text/poller/OmsaStorageMonitor.adoc[]
-include::text/poller/OpenManageChassisMonitor.adoc[]
-include::text/poller/PercMonitor.adoc[]
-include::text/poller/Pop3Monitor.adoc[]
-include::text/poller/PrTableMonitor.adoc[]
-include::text/poller/RadiusAuthMonitor.adoc[]
-include::text/poller/SmbMonitor.adoc[]
-include::text/poller/SnmpMonitor.adoc[]
-include::text/poller/SshMonitor.adoc[]
-include::text/poller/SSLCertMonitor.adoc[]
-include::text/poller/StrafePingMonitor.adoc[]
-include::text/poller/TcpMonitor.adoc[]
-include::text/poller/SystemExecuteMonitor.adoc[]
-include::text/poller/VmwareCimMonitor.adoc[]
-include::text/poller/VmwareMonitor.adoc[]
-include::text/poller/Win32ServiceMonitor.adoc[]
-include::text/poller/XmpMonitor.adoc[]
+include::text/poller/monitors/AvailabilityMonitor.adoc[]
+include::text/poller/monitors/BgpSessionMonitor.adoc[]
+include::text/poller/monitors/BSFMonitor.adoc[]
+include::text/poller/monitors/CiscoIpSlaMonitor.adoc[]
+include::text/poller/monitors/CiscoPingMibMonitor.adoc[]
+include::text/poller/monitors/CitrixMonitor.adoc[]
+include::text/poller/monitors/DhcpMonitor.adoc[]
+include::text/poller/monitors/DiskUsageMonitor.adoc[]
+include::text/poller/monitors/DnsMonitor.adoc[]
+include::text/poller/monitors/DNSResolutionMonitor.adoc[]
+include::text/poller/monitors/FtpMonitor.adoc[]
+include::text/poller/monitors/HostResourceSwRunMonitor.adoc[]
+include::text/poller/monitors/HttpMonitor.adoc[]
+include::text/poller/monitors/HttpPostMonitor.adoc[]
+include::text/poller/monitors/HttpsMonitor.adoc[]
+include::text/poller/monitors/IcmpMonitor.adoc[]
+include::text/poller/monitors/ImapMonitor.adoc[]
+include::text/poller/monitors/JCifsMonitor.adoc[]
+include::text/poller/monitors/JDBCMonitor.adoc[]
+include::text/poller/monitors/JDBCStoredProcedureMonitor.adoc[]
+include::text/poller/monitors/JDBCQueryMonitor.adoc[]
+include::text/poller/monitors/JolokiaBeanMonitor.adoc[]
+include::text/poller/monitors/LdapMonitor.adoc[]
+include::text/poller/monitors/LdapsMonitor.adoc[]
+include::text/poller/monitors/MemcachedMonitor.adoc[]
+include::text/poller/monitors/NetScalerGroupHealthMonitor.adoc[]
+include::text/poller/monitors/NrpeMonitor.adoc[]
+include::text/poller/monitors/NtpMonitor.adoc[]
+include::text/poller/monitors/OmsaStorageMonitor.adoc[]
+include::text/poller/monitors/OpenManageChassisMonitor.adoc[]
+include::text/poller/monitors/PercMonitor.adoc[]
+include::text/poller/monitors/Pop3Monitor.adoc[]
+include::text/poller/monitors/PrTableMonitor.adoc[]
+include::text/poller/monitors/RadiusAuthMonitor.adoc[]
+include::text/poller/monitors/SmbMonitor.adoc[]
+include::text/poller/monitors/SnmpMonitor.adoc[]
+include::text/poller/monitors/SshMonitor.adoc[]
+include::text/poller/monitors/SSLCertMonitor.adoc[]
+include::text/poller/monitors/StrafePingMonitor.adoc[]
+include::text/poller/monitors/TcpMonitor.adoc[]
+include::text/poller/monitors/SystemExecuteMonitor.adoc[]
+include::text/poller/monitors/VmwareCimMonitor.adoc[]
+include::text/poller/monitors/VmwareMonitor.adoc[]
+include::text/poller/monitors/Win32ServiceMonitor.adoc[]
+include::text/poller/monitors/XmpMonitor.adoc[]
 
-// Event description
+[[ga-events]]
+== Events in OpenNMS
 include::text/events.adoc[]
 
-// Provisioning guide
-include::text/provisioning.adoc[]
+[ga-provisioning]
+== Provisioning
+include::text/provisioning/introduction.adoc[]
+include::text/provisioning/concepts.adoc[]
+include::text/provisioning/terminology.adoc[]
+include::text/provisioning/scalability.adoc[]
+include::text/provisioning/getting-started.adoc[]
+include::text/provisioning/import-handler.adoc[]
+include::text/provisioning/examples.adoc[]
+include::text/provisioning/adapters.adoc[]
+include::text/provisioning/integration.adoc[]
+include::text/provisioning/single-node.adoc[]
+include::text/provisioning/fine-grained.adoc[]
+include::text/provisioning/api-examples.adoc[]
 
-// OpenNMS operation
+[[ga-opennms-operation]]
 == OpenNMS Operation
-include::text/operation/cassandra21x.adoc[]
-include::text/operation/newts.adoc[]
-include::text/operation/jmx-config-generator/introduction.adoc[]
-include::text/operation/jmx-config-generator/webui.adoc[]
-include::text/operation/jmx-config-generator/cli.adoc[]
+include::text/operation/newts/cassandra21x.adoc[]
+include::text/operation/newts/newts.adoc[]
