@@ -56,6 +56,10 @@
       <outputDirectory>logs</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.build.directory}/jasperstudio-extension</directory>
+      <outputDirectory>contrib/jasperstudio-extension</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.outputDirectory}/share</directory>
       <outputDirectory>share</outputDirectory>
     </fileSet>

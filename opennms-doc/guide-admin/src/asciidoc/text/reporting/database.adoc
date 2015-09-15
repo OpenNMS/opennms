@@ -89,7 +89,7 @@ To achieve this, right click in the `Project Explorer` and select `Configure Bui
 image::reporting/1_configure-build-path-1.png[]
 
 Switch to the `Libraries` tab. +
-Click `Add External JARs` and select the `opennms-jasperstudio-extension-{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/lib/ext`. +
+Click `Add External JARs` and select the `opennms-jasperstudio-extension-{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`. +
 Close the file selection dialog.
 
 image::reporting/2_configure-build-path-2.png[]
