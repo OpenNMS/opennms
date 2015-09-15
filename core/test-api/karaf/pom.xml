@@ -201,6 +201,20 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Other projects necessary to run integration tests -->
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.event-forwarder</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.event-receiver</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- 
       This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
       which provides useful utility functions when running Pax Exam testing inside
