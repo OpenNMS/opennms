@@ -215,6 +215,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.broker</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>activemq-receiver</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.vaadin-dashlets</groupId>
       <artifactId>dashlet-url</artifactId>
       <version>${project.version}</version>
