@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.mock;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -387,5 +389,19 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
         }
 
         return foreignSource;
+    }
+
+    @Override
+    public String getForeignId(long nodeId) throws SQLException {
+        try (Connection dbConn = DataSourceFactory.getInstance().getConnection();
+             PreparedStatement stmt = dbConn.prepareStatement("SELECT foreignId FROM node WHERE nodeid=?");
+        ) {
+            stmt.setString(1, String.valueOf(nodeId));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("foreignId");
+            }
+        }
+        return null;
     }
 }

@@ -128,6 +128,11 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String TAG_FOREIGNSOURCE = "foreignsource";
 
 	/**
+	 * The foreignid for the event's nodeid xml tag
+	 */
+	protected static final String TAG_FOREIGNID = "foreignid";
+
+	/**
 	 * The event ifindex xml tag
 	 */
 	protected static final String TAG_IFINDEX = "ifindex";
@@ -416,16 +421,28 @@ public abstract class AbstractEventUtil implements EventUtil {
 				retParmVal = "Unknown";
 		} else if (parm.equals(TAG_FOREIGNSOURCE)) {
 			retParmVal = "";
-			String foreignSource = null;
 			if (event.getNodeid() > 0) {
 				try {
-					foreignSource = getForeignSource(event.getNodeid());
+					String foreignSource = getForeignSource(event.getNodeid());
+					if (foreignSource != null) {
+						retParmVal = WebSecurityUtils.sanitizeString(foreignSource);
+					}
 				} catch (SQLException e) {
 					// do nothing
 				}
 			}
-			if (foreignSource != null)
-				retParmVal = WebSecurityUtils.sanitizeString(foreignSource);
+		} else if (parm.equals(TAG_FOREIGNID)) {
+			retParmVal = "";
+			if (event.getNodeid() > 0) {
+				try {
+					String foreignId = getForeignId(event.getNodeid());
+					if (foreignId != null) {
+						retParmVal = WebSecurityUtils.sanitizeString(foreignId);
+					}
+				} catch (SQLException ex) {
+					// do nothing
+				}
+			}
 		} else if (parm.equals(TAG_TIME)) {
 			Date eventTime = event.getTime(); //This will be in GMT
 			if (eventTime == null) {
@@ -1039,6 +1056,15 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 *             if database error encountered
 	 */
 	protected abstract String getForeignSource(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve foreign id from the node table of the database given a particular nodeId.
+	 *
+	 * @param nodeId Node identifier
+	 * @return foreignId Retrieved foreign id
+	 * @throws SQLException if database error encountered
+	 */
+	protected abstract String getForeignId(long nodeId) throws SQLException;
 
 	/**
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular

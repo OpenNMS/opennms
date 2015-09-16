@@ -257,10 +257,10 @@ public class EventUtilIT {
      */
     @Test
     public void testNodeFields() {
-        String testString = "%uei%:%dpname%:%nodeid%:%nodelabel%:%foreignsource%";
+        String testString = "%uei%:%dpname%:%nodeid%:%nodelabel%:%foreignsource%:%foreignid%";
 
         String newString = AbstractEventUtil.getInstance().expandParms(testString, m_svcLostEvent);
-        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:Unknown:", newString);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:Unknown::", newString);
     }
 
     @Test

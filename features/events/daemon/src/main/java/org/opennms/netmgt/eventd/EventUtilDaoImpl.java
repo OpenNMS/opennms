@@ -93,10 +93,16 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
 
     @Override
     protected String getForeignSource(long nodeId) {
-        OnmsNode node = nodeDao.get(Integer.valueOf((int)nodeId));
+        OnmsNode node = nodeDao.get((int)nodeId);
         if (node != null)
             return node.getForeignSource();
         return null;
+    }
+
+    @Override
+    protected String getForeignId(long nodeId) {
+        OnmsNode node = nodeDao.get((int)nodeId);
+        return node == null ? null : node.getForeignId();
     }
 
     @Override

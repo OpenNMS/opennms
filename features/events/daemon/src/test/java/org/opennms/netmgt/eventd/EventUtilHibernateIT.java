@@ -100,6 +100,16 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    public void testGetForeignId() {
+        String label = eventUtilDaoImpl.getForeignId(m_populator.getNode3().getId());
+        assertEquals("3", label);
+        label = eventUtilDaoImpl.getForeignId(m_populator.getNode1().getId());
+        assertEquals("1", label);
+        label = eventUtilDaoImpl.getForeignId(m_populator.getNode6().getId());
+        assertNull(label);
+    }
+
+    @Test
     public void testGetIfAlias() {
     	String alias = eventUtilDaoImpl.getIfAlias(m_populator.getNode1().getId(), "192.168.1.1");
     	assertEquals("Initial ifAlias value", alias);
