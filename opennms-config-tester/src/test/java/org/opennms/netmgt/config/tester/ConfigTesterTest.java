@@ -288,6 +288,14 @@ public class ConfigTesterTest {
         testConfigFile("nsclient-datacollection-config.xml");
     }
 
+    /**
+     * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
+     */
+    @Test
+    public void testOpennmsActivemq() {
+        ignoreConfigFile("opennms-activemq.xml");
+    }
+
     @Test
     public void testOpennmsDatasources() {
         testConfigFile("opennms-datasources.xml");

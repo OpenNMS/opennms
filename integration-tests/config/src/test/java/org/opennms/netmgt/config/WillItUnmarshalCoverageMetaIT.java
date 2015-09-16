@@ -131,6 +131,7 @@ public class WillItUnmarshalCoverageMetaIT {
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Postfix.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Sudo.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "log4j2.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "opennms-activemq.xml"));
         LOG.debug("FILES.size() = {}", FILES.size());
     }
     
