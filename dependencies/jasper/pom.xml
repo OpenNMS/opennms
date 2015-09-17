@@ -47,9 +47,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>iText</artifactId>
-      <version>2.1.7</version>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7.js3</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
