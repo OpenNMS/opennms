@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
+import org.exolab.castor.xml.ValidationException;
 import org.apache.commons.io.IOUtils;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
@@ -47,6 +48,8 @@ import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.logging.Logging;
 import org.opennms.javamail.JavaMailer;
 import org.opennms.javamail.JavaMailerException;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocator;
@@ -78,6 +81,40 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     /** {@inheritDoc} */
     @Override
+    public DeliveryOptions getDeliveryOptions(final String reportId, final String userId) {
+        final DeliveryOptions options = new DeliveryOptions();
+
+        options.setFormat(ReportFormat.HTML);
+        options.setPersist(true);
+        options.setSendMail(false);
+
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+            @Override public void run() {
+                UserManager userFactory = UserFactory.getInstance();
+
+                try {
+                    final String emailAddress = userFactory.getEmail(userId);
+                    if (emailAddress != null && !emailAddress.isEmpty()) {
+                        options.setMailTo(emailAddress);
+                    }
+                } catch (final ValidationException e) {
+                    LOG.error("Validation exception trying to set destination email address", e);
+                } catch (final NullPointerException e) { // See NMS-5111 for more details.
+                    LOG.warn("The user {} does not have any email configured.", userId);
+                } catch (final Exception e) {
+                    LOG.error("An error occurred while attempting to determine and set the destination email address for user {}", userId, e);
+                }
+
+                options.setInstanceId(reportId + " " + userId);
+
+            }
+        });
+        return options;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public ReportParameters getParameters(final String reportId) {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<ReportParameters>() {
@@ -93,6 +130,31 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         } catch (final Exception e) {
             return null;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Boolean hasParameters(final String reportId) {
+        final Map<String, Object> reportParms = getParameters(reportId).getReportParms();
+        if ((reportParms == null)||(reportParms.isEmpty())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void render(final String reportId, final String location, final ReportFormat format, final OutputStream outputStream) {
+        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
+            @Override public void run() {
+                try {
+                    getReportService(reportId).render(reportId, location, format, outputStream);
+                } catch (final ReportException e) {
+                    LOG.error("Failed to render report", e);
+                }
+            }
+        });
     }
 
     /** {@inheritDoc} */

@@ -67,6 +67,17 @@ public interface ReportWrapperService {
     void run(ReportParameters parameters, ReportMode mode, DeliveryOptions deliveryOptions, String reportId);
 
     /**
+     * This method returns the delivery options for the report. Providing a userID will
+     * allow the report service to pre-populate the destination address
+     *
+     * @param userId a {@link java.lang.String} object.
+     * @param reportId a {@link java.lang.String} object.
+     * @return a delivery options object containing information that describes how the report might
+     *         be delivered.
+     */
+    DeliveryOptions getDeliveryOptions(String userId, String reportId);
+
+    /**
      * This method provides a list of formats supported by the report
      *
      * @param reportId reportId as defined in database-reports.xml
@@ -83,6 +94,25 @@ public interface ReportWrapperService {
      * @param mode in which to run the report (ONLINE, BATCH or IMMEDIATE)
      */
     void runAndRender(ReportParameters parameters, ReportMode mode, OutputStream outputStream) throws ReportException;
+
+    /**
+     * This method renders the report into a given output stream.
+     *
+     * @param ReportId reportId as defined in database-reports.xml
+     * @param location location of the report on disk
+     * @param format format to render the report
+     * @param outputStream stream to render the resulting report
+     */
+    void render(String ReportId, String location, ReportFormat format, OutputStream outputStream);
+
+
+    /**
+     * This method is used to determine whether the report takes any parameters
+     *
+     *  @return true if the report takes parameters, false if not.
+     * @param ReportId a {@link java.lang.String} object.
+     */
+    Boolean hasParameters(String ReportId);
 
     /**
      * This method retrieves the runtime parameters taken by the report
