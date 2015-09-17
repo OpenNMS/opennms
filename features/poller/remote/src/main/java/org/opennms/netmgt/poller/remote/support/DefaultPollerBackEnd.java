@@ -102,6 +102,9 @@ import org.springframework.util.Assert;
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerBackEnd.class);
 
+    /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
+    public static final String DEFAULT_BASENAME = "response-time";
+
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
@@ -663,9 +666,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         final String svcName = monSvc.getServiceName();
         final Service svc = m_pollerConfig.getServiceInPackage(svcName, pkg);
 
-        final String dsName = getServiceParameter(svc, "ds-name");
+        String dsName = getServiceParameter(svc, "ds-name");
         if (dsName == null) {
-            return;
+            dsName = DEFAULT_BASENAME;
+        }
+
+        String rrdBaseName = getServiceParameter(svc, "rrd-base-name");
+        if (rrdBaseName == null) {
+            rrdBaseName = dsName;
         }
 
         final String rrdRepository = getServiceParameter(svc, "rrd-repository");
@@ -680,7 +688,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         repository.setRrdBaseDir(new File(rrdRepository));
 
         DistributedLatencyCollectionResource distributedLatencyResource = new DistributedLatencyCollectionResource(locationMonitorId, InetAddressUtils.toIpAddrString(monSvc.getIpAddress()));
-        DistributedLatencyCollectionAttributeType distributedLatencyType = new DistributedLatencyCollectionAttributeType(dsName, dsName);
+        DistributedLatencyCollectionAttributeType distributedLatencyType = new DistributedLatencyCollectionAttributeType(rrdBaseName, dsName);
         distributedLatencyResource.addAttribute(new DistributedLatencyCollectionAttribute(distributedLatencyResource,
                 distributedLatencyType, responseTime));
 
