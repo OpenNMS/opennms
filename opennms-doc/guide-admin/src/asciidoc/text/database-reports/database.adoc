@@ -87,23 +87,23 @@ The official _Jaspersoft Studio_ documentation and wiki covers this aspect.
 To use the _Measurements API_ it is required to add the _Measurements Datasource_ library to the build path of _JasperStudio_.
 This is achieved with right click in the `Project Explorer` and select `Configure Buildpath`.
 
-image::reporting/1_configure-build-path-1.png[]
+image::database-reports/1_configure-build-path-1.png[]
 
 . Switch to the `Libraries` tab.
 . Click `Add External JARs` and select the `opennms-jasperstudio-extension-{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
 . Close the file selection dialog.
 
-image::reporting/2_configure-build-path-2.png[]
+image::database-reports/2_configure-build-path-2.png[]
 
 . Close the dialog.
 . The _Measurements Datasource and Helpers_ should now be available.
 . Go to the `Dataset and Query Dialog` in _Jaspersoft Studio_ and select a language called `measurement`.
 
-image::reporting/3_dataset-query-dialog.png[]
+image::database-reports/3_dataset-query-dialog.png[]
 
 NOTE: Even if there is no `Read Fields` functionality available, the `Data preview` can be used.
       It is required the the access to the _Measurements API_ is possible using the connection parameters `MEASUREMENT_URL`, `MEASUREMENT_USERNAME` and `MEASUREMENT_PASSWORD`.
-      The <<ga-database-reports-fields, Supported Fields>> section gives more details.
+      The <<ga-database-reports-fields, Supported Fields>> section gives more details. In addition you have
 
 [[ga-database-reports-access-performance-data]]
 === Accessing Performance Data (`Measurement Datasource`)
@@ -112,7 +112,7 @@ WARNING: Before _OpenNMS 17_ it was possible to access the performance data stor
          This is no longer possible and the _Measurements Datasource_ has to be used.
 
 To access performance data within reports we created a custom _Measurement Datasource_ which allows to query the _Measurements API_ and process the returned data in your reports.
-Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements_api[official documentation] on how to use the _Measurements API_.
+Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
 To receive data from the _Measurements API_ simply create a query as follows:
 
@@ -177,7 +177,7 @@ These helpers come along with the _Measurement Datasource_.
                                                                                                                               `foreignSource`: String, the foreign source of the node, may be null +
                                                                                                                               `foreignId`: String, the foreign id of the node, may be null. +
                                                                                                                               +
-                                                                                                                              For more details checkout <<ga-database-reports-nodeid-foreignsource-dilemma, The node id and foreign source dilemma>>.
+                                                                                                                              For more details checkout <<ga-database-reports-node-source-descriptor, Usage of the node source descriptor>>.
 | `org.opennms.netmgt.jasper.helper.MeasurementsHelper` | `getInterfaceDescriptor(snmpifname, snmpifdescr, snmphysaddr)`    | Returns the `interface descriptor` of a given interface, e.g. `en0-005e607e9e00`.
                                                                                                                               The input paramaters are prioritized. If a `snmpifdescr` is specified, it is used instead of the `snmpifname`.
                                                                                                                               It a `snmpifdescr` is defined, it will be appended to `snmpifname`/`snmpifdescr`. +
@@ -187,21 +187,45 @@ These helpers come along with the _Measurement Datasource_.
                                                                                                                               `snmphyaddr`: String, the mac address of the interface, e.g. `005e607e9e00`. May be null. +
                                                                                                                               As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined. +
                                                                                                                               +
-                                                                                                                              For more details checkout <<ga-database-reports-interface-descriptor, The interface descriptor>>.
+                                                                                                                              For more details checkout <<ga-database-reports-interface-descriptor, Usage of the interface descriptor>>.
 |===
 
-[[ga-database-reports-nodeid-foreignsource-dilemma]]
-==== The `node id` and `foreign source` dilemma
+[[ga-database-reports-interface-descriptor]]
+==== Usage of the `interface descriptor`
 
-If you are using _RRD_ or _JRobin_ as persistence strategy and have `story by foreign source` enabled you cannot access the data via the node resource (e.g. `node[<nodeId>]`), because the data is stored somewhere else on disk.
-Instead you have to access the nodeSource resource (e.g. `nodeSource[<foreignSource>:<foreignId>]`).
-See link:http://www.opennms.org/wiki/ForeignSource/foreignId_Data_Storage_How-To[here] for more details.
+An `interfaceSnmp` is addressed with the exact `interface descriptor`.
+To allow easy access to the `interface descriptor` a helper tool is provided.
+The following example shows the usage of that helper.
 
-However if you have a `foreign source` and a `foreign id` you can always access the data, even if `store by foreign source` is enabled/disabled.
+.jrxml report snippet to visualize the use of the `interface descriptor`
+[source, xml]
+------
+<parameter name="interface" class="java.lang.String" isForPrompting="false">
+  <parameterDescription><![CDATA[]]></parameterDescription>
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+</parameter>
+<queryString language="Measurement">
+  <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
+<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeId}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeId}].interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
+------
+
+[[ga-database-reports-node-source-descriptor]]
+==== Usage of the `node source descriptor`
+
+A node is addressed by a `node source descriptor`.
+The `node source descriptor` references the node either via the `foreign source` and `foreign id` or by the `node id`.
+
+If `store by foreign source` is enabled only addressing the node via `foreign source` and `foreign id` is possible.
 
 In order to make report creation easier, there is a helper method to create the `node source descriptor`.
 
-.jrxml report snippet to visualize the use of the `node source descriptor helper method`.
+NOTE: For more information about `store by foreign source`, please have a look at link:http://www.opennms.org/wiki/ForeignSource/foreignId_Data_Storage_How-To[our Wiki].
+
+The following example shows the usage of that helper.
+
+.jrxml report snippet to visualize the use of the `node source descriptor`.
 [source, xml]
 ------
 <parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
@@ -213,10 +237,10 @@ In order to make report creation easier, there is a helper method to create the 
 <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[en0-005e607e9e00]"/>
 </query-request>]]>
 ------
-Depending on the input parameters you either get a node or a nodeSource resource descriptor.
+Depending on the input parameters you either get a `node resource descriptor` or a `foreign source/foreign id resource descriptor`.
 
 [[ga-database-reports-interface-descriptor]]
-==== The `interface descriptor`
+==== Usage of the `interface descriptor`
 
 An `interfaceSnmp` is addressed with the exact `interface descriptor`.
 To allow easy access to the `interface descriptor` a helper tool is provided.
