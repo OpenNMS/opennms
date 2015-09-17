@@ -30,7 +30,7 @@ If you do not have a _Java Trust Store_ setup yet, it is created automatically.
 .Import a certificate to the _Java Trust Store_
 [source,shell]
 ----
-keytool
+keytool \
   -import \ <1>
   -v \ <2>
   -trustcacerts \ <3>
