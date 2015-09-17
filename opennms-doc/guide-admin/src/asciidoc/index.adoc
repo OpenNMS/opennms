@@ -124,9 +124,9 @@ include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
 
-[[ga-reporting]]
-// Reporting
-include::text/reporting/database.adoc[]
+[[ga-database-reports]]
+== Database Reports
+include::text/database-reports/database.adoc[]
 
 [[ga-opennms-operation]]
 == Operation
