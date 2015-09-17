@@ -7,6 +7,7 @@
             "ackTime": null,
             "ackUser": null,
             "destinations": [],
+            "eventId": 1,
             "id": 1,
             "ipAddress": "192.168.1.1",
             "nodeId": 1,

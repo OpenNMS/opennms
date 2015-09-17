@@ -1,0 +1,127 @@
+<!-- Author: Alejandro Galue <agalue@opennms.org> -->
+
+<div class="panel panel-default">
+  
+  <div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#requisitions-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <div class="navbar-brand">Requisitions ({{ requisitions.length }})</div>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="requisitions-navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a ng-click="editDefaultForeignSource()"><span class="glyphicon glyphicon-edit"/> Edit Default</a></li>
+            <!-- Not implemented
+            <li><a ng-click="resetDefaultForeignSource()"><span class="glyphicon glyphicon-retweet"/> Reset Default</a></li>
+            -->
+            <li><a ng-click="refresh()"><span class="glyphicon glyphicon-refresh"/> Refresh</a></li>
+            <li><a ng-click="add()"><span class="glyphicon glyphicon-plus"/> Add</a></li>
+          </ul>
+          <form class="navbar-form" role="search">
+            <div class="input-group">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+              <input class="form-control" type="text" placeholder="Search/Filter" ng-model="reqFilter"></input>
+            </div>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Loading Message -->
+    <div class="jumbotron" ng-show="!loaded">
+      <div class="container">
+        <h1>Loading Requisitions</h1>
+        <p>Please wait while all the requisitions are loaded in on your browser.</p>
+        <p>This could take time, depending on the number of requisitions, and the number of nodes on each requisition.</p>
+      </div>
+    </div>
+
+    <!-- No Requisitions -->
+    <div class="jumbotron" ng-show="loaded && requisitions.length == 0">
+      <div class="container">
+        <h1>There are no requisitions</h1>
+        <p>Please click on the 'Add' button, to start adding requisitions.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Table with Navigation -->
+  <div class="container-fluid table-responsive" ng-show="requisitions.length > 0">
+
+    <table class="table table-striped table-condensed table-hover">
+      <thead>
+        <tr>
+          <th>Requisition Name</th>
+          <th>Last Update</th>
+          <th>Last Import</th>
+          <th>Nodes Defined</th>
+          <th>Nodes in Database</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ng-class="{danger: !requisition.deployed}" -->
+        <tr ng-repeat="requisition in filteredRequisitions | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+          <td>{{ requisition.foreignSource }}</td>
+          <td>{{ requisition.dateStamp | date:'dd-MM-yy hh:mm:ss' }}</td>
+          <td>{{ requisition.lastImport | date:'dd-MM-yy hh:mm:ss' }}</td>
+          <td>{{ requisition.nodesDefined }}</td>
+          <td>{{ requisition.nodesInDatabase }}</td>
+          <td>
+            <a class="btn btn-default btn-xs"
+              tooltip="Edit the {{requisition.foreignSource}} Requisition"
+              ng-click="edit(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+            <a class="btn btn-default btn-xs"
+              tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
+              ng-click="editForeignSource(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-edit"></span>
+            </a>
+            <!-- Not implemented
+            <a class="btn btn-default btn-xs"
+              tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
+              ng-click="clone(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-link"></span>
+            </a>
+            -->
+            <a class="btn btn-default btn-xs"
+              tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
+              ng-click="synchronize(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+            <a class="btn btn-default btn-xs" ng-show="requisition.nodesInDatabase > 0"
+              tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
+              ng-click="removeAllNodes(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-remove-circle"></span>
+            </a>
+            <a class="btn btn-default btn-xs" ng-show="requisition.nodesInDatabase == 0"
+              tooltip="Remove the {{requisition.foreignSource}} Requisition"
+              ng-click="delete(requisition.foreignSource)">
+              <span class="glyphicon glyphicon-remove"></span>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <br ng-hide="filteredRequisitions.length > pageSize" />
+
+    <pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true" 
+      class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+      ng-show="filteredRequisitions.length > pageSize"></pagination>
+
+  </div> <!-- container-fluid -->
+
+</div> <!-- panel -->

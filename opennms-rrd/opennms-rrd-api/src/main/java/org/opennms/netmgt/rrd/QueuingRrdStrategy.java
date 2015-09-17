@@ -1253,6 +1253,36 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     }
 
     /**
+     * <p>getGraphLeftOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphLeftOffset() {
+        return m_delegate.getGraphLeftOffset();
+    }
+
+    /**
+     * <p>getGraphRightOffset</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphRightOffset() {
+        return m_delegate.getGraphRightOffset();
+    }
+
+    /**
+     * <p>getGraphTopOffsetWithText</p>
+     *
+     * @return a int.
+     */
+    @Override
+    public int getGraphTopOffsetWithText() {
+        return m_delegate.getGraphTopOffsetWithText();
+    }
+
+    /**
      * <p>getDefaultFileExtension</p>
      *
      * @return a {@link java.lang.String} object.

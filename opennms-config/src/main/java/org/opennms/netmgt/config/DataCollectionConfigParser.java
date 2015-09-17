@@ -32,10 +32,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
@@ -47,7 +45,6 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.Systems;
@@ -107,23 +104,6 @@ public class DataCollectionConfigParser {
             LOG.info("parse: SNMP collection {} doesn't have any external reference.", collection.getName());
         }
     }
-    
-    /**
-     * Get all configured resource types.
-     * 
-     * @return the resource type list
-     */
-    public Set<ResourceType> getAllResourceTypes() {
-        parseExternalResources();
-        Set<ResourceType> resourceTypes = new HashSet<ResourceType>();
-        for (DatacollectionGroup group : externalGroupsMap.values()) {
-            for (ResourceType rt : group.getResourceTypes()) {
-                if (!contains(resourceTypes, rt))
-                    resourceTypes.add(rt);
-            }
-        }
-        return resourceTypes;
-    }
 
     /**
      * Verify the sub-groups of SNMP collection.
@@ -137,23 +117,6 @@ public class DataCollectionConfigParser {
             collection.setGroups(new Groups());
     }
 
-    /**
-     * Verify if the resourceTypes list contains a specific resourceType.
-     * <p>One resource type will be considered the same as another one, if they have the same name.</p>
-     * 
-     * @param globalContainer
-     * @param resourceType
-     * 
-     * @return true, if the list contains the resourceType
-     */
-    private boolean contains(Collection<ResourceType> resourceTypes, ResourceType resourceType) {
-        for (ResourceType rt : resourceTypes) {
-            if (resourceType.getName().equals(rt.getName()))
-                return true;
-        }
-        return false;
-    }
-    
     /**
      * Verify if the groups list contains a specific group.
      * <p>One group will be considered the same as another one, if they have the same name.</p>

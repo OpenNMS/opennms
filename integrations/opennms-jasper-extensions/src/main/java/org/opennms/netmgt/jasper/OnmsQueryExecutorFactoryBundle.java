@@ -29,14 +29,14 @@
 package org.opennms.netmgt.jasper;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
-import net.sf.jasperreports.engine.query.QueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.query.JRQueryExecuterFactoryBundle;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 
 import org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory;
 import org.opennms.netmgt.jasper.resource.ResourceQueryExecuterFactory;
 import org.opennms.netmgt.jasper.rrdtool.RrdtoolQueryExecutorFactory;
 
-public class OnmsQueryExecutorFactoryBundle implements QueryExecuterFactoryBundle {
+public class OnmsQueryExecutorFactoryBundle implements JRQueryExecuterFactoryBundle {
     
     @Override
     public String[] getLanguages() {
@@ -44,7 +44,7 @@ public class OnmsQueryExecutorFactoryBundle implements QueryExecuterFactoryBundl
     }
 
     @Override
-    public JRQueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
+    public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException {
         String reportLanguage = checkReportLanguage(language);
         
         if("jrobin".equals(reportLanguage)) {

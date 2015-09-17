@@ -110,12 +110,20 @@ public class RrdGraphAttribute implements OnmsAttribute {
     public String getRrdRelativePath() {
         return m_relativePath + File.separator + m_rrdFile;
     }
-    
+
+    /**
+     * <p>getRrdFile</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRrdFile() {
+        return m_rrdFile;
+    }
+
     /** {@inheritDoc} */
     @Override
 	public String toString() {
     	return ""+m_resource + '.' + m_name;
 	}
-
 
 }

@@ -104,20 +104,24 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", BASE_URL + "opennms/admin/index.jsp");
+        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", "opennms/admin/index.jsp");
         findElementByXpath("//h3[text()='OpenNMS System']");
-        findElementByXpath("//h3[text()='Operations']");
+        findElementByXpath("//h3[text()='Provisioning']");
+        findElementByXpath("//h3[text()='Event Management']");
+        findElementByXpath("//h3[text()='Service Monitoring']");
+        findElementByXpath("//h3[text()='Performance Measurement']");
+        findElementByXpath("//h3[text()='Distributed Monitoring']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
+        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "opennms/admin/node/add.htm");
         findElementByXpath("//h3[text()='Node Quick-Add']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Help/Support", BASE_URL + "opennms/support/index.htm");
+        clickMenuItem("name=nav-admin-top", "Help/Support", "opennms/support/index.htm");
         findElementByXpath("//h3[text()='Commercial Support']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Log Out", BASE_URL + "opennms/j_spring_security_logout");
+        clickMenuItem("name=nav-admin-top", "Log Out", "opennms/j_spring_security_logout");
         findElementById("input_j_username");
     }
 

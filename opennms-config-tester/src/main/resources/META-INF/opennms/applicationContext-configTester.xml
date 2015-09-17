@@ -31,6 +31,8 @@
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
+        <entry key="jmx-config.xml" value="jmxConfigDao"/>
+        <entry key="jms-northbounder-configuration.xml" value="jmsNorthbounderConfigDao"/>
         <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigFactory"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
         <entry key="magic-users.properties" value="userDao"/>
@@ -214,7 +216,15 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jdbc-datacollection-config.xml"/>
   </bean>
+
+  <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
+    <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
+  </bean>
   
+  <bean name="jmsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/jms-northbounder-configuration.xml" />
+  </bean>
+
   <bean id="jmxDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.JMXDataCollectionConfigFactory.init</value></property>
   </bean>

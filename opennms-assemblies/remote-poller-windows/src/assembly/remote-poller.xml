@@ -11,24 +11,23 @@
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <includes>
         <include>*.bat</include>
       </includes>
       <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
       <excludes>
         <exclude>*.bat</exclude>
       </excludes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -38,8 +37,6 @@
       <includes>
         <include>org.opennms.assemblies:org.opennms.assemblies.remote-poller-onejar:jar:signed-jar-with-dependencies:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>

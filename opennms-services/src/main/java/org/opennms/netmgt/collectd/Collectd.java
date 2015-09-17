@@ -1015,11 +1015,15 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
         // Removing unused collectors if necessary
+        List<String> blackList = new ArrayList<String>();
         for (String collectorName : getCollectorNames()) {
             if (!configuredCollectors.contains(collectorName)) {
-                LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", collectorName);
-                m_collectors.remove(collectorName);
+                blackList.add(collectorName);
             }
+        }
+        for (String collectorName : blackList) {
+            LOG.info("rebuildScheduler: removing collector for {}, it is no longer required", collectorName);
+            m_collectors.remove(collectorName);
         }
         // Recreating all Collectable Services (using the nodeID list populated at the beginning)
         Collection<Integer> nodeIds = m_nodeDao.getNodeIds();

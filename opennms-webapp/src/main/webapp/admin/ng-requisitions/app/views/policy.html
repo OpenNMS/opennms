@@ -1,0 +1,31 @@
+<!-- Author: Alejandro Galue <agalue@opennms.org> -->
+
+<div class="modal-content">
+
+  <div class="modal-header">
+    <h3 class="modal-title">Policy</h3>
+  </div>
+
+  <div class="modal-body">
+    <form name="policyForm">
+      <div class="form-group">
+        <label class="control-label" for="name">Name</label>
+        <input class="form-control" type="text" id="name" name="name" placeholder="Name" ng-model="policy.name" required></input>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="clazz">Class</label>
+        <input class="form-control" type="text" id="clazz" name="clazz" placeholder="Implementation Class" ng-model="policy.class" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false" typeahead-on-select="updatePolicyParameters($item)" typeahead="policy.class as policy.name for policy in availablePolicies | filter:$viewValue:fieldComparator" required></input>
+      </div>
+      <div class="form-group" ng-repeat="parameter in policy.parameter">
+        <div ng-include="getTemplate(parameter)"></div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="addParameter()" ng-disabled="policyForm.clazz.$invalid">Add Parameter</button>
+    <button class="btn btn-success" ng-click="save()" ng-disabled="policyForm.$invalid">Save</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+  </div>
+
+</div> <!-- modal-content -->

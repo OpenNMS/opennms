@@ -62,6 +62,9 @@ public class JmxConfigCreateCommand extends JmxCommand {
     @Option(name = "--skipDefaultVM", usage = "set to process default JavaVM Beans.")
     private boolean skipDefaultVM = false;
 
+    @Option(name = "--skipNonNumber", usage = "do not process any non-number values.")
+    private boolean skipNonNumber = false;
+
     @Option(name = "--output", usage = "file name to write generated jmx-datacollection-config.xml", required = false, metaVar = "<file>")
     private String outFile;
 
@@ -101,7 +104,7 @@ public class JmxConfigCreateCommand extends JmxCommand {
     protected void execute(MBeanServerConnection mbeanServerConnection) throws IOException, MBeanServerQueryException, JMException {
         JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(LOG);
         Map<String, String> dictionary = loadDictionary();
-        JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(ids, mbeanServerConnection, serviceName, !skipDefaultVM, dictionary);
+        JmxDatacollectionConfig generateJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(ids, mbeanServerConnection, serviceName, !skipDefaultVM, skipNonNumber, dictionary);
         jmxConfigGenerator.writeJmxConfigFile(generateJmxConfigModel, outFile);
     }
 

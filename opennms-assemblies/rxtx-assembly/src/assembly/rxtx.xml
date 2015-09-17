@@ -11,7 +11,8 @@
   <fileSets>
     <fileSet>
       <directory>target/dependency/lib</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <fileMode>0755</fileMode>
       <directoryMode>0755</directoryMode>
     </fileSet>

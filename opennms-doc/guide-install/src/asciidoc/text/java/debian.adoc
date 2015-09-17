@@ -1,0 +1,27 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-oracle-java-debian]]
+=== Setup on _Debian-based_ systems
+
+This section describes how to install _Oracle Java 8_ on a _Debian-based_ system like _Debian 8_ or _Ubuntu 14.04 LTS_.
+
+.Install add-apt-repository package
+[source, bash]
+----
+apt-get install -y python-software-properties
+----
+
+.Add Java repository from webud8 maintainer
+[source, bash]
+----
+add-apt-repository ppa:webupd8team/java
+apt-get update
+----
+
+.Install Oracle Java 8 installer
+[source, bash]
+----
+apt-get install -y oracle-java8-installer
+----

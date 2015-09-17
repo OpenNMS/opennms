@@ -29,11 +29,11 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.RESOLUTION_TYPE_PARM;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.RT_BOTH;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.RT_EITHER;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.RT_V4;
-import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.RT_V6;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_BOTH;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_EITHER;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V4;
+import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_RESOLUTION_TYPE_V6;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
-import org.opennms.netmgt.poller.monitors.DNSResolutionMonitor;
 
 /**
  * DNSResolutionMonitorTest
@@ -74,10 +73,14 @@ public class DNSResolutionMonitorTest {
         monitor.initialize(neither);
         
         
-        Map<String, Object> v4Parms = Collections.<String, Object>singletonMap(RESOLUTION_TYPE_PARM, RT_V4);
-        Map<String, Object> v6Parms = Collections.<String, Object>singletonMap(RESOLUTION_TYPE_PARM, RT_V6);
-        Map<String, Object> bothParms = Collections.<String, Object>singletonMap(RESOLUTION_TYPE_PARM, RT_BOTH);
-        Map<String, Object> eitherParms = Collections.<String, Object>singletonMap(RESOLUTION_TYPE_PARM, RT_EITHER);
+        Map<String, Object> v4Parms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
+                                                                               PARM_RESOLUTION_TYPE_V4);
+        Map<String, Object> v6Parms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
+                                                                               PARM_RESOLUTION_TYPE_V6);
+        Map<String, Object> bothParms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
+                                                                                 PARM_RESOLUTION_TYPE_BOTH);
+        Map<String, Object> eitherParms = Collections.<String, Object>singletonMap(PARM_RESOLUTION_TYPE,
+                                                                                   PARM_RESOLUTION_TYPE_EITHER);
         
         
         assertEquals(PollStatus.available(), monitor.poll(dual, v4Parms));

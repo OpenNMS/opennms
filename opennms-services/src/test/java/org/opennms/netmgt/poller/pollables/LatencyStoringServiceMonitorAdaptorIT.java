@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,19 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         m_db = database;
     }
 
+    private class MockServiceMonitor extends AbstractServiceMonitor {
+        private  Double[] values;
+        private int current = 0;
+
+        public MockServiceMonitor(Double[] values) {
+            this.values = values;
+        }
+        @Override
+        public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+            return (PollStatus.get(PollStatus.SERVICE_AVAILABLE, values[current++]));
+        }
+    }
+
     @Before
     // Cannot avoid this warning since there is no way to fetch the class object for an interface
     // that uses generics
@@ -124,6 +138,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
         PollOutagesConfigFactory.init();
         System.setProperty("opennms.home", previousOpennmsHome);
+
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        network.addNode(1, "testNode");
+        network.addInterface("127.0.0.1");
+        network.setIfAlias("eth0");
+        network.addService("ICMP");
+        network.addService("SNMP");
+        m_db.populate(network);
     }
 
     @After
@@ -134,14 +157,20 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
     @Test
     @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
     public void testThresholds() throws Exception {
+        EventAnticipator anticipator = new EventAnticipator();
         EventBuilder bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
         bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");
-
-        EventAnticipator anticipator = new EventAnticipator();
         anticipator.anticipateEvent(bldr.getEvent());
-        executeThresholdTest(anticipator);
+
+        bldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "LatencyStoringServiceMonitorAdaptorTest");
+        bldr.setNodeid(1);
+        bldr.setInterface(addr("127.0.0.1"));
+        bldr.setService("ICMP");
+        anticipator.anticipateEvent(bldr.getEvent());
+
+        executeThresholdTest(anticipator, new Double[] {100.0, 10.0}); // This should emulate a trigger and a rearm
         anticipator.verifyAnticipated();
     }
 
@@ -172,7 +201,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
 
         EventAnticipator anticipator = new EventAnticipator();
-        executeThresholdTest(anticipator);
+        executeThresholdTest(anticipator, new Double[] {100.0});
         anticipator.verifyAnticipated();
 
         // Reset the state of the PollOutagesConfigFactory for any subsequent tests
@@ -180,7 +209,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         file.delete();
     }
 
-    private void executeThresholdTest(EventAnticipator anticipator) throws Exception {
+    private void executeThresholdTest(EventAnticipator anticipator, Double[] rtValues) throws Exception {
 
         Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("rrd-repository", "/tmp");
@@ -199,11 +228,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         expect(svc.getIpAddr()).andReturn("127.0.0.1").atLeastOnce();
         expect(svc.getSvcName()).andReturn("ICMP").atLeastOnce();
 
-        ServiceMonitor service = m_mocks.createMock(ServiceMonitor.class);
-        PollStatus value = PollStatus.get(PollStatus.SERVICE_AVAILABLE, 100.0);
-        expect(service.poll(svc, parameters)).andReturn(value);
+        ServiceMonitor service = new MockServiceMonitor(rtValues);
 
-        int step = 300;
+        int step = 1;
         List<String> rras = Collections.singletonList("RRA:AVERAGE:0.5:1:2016");
         Package pkg = new Package();
         Rrd rrd = new Rrd();
@@ -211,26 +238,21 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         rrd.setRras(rras);
         pkg.setRrd(rrd);
 
-        expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras);
+        expect(m_pollerConfig.getRRAList(pkg)).andReturn(rras).anyTimes();
         expect(m_pollerConfig.getStep(pkg)).andReturn(step).anyTimes();
 
         m_eventIpcManager.setEventAnticipator(anticipator);
 
-        MockNetwork network = new MockNetwork();
-        network.setCriticalService("ICMP");
-        network.addNode(1, "testNode");
-        network.addInterface("127.0.0.1");
-        network.setIfAlias("eth0");
-        network.addService("ICMP");
-        network.addService("SNMP");
-        m_db.populate(network);
-        
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg, m_persisterFactory, m_resourceStorageDao);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
-        adaptor.poll(svc, parameters);
+        for (int i=0; i<rtValues.length; i++) {
+            adaptor.poll(svc, parameters);
+            Thread.sleep(1000 * step); // Emulate the appropriate wait time prior inserting another value into the RRD files.
+        }
         System.setProperty("opennms.home", previousOpennmsHome);
         m_mocks.verifyAll();
     }
+
 }

@@ -10,21 +10,7 @@ GraphContainers = (function () {
   "use strict";
 
   var $j = jQuery.noConflict(); // Avoid conflicts with prototype.js used by graph/cropper/zoom.js
-  jQuery.cachedScript = function( url, options ) {
-    // Allow user to set any option except for dataType, cache, and url
-    options = $j.extend( options || {}, {
-      dataType: "script",
-      cache: true,
-      url: url
-    });
-
-    // Use $.ajax() since it is more flexible than $.getScript
-    // Return the jqXHR object so we can chain callbacks
-    return jQuery.ajax( options );
-  };
-
-  var librariesLoaded = {};
-  var dependenciesResolved = false;
+  var cssLoaded = false;
 
   var getGraphingEngine = function() {
     var graphingEngine = "png";
@@ -39,71 +25,6 @@ GraphContainers = (function () {
   var loadCSS = function(href) {
     var cssLink = $j("<link rel='stylesheet' type='text/css' href='"+window.onmsGraphContainers.baseHref+href+"'>");
     $j("head").append(cssLink);
-  };
-
-  var loadJS = function(src) {
-    return $j.cachedScript(window.onmsGraphContainers.baseHref+src);
-  };
-
-  /**
-   * Waits for the libraries to be executed (not just loaded) by
-   * listening for events.
-   *
-   * Every library that is used must contain a snippet of the form:
-   *   jQuery(document).trigger("libraryLoaded", "name");
-   *
-   */
-  var waitForLibraries = function(libraries, dfd) {
-    var k, n = libraries.length, missingLibrary;
-    $j(document).on("libraryLoaded", {}, function(event, name) {
-      //console.log("Got library loaded for:", name);
-      librariesLoaded[name] = true;
-
-      missingLibrary = false;
-      for (k = 0; k < n; k++) {
-        if(!librariesLoaded.hasOwnProperty(libraries[k])) {
-          //console.log("Still missing: " + libraries[k]);
-          missingLibrary = true;
-          break;
-        }
-      }
-
-      if (!missingLibrary) {
-        dfd.resolve();
-      }
-    });
-  };
-
-  /**
-   * Load the dependenices required by the target graphing engine
-   * and return a promise that will resolve once these are
-   * ready to be used.
-   */
-  var loadDependencies = function() {
-    var dfd = $j.Deferred();
-
-    if (window.onmsGraphContainers === undefined) {
-      dfd.reject();
-      return dfd;
-    }
-
-    var graphingEngine = getGraphingEngine();
-    if (graphingEngine == "placeholder") {
-      loadJS("js/holder.min.js")
-        .then(waitForLibraries(["holder"], dfd));
-    } else if (graphingEngine == "backshift") {
-      loadCSS("lib/c3/c3.min.css");
-      loadJS("js/holder.min.js")
-        .then(loadJS("lib/d3/d3.min.js"))
-        .then(loadJS("lib/c3/c3.min.js"))
-        .then(loadJS("js/backshift.onms.min.js"))
-        .then(waitForLibraries(["holder", "d3", "c3", "rsvp", "backshift"], dfd));
-    } else {
-      // Nothing to load
-      dfd.resolve();
-    }
-
-    return dfd;
   };
 
   /**
@@ -194,7 +115,7 @@ GraphContainers = (function () {
       });
 
       // Build and render the graph
-      var graph = new Backshift.Graph.C3({
+      var graph = new Backshift.Graph.DC({
         element: el[0],
         width: dim.width,
         height: dim.height,
@@ -222,15 +143,17 @@ GraphContainers = (function () {
   };
 
   var render = function() {
-    if (!dependenciesResolved) {
-      loadDependencies().done(_render());
-    } else {
-      _render();
-    }
-  };
-
-  var _render = function () {
     var didDrawOneOrMorePlaceholders = false;
+
+    var graphingEngine = "png";
+    if (window.onmsGraphContainers != undefined) {
+      graphingEngine = window.onmsGraphContainers.engine;
+    }
+
+    if (graphingEngine === "backshift" && !cssLoaded) {
+        loadCSS("lib/dcjs/dc.css");
+        cssLoaded = true;
+    }
 
     $j(".graph-container").each(function () {
       // Grab the element
@@ -274,18 +197,17 @@ GraphContainers = (function () {
       // Determine the target dimensions
       var dim = getDimensionsForElement(el, def);
 
-      // Render the graph using the appropriate engine
-      var graphingEngine = "png";
-      if (window.onmsGraphContainers != undefined) {
-        graphingEngine = window.onmsGraphContainers.engine;
-      }
-
       if (graphingEngine === "placeholder") {
-        drawPlaceholderGraph(el, def, dim);
-        didDrawOneOrMorePlaceholders = true;
+        require(['holder'], function (holder) {
+          window.Holder = holder;
+          drawPlaceholderGraph(el, def, dim);
+          didDrawOneOrMorePlaceholders = true;
+        });
       } else if (graphingEngine === "backshift") {
-        drawBackshiftGraph(el, def, dim);
-        didDrawOneOrMorePlaceholders = true;
+        require(['backshift', 'dc'], function (backshift, dc) {
+          window.dc = dc;
+          drawBackshiftGraph(el, def, dim);
+        });
       } else {
         drawPngGraph(el, def, dim);
       }

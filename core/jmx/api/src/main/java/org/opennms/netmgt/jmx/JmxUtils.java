@@ -34,14 +34,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class JmxUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(JmxUtils.class);
-
-    private static final int MAX_ATTRIBUTE_NAME_LENGTH = 19;
 
     /**
      * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
@@ -53,15 +47,38 @@ public final class JmxUtils {
      * @param map The map to be converted. May be null.
      * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
      */
+    public static Map<String, String> convertToUnmodifiableStringMap(final Map<String, Object> map) {
+        if (map != null) {
+            Map<String, String> convertedProperties = new HashMap<>();
+            for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
+                }
+            }
+            return Collections.unmodifiableMap(convertedProperties);
+        }
+        return null;
+    }
+
+    /**
+     * Converts the map, so that it only contains String values. All non String values will be removed (null values included).
+     * <p/>
+     * The returned map is modifiable.
+     * <p/>
+     * If the input map is null, null is also returned.
+     *
+     * @param map The map to be converted. May be null.
+     * @return An unmodifiable map containing only String values from the input map, or null if input map was null.
+     */
     public static Map<String, String> convertToStringMap(final Map<String, Object> map) {
         if (map != null) {
             Map<String, String> convertedProperties = new HashMap<>();
             for (Map.Entry<String, Object> eachEntry : map.entrySet()) {
-                if (eachEntry.getValue() instanceof String) {
-                    convertedProperties.put(eachEntry.getKey(), (String) eachEntry.getValue());
+                if (eachEntry.getValue() != null) {
+                    convertedProperties.put(eachEntry.getKey(), eachEntry.getValue().toString());
                 }
             }
-            return Collections.unmodifiableMap(convertedProperties);
+            return convertedProperties;
         }
         return null;
     }
@@ -77,14 +94,6 @@ public final class JmxUtils {
         }
         final String port = map.get(ParameterName.PORT.toString());
         return port;
-    }
-
-    public static String trimAttributeName(String input) {
-        if (input != null && input.length() > MAX_ATTRIBUTE_NAME_LENGTH) {
-            LOG.warn("attribute '{}' exceeds {} char maximum for RRD data source names, truncating.", MAX_ATTRIBUTE_NAME_LENGTH, input);
-            input = input.substring(0, MAX_ATTRIBUTE_NAME_LENGTH);
-        }
-        return input;
     }
 
     public static String getGroupName(final Map<String, String> map, final Mbean mbean) {

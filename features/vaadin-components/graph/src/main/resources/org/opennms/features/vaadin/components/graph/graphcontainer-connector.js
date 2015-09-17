@@ -2,11 +2,14 @@ org_opennms_features_vaadin_components_graph_GraphContainer = function() {
   var e = this.getElement();
 
   this.onStateChange = function() {
-	// Globals
+    // Globals
     window.onmsGraphContainers = {
         'baseHref': this.getState().baseHref,
         'engine': this.getState().engine
     };
+
+    // Update the baseUrl to use an absolute path
+    requirejs.config({baseUrl: this.getState().baseHref + 'lib'});
 
     // Build the div
     var div = document.createElement('div');

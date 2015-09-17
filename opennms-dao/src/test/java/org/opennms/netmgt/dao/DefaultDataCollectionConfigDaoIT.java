@@ -80,11 +80,11 @@ public class DefaultDataCollectionConfigDaoIT {
     @Test
     public void testNewStyle() throws Exception {
         DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
-        executeTests(dao);
+        executeTests(dao, 86);
         SnmpCollection def =  dao.getContainer().getObject().getSnmpCollection("default");
         Assert.assertEquals(0, def.getResourceTypes().size());
         SnmpCollection rt =  dao.getContainer().getObject().getSnmpCollection("__resource_type_collection");
-        Assert.assertEquals(88, rt.getResourceTypes().size());
+        Assert.assertEquals(86, rt.getResourceTypes().size());
         Assert.assertEquals(0, rt.getSystems().getSystemDefs().size());
         Assert.assertEquals(0, rt.getGroups().getGroups().size());
     }
@@ -92,7 +92,7 @@ public class DefaultDataCollectionConfigDaoIT {
     @Test
     public void testOldStyle() throws Exception {
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
-        executeTests(oldDao);
+        executeTests(oldDao, 82);
     }
 
     @Test
@@ -145,11 +145,10 @@ public class DefaultDataCollectionConfigDaoIT {
         }
     }
 
-    private void executeTests(DefaultDataCollectionConfigDao dao) {
+    private void executeTests(DefaultDataCollectionConfigDao dao, int resourceTypesCount) {
         // Expected Values
         int netsnmpObjectsCount = 197; //  bluecat.xml, netsnmp.xml, zeus.xml
         int ciscoObjectsCount = 44;
-        int resourceTypesCount = 88;
         int systemDefCount = 141;
 
         // Execute Tests

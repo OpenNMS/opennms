@@ -87,6 +87,7 @@
           <descriptors>
             <descriptor>src/assembly/jnlp.xml</descriptor>
           </descriptors>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

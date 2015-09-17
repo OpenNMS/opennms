@@ -14,6 +14,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+
     <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
     <reference id="lldpElementDao" interface="org.opennms.netmgt.dao.api.LldpElementDao" availability="mandatory" />
     <reference id="ospfLinkDao" interface="org.opennms.netmgt.dao.api.OspfLinkDao" availability="mandatory" />
@@ -36,7 +38,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Shared Components end -->
 
     <bean id="topologyProvider" scope="prototype" init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
-        <!--property name="transactionTemplate" ref="transactionTemplate" /-->
+        <property name="transactionOperations" ref="transactionOperations"/>
         <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao"/>

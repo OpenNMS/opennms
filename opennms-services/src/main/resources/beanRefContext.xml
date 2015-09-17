@@ -75,15 +75,6 @@
      <constructor-arg ref="daoContext" />
     </bean>
     
-    <bean id="linkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-linkd.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-        
    <bean id="enhancedLinkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
@@ -110,13 +101,5 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
    </bean>
-    
-   <bean id="discoveryContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-discovery.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean> 
+
 </beans>
