@@ -183,10 +183,11 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                                 "join category_node using (nodeid) left join categories using (categoryid) " +
                                 "left outer join ipinterface using (nodeid) " +
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                                "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
                                 "where nodeType <> 'D' " +
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause)
+                                "group by " + groupByClause + " having count(distinct case when ifservices.status = 'A' then ifservices.id else null end) > 0")
                         .setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;
 
