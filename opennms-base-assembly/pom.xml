@@ -61,9 +61,16 @@
                   <type>jar</type>
                   <classifier>onejar</classifier>
                   <destFileName>opennms_jmx_config_generator.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/jmx</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-jasperstudio-extension</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <outputDirectory>${project.build.directory}/jasperstudio-extension</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/jmx</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -104,7 +111,7 @@
           <xmlValidation>true</xmlValidation>
           <forceCompile>false</forceCompile>
           <additionalProperties>
-            <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
+            <net.sf.jasperreports.query.executer.factory.measurement>org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory</net.sf.jasperreports.query.executer.factory.measurement>
           </additionalProperties>
         </configuration>
         <dependencies>
@@ -675,6 +682,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jasper-extensions</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jasperstudio-extension</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- TODO: Is this the better place for the following dependency? -->

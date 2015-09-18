@@ -106,7 +106,7 @@ include::text/poller/monitors/Win32ServiceMonitor.adoc[]
 include::text/poller/monitors/XmpMonitor.adoc[]
 
 [[ga-events]]
-== Events in OpenNMS
+== Events
 include::text/events.adoc[]
 
 [ga-provisioning]
@@ -124,7 +124,15 @@ include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
 
+[[ga-database-reports]]
+== Database Reports
+include::text/database-reports/database.adoc[]
+
 [[ga-opennms-operation]]
-== OpenNMS Operation
+== Operation
+include::text/operation/ssl/ssl.adoc[]
 include::text/operation/newts/cassandra21x.adoc[]
 include::text/operation/newts/newts.adoc[]
+include::text/operation/jmx-config-generator/introduction.adoc[]
+include::text/operation/jmx-config-generator/webui.adoc[]
+include::text/operation/jmx-config-generator/cli.adoc[]

@@ -8,7 +8,7 @@ polynomialOrder <- ${polynomialOrder?c}
 # Read the data from stdin
 data <- read.csv(file=inputFile)
 
-x <- data[,'Timestamp'][firstIndex:lastIndex]
+x <- data[,'timestamp'][firstIndex:lastIndex]
 y <- data[,inputColumn][firstIndex:lastIndex]
 
 # Least-square fit
