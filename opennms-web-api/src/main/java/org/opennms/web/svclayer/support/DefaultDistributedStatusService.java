@@ -822,11 +822,17 @@ public class DefaultDistributedStatusService implements DistributedStatusService
     }
 
     private ServiceGraph getServiceGraphForService(OnmsLocationMonitor locMon, OnmsMonitoredService service, long[] times) {
-        OnmsResource resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
+        OnmsResource resource;
+        try {
+            resource = m_resourceDao.getResourceForIpInterface(service.getIpInterface(), locMon);
+        } catch (ObjectRetrievalFailureException e) {
+            resource = null;
+        }
+
         if (resource == null) {
             return new ServiceGraph(service, new String[] { "Resource could not be found.  Has any response time data been collected for this service from this remote poller?" });
         }
-        
+
         String graphName = service.getServiceName().toLowerCase();
         try {
             m_graphDao.getPrefabGraph(graphName);

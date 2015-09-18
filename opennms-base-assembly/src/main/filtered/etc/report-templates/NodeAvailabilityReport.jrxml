@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T18:12:08 -->
+<!-- 2015-08-25T10:55:56 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dc51dbdf-2cfc-4a6f-9cfb-9c269f102c57">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -101,16 +101,24 @@ FROM
       max(ifregainedservice - iflostservice) AS duration
     FROM
       (SELECT
-        outages.nodeid,
+        ipinterface.nodeid,
         outages.svclosteventid AS "svclosteventid",
         least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice) AS ifregainedservice,
         greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) AS iflostservice
-      FROM
+       FROM
         outages
       JOIN
         events
       ON
         events.eventid = outages.svclosteventid
+      JOIN
+	ifservices
+      ON
+        ifservices.id = outages.ifserviceid
+      JOIN
+        ipinterface
+      ON
+        ifservices.ipinterfaceid = ipinterface.id
       WHERE
          events.eventuei = 'uei.opennms.org/nodes/nodeDown'
          AND (iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP, '$P!{DS_START_TIME_STRING}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL))

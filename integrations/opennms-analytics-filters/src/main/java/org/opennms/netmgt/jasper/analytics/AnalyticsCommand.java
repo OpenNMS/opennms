@@ -39,16 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Used to store the options of an ANALYTICS command
- * that has been parsed on the RRD query string.
+ * Used to store the options of an ANALYTICS command.
  *
- * @see {@link org.opennms.netmgt.jasper.helper.RrdDataSourceFilter}
+ * @see {@link org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter}
  * @author jwhite
  */
 @XmlRootElement(name="analytics-command")
 @XmlAccessorType(XmlAccessType.NONE)
 public class AnalyticsCommand {
     private static final Logger LOG = LoggerFactory.getLogger(AnalyticsCommand.class);
+
     public static final String CMD_IN_RRD_QUERY_STRING = "ANALYTICS";
 
     @XmlAttribute(name="filter", required=true)

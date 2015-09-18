@@ -119,6 +119,7 @@
                     <imagesDir>images</imagesDir>
                     <attributes>
                         <opennms-version>${project.version}</opennms-version>
+                        <jasperReportsVersion>${jasperreportsVersion}</jasperReportsVersion>
                     </attributes>
                 </configuration>
             </plugin>

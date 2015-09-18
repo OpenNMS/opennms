@@ -28,15 +28,20 @@
 
 package org.opennms.netmgt.measurements.api;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.opennms.netmgt.jasper.analytics.Filter;
-
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.opennms.netmgt.jasper.analytics.Filter;
 
 /**
  * Used to store the results of a fetch.
@@ -75,10 +80,7 @@ public class FetchResults {
     public FetchResults(final RowSortedTable<Integer, String, Double> values, final long step, final Map<String, Object> constants) {
         Preconditions.checkNotNull(values, "values argument");
         Preconditions.checkNotNull(constants, "constants argument");
-
-        //m_timestamps = ArrayUtils.toPrimitive(values.rowKeySet().toArray(new Long[0]));
-        m_timestamps = values.column(Filter.TIMESTAMP_COLUMN_NAME).values().stream().mapToLong(i -> i.longValue()).toArray();
-
+        m_timestamps = transform(values);
         // Use a LinkedHashMap here to preserve ordering
         m_columns = new LinkedHashMap<String, double[]>();
         for (String column : values.columnKeySet()) {
@@ -89,6 +91,16 @@ public class FetchResults {
         }
         m_step = step;
         m_constants = constants;
+    }
+
+    private long[] transform(RowSortedTable<Integer, String, Double> values) {
+        Collection<Long> timestampCollection = Collections2.transform(values.column(Filter.TIMESTAMP_COLUMN_NAME).values(), new Function<Double, Long>() {
+            @Override
+            public Long apply(Double input) {
+                return input.longValue();
+            }
+        });
+        return ArrayUtils.toPrimitive(timestampCollection.toArray(new Long[0]));
     }
 
     public long[] getTimestamps() {
@@ -105,6 +117,15 @@ public class FetchResults {
 
     public Map<String, Object> getConstants() {
         return m_constants;
+    }
+
+    public String toString() {
+       return Objects.toStringHelper(this.getClass())
+            .add("timestamps", Arrays.toString(m_timestamps))
+            .add("columns", m_columns)
+            .add("step", m_step)
+            .add("constants", m_constants)
+            .toString();
     }
 
     public RowSortedTable<Integer, String, Double> asRowSortedTable() {

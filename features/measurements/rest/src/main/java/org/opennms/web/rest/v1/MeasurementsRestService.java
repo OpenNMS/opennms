@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +48,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-import org.opennms.netmgt.jasper.analytics.Filter;
 import org.opennms.netmgt.jasper.analytics.FilterFactory;
+import org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -107,6 +108,15 @@ public class MeasurementsRestService {
     private List<FilterFactory> m_filterFactories;
 
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
+
+    private DataSourceFilter dataSourceFilter;
+
+    protected DataSourceFilter getDataSourceFilter() {
+        if (dataSourceFilter == null) {
+            dataSourceFilter = new DataSourceFilter(m_filterFactories);
+        }
+        return dataSourceFilter;
+    }
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -186,25 +196,19 @@ public class MeasurementsRestService {
         try {
             expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
-            throw getException(Status.BAD_REQUEST, e, "An error occured while evaluating an expression.");
+            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression.");
         }
 
+        // Apply the analytics commands to filter results
         // If there is an analytics command, apply it to the metrics
-        if (request.getAnalyticsCommands().size() > 0) {
-            for (AnalyticsCommand command : request.getAnalyticsCommands()) {
-                for (FilterFactory factory : m_filterFactories) {
-                    Filter filter = factory.getFilter(command);
-                    if (filter != null) {
-                        RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
-                        try {
-                            filter.filter(table);
-                        } catch (Exception e) {
-                            throw getException(Status.BAD_REQUEST, e, "An error occured while executing an analytics filter: " + e.getMessage());
-                        }
-                        results = new FetchResults(table, results.getStep(), results.getConstants());
-                    }
-                }
+        if (!request.getAnalyticsCommands().isEmpty()) {
+            RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+            try {
+                getDataSourceFilter().filter(request.getAnalyticsCommands(), table);
+            } catch (Exception e) {
+                throw getException(Status.BAD_REQUEST, e, "An error occurred while executing an analytics filter: " + e.getMessage());
             }
+            results = new FetchResults(table, results.getStep(), results.getConstants());
         }
 
         final Map<String, double[]> columns = results.getColumns();
@@ -239,6 +243,8 @@ public class MeasurementsRestService {
      * @throws WebApplicationException if validation fails.
      */
     private static void validateQueryRequest(final QueryRequest request) {
+        final Map<String,String> labels = new HashMap<String,String>();
+
         if (request.getEnd() < 0) {
             throw getException(Status.BAD_REQUEST, "Query end must be >= 0: {}", request.getEnd());
         }
@@ -252,11 +258,22 @@ public class MeasurementsRestService {
                     || source.getAggregation() == null) {
                 throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
             }
+            if (labels.containsKey(source.getLabel())) {
+                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
+            } else {
+                labels.put(source.getLabel(), "source");
+            }
         }
         for (final Expression expression : request.getExpressions()) {
             if (expression.getExpression() == null
                     || expression.getLabel() == null) {
                 throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
+            }
+            if (labels.containsKey(expression.getLabel())) {
+                final String type = labels.get(expression.getLabel());
+                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+            } else {
+                labels.put(expression.getLabel(), "expression");
             }
         }
         List<AnalyticsCommand> analyticsCommands = request.getAnalyticsCommands();

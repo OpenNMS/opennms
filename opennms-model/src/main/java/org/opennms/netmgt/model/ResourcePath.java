@@ -2,6 +2,7 @@ package org.opennms.netmgt.model;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,12 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         }
     }
 
+    public ResourcePath(Collection<String> pathElements) {
+        for (String el : pathElements) {
+            m_elements.add(el);
+        }
+    }
+
     public ResourcePath(ResourcePath parent, String... path) {
         m_elements.addAll(parent.m_elements);
         for (String el : path) {
@@ -37,6 +44,13 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      */
     public static ResourcePath get(String... path) {
         return new ResourcePath(path);
+    }
+
+    /**
+     * Convenience method.
+     */
+    public static ResourcePath get(Collection<String> pathElements) {
+        return new ResourcePath(pathElements);
     }
 
     /**
@@ -78,11 +92,37 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         return m_elements.toArray(new String[m_elements.size()]);
     }
 
+    /**
+     * Determines the relative depth of a child path.
+     *
+     * @return the relative depth >= 0, or -1 if the given child is not actually a child
+     */
+    public int relativeDepth(ResourcePath child) {
+        final List<String> childEls = child.m_elements;
+        final int numChildEls = childEls.size();
+        final int numParentEls = m_elements.size();
+
+        if (numChildEls < numParentEls) {
+            // Definitely not a child
+            return -1;
+        }
+
+        // Verify the path elements up to the parents
+        for (int i = 0; i < numParentEls; i++) {
+            if (!m_elements.get(i).equals(childEls.get(i))) {
+                return -1;
+            }
+        }
+
+        return numChildEls - numParentEls;
+    }
+
     @Override
     public Iterator<String> iterator() {
         return m_elements.iterator();
     }
 
+    @Override
     public String toString() {
         return m_elements.toString();
     }

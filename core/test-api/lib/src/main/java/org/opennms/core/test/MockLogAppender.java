@@ -367,5 +367,4 @@ public class MockLogAppender {
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
     }
-
 }

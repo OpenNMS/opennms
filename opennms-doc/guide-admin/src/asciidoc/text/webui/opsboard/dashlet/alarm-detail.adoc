@@ -1,5 +1,5 @@
 
-==== Alarm Details
+===== Alarm Details
 
 This _Alarm-Details Dashlet_ shows a table with alarms and some detailed information.
 

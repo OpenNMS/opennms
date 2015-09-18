@@ -36,6 +36,7 @@ import org.opennms.netmgt.integrations.R.RScriptException;
 import org.opennms.netmgt.integrations.R.RScriptExecutor;
 import org.opennms.netmgt.integrations.R.RScriptInput;
 import org.opennms.netmgt.integrations.R.RScriptOutput;
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class HWForecast implements Filter {
 
     @Override
     public void filter(RowSortedTable<Integer, String, Double> table) throws RScriptException {
-        Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), "Data source must have a 'Timestamp' column.");
+        Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), String.format("Data source must have a '%s' column.", Filter.TIMESTAMP_COLUMN_NAME));
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
@@ -72,13 +73,13 @@ public class HWForecast implements Filter {
         // Make sure we have some samples
         int numSampleRows = lastRowWithValues - firstRowWithValues;
         if (numSampleRows < 1) {
-            LOG.error("Insufficent values in column for forecasting. Excluding forecast columns from data source.");
+            LOG.error("Insufficient values in column for forecasting. Excluding forecast columns from data source.");
             return;
         }
 
         // Determine the step size
         Date lastTimestamp = new Date(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME).longValue());
-        long stepInMs = (long)(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(lastRowWithValues-1, "Timestamp"));
+        long stepInMs = (long)(table.get(lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(lastRowWithValues-1, Filter.TIMESTAMP_COLUMN_NAME));
 
         // Calculate the number of samples per period
         int numSamplesPerPeriod = (int)Math.floor(m_config.getPeriod() * 1000 / stepInMs);
