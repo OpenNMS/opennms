@@ -5,7 +5,6 @@
 	<property name="ireport.zoom" value="1.5026296018031553"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QueryExecutorAdapter"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
@@ -30,7 +29,7 @@
 	</parameter>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
 	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeId}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{nodeId}, $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
 	<queryString language="measurement">
 		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
