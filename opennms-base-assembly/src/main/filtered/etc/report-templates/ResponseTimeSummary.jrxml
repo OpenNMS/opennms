@@ -87,10 +87,10 @@
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="RESPONSE_WARNING" class="java.lang.Double">
+	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double">
+	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
@@ -106,7 +106,7 @@
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " days from " + $P{startDate}]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date">
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
 		<parameterDescription><![CDATA[Report End Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), $P{startDate}.getDate() + $P{TIME_RANGE}).getTimeInMillis()
