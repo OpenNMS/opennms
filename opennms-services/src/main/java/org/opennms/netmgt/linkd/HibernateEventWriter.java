@@ -372,6 +372,7 @@ public class HibernateEventWriter implements QueryManager {
     }
 
     @Override
+    @Transactional
     public LinkableNode storeSnmpCollection(final LinkableNode node,
             final SnmpCollection snmpColl, final Linkd linkd) {
         final Date scanTime = new Date();
