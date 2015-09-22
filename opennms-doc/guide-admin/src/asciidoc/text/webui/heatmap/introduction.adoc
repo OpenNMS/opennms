@@ -21,7 +21,7 @@ image:webui/heatmap/heatmap.png[]
                                                            default.
                                                                                                                         | `alarms`
 | `org.opennms.heatmap.defaultHeatmap`       | _String_  | This option defines which _Heatmap_ is displayed by default.
-                                                           The three valid options are `categories`, `foreignSources` and
+                                                           Valid options are `categories`, `foreignSources` and
                                                            'services'.                                                  | `categories`
 | `org.opennms.heatmap.categoryFilter`       | _String_  | The following option is used to filter for categories to be
                                                            displayed in the _Heatmap_. This option uses the Java regular
