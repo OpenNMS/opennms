@@ -9,6 +9,35 @@
   <artifactId>opennms-integrations</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Integrations</name>
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
+          <systemPropertyVariables>
+            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
+            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <modules>
     <module>opennms-analytics-filters</module>
     <module>opennms-dns-provisioning-adapter</module>
@@ -20,6 +49,7 @@
     <module>opennms-snmp-asset-provisioning-adapter</module>
     <module>opennms-snmp-hardware-inventory-provisioning-adapter</module>
     <module>opennms-jasper-extensions</module>
+    <module>opennms-jasperstudio-extension</module>
     <module>opennms-vmware</module>
     <module>opennms-vtdxml-collector-handler</module>
   </modules>

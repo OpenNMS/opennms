@@ -29,6 +29,7 @@
 package org.opennms.netmgt.eventd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -88,6 +89,26 @@ public class EventUtilHibernateIT {
 		assertEquals("node2",label);
     }
     
+    @Test
+    public void testGetForeignSource() {
+        String label = eventUtilDaoImpl.getForeignSource(m_populator.getNode3().getId());
+        assertEquals("imported:", label);
+        label = eventUtilDaoImpl.getForeignSource(m_populator.getNode1().getId());
+        assertEquals("imported:", label);
+        label = eventUtilDaoImpl.getForeignSource(m_populator.getNode6().getId());
+        assertNull(label);
+    }
+
+    @Test
+    public void testGetForeignId() {
+        String label = eventUtilDaoImpl.getForeignId(m_populator.getNode3().getId());
+        assertEquals("3", label);
+        label = eventUtilDaoImpl.getForeignId(m_populator.getNode1().getId());
+        assertEquals("1", label);
+        label = eventUtilDaoImpl.getForeignId(m_populator.getNode6().getId());
+        assertNull(label);
+    }
+
     @Test
     public void testGetIfAlias() {
     	String alias = eventUtilDaoImpl.getIfAlias(m_populator.getNode1().getId(), "192.168.1.1");

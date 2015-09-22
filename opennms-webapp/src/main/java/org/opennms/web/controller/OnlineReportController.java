@@ -28,14 +28,15 @@
 
 package org.opennms.web.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -46,23 +47,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
-/**
- * <p>OnlineReportController class.</p>
- */
 @Controller
 @RequestMapping("/report/database/onlineReport.htm")
 public class OnlineReportController {
 
-    public static final String COMMAND_NAME = "parameters";
-    
     @Autowired
     private ReportWrapperService m_reportWrapperService;
 
@@ -71,17 +68,6 @@ public class OnlineReportController {
 
     @Autowired
     private CategoryDao m_categoryDao;
-
-    @RequestMapping(method=RequestMethod.GET)
-    public void referenceData(ModelMap data, @RequestParam("reportId") String reportId) {
-
-        List<ReportFormat> formats = m_reportWrapperService.getFormats(reportId);
-        data.put("formats", formats);
-        List<String> onmsCategories = m_categoryDao.getAllCategoryNames();
-        data.put("onmsCategories", onmsCategories);
-        List<String> categories = m_catConfigService.getCategoriesList();
-        data.put("categories", categories);
-    }
 
     @InitBinder
     public void initBinder(ServletRequestDataBinder binder) {
@@ -94,30 +80,52 @@ public class OnlineReportController {
         );
     }
 
-    @ModelAttribute(COMMAND_NAME)
-    public ReportParameters formBackingObject(HttpServletRequest req) throws Exception {
-        return m_reportWrapperService.getParameters(req.getParameter("reportId"));
+    @RequestMapping(method=RequestMethod.GET)
+    public void handleGet(ModelMap modelMap, @RequestParam("reportId") String reportId) {
+        modelMap.addAttribute("formats", m_reportWrapperService.getFormats(reportId));
+        modelMap.addAttribute("onmsCategories", m_categoryDao.getAllCategoryNames());
+        modelMap.addAttribute("categories", m_catConfigService.getCategoriesList());
     }
 
-    @RequestMapping(method=RequestMethod.POST)
-    public void onSubmit(HttpServletResponse response, @ModelAttribute(COMMAND_NAME) ReportParameters parameters, BindingResult errors) throws IOException {
+    @ModelAttribute("parameters")
+    public ReportParameters getReportParameters(@RequestParam("reportId") String reportId) {
+       return m_reportWrapperService.getParameters(reportId);
+    }
 
-        if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG) ) {
-            response.setContentType("application/pdf;charset=UTF-8");
-            response.setHeader("Content-disposition", "inline; filename=report.pdf");
-            response.setHeader("Pragma", "public");
-            response.setHeader("Cache-Control", "cache");
-            response.setHeader("Cache-Control", "must-revalidate");
+    @RequestMapping(method=RequestMethod.POST, params="cancel")
+    public ModelAndView onCancel() {
+        return new ModelAndView(new RedirectView("/report/database/reportList.htm", true));
+    }
+
+    @RequestMapping(method=RequestMethod.POST, params="run")
+    public String handleSubmit(ModelMap modelMap, HttpServletResponse response, @ModelAttribute("parameters") ReportParameters parameters) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            m_reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, outputStream);
+            if ((parameters.getFormat() == ReportFormat.PDF) || (parameters.getFormat() == ReportFormat.SVG) ) {
+                response.setContentType("application/pdf;charset=UTF-8");
+                response.setHeader("Content-disposition", "inline; filename=report.pdf");
+                response.setHeader("Pragma", "public");
+                response.setHeader("Cache-Control", "cache");
+                response.setHeader("Cache-Control", "must-revalidate");
+            }
+            if(parameters.getFormat() == ReportFormat.CSV) {
+                response.setContentType("text/csv;charset=UTF-8");
+                response.setHeader("Content-disposition", "inline; filename=report.csv");
+                response.setHeader("Pragma", "public");
+                response.setHeader("Cache-Control", "cache");
+                response.setHeader("Cache-Control", "must-revalidate");
+            }
+            response.getOutputStream().write(outputStream.toByteArray());
+            return null;
+        } catch (ReportException ex) {
+            // forward to same page, but now show errors
+            modelMap.addAttribute("errorMessage", ex.getMessage());
+            modelMap.addAttribute("errorCause", ex.getCause());
+            handleGet(modelMap, parameters.getReportId()); // add default view parameters
+            return "report/database/onlineReport";
+        } finally {
+            IOUtils.closeQuietly(outputStream);
         }
-
-        if(parameters.getFormat() == ReportFormat.CSV) {
-            response.setContentType("text/csv;charset=UTF-8");
-            response.setHeader("Content-disposition", "inline; filename=report.csv");
-            response.setHeader("Pragma", "public");
-            response.setHeader("Cache-Control", "cache");
-            response.setHeader("Cache-Control", "must-revalidate");
-        }
-
-        m_reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, response.getOutputStream());
     }
 }

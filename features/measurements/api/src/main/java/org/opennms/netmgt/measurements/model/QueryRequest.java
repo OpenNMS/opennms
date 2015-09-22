@@ -36,10 +36,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.common.collect.Lists;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-
-import com.google.common.collect.Lists;
 
 /**
  * Query request attributes.

@@ -252,6 +252,17 @@ public class EventUtilIT {
         assertEquals("http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition::1:7.128.64.32.16", newString);
     }
     
+    /**
+     * Test method for split-and-extract-range functionality indexed from end of name and extending to end
+     */
+    @Test
+    public void testNodeFields() {
+        String testString = "%uei%:%dpname%:%nodeid%:%nodelabel%:%foreignsource%:%foreignid%";
+
+        String newString = AbstractEventUtil.getInstance().expandParms(testString, m_svcLostEvent);
+        assertEquals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "::1:Unknown::", newString);
+    }
+
     @Test
     public void testExpandTticketId() {
         String testString = "%tticketid%";

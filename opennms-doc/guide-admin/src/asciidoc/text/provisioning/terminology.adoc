@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-==== OpenNMS Provisioning Terminology
+==== Terminology
 
 The following terms are used with respect to OpenNMS’ provisioning system and are essential for understanding the material presented in this guide.
 

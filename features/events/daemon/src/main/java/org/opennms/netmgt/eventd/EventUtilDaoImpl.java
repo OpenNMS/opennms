@@ -52,6 +52,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,20 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     @Override
     protected String getNodeLabel(long nodeId) {
         return nodeDao.getLabelForId(Integer.valueOf((int)nodeId));
+    }
+
+    @Override
+    protected String getForeignSource(long nodeId) {
+        OnmsNode node = nodeDao.get((int)nodeId);
+        if (node != null)
+            return node.getForeignSource();
+        return null;
+    }
+
+    @Override
+    protected String getForeignId(long nodeId) {
+        OnmsNode node = nodeDao.get((int)nodeId);
+        return node == null ? null : node.getForeignId();
     }
 
     @Override

@@ -17,6 +17,18 @@
       <version>${jasperreportsVersion}</version>
       <exclusions>
         <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
         </exclusion>
@@ -35,9 +47,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>iText</artifactId>
-      <version>2.1.7</version>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7.js3</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
