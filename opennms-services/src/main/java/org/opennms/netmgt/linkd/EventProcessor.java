@@ -38,8 +38,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-@EventListener(name="Linkd:LinkdEventProcessor", logPrefix=Linkd.LOG_PREFIX)
-public final class LinkdEventProcessor {
+@EventListener(name="linkd")
+public final class EventProcessor {
 
     private Linkd m_linkd;
 

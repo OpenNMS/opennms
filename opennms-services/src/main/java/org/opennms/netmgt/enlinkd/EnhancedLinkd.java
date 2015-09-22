@@ -115,7 +115,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.notNull(m_nodes);
         scheduleCollection();
 
-        LOG.info("init: ENHANCED LINKD CONFIGURATION INITIALIZED");
+        LOG.info("init: ENHANCED LINKD INITIALIZED");
     }
 
     private void scheduleCollection() {
