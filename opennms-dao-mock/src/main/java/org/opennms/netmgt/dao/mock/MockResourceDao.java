@@ -65,4 +65,8 @@ public class MockResourceDao implements ResourceDao {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
+    @Override
+    public boolean deleteResourceById(final String resourceId) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

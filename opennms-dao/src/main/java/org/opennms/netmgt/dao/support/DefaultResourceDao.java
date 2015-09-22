@@ -408,6 +408,30 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(locMon.getId(), ipAddress));
     }
 
+    @Override
+    public boolean deleteResourceById(final String resourceId) {
+        final OnmsResource resource = this.getResourceById(resourceId);
+        if (resource == null) {
+            return false;
+        }
+
+        return deleteResource(resource, true);
+    }
+
+    public boolean deleteResource(final OnmsResource resource, boolean recursive) {
+        boolean result = false;
+
+        if (recursive) {
+            for (final OnmsResource childResource : resource.getChildResources()) {
+                result = deleteResource(childResource, recursive) || result;
+            }
+        }
+
+        result = m_resourceStorageDao.delete(resource.getPath()) || result;
+
+        return result;
+    }
+
     /**
      * <p>getChildResource</p>
      *

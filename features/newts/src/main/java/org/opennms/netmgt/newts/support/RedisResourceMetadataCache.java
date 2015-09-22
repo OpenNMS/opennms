@@ -149,6 +149,11 @@ public class RedisResourceMetadataCache implements SearchableResourceMetadataCac
     }
 
     @Override
+    public void delete(final Context context, final Resource resource) {
+        m_jedis.del(key(METADATA_PREFIX, context.getId(), resource.getId()));
+    }
+
+    @Override
     public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
         final List<String> elements = Lists.newArrayList(SEARCH_PREFIX, context.getId());
         elements.addAll(m_resourceIdSplitter.splitIdIntoElements(resourceIdPrefix));
