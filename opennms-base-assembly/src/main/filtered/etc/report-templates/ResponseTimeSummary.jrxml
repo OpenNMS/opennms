@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -88,10 +87,10 @@
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="RESPONSE_WARNING" class="java.lang.Double">
+	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double">
+	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
@@ -107,7 +106,7 @@
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " days from " + $P{startDate}]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date">
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
 		<parameterDescription><![CDATA[Report End Date]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new java.util.Date(
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), $P{startDate}.getDate() + $P{TIME_RANGE}).getTimeInMillis()
@@ -355,6 +354,9 @@ ORDER BY
 				</subreportParameter>
 				<subreportParameter name="MEASUREMENT_PASSWORD">
 					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nodeid">
+					<subreportParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="foreignid">
 					<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>

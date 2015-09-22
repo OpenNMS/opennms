@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -284,7 +283,7 @@ ORDER BY
 					<subreportParameterExpression><![CDATA[$F{ipaddr}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="nodeId">
-					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="endDate">
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>

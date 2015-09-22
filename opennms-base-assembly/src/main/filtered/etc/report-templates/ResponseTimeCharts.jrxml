@@ -14,7 +14,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -65,7 +64,7 @@
 			<defaultValueExpression><![CDATA["Servers"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="ds_nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{ds_nodeid}), $P{ds_foreignsource}, $P{ds_foreignid})]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{ds_nodeid}, $P{ds_foreignsource}, $P{ds_foreignid})]]></defaultValueExpression>
 		</parameter>
 		<parameter name="MEASUREMENT_URL" class="java.lang.String" isForPrompting="false"/>
 		<parameter name="MEASUREMENT_USERNAME" class="java.lang.String" isForPrompting="false"/>
@@ -304,7 +303,7 @@ ORDER BY
 								<datasetParameterExpression><![CDATA[$F{ipaddr}]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ds_nodeid">
-								<datasetParameterExpression><![CDATA[$F{nodeid}]]></datasetParameterExpression>
+								<datasetParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ds_startDateTime">
 								<datasetParameterExpression><![CDATA[$P{startDate}.getTime()]]></datasetParameterExpression>
