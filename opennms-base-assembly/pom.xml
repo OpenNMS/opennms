@@ -379,6 +379,11 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>resource-cli</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!--
     <dependency>
       <groupId>org.opennms.features</groupId>

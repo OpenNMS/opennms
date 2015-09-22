@@ -30,6 +30,7 @@ package org.opennms.web.rest.v1;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,7 +45,6 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +71,7 @@ public class ResourceRestService extends OnmsRestService {
     public ResourceDTOCollection getResources(@DefaultValue("1") @QueryParam("depth") final int depth) {
         List<ResourceDTO> resources = Lists.newLinkedList();
         for (OnmsResource resource : m_resourceDao.findTopLevelResources()) {
-            resources.add(new ResourceDTO(resource, depth));
+            resources.add(ResourceDTO.fromResource(resource, depth));
         }
         return new ResourceDTOCollection(resources);
     }
@@ -87,8 +87,20 @@ public class ResourceRestService extends OnmsRestService {
             throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
         }
 
-        return new ResourceDTO(resource, depth);
+        return ResourceDTO.fromResource(resource, depth);
     }
+
+    @DELETE
+    @Path("{resourceId}")
+    @Transactional(readOnly=false)
+    public void deleteResourceById(@PathParam("resourceId") final String resourceId) {
+        final boolean found = m_resourceDao.deleteResourceById(resourceId);
+
+        if (!found) {
+            throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
+        }
+    }
+
 
     @GET
     @Path("fornode/{nodeCriteria}")
@@ -106,6 +118,6 @@ public class ResourceRestService extends OnmsRestService {
             throw getException(Status.NOT_FOUND, "No resource found for node with id {}.", "" + node.getId());
         }
 
-        return new ResourceDTO(resource, depth);
+        return ResourceDTO.fromResource(resource, depth);
     }
 }
