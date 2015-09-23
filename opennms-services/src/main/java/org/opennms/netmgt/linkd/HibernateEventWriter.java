@@ -473,6 +473,7 @@ public class HibernateEventWriter implements QueryManager {
     }
 
     @Override
+    @Transactional
     public void storeDiscoveryLink(final DiscoveryLink discoveryLink) {
         final Date now = new Date();
         String source = Linkd.LOG_PREFIX + "/"
@@ -895,19 +896,23 @@ public class HibernateEventWriter implements QueryManager {
         }.execute();
     }
 
-    public OnmsSnmpInterface getFromSysnameIpAddress(
+    protected OnmsSnmpInterface getFromSysnameIpAddress(
             final String lldpRemSysname, final InetAddress lldpRemPortid) {
-        final CriteriaBuilder builder = new CriteriaBuilder(
-                                                            OnmsIpInterface.class);
-        builder.createAlias("node", "node");
-        builder.eq("node.sysName", lldpRemSysname);
-        builder.eq("ipAddress", lldpRemPortid);
-        final List<OnmsIpInterface> interfaces = m_ipInterfaceDao.findMatching(builder.toCriteria());
+        final Criteria criteria = new Criteria(OnmsSnmpInterface.class);
+        criteria.setAliases(Arrays.asList(new Alias[] { new Alias(
+                                                                  "node",
+                                                                  "node",
+                                                                  JoinType.LEFT_JOIN),new Alias(
+                                                                                                "ipInterfaces",
+                                                                                                "iface",
+                                                                                                JoinType.LEFT_JOIN) }));
+        criteria.addRestriction(new EqRestriction("node.sysName",
+                                                  lldpRemSysname));
+        criteria.addRestriction(new EqRestriction("iface.ipAddress", lldpRemPortid));
+        final List<OnmsSnmpInterface> interfaces = m_snmpInterfaceDao.findMatching(criteria);
         if (interfaces != null && !interfaces.isEmpty()
                 && interfaces.size() == 1) {
-            OnmsIpInterface ip = interfaces.get(0);
-            return m_snmpInterfaceDao.findByNodeIdAndIfIndex(ip.getNode().getId(),
-                                                                ip.getIfIndex());
+            return interfaces.get(0);
         }
         return null;
     }
