@@ -175,9 +175,9 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
                 return (List<HeatMapElement>) session.createSQLQuery(
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
-                                "count(distinct case when outages.outageid is not null and ifservices.status = 'A' then ifservices.id else null end) as servicesDown, " +
-                                "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
-                                "count(distinct case when outages.outageid is null and ifservices.status = 'A' then node.nodeid else null end) as nodesUp, " +
+                                "count(distinct case when outages.outageid is not null and ifservices.status <> 'D' then ifservices.id else null end) as servicesDown, " +
+                                "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
+                                "count(distinct case when outages.outageid is null and ifservices.status <> 'D' then node.nodeid else null end) as nodesUp, " +
                                 "count(distinct node.nodeid) as nodeTotalCount " +
                                 "from node left " +
                                 "join category_node using (nodeid) left join categories using (categoryid) " +
@@ -187,7 +187,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                                 "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
                                 "where nodeType <> 'D' " +
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause + " having count(distinct case when ifservices.status = 'A' then ifservices.id else null end) > 0")
+                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
                         .setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;
 
