@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:51:18 -->
+<!-- 2015-08-25T11:14:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="22c34d11-db7d-4471-a62b-0c9cc49e1b9d">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -39,13 +39,23 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String">
+		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
+		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
+		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[The directory where the subreports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT
 	categories.categoryname,
 	node.nodelabel,
@@ -221,8 +231,14 @@ ORDER BY
 				<subreportParameter name="ONMS_REPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="rrdDir">
-					<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+				<subreportParameter name="MEASUREMENT_URL">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_USERNAME">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_PASSWORD">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="snmpifalias">
 					<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>

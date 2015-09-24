@@ -593,7 +593,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
 
         expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(3);
-        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameters()).times(2);
+        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameters()).times(6);
 
         final PollStatus newStatus = PollStatus.available(1234.0);
 
@@ -702,7 +702,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
 
         expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).times(3);
-        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameters()).times(2);
+        expect(m_pollerConfig.parameters(m_dnsSvcConfig)).andReturn(m_dnsSvcConfig.getParameters()).times(6);
 
         final PollStatus newStatus = PollStatus.available(1234.0);
 
@@ -723,7 +723,7 @@ public class PollerBackEndTest extends TestCase {
         expect(m_monSvcDao.get(1)).andReturn(m_httpService);
 
         expect(m_pollerConfig.getServiceInPackage("HTTP", m_package)).andReturn(m_httpSvcConfig).times(3);
-        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameters()).times(2);
+        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameters()).times(6);
 
         expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_httpService)).andReturn(m_httpCurrentStatus);
 
@@ -828,7 +828,7 @@ public class PollerBackEndTest extends TestCase {
         //m_rrdStrategy.closeFile(isA(Object.class));
 
         expect(m_pollerConfig.getServiceInPackage("HTTP", pkg)).andReturn(m_httpSvcConfig);
-        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameters());
+        expect(m_pollerConfig.parameters(m_httpSvcConfig)).andReturn(m_httpSvcConfig.getParameters()).atLeastOnce();
 
         m_mocks.replayAll();
         m_backEnd.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);

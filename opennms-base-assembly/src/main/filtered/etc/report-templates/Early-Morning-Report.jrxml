@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-09T17:29:14 -->
+<!-- 2015-08-25T10:31:03 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Early-Morning-Report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2ccb7e05-ef47-49aa-83b8-9a38061a95ca">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Crosstab Data Text" hAlign="Center"/>
 	<subDataset name="outages_24h" uuid="584cad90-ea4d-4f92-b243-450cebb3f6c4">
 		<queryString>
 			<![CDATA[SELECT
@@ -38,7 +37,7 @@ FROM
 			outages_24h.nodeid, outages_24h.duration, outages_24h.unresolved, outages_24h.resolved, events.eventuei, outages_24h.svclosteventid, outages_24h.svcregainedeventid, outages_24h.servicename
 		FROM
 			(SELECT
-				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
 				CASE
 					WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
 					ELSE outages.ifregainedservice-outages.iflostservice
@@ -52,16 +51,27 @@ FROM
 					ELSE CAST('0' AS INTEGER)
 				END AS resolved
 			FROM
-				outages
-			JOIN
-				service
-			ON
-				(outages.serviceid=service.serviceid)
-			WHERE
-				service.servicename not like 'StrafePing' AND
-				(outages.iflostservice > now()-INTERVAL '23 hours' OR
-				outages.ifregainedservice is null))
-			AS outages_24h
+			outages
+		JOIN 
+			ifservices
+		ON
+			(outages.ifserviceid = ifservices.id)
+		JOIN
+			service
+		ON
+			(ifservices.serviceid=service.serviceid)
+		JOIN
+			ipinterface
+		ON
+			(ifservices.ipinterfaceid = ipinterface.id)
+		WHERE
+			service.servicename not like 'StrafePing' AND
+			(
+				outages.iflostservice > now()-INTERVAL '23 hours' 
+				OR 
+				outages.ifregainedservice is null
+			)
+		) AS outages_24h
 		JOIN
 			events
 		ON
@@ -265,7 +275,7 @@ LIMIT '20']]>
 		</field>
 	</subDataset>
 	<subDataset name="outages_details" uuid="bbc36c5e-3187-4444-81ec-d12779b4c84f">
-		<queryString>
+		<queryString language="SQL">
 			<![CDATA[SELECT
 		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, COUNT(detailed_outages_24h.outage_type) AS count, detailed_outages_24h.outage_type
 	FROM
@@ -282,7 +292,7 @@ LIMIT '20']]>
 			END AS outage_type
 		FROM
 			(SELECT
-				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
 				CASE
 					WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
 					ELSE outages.ifregainedservice-outages.iflostservice
@@ -294,9 +304,17 @@ LIMIT '20']]>
 			FROM
 				outages
 			JOIN
+				ifservices
+			ON
+				(outages.ifserviceid=ifservices.id)
+			JOIN
 				service
 			ON
-				(outages.serviceid=service.serviceid)
+				(ifservices.serviceid=service.serviceid)
+			JOIN
+				ipinterface
+			ON
+				(ifservices.ipinterfaceid=ipinterface.id)
 			WHERE
 				service.servicename not like 'StrafePing' AND
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
@@ -374,7 +392,7 @@ ORDER BY
 		<parameter name="outage_type" class="java.lang.String">
 			<defaultValueExpression><![CDATA["current"]]></defaultValueExpression>
 		</parameter>
-		<queryString>
+		<queryString language="SQL">
 			<![CDATA[SELECT
 	detailed_outage_24h.nodelabel,
 	detailed_outage_24h.outage_type,
@@ -416,7 +434,7 @@ FROM
 			outage_24h.nodeid, outage_24h.state, outage_24h.current, outage_24h.resolved, events.eventuei, outage_24h.svclosteventid, outage_24h.svcregainedeventid, outage_24h.servicename
 		FROM
 			(SELECT
-				outages.nodeid, outages.svclosteventid, outages.svcregainedeventid, outages.serviceid, service.servicename,
+				ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
 				CASE
 					WHEN ifregainedservice is null THEN CAST('1' AS INTEGER)
 					ELSE CAST('0' AS INTEGER)
@@ -432,9 +450,17 @@ FROM
 			FROM
 				outages
 			JOIN
+				ifservices
+			ON
+				(outages.ifserviceid=ifservices.id)
+			JOIN
 				service
 			ON
-				(outages.serviceid=service.serviceid)
+				(ifservices.serviceid=service.serviceid)
+			JOIN
+				ipinterface
+			ON
+				(ifservices.ipinterfaceid=ipinterface.id)
 			WHERE
 				service.servicename not like 'StrafePing' AND
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
@@ -758,7 +784,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="20" uuid="e5d02141-31ab-4f4d-b5a4-d2441b78d0b4"/>
+									<reportElement x="0" y="0" width="61" height="20" uuid="e5d02141-31ab-4f4d-b5a4-d2441b78d0b4"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -776,7 +802,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<staticText>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10" uuid="6b79aae3-3188-4cc9-9db3-c1a44007e235"/>
+									<reportElement x="0" y="0" width="249" height="10" uuid="6b79aae3-3188-4cc9-9db3-c1a44007e235"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 									</textElement>
@@ -795,7 +821,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="185" height="10" uuid="5f7da192-c707-4679-9365-95e104bd295f"/>
+									<reportElement x="0" y="0" width="185" height="10" uuid="5f7da192-c707-4679-9365-95e104bd295f"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -813,7 +839,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="185" height="10" uuid="60e2d756-c6a1-4d45-bd8b-c2b2bd4c129f"/>
+									<reportElement x="0" y="0" width="185" height="10" uuid="60e2d756-c6a1-4d45-bd8b-c2b2bd4c129f"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -838,7 +864,7 @@ WHERE
 							</cellContents>
 						</crosstabColumnHeader>
 						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+							<cellContents backcolor="#FFFFFF" mode="Transparent">
 								<box>
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 									<topPen lineWidth="0.0"/>
@@ -883,7 +909,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="e79a77f5-cd6c-418e-a821-49da71c6e141"/>
+								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="e79a77f5-cd6c-418e-a821-49da71c6e141"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
 								</textElement>
@@ -897,7 +923,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="cd5b1ce5-6a11-472b-a25e-9aca197f4190"/>
+								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="cd5b1ce5-6a11-472b-a25e-9aca197f4190"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>
@@ -926,7 +952,7 @@ WHERE
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="301185c0-877f-44c2-b258-b681184de007"/>
+								<reportElement x="0" y="0" width="22" height="10" forecolor="#CD0200" uuid="301185c0-877f-44c2-b258-b681184de007"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>
@@ -957,7 +983,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="10" uuid="c87d5c43-2364-486f-8cdb-e0bb84b80de6"/>
+									<reportElement x="0" y="0" width="61" height="10" uuid="c87d5c43-2364-486f-8cdb-e0bb84b80de6"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -975,7 +1001,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<staticText>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10" uuid="5a9c863e-53a8-496b-b6af-eeecefe456b1"/>
+									<reportElement x="0" y="0" width="249" height="10" uuid="5a9c863e-53a8-496b-b6af-eeecefe456b1"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 									</textElement>
@@ -994,7 +1020,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10" uuid="ac9c4cf6-77c8-46ea-91b6-20348d102c5f"/>
+									<reportElement x="0" y="0" width="186" height="10" uuid="ac9c4cf6-77c8-46ea-91b6-20348d102c5f"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -1012,7 +1038,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10" uuid="6f42c468-dbbe-4eaa-b55c-c902e4e8f11b"/>
+									<reportElement x="0" y="0" width="186" height="10" uuid="6f42c468-dbbe-4eaa-b55c-c902e4e8f11b"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -1037,7 +1063,7 @@ WHERE
 							</cellContents>
 						</crosstabColumnHeader>
 						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+							<cellContents backcolor="#FFFFFF" mode="Transparent">
 								<box>
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 									<topPen lineWidth="0.0"/>
@@ -1079,7 +1105,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="3989d247-c0e1-48d3-ac62-35c03fa59139"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="3989d247-c0e1-48d3-ac62-35c03fa59139"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
 								</textElement>
@@ -1093,7 +1119,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="695fb30e-2763-4b6e-900d-2284bf5af415"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="695fb30e-2763-4b6e-900d-2284bf5af415"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>
@@ -1122,7 +1148,7 @@ WHERE
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="43554b9f-b3e3-4f71-9a4a-b8b991029a14"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="43554b9f-b3e3-4f71-9a4a-b8b991029a14"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>
@@ -1318,7 +1344,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="61" height="20" uuid="8b0bd1bb-3890-4281-ba84-22e6d68e2746"/>
+									<reportElement x="0" y="0" width="61" height="20" uuid="8b0bd1bb-3890-4281-ba84-22e6d68e2746"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -1336,7 +1362,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<staticText>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="249" height="10" uuid="e854ebd3-3272-444c-a731-883170bf7b2f"/>
+									<reportElement x="0" y="0" width="249" height="10" uuid="e854ebd3-3272-444c-a731-883170bf7b2f"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 									</textElement>
@@ -1355,7 +1381,7 @@ WHERE
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10" uuid="79a502a9-64d4-49f5-ac0a-b26a4c94f2b3"/>
+									<reportElement x="0" y="0" width="186" height="10" uuid="79a502a9-64d4-49f5-ac0a-b26a4c94f2b3"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
@@ -1373,7 +1399,7 @@ WHERE
 									<rightPen lineWidth="0.5"/>
 								</box>
 								<textField>
-									<reportElement style="Crosstab Data Text" x="0" y="0" width="186" height="10" uuid="9394ed76-1421-4df2-8abe-0bc210d24bdd"/>
+									<reportElement x="0" y="0" width="186" height="10" uuid="9394ed76-1421-4df2-8abe-0bc210d24bdd"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7" isBold="true"/>
 									</textElement>
@@ -1398,7 +1424,7 @@ WHERE
 							</cellContents>
 						</crosstabColumnHeader>
 						<crosstabTotalColumnHeader>
-							<cellContents backcolor="#FFFFFF" mode="Transparent" style="Crosstab Data Text">
+							<cellContents backcolor="#FFFFFF" mode="Transparent">
 								<box>
 									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 									<topPen lineWidth="0.0"/>
@@ -1440,7 +1466,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="d5b14198-a26f-4acd-a5a8-4cc6aa181ba1"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="d5b14198-a26f-4acd-a5a8-4cc6aa181ba1"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="false" isPdfEmbedded="true"/>
 								</textElement>
@@ -1454,7 +1480,7 @@ WHERE
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="8e3c7fde-d0d3-46ca-8a4b-1ccdf6cecbd1"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="8e3c7fde-d0d3-46ca-8a4b-1ccdf6cecbd1"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>
@@ -1483,7 +1509,7 @@ WHERE
 								<rightPen lineWidth="0.5"/>
 							</box>
 							<textField>
-								<reportElement style="Crosstab Data Text" x="0" y="0" width="21" height="10" forecolor="#000000" uuid="52a3b8cb-77ef-4312-9bea-620de087b3df"/>
+								<reportElement x="0" y="0" width="21" height="10" forecolor="#000000" uuid="52a3b8cb-77ef-4312-9bea-620de087b3df"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 								</textElement>

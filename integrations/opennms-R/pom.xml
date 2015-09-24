@@ -8,13 +8,7 @@
   </parent>
   <artifactId>opennms-R</artifactId>
   <name>OpenNMS Integrations R Interface</name>
-
   <packaging>bundle</packaging>
-
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
-
   <build>
     <plugins>
       <plugin>
@@ -28,28 +22,6 @@
             <Bundle-Version>${project.version}</Bundle-Version>
           </instructions>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.16</version>
-        <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

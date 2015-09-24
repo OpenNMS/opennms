@@ -53,9 +53,7 @@ public class RrdGraphAttribute implements OnmsAttribute {
 
     private OnmsResource m_resource;
 
-    @SuppressWarnings("unused")
-    private RrdGraphAttribute() {
-        throw new UnsupportedOperationException("No-arg constructor for JAXB.");
+    public RrdGraphAttribute() {
     }
 
     /**
@@ -79,6 +77,10 @@ public class RrdGraphAttribute implements OnmsAttribute {
     @Override
     public String getName() {
         return m_name;
+    }
+
+    public void setName(final String name) {
+        this.m_name = name;
     }
 
     /**
@@ -111,6 +113,10 @@ public class RrdGraphAttribute implements OnmsAttribute {
         return m_relativePath + File.separator + m_rrdFile;
     }
 
+    public void setRrdRelativePath(final String relativePath) {
+        this.m_relativePath = relativePath;
+    }
+
     /**
      * <p>getRrdFile</p>
      *
@@ -118,6 +124,10 @@ public class RrdGraphAttribute implements OnmsAttribute {
      */
     public String getRrdFile() {
         return m_rrdFile;
+    }
+
+    public void setRrdFile(final String rrdFile) {
+        this.m_rrdFile = rrdFile;
     }
 
     /** {@inheritDoc} */

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:29:37 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a7c16202-b94a-4261-b00d-080ff04e390b">
+<!-- 2015-09-10T17:33:51 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Response Time Summary" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a7c16202-b94a-4261-b00d-080ff04e390b">
 	<property name="ireport.zoom" value="1.6528925619834718"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="48"/>
@@ -112,9 +112,6 @@
     new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), $P{startDate}.getDate() + $P{TIME_RANGE}).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
-	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
 	</parameter>
@@ -124,21 +121,32 @@
 	<parameter name="SUBREPORT_TIME_RANGE" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " Days"]]></defaultValueExpression>
 	</parameter>
-	<queryString>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String">
+		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
+		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
+		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
 		<![CDATA[SELECT
 	categories.categoryname,
 	node.nodelabel,
-	ifservices.ipaddr
+	node.nodeid,
+	node.foreignid,
+	node.foreignsource,
+	ipinterface.ipaddr
 FROM
 	node
 JOIN
-	ifservices
+	ipinterface
 ON
-	(ifservices.nodeid = node.nodeid)
-JOIN
-	service
-ON
-	(service.serviceid = ifservices.serviceid)
+	(ipinterface.nodeid = node.nodeid)
 JOIN
 	category_node
 ON
@@ -147,6 +155,14 @@ JOIN
 	categories
 ON
 	(categories.categoryid = category_node.categoryid)
+JOIN
+	ifservices
+ON
+	(ifservices.ipinterfaceid = ipinterface.id)
+JOIN
+	service
+ON
+	(service.serviceid = ifservices.serviceid)
 WHERE
 	ifservices.status = 'A' AND
 	service.servicename = 'ICMP' AND
@@ -154,11 +170,14 @@ WHERE
 ORDER BY
 	categories.categoryname,
 	node.nodelabel,
-	ifservices.ipaddr]]>
+	ipinterface.ipaddr]]>
 	</queryString>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
 	<field name="ipaddr" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="foreignid" class="java.lang.String"/>
+	<field name="foreignsource" class="java.lang.String"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double" resetType="Group" resetGroup="nodelabel_group" incrementType="Group" incrementGroup="nodelabel_group"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double" resetType="Group" resetGroup="nodelabel_group" incrementType="Group" incrementGroup="nodelabel_group"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double" resetType="Group" resetGroup="nodelabel_group" incrementType="Group" incrementGroup="nodelabel_group"/>
@@ -318,9 +337,6 @@ ORDER BY
 				<subreportParameter name="ONMS_REPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="rrdDir">
-					<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="startDate">
 					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -329,6 +345,24 @@ ORDER BY
 				</subreportParameter>
 				<subreportParameter name="endDate">
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_URL">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_USERNAME">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MEASUREMENT_PASSWORD">
+					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nodeid">
+					<subreportParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignid">
+					<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="foreignsource">
+					<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<returnValue subreportVariable="ICMP_Latency_AVG" toVariable="ICMP_Latency_AVG" calculation="Sum"/>

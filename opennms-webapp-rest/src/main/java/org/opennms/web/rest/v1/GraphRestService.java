@@ -139,7 +139,7 @@ public class GraphRestService extends OnmsRestService {
         }
 
         final ResourceVisitor visitor = new ResourceVisitor(this);
-        final ResourceDTO resourceDTO = new ResourceDTO(resource, depth);
+        final ResourceDTO resourceDTO = ResourceDTO.fromResource(resource, depth);
         visitor.visit(resourceDTO);
 
         return new GraphResourceDTO(resourceDTO, visitor.getGraphs());

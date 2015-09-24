@@ -123,6 +123,16 @@ public abstract class AbstractEventUtil implements EventUtil {
 	protected static final String TAG_INTERFACE = "interface";
 
 	/**
+	 * The foreignsource for the event's nodeid xml tag
+	 */
+	protected static final String TAG_FOREIGNSOURCE = "foreignsource";
+
+	/**
+	 * The foreignid for the event's nodeid xml tag
+	 */
+	protected static final String TAG_FOREIGNID = "foreignid";
+
+	/**
 	 * The event ifindex xml tag
 	 */
 	protected static final String TAG_IFINDEX = "ifindex";
@@ -409,6 +419,30 @@ public abstract class AbstractEventUtil implements EventUtil {
 				retParmVal = WebSecurityUtils.sanitizeString(nodeLabel);
 			else
 				retParmVal = "Unknown";
+		} else if (parm.equals(TAG_FOREIGNSOURCE)) {
+			retParmVal = "";
+			if (event.getNodeid() > 0) {
+				try {
+					String foreignSource = getForeignSource(event.getNodeid());
+					if (foreignSource != null) {
+						retParmVal = WebSecurityUtils.sanitizeString(foreignSource);
+					}
+				} catch (SQLException e) {
+					// do nothing
+				}
+			}
+		} else if (parm.equals(TAG_FOREIGNID)) {
+			retParmVal = "";
+			if (event.getNodeid() > 0) {
+				try {
+					String foreignId = getForeignId(event.getNodeid());
+					if (foreignId != null) {
+						retParmVal = WebSecurityUtils.sanitizeString(foreignId);
+					}
+				} catch (SQLException ex) {
+					// do nothing
+				}
+			}
 		} else if (parm.equals(TAG_TIME)) {
 			Date eventTime = event.getTime(); //This will be in GMT
 			if (eventTime == null) {
@@ -912,7 +946,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 
 		// check input string to see if it has any %xxx% substring
 		while ((tempInp != null) && ((index1 = tempInp.indexOf(PERCENT)) != -1)) {
-		        LOG.debug("checking input " + tempInp);
+		        LOG.debug("checking input {}", tempInp);
 			// copy till first %
 			ret.append(tempInp.substring(0, index1));
 			tempInp = tempInp.substring(index1);
@@ -921,19 +955,19 @@ public abstract class AbstractEventUtil implements EventUtil {
 			if (index2 != -1) {
 				// Get the value between the %s
 				String parm = tempInp.substring(1, index2);
-				LOG.debug("parm: " + parm + " found in value");
+				LOG.debug("parm: {} found in value", parm);
 
 				// If there's any whitespace in between the % signs, then do not try to 
 				// expand it with a parameter value
 				if (parm.matches(".*\\s(?s).*")) {
 					ret.append(PERCENT);
 					tempInp = tempInp.substring(1);
-		                        LOG.debug("skipping parm: " + parm + " because whitespace found in value");
+		                        LOG.debug("skipping parm: {} because whitespace found in value", parm);
 					continue;
 				}
 
 				String parmVal = getValueOfParm(parm, event);
-				LOG.debug("value of parm: " + parmVal);
+				LOG.debug("value of parm: {}", parmVal);
 
 				if (parmVal != null) {
 					if (decode != null && decode.containsKey(parm) && decode.get(parm).containsKey(parmVal)) {
@@ -1008,6 +1042,29 @@ public abstract class AbstractEventUtil implements EventUtil {
 	 *             if database error encountered
 	 */
 	protected abstract String getNodeLabel(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve foreign source from the node table of the database given a particular
+	 * nodeId.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 *
+	 * @return foreignSource Retrieved foreign source
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	protected abstract String getForeignSource(long nodeId) throws SQLException;
+
+	/**
+	 * Retrieve foreign id from the node table of the database given a particular nodeId.
+	 *
+	 * @param nodeId Node identifier
+	 * @return foreignId Retrieved foreign id
+	 * @throws SQLException if database error encountered
+	 */
+	protected abstract String getForeignId(long nodeId) throws SQLException;
 
 	/**
 	 * Retrieve ifAlias from the snmpinterface table of the database given a particular

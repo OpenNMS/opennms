@@ -1,14 +1,13 @@
 
-== Events in OpenNMS
-
-=== Events
+// Allow GitHub image rendering
+:imagesdir: ../images
 
 Events are central to the operation of the OpenNMS platform, so it's critical to have a firm grasp of this topic.
 
 IMPORTANT: Whenever something in OpenNMS appears to work by magic, it's probably events working behind the curtain.
 
 [[section-events-anatomy-of-an-event]]
-==== Anatomy of an Event
+=== Anatomy of an Event
 
 Events are structured historical records of things that happen in OpenNMS and the nodes, interfaces, and services it manages.
 Every event has a number of fixed *fields* and zero or more *parameters*.
@@ -37,7 +36,7 @@ Alarm Data::
     For more about alarms and how they relate to events, see <<alarms-introduction>>.
 
 [[section-events-sources-of-events]]
-==== Sources of Events
+=== Sources of Events
 
 Events may originate within OpenNMS itself or from outside.
 
@@ -57,7 +56,7 @@ XML-TCP::
     Any application or script can create custom events in OpenNMS by sending properly-formatted XML data over a TCP socket.
 
 [[section-events-event-bus]]
-==== The Event Bus
+=== The Event Bus
 
 At the heart of OpenNMS lies an *event bus*.
 Any OpenNMS component can _publish_ events to the bus, and any component can _subscribe_ to receive events of interest that have been published on the bus.
@@ -67,6 +66,4 @@ Other subsystems with an interest in new nodes subscribe to the _node-added_ eve
 The publisher and subscriber components do not need to have any knowledge of each other, allowing for a clean division of labor and lessening the programming burden to add entirely new OpenNMS subsystems or modify the behavior of existing ones.
 
 [[section-events-events-in-action]]
-==== Events in Action
-
-[[section-events-events-in-action-notifications]]
+=== Events in Action

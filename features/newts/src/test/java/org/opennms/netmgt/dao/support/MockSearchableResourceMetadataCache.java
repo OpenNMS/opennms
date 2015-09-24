@@ -52,6 +52,11 @@ public class MockSearchableResourceMetadataCache implements SearchableResourceMe
     }
 
     @Override
+    public void delete(final Context context, final Resource resource) {
+
+    }
+
+    @Override
     public List<String> getResourceIdsWithPrefix(Context context, String resourceIdPrefix) {
         return Collections.emptyList();
     }

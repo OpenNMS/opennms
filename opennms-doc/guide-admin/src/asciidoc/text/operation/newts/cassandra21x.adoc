@@ -1,0 +1,113 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+=== Cassandra monitoring
+
+This section describes some of the metrics _OpenNMS_ collects for monitoring an _Apache Cassandra_ database infrastructure.
+By default the category `Cassandra21x` is used to enable the data collection on a node.
+Also, the service name `JMX-Cassandra21x` is used to bind this data collection to a node's interface.
+The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
+
+==== Thread pools
+
+_Apache Cassandra_ is based on a so called _Staged Event Driven Architecture_ (SEDA).
+This seperates different operations in stages and these stages are loosely coupled using a messaging service.
+Each of these components use queues and thread pools to group and execute their tasks.
+_OpenNMS_ collects the data for the following thread pools:
+
+* AntiEntropyStage
+* CacheCleanupExecutor
+* CommitLogArchiver
+* CompactionExecutor
+* GossipStage
+* HintedHandoff
+* InternalResponseStage
+* MemtableFlushWriter
+* MemtablePostFlush
+* MemtableReclaimMemory
+* MigrationStage
+* MiscStage
+* PendingRangeCalculator
+* Sampler
+* ValidationExecutor
+* CounterMutationStage
+* MutationStage
+* ReadRepairStage
+* ReadStage
+* RequestResponseStage
+* Native-Transport-Requests
+
+For each of these the following metrics are collected by _OpenNMS_:
+
+[options="header, autowidth"]
+|===
+| Name | Description
+| `ActiveTasks` | Tasks that are currently running
+| `CompletedTasks` | Tasks that have been completed
+| `CurrentlyBlockedTasks` | Tasks that have been blocked due to a full queue
+| `PendingTasks` | Tasks queued for execution
+| `TotalBlockedTasks` | Number of tasks that have been blocked in total
+|===
+
+==== Message dropped
+
+Load shedding is part of the _Apache Cassandra_ architecture.
+The number of dropped messages in the different message queues are good indicators whether a cluster can handle its load:
+
+* COUNTER_MUTATION
+* MUTATION
+* PAGED_RANGE
+* RANGE_SLICE
+* READ
+* READ_REPAIR
+* REQUEST_RESPONSE
+* _TRACE
+* BINARY
+
+==== Compaction manager
+
+The following compaction manager metrics are monitored by _OpenNMS_:
+
+[options="header, autowidth"]
+|===
+| Name | Description
+| `BytesCompacted` | Number of bytes compacted since node started
+| `CompletedTasks` | Estimated number of completed compaction tasks
+| `PendingTasks` | Estimated number of pending compaction tasks
+| `TotalCompactionsCompleted` | Total number of completed compaction tasks
+|===
+
+==== Storage
+
+The following storage metrics are collected by _OpenNMS_:
+
+[options="header, autowidth"]
+|===
+| Name | Description
+| `Load` | Total disk space (in bytes) used by this node
+| `Exceptions` | Number of unhandled exceptions since start of this _Cassandra_ instance
+| `TotalHints` | The number of hints since the node was started
+| `TotalHintsInProgress` | Number of hints currently active on this node
+|===
+
+==== Client connections
+
+The number of client connections are also collected:
+
+[options="header, autowidth"]
+|===
+| Name | Description
+| `connectedNativeClients` | Metrics for connected native clients
+| `connectedThriftClients` | Metrics for connected thrift clients
+|===
+
+==== JVM Metrics
+
+Some key metrics from the running Java virtual machine are also collected:
+
+java.lang:type=Memory::
+  The memory system of the Java virtual machine. This includes heap and non-heap memory
+java.lang:type=GarbageCollector,name=ConcurrentMarkSweep::
+  Metrics for the garbage collection process of the Java virtual machine
+
+TIP: If you use _Apache Cassandra_ for running _Newts_ you can also enable additional metrics for the _Newts_ keyspace.

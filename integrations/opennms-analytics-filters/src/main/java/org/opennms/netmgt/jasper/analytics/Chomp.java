@@ -31,8 +31,11 @@ package org.opennms.netmgt.jasper.analytics;
 import java.awt.Point;
 import java.util.Set;
 
+import org.opennms.netmgt.jasper.analytics.helper.AnalyticsFilterUtils;
+
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.Sets;
+
 
 /**
  * Strips leading and trailing rows that contain
@@ -70,7 +73,7 @@ public class Chomp implements Filter {
         }
 
         if (m_config.getStripNaNs()) {
-            // Excluding the Timestamp column, determine the
+            // Excluding the timestamp column, determine the
             // index of the first and last rows which don't contain
             // completely NaN values
             Set<String> columnNamesNoTs = Sets.newHashSet(dsAsTable.columnKeySet());
