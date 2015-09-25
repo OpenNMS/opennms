@@ -43,8 +43,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,15 +70,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
-    private NodeDao m_nodeDao;
-
-    @Autowired
     private DatabasePopulator m_dbPopulator;
 
     @Autowired
-    private DefaultResourceDao m_resourceDao;
-
-    private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+    private FilesystemResourceStorageDao m_resourceStorageDao;
 
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
@@ -94,7 +87,6 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Point to our temporary directory
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
-        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
 
         // Add some blank .jrb files
         File nodeSnmp1 = m_tempFolder.newFolder("snmp", "1");
