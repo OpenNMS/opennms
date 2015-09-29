@@ -180,7 +180,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
                 return (List<HeatMapElement>) session.createSQLQuery(
                         "select coalesce(" + entityNameColumn + ",'Uncategorized'), " + entityIdColumn + ", " +
-                                "count(distinct case when ifservices.status = 'A' then ifservices.id else null end) as servicesTotal, " +
+                                "count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) as servicesTotal, " +
                                 "count(distinct node.nodeid) as nodeTotalCount, " +
                                 maximumSeverityQuery +
                                 "from node " +
@@ -188,10 +188,11 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 "left join categories using (categoryid) " +
                                 "left outer join ipinterface using (nodeid) " +
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
+                                "left outer join service on (ifservices.serviceid = service.serviceid) " +
                                 "left outer join alarms on (alarms.nodeid = node.nodeid) " +
-                                "where nodeType <> 'D' " +
+                                "where nodeType <> 'D' and alarms.alarmtype in (1,3) " +
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
-                                "group by " + groupByClause)
+                                "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
                         .setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 5152094813503430377L;
 

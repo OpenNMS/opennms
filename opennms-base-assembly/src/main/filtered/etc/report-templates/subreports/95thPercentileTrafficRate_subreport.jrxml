@@ -5,7 +5,6 @@
 	<property name="ireport.zoom" value="1.8150000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QueryExecutorAdapter"/>
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>

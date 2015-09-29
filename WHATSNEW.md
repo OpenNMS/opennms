@@ -36,9 +36,9 @@ Events
 * Raytheon NXU-2A
 * Avocent DSView
 * Evertz 7800FR Multiframe
-** 7880-IP-ASI-IP
-** 7881-DEC-MP2
-** 7780-ASI-IP2
+  * 7880-IP-ASI-IP
+  * 7881-DEC-MP2
+  * 7780-ASI-IP2
 * Dell Force 10
 * ~50 new NetApp Events
 

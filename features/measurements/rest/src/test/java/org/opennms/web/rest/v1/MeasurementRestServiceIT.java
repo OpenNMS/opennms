@@ -45,7 +45,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -83,15 +82,13 @@ import com.google.common.collect.Maps;
 public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
-    protected DefaultResourceDao m_resourceDao;
-
-    @Autowired
     protected NodeDao m_nodeDao;
 
     @Autowired
     private ServletContext m_context;
 
-    protected FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+    @Autowired
+    protected FilesystemResourceStorageDao m_resourceStorageDao;
     
     public MeasurementRestServiceIT() {
         super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml");
@@ -113,7 +110,6 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(rrdDirectory.canRead());
 
         m_resourceStorageDao.setRrdDirectory(rrdDirectory);
-        m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
 
         System.setProperty("rrd.base.dir", rrdDirectory.getAbsolutePath());
     }

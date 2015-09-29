@@ -63,7 +63,6 @@
 			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Table Dataset 1" uuid="30eb0e3d-6d6f-4d81-a3ab-75065b1696b9"/>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>

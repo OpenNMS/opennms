@@ -225,7 +225,7 @@ public class MeasurementQueryExecutorIT {
             });
             Assert.fail("JRException expected, but not received");
         } catch (JRException ex) {
-            Assert.assertTrue(ex.toString().contains("No query executer factory registered for the 'resourceQuery' language."));
+            Assert.assertTrue(ex.toString().contains("No query executer factory registered for the \"resourceQuery\" language."));
         }
         verifyHttpCalls(0);
     }

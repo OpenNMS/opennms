@@ -58,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Throwables;
@@ -280,6 +281,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
+    @Transactional(readOnly=true)
     public List<OnmsResource> findTopLevelResources() {
         // Retrieve all top-level resources by passing null as the parent
         final List<OnmsResource> resources = m_resourceTypes.values().stream()
@@ -329,6 +331,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @throws ObjectRetrievalFailureException If any exceptions are thrown while searching for the resource
      */
     @Override
+    @Transactional(readOnly=true)
     public OnmsResource getResourceById(String id) {
         OnmsResource resource = null;
 
@@ -406,6 +409,30 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
         final OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
         return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(locMon.getId(), ipAddress));
+    }
+
+    @Override
+    public boolean deleteResourceById(final String resourceId) {
+        final OnmsResource resource = this.getResourceById(resourceId);
+        if (resource == null) {
+            return false;
+        }
+
+        return deleteResource(resource, true);
+    }
+
+    public boolean deleteResource(final OnmsResource resource, boolean recursive) {
+        boolean result = false;
+
+        if (recursive) {
+            for (final OnmsResource childResource : resource.getChildResources()) {
+                result = deleteResource(childResource, recursive) || result;
+            }
+        }
+
+        result = m_resourceStorageDao.delete(resource.getPath()) || result;
+
+        return result;
     }
 
     /**

@@ -27,7 +27,7 @@ The _OpenNMS Report Engine_ passes a _JDBC_ Connection to the _OpenNMS Database_
 |`JasperReport` Version   | {jasperReportsVersion}
 |===
 
-For more details on how _JasperReports_ works, please have a look at the link:http://community.jaspersoft.com/documentation/v56-v561-v560/jaspersoft-studio-user-guide[official documentation] of _Jaspersoft Studio_.
+For more details on how _JasperReports_ works, please have a look at the link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation] of _Jaspersoft Studio_.
 
 [[ga-database-report-add-custom-report]]
 === Add a custom report

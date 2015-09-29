@@ -115,6 +115,11 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
         return (r != null) ? Optional.of(r) : Optional.<ResourceMetadata>absent();
     }
 
+    @Override
+    public void delete(final Context context, final Resource resource) {
+        m_cache.invalidate(key(context, resource.getId()));
+    }
+
     private String key(Context context, String resourceId) {
         return m_keyJoiner.join(context.getId(), resourceId);
     }
