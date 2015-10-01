@@ -1,0 +1,14 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-credits]]
+=== Credits
+
+This is the section with all the credits.
+
+NOTE: Maybe not all, but some.
+
+* Credit 1
+* Credit 2
+* ...

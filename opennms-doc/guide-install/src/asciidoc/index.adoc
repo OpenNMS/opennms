@@ -33,3 +33,6 @@ include::text/newts/cassandra-rhel.adoc[]
 include::text/newts/cassandra-debian.adoc[]
 include::text/newts/cassandra-windows.adoc[]
 include::text/newts/configure-opennms.adoc[]
+
+// Credits
+include:text/credits.adoc[]
