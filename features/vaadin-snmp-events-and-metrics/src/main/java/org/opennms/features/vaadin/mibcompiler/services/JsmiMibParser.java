@@ -241,7 +241,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 String groupName = getGroupName(v);
                 String resourceType = getResourceType(v);
                 Group group = getGroup(dcGroup, groupName, resourceType);
-                String typeName = getMetricType(v.getType().getPrimitiveType());
+                String typeName = getMetricType(v.getType().getPrimitiveType()); // FIXME what if it is not a primitive type, like in ENTITY-SENSOR-MIB ?
                 if (typeName != null) {
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
                     MibObj mibObj = new MibObj();
@@ -441,6 +441,9 @@ public class JsmiMibParser implements MibParser, Serializable {
      * @return the type
      */
     private String getMetricType(SmiPrimitiveType type) {
+        if (type == null) {
+            return null;
+        }
         if (type.equals(SmiPrimitiveType.ENUM)) // ENUM are just informational elements.
             return "string";
         if (type.equals(SmiPrimitiveType.OBJECT_IDENTIFIER)) // ObjectIdentifier will be treated as strings.
