@@ -24,7 +24,9 @@ describe('Controller: InterfaceController', function () {
       $modalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
       foreignSource: foreignSource,
-      requisitionInterface: node.interfaces[0]
+      foreignId: foreignId,
+      requisitionInterface: node.interfaces[0],
+      ipBlackList: []
     });
   }
 

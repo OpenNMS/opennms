@@ -111,15 +111,15 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testRequisitionUI() throws Exception {
         // Add a new requisition
-        findElementByXpath("//div/ul/li/a[contains(@ng-click,'add')]").click();
+        findElementByXpath("//div/button[contains(@ng-click,'add')]").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
         enterText(By.xpath("//form/input[contains(@class,'bootbox-input')]"), REQUISITION_NAME);
         findElementByXpath("//div/button[text()='OK']").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
 
         // Edit the foreign source
-        findElementByXpath("//td[text()='" + REQUISITION_NAME + "']/../td/a[contains(@ng-click,'editForeignSource')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Foreign Source Definition (" + REQUISITION_NAME + ")']")));
+        findElementByXpath("//td[text()='" + REQUISITION_NAME + "']/../td/button[contains(@ng-click,'editForeignSource')]").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
         // Add a detector
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div/a[contains(@ng-click,'addDetector')]")));
@@ -132,16 +132,16 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//div[contains(@class,'modal-footer')]/button[text()='Save']").click();
 
         // Save foreign source definition
-        final String saveFSXpath = "//ul/li/button[contains(text(),'Save')]";
+        final String saveFSXpath = "//div/button[contains(@ng-click,'save')]";
         findElementByXpath(saveFSXpath).click();
         wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.xpath(saveFSXpath))));
 
         // Go to the Requisition page
-        findElementByXpath("//ul/li/a[contains(text(),'Return')]").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='" + REQUISITION_NAME + " (0 nodes)']")));
+        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (0 nodes)']")));
 
         // Add node to a requisition
-        findElementByXpath("//ul/li/a[contains(@ng-click,'addNode')]").click();
+        findElementByXpath("//div/button[contains(@ng-click,'addNode')]").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nodeLabel")));
         enterText(By.id("nodeLabel"), NODE_LABEL);
         WebElement foreignId = m_driver.findElement(By.id("foreignId"));
@@ -156,30 +156,37 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         final String ipAddrXpath = "//div/input[@id='ipAddress']";
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(ipAddrXpath)));
         enterText(By.xpath(ipAddrXpath), NODE_IPADDR);
-        findElementByXpath("//div/button[contains(@ng-click,'addService')]").click();
 
         // Add a service to the IP Interface
+        findElementByXpath("//div/button[contains(@ng-click,'addService')]").click();
         final String serviceXpath = "//div/input[@ng-model='service.name']";
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(serviceXpath)));
         enterText(By.xpath(serviceXpath), "HTTP-8980");
 
         // Save the IP interface
-        findElementByXpath("//div/button[contains(@ng-click,'save')]").click();
+        findElementByXpath("//div[@class='modal-footer']/button[contains(@ng-click,'save')]").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_IPADDR + "']")));
 
         // Save the node
-        final String saveNodeXpath = "//div/ul/li/button[contains(@ng-click,'save')]";
+        final String saveNodeXpath = "//div/button[contains(@ng-click,'save')]";
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(saveNodeXpath)));
         findElementByXpath(saveNodeXpath).click();
         wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.xpath(saveNodeXpath))));
-        findElementByXpath("//div/ul/li/a[contains(@ng-click,'goBack')]").click();
+        
+        // Go to the requisition page
+        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[contains(@class,'ng-binding') and text()='" + NODE_LABEL + "']")));
 
         // Synchronize the requisition
-        findElementByXpath("//div/ul/li/a[contains(@ng-click,'synchronize')]").click();
+        final String syncXpath = "//div/button[contains(@ng-click,'synchronize')]";
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(syncXpath)));
+        findElementByXpath(syncXpath).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
         findElementByXpath("//div/button[text()='Yes']").click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='" + REQUISITION_NAME + " (1 nodes)']")));
-        findElementByXpath("//div/ul/li/a[contains(@ng-click,'goBack')]").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Requisition " + REQUISITION_NAME + " (1 nodes)']")));
+        
+        // Go to the requisitions page
+        findElementByXpath("//div/button[contains(@ng-click,'goBack')]").click();
 
         // Wait until the node has been added to the database, using the ReST API
         for (int i=0; i<5; i++) {
