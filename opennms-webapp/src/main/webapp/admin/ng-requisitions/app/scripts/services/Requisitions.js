@@ -54,8 +54,6 @@
     requisitionsService.internal.defaultTimeout = 5;
     requisitionsService.internal.timingStatus = { isRunning: false };
 
-    requisitionService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
-
     /**
     * @description (Internal) Gets the requisitions data from the internal cache
     *
