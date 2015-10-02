@@ -29,6 +29,16 @@
   .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
 
     /**
+    * @description The timing status.
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#timingStatus
+    * @propertyOf ForeignSourceController
+    * @returns {object} The timing status object
+    */
+    $scope.timingStatus = RequisitionsService.getTiming();
+
+    /**
     * @description The foreign source (a.k.a the name of the requisition).
     * The default value is obtained from the $routeParams.
     *
@@ -68,6 +78,50 @@
     $scope.onFocus = EmptyTypeaheadService.onFocus;
 
     /**
+    * @description Goes to specific URL warning about changes if exist.
+    *
+    * @name ForeignSourceController:goTo
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    * @param {object} handler The goto handler
+    */
+    $scope.goTo = function(handler) {
+      if (this.fsForm.$dirty) {
+        bootbox.dialog({
+          message: 'There are changes on the current requisition. Are you sure you want to cancel ?',
+          title: 'Cancel Changes',
+          buttons: {
+            success: {
+              label: 'Yes',
+              className: 'btn-danger',
+              callback: handler
+            },
+            main: {
+              label: 'No',
+              className: 'btn-default'
+            }
+          }
+        });
+      } else {
+        handler();
+      }
+    };
+
+    /**
+    * @description Goes back to requisitions list (navigation)
+    *
+    * @name ForeignSourceController:goTop
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    */
+    $scope.goTop = function() {
+      var doGoTop = function() {
+        $window.location.href = '#/requisitions';
+      };
+      $scope.goTo(doGoTop);
+    };
+
+    /**
     * @description Goes back to requisition editor (navigation)
     *
     * @name ForeignSourceController:goBack
@@ -82,25 +136,7 @@
           $window.location.href = '#/requisitions/' + $scope.foreignSource;
         }
       };
-      if (this.fsForm.$dirty) {
-        bootbox.dialog({
-          message: 'There are changes on the current requisition. Are you sure you want to cancel ?',
-          title: 'Cancel Changes',
-          buttons: {
-            success: {
-              label: 'Yes',
-              className: 'btn-danger',
-              callback: doGoBack
-            },
-            main: {
-              label: 'No',
-              className: 'btn-default'
-            }
-          }
-        });
-      } else {
-        doGoBack();
-      }
+      $scope.goTo(doGoBack);
     };
 
     /**
@@ -232,6 +268,7 @@
     */
     $scope.save = function() {
       var form = this.fsForm;
+      RequisitionsService.startTiming();
       RequisitionsService.saveForeignSourceDefinition($scope.foreignSourceDef).then(
         function() { // success
           growl.success('The definition for the requisition ' + $scope.foreignSource + ' has been saved.');

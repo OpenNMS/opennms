@@ -15,7 +15,8 @@ describe('Controller: AssetController', function () {
       $modalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
       EmptyTypeaheadService: mockEmptyTypeaheadService,
-      asset: asset
+      asset: asset,
+      assetsBlackList: []
     });
   };
 

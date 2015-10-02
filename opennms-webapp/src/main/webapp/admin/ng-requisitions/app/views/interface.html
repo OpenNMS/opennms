@@ -11,7 +11,7 @@
       <div class="form-group" ng-class="{ 'has-error' : intfForm.ipAddress.$invalid }">
         <label class="control-label" for="ipAddress">IP Address</label>
         <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="requisitionInterface.ipAddress" required valid-ip-address></input>
-        <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required.</p>
+        <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required, and must be unique within the node.</p>
       </div>
       <div class="form-group">
         <label class="control-label" for="descr">Description</label>
@@ -22,14 +22,17 @@
         <input class="form-control" type="text" id="snmpPrimary" name="snmpPrimary" ng-model="requisitionInterface.snmpPrimary" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false" typeahead="a.id as a.title for a in snmpPrimaryFields | filter:$viewValue:fieldComparator" required></input>
       </div>
       <label ng-show="requisitionInterface.services.length > 0">Services</label>
-      <div class="form-group" ng-repeat="service in requisitionInterface.services">
-        <div class="input-group">
-          <input class="form-control" type="text" placeholder="Service Name" ng-model="service.name" ng-focus="onFocus($event)" empty-typeahead typeahead="service for service in availableServices | filter:$viewValue:fieldComparator" typeahead-editable="true" required></input>
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="button" ng-click="removeService($index)"><span class="glyphicon glyphicon-remove"></span></button>
-          </span>
+      <ng-form name="serviceForm" ng-repeat="service in requisitionInterface.services">
+        <div class="form-group" ng-class="{ 'has-error' : serviceForm.serviceName.$invalid }">
+          <div class="input-group">
+            <input class="form-control" type="text" name="serviceName" placeholder="Service Name" ng-model="service.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="service for service in getAvailableServices() | filter:$viewValue:fieldComparator" required valid-service></input>
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" ng-click="removeService($index)"><span class="glyphicon glyphicon-remove"></span></button>
+            </span>
+          </div>
+          <p ng-show="serviceForm.serviceName.$invalid" class="help-block">Service name is required and should be unique on the interface.</p>
         </div>
-      </div>
+      </ng-form>
     </form>
   </div>
 

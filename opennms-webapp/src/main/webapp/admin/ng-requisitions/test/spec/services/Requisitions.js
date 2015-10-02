@@ -492,6 +492,8 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(2);
       expect(data[1]).toBe('SNMP');
+    }, function(msg) {
+      throw 'This is not expected';
     });
 
     $httpBackend.flush();
@@ -512,6 +514,8 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(4);
       expect(data[1]).toBe('city');
+    }, function(msg) {
+      throw 'This is not expected';
     });
 
     $httpBackend.flush();
@@ -532,6 +536,8 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(3);
       expect(data[1]).toBe('Development');
+    }, function(msg) {
+      throw 'This is not expected';
     });
 
     $httpBackend.flush();
@@ -574,6 +580,8 @@ describe('Service: RequisitionsService', function () {
       expect(data.length).toBe(1);
       expect(data[0].name).toBe('Match IP Interface');
       expect(data[0].parameters.length).toBe(4);
+    }, function(msg) {
+      throw 'This is not expected';
     });
 
     $httpBackend.flush();
@@ -619,9 +627,92 @@ describe('Service: RequisitionsService', function () {
       expect(data.length).toBe(1);
       expect(data[0].name).toBe('ICMP');
       expect(data[0].parameters.length).toBe(5);
+    }, function(msg) {
+      throw 'This is not expected';
     });
 
     $httpBackend.flush();
   });
+
+  // Test Foreign ID on Requisition
+
+  it('isForeignIdOnRequisition', function() {
+    console.log('Running tests for isForeignIdOnRequisition');
+
+    initializeCache();
+
+    requisitionsService.isForeignIdOnRequisition('test-network', '1001').then(function(exist) {
+      expect(exist).toBe(true);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+
+    requisitionsService.isForeignIdOnRequisition('test-network', '1004').then(function(exist) {
+      expect(exist).toBe(false);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+  });
+
+  // Test IP Address on Node
+
+  it('isIpAddressOnNode', function() {
+    console.log('Running tests for isIpAddressOnNode');
+
+    initializeCache();
+
+    requisitionsService.isIpAddressOnNode('test-network', '1001', '10.0.0.1').then(function(exist) {
+      expect(exist).toBe(true);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+
+    requisitionsService.isIpAddressOnNode('test-network', '1001', '10.0.0.2').then(function(exist) {
+      expect(exist).toBe(false);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+  });
+
+  // Test Category on Node
+
+  it('isCategoryOnNode', function() {
+    console.log('Running tests for isCategoryOnNode');
+
+    initializeCache();
+
+    requisitionsService.isCategoryOnNode('test-network', '1001', 'Servers').then(function(exist) {
+      expect(exist).toBe(true);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+
+    requisitionsService.isCategoryOnNode('test-network', '1001', 'Router').then(function(exist) {
+      expect(exist).toBe(false);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+  });
+
+  // Test Service on Node
+
+  it('isServiceOnNode', function() {
+    console.log('Running tests for isServiceOnNode');
+
+    initializeCache();
+
+    requisitionsService.isServiceOnNode('test-network', '1001', '10.0.0.1', 'ICMP').then(function(exist) {
+      expect(exist).toBe(true);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+
+    requisitionsService.isServiceOnNode('test-network', '1001', '10.0.0.2', 'HTTP').then(function(exist) {
+      expect(exist).toBe(false);
+    }, function(msg) {
+      throw 'This is not expected';
+    });
+  });
+
 
 });
