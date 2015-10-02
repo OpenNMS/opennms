@@ -26,7 +26,7 @@
         }
         return $q.reject(rejection);
       }
-    }
+    };
   }])
 
   .config(['$httpProvider',function($httpProvider) {

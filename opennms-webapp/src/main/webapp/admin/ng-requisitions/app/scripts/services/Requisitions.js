@@ -263,7 +263,7 @@
     */
     requisitionsService.getTiming = function() {
       return requisitionsService.internal.timingStatus;
-    }
+    };
 
     /**
     * @description Requests all the requisitions (pending and deployed) from OpenNMS.
@@ -915,7 +915,7 @@
         deferred.resolve(found);
       }, function(err) {
         var message = 'cannot verify foreignId ' + foreignId + '@' + foreignSource + '. ';
-        $log.error('isForeignIdOnRequisition: ' + message, err)
+        $log.error('isForeignIdOnRequisition: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
@@ -945,7 +945,7 @@
         deferred.resolve(found);
       }, function(err) {
         var message = 'cannot verify ipAddress on node ' + foreignId + '@' + foreignSource + '. ';
-        $log.error('isIpAddressOnNode: ' + message, err)
+        $log.error('isIpAddressOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
@@ -976,7 +976,7 @@
         deferred.resolve(found);
       }, function(err) {
         var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
-        $log.error('isCategoryOnNode: ' + message, err)
+        $log.error('isCategoryOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
@@ -1009,7 +1009,7 @@
         deferred.resolve(found);
       }, function(err) {
         var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
-        $log.error('isIpAddressOnNode: ' + message, err)
+        $log.error('isIpAddressOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
