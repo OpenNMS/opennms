@@ -36,7 +36,7 @@ import java.util.List;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class Sample extends Row implements Comparable<Sample> {
+public class RrdSample extends Row implements Comparable<RrdSample> {
 
     /** The timestamp. */
     private long timestamp;
@@ -47,7 +47,7 @@ public class Sample extends Row implements Comparable<Sample> {
      * @param timestamp the timestamp in seconds
      * @param values the values
      */
-    public Sample(long timestamp, List<Double> values) {
+    public RrdSample(long timestamp, List<Double> values) {
         setTimestamp(timestamp * 1000);
         setValues(values);
     }
@@ -100,7 +100,7 @@ public class Sample extends Row implements Comparable<Sample> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Sample other = (Sample) obj;
+        RrdSample other = (RrdSample) obj;
         if (timestamp != other.timestamp)
             return false;
         return true;
@@ -110,7 +110,7 @@ public class Sample extends Row implements Comparable<Sample> {
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(Sample o) {
+    public int compareTo(RrdSample o) {
         if (this.timestamp < o.timestamp)
             return -1;
         if (this.timestamp == o.timestamp)

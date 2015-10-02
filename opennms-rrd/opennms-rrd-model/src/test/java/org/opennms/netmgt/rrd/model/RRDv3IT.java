@@ -194,13 +194,13 @@ public class RRDv3IT {
         File source = new File("src/test/resources/sample-counter.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        List<Sample> samples = rrd.generateSamples(rrd.getRras().get(0));
+        List<RrdSample> samples = rrd.generateSamples(rrd.getRras().get(0));
         Assert.assertFalse(samples.isEmpty());
         long ts = 1441748400000L;
         Double v1 = 600.0;
         Double v2 = 2.0;
         Assert.assertEquals(rrd.getRras().get(0).getRows().size(), samples.size());
-        for (Sample s : samples) {
+        for (RrdSample s : samples) {
             System.out.println(s);
             Assert.assertEquals(2, s.getValues().size());
             Assert.assertEquals(ts, s.getTimestamp());
@@ -222,7 +222,7 @@ public class RRDv3IT {
         File source = new File("src/test/resources/sample-counter-rras.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        List<Sample> samples = rrd.generateSamples(rrd.getRras().get(1));
+        List<RrdSample> samples = rrd.generateSamples(rrd.getRras().get(1));
         samples.forEach(System.out::println);
         Assert.assertFalse(samples.isEmpty());
         Assert.assertEquals(rrd.getRras().get(1).getRows().size(), samples.size());
@@ -238,7 +238,7 @@ public class RRDv3IT {
         File source = new File("src/test/resources/sample-counter-rras.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        List<Sample> samples = rrd.generateSamples();
+        List<RrdSample> samples = rrd.generateSamples();
         Assert.assertFalse(samples.isEmpty());
         int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
         Assert.assertEquals(size - 3, samples.size()); // There are 3 timestamps that exist in both RRAs.

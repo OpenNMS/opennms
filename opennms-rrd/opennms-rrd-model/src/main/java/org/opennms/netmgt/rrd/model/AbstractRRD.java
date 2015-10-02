@@ -431,8 +431,8 @@ public abstract class AbstractRRD {
      * @return the all samples
      */
     @XmlTransient
-    public List<Sample> generateSamples() {
-        List<Sample> samples = new ArrayList<Sample>();
+    public List<RrdSample> generateSamples() {
+        List<RrdSample> samples = new ArrayList<RrdSample>();
         getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
             generateSamples(r).forEach(s -> {
                 if (!samples.contains(s))
@@ -463,8 +463,8 @@ public abstract class AbstractRRD {
      * @return the samples for the given RRA
      */
     @XmlTransient
-    public List<Sample> generateSamples(AbstractRRA rra) {
-        List<Sample> samples = new ArrayList<Sample>();
+    public List<RrdSample> generateSamples(AbstractRRA rra) {
+        List<RrdSample> samples = new ArrayList<RrdSample>();
         if (!rra.hasAverageAsCF()) {
             return samples;
         }
@@ -527,7 +527,7 @@ public abstract class AbstractRRD {
         }
 
         // Update Samples
-        valuesMap.forEach((timestamp, data) -> samples.add(new Sample(timestamp,data)));
+        valuesMap.forEach((timestamp, data) -> samples.add(new RrdSample(timestamp,data)));
         return samples;
     }
 
