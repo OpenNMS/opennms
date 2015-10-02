@@ -17,7 +17,7 @@
   * @description A directive to verify IPv4 and IPv6 addresses using a regular expression.
   * Also verifies if the given IP is unique on the node (to avoid duplicates).
   */
-  .directive('validIpAddress', ['RequisitionsService', function(RequisitionsService) {
+  .directive('validIpAddress', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -38,7 +38,7 @@
         });
       }
     };
-  }])
+  })
 
   /**
   * @ngdoc directive
@@ -48,7 +48,7 @@
   * @description A directive to verify if the given service is unique on the IP Interface.
   * This must be used on interface.html in conjunction with InterfaceController
   */
-  .directive('validService', ['RequisitionsService', function(RequisitionsService) { // WORKS PERFECT
+  .directive('validService', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -59,7 +59,7 @@
             if (s.$$hashKey != scope.service.$$hashKey && s.name == serviceName) {
               found = true;
             }
-          })
+          });
           if (found) {
             ctrl.$setValidity('unique', false);
             return undefined;
@@ -70,7 +70,7 @@
         });
       }
     };
-  }])
+  })
 
  /**
   * @ngdoc directive
@@ -80,7 +80,7 @@
   * @description A directive to verify if the given foreign ID is unique on the requisition.
   * This must be used on node.html in conjunction with NodeController
   */
-  .directive('validForeignId', ['RequisitionsService', function(RequisitionsService) {
+  .directive('validForeignId', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -97,7 +97,7 @@
         });
       }
     };
-  }])
+  })
 
   /**
   * @ngdoc directive
@@ -107,7 +107,7 @@
   * @description A directive to verify if the given category is unique on the node.
   * This must be used on node.html in conjunction with NodeController
   */
-  .directive('validCategory', ['RequisitionsService', function(RequisitionsService) {
+  .directive('validCategory', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -120,7 +120,7 @@
             if (c.$$hashKey != scope.category.$$hashKey && c.name == categoryName) {
               found = true;
             }
-          })
+          });
           if (found) {
             ctrl.$setValidity('unique', false);
             return undefined;
@@ -131,6 +131,6 @@
         });
       }
     };
-  }]);
+  });
 
 }());
