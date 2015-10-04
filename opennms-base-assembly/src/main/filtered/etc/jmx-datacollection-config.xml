@@ -275,10 +275,16 @@
             </mbean>
 
             <!-- Newts specifics beans - available when using the Newts time series strategy -->
-            <mbean name="org.opennms.newts.cache.cache-size" objectname="org.opennms.newts:name=cache.size">
+            <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
+                <attrib name="Value" alias="NewtsRingBufSize" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size">
+                <attrib name="Value" alias="NewtsRingBufMaxSize" type="gauge"/>
+            </mbean>
+            <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size">
                 <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
             </mbean>
-            <mbean name="org.opennms.newts.cache.cache-max-size" objectname="org.opennms.newts:name=cache.max-size">
+            <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size">
                 <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
             </mbean>
             <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
