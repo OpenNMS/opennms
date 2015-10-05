@@ -26,26 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Used to annotate the parameters names in a {@link FilterConfig} object.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
-
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
-    }
-
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface FilterParam {
+    public String name();
+    public String value() default "";
+    public boolean required() default false;
+    public String description() default "";
 }

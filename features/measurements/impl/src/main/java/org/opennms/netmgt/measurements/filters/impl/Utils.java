@@ -26,26 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.filters.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Table;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Helper functions for manipulating tables.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public class Utils {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
+    public static class TableLimits {
+        long firstRowWithValues = -1;
+        long lastRowWithValues = -1;
     }
 
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
+    public static TableLimits getRowsWithValues(Table<Long, String, Double> table, String... columnNames) {
+        TableLimits limits = new TableLimits();
+        for (long k : table.rowKeySet()) {
+            for (String columnName : columnNames) {
+                Double value = table.get(k, columnName);
+                
+                if (value != null && !Double.isNaN(value)) {
+                    if (limits.firstRowWithValues < 0) {
+                        limits.firstRowWithValues = k;
+                    }
+                    limits.lastRowWithValues = k;
+                }
+            }
+        }
+
+        return limits;
     }
 }

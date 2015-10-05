@@ -26,26 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+package org.opennms.netmgt.measurements.api;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Used to hold the configuration parameters of a particular {@link Filter}.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public interface FilterConfig {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
-    }
-
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
-    }
 }

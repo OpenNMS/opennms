@@ -26,26 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.RowSortedTable;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Used to alter or enrich the results of a Measurements API query.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public interface Filter {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
-    }
+    String TIMESTAMP_COLUMN_NAME = "timestamp";
 
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
-    }
+    void filter(RowSortedTable<Long, String, Double> qrAsTable) throws Exception;
 }
