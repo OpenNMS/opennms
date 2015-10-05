@@ -232,6 +232,11 @@ public abstract class EventConstants {
     public static final String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
 
     /**
+     * The service managed event UEI
+     */
+    public static final String SERVICE_MANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceManaged";
+    
+    /**
      * The service unmanaged event UEI.
      */
     public static final String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
