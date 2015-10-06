@@ -71,7 +71,7 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
     }
 
     @Test
-    public void testPollerConfig() throws Exception {
+    public void testJmxConfig() throws Exception {
         sendRequest(GET, "/config/jmx/notfound", 404);
 
         String xml = sendRequest(GET, "/config/jmx", 200);
@@ -86,14 +86,14 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
         assertEquals(4, config.getJmxCollection(0).getMbeanCount());
         assertEquals(config.getJmxCollection(1).getRrd().getStep(), 300);
         assertEquals("jsr160", config.getJmxCollection(1).getName());
-        assertEquals(29, config.getJmxCollection("jsr160").getMbeanCount());
-        assertEquals(29, config.getJmxCollection(1).getMbeanCount());
+        assertEquals(31, config.getJmxCollection("jsr160").getMbeanCount());
+        assertEquals(31, config.getJmxCollection(1).getMbeanCount());
 
         assertEquals(config.getJmxCollection(2).getRrd().getStep(), 300);
         assertEquals("cassandra21x", config.getJmxCollection(2).getName());
 
         assertEquals(config.getJmxCollection(3).getRrd().getStep(), 300);
-        assertEquals("newts-cassandra21x", config.getJmxCollection(3).getName());
+        assertEquals("cassandra21x-newts", config.getJmxCollection(3).getName());
     }
 
 }

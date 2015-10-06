@@ -28,6 +28,13 @@
       <version>${project.version}</version>
     </dependency>
 
+	<!-- R -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-R</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- RRD/JRobin -->
     <dependency>
       <groupId>org.opennms</groupId>

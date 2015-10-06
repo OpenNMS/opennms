@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -44,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.math.DoubleMath;
@@ -74,14 +77,37 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
 
     private final int m_ringBufferSize;
 
+    /**
+     * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
+     * of elements that are currently "queued", so we keep track of them with this atomic counter.
+     */
+    private final AtomicLong m_numSamplesOnRingBuffer = new AtomicLong();
+
     @Inject
-    public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize)  {
+    public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize, MetricRegistry registry) {
         Preconditions.checkArgument(maxBatchSize > 0, "max_batch_size must be strictly positive");
         Preconditions.checkArgument(ringBufferSize >= 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");
+        Preconditions.checkNotNull(registry, "metric registry");
 
         m_maxBatchSize = maxBatchSize;
         m_ringBufferSize = ringBufferSize;
+        m_numSamplesOnRingBuffer.set(0L);
+
+        registry.register(MetricRegistry.name("ring-buffer", "size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return m_numSamplesOnRingBuffer.get();
+                    }
+                });
+        registry.register(MetricRegistry.name("ring-buffer", "max-size"),
+                new Gauge<Long>() {
+                    @Override
+                    public Long getValue() {
+                        return Long.valueOf(m_ringBufferSize);
+                    }
+                });
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
         setUpDisruptor();
@@ -110,6 +136,8 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
     public void insert(List<Sample> samples) {
         // Add the samples to the ring buffer
         m_ringBuffer.publishEvent(TRANSLATOR, samples);
+        // Increase our sample counter
+        m_numSamplesOnRingBuffer.addAndGet(samples.size());
     }
 
     @Override
@@ -117,8 +145,11 @@ public class NewtsWriter implements EventHandler<SampleBatchEvent> {
         // We'd expect the logs from this thread to be in collectd.log
         Logging.putPrefix("collectd");
 
-        // Partition the samples into collections smaller then max_batch_size
         List<Sample> samples = event.getSamples();
+        // Decrement our sample counter
+        m_numSamplesOnRingBuffer.addAndGet(-samples.size());
+
+        // Partition the samples into collections smaller then max_batch_size
         for (List<Sample> batch : Lists.partition(samples, m_maxBatchSize)) {
             try {
                 LOG.debug("Inserting {} samples", batch.size());

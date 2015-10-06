@@ -1,0 +1,5 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+This section describes how to configure _OpenNMS_ to use _Newts_ and how to use _OpenNMS_ to monitor your Cassandra cluster.

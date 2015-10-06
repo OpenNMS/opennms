@@ -1225,6 +1225,7 @@
     <commonsCodecVersion>1.9</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
+    <commonsCsvVersion>1.1</commonsCsvVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsIoVersion>2.4</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
