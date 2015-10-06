@@ -1,14 +1,14 @@
 
 // Allow GitHub image rendering
 :imagesdir: ../../../images
-=== Newts
+==== Newts Metrics
 
 This section describes some of the metrics _OpenNMS_ collects for monitoring the _Newts_ keyspace on an _Apache Cassandra_ node.
 The category `Newts` is used to enable the data collection on a node.
 Also, the service name `JMX-Cassandra-Newts` is used to bind this data collection to a node's interface.
 The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
 
-==== Keyspace newts
+===== Newts Keyspace Metrics
 
 The following metrics will be collected by _OpenNMS_:
 
