@@ -26,37 +26,39 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.filters.impl;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.model.FilterDefinition;
 
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-public class RScriptExecutorIT {
+public class TrendLineIT extends AnalyticsFilterTest {
     @Test
-    public void canRunScriptInClasspath() throws RScriptException {
-        long N = 8192;
+    public void canTrend() throws Exception {
+        FilterDefinition filterDef = new FilterDefinition("TrendLine",
+                "outputColumn", "Z",
+                "inputColumn", "Y",
+                "secondsAhead", "1",
+                "polynomialOrder", "3");
 
-        // Generate data for the input table
-        RowSortedTable<Long, String, Double> expectedTable = TreeBasedTable.create();
-        for (long i = 0; i < N; i++) {
-            expectedTable.put(i, "x", Double.valueOf(i));
-            expectedTable.put(i, "y", Double.valueOf(i*2));
+        // Use constant values for the Y column
+        RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
+        for (long i = 0; i < 100; i++) {
+            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i* 1000));
+            table.put(i, "Y", 1.0d);
         }
 
-        // Execute the script
-        RScriptExecutor executor = new RScriptExecutor();
-        RScriptOutput output = executor.exec("/echo.R", new RScriptInput(expectedTable));
-        ImmutableTable<Long, String, Double> actualTable = output.getTable();
+        // Apply the filter
+        getFilterEngine().filter(filterDef, table);
 
-        // Expect the same table back
-        for (long i = 0; i < N; i++) {
-            assertEquals(i, actualTable.get(i, "x"), 0.0001);
-            assertEquals(i*2, actualTable.get(i, "y"), 0.0001);
+        // The Z column should be constant
+        for (long i = 1; i <= 100; i++) {
+            Assert.assertEquals((double) i * 1000, table.get(i, Filter.TIMESTAMP_COLUMN_NAME), 0.0001);
+            Assert.assertEquals(1.0d, table.get(i, "Z"), 0.0001);
         }
     }
 }

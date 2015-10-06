@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,26 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.filters.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import org.opennms.netmgt.measurements.api.FilterEngine;
 
-/**
- * Used to group all of the arguments/values retrieved from the script.
- *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
- * @author jwhite
- */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public abstract class AnalyticsFilterTest {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
-    }
+    private static FilterEngine filterEngine = new FilterEngine();
 
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
+    protected static FilterEngine getFilterEngine() {
+        return filterEngine;
     }
 }

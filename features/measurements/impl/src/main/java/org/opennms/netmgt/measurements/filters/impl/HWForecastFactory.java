@@ -26,26 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.filters.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.model.FilterDefinition;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Instantiate a filter capable or performing Holt-Winters
+ * forecasts.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public class HWForecastFactory extends AbstractFilterFactory<HWForecastConfig> {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
+    public static final String FILTER_NAME = "HoltWinters";
+
+    public HWForecastFactory() {
+        super(HWForecastConfig.class);
     }
 
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
+    @Override
+    public boolean supports(FilterDefinition filterDef) {
+        return FILTER_NAME.equalsIgnoreCase(filterDef.getName());
+    }
+
+    @Override
+    public Filter createFilter(HWForecastConfig config) {
+        return new HWForecast(config);
     }
 }

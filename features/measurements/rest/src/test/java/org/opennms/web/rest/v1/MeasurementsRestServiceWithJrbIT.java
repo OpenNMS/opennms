@@ -32,7 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Before;
@@ -41,8 +40,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 import org.opennms.netmgt.measurements.model.Expression;
+import org.opennms.netmgt.measurements.model.FilterDefinition;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -172,10 +171,10 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
     }
 
     @Test
-    public void testAnalyticsFilters() {
+    public void canApplyFilters() {
         QueryRequest request = new QueryRequest();
         request.setStart(1414602000000L);
-        request.setEnd(1417046400000L);
+        request.setEnd(1418046400000L);
         request.setStep(1000L);
         request.setMaxRows(700);
 
@@ -186,13 +185,19 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         ifInOctets.setLabel("ifInOctets");
         request.setSources(Lists.newArrayList(ifInOctets));
 
-        AnalyticsCommand command = new AnalyticsCommand("Chomp", "1416009600.0", new String[] { "true" });
-        request.setAnalyticsCommands(Collections.singletonList(command));
+        // Apply a chomp filter - cutting some of the first row off, and the trailing NaNs
+        FilterDefinition chompFilter = new FilterDefinition("Chomp",
+                "cutoffDate", "1414630000.0",
+                "stripNaNs", "true");
+        request.setFilters(Lists.newArrayList(chompFilter));
         LOG.debug(JaxbUtils.marshal(request));
 
         QueryResponse response = m_svc.query(request);
 
-        // TODO: Add some assertions that the analytics command worked
-        LOG.debug(JaxbUtils.marshal(response));
+        // Verify the values for the first and last rows
+        final Map<String, double[]> columns = response.columnsWithLabels();
+        double ifInOctetsColumn[] = columns.get("ifInOctets");
+        assertEquals(67872.22455490529, ifInOctetsColumn[0], 0.0001);
+        assertEquals(1649961.9593111263, ifInOctetsColumn[ifInOctetsColumn.length-1], 0.0001);
     }
 }

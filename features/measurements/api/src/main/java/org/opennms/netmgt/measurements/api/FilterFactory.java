@@ -26,26 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.api;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import org.opennms.netmgt.measurements.model.FilterDefinition;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Used to instantiate a {@link org.opennms.netmgt.measurements.api.Filter}
+ * from the corresponding filter definition.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public interface FilterFactory {
+    /**
+     * Retrieves the appropriate {@link Filter} for the given definition.
+     *
+     * @param filterDef
+     *   a filter definition
+     * @return
+     *   null if this factory doesn't support the filter in question
+     */
+    Filter getFilter(FilterDefinition filterDef);
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
-    }
-
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
-    }
+    /**
+     * Retrieves a reference to the associated {@link FilterConfig} type.
+     *
+     * @return
+     *   the filter configuration 
+     */
+    Class<? extends FilterConfig> getFilterConfigType();
 }

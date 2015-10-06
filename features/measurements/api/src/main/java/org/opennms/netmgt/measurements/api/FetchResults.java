@@ -41,7 +41,6 @@ import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.opennms.netmgt.jasper.analytics.Filter;
 
 /**
  * Used to store the results of a fetch.
@@ -77,7 +76,7 @@ public class FetchResults {
      * @param step
      * @param constants
      */
-    public FetchResults(final RowSortedTable<Integer, String, Double> values, final long step, final Map<String, Object> constants) {
+    public FetchResults(final RowSortedTable<Long, String, Double> values, final long step, final Map<String, Object> constants) {
         Preconditions.checkNotNull(values, "values argument");
         Preconditions.checkNotNull(constants, "constants argument");
         m_timestamps = transform(values);
@@ -93,7 +92,7 @@ public class FetchResults {
         m_constants = constants;
     }
 
-    private long[] transform(RowSortedTable<Integer, String, Double> values) {
+    private long[] transform(RowSortedTable<Long, String, Double> values) {
         Collection<Long> timestampCollection = Collections2.transform(values.column(Filter.TIMESTAMP_COLUMN_NAME).values(), new Function<Double, Long>() {
             @Override
             public Long apply(Double input) {
@@ -128,13 +127,13 @@ public class FetchResults {
             .toString();
     }
 
-    public RowSortedTable<Integer, String, Double> asRowSortedTable() {
-        RowSortedTable<Integer, String, Double> table = TreeBasedTable.create();
+    public RowSortedTable<Long, String, Double> asRowSortedTable() {
+        RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
 
         for (int i = 0; i < m_timestamps.length; i++) {
-            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)m_timestamps[i]);
+            table.put(Long.valueOf(i), Filter.TIMESTAMP_COLUMN_NAME, (double)m_timestamps[i]);
             for (String column : m_columns.keySet()) {
-                table.put(i, column, m_columns.get(column)[i]);
+                table.put(Long.valueOf(i), column, m_columns.get(column)[i]);
             }
         }
         return table;

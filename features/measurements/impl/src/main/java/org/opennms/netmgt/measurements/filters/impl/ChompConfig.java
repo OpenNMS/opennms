@@ -26,26 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.integrations.R;
+package org.opennms.netmgt.measurements.filters.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
+import org.opennms.netmgt.measurements.api.FilterConfig;
+import org.opennms.netmgt.measurements.api.FilterParam;
 
 /**
- * Used to group all of the arguments/values retrieved from the script.
+ * Configuration options for the Chomp filter.
  *
- * @see {@link org.opennms.netmgt.integrations.R.RScriptExecutor}
  * @author jwhite
  */
-public class RScriptOutput {
-    private final ImmutableTable<Long, String, Double> m_table;
+public class ChompConfig implements FilterConfig {
 
-    public RScriptOutput(ImmutableTable<Long, String, Double> table) {
-        Preconditions.checkNotNull(table, "table argument");
-        m_table = table;
+    @FilterParam(name="cutoffDate", value="0", description="Timestamp in milliseconds. Any rows before this time will be removed.")
+    private double m_cutoffDate;
+
+    @FilterParam(name="stripNaNs", value="false", description="When set, leading and trailing rows containing NaNs will be removed")
+    private boolean m_stripNaNs;
+
+    protected ChompConfig() {}
+
+    public ChompConfig(double cutOffDate, boolean stripNaNs) {
+        m_cutoffDate = cutOffDate;
+        m_stripNaNs = stripNaNs;
     }
 
-    public ImmutableTable<Long, String, Double> getTable() {
-        return m_table;
+    public double getCutoffDate() {
+        return m_cutoffDate;
+    }
+
+    public boolean getStripNaNs() {
+        return m_stripNaNs;
     }
 }
