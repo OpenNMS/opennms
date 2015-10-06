@@ -11,6 +11,6 @@ The following routing daemons can be used to provide a discovery of links based 
 * link:https://en.wikipedia.org/wiki/Open_Shortest_Path_First[Open Shortest Path First] (OSPF)
 * link:https://en.wikipedia.org/wiki/IS-IS[Intermediate System to Intermediate System] (IS-IS)
 
-This information are provided by _SNMP Agents_ with appropriate _MIB support_.
+This information is provided by _SNMP Agents_ with appropriate _MIB support_.
 For this reason it is required to have a working _SNMP_ configuration running.
 The link data discovered from _Enlinkd_ is provided in the _Topology User Interface_ and on the detail page of a node.
