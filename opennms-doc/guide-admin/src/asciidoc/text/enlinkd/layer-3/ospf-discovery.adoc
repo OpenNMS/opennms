@@ -4,15 +4,14 @@
 
 ==== OSPF Discovery
 
-The relevant MIB for OSPF topology are OSPF-MIB and OSPF-TRAP-MIB, supported by junos, and usually available with junos mib distribution under standardMib as mib-ospf2mib.txt and mib-ospf2trap.txt.
-In this mib are defined the relevant object to be used to find ospf links.
-In particular consider that
+The relevant MIBs for OSPF topology are _OSPF-MIB_ and _OSPF-TRAP-MIB_.
+In these MIBs are defined the relevant objects used to find OSPF links, specifically:
 
-* The Router ID, in OSPF, has the same format as an IP Address,
-* but identifies the router independent of its IP Address.
+* The _Router ID_ which, in OSPF, has the same format as an IP address
+* But identifies the router independent of its IP address.
 
-Also all the interfaces are identified by the ip address.
-The Ospf links comes from the router ospfNbrTable defined in OSPF-MIB and this table is in practice persisted in ospflink table:
+Also all the interfaces are identified by their IP addresses.
+The OSPF links come from the SNMP _ospfNbrTable_ defined in OSPF-MIB and this table is in practice persisted in the _ospfLink_ table:
 
 .Supported OIDs from OSPF-MIB
 [options="header, autowidth"]
@@ -49,7 +48,7 @@ The Ospf links comes from the router ospfNbrTable defined in OSPF-MIB and this t
 |===
 
 Generic information about the _OSPF_ link discovery process can be found in the _OSPF Information_ box on the _Node Detail Page_ of the device.
-Information gathered from this OIDs will be stored in the following database table:
+Information gathered from these OIDs will be stored in the following database table:
 
 .Database tables related to OSPF discovery
 image::enlinkd/ospf-database.png[]
