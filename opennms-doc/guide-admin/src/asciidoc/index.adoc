@@ -131,10 +131,11 @@ include::text/database-reports/database.adoc[]
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
-include::text/operation/newts/cassandra21x.adoc[]
-include::text/operation/newts/newts.adoc[]
-include::text/operation/jmx-config-generator/introduction.adoc[]
-include::text/operation/jmx-config-generator/webui.adoc[]
-include::text/operation/jmx-config-generator/cli.adoc[]
 include::text/operation/resourcecli.adoc[]
 
+[[ga-opennms-operation-newts]]
+=== Newts
+include::text/operation/newts/introduction.adoc[]
+include::text/operation/newts/configuration.adoc[]
+include::text/operation/newts/cassandra21x.adoc[]
+include::text/operation/newts/newts.adoc[]
