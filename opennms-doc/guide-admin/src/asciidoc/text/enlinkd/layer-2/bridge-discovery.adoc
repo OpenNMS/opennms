@@ -4,14 +4,14 @@
 
 ==== Transparent Bridge Discovery
 
-Discovering _Layer 2_ network links using the _Bridge Forwarding_ table requires an special algorithm.
+Discovering _Layer 2_ network links using the _Bridge Forwarding_ table requires a special algorithm.
 To discover _Links_ an algorithm based on a scientific paper with the title link:http://cs-pub.bu.edu/groups/nrg/readinglist/lowekamp-sigcomm01.pdf[Topology Discovery for Large Ethernet Networks] is implemented.
 The gathered information is used to classify _Links_ in _macLink_ and _bridgeLink_.
 A _macLink_ represents a _Link_ between a workstation or server identified by a mac address.
 A _bridgeLink_ is a _connection_ between backbone ports.
 
-Transparent bridging is not loop free so if you have loops you have to enable the spanning tree protocol that will detect loops and again will put some port in a state _blocking_ to avoid loops.
-To get links it is necessary to perform some calculations that let define the _Links_.
+Transparent bridging is not loop free so if you have loops you have to enable the spanning tree protocol that will detect loops and again will put some ports in a _blocking_ state to avoid loops.
+To get links it is necessary to perform some calculations that let us define the _Links_.
 The following _MIBS_ must be supported by the _SNMP agent_ to allow _Transparent Bridge Discovery_.
 
 .Supported MIBS from the Cisco-VTP MIB
@@ -28,7 +28,7 @@ The following _MIBS_ must be supported by the _SNMP agent_ to allow _Transparent
 |===
 | Name                            | OID                           | Description
 | _ipNetToMediaIfIndex_           | `.1.3.6.1.2.1.4.22.1.1`       | The interface on which this entry's equivalence is effective.
-                                                                    The interface identified by a particular value of this index is the same interface as identified by the same value of _ifIndex_.
+                                                                    The layer-2 interface identified by a particular value of this index is the same interface as identified by the same value of _ifIndex_.
 | _ipNetToMediaPhysAddress_       | `.1.3.6.1.2.1.4.22.1.2`       | The media-dependent _physical_ address.
 | _ipNetToMediaNetAddress_        | `.1.3.6.1.2.1.4.22.1.3`       | The _IpAddress_ corresponding to the media-dependent _physical_ address.
 | _ipNetToMediaType_              | `.1.3.6.1.2.1.4.22.1.4`       | The type of mapping. Setting this object to the value _invalid(2)_ has the effect of invalidating the corresponding entry in the _ipNetToMediaTable_.
@@ -55,7 +55,7 @@ The following _MIBS_ must be supported by the _SNMP agent_ to allow _Transparent
                                                                     The value _decLb100(2)_ indicates the _DEC LANbridge 100 Spanning Tree protocol_.
                                                                     _IEEE 802.1d_ implementations will return _ieee8021d(3)_.
                                                                     If future versions of the _IEEE Spanning Tree Protocol_ are released that are incompatible with the current version a new value will be defined.
-| _dot1dStpPriority_              | `.1.3.6.1.2.1.17.2.2`         | The value of the write-able portion of the _Bridge ID_, i.e., the first two octets of the (8 octet long) _Bridge ID_.
+| _dot1dStpPriority_              | `.1.3.6.1.2.1.17.2.2`         | The value of the writeable portion of the _Bridge ID_, i.e., the first two octets of the (8 octet long) _Bridge ID_.
                                                                     The other (last) 6 octets of the _Bridge ID_ are given by the value of _dot1dBaseBridgeAddress_.
 | _dot1dStpDesignatedRoot_        | `.1.3.6.1.2.1.17.2.5`         | The bridge identifier of the root of the spanning tree as determined by the _Spanning Tree Protocol_ as executed by this node.
                                                                     This value is used as the _Root Identifier_ parameter in all configuration _Bridge PDUs_ originated by this node.
