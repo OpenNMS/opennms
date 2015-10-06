@@ -24,7 +24,7 @@ With these set, _OpenNMS_ will begin persisting metrics using the _Newts_ engine
 
 Additional configuration options are presented in the next section.
 
-===== Configuring Newts
+===== Configuration Reference
 
 The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can be used to configure and tune _Newts_.
 
@@ -70,3 +70,14 @@ When enabled, the following options can be used to configure the Redis-based cac
 | `org.opennms.newts.config.cache.redis_hostname` | `localhost`          | IP address of hostname of the _Redis_ server.
 | `org.opennms.newts.config.cache.redis_port`     | `6379`               | TCP port used to connect to the _Redis_ server.
 |===
+
+===== Recommendations
+
+You will likely want to change the values of `cache.max_entries` and the `ring_buffer_size` to suit your installation.
+
+Meta-data related to resources are cached in order to avoid writing redundant records in _Cassandra_.
+If you are collecting data from a large number of resources, you should increase the `cache.max_entries` to reflect the number of resources you are collecting from, with a suitable buffer.
+
+The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to _Cassandra_ using _Newts_.
+The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these to _Cassandra_.
+However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
