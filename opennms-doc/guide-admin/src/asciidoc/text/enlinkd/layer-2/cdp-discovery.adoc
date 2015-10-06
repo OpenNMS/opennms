@@ -9,9 +9,9 @@ It is used by network devices to advertise identity, capabilities and neighbors.
 _CDP_ performs functions similar to several proprietary protocols, such as the _Link Layer Discovery Protocol (LLDP)_, _Extreme Discovery Protocol_, _Foundry Discovery Protocol (FDP)_, _Nortel Discovery Protocol (also known as SONMP)_, and _Microsoft's Link Layer Topology Discovery (LLTD)_.
 The _CDP_ discovery uses information provided by the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-CDP-MIB[CISCO-CDP-MIB] and link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-VTP-MIB[CISCO-VTP-MIB].
 
-NOTE: Only nodes with a running _CDP_ process running can be part of the link discovery.
-      The data is similar as running a `show cdp neighbor` command on the device.
-      Linux or Windows servers don't have by default a _CDP_ process running and will not be part of the link discovery.
+NOTE: Only nodes with a running _CDP_ process can be part of the link discovery.
+      The data is similar to running a `show cdp neighbor` command on the IOS CLI of the device.
+      Linux and Windows servers don't have a _CDP_ process running by default and will not be part of the link discovery.
 
 The following OIDs are supported to discover and build the _CDP_ network topology.
 
@@ -72,7 +72,7 @@ The following OIDs are supported to discover and build the _CDP_ network topolog
 |===
 
 Generic information about the _CDP_ process can be found in the _CDP Information_ box on the _Node Detail Page_ of the device.
-Information gathered from this OIDs will be stored in the following database table:
+Information gathered from these OIDs will be stored in the following database table:
 
 .Database tables related to CDP discovery
 image::enlinkd/cdp-database.png[]
