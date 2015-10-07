@@ -1,0 +1,45 @@
+<!-- Author: Alejandro Galue <agalue@opennms.org> -->
+
+<div class="modal-content">
+
+  <div class="modal-header">
+    <h3 class="modal-title">Interface</h3>
+  </div>
+
+  <div class="modal-body">
+    <form name="intfForm">
+      <div class="form-group" ng-class="{ 'has-error' : intfForm.ipAddress.$invalid }">
+        <label class="control-label" for="ipAddress">IP Address</label>
+        <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="requisitionInterface.ipAddress" required valid-ip-address></input>
+        <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required, and must be unique within the node.</p>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="descr">Description</label>
+        <input class="form-control" type="text" id="descr" name="descr" placeholder="Description" ng-model="requisitionInterface.description"></input>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="snmpPrimary">SNMP Primary</label>
+        <input class="form-control" type="text" id="snmpPrimary" name="snmpPrimary" ng-model="requisitionInterface.snmpPrimary" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false" typeahead="a.id as a.title for a in snmpPrimaryFields | filter:$viewValue:fieldComparator" required></input>
+      </div>
+      <label ng-show="requisitionInterface.services.length > 0">Services</label>
+      <ng-form name="serviceForm" ng-repeat="service in requisitionInterface.services">
+        <div class="form-group" ng-class="{ 'has-error' : serviceForm.serviceName.$invalid }">
+          <div class="input-group">
+            <input class="form-control" type="text" name="serviceName" placeholder="Service Name" ng-model="service.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="service for service in getAvailableServices() | filter:$viewValue:fieldComparator" required valid-service></input>
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" ng-click="removeService($index)"><span class="glyphicon glyphicon-remove"></span></button>
+            </span>
+          </div>
+          <p ng-show="serviceForm.serviceName.$invalid" class="help-block">Service name is required and should be unique on the interface.</p>
+        </div>
+      </ng-form>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-success" ng-click="addService()" ng-disabled="policyForm.clazz.$invalid">Add Service</button>
+    <button class="btn btn-primary" ng-click="save()" ng-disabled="intfForm.$invalid">Save</button>
+    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+  </div>
+
+</div> <!-- modal-content -->

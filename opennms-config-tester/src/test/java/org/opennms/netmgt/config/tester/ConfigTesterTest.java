@@ -88,7 +88,6 @@ public class ConfigTesterTest {
     @Test
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
-        assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
     }
 
     @Test
@@ -125,11 +124,6 @@ public class ConfigTesterTest {
      */
     public void testC3p0Properties() {
         ignoreConfigFile("c3p0.properties");
-    }
-
-    @Test
-    public void testCapsdConfiguration() {
-        testConfigFile("capsd-configuration.xml");
     }
 
     @Test
@@ -221,6 +215,16 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testJmxConfig() {
+        testConfigFile("jmx-config.xml");
+    }
+
+    @Test
+    public void testJmsNorthbounderConfiguration() {
+        testConfigFile("jms-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
     }
@@ -228,14 +232,6 @@ public class ConfigTesterTest {
     @Test
     public void testKscPerformanceReports() {
         testConfigFile("ksc-performance-reports.xml");
-    }
-
-    @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testLinkdConfiguration() {
-        ignoreConfigFile("linkd-configuration.xml");
     }
 
     @Test
@@ -251,11 +247,6 @@ public class ConfigTesterTest {
     @Test
     public void testMagicUsers() {
         testConfigFile("magic-users.properties");
-    }
-
-    @Test
-    public void testMap() {
-        testConfigFile("map.properties");
     }
 
     @Test
@@ -284,14 +275,6 @@ public class ConfigTesterTest {
      */
     public void testModemConfig() {
         ignoreConfigFile("modemConfig.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
-     */
-    public void testMonitoringLocations() {
-        ignoreConfigFile("monitoring-locations.xml");
     }
 
     @Test
@@ -534,12 +517,6 @@ public class ConfigTesterTest {
     public void testWmiDatacollectionConfig() {
         testConfigFile("wmi-datacollection-config.xml");
     }
-
-    @Test
-    public void testXmlrpcdConfiguration() {
-        testConfigFile("xmlrpcd-configuration.xml");
-    }
-
 
     @Test
     public void testVMwareCimDatacollectionConfig() {

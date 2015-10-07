@@ -91,10 +91,9 @@ public class OutageFeed extends AbstractFeed {
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         try {
-            OutageModel model = new OutageModel();
             Date date = new Date();
             date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
-            OutageSummary[] summaries = model.getAllOutageSummaries(date);
+            OutageSummary[] summaries = OutageModel.getAllOutageSummaries(date);
 
             SyndEntry entry;
             

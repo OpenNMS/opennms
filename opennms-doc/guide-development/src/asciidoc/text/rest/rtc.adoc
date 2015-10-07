@@ -1,0 +1,26 @@
+
+==== Realtime Console data
+
+The _Realtime Console (RTC)_ calculates the availability for monitored services.
+Data provided from the _RTC_ is available to the ReST API.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                             | Description
+| `/availability/categories/{category}`                | Get all nodes and availability data from a given SLA category filter, i.e. Web Servers (Web+Servers)
+| `/availability/categories/{category}/nodes`          | Get node availability data for each node of a given SLA category filter
+| `/availability/categories/{category}/nodes/{nodeId}` | Get detailed service availability for a given node in a given SLA category filter
+| `/availability/nodes/{nodeId}`                       | Get detailed availability for all services on a given node
+|===
+
+===== Example
+
+[source, bash]
+----
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/Web+Servers
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/nodes
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/categories/nodes/31
+curl -u demo:demo http://demo.opennms.org/opennms/rest/availability/nodes/31
+----

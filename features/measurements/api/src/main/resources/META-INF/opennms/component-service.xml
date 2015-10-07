@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+  <context:annotation-config />
+
+  <!-- This annotated bean will produce the measurementFetchStrategy bean -->
+  <bean id="measurementFetchStrategyFactory" class="org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.measurements.api.MeasurementFetchStrategy" ref="measurementFetchStrategy"/>
+
+  <!-- This is a list of analytics filters that can be used to filter the measurements REST results -->
+  <onmsgi:list id="analyticsFilters" interface="org.opennms.netmgt.jasper.analytics.FilterFactory"/>
+
+</beans>

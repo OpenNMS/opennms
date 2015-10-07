@@ -153,6 +153,15 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         m_currentInterface.setIfAlias(ifAlias);
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex
+     */
+    public void setIfIndex(int ifIndex) {
+        m_currentInterface.setIfIndex(ifIndex);
+    }
+
     // model
     /**
      * <p>addInterface</p>

@@ -316,6 +316,10 @@ a:focus {
 	color: #F45C31;
 }
 
+.multi-select {
+  min-width: 90%;
+}
+
 /* =8.0 Progress Bars
 ----------------------------------------------- */
 
@@ -667,6 +671,10 @@ $header-background-image: url("../images/headerbg.png") !default;
 
 .graph-aux-controls {
 	text-align: right;
+}
+.graph-container {
+        margin-left: auto;
+        margin-right: auto;
 }
 
 #footer {

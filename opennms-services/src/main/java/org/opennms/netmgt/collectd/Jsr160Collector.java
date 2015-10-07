@@ -28,25 +28,15 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.net.InetAddress;
-import java.util.Map;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
-import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
-import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
-
-/*
- * The Jsr160Collector class manages the querying and storage of data into RRD files.  The list of 
+/**
+ * The Jsr160Collector class manages the querying and storage of data into RRD files.  The list of
  * MBeans to be queried is read from the jmx-datacollection-config.xml file using the "jsr160" service name.
- * The super class, JMXCollector, performs all the work. 
- * 
+ * The super class, JMXCollector, performs all the work.
+ *
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-/**
- * <p>Jsr160Collector class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public class Jsr160Collector extends JMXCollector {
 
@@ -56,16 +46,10 @@ public class Jsr160Collector extends JMXCollector {
     public Jsr160Collector() {
         super();
         setServiceName("jsr160");
-        setUseFriendlyName(true);
     }
 
-    /* Return a ConnectionWrapper object using the factory.
-     * 
-     * @see org.opennms.netmgt.collectd.JMXCollector#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
-     */
-    /** {@inheritDoc} */
     @Override
-    public ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address) {
-        return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
+    protected String getConnectionName() {
+        return JmxConnectors.JSR160;
     }
 }

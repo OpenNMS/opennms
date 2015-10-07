@@ -35,6 +35,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 
@@ -42,7 +43,7 @@ import org.opennms.netmgt.poller.remote.PollerBackEnd;
 
 public class ServerUnreachableAdaptorTest extends TestCase {
     public void testPollerStartingWhenBackEndReturnsFalse() {
-        int id = 1;
+        String id = UUID.randomUUID().toString();
         Map<String, String> details = new HashMap<String, String>();
         
         PollerBackEnd backEnd = createMock(PollerBackEnd.class);

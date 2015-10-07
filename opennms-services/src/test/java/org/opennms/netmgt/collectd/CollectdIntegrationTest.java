@@ -43,8 +43,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
@@ -63,8 +62,13 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
@@ -72,9 +76,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -164,7 +165,7 @@ public class CollectdIntegrationTest extends TestCase {
         };
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
-        NetworkBuilder netBuilder = new NetworkBuilder("localhost", "127.0.0.1");
+        NetworkBuilder netBuilder = new NetworkBuilder();
         NodeBuilder nodeBuilder = netBuilder.addNode("node1").setId(1);
         InterfaceBuilder ifaceBlder = 
             netBuilder.addInterface("192.168.1.1")
@@ -195,7 +196,8 @@ public class CollectdIntegrationTest extends TestCase {
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
-        
+        m_collectd.setPersisterFactory(new MockPersisterFactory());
+
         // Inits the class
         m_collectd.afterPropertiesSet();
         //assertNotNull(m_serviceCollector);

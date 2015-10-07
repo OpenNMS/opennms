@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:33:54 -->
+<!-- 2015-08-20T16:35:07 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sample-report" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a814e854-a35e-4a26-ad52-70ec3894015d">
 	<property name="ireport.zoom" value="1.610510000000001"/>
 	<property name="ireport.x" value="0"/>
@@ -23,7 +23,7 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT * FROM node;]]>
+		<![CDATA[SELECT * FROM node]]>
 	</queryString>
 	<field name="nodelabel" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -94,7 +94,7 @@
 				<text><![CDATA[Sample Report Nodelist]]></text>
 			</staticText>
 			<textField pattern="yyyy/MM/dd HH:mm:ss">
-				<reportElement style="Creation-Date" x="0" y="60" width="355" height="20" uuid="92fbf2b8-0092-46b3-a604-f34fcc626397">
+				<reportElement x="0" y="60" width="355" height="20" uuid="92fbf2b8-0092-46b3-a604-f34fcc626397">
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="local_mesure_unity" value="pixel"/>
@@ -148,7 +148,7 @@
 			<property name="local_mesure_unitheight" value="pixel"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
-				<reportElement style="Paging-Footer" x="433" y="5" width="80" height="20" uuid="9b9a3051-b8f6-440b-b510-e41ec256ac59">
+				<reportElement x="433" y="5" width="80" height="20" uuid="9b9a3051-b8f6-440b-b510-e41ec256ac59">
 					<property name="local_mesure_unity" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
@@ -158,7 +158,7 @@
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement style="Paging-Footer" x="513" y="5" width="40" height="20" uuid="a2b53def-7603-4eac-a016-3bfd2aabf0fe">
+				<reportElement x="513" y="5" width="40" height="20" uuid="a2b53def-7603-4eac-a016-3bfd2aabf0fe">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<textElement>

@@ -1,208 +1,67 @@
-What's New in OpenNMS 14
+What's New in OpenNMS 17
 ========================
 
-Since OpenNMS 1.12, a large number of changes have occurred, including architectural
-updates, major topology UI updates, a completely rewritten Linkd (called Enhanced Linkd),
-and much more.
+System Requirements
+-------------------
+* **Java 8**: OpenNMS 17 requires Java 8 as the runtime environment. To run OpenNMS 17, we recommend the most recent version of Oracle JDK 8 for your platform.
+* **PostgreSQL 9.1 or higher**: OpenNMS 17 now requires PostgreSQL 9.1 or higher. All older versions of PostgreSQL are past their end-of-life support date.
 
-Licensing
----------
+Important Upgrade Notes
+-----------------------
 
-As of OpenNMS 14, OpenNMS is now released under the [GNU Affero General Public License 3.0].
-It is identical to the GPLv3 OpenNMS was previously licensed under, with the additional
-caveat that users who interact with OpenNMS software over a network are entitled to receive
-the source.
+* **Clean Up Events and Alarms**: Please clean up your event and alarm lists as much as possible before performing an upgrade to OpenNMS 17. The upgrade process contains a large number of database schema migrations which will cause rewrites of all of the data in some tables. If you prune unused data from these tables beforehand, it will make the upgrade process much quicker.
+* **Remote Poller API Change**: Due to internal API changes, the Remote Poller API has changed in OpenNMS 17. If you upgrade to OpenNMS 17, you will also need to upgrade all Remote Pollers attached to the system to version 17 as well.
 
-Java 7 and 8
+API Changes
+-----------
+* Monitoring locations for the Remote Poller are now viewed and configured in the UI under `/locations/index.jsp`. Monitoring locations were previously configured in the `etc/monitoring-locations.xml` file but are now stored in `monitoringlocations` database table.
+* All data previously in the `location_monitors` table is now in the `monitoringsystems` table.
+* The `ifIndex` column has been removed from the `ipInterface` table. To fetch the ifIndex, you need to join to the `snmpInterface` table by `nodeId`.
+* The `nodeId` and `ipAddr` columns have been removed from the `ifServices` table. To fetch these columns, you need to join to the `ipInterface` table.
+* The `nodeId`, `ipAddr` and `serviceId` columns have been removed from the `outages` table. To fetch these columns, you need to join to the `ifServices` table.
+
+New Features
 ------------
-
-OpenNMS 14 drops support for Java 6, which has been EOL'd for some time now.  OpenNMS 14
-requires Java 7 or higher to run.
-
-Note that *building* under Java 8 still has some known issues.  It is strongly recommended
-that you build and run under Java 7 until Java 8 has had enough time to be well-tested.
-
-Logging System Upgrade
-----------------------
-
-Logging has been *completely* revamped in OpenNMS 14.  The locations of various log output
-are much more intuitive, and turning on DEBUG/TRACE for specific subsystems is simpler.  The
-old `log4j.properties` has been superseded by the `log4j2.xml` file.
-
-Core Updates
-------------
-
-As always, many updates and cleanups have been made to the OpenNMS core, through refactoring,
-addition of unit tests, and other code modernization.
-
-* The embedded Karaf OSGi container has been updated to 2.4.0.
-* Many core OpenNMS modules are now capable of being loaded inside an OSGi container.
-* A large number of legacy Castor-based classes have been updated to use JAXB instead.
-* SNMP4J has been updated to version 2, which provides improved handling of SNMPv3, in
-  addition to a number of other bug fixes and improvements to SNMP handling.
-* JRobin graphing has had a number of graphical updates as well as bugfixes.
-* The syslog northbounder has been enhanced to be able to do more with alarm data:
-  http://issues.opennms.org/browse/NMS-5798
-* New or updated monitors:
-  * DskTableMonitor: UCD-SNMP-MIB-based monitor for disks with errors
-  * HttpPostMonitor: POST data to an HTTP server and evaluate the response headers
-  * JolokiaBeanMonitor: monitors a mbean method via the Jolokia agent
-  * LaTableMonitor: UCD-SNMP-MIB-based monitor for load average errors
-  * LogMatchTableMonitor: UCD-SNMP-MIB-based monitor for log matches
-  * PrTableMonitor: UCD-SNMP-MIB-based monitor for processes
-  * TcpMonitor: can now match banners using a ~regex
-  * WebMonitor: accepts an optional `queryString` parameter for the request
-
-Utility Updates
----------------
-
-* You may now pass `--ifindex` to `send-event.pl` when sending events.
-* `provision.pl` can now optionally use the `rescanExisting` flag when performing an
-  import.  (See below for details.)
-* `runjava` now prefers newer Java versions in `/Library/Java/JavaVirtualMachines` over
-  `/Library/Java/Home` on Mac OS X.
+* **FreeIPA Kerberos Authentication**: We've added a sample configuration for FreeIPA Kerberos SSO to our `jetty-webapps/opennms/WEB-INF/spring-security.d` directory.
+* **Alarm Heatmap**: A heatmap visualization has been added that lets you quickly visualize alarm status and outages within a category or on a node.
+* **JMX Configuration UI and CLI**: The JMX Configuration web UI and CLI have been rewritten to make it easier to generate complex JMX data collection configurations.
+* **Grafana Panel**: An optional panel has been added to the UI to allow you to integrate links to Grafana graphs in the UI.
+* **JMS Alarm Northbounder**: The implementation of a JMS northbounder for sending OpenNMS Alarms to external JMS listeners has been completed. Thanks to David Schlenk for this contribution!
+* **Easier Remote Poller configuration**: Monitoring locations can now be associated with multiple polling and collection packages. This can make some Remote Poller scenarios easier to configure.
 
 Events
 ------
+* A10 AX Load Balancer
+* Infoblox
+* Raytheon NXU-2A
+* Avocent DSView
+* Evertz 7800FR Multiframe
+  * 7880-IP-ASI-IP
+  * 7881-DEC-MP2
+  * 7780-ASI-IP2
+* Dell Force 10
+* ~50 new NetApp Events
 
-New or updated trap definitions have been added for the following classes of devices:
-
-* Backup Exec
-* Broadcom
-* Dell
-* D-Link
-* Foundry
-* Intel (LAN adapters)
-* Konica
-* Trend Micro
 
 Data Collection
 ---------------
+* Fortinet Fortigate
+* Sonicwall
 
-New or updated collection definitions have been added for the following classes of
-devices:
+Retired Features
+----------------
+* **Linkd**: Linkd was the original implementation of the link scanning daemon for OpenNMS. It has been superseded by Enhanced Linkd (Enlinkd) in OpenNMS 14 and higher. Linkd has been removed as of OpenNMS 17.
+* **SVG Maps**: The SVG map feature relied on Linkd's code for drawing links between items on the map so it was also removed in OpenNMS 17.
+* **Xmlrpcd**: Xmlrpcd was a daemon that relayed inventory and polling events to an external system over the XML-RPC protocol. Because you can accomplish almost all of its use cases by using the provisioning REST service, it has been removed.
 
-* Foundry
-* Konica
+CLI Changes
+-----------
+* `opennms-assemblies/jmx-config-generator-onejar` does not exist anymore. The onejar project is now located in `features/jmx-config-generator`.
 
-Link Discovery
---------------
-
-A much more efficient version of `Linkd`, called `Enhanced Linkd` (`Enlinkd`) has been
-created.  Traditionally, `Linkd` could be quite resource-intensive because it kept
-large amounts of data in memory as it attempted to infer links between devices.
-`Enlinkd` instead stores link information from each end separately and then correlates
-them when it's time to draw links on the topological maps.  This is much less memory
-intensive and keeps from using CPU until you are actually need link data.
-
-`Enlinkd` can gather link information from:
-
-* Cisco Discovery Protocol (CDP)
-* Cisco VLAN Trunk Protocol (VTP)
-* MIB II 802.1D BRIDGE-MIB
-* MIB II ipNetToMediaTable
-* Intermediate-System-to-Intermediate-System (IS-IS)
-* Link Layer Discovery Protocol (LLDP)
-* Open Shortest Path First (OSPF)
-
-Note that `Enlinkd` does *not* support IP Routes discovery, because it is difficult to
-mine for correct data and sometimes ends up with false positives.  The `Linkd` service
-has not been removed in OpenNMS 14, so if you still need to generate link data based
-on IP Routes discovery, you can re-enable `Linkd` in `service-configuration.xml` and
-disable the `Enlinkd` service.
-
-The configuration file for enhanced link scanning is `enlinkd-configuration.xml`.
-
-Provisioning
-------------
-
-* You can now assign a foreign-source to discovered nodes by adding
-  `foreign-source="foo"` to the `discovery-configuration` tag in
-  `$OPENNMS_HOME/etc/discovery-configuration.xml`.
-* Categories are now handled better in provisiond, so they do not disappear and then
-  reappear during scan.
-* New provisioning adapter: opennms-snmp-hardware-inventory-provisioning-adapter
-  A provisioning adapter using the ENTITY-MIB for collecting hardware inventory while
-  doing a provisioning scan.  For details, see [the Hardware Inventory wiki page].
-* In 1.12 we introduced the `rescanExisting` flag when performing an import.  Previously
-  this would allow you to push nodes to Provisiond in batches and trigger imports, and it
-  would only import any *new* nodes that didn't already exist in the database.  In OpenNMS
-  14, this flag has been extended to have 3 choices:
-  * `true` (default): Import all nodes in the requisition (and remove nodes no longer in
-    the requisition), then perform a scan to apply policies and additional detected
-    services to those nodes.
-  * `false`: Import all *new* nodes in the requisition, skipping the scan phase.
-  * `dbonly`: Import all nodes in the requisition (and remove nodes no longer in the
-    requisition), then skip the scan phase.
-* The WebDetector can now specify a query string.
-* It is now possible to selectively detect services on requisitions based on an IPLIKE
-  match.  For more details, see: http://issues.opennms.org/browse/NMS-6829
-
-Web UI and APIs
----------------
-
-* Our Vaadin-based UI components have been updated to Vaadin 7, which provides performance
-  improvements and better browser support.
-* A new UI for creating JMX datacollection configuration was added.  It is reachable from
-  the OpenNMS admin page.
-* The node groups in geographical maps now include a donut chart which shows alarm status.
-* Many of the Jasper-based reports have been cleaned up and handle cases where there is no
-  data more consistently.
-* The node UI now shows a timeline rather than just a percentage in the availability box.
-* The event and alarm list UIs now let you save their search constraints for future reuse.
-* The notification UI can now sort by severity.
-* The outage UI can now sort by a node's foreign source.
-* Some ReST services have been cleaned up to provide more consistent output.
-* The group ReST service now supports querying the users or categories associated with
-  a group. (ie, `/opennms/rest/groups/users/` and `/opennms/rest/groups/categories/`)
-* The node ReST service now supports manually adding and removing hardware inventory data.
-  For details, see [the Hardware Inventory wiki page].
-* The snmp ReST service now supports SNMP v3 configurations.
-* The Snmp Configuration by IP UI in the admin page has been improved and now supports SNMP v3 configurations.
-
-Dashboard
----------
-
-A new dashboard (the "Ops Board") has been added.  It allows you to create a custom UI
-that cycles through interesting monitoring information.  The different "boards" which
-are shown are configurable in the admin page ("Ops Board Config Web UI").
-
-The following dashlets are available:
-
-* Alarms (a list of alarms)
-* Alarm Details (a more detailed list of alarms)
-* Charts
-* Image (embed an arbitrary image)
-* KSC Report
-* Map (geographical maps)
-* RRD (RRD graph of your choice)
-* RTC (same as the front page availability view)
-* Summary (alarm trends by severity and UEI)
-* Surveillance
-* Topology (topology maps)
-* URL (embed an arbitrary URL)
-
-Topology Maps
--------------
-* Per-user browser navigation and UI-selection history is now preserved.
-* Enhanced the topology view to include node and alarm data, synced with map selection.
-* Alarm, node, and link data can now auto-update without reloading the page.
-* The topology UI now supports search.
-* Links from Enhanced Linkd will be shown if it is enabled.
-* Many other bug fixes, performance updates, and visual enhancements.
-
-Removals
---------
-
-The `access-point-monitor` and `sms-reflector` projects have been removed from the default
-OpenNMS build, as they have not been used in production for quite some time, and
-existed for very specific use cases.
-
-The `acl` project has been removed as well.  It was an unfinished attempt at implementing
-ACLs in OpenNMS which are superseded by the [User Restriction Filters] feature first added
-in OpenNMS 1.10.x.
-
+Internal Updates
+----------------
+* The resource API for data storage has undergone heavy refactoring.
+* The REST interface was refactored to be based on Apache CXF 3.1.1.
+* The Dashboard has been rewritten using the Vaadin toolkit to modernize its look-and-feel.
 
 [GNU Affero General Public License 3.0]: http://www.gnu.org/licenses/agpl-3.0.html
-[User Restriction Filters]: http://www.opennms.org/wiki/User_Restriction_Filters
-[the Hardware Inventory wiki page]: http://www.opennms.org/wiki/Hardware_Inventory_Entity_MIB

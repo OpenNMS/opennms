@@ -39,6 +39,7 @@ import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeStatistic;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.test.ThrowableAnticipator;
 
 /**
@@ -76,13 +77,14 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         
         Map<OnmsAttribute, Double> attributes = new HashMap<OnmsAttribute, Double>();
         attributes.put(new MockAttribute("foo"), 0.0);
-        new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet());
-        
+        OnmsResource resource = new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet(), ResourcePath.get("foo"));
+        resource.getAttributes();
+
         for (Entry<OnmsAttribute, Double> entry : attributes.entrySet()) {
             visitor.visit(entry.getKey(), entry.getValue());
         }
     }
-    
+
     public void testVisitWithNull() throws Exception {
         BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
@@ -103,11 +105,12 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         BottomNAttributeStatisticVisitor visitor = new TopNAttributeStatisticVisitor();
         visitor.setCount(20);
         visitor.afterPropertiesSet();
-        
+
         Map<OnmsAttribute, Double> attributes = new HashMap<OnmsAttribute, Double>();
         attributes.put(new MockAttribute("foo"), 0.0);
-        new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet());
-        
+        OnmsResource resource = new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet(), ResourcePath.get("foo"));
+        resource.getAttributes();
+
         for (Entry<OnmsAttribute, Double> entry : attributes.entrySet()) {
             visitor.visit(entry.getKey(), entry.getValue());
         }
@@ -131,8 +134,9 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         for (int i = 0; i < 5; i++) {
             attributes.put(new MockAttribute("foo"), 0.0);
         }
-        new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet());
-        
+        OnmsResource resource = new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet(), ResourcePath.get("foo"));
+        resource.getAttributes();
+
         for (Entry<OnmsAttribute, Double> entry : attributes.entrySet()) {
             visitor.visit(entry.getKey(), entry.getValue());
         }
@@ -157,8 +161,9 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         for (int i = 0; i < 5; i++) {
             attributes.put(new MockAttribute("foo"), 0.0 + i);
         }
-        new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet());
-        
+        OnmsResource resource = new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet(), ResourcePath.get("foo"));
+        resource.getAttributes();
+
         for (Entry<OnmsAttribute, Double> entry : attributes.entrySet()) {
             visitor.visit(entry.getKey(), entry.getValue());
         }
@@ -183,8 +188,9 @@ public class TopNAttributeStatisticVisitorTest extends TestCase {
         for (int i = 0; i < 100; i++) {
             attributes.put(new MockAttribute("foo"), 0.0 + i);
         }
-        new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet());
-        
+        OnmsResource resource = new OnmsResource("1", "Node One", new MockResourceType(), attributes.keySet(), ResourcePath.get("foo"));
+        resource.getAttributes();
+
         for (Entry<OnmsAttribute, Double> entry : attributes.entrySet()) {
             visitor.visit(entry.getKey(), entry.getValue());
         }

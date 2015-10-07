@@ -28,115 +28,113 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.AAAARecord;
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
+import org.xbill.DNS.*;
 
 /**
  * DNSResolutionMonitor
  *
- * @author brozow
+ * @author brozow, fooker
  */
 @Distributable
 public class DNSResolutionMonitor extends AbstractServiceMonitor {
-    
-    
     public static final Logger LOG = LoggerFactory.getLogger(DNSResolutionMonitor.class);
-    
-    public static final String RESOLUTION_TYPE_PARM = "resolution-type";
-    public static final String RT_V4 = "v4";
-    public static final String RT_V6 = "v6";
-    public static final String RT_BOTH = "both";
-    public static final String RT_EITHER = "either";
-    public static final String RESOLUTION_TYPE_DEFAULT = RT_EITHER;
+
+    public static final String PARM_RESOLUTION_TYPE = "resolution-type";
+    public static final String PARM_RESOLUTION_TYPE_V4 = "v4";
+    public static final String PARM_RESOLUTION_TYPE_V6 = "v6";
+    public static final String PARM_RESOLUTION_TYPE_BOTH = "both";
+    public static final String PARM_RESOLUTION_TYPE_EITHER = "either";
+    public static final String PARM_RESOLUTION_TYPE_DEFAULT = PARM_RESOLUTION_TYPE_EITHER;
+
+    public static final String PARM_NAMESERVER = "nameserver";
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-
-        String nodeLabel = svc.getNodeLabel();
-        
-        String resolutionType = ParameterMap.getKeyedString(parameters, RESOLUTION_TYPE_PARM, RESOLUTION_TYPE_DEFAULT);
-        boolean requireV4 = RT_V4.equalsIgnoreCase(resolutionType) || RT_BOTH.equals(resolutionType);
-        boolean requireV6 = RT_V6.equalsIgnoreCase(resolutionType) || RT_BOTH.equals(resolutionType);
-        
-
+        // Get the name to query for
+        final Name name;
         try {
-            long start = System.currentTimeMillis();
-            InetAddress[] addrs = resolve(nodeLabel);
-            long end = System.currentTimeMillis();
+            name = new Name(svc.getNodeLabel());
 
-            boolean v4found = false;
-            boolean v6found = false;
-            for(InetAddress addr : addrs) {
-                LOG.debug("Resolved {} to {}", nodeLabel, addr);
-                if (addr instanceof Inet4Address) {
-                    v4found = true;
-                } else if(addr instanceof Inet6Address) {
-                    v6found = true;
-                }
-            }
-
-            if (!v4found && !v6found) {
-                String reason = "Unable to resolve " + nodeLabel;
-                LOG.debug(reason);
-                return PollStatus.unavailable(reason);
-            } 
-            if (requireV4 && !v4found) {
-                String reason = nodeLabel + " could only be resolved to an IPv6 address";
-                LOG.debug(reason);
-                return PollStatus.unavailable(reason);
-            }
-            if (requireV6 && !v6found) {
-                String reason = nodeLabel + " could only be resolved to an IPv4 address";
-                LOG.debug(reason);
-                return PollStatus.unavailable(reason);
-            }
-            LOG.debug("Resolved {} correctly!", nodeLabel);
-            return PollStatus.available((double)(end - start));
-
-        } catch (TextParseException e) {
-            String reason = "Unable to resolve "+nodeLabel+": "+e.getMessage();
-            LOG.debug(reason);
-            return PollStatus.unavailable(reason);
+        } catch (final TextParseException e) {
+            return PollStatus.unavailable("Invalid record name '" + svc.getNodeLabel() + "': " + e.getMessage());
         }
 
-    }
-    
-    InetAddress[] resolve(String hostname) throws TextParseException {
-        Record[] aaaaRecords = new Lookup(hostname, Type.AAAA).run();
-        Record[] aRecords = new Lookup(hostname, Type.A).run();
-        
-        InetAddress[] addrs = new InetAddress[(aaaaRecords == null ? 0 : aaaaRecords.length)+(aRecords == null ? 0 : aRecords.length)];
-        
-        int index = 0;
-        if (aaaaRecords != null) {
-            for(Record r : aaaaRecords) {
-                addrs[index++] = ((AAAARecord)r).getAddress();
+        // Determine if records for IPv4 and/or IPv6 re required
+        final String resolutionType = ParameterMap.getKeyedString(parameters,
+                                                                  PARM_RESOLUTION_TYPE,
+                                                                  PARM_RESOLUTION_TYPE_DEFAULT);
+        final boolean ipv4Required = PARM_RESOLUTION_TYPE_V4.equalsIgnoreCase(resolutionType) ||
+                                     PARM_RESOLUTION_TYPE_BOTH.equals(resolutionType);
+        final boolean ipv6Required = PARM_RESOLUTION_TYPE_V6.equalsIgnoreCase(resolutionType) ||
+                                     PARM_RESOLUTION_TYPE_BOTH.equals(resolutionType);
+
+        // Build a resolver object used for lookups
+        final String nameserver = ParameterMap.getKeyedString(parameters,
+                                                              PARM_NAMESERVER,
+                                                              null);
+
+        final Resolver resolver;
+        try {
+            if (nameserver == null) {
+                // Use system-defined resolvers
+                resolver = new ExtendedResolver();
+            } else {
+                resolver = new SimpleResolver(nameserver);
             }
+
+        } catch (final UnknownHostException e) {
+            return PollStatus.unavailable("Unable to resolve nameserver '" + nameserver + "': " + e.getMessage());
         }
-        
-        if (aRecords != null) {
-            for(Record r : aRecords) {
-                addrs[index++] = ((ARecord)r).getAddress();
-            }
+
+        // Start resolving the records
+        final long start = System.currentTimeMillis();
+
+        // Resolve the name
+        final boolean ipv4Found = resolve(name, resolver, Type.A);
+        final boolean ipv6Found = resolve(name, resolver, Type.AAAA);
+
+        // Resolving succeeded - checking results
+        final long end = System.currentTimeMillis();
+
+        // Check if result is valid
+        if (!ipv4Found && !ipv6Found) {
+            return PollStatus.unavailable("Unable to resolve host '" + name + "'");
+
+        } else  if (ipv4Required && !ipv4Found) {
+            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv6 address (AAAA record) but not an IPv4 address (A record)");
+
+        } else if (ipv6Required && !ipv6Found) {
+            return PollStatus.unavailable("'" + name + "' could be resolved to an IPv4 address (A record) but not an IPv6 address (AAAA record)");
+
+        } else {
+            return PollStatus.available((double) (end - start));
         }
-        
-        return addrs;
     }
 
+    private static boolean resolve(final Name name,
+                                   final Resolver resolver,
+                                   final int type) {
+        final Lookup lookup = new Lookup(name, type);
+        lookup.setResolver(resolver);
+
+        final Record[] records = lookup.run();
+
+        if (records == null) {
+            return false;
+        }
+
+        return Arrays.stream(records)
+                     .filter(r -> r.getType() == type)
+                     .count() > 0;
+    }
 }

@@ -49,7 +49,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -340,7 +339,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
     @Column(name="eventId", nullable=false)
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")    
+    @GeneratedValue(generator="eventSequence")
 	public Integer getId() {
 		return m_eventId;
 	}
@@ -463,8 +462,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="eventDpName", nullable=false)
+	@ManyToOne
+	@JoinColumn(name="systemId", nullable=false)
 	public OnmsDistPoller getDistPoller() {
 		return m_distPoller;
 	}

@@ -46,16 +46,16 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -428,7 +428,7 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -437,7 +437,7 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -478,7 +478,6 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>doImport</p>
      *
      * @param url a {@link java.lang.String} object.
-     * @param rescanExisting TODO
      */
     public void doImport(final String url, final String rescanExisting) {
         
@@ -915,7 +914,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
             .getEvent();
     }
@@ -937,7 +936,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .getEvent();
     }
 

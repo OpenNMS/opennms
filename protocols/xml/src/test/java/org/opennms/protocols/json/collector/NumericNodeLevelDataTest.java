@@ -40,13 +40,13 @@ import org.junit.Test;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NumericNodeLevelDataTest extends AbstractJsonCollectorTest {
+public class NumericNodeLevelDataTest extends JsonCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.json.collector.AbstractJsonCollectorTest#getJSONConfigFileName()
      */
     @Override
-    public String getJSONConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/sample-node-level-data.xml";
     }
 
@@ -54,7 +54,7 @@ public class NumericNodeLevelDataTest extends AbstractJsonCollectorTest {
      * @see org.opennms.protocols.json.collector.AbstractJsonCollectorTest#getJSONSampleFileName()
      */
     @Override
-    public String getJSONSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/sample-node-level-data.json";
     }
 
@@ -69,7 +69,7 @@ public class NumericNodeLevelDataTest extends AbstractJsonCollectorTest {
         parameters.put("collection", "Jeff");
         parameters.put("handler-class", "org.opennms.protocols.json.collector.MockDefaultJsonCollectionHandler");
         executeCollectorTest(parameters, 1);
-        File file = new File("target/snmp/1/natStats.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/natStats.jrb");
         Assert.assertTrue(file.exists());
         String[] dsnames = new String[] { "ariNatTotalConx", "ariNatConnLimit" };
         Double[] dsvalues = new Double[] { 10.0, 20.0 };

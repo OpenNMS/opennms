@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -85,37 +84,28 @@ public class EventBuilder {
         setCreationTime(date);
         setSource(source);
     }
-    
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public EventBuilder(final Event event) {
-        this(event, new Date());
+        m_event = event;
+        Date now = new Date();
+        setTime(now);
+        setCreationTime(now);
     }
 
     /**
-     * <p>Constructor for EventBuilder.</p>
+     * <p>getEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public EventBuilder(final Event event, final Date date) {
-    	m_event = event;
-	    setTime(date);
-	    setCreationTime(date);
-	}
-
-	/**
-	 * <p>getEvent</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event getEvent() {
+    public Event getEvent() {
         return m_event;
     }
-	
+
     public EventBuilder setUei(final String uei) {
         m_event.setUei(uei);
         return this;
@@ -129,7 +119,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setTime(final Date date) {
-       m_event.setTime(EventConstants.formatToString(date));
+       m_event.setTime(date);
        return this;
     }
     
@@ -140,7 +130,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setCreationTime(final Date date) {
-        m_event.setCreationTime(EventConstants.formatToString(date));
+        m_event.setCreationTime(date);
         return this;
     }
 
@@ -297,7 +287,7 @@ public class EventBuilder {
         }
 
         for(final Parm parm : m_event.getParmCollection()) {
-            if (parm.getParmName().equals(val)) {
+            if (parm.getParmName().equals(parmName)) {
             	final Value value = new Value();
                 value.setContent(val);
                 parm.setValue(value);

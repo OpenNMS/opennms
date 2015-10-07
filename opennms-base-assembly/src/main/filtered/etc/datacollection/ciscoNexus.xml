@@ -6,7 +6,7 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType != null)" />
       </persistenceSelectorStrategy>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
     <resourceType name="ciscoNXProcessIndex" label="Cisco Nexus System Resourses"
@@ -14,7 +14,7 @@
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
         <parameter key="match-expression" value="(#cpmCPUTotalPhysicalIndex != null)" />
       </persistenceSelectorStrategy>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
 
       <group name="cisco-nx-environmental" ifType="all">
@@ -83,7 +83,16 @@
           <includeGroup>cisco-nx-environmental</includeGroup>
         </collect>
       </systemDef>
-
+      
+      <systemDef name="Cisco Nexus 5596"><!-- Nexus 5598 Switch with 2 Power Supplies, 2 Fan Modules, 32 Ethernet/FCoE ports and 1 module -->
+        <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1038</sysoid>
+        <collect>
+          <includeGroup>cisco-process</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>cisco-nx-environmental</includeGroup>
+        </collect>
+      </systemDef>
+       
       <systemDef name="Cisco Nexus 7004"><!-- Nexus7000 4slot zonda n7k chassis N7K-C7004 -->
         <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1147</sysoid>
         <collect>

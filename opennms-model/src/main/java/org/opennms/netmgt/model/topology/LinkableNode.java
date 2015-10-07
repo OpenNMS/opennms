@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import org.springframework.util.Assert;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,14 +40,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsStpInterface;
-import org.springframework.util.Assert;
-
 /**
  * <p>
  * LinkableNode class.
  * </p>
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
@@ -55,23 +54,16 @@ public class LinkableNode {
     private final LinkableSnmpNode m_snmpnode;
 
     private String m_cdpDeviceId;
-    private List<CdpInterface> m_cdpinterfaces = new ArrayList<CdpInterface>();
 
     private String m_lldpSysname;
     private String m_lldpChassisId;
     private Integer m_lldpChassisIdSubtype;
-    private List<LldpRemInterface> m_lldpreminterfaces = new ArrayList<LldpRemInterface>();
 
     private InetAddress m_ospfRouterId;
-    private List<OspfNbrInterface> m_ospfinterfaces = new ArrayList<OspfNbrInterface>();
 
     private String m_isisSysId;
-    private List<IsisISAdjInterface> m_isisinterfaces = new ArrayList<IsisISAdjInterface>();
 
-    private List<RouterInterface> m_routeinterfaces = new ArrayList<RouterInterface>();
-
-    private Map<Integer,String> m_macIdentifiers = new HashMap<Integer,String>();
-    private Map<Integer, List<OnmsStpInterface>> m_vlanStpInterfaces = new HashMap<Integer, List<OnmsStpInterface>>();
+    private Map<Integer, String> m_macIdentifiers = new HashMap<Integer, String>();
     private Map<Integer, String> m_vlanBridgeIdentifier = new HashMap<Integer, String>();
     private Map<Integer, Set<String>> m_portMacs = new HashMap<Integer, Set<String>>();
     private Map<Integer, String> m_vlanStpRoot = new HashMap<Integer, String>();
@@ -80,13 +72,13 @@ public class LinkableNode {
     /**
      * The Wifi Mac address to Interface Index map
      */
-    private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer,Set<String>>();
+    private Map<Integer, Set<String>> m_wifiIfIndexMac = new HashMap<Integer, Set<String>>();
 
     /**
      * <p>
      * Constructor for LinkableNode.
      * </p>
-     * 
+     *
      * @param nodeId
      *            a int.
      * @param snmprimaryaddr
@@ -155,107 +147,11 @@ public class LinkableNode {
         return m_snmpnode;
     }
 
-    public List<LldpRemInterface> getLldpRemInterfaces() {
-        return m_lldpreminterfaces;
-    }
-
-    public void setLldpRemInterfaces(List<LldpRemInterface> lldpreminterfaces) {
-        m_lldpreminterfaces = lldpreminterfaces;
-    }
-
-    public List<OspfNbrInterface> getOspfinterfaces() {
-        return m_ospfinterfaces;
-    }
-
-    public void setOspfinterfaces(List<OspfNbrInterface> ospfinterfaces) {
-        m_ospfinterfaces = ospfinterfaces;
-    }
-
-    public List<IsisISAdjInterface> getIsisInterfaces() {
-        return m_isisinterfaces;
-    }
-
-    public void setIsisInterfaces(List<IsisISAdjInterface> isisinterfaces) {
-        m_isisinterfaces = isisinterfaces;
-    }
-
-    /**
-     * <p>
-     * getCdpInterfaces
-     * </p>
-     * 
-     * @return Returns the m_cdpinterfaces.
-     */
-    public List<CdpInterface> getCdpInterfaces() {
-        return m_cdpinterfaces;
-    }
-
-    /**
-     * <p>
-     * setCdpInterfaces
-     * </p>
-     * 
-     * @param cdpinterfaces
-     *            The m_cdpinterfaces to set.
-     */
-    public void setCdpInterfaces(List<CdpInterface> cdpinterfaces) {
-        if (cdpinterfaces == null || cdpinterfaces.isEmpty())
-            return;
-        m_cdpinterfaces = cdpinterfaces;
-    }
-
-    /**
-     * <p>
-     * hasCdpInterfaces
-     * </p>
-     * 
-     * @return Returns the m_hascdpinterfaces.
-     */
-    public boolean hasCdpInterfaces() {
-        return !m_cdpinterfaces.isEmpty();
-    }
-
-    /**
-     * <p>
-     * getRouteInterfaces
-     * </p>
-     * 
-     * @return Returns the m_routeinterfaces.
-     */
-    public List<RouterInterface> getRouteInterfaces() {
-        return m_routeinterfaces;
-    }
-
-    /**
-     * <p>
-     * setRouteInterfaces
-     * </p>
-     * 
-     * @param routeinterfaces
-     *            a {@link java.util.List} object.
-     */
-    public void setRouteInterfaces(List<RouterInterface> routeinterfaces) {
-        if (routeinterfaces == null || routeinterfaces.isEmpty())
-            return;
-        m_routeinterfaces = routeinterfaces;
-    }
-
-    /**
-     * <p>
-     * hasRouteInterfaces
-     * </p>
-     * 
-     * @return Returns the m_hascdpinterfaces.
-     */
-    public boolean hasRouteInterfaces() {
-        return !m_routeinterfaces.isEmpty();
-    }
-
     /**
      * <p>
      * isBridgeNode
      * </p>
-     * 
+     *
      * @return Returns the isBridgeNode.
      */
     public boolean isBridgeNode() {
@@ -281,11 +177,11 @@ public class LinkableNode {
         return m_vlanBridgeIdentifier.get(vlan);
     }
 
-    public void setMacIdentifiers(final Map<Integer,String> macIdentifiers) {
+    public void setMacIdentifiers(final Map<Integer, String> macIdentifiers) {
         m_macIdentifiers = macIdentifiers;
     }
 
-    public Map<Integer,String> getMacIdentifiers() {
+    public Map<Integer, String> getMacIdentifiers() {
         return m_macIdentifiers;
     }
 
@@ -300,8 +196,8 @@ public class LinkableNode {
         macs.add(macAddress);
         m_wifiIfIndexMac.put(ifindex, macs);
     }
- 
-    public Map<Integer,Set<String>> getWifiMacIfIndexMap() {
+
+    public Map<Integer, Set<String>> getWifiMacIfIndexMap() {
         return m_wifiIfIndexMac;
     }
 
@@ -403,39 +299,9 @@ public class LinkableNode {
 
     /**
      * <p>
-     * getStpInterfaces
-     * </p>
-     * 
-     * @return Returns the stpInterfaces.
-     */
-    public Map<Integer, List<OnmsStpInterface>> getStpInterfaces() {
-        return m_vlanStpInterfaces;
-    }
-
-    /**
-     * <p>
-     * addStpInterface
-     * </p>
-     * 
-     * @param stpIface
-     *            a {@link org.opennms.netmgt.model.OnmsStpInterface} object.
-     */
-    public void addStpInterface(final OnmsStpInterface stpIface) {
-        final Integer vlanindex = stpIface.getVlan() == null ? 0
-                                                            : stpIface.getVlan();
-        List<OnmsStpInterface> stpifs = new ArrayList<OnmsStpInterface>();
-        if (m_vlanStpInterfaces.containsKey(vlanindex)) {
-            stpifs = m_vlanStpInterfaces.get(vlanindex);
-        }
-        stpifs.add(stpIface);
-        m_vlanStpInterfaces.put(vlanindex, stpifs);
-    }
-
-    /**
-     * <p>
      * getNodeId
      * </p>
-     * 
+     *
      * @return a int.
      */
     public int getNodeId() {
@@ -446,7 +312,7 @@ public class LinkableNode {
      * <p>
      * getSnmpPrimaryIpAddr
      * </p>
-     * 
+     *
      * @return a {@link java.lang.String} object.
      */
     public InetAddress getSnmpPrimaryIpAddr() {
@@ -457,7 +323,7 @@ public class LinkableNode {
      * <p>
      * getSysoid
      * </p>
-     * 
+     *
      * @return a {@link java.lang.String} object.
      */
     public String getSysoid() {

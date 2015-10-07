@@ -52,8 +52,15 @@
 
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
-		<% String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp"); %>
-		<jsp:include page="<%=centerUrl%>" flush="false" />
+		<%
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp");
+			String[] centerUrlArr = centerUrl.split(",");
+			for(String centerUrlItem : centerUrlArr) {
+		%>
+			<jsp:include page="<%=centerUrlItem%>" flush="false" />
+		<%
+			}
+		%>
 	</div>
 
 	<!-- Right Column -->
@@ -66,6 +73,11 @@
 
 		<!-- KSC Reports box -->    
 		<jsp:include page="/KSC/include-box.htm" flush="false" />
+
+		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
+			if (Boolean.parseBoolean(showGrafanaBox)) { %>
+		<jsp:include page="/includes/grafana-box.jsp" flush="false" />
+		<% } %>
 
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />

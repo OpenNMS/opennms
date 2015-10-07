@@ -43,8 +43,7 @@ public class OnmsAssetRecordTest {
     public void equalsSameObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         Assert.assertTrue(rec1.equals(rec1));
@@ -54,13 +53,12 @@ public class OnmsAssetRecordTest {
     public void equalsDiffObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(1);
         
         Assert.assertTrue(rec1.equals(rec2));
@@ -75,13 +73,12 @@ public class OnmsAssetRecordTest {
     public void notEquals() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(2);
         
         Assert.assertFalse(rec1.equals(rec2));
@@ -91,8 +88,7 @@ public class OnmsAssetRecordTest {
     public void testMergeEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         rec1.setGeolocation(new OnmsGeolocation());
         rec1.getGeolocation().setAddress1("220 Chatham Business Drive");
@@ -101,7 +97,7 @@ public class OnmsAssetRecordTest {
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(1);
         String newAddress1 = "7025 Kit Creek Rd";
         rec2.getGeolocation().setAddress1(newAddress1);
@@ -118,8 +114,7 @@ public class OnmsAssetRecordTest {
     public void testMergeNotEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         String originalAddress1 = "220 Chatham Business Drive";
         rec1.getGeolocation().setAddress1(originalAddress1);
@@ -130,7 +125,7 @@ public class OnmsAssetRecordTest {
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(2);
         rec2.getGeolocation().setAddress1("7025 Kit Creek Rd");
         rec2.getGeolocation().setAddress2("P.O. Box 14987");

@@ -30,17 +30,32 @@ package org.opennms.netmgt.model;
 
 import java.io.File;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * <p>RrdGraphAttribute class.</p>
  */
+@XmlRootElement(name = "rrd-graph-attribute")
+@XmlAccessorType(XmlAccessType.NONE)
 public class RrdGraphAttribute implements OnmsAttribute {
 
+    @XmlAttribute(name = "name")
     private String m_name;
+
+    @XmlAttribute(name = "relativePath")
     private String m_relativePath;
+
+    @XmlAttribute(name = "rrdFile")
     private String m_rrdFile;
+
     private OnmsResource m_resource;
-    
+
+    public RrdGraphAttribute() {
+    }
+
     /**
      * <p>Constructor for RrdGraphAttribute.</p>
      *
@@ -62,6 +77,10 @@ public class RrdGraphAttribute implements OnmsAttribute {
     @Override
     public String getName() {
         return m_name;
+    }
+
+    public void setName(final String name) {
+        this.m_name = name;
     }
 
     /**
@@ -93,12 +112,28 @@ public class RrdGraphAttribute implements OnmsAttribute {
     public String getRrdRelativePath() {
         return m_relativePath + File.separator + m_rrdFile;
     }
-    
+
+    public void setRrdRelativePath(final String relativePath) {
+        this.m_relativePath = relativePath;
+    }
+
+    /**
+     * <p>getRrdFile</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRrdFile() {
+        return m_rrdFile;
+    }
+
+    public void setRrdFile(final String rrdFile) {
+        this.m_rrdFile = rrdFile;
+    }
+
     /** {@inheritDoc} */
     @Override
 	public String toString() {
     	return ""+m_resource + '.' + m_name;
 	}
-
 
 }

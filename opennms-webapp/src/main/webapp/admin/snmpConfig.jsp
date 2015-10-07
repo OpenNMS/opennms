@@ -30,7 +30,7 @@
 --%>
 
 <%@page import="com.google.common.base.Strings"%>
-<%@page import="org.opennms.web.snmpinfo.SnmpInfo"%>
+<%@page import="org.opennms.web.svclayer.model.SnmpInfo"%>
 <%@page import="org.opennms.netmgt.snmp.SnmpConfiguration"%>
 <%@page language="java" contentType="text/html" session="true"%>
 
@@ -41,7 +41,6 @@
 	<jsp:param name="location" value="admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
 	<jsp:param name="breadcrumb" value="Configure SNMP by IP" />
-	<jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
 	<jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />

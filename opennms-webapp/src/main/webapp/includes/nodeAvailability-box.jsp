@@ -92,7 +92,7 @@
     String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
     String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/" ;
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
 <div id="availability-box" class="panel panel-default">
@@ -166,7 +166,7 @@
                 String warnClass = "Indeterminate";
 
                 if (service.isManaged()) {
-                  double svcValue = m_model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+                  double svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
                   availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, svcValue);
                   availValue = CategoryUtil.formatValue(svcValue) + "%";
 
@@ -218,21 +218,23 @@
                 </tr>
             <% } %>
           <% } else { %>
-            <%-- interface is not managed --%>
-            <% if("0.0.0.0".equals(ipAddr)) {
-            }
-            else { %>
-            <tr>
-              <td>
+      <%-- interface is not managed --%>
+      <% if("0.0.0.0".equals(ipAddr)) {
+      }
+      else { %>
+      <tr>
+          <td class="severity-Cleared nobright" colspan=2>
               <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
-              </td>
-              <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
-            </tr>
-            <% } %>
-          <% } %>
-        <% } %>
-<% } %>
-</table>   
+          </td>
+          <!--<td class="severity-Cleared nobright"></td>-->
+          <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+          <td class="severity-Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+      </tr>
+      <% } %>
+      <% } %>
+      <% } %>
+      <% } %>
+  </table>
 
 </div>
 

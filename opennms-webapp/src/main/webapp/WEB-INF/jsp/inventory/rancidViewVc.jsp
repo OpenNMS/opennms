@@ -48,7 +48,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <iframe frameborder="0" src="${model.iframelink}" width="100%" height="800px">
+        <iframe src="${model.iframelink}" width="100%" height="800px">
             <p>Your browser does not support iframes.</p>
         </iframe>
     </div>

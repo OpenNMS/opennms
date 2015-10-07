@@ -42,36 +42,31 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Basic Web Service using REST for NCS Components
  *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  */
-@Component
-@PerRequest
-@Scope("prototype")
+@Component("ncsRestService")
 @Path("NCS")
 @Transactional
 public class NCSRestService {
@@ -79,9 +74,6 @@ public class NCSRestService {
 
     @Autowired
     NCSComponentService m_componentService;
-
-    @Context 
-    UriInfo m_uriInfo;
 
     public void afterPropertiesSet() throws RuntimeException {
         Assert.notNull(m_componentService);
@@ -235,6 +227,7 @@ public class NCSRestService {
     }
 
     @XmlRootElement(name="components")
+    @JsonRootName("components")
     public static class ComponentList extends JaxbListWrapper<NCSComponent> {
         private static final long serialVersionUID = 1L;
 
@@ -243,6 +236,7 @@ public class NCSRestService {
             super(components);
         }
         @XmlElement(name="component")
+        @JsonProperty("component")
         public List<NCSComponent> getObjects() {
             return super.getObjects();
         }

@@ -33,7 +33,7 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.netmgt.model.events.EventProxyException"
+	import="org.opennms.netmgt.events.api.EventProxyException"
 %>
 
 

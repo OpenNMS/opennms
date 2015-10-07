@@ -37,6 +37,7 @@ import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CollectorThresholdingSet extends ThresholdingSet {
     private static final Logger LOG = LoggerFactory.getLogger(CollectorThresholdingSet.class);
+
+    private final ResourceStorageDao m_resourceStorageDao;
 
     // CollectionSpecification parameters
     boolean storeByIfAlias = false;
@@ -65,8 +68,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) {
         super(nodeId, hostAddress, serviceName, repository);
+        m_resourceStorageDao = resourceStorageDao;
         String storeByIfAliasString = svcParams.getStoreByIfAlias();
         storeByIfAlias = storeByIfAliasString != null && "true".equalsIgnoreCase(storeByIfAliasString);
         this.svcParams = svcParams;
@@ -106,7 +110,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
         }
 		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
 				collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName,
-				m_repository, resource, attributesMap);
+				m_repository, resource, attributesMap, m_resourceStorageDao);
 		resourceWrapper.setCounterReset(counterReset);
         return applyThresholds(resourceWrapper, attributesMap);
     }

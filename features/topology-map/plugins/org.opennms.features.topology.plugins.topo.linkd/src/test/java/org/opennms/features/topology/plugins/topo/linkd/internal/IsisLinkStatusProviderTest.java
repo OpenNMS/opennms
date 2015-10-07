@@ -46,9 +46,9 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -157,7 +157,7 @@ public class IsisLinkStatusProviderTest {
     }
 
     private List<OnmsAlarm> createAlarm() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     private List<OnmsAlarm> createDownAlarm(){

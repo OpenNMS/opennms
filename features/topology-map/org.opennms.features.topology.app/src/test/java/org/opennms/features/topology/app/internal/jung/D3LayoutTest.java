@@ -43,7 +43,6 @@ import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -168,7 +167,7 @@ public class D3LayoutTest {
         
         PrintWriter out = null;
         try {
-            out = new PrintWriter(new FileWriter("data"+count+".js")) ;
+            out = new PrintWriter(new FileWriter("target/data"+count+".js")) ;
 
             out.println("var gCenter = { x: " + size.getWidth()/2.0 + ", y: " + size.getHeight()/2.0 + "};");
            

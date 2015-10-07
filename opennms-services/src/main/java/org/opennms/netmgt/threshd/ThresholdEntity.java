@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,10 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
-import org.opennms.netmgt.threshd.ThresholdingVisitor.ThresholdingResult;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
@@ -257,57 +253,6 @@ public final class ThresholdEntity implements Cloneable {
         }
 
         return events;
-    }
-
-    /**
-     * <p>fetchLastValue</p>
-     *
-     * @param latIface a {@link org.opennms.netmgt.threshd.LatencyInterface} object.
-     * @param latParms a {@link org.opennms.netmgt.threshd.LatencyParameters} object.
-     * @return a {@link java.lang.Double} object.
-     * @throws org.opennms.netmgt.threshd.ThresholdingException if any.
-     */
-    public Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
-        //Assume that this only happens on a simple "Threshold", not an "Expression"
-        //If it is an Expression, then we don't yet know what to do - this will likely just fail with some sort of exception.
-        //perhaps we should figure out how to expand it (or at least use code elsewhere to do so sensibly)
-        String datasource=getDataSourceExpression();
-  
-
-        // Use RRD strategy to "fetch" value of the datasource from the RRD file
-        Double dsValue = null;
-        try {
-            if (getDatasourceType().equals("if")) {
-                LOG.debug("Fetching last value from dataSource '{}'", datasource);
-
-                File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
-                if (!rrdFile.exists()) {
-                    LOG.info("rrd file {} does not exist", rrdFile);
-                    return null;
-                }
-
-                if (!rrdFile.canRead()) {
-                    LOG.error("Unable to read existing rrd file {}", rrdFile);
-                    return null;
-                }
-
-                if (latParms.getRange() == 0) {
-                    dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), datasource, latParms.getInterval());
-                } else {
-                    dsValue = RrdUtils.fetchLastValueInRange(rrdFile.getAbsolutePath(), datasource, latParms.getInterval(), latParms.getRange());
-                }
-            } else {
-                throw new ThresholdingException("expr types not yet implemented", ThresholdingResult.THRESHOLDING_FAILED);
-            }
-
-            LOG.debug("Last value from dataSource '{}' was {}", datasource, dsValue);
-        } catch (NumberFormatException nfe) {
-            LOG.warn("Unable to convert retrieved value for datasource '{}' to a double, skipping evaluation.", datasource);
-        } catch (RrdException e) {
-            LOG.error("An error occurred retriving the last value for datasource '{}'", datasource, e);
-        }
-
-        return dsValue;
     }
 
     /**

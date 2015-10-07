@@ -433,10 +433,10 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
 
     /** {@inheritDoc} */
     @Override
-    public OnmsUser getByUsername(String username) {
+    public SpringSecurityUser getByUsername(String username) {
         reloadIfNecessary();
 
-        OnmsUser user;
+        final OnmsUser user;
         if (m_magicUsers.containsKey(username)) {
             user = m_magicUsers.get(username);
         } else {
@@ -447,9 +447,9 @@ public class SpringSecurityUserDaoImpl implements SpringSecurityUserDao, Initial
             return null;
         }
 
-        user.setAuthorities(getAuthoritiesByUsername(username));
-
-        return user;
+        final SpringSecurityUser springUser = new SpringSecurityUser(user);
+        springUser.setAuthorities(getAuthoritiesByUsername(username));
+        return springUser;
     }
 
     private void reloadIfNecessary() {

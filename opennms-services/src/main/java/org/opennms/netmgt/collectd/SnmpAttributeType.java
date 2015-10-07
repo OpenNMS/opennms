@@ -36,7 +36,7 @@ import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -70,7 +70,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      */
     protected SnmpAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
@@ -120,7 +120,7 @@ public abstract class SnmpAttributeType extends AbstractCollectionAttributeType 
      *
      * @param resourceType a {@link org.opennms.netmgt.collectd.ResourceType} object.
      * @param collectionName a {@link java.lang.String} object.
-     * @param mibObj a {@link org.opennms.netmgt.config.MibObject} object.
+     * @param mibObj a {@link org.opennms.netmgt.config.datacollection.MibObject} object.
      * @param groupType a {@link org.opennms.netmgt.collection.api.AttributeGroupType} object.
      * @return a {@link org.opennms.netmgt.collectd.SnmpAttributeType} object.
      */

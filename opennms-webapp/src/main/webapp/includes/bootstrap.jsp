@@ -45,6 +45,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory
 	"%>
@@ -86,17 +87,21 @@
   <c:if test="${param.nostyles != 'true' }">
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.3.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.4.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+  <c:if test="${param.norequirejs != 'true' }">
+    <script type="text/javascript" src="<%= baseHref %>lib/requirejs/require.min.js"></script>
+  </c:if>
+
+    <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="<%= baseHref %>lib/bootstrap/dist/js/bootstrap.js"></script>
 
     <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
         <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
@@ -109,6 +114,18 @@
       <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
       <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
+    </c:if>
+
+    <c:if test="${param.renderGraphs == 'true'}">
+      <!-- Graphing -->
+      <script type="text/javascript">
+        // Global scope
+        window.onmsGraphContainers = {
+          'engine': '<%= TimeSeries.getGraphEngine() %>',
+          'baseHref': '<%= baseHref %>'
+        };
+      </script>
+      <script type="text/javascript" src="<%= baseHref %>js/graph.js"></script>
     </c:if>
 
 <c:forEach var="script" items="${paramValues.script}">
@@ -133,6 +150,9 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
+<c:if test="${param.ngapp != null}">
+  ng-app="${param.ngapp}"
+</c:if>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>

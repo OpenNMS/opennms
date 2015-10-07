@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -78,14 +79,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return a {@link java.util.Collection} object.
      */
     List<OnmsNode> findByLabel(String label);
-    
-    /**
-     * <p>findNodes</p>
-     *
-     * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-     * @return a {@link java.util.Collection} object.
-     */
-    List<OnmsNode> findNodes(OnmsDistPoller dp);
     
     /**
      * <p>getHierarchy</p>
@@ -173,6 +166,8 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     OnmsNode findByForeignId(String foreignSource, String foreignId);
 
+    List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName);
+
     /**
      * <p>getNodeCountForForeignSource</p>
      *
@@ -230,8 +225,8 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 
     SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
-    
+
     Integer getNextNodeId (Integer nodeId);
-    
+
     Integer getPreviousNodeId (Integer nodeId);
 }

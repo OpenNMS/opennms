@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -16,6 +16,18 @@
       <artifactId>jasperreports</artifactId>
       <version>${jasperreportsVersion}</version>
       <exclusions>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
@@ -35,9 +47,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>iText</artifactId>
-      <version>2.1.7</version>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7.js3</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>

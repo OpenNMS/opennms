@@ -30,6 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -47,9 +48,12 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class MockInterface extends MockContainer<MockNode,MockService> {
 
+	private static final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+
+	private final int m_id;
 	private String m_ifAlias;
     private final InetAddress m_inetAddr;
-    private final int m_ifIndex;
+    private int m_ifIndex;
     
 
     /**
@@ -60,6 +64,7 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      */
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
+        m_id = ID_COUNTER.getAndIncrement();
         m_ifIndex = node.getNextIfIndex();
         m_inetAddr = InetAddressUtils.addr(ipAddr);
         if (m_inetAddr == null) {
@@ -77,6 +82,15 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      */
     public MockService addService(String svcName, int serviceId) {
         return (MockService) addMember(new MockService(this, svcName, serviceId));
+    }
+
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public int getId() {
+        return m_id;
     }
 
     // model
@@ -300,6 +314,13 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
     public int getIfIndex() {
         return m_ifIndex;
     }
-    
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex
+     */
+    public void setIfIndex(int ifIndex) {
+        m_ifIndex = ifIndex;
+    }
 }
