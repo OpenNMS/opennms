@@ -60,6 +60,10 @@
       <outputDirectory>contrib/jasperstudio-extension</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>${project.build.directory}/resource-cli</directory>
+      <outputDirectory>contrib/resource-cli</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.outputDirectory}/share</directory>
       <outputDirectory>share</outputDirectory>
     </fileSet>
@@ -123,7 +127,9 @@
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
         <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
+        <exclude>org.opennms.features:resource-cli</exclude>
         <exclude>org.slf4j:slf4j-jdk14</exclude>
+        <exclude>org.slf4j:slf4j-simple</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>

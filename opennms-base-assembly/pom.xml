@@ -70,6 +70,13 @@
                   <classifier>jar-with-dependencies</classifier>
                   <outputDirectory>${project.build.directory}/jasperstudio-extension</outputDirectory>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>resource-cli</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <outputDirectory>${project.build.directory}/resource-cli</outputDirectory>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -382,6 +389,7 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>resource-cli</artifactId>
+      <classifier>jar-with-dependencies</classifier>
       <version>${project.version}</version>
     </dependency>
     <!--
