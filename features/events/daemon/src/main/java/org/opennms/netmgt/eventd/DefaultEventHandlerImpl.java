@@ -81,7 +81,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
         /**
          * log of events
          */
-        private Log m_eventLog;
+        private final Log m_eventLog;
 
         public EventHandlerRunnable(Log eventLog) {
             Assert.notNull(eventLog, "eventLog argument must not be null");

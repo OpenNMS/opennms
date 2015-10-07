@@ -217,8 +217,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public OnmsNode(final OnmsDistPoller distPoller) {
         m_distPoller = distPoller;
-        m_assetRecord = new OnmsAssetRecord();
-        m_assetRecord.setNode(this);
     }
 
     public OnmsNode(final OnmsDistPoller distPoller, final String label) {
@@ -745,6 +743,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @XmlElement(name="assetRecord")
     public OnmsAssetRecord getAssetRecord() {
+        if (m_assetRecord == null) {
+            m_assetRecord = new OnmsAssetRecord();
+            m_assetRecord.setNode(this);
+        }
         return m_assetRecord;
     }
 
