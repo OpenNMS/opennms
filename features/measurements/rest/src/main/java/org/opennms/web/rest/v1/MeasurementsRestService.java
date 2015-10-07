@@ -29,9 +29,6 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -46,28 +43,28 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
-import org.opennms.netmgt.measurements.api.ExpressionException;
-import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.api.MeasurementService;
+import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
+import org.opennms.netmgt.measurements.api.exceptions.FetchException;
+import org.opennms.netmgt.measurements.api.exceptions.FilterException;
+import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
+import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
 import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
-import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.RowSortedTable;
 
 /**
  * The Measurements API provides read-only access to values
@@ -95,11 +92,17 @@ public class MeasurementsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestService.class);
 
     @Autowired
-    private MeasurementFetchStrategy m_fetchStrategy;
+    private MeasurementFetchStrategy fetchStrategy;
 
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
 
     private final FilterEngine filterEngine = new FilterEngine();
+
+    private final MeasurementService service;
+
+    public MeasurementsRestService() {
+        service = new MeasurementService(fetchStrategy, expressionEngine, filterEngine);
+    }
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -151,131 +154,35 @@ public class MeasurementsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional(readOnly=true)
     public QueryResponse query(final QueryRequest request) {
-        Preconditions.checkState(m_fetchStrategy != null);
-        validateQueryRequest(request);
-
+        Preconditions.checkState(service != null);
         LOG.debug("Executing query with {}", request);
-
-        // Fetch the measurements
-        FetchResults results;
+        QueryResponse response = null;
         try {
-            results = m_fetchStrategy.fetch(
-                        request.getStart(),
-                        request.getEnd(),
-                        request.getStep(),
-                        request.getMaxRows(),
-                        request.getSources()
-                        );
+            response = service.query(request);
+        } catch (ExpressionException | FilterException | ValidationException e) {
+            throw getException(Status.BAD_REQUEST, e, e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            getException(Status.NOT_FOUND, e, e.getMessage());
+        } catch (FetchException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, e, e.getMessage());
         } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed");
-        }
-
-        // Return a 404 when null
-        if (results == null) {
-            throw getException(Status.NOT_FOUND, "Resource or attribute not found for {}", request);
-        }
-
-        // Apply the expression to the fetch results
-        try {
-            expressionEngine.applyExpressions(request, results);
-        } catch (ExpressionException e) {
-            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression.");
-        }
-
-        // Apply the filters
-        if (!request.getFilters().isEmpty()) {
-            RowSortedTable<Long, String, Double> table = results.asRowSortedTable();
-            try {
-                filterEngine.filter(request.getFilters(), table);
-            } catch (Throwable t) {
-                throw getException(Status.BAD_REQUEST, t, "An error occurred while applying one or more filters: " + t.getMessage());
-            }
-            results = new FetchResults(table, results.getStep(), results.getConstants());
-        }
-
-        final Map<String, double[]> columns = results.getColumns();
-
-        // Remove any transient values belonging to sources
-        for (final Source source : request.getSources()) {
-            if (source.getTransient()) {
-                columns.remove(source.getLabel());
-            }
+            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Query failed");
         }
 
         // Return a 204 if there are no columns
-        if (columns.keySet().size() == 0) {
+        if (response.getColumns().length == 0) {
             throw getException(Status.NO_CONTENT, "No content.");
         }
-
-        // Build the response
-        final QueryResponse response = new QueryResponse();
-        response.setStart(request.getStart());
-        response.setEnd(request.getEnd());
-        response.setStep(results.getStep());
-        response.setTimestamps(results.getTimestamps());
-        response.setColumns(columns);
 
         return response;
     }
 
-    /**
-     * Validates the query request, in order to avoid triggering
-     * internal server errors for invalid input.
-     *
-     * @throws WebApplicationException if validation fails.
-     */
-    private static void validateQueryRequest(final QueryRequest request) {
-        final Map<String,String> labels = new HashMap<String,String>();
-
-        if (request.getEnd() < 0) {
-            throw getException(Status.BAD_REQUEST, "Query end must be >= 0: {}", request.getEnd());
-        }
-        if (request.getStep() <= 0) {
-            throw getException(Status.BAD_REQUEST, "Query step must be > 0: {}", request.getStep());
-        }
-        for (final Source source : request.getSources()) {
-            if (source.getResourceId() == null
-                    || source.getAttribute() == null
-                    || source.getLabel() == null
-                    || source.getAggregation() == null) {
-                throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
-            }
-            if (labels.containsKey(source.getLabel())) {
-                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
-            } else {
-                labels.put(source.getLabel(), "source");
-            }
-        }
-        for (final Expression expression : request.getExpressions()) {
-            if (expression.getExpression() == null
-                    || expression.getLabel() == null) {
-                throw getException(Status.BAD_REQUEST, "Query expression fields must be set: {}", expression);
-            }
-            if (labels.containsKey(expression.getLabel())) {
-                final String type = labels.get(expression.getLabel());
-                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
-            } else {
-                labels.put(expression.getLabel(), "expression");
-            }
-        }
-        List<FilterDefinition> filters = request.getFilters();
-        if (filters.size() > 0) {
-            for (FilterDefinition filter : filters) {
-                if (filter.getName() == null) {
-                    throw getException(Status.BAD_REQUEST, "Filter name must be set: {}", filter);
-                }
-            }
-        }
-    }
-
-    protected static <T> WebApplicationException getException(final Status status, String msg, Object... params) throws WebApplicationException {
-        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+    protected static WebApplicationException getException(final Status status, String msg) throws WebApplicationException {
         LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
-    protected static <T> WebApplicationException getException(final Status status, Throwable t, String msg, Object... params) throws WebApplicationException {
-        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+    protected static WebApplicationException getException(final Status status, Throwable t, String msg) throws WebApplicationException {
         LOG.error(msg, t);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }

@@ -90,10 +90,16 @@
       <artifactId>org.opennms.features.measurements.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- TODO MVR do we need this? -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
       <version>${commonsCsvVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>jasper-reports-filter</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>

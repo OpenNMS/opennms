@@ -36,8 +36,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -53,7 +55,6 @@ import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
-
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
@@ -67,6 +68,7 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.features.reporting.repository.global.GlobalReportRepository;
+import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,12 +89,14 @@ public class JasperReportService implements ReportService {
 
     private GlobalReportRepository m_globalReportRepository;
 
-    /**
-     * <p>
-     * Constructor for JasperReportService.
-     * </p>
-     */
+    private final List<ParameterFilter> parameterFilters;
+
     public JasperReportService() {
+        parameterFilters = new ArrayList<>();
+        Iterator<ParameterFilter> it =  ServiceLoader.load(ParameterFilter.class).iterator();
+        while (it.hasNext()) {
+            parameterFilters.add(it.next());
+        }
     }
 
     /**
@@ -139,17 +143,7 @@ public class JasperReportService implements ReportService {
                     reportParameters.setDateParms(dateParms);
 
                     for (final JRParameter reportParm : reportParms) {
-
-                        if (reportParm.isSystemDefined() == false) {
-
-                            if (reportParm.isForPrompting() == false) {
-                                LOG.debug("report parm {} is not for prompting - continuing", reportParm.getName());
-                                continue;
-                            } else {
-                                LOG.debug("found promptable report parm {}", reportParm.getName());
-
-                            }
-
+                        if (apply(parameterFilters, reportParm)) {
                             if (reportParm.getValueClassName().equals("java.lang.String")) {
                                 LOG.debug("adding a string parm name {}", reportParm.getName());
                                 final ReportStringParm stringParm = new ReportStringParm();
@@ -289,9 +283,12 @@ public class JasperReportService implements ReportService {
                                 continue;
                             }
                             throw new ReportException("Unsupported report parameter type " + reportParm.getValueClassName());
+                        } else {
+                            LOG.debug("SKIPPING {}", reportParm.getName());
                         }
                     }
-                    return reportParameters;                }
+                    return reportParameters;
+                }
             });
         } catch (final Exception e) {
             if (e instanceof ReportException) throw (ReportException)e;
@@ -585,5 +582,18 @@ public class JasperReportService implements ReportService {
             LOG.error("unable to compile jasper report {}", e);
             throw new ReportException("unable to compile jasperReport", e);
         }
+    }
+
+    protected boolean apply(List<ParameterFilter> parameterFilters, JRParameter reportParm) {
+        for (ParameterFilter eachFilter : parameterFilters) {
+            if (!eachFilter.apply(reportParm)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected List<ParameterFilter> getParameterFilters() {
+        return parameterFilters;
     }
 }

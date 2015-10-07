@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Makes Measurement API requests and wraps the request in an appropriate {@link JRRewindableDataSource}.
  */
-public class RemoteMeasurementDataSourceWrapper {
+class RemoteMeasurementDataSourceWrapper implements MeasurementDataSourceWrapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementQueryExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteMeasurementDataSourceWrapper.class);
 
     private final MeasurementApiConnector connector = new MeasurementApiConnector();
     private final String url;
@@ -58,13 +58,7 @@ public class RemoteMeasurementDataSourceWrapper {
         this.useSsl = useSsl;
     }
 
-    /**
-     * Creates a {@link JRRewindableDataSource} according to the provided query.
-     *
-     * @param query The query to execute. Should be a OpenNMS Measurement API parsable {@link org.opennms.netmgt.measurements.model.QueryRequest}. It may be null, but not empty.
-     * @return The DataSource.
-     * @throws JRException In any error situation. RuntimeException are not catched and may be thrown in addition.
-     */
+    @Override
     public JRRewindableDataSource createDataSource(String query) throws JRException {
         try {
             Result result = connector.execute(useSsl, url, username, password, query);
@@ -97,7 +91,8 @@ public class RemoteMeasurementDataSourceWrapper {
         }
     }
 
-    public void disconnect() {
+    @Override
+    public void close() {
         if (connector != null) {
             connector.disconnect();
         }

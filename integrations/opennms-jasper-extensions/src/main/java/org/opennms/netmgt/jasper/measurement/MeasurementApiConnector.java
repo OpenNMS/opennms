@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Posts a given query to a given url using optional username and password.
  */
+// TODO MVR rename to MeasurementApiClient
 class MeasurementApiConnector {
 
     protected static final int CONNECT_TIMEOUT = 2500;

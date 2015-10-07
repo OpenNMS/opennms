@@ -26,17 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.measurements.api;
+package org.opennms.netmgt.measurements.api.exceptions;
 
 /**
  * A generic exception used by the expression engine.
  *
  * @author jwhite
  */
-public class ExpressionException extends Exception {
+public class ExpressionException extends MeasurementException {
     private static final long serialVersionUID = 8110948443639294775L;
 
-    public ExpressionException(String message, RuntimeException cause) {
-        super(message, cause);
+    public ExpressionException(Throwable cause, String message, Object... params) {
+        super(cause, message, params);
     }
 }

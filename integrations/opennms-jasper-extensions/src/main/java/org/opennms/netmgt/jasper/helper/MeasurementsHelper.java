@@ -30,6 +30,13 @@ package org.opennms.netmgt.jasper.helper;
 
 import com.google.common.base.Strings;
 
+import org.opennms.netmgt.measurements.api.ExpressionEngine;
+import org.opennms.netmgt.measurements.api.FilterEngine;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory;
+import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeanUtils;
+
 /**
  * Provides helper methods for the {@link org.opennms.netmgt.jasper.measurement.MeasurementDataSource}.
  */
@@ -64,5 +71,31 @@ public abstract class MeasurementsHelper {
             return String.format("nodeSource[%s:%s]", foreignSource, foreignId);
         }
         return String.format("node[%s]", nodeId);
+    }
+
+    public static boolean isRunInOpennmsJvm() {
+        return getMeasurementFetchStrategy() != null;
+    }
+
+    public static MeasurementFetchStrategy getMeasurementFetchStrategy() {
+        try {
+            MeasurementFetchStrategyFactory strategyFactory = BeanUtils.instantiate(MeasurementFetchStrategyFactory.class);
+            return strategyFactory.getStrategy();
+        } catch (BeanInstantiationException |  InstantiationException | IllegalAccessException ex) {
+            return null;
+        }
+    }
+
+    public static ExpressionEngine getExpressionEngine() {
+        try {
+            ExpressionEngine expressionEngine = BeanUtils.instantiate(ExpressionEngine.class);
+            return expressionEngine;
+        } catch (BeanInstantiationException ex) {
+            return null;
+        }
+    }
+
+    public static FilterEngine getFilterEngine() {
+        return new FilterEngine();
     }
 }
