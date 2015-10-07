@@ -201,9 +201,9 @@ public abstract class EventConstants {
      */
     public static final String NODE_UPDATED_EVENT_UEI = "uei.opennms.org/nodes/nodeUpdated";
     
-	/**
-	 * The node category membership changed UEI.
-	 */
+        /**
+         * The node category membership changed UEI.
+         */
     public static final String NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeCategoryMembershipChanged";
 
     /**
@@ -231,11 +231,6 @@ public abstract class EventConstants {
      */
     public static final String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
 
-    /**
-     * The service managed event UEI
-     */
-    public static final String SERVICE_MANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceManaged";
-    
     /**
      * The service unmanaged event UEI.
      */
@@ -502,7 +497,7 @@ public abstract class EventConstants {
     /**
      * Demand poll service event ui.
      */
-	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
+        public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
 
     /**
      * An event to signal that a user has changed asset information via the web
@@ -510,7 +505,7 @@ public abstract class EventConstants {
      */
     public static final String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
 
-	/**
+        /**
         * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter).
         */
     public static final String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
@@ -1277,47 +1272,47 @@ public abstract class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToString(final Date date) {
-    	return FORMATTER_LONG_GMT.get().format(date);
+        return FORMATTER_LONG_GMT.get().format(date);
     }
 
-	/**
-	 * Converts the value of a parm ('Value') of the instance to a string
-	 *
-	 * @param pvalue a {@link org.opennms.netmgt.xml.event.Value} object.
-	 * @return a {@link java.lang.String} object.
-	 */
-	public static String getValueAsString(Value pvalue) {
-		if (pvalue == null)
-			return null;
-		
-		if (pvalue.getContent() == null)
-			return null;
+        /**
+         * Converts the value of a parm ('Value') of the instance to a string
+         *
+         * @param pvalue a {@link org.opennms.netmgt.xml.event.Value} object.
+         * @return a {@link java.lang.String} object.
+         */
+        public static String getValueAsString(Value pvalue) {
+                if (pvalue == null)
+                        return null;
+                
+                if (pvalue.getContent() == null)
+                        return null;
 
-		String result = "";
-		String encoding = pvalue.getEncoding();
-		if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
-			result = pvalue.getContent();
-		} else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
-			byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
-			result = "0x"+toHexString(bytes);
-		} else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
-			result = pvalue.getContent();
-		} else {
-			throw new IllegalStateException("Unknown encoding for parm value: " + encoding);
-		}
-		
-		return result.trim();
-	}
-	
-	public static String toHexString(byte[] data) {
-		final StringBuffer b = new StringBuffer();
-		for (int i = 0; i < data.length; ++i) {
-			final int x = (int) data[i] & 0xff;
-			if (x < 16) b.append("0");
-			b.append(Integer.toString(x, 16).toLowerCase());
-		}
-		return b.toString();
-	}
+                String result = "";
+                String encoding = pvalue.getEncoding();
+                if (encoding.equals(EventConstants.XML_ENCODING_TEXT)) {
+                        result = pvalue.getContent();
+                } else if (encoding.equals(EventConstants.XML_ENCODING_BASE64)) {
+                        byte[] bytes = Base64.decodeBase64(pvalue.getContent().toCharArray());
+                        result = "0x"+toHexString(bytes);
+                } else if (encoding.equals(EventConstants.XML_ENCODING_MAC_ADDRESS)) {
+                        result = pvalue.getContent();
+                } else {
+                        throw new IllegalStateException("Unknown encoding for parm value: " + encoding);
+                }
+                
+                return result.trim();
+        }
+        
+        public static String toHexString(byte[] data) {
+                final StringBuffer b = new StringBuffer();
+                for (int i = 0; i < data.length; ++i) {
+                        final int x = (int) data[i] & 0xff;
+                        if (x < 16) b.append("0");
+                        b.append(Integer.toString(x, 16).toLowerCase());
+                }
+                return b.toString();
+        }
 
     //
     // For Trapd

@@ -39,6 +39,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -58,8 +58,6 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
-
-import com.google.common.collect.Lists;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -74,6 +72,9 @@ public class ManageNodesServlet extends HttpServlet {
      * 
      */
     private static final long serialVersionUID = -4938417809629844445L;
+
+    // FIXME: Should this be removed?
+    //private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
 
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
 
@@ -103,22 +104,22 @@ public class ManageNodesServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
-
+        List<String> interfaceList = new ArrayList<String>();
+        List<String> serviceList = new ArrayList<String>();
+        
         // the list of all interfaces marked as managed
-        List<String> interfaceList = Lists.newArrayList();
         if(request.getParameterValues("interfaceCheck") != null)
-        	interfaceList = Arrays.asList(request.getParameterValues("interfaceCheck"));
+            interfaceList = Arrays.asList(request.getParameterValues("interfaceCheck"));
 
         // the list of all services marked as managed
-        List<String> serviceList  = Lists.newArrayList();
-    	if(request.getParameterValues("serviceCheck") != null)
-    		serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
+        if(request.getParameterValues("serviceCheck") != null)
+            serviceList = Arrays.asList(request.getParameterValues("serviceCheck"));
 
         // the list of interfaces that need to be put into the URL file
-        List<String> addToURL = Lists.newArrayList();
-        
-        List<String> unmanageInterfacesList = Lists.newArrayList();
-        List<String> manageInterfacesList = Lists.newArrayList();
+        List<String> addToURL = new ArrayList<String>();
+
+        List<String> unmanageInterfacesList = new ArrayList<String>();
+        List<String> manageInterfacesList = new ArrayList<String>();
 
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -131,7 +132,8 @@ public class ManageNodesServlet extends HttpServlet {
                 PreparedStatement outagesstmt = connection.prepareStatement(DELETE_SERVICE_OUTAGES);
                 d.watch(outagesstmt);
 
-                for (ManagedInterface curInterface : allNodes) {
+                for (int j = 0; j < allNodes.size(); j++) {
+                    ManagedInterface curInterface = allNodes.get(j);
                     String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
 
                     // see if this interface needs added to the url list
@@ -141,38 +143,55 @@ public class ManageNodesServlet extends HttpServlet {
 
                     // determine what is managed and unmanged
                     if (interfaceList.contains(intKey) && curInterface.getStatus().equals("unmanaged")) {
+                        // Event newEvent = new Event();
+                        // newEvent.setUei("uei.opennms.org/internal/interfaceManaged");
+                        // newEvent.setSource("web ui");
+                        // newEvent.setNodeid(curNode.getNodeID());
+                        // newEvent.setInterface(curInterface.getAddress());
+                        // newEvent.setTime(curDate);
+
+                        // updateInterface(curInterface.getNodeid(),
+                        // curInterface.getAddress(), new Event(), "M");
                         manageInterfacesList.add(curInterface.getAddress());
-                        
                     } else if (!interfaceList.contains(intKey) && curInterface.getStatus().equals("managed")) {
+                        // Event newEvent = new Event();
+                        // newEvent.setUei("uei.opennms.org/internal/interfaceUnmanaged");
+                        // newEvent.setSource("web ui");
+                        // newEvent.setNodeid(curNode.getNodeID());
+                        // newEvent.setInterface(curInterface.getAddress());
+                        // newEvent.setTime(curDate);
+
+                        // updateInterface(curInterface.getNodeid(),
+                        // curInterface.getAddress(), new Event(), "F");
                         unmanageInterfacesList.add(curInterface.getAddress());
                     }
 
                     List<ManagedService> interfaceServices = curInterface.getServices();
 
-                    for (ManagedService curService : interfaceServices) {
+                    for (int k = 0; k < interfaceServices.size(); k++) {
+                        ManagedService curService = interfaceServices.get(k);
                         String serviceKey = intKey + "-" + curService.getId();
 
                         if (serviceList.contains(serviceKey) && curService.getStatus().equals("unmanaged")) {
-                        	EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_MANAGED_EVENT_UEI, "web ui");
-                            bldr.setNodeid(curInterface.getNodeid())
-                            	.setInterface(addr(curInterface.getAddress()))
-                            	.setService(curService.getName());
+                            // Event newEvent = new Event();
+                            // newEvent.setUei("uei.opennms.org/internal/serviceManaged");
+                            // newEvent.setSource("web ui");
+                            // newEvent.setNodeid(curNode.getNodeID());
+                            // newEvent.setInterface(curInterface.getAddress());
+                            // newEvent.setService(curService.getName());
+                            // newEvent.setTime(curDate);
 
-                            sendEvent(bldr.getEvent());
-                            
-                        	stmt.setString(1, "R");
-
+                            stmt.setString(1, "R");
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
-                            stmt.executeUpdate();
-                            
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_UNMANAGED_EVENT_UEI, "web ui");
-                            bldr.setNodeid(curInterface.getNodeid())
-                                .setInterface(addr(curInterface.getAddress()))
-                                .setService(curService.getName());
+                            bldr.setNodeid(curInterface.getNodeid());
+                            bldr.setInterface(addr(curInterface.getAddress()));
+                            bldr.setService(curService.getName());
 
                             sendEvent(bldr.getEvent());
 
@@ -180,24 +199,24 @@ public class ManageNodesServlet extends HttpServlet {
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
-                            stmt.executeUpdate();
-                            
                             outagesstmt.setString(1, curInterface.getAddress());
                             outagesstmt.setInt(2, curInterface.getNodeid());
                             outagesstmt.setInt(3, curService.getId());
+                            this.log("DEBUG: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
+                            stmt.executeUpdate();
                             outagesstmt.executeUpdate();
-                            
-                            this.log("DEBUG: executed unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
                         }
                     } // end k loop
-                    
-                    manageInterfaces(manageInterfacesList, ManageState.M);
-                    manageInterfaces(unmanageInterfacesList, ManageState.F);
                 } // end j loop
-                	
-            	// update the packages url file
+
+                if (manageInterfacesList.size() > 0)
+                    manageInterfaces(manageInterfacesList, connection);
+                if (unmanageInterfacesList.size() > 0)
+                    unmanageInterfaces(unmanageInterfacesList, connection);
+
+                // update the packages url file
                 writeURLFile(addToURL);
-                
+
                 connection.commit();
             } finally { // close off the db connection
                 connection.setAutoCommit(true);
@@ -225,28 +244,44 @@ public class ManageNodesServlet extends HttpServlet {
         }
     }
 
-    private void manageInterfaces(List<String> interfaces, ManageState state) throws SQLException {
-        if(interfaces != null && !interfaces.isEmpty()) {
-        	switch(state) {
-	        	case M: new UpdateStatement<>()
-					        	.update("ipinterface")
-					        	.set("isManaged", new StringValue(state.name()))
-					        	.where("ipaddr")
-					        	.in(interfaces)
-					        	.execute();
-		    					 break;
-	    					
-	        	case F:	new UpdateStatement<>()
-					        	.update("ipinterface")
-					        	.set("isManaged", new StringValue(state.name()))
-					        	.where("ipaddr")
-					        	.in(interfaces)
-					        	.execute();
-	    						 break;
-	    						 
-	    		default: log("Error: Unknown Manage State");
-        	}
+    /**
+     */
+    private void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
+        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        query.append("'M'").append(" WHERE ipaddr IN (");
+
+        for (int i = 0; i < interfaces.size(); i++) {
+            query.append("'").append(interfaces.get(i)).append("'");
+
+            if (i < interfaces.size() - 1)
+                query.append(",");
         }
+        query.append(")");
+
+        this.log("DEBUG: " + query.toString());
+        Statement update = connection.createStatement();
+        update.executeUpdate(query.toString());
+        update.close();
+    }
+
+    /**
+     */
+    private void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
+        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        query.append("'F'").append(" WHERE ipaddr IN (");
+
+        for (int i = 0; i < interfaces.size(); i++) {
+            query.append("'").append(interfaces.get(i)).append("'");
+
+            if (i < interfaces.size() - 1)
+                query.append(",");
+        }
+        query.append(")");
+
+        this.log("DEBUG: " + query.toString());
+        Statement update = connection.createStatement();
+        update.executeUpdate(query.toString());
+        update.close();
     }
 
     /**
@@ -269,11 +304,11 @@ public class ManageNodesServlet extends HttpServlet {
         Writer fileWriter = null;
         FileOutputStream fos = null;
         try {
-        	fos = new FileOutputStream(fileName);
-        	fileWriter = new OutputStreamWriter(fos, "UTF-8");
+                fos = new FileOutputStream(fileName);
+                fileWriter = new OutputStreamWriter(fos, "UTF-8");
 
             for (int i = 0; i < interfaceList.size(); i++) {
-                fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));
+                fileWriter.write((String) interfaceList.get(i) + System.getProperty("line.separator"));
             }
 
             // write out the file and close
@@ -281,8 +316,8 @@ public class ManageNodesServlet extends HttpServlet {
         } catch (IOException e) {
             throw new ServletException("Error writing the include url file " + fileName + ": " + e.getMessage(), e);
         } finally {
-        	IOUtils.closeQuietly(fileWriter);
-        	IOUtils.closeQuietly(fos);
+                IOUtils.closeQuietly(fileWriter);
+                IOUtils.closeQuietly(fos);
         }
     }
 
@@ -294,95 +329,5 @@ public class ManageNodesServlet extends HttpServlet {
         } catch (Throwable e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
-    }
-    
-    enum ManageState {
-    	F, M
-    }
-    
-    class UpdateStatement<T> { 
-    	private List<String> elements = Lists.newArrayList();
-    	private final DBUtils dbUtils;
-        private Connection connection;
-        private Statement statement;
-    	
-    	public UpdateStatement() throws SQLException { 
-    		this.connection = DataSourceFactory.getInstance().getConnection();
-    		this.connection.setAutoCommit(true);
-    		this.statement = connection.createStatement();
-    		this.dbUtils = new DBUtils(getClass());
-    		dbUtils.watch(connection);
-    	}
-    	
-    	public UpdateStatement<T> update(String tableName) {
-    		elements.add("UPDATE");
-    		elements.add(tableName);
-    		return this;
-    	}
-    	
-    	public UpdateStatement<T> set(String column, T value) {
-    		elements.add("SET");
-    		elements.add(column);
-    		elements.add("=");
-    		elements.add(value.toString());
-    		return this;
-    	}
-    	
-    	public UpdateStatement<T> where(String column) {
-    		elements.add("WHERE");
-    		elements.add(column);
-    		return this;
-    	}
-    	
-    	public UpdateStatement<T> in(List<String> inList) {
-    		String inValues;
-    		
-    		if(inList != null && !inList.isEmpty()) {
-    			inValues = "'" + StringUtils.join(inList.toArray(), "','") + "'";
-    		} else {
-    			inValues = "'-1'";
-    		}
-    		
-    		elements.add("IN");
-    		elements.add("(");
-    		elements.add(inValues);
-    		elements.add(")");
-    		elements.add(";");
-    		return this;
-    	}
-
-    	public void execute() throws SQLException {
-    		String sql = StringUtils.join(elements.toArray(), " ");
-    		statement.execute(sql);
-    		statement.close();
-    		log("Executed " + sql);
-    	}
-    }
-    
-    
-	class StringValue {
-		private String value;
-		
-		public StringValue(String value) {
-			this.value = value;
-		}
-		
-		@Override
-		public String toString() {
-			return "'" + value.toString() + "'";
-		}
-    }
-    
-    class NumberValue {
-    	private String value;
-    	
-    	public NumberValue(String value) {
-    		this.value = value;
-    	}
-    	
-		@Override
-		public String toString() {
-			return value.toString();
-		}
     }
 }

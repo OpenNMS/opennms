@@ -138,16 +138,41 @@
 
 <form method="post" name="manageAll" action="admin/manageNodes">
 
+<%
+  int halfway = 0;
+  int midCount = 0;
+  int midNodeIndex = 0;
+  
+  if (lineItems.intValue() > 0)
+  {
+    halfway = lineItems.intValue()/2;
+    for (int nodeCount = 0; nodeCount < nodes.size(); nodeCount++)
+    {
+        if (midCount < halfway)
+        {
+            midCount++; //one row for each interface
+            ManagedInterface curInterface = (ManagedInterface)nodes.get(nodeCount);
+            midCount += curInterface.getServiceCount();
+        }
+        else 
+        {
+            midNodeIndex = nodeCount;
+            break;
+        }
+    }
+  }
+%>
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
   </div>
   <div class="panel-body">
-          <p>The 'Status' column indicates if the interface or service is managed or not, with checked rows meaning the interface 
-             or service is managed, and unchecked meaning not managed. Each different interface has a dark grey row and
-             no service column, and each service on that interface is listed below on light grey rows.</p>
-          <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed or unmanaged accordingly. 
-             A service cannot be managed if its interface is not managed.</p>
+          <p>The two tables below represent each managed and unmanged node, interface, and service combination. The 'Status' column indicates if the interface or
+          service is managed or not, with checked rows meaning the interface or service is managed, and unchecked meaning not managed. Each different interface
+          has a dark grey row and no service column, and each service on that interface is listed below on light grey rows.</p>
+          <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed or unmanaged accordingly. A service cannot be
+          managed if its interface is not managed.</p>
 
     <button type="button" class="btn btn-default" onClick="applyChanges()">Apply Changes</button>
     <button type="button" class="btn btn-default" onClick="cancel()">Cancel</button>
@@ -157,21 +182,37 @@
 
     <div class="row top-buffer">
       <% if (nodes.size() > 0) { %>
-		<div class="col-md-6">
-	          <table class="table table-condensed table-striped table-hover">
-	            <tr>
-	              <th width="5%">Status</th>
-	              <th width="10%">Node Label</th>
-	              <th width="5%">Interface</th>
-	              <th width="5%">Service</th>
-	            </tr>
-	            
-	            <%=buildManageTableRows(nodes, 0, nodes.size())%>
-	            
-	          </table>
-		</div> <!-- column -->
-      <% } /*end if*/ %>
+	<div class="col-md-6">
+          <table class="table table-condensed table-striped table-hover">
+            <tr>
+              <th width="5%">Status</th>
+              <th width="10%">Node Label</th>
+              <th width="5%">Interface</th>
+              <th width="5%">Service</th>
+            </tr>
+            
+            <%=buildManageTableRows(nodes, 0, midNodeIndex)%>
+            
+          </table>
+	</div> <!-- column -->
+          <% } /*end if*/ %>
         
+      <!--see if there is a second column to draw-->
+      <% if (midNodeIndex < nodes.size()) { %>
+	<div class="col-md-6">
+          <table class="table table-condensed table-striped table-hover">
+            <tr>
+              <th width="5%">Status</th>
+              <th width="10%">Node Label</th>
+              <th width="5%">Interface</th>
+              <th width="5%">Service</th>
+            </tr>
+            
+            <%=buildManageTableRows(nodes, midNodeIndex, nodes.size())%>
+               
+          </table>
+	</div> <!-- column -->
+        <% } /*end if */ %>
     </div> <!-- row -->
 
     <div class="top-buffer"></div>
