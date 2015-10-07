@@ -1,0 +1,16 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-enlinkd-layer-2-link-discovery]]
+=== Layer 2 Link Discovery
+
+_Enlinkd_ is able to discover _Layer 2_ network links based on the following protocols:
+
+* link:https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol[Link Layer Discovery Protocol] (LLDP)
+* link:https://en.wikipedia.org/wiki/Cisco_Discovery_Protocol[Cisco Discovery Protocol] (CDP)
+* Transparent Bridge Discovery
+
+This information are provided by _SNMP Agents_ with appropriate _MIB support_.
+For this reason it is required to have a working _SNMP_ configuration running.
+The following section describes the required _SNMP MIB_ provided by the _SNMP agent_ to allow the _Link Discovery_.
