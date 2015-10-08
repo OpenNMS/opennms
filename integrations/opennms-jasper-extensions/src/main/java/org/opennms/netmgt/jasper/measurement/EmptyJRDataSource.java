@@ -35,7 +35,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 /**
  * An empty or nullable data source implementation.
  */
-class EmptyJRDataSource implements JRRewindableDataSource {
+public class EmptyJRDataSource implements JRRewindableDataSource {
     @Override
     public Object getFieldValue(JRField jrField) throws JRException {
         return null;

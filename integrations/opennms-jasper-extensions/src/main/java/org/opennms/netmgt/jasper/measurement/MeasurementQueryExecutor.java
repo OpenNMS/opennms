@@ -37,6 +37,8 @@ import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
+import org.opennms.netmgt.jasper.measurement.local.LocalMeasurementDataSourceWrapper;
+import org.opennms.netmgt.jasper.measurement.remote.RemoteMeasurementDataSourceWrapper;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

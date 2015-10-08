@@ -26,22 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.remote;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class MeasurementApiConnectorTest {
+public class MeasurementApiClientTest {
     @Test
     public void testAuthenticationRequired() {
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("dummy", null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("dummy", ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, "dummy"));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", "dummy"));
-        Assert.assertTrue(MeasurementApiConnector.isAuthenticationRequired("dummy", "dummy"));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired(null, null));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired(null, ""));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired("", null));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired("", ""));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired("dummy", null));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired("dummy", ""));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired(null, "dummy"));
+        Assert.assertFalse(MeasurementApiClient.isAuthenticationRequired("", "dummy"));
+        Assert.assertTrue(MeasurementApiClient.isAuthenticationRequired("dummy", "dummy"));
     }
 }

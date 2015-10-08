@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.remote;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -37,6 +37,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
 
 public class RemoteMeasurementDataSourceWrapperIT {
     @Rule

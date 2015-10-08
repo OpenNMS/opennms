@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.remote;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,17 +35,20 @@ import com.google.common.io.ByteStreams;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
+import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Makes Measurement API requests and wraps the request in an appropriate {@link JRRewindableDataSource}.
  */
-class RemoteMeasurementDataSourceWrapper implements MeasurementDataSourceWrapper {
+public class RemoteMeasurementDataSourceWrapper implements MeasurementDataSourceWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoteMeasurementDataSourceWrapper.class);
 
-    private final MeasurementApiConnector connector = new MeasurementApiConnector();
+    private final MeasurementApiClient connector = new MeasurementApiClient();
     private final String url;
     private final String username;
     private final String password;

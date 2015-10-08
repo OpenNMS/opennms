@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.local;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,6 +36,8 @@ import javax.xml.bind.JAXB;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
+import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
@@ -45,14 +47,17 @@ import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO MVR ...
-class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceWrapper {
+/**
+ * This data source is used when the reports are running within a OpenNMS JVM. In detail they should be used
+ * if there is an implementation of {@link MeasurementFetchStrategy} available by {@link org.springframework.beans.BeanUtils#instantiate(Class)}.
+ */
+public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(LocalMeasurementDataSourceWrapper.class);
 
     private final MeasurementService fetchService;
 
-    LocalMeasurementDataSourceWrapper(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
+    public LocalMeasurementDataSourceWrapper(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
         Objects.requireNonNull(fetchStrategy);
         Objects.requireNonNull(expressionEngine);
         Objects.requireNonNull(filterEngine);

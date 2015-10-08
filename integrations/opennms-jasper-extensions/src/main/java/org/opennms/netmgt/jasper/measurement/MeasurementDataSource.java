@@ -44,7 +44,7 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.design.JRDesignField;
 
 
-class MeasurementDataSource implements JRRewindableDataSource {
+public class MeasurementDataSource implements JRRewindableDataSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementDataSource.class);
 
@@ -52,7 +52,7 @@ class MeasurementDataSource implements JRRewindableDataSource {
     protected QueryResponse response;
     private int currentRow = -1;
 
-    protected MeasurementDataSource(InputStream inputStream) {
+    public MeasurementDataSource(InputStream inputStream) {
         this(inputStream != null ? JAXB.unmarshal(inputStream, QueryResponse.class) : null);
     }
 
