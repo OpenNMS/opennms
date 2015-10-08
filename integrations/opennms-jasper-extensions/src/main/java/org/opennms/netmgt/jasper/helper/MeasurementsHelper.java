@@ -34,6 +34,7 @@ import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory;
+import org.opennms.netmgt.measurements.impl.NullFetchStrategy;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 
@@ -74,7 +75,8 @@ public abstract class MeasurementsHelper {
     }
 
     public static boolean isRunInOpennmsJvm() {
-        return getMeasurementFetchStrategy() != null;
+        MeasurementFetchStrategy strategy = getMeasurementFetchStrategy();
+        return strategy != null && strategy.getClass() !=  NullFetchStrategy.class;
     }
 
     public static MeasurementFetchStrategy getMeasurementFetchStrategy() {
