@@ -41,7 +41,7 @@ import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
-import org.opennms.netmgt.measurements.api.MeasurementService;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.slf4j.Logger;
@@ -55,13 +55,13 @@ public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceW
 
     private static final Logger LOG = LoggerFactory.getLogger(LocalMeasurementDataSourceWrapper.class);
 
-    private final MeasurementService fetchService;
+    private final MeasurementsService fetchService;
 
     public LocalMeasurementDataSourceWrapper(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
         Objects.requireNonNull(fetchStrategy);
         Objects.requireNonNull(expressionEngine);
         Objects.requireNonNull(filterEngine);
-        this.fetchService = new MeasurementService(fetchStrategy, expressionEngine, filterEngine);
+        this.fetchService = new MeasurementsService(fetchStrategy, expressionEngine, filterEngine);
     }
 
     @Override

@@ -12,6 +12,7 @@
            http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
   <context:annotation-config />
+  <context:component-scan base-package="org.opennms.netmgt.measurements"/>
 
   <!-- This annotated bean will produce the measurementFetchStrategy bean -->
   <bean id="measurementFetchStrategyFactory" class="org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory"/>

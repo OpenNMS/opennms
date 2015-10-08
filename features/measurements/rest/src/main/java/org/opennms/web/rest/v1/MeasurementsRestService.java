@@ -46,16 +46,12 @@ import javax.ws.rs.core.Response.Status;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import org.opennms.netmgt.measurements.api.ExpressionEngine;
-import org.opennms.netmgt.measurements.api.FilterEngine;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
-import org.opennms.netmgt.measurements.api.MeasurementService;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.api.exceptions.FetchException;
 import org.opennms.netmgt.measurements.api.exceptions.FilterException;
 import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
-import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -92,17 +88,7 @@ public class MeasurementsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(MeasurementsRestService.class);
 
     @Autowired
-    private MeasurementFetchStrategy fetchStrategy;
-
-    private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
-
-    private final FilterEngine filterEngine = new FilterEngine();
-
-    private final MeasurementService service;
-
-    public MeasurementsRestService() {
-        service = new MeasurementService(fetchStrategy, expressionEngine, filterEngine);
-    }
+    private MeasurementsService service;
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -162,7 +148,7 @@ public class MeasurementsRestService {
         } catch (ExpressionException | FilterException | ValidationException e) {
             throw getException(Status.BAD_REQUEST, e, e.getMessage());
         } catch (ResourceNotFoundException e) {
-            getException(Status.NOT_FOUND, e, e.getMessage());
+            throw getException(Status.NOT_FOUND, e, e.getMessage());
         } catch (FetchException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, e, e.getMessage());
         } catch (Exception e) {

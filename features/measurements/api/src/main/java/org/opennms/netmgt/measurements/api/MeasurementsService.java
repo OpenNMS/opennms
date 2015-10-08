@@ -44,14 +44,18 @@ import org.opennms.netmgt.measurements.model.FilterDefinition;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class MeasurementService {
+@Component("measurementsService")
+public class MeasurementsService {
 
     private final MeasurementFetchStrategy fetchStrategy;
     private final ExpressionEngine expressionEngine;
     private final FilterEngine filterEngine;
 
-    public MeasurementService(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
+    @Autowired
+    public MeasurementsService(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
         Preconditions.checkNotNull(fetchStrategy);
         Preconditions.checkNotNull(expressionEngine);
         Preconditions.checkNotNull(filterEngine);

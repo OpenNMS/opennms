@@ -16,12 +16,14 @@ import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.utils.Utils;
+import org.springframework.stereotype.Component;
 
 /**
  * An expression engine implemented using JEXL.
  *
  * @author jwhite
  */
+@Component("expressionEngine")
 public class JEXLExpressionEngine implements ExpressionEngine {
 
     /**

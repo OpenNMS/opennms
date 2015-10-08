@@ -37,12 +37,14 @@ import com.google.common.collect.RowSortedTable;
 
 import org.opennms.netmgt.measurements.api.exceptions.FilterException;
 import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.springframework.stereotype.Component;
 
 /**
  * Used to apply a series of {@link Filter} to a {@link RowSortedTable}. 
  *
  * @author jwhite
  */
+@Component("filterEngine")
 public class FilterEngine {
 
     private final static ServiceLoader<FilterFactory> filterFactories = ServiceLoader.load(FilterFactory.class);
