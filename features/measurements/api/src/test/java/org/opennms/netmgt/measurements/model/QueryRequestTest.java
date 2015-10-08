@@ -57,7 +57,7 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
         Expression expression = new Expression("ping1Millis", "ping1Micro / 1000", false);
         request.setExpressions(Lists.newArrayList(expression));
 
-        FilterDefinition filter = new FilterDefinition("name", "key", "val");
+        FilterDef filter = new FilterDef("name", "key", "val");
         request.setFilters(Lists.newArrayList(filter));
 
         return Arrays.asList(new Object[][]{{

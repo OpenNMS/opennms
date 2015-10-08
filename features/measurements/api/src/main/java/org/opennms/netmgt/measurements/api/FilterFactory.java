@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.measurements.api;
 
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 
 /**
  * Used to instantiate a {@link org.opennms.netmgt.measurements.api.Filter}
@@ -38,20 +38,20 @@ import org.opennms.netmgt.measurements.model.FilterDefinition;
  */
 public interface FilterFactory {
     /**
-     * Retrieves the appropriate {@link Filter} for the given definition.
+     * Retrieves the appropriate {@link Filter} for the given configuration.
      *
      * @param filterDef
      *   a filter definition
      * @return
      *   null if this factory doesn't support the filter in question
      */
-    Filter getFilter(FilterDefinition filterDef);
+    Filter getFilter(FilterDef filterDef);
 
     /**
-     * Retrieves a reference to the associated {@link FilterConfig} type.
+     * Retrieves a reference to the associated {@link Filter} type.
      *
      * @return
      *   the filter configuration 
      */
-    Class<? extends FilterConfig> getFilterConfigType();
+    Class<? extends Filter> getFilterType();
 }

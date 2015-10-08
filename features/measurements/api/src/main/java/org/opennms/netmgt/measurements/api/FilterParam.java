@@ -34,7 +34,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotate the parameters names in a {@link FilterConfig} object.
+ * Used to annotate parameters on {@link org.opennms.netmgt.measurements.api.Filter}.
  *
  * @author jwhite
  */

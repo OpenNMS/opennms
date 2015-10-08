@@ -53,7 +53,8 @@ import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
 import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
+import org.opennms.netmgt.measurements.model.FilterMetaData;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -100,6 +101,24 @@ public class MeasurementsRestService {
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
 
     private final FilterEngine filterEngine = new FilterEngine();
+
+    @GET
+    @Path("filters")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public List<FilterMetaData> getFilterMetadata() {
+        return filterEngine.getFilterMetaData();
+    }
+
+    @GET
+    @Path("filters/{name}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public FilterMetaData getFilterMetadata(@PathParam("name") final String name) {
+        FilterMetaData metaData = filterEngine.getFilterMetaData(name);
+        if (metaData == null) {
+            throw getException(Status.NOT_FOUND, "No filter with name '{}' was found.", name);
+        }
+        return metaData;
+    }
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -258,9 +277,9 @@ public class MeasurementsRestService {
                 labels.put(expression.getLabel(), "expression");
             }
         }
-        List<FilterDefinition> filters = request.getFilters();
+        List<FilterDef> filters = request.getFilters();
         if (filters.size() > 0) {
-            for (FilterDefinition filter : filters) {
+            for (FilterDef filter : filters) {
                 if (filter.getName() == null) {
                     throw getException(Status.BAD_REQUEST, "Filter name must be set: {}", filter);
                 }

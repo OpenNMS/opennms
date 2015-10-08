@@ -41,7 +41,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -186,7 +186,7 @@ public class MeasurementsRestServiceWithJrbIT extends MeasurementsRestServiceITC
         request.setSources(Lists.newArrayList(ifInOctets));
 
         // Apply a chomp filter - cutting some of the first row off, and the trailing NaNs
-        FilterDefinition chompFilter = new FilterDefinition("Chomp",
+        FilterDef chompFilter = new FilterDef("Chomp",
                 "cutoffDate", "1414630000.0",
                 "stripNaNs", "true");
         request.setFilters(Lists.newArrayList(chompFilter));

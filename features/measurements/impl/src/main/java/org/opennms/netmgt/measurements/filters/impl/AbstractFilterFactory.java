@@ -32,52 +32,53 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.api.FilterConfig;
 import org.opennms.netmgt.measurements.api.FilterFactory;
+import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
-import org.opennms.netmgt.measurements.model.FilterParameter;
+import org.opennms.netmgt.measurements.model.FilterDef;
+import org.opennms.netmgt.measurements.model.FilterParamDef;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
 /**
- * Helps automate the creation of {@link FilterConfig} objects using the annotated parameters. 
+ * Helps automate the creation of {@link Filter} objects using the annotated parameters. 
  *
  * @author jwhite
  */
-public abstract class AbstractFilterFactory<T extends FilterConfig> implements FilterFactory {
-    
+public abstract class AbstractFilterFactory<T extends Filter> implements FilterFactory {
+
     private final Class<T> type;
+    private final FilterInfo info;
 
     public AbstractFilterFactory(Class<T> type) {
          this.type = type;
+         info = type.getAnnotation(FilterInfo.class);
+         Preconditions.checkState(info != null, "Filter is missing a FilterInfo annotation");
     }
 
-    public abstract boolean supports(FilterDefinition filterDef);
-
-    public abstract Filter createFilter(T config);
-
     @Override
-    public Class<T> getFilterConfigType() {
+    public Class<T> getFilterType() {
         return type;
     }
 
     @Override
-    public Filter getFilter(FilterDefinition filterDef) {
-        if (!supports(filterDef)) {
+    public Filter getFilter(FilterDef filterDef) {
+        if (!info.name().equalsIgnoreCase(filterDef.getName()) &&
+                !type.getCanonicalName().equals(filterDef.getName())) {
             return null;
         }
 
         // Map the parameters by name, last one wins
         Map<String, String> parameterMap = Maps.newHashMap();
-        for (FilterParameter param : filterDef.getParameters()) {
+        for (FilterParamDef param : filterDef.getParameters()) {
             parameterMap.put(param.getName(), param.getValue());
         }
 
-        T filterConfig;
+        T filter;
         try {
-            filterConfig = type.newInstance();
+            filter = type.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw Throwables.propagate(e);
         }
@@ -115,13 +116,13 @@ public abstract class AbstractFilterFactory<T extends FilterConfig> implements F
             // Set the field's value
             try {
                 field.setAccessible(true);
-                field.set(filterConfig, effectiveValue);
+                field.set(filter, effectiveValue);
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 throw Throwables.propagate(e);
             }
         }
 
-        return createFilter(filterConfig);
+        return filter;
     }
 
 }

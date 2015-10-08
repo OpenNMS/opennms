@@ -28,63 +28,54 @@
 
 package org.opennms.netmgt.measurements.model;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 
 /**
- * Represents a filter and it's parameters.
+ * Used to set the value of a particular filter parameter.
  *
  * @author jwhite
  */
-@XmlRootElement(name="filter")
+@XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.NONE)
-public class FilterDefinition {
+public class FilterParamDef {
 
     @XmlAttribute(name="name", required=true)
     private String name;
 
-    @XmlElement(name="parameter")
-    private List<FilterParameter> parameters = Lists.newArrayListWithCapacity(0);
+    @XmlValue
+    private String value;
 
     /**
      * Zero-arg constructor for JAXB.
      */
-    public FilterDefinition() {
+    public FilterParamDef() {
     }
 
-    public FilterDefinition(String name, String... paramNamesAndValues) {
-        // Combine the varargs into key-value pairs
-        if (paramNamesAndValues.length % 2 != 0) {
-            throw new IllegalArgumentException("Must have an even number of parameter names and values");
-        }
-        List<FilterParameter> parameters = Lists.newLinkedList();
-        for (int i = 0; i < paramNamesAndValues.length; i+=2) {
-            parameters.add(new FilterParameter(
-                    paramNamesAndValues[i], paramNamesAndValues[i+1]));
-        }
-
-        this.name = name;
-        this.parameters = parameters;
-    }
-
-    public FilterDefinition(String name, List<FilterParameter> parameters) {
-        this.name = name;
-        this.parameters = parameters;
+    public FilterParamDef(String name, String value) {
+        this.name = Preconditions.checkNotNull(name, "name argument");
+        this.value = Preconditions.checkNotNull(value, "value argument");
     }
 
     public String getName() {
         return name;
     }
 
-    public List<FilterParameter> getParameters() {
-        return parameters;
+    public String getValue() {
+        return value;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
@@ -95,23 +86,23 @@ public class FilterDefinition {
        if (getClass() != obj.getClass()) {
           return false;
        }
-       final FilterDefinition other = (FilterDefinition) obj;
+       final FilterParamDef other = (FilterParamDef) obj;
 
        return   com.google.common.base.Objects.equal(this.name, other.name)
-             && com.google.common.base.Objects.equal(this.parameters, other.parameters);
+             && com.google.common.base.Objects.equal(this.value, other.value);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.name, this.parameters);
+                 this.name, this.value);
     }
 
     @Override
     public String toString() {
        return com.google.common.base.Objects.toStringHelper(this)
                  .add("Name", this.name)
-                 .add("Parameters", this.parameters)
+                 .add("Value", this.value)
                  .toString();
     }
 }

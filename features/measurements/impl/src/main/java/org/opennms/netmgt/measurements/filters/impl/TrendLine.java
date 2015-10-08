@@ -37,6 +37,8 @@ import org.opennms.netmgt.integrations.R.RScriptExecutor;
 import org.opennms.netmgt.integrations.R.RScriptInput;
 import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.api.FilterInfo;
+import org.opennms.netmgt.measurements.api.FilterParam;
 import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,14 +55,30 @@ import com.google.common.collect.RowSortedTable;
  *
  * @author jwhite
  */
+@FilterInfo(name="TrendLine", description="Fits a trend line to the samples in a column.", backend="R")
 public class TrendLine implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(TrendLine.class);
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/trendLine.R";
 
-    private final TrendLineConfig m_config;
+    @FilterParam(name="outputColumn", required=true, description="Output column.")
+    private String m_outputColumn;
 
-    public TrendLine(TrendLineConfig config) {
-        m_config = config;
+    @FilterParam(name="inputColumn", required=true, description="Input column.")
+    private String m_inputColumn;
+
+    @FilterParam(name="secondsAhead", required=true, description="Number seconds ahead the of the column for which we want to include the trend line")
+    private long m_secondsAhead;
+
+    @FilterParam(name="polynomialOrder", value="1", description="Polynomial order of the trend line/curve. Set this to 1 for a line.")
+    private int m_polynomialOrder;
+
+    protected TrendLine() {}
+
+    public TrendLine(String outputColumn, String inputColumn, long secondsAhead, int polynomialOrder) {
+        m_outputColumn = outputColumn;
+        m_inputColumn = inputColumn;
+        m_secondsAhead = secondsAhead;
+        m_polynomialOrder = polynomialOrder;
     }
 
     @Override
@@ -69,7 +87,7 @@ public class TrendLine implements Filter {
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
-        TableLimits limits = Utils.getRowsWithValues(table, m_config.getInputColumn());
+        TableLimits limits = Utils.getRowsWithValues(table, m_inputColumn);
 
         // Make sure we have some samples
         long numSampleRows = limits.lastRowWithValues - limits.firstRowWithValues;
@@ -83,13 +101,13 @@ public class TrendLine implements Filter {
         long stepInMs = (long)(table.get(limits.lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(limits.lastRowWithValues-1, Filter.TIMESTAMP_COLUMN_NAME));
 
         // Num steps ahead
-        int numStepsAhead = (int)Math.floor(m_config.getSecondsAhead() * 1000 / stepInMs);
+        int numStepsAhead = (int)Math.floor(m_secondsAhead * 1000 / stepInMs);
         numStepsAhead = Math.max(1, numStepsAhead);
 
         // Script arguments
         Map<String, Object> arguments = Maps.newHashMap();
-        arguments.put("inputColumn", m_config.getInputColumn());
-        arguments.put("polynomialOrder", m_config.getPolynomialOrder());
+        arguments.put("inputColumn", m_inputColumn);
+        arguments.put("polynomialOrder", m_polynomialOrder);
         // Array indices in R start at 1
         arguments.put("firstIndex", limits.firstRowWithValues+1);
         arguments.put("lastIndex", limits.lastRowWithValues+1);
@@ -109,7 +127,7 @@ public class TrendLine implements Filter {
                 table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * (i-limits.lastRowWithValues)).getTime());
             }
             double x = table.get(i, TIMESTAMP_COLUMN_NAME);
-            table.put(i, m_config.getOutputColumn(), poly.eval(x));
+            table.put(i, m_outputColumn, poly.eval(x));
         }
     }
 

@@ -37,7 +37,8 @@ import com.google.common.collect.RowSortedTable;
 
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterFactory;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
+import org.opennms.netmgt.measurements.model.FilterMetaData;
 
 /**
  * Used to apply a series of {@link Filter} to a {@link RowSortedTable}. 
@@ -48,10 +49,12 @@ public class FilterEngine {
 
     private final static ServiceLoader<FilterFactory> filterFactories = ServiceLoader.load(FilterFactory.class);
 
+    private List<FilterMetaData> filterMetaDatas = null;
+
     /**
      * Applies the given filter.
      */
-    public void filter(FilterDefinition filterDef, RowSortedTable<Long, String, Double> table) throws Exception {
+    public void filter(FilterDef filterDef, RowSortedTable<Long, String, Double> table) throws Exception {
         Preconditions.checkNotNull(filterDef, "filterDef argument");
         Preconditions.checkNotNull(table, "table argument");
 
@@ -61,12 +64,12 @@ public class FilterEngine {
     /**
      * Successively applies all of the filters.
      */
-    public void filter(final List<FilterDefinition> filterDefinitions,
+    public void filter(final List<FilterDef> filterDefinitions,
                        final RowSortedTable<Long, String, Double> table) throws Exception {
         Preconditions.checkNotNull(filterDefinitions, "filterDefinitions argument");
         Preconditions.checkNotNull(table, "table argument");
 
-        for (FilterDefinition filterDef : filterDefinitions) {
+        for (FilterDef filterDef : filterDefinitions) {
             Filter filter = getFilter(filterDef);
             if (filter == null) {
                 throw new Exception("No filter implementation found for " + filterDef.getName());
@@ -80,11 +83,35 @@ public class FilterEngine {
      *
      * @return null if no suitable {@link Filter}  was found
      */
-    private Filter getFilter(FilterDefinition filterDef) {
+    private Filter getFilter(FilterDef filterDef) {
         for (FilterFactory module : filterFactories) {
             Filter filter = module.getFilter(filterDef);
             if (filter != null) {
                 return filter;
+            }
+        }
+        return null;
+    }
+
+    public synchronized List<FilterMetaData> getFilterMetaData() {
+        if (filterMetaDatas != null) {
+            return filterMetaDatas;
+        }
+
+        filterMetaDatas = Lists.newArrayList();
+        for (FilterFactory module : filterFactories) {
+            filterMetaDatas.add(new FilterMetaData(module.getFilterType()));
+        }
+        return filterMetaDatas;
+    }
+
+    public FilterMetaData getFilterMetaData(String filterName) {
+        // The list of filters should be relatively small, so we afford
+        // to iterate over the results when requested
+        for (FilterMetaData metaData : getFilterMetaData()) {
+            if (metaData.getName().equalsIgnoreCase(filterName) ||
+                    metaData.getCanonicalName().equals(filterName)) {
+                return metaData;
             }
         }
         return null;

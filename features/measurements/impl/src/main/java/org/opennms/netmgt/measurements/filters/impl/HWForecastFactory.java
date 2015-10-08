@@ -28,30 +28,14 @@
 
 package org.opennms.netmgt.measurements.filters.impl;
 
-import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
-
 /**
- * Instantiate a filter capable or performing Holt-Winters
- * forecasts.
+ * HWForecast filter.
  *
  * @author jwhite
  */
-public class HWForecastFactory extends AbstractFilterFactory<HWForecastConfig> {
-
-    public static final String FILTER_NAME = "HoltWinters";
+public class HWForecastFactory extends AbstractFilterFactory<HWForecast> {
 
     public HWForecastFactory() {
-        super(HWForecastConfig.class);
-    }
-
-    @Override
-    public boolean supports(FilterDefinition filterDef) {
-        return FILTER_NAME.equalsIgnoreCase(filterDef.getName());
-    }
-
-    @Override
-    public Filter createFilter(HWForecastConfig config) {
-        return new HWForecast(config);
+        super(HWForecast.class);
     }
 }
