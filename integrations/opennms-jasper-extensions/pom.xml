@@ -90,11 +90,11 @@
       <artifactId>org.opennms.features.measurements.api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- TODO MVR do we need this? -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
       <version>${commonsCsvVersion}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
