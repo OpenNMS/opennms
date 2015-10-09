@@ -70,7 +70,7 @@ public class HWForecast implements Filter {
     @FilterParam(key="periodInSeconds", required=true, displayName="Period", description="Size of a period in seconds.")
     private long m_periodInSeconds;
 
-    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds.")
+    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds. Set this to 0 in order to disable the bounds.")
     private double m_confidenceLevel;
 
     protected HWForecast() {}
@@ -141,9 +141,11 @@ public class HWForecast implements Filter {
         for (long i = numFittedValues; i < numOutputRows; i++) {
             long idxForecast = i - numFittedValues + 1;
             long idxTarget = limits.lastRowWithValues + idxForecast;
-            table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
-            table.put(idxTarget, m_outputPrefix + "Lwr", outputTable.get(i, "lwr"));
-            table.put(idxTarget, m_outputPrefix + "Upr", outputTable.get(i, "upr"));
+            if (m_confidenceLevel > 0) {
+                table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
+                table.put(idxTarget, m_outputPrefix + "Lwr", outputTable.get(i, "lwr"));
+                table.put(idxTarget, m_outputPrefix + "Upr", outputTable.get(i, "upr"));
+            }
             table.put(idxTarget, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
         }
     }
