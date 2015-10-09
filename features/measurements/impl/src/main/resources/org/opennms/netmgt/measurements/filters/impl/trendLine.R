@@ -12,7 +12,7 @@ x <- data[,'timestamp'][firstIndex:lastIndex]
 y <- data[,inputColumn][firstIndex:lastIndex]
 
 # Least-square fit
-C <- lm(y ~ poly(x, polynomialOrder, raw=TRUE))
+C <- lm(y ~ poly(x, polynomialOrder))
 
 # Send the results to stdout
 write.csv(coefficients(C))
