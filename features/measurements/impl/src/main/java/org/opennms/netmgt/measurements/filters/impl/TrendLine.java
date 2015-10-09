@@ -29,7 +29,6 @@
 package org.opennms.netmgt.measurements.filters.impl;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.integrations.R.RScriptException;
@@ -45,13 +44,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 
 /**
- * Fits a trend line to the samples in a column
- * using R.
+ * Fits a trend line to the samples in a column using R.
  *
  * @author jwhite
  */
@@ -111,55 +108,22 @@ public class TrendLine implements Filter {
         // Array indices in R start at 1
         arguments.put("firstIndex", limits.firstRowWithValues+1);
         arguments.put("lastIndex", limits.lastRowWithValues+1);
+        arguments.put("numStepsAhead", numStepsAhead);
+        arguments.put("stepInMs", stepInMs);
 
         // Calculate the trend line/curve
         RScriptExecutor executor = new RScriptExecutor();
         RScriptOutput output = executor.exec(PATH_TO_R_SCRIPT, new RScriptInput(table, arguments));
         ImmutableTable<Long, String, Double> outputTable = output.getTable();
 
-        // Convert the result to a polynomial
-        List<Double> coeffs = Lists.newArrayList(outputTable.column("x").values());
-        LOG.debug("Using coefficients {} for trend with order {}", coeffs, m_polynomialOrder);
-        Polynomial poly = new Polynomial(coeffs);
-
         // Calculate the value of the polynomial for all of the samples
         // and the requested number of steps ahead
+        long j = 0;
         for (long i = limits.firstRowWithValues; i <= (limits.lastRowWithValues + numStepsAhead); i++) {
             if (i >= limits.lastRowWithValues) {
                 table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * (i-limits.lastRowWithValues)).getTime());
             }
-            double x = table.get(i, TIMESTAMP_COLUMN_NAME);
-            table.put(i, m_outputColumn, poly.eval(x));
-        }
-    }
-
-    private static class Polynomial {
-        private final List<Double> m_coeffs;
- 
-        public Polynomial(List<Double> coeffs) {
-            m_coeffs = Lists.newLinkedList();
-            // R may return NaNs for some of the higher order coefficients, 
-            // so we add all of the coefficients until a null or NaN is reached
-            for (int i = 0; i < coeffs.size(); i++) {
-                Double coeff = coeffs.get(i);
-                if (coeff == null || Double.isNaN(coeff)) {
-                    break;
-                }
-                m_coeffs.add(coeff);
-            }
-        }
-
-        public double eval(double x) {
-            double sum = 0;
-            int k = 0;
-            for (Double coeff : m_coeffs) {
-                sum += coeff * Math.pow(x, k++);
-            }
-            return sum;
-        }
-
-        public String toString() {
-            return "Polynomial [" + m_coeffs + "]";
+            table.put(i, m_outputColumn, outputTable.get(j++, "x"));
         }
     }
 }

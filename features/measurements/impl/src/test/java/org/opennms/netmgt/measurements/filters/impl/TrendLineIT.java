@@ -43,7 +43,7 @@ public class TrendLineIT extends AnalyticsFilterTest {
                 "outputColumn", "Z",
                 "inputColumn", "Y",
                 "secondsAhead", "1",
-                "polynomialOrder", "1");
+                "polynomialOrder", "5");
 
         // Use constant values for the Y column
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
