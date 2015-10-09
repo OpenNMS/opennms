@@ -16,9 +16,6 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
-== CORS Support
-include::text/rest/CORS.adoc[]
-
 == ReST API
 include::text/rest/rest-api.adoc[]
 
@@ -45,3 +42,9 @@ include::text/rest/users.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]
+
+== CORS Support
+include::text/rest/CORS.adoc[]
+
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]
