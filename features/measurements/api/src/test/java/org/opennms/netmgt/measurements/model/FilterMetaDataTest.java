@@ -45,10 +45,10 @@ public class FilterMetaDataTest extends XmlTestNoCastor<FilterMetaData> {
     @FilterInfo(name="noop", description="does nothing", backend="java")
     private static class MyNoOpFilter implements Filter {
 
-        @FilterParam(name="column", required=true, description="use a column")
+        @FilterParam(key="column", required=true, displayName="Column", description="use a column")
         private String column;
 
-        @FilterParam(name="toggle", value="false", description="toggle something")
+        @FilterParam(key="toggle", value="false", displayName="Toggle", description="toggle something")
         private boolean toggle;
 
         @Override
@@ -67,8 +67,8 @@ public class FilterMetaDataTest extends XmlTestNoCastor<FilterMetaData> {
         return Arrays.asList(new Object[][]{{
             metadata,
             "<filter canonicalName=\"org.opennms.netmgt.measurements.model.FilterMetaDataTest.MyNoOpFilter\" name=\"noop\" description=\"does nothing\" backend=\"java\">" +
-                "<parameter name=\"column\" type=\"string\" description=\"use a column\" required=\"true\"/>" +
-                "<parameter name=\"toggle\" type=\"boolean\" description=\"toggle something\" default=\"false\" required=\"false\"/>" +
+                "<parameter key=\"column\" type=\"string\" displayName=\"Column\" description=\"use a column\" required=\"true\"/>" +
+                "<parameter key=\"toggle\" type=\"boolean\" displayName=\"Toggle\" description=\"toggle something\" default=\"false\" required=\"false\"/>" +
             "</filter>",
             null
         }});

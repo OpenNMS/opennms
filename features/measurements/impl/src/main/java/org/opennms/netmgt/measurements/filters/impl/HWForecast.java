@@ -53,24 +53,24 @@ import com.google.common.collect.RowSortedTable;
  *
  * @author jwhite
  */
-@FilterInfo(name="HoltWinters", description="Used to perform Holt-Winters forecasting.", backend="R")
+@FilterInfo(name="HoltWinters", description="Performs Holt-Winters forecasting.", backend="R")
 public class HWForecast implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(HWForecast.class);
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/holtWinters.R";
 
-    @FilterParam(name="outputPrefix", required=true, description="Output prefix.")
-    private String m_outputPrefix;
-
-    @FilterParam(name="inputColumn", required=true, description="Input column.")
+    @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
 
-    @FilterParam(name="numPeriodsToForecast", value="3", description="Number of periods to forecast.")
+    @FilterParam(key="outputPrefix", value="HW", displayName="Output", description="Output prefix.")
+    private String m_outputPrefix;
+
+    @FilterParam(key="numPeriodsToForecast", value="3", displayName="# Periods", description="Number of periods to forecast.")
     private int m_numPeriodsToForecast;
 
-    @FilterParam(name="periodInSeconds", required=true, description="Size of a period in seconds.")
+    @FilterParam(key="periodInSeconds", required=true, displayName="Period", description="Size of a period in seconds.")
     private long m_periodInSeconds;
 
-    @FilterParam(name="confidenceLevel", value="0.95", description="Size of a period in seconds.")
+    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds.")
     private double m_confidenceLevel;
 
     protected HWForecast() {}

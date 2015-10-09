@@ -43,5 +43,5 @@ import java.lang.annotation.Target;
 public @interface FilterInfo {
     public String name();
     public String description() default "";
-    public String backend() default "java";
+    public String backend() default "Java";
 }

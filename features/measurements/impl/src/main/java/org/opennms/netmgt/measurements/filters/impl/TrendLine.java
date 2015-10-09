@@ -55,21 +55,21 @@ import com.google.common.collect.RowSortedTable;
  *
  * @author jwhite
  */
-@FilterInfo(name="TrendLine", description="Fits a trend line to the samples in a column.", backend="R")
+@FilterInfo(name="Trend", description="Fits a trend line or polynomial to a given column.", backend="R")
 public class TrendLine implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(TrendLine.class);
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/trendLine.R";
 
-    @FilterParam(name="outputColumn", required=true, description="Output column.")
-    private String m_outputColumn;
-
-    @FilterParam(name="inputColumn", required=true, description="Input column.")
+    @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
 
-    @FilterParam(name="secondsAhead", required=true, description="Number seconds ahead the of the column for which we want to include the trend line")
+    @FilterParam(key="outputColumn", required=true, displayName="Output", description="Output column.")
+    private String m_outputColumn;
+
+    @FilterParam(key="secondsAhead", value="0", displayName="Forecast", description="Number seconds ahead the of the column for which we want to include the trend line.")
     private long m_secondsAhead;
 
-    @FilterParam(name="polynomialOrder", value="1", description="Polynomial order of the trend line/curve. Set this to 1 for a line.")
+    @FilterParam(key="polynomialOrder", value="1", displayName="Order", description="Polynomial order of the trend line/curve. Set this to 1 for a line.")
     private int m_polynomialOrder;
 
     protected TrendLine() {}

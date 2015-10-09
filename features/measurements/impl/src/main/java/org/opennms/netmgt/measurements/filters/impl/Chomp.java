@@ -48,13 +48,13 @@ import com.google.common.collect.Sets;
  *
  * @author jwhite
  */
-@FilterInfo(name="Chomp", description="Used to strip leading and trailing rows that contain nothing but NaNs/null values.")
+@FilterInfo(name="Chomp", description="Strips leading and trailing rows that contain nothing but NaNs/null values.")
 public class Chomp implements Filter {
 
-    @FilterParam(name="cutoffDate", value="0", description="Timestamp in milliseconds. Any rows before this time will be removed.")
+    @FilterParam(key="cutoffDate", value="0", displayName="Cutoff", description="Timestamp in milliseconds. Any rows before this time will be removed.")
     private double m_cutoffDate;
 
-    @FilterParam(name="stripNaNs", value="false", description="When set, leading and trailing rows containing NaNs will be removed")
+    @FilterParam(key="stripNaNs", value="false", displayName="Strip", description="When set, leading and trailing rows containing NaNs will be removed")
     private boolean m_stripNaNs;
 
     protected Chomp() { }

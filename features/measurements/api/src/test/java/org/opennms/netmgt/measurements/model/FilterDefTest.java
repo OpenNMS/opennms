@@ -26,24 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.measurements.api;
+package org.opennms.netmgt.measurements.model;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
 
-/**
- * Used to annotate parameters on {@link org.opennms.netmgt.measurements.api.Filter}.
- *
- * @author jwhite
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface FilterParam {
-    public String key();
-    public String value() default "";
-    public boolean required() default false;
-    public String displayName();
-    public String description();
+import org.junit.runners.Parameterized;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+
+public class FilterDefTest extends XmlTestNoCastor<FilterDef> {
+
+    public FilterDefTest(FilterDef sampleObject, Object sampleXml, String schemaFile) {
+        super(sampleObject, sampleXml, schemaFile);
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() throws ParseException {
+        FilterDef filterDef = new FilterDef("Outlier",
+                "inputColumn", "Y",
+                "probability", "0.99");
+
+        return Arrays.asList(new Object[][]{{
+            filterDef,
+            "<filter name=\"Outlier\">" +
+               "<parameter key=\"inputColumn\">Y</parameter>" +
+               "<parameter key=\"probability\">0.99</parameter>" +
+            "</filter>",
+            null
+        }});
+    }
 }

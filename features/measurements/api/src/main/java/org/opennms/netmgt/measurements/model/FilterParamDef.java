@@ -45,8 +45,8 @@ import com.google.common.base.Preconditions;
 @XmlAccessorType(XmlAccessType.NONE)
 public class FilterParamDef {
 
-    @XmlAttribute(name="name", required=true)
-    private String name;
+    @XmlAttribute(name="key", required=true)
+    private String key;
 
     @XmlValue
     private String value;
@@ -57,21 +57,21 @@ public class FilterParamDef {
     public FilterParamDef() {
     }
 
-    public FilterParamDef(String name, String value) {
-        this.name = Preconditions.checkNotNull(name, "name argument");
+    public FilterParamDef(String key, String value) {
+        this.key = Preconditions.checkNotNull(key, "key argument");
         this.value = Preconditions.checkNotNull(value, "value argument");
     }
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
     public String getValue() {
         return value;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public void setValue(String value) {
@@ -88,20 +88,20 @@ public class FilterParamDef {
        }
        final FilterParamDef other = (FilterParamDef) obj;
 
-       return   com.google.common.base.Objects.equal(this.name, other.name)
+       return   com.google.common.base.Objects.equal(this.key, other.key)
              && com.google.common.base.Objects.equal(this.value, other.value);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.name, this.value);
+                 this.key, this.value);
     }
 
     @Override
     public String toString() {
        return com.google.common.base.Objects.toStringHelper(this)
-                 .add("Name", this.name)
+                 .add("Key", this.key)
                  .add("Value", this.value)
                  .toString();
     }

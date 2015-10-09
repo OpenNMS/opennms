@@ -38,7 +38,7 @@ import com.google.common.collect.TreeBasedTable;
 public class OutlierFilterIT extends AnalyticsFilterTest {
     @Test
     public void canFilterOutliers() throws Exception {
-        FilterDef filterDef = new FilterDef("OutlierFilter",
+        FilterDef filterDef = new FilterDef("Outlier",
                 "inputColumn", "Y");
 
         // Use constant values for the Y column
@@ -72,7 +72,7 @@ public class OutlierFilterIT extends AnalyticsFilterTest {
 
     @Test
     public void canInterpolateValues() throws Exception {
-        FilterDef filterDef = new FilterDef("OutlierFilter",
+        FilterDef filterDef = new FilterDef("Outlier",
                 "inputColumn", "Y",
                 "probability", "0.99");
 
@@ -103,7 +103,7 @@ public class OutlierFilterIT extends AnalyticsFilterTest {
 
     @Test
     public void canInterpolateLargeGaps() throws Exception {
-        FilterDef filterDef = new FilterDef("OutlierFilter",
+        FilterDef filterDef = new FilterDef("Outlier",
                 "inputColumn", "Y",
                 "probability", "0.99");
 
@@ -140,7 +140,7 @@ public class OutlierFilterIT extends AnalyticsFilterTest {
 
     @Test
     public void doesntFailWhenDsOnlyContainsNaNs() throws Exception {
-        FilterDef filterDef = new FilterDef("OutlierFilter",
+        FilterDef filterDef = new FilterDef("Outlier",
                 "inputColumn", "X",
                 "probability", "0.99");
 

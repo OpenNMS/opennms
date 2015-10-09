@@ -39,7 +39,7 @@ import com.google.common.collect.TreeBasedTable;
 public class TrendLineIT extends AnalyticsFilterTest {
     @Test
     public void canTrend() throws Exception {
-        FilterDef filterDef = new FilterDef("TrendLine",
+        FilterDef filterDef = new FilterDef("Trend",
                 "outputColumn", "Z",
                 "inputColumn", "Y",
                 "secondsAhead", "1",

@@ -48,13 +48,16 @@ import com.google.common.base.Preconditions;
 @XmlAccessorType(XmlAccessType.NONE)
 public class FilterParamMetaData {
 
-    @XmlAttribute(name="name", required=true)
-    private String name;
+    @XmlAttribute(name="key", required=true)
+    private String key;
 
     @XmlAttribute(name="type", required=true)
     private String type;
 
-    @XmlAttribute(name="description")
+    @XmlAttribute(name="displayName", required=true)
+    private String displayName;
+
+    @XmlAttribute(name="description", required=true)
     private String description;
 
     @XmlAttribute(name="default")
@@ -69,8 +72,9 @@ public class FilterParamMetaData {
         Preconditions.checkNotNull(field, "field argument");
         Preconditions.checkNotNull(filterParam, "filterParam argument");
 
-        name = filterParam.name();
+        key = filterParam.key();
         type = field.getType().getSimpleName().toLowerCase();
+        displayName = filterParam.displayName();
         description = filterParam.description();
         defaultValue = filterParam.value();
         required = filterParam.required();
@@ -80,12 +84,16 @@ public class FilterParamMetaData {
         }
     }
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
     public String getType() {
         return type;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getDescription() {
@@ -100,8 +108,12 @@ public class FilterParamMetaData {
         return required;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public void setDescription(String description) {
@@ -126,8 +138,9 @@ public class FilterParamMetaData {
        }
        final FilterParamMetaData other = (FilterParamMetaData) obj;
 
-       return   com.google.common.base.Objects.equal(this.name, other.name)
+       return   com.google.common.base.Objects.equal(this.key, other.key)
              && com.google.common.base.Objects.equal(this.type, other.type)
+             && com.google.common.base.Objects.equal(this.displayName, other.displayName)
              && com.google.common.base.Objects.equal(this.description, other.description)
              && com.google.common.base.Objects.equal(this.defaultValue, other.defaultValue)
              && com.google.common.base.Objects.equal(this.required, other.required);
@@ -136,14 +149,15 @@ public class FilterParamMetaData {
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.name, this.type, this.description, this.defaultValue, this.required);
+                 this.key, this.type, this.displayName, this.description, this.defaultValue, this.required);
     }
 
     @Override
     public String toString() {
        return com.google.common.base.Objects.toStringHelper(this)
-                 .add("Name", this.name)
+                 .add("Key", this.key)
                  .add("Type", this.type)
+                 .add("Display Name", this.displayName)
                  .add("Description", this.description)
                  .add("Default", this.defaultValue)
                  .add("Required", this.required)

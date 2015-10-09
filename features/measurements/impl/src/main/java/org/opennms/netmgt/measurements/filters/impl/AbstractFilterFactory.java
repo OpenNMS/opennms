@@ -73,7 +73,7 @@ public abstract class AbstractFilterFactory<T extends Filter> implements FilterF
         // Map the parameters by name, last one wins
         Map<String, String> parameterMap = Maps.newHashMap();
         for (FilterParamDef param : filterDef.getParameters()) {
-            parameterMap.put(param.getName(), param.getValue());
+            parameterMap.put(param.getKey(), param.getValue());
         }
 
         T filter;
@@ -93,12 +93,12 @@ public abstract class AbstractFilterFactory<T extends Filter> implements FilterF
 
             // Determine whether we use the default or user supplied value
             String effectiveValueAsStr = null;
-            if (parameterMap.containsKey(filterParam.name())) {
-                effectiveValueAsStr = parameterMap.get(filterParam.name());
+            if (parameterMap.containsKey(filterParam.key())) {
+                effectiveValueAsStr = parameterMap.get(filterParam.key());
             } else if (!filterParam.required()) {
                 effectiveValueAsStr = filterParam.value();
             } else {
-                throw new IllegalArgumentException("Parameter with name '" + filterParam.name() + "' is required, but no value was given.");
+                throw new IllegalArgumentException("Parameter with key '" + filterParam.key() + "' is required, but no value was given.");
             }
 
             // Convert the value to the appropriate type

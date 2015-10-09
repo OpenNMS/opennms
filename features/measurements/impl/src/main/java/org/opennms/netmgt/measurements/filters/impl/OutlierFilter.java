@@ -48,14 +48,14 @@ import com.google.common.collect.RowSortedTable;
  * @see {@link org.opennms.netmgt.measurements.filters.impl.OutlierFilterConfig}
  * @author jwhite
  */
-@FilterInfo(name="OutlierFilter", description="Used to remove outliers and replace them with interpolated values.", backend="R")
+@FilterInfo(name="Outlier", description="Removes outliers and replaces them with interpolated values.", backend="R")
 public class OutlierFilter implements Filter {
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/outlierFilter.R";
 
-    @FilterParam(name="inputColumn", required=true, description="Input column.")
+    @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
 
-    @FilterParam(name="probability", value="0.975", description="Outlier removal is performed by calculating a quantile using the defined probability. Any values greater than the the quantile will be replaced with an interpolated value.")
+    @FilterParam(key="probability", value="0.975", displayName="Level", description="Probability used to calculate the quantiles, any values greater than these will be replaced with an interpolated value.")
     private double m_probability;
 
     protected OutlierFilter() {}
