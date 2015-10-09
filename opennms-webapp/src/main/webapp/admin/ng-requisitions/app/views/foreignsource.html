@@ -5,8 +5,8 @@
   <li><a href="/opennms/admin/index.jsp">Admin</a></li>
   <li><a ng-click="goTop()">Provisioning Requisitions</a></li>
   <li ng-hide="foreignSource == 'default'"><a ng-click="goBack()">{{ foreignSource }}</a></li>
-  <li ng-hide="foreignSource == 'default'">Foreign Source Definition</a></li>
-  <li ng-show="foreignSource == 'default'">Default Definition</a></li>
+  <li ng-hide="foreignSource == 'default'">Foreign Source Definition</li>
+  <li ng-show="foreignSource == 'default'">Default Definition</li>
 </ol>
 
 <form name="fsForm" novalidate>
@@ -35,17 +35,17 @@
 
 <div class="row">
   <div class="col-md-12">
-    </br>
+    <br/>
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label classs="control-label">Last Modified</label>
+      <label class="control-label">Last Modified</label>
       <span class="form-control">{{ foreignSourceDef['date-stamp'] | date:'dd-MM-yy hh:mm:ss' }}</span>
     </div>
   </div>
   <div class="col-md-6">
     <div class="form-group" ng-class="{ 'has-error' : fsForm.scanInterval.$invalid }">
-      <label classs="control-label" for="scanInterval">Scan Interval</label>
+      <label class="control-label" for="scanInterval">Scan Interval</label>
       <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required></input>
       <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
     </div>
