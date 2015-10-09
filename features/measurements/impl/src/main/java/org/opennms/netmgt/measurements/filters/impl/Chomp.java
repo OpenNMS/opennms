@@ -51,11 +51,11 @@ import com.google.common.collect.Sets;
 @FilterInfo(name="Chomp", description="Strips leading and trailing rows that contain nothing but NaNs/null values.")
 public class Chomp implements Filter {
 
+    @FilterParam(key="stripNaNs", value="true", displayName="Strip", description="When set, leading and trailing rows containing NaNs will be removed")
+    private boolean m_stripNaNs;
+
     @FilterParam(key="cutoffDate", value="0", displayName="Cutoff", description="Timestamp in milliseconds. Any rows before this time will be removed.")
     private double m_cutoffDate;
-
-    @FilterParam(key="stripNaNs", value="false", displayName="Strip", description="When set, leading and trailing rows containing NaNs will be removed")
-    private boolean m_stripNaNs;
 
     protected Chomp() { }
 

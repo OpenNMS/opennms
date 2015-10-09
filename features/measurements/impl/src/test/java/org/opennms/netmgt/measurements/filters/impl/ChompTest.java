@@ -41,7 +41,8 @@ public class ChompTest extends AnalyticsFilterTest {
     @Test
     public void canCutoffRows() throws Exception {
         FilterDef filterDef = new FilterDef("Chomp",
-                "cutoffDate", "5000");
+                "cutoffDate", "5000",
+                "stripNaNs", "false");
 
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
         long k = 0;
