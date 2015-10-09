@@ -497,16 +497,10 @@ public class JasperReportService implements ReportService {
         final Map<String, Object> jrReportParms = new HashMap<String, Object>();
 
         for (final JRParameter reportParm : reportParms) {
-            LOG.debug("found report parm {} of class {}", reportParm.getValueClassName(), reportParm.getName());
-            if (reportParm.isSystemDefined() == false) {
+            if (apply(getParameterFilters(), reportParm)) {
                 final String parmName = reportParm.getName();
 
-                if (reportParm.isForPrompting() == false) {
-                    LOG.debug("Required parameter {} is not for prompting - continuing", parmName);
-                    continue;
-                }
-
-                if (onmsReportParms.containsKey(parmName) == false) {
+                if (!onmsReportParms.containsKey(parmName)) {
                     throw new ReportException("Required parameter " + parmName + " not supplied to JasperReports by OpenNMS");
                 }
 
@@ -546,7 +540,6 @@ public class JasperReportService implements ReportService {
                     jrReportParms.put(parmName, new java.sql.Timestamp(date.getTime()));
                     continue;
                 }
-
                 throw new ReportException("Unsupported report parameter type " + reportParm.getValueClassName());
             }
         }
@@ -585,6 +578,7 @@ public class JasperReportService implements ReportService {
     }
 
     protected boolean apply(List<ParameterFilter> parameterFilters, JRParameter reportParm) {
+        LOG.debug("Found report parameter {} (isSystemDefined(){}, isForPrompting()={}", reportParm.getName(), reportParm.isSystemDefined(), reportParm.isForPrompting());
         for (ParameterFilter eachFilter : parameterFilters) {
             if (!eachFilter.apply(reportParm)) {
                 return false;

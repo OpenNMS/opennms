@@ -39,7 +39,6 @@ public class DefaultParameterFilter implements ParameterFilter {
 
     @Override
     public boolean apply(JRParameter reportParam) {
-        logger.debug("Found report parameter {} (isSystemDefined(){}, isForPrompting()={}", reportParam.getName(), reportParam.isSystemDefined(), reportParam.isForPrompting());
         return !reportParam.isSystemDefined() && reportParam.isForPrompting();
     }
 }

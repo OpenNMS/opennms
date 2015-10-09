@@ -34,9 +34,28 @@ import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 
 public class MeasurementParameterFilter implements ParameterFilter {
 
+    protected interface JvmDetector {
+        boolean isRunInOpennmsJvm();
+    }
+
+    private final JvmDetector jvmDetector;
+
+    public MeasurementParameterFilter() {
+        this(new JvmDetector() {
+            @Override
+            public boolean isRunInOpennmsJvm() {
+                return MeasurementsHelper.isRunInOpennmsJvm();
+            }
+        });
+    }
+
+    protected MeasurementParameterFilter(JvmDetector jvmDetector) {
+        this.jvmDetector = jvmDetector;
+    }
+
     @Override
     public boolean apply(JRParameter reportParameter) {
-        if (MeasurementsHelper.isRunInOpennmsJvm()) {
+        if (jvmDetector.isRunInOpennmsJvm()) {
             // We have to filter MEASUREMENT_* parameters if we run within the OpenNMS JVM
             if (Parameters.URL.equals(reportParameter.getName())
                     || Parameters.USERNAME.equals(reportParameter.getName())
