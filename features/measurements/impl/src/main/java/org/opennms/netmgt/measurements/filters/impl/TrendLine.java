@@ -118,7 +118,9 @@ public class TrendLine implements Filter {
         ImmutableTable<Long, String, Double> outputTable = output.getTable();
 
         // Convert the result to a polynomial
-        Polynomial poly = new Polynomial(outputTable.column("x").values().toArray(new Double[0]));
+        List<Double> coeffs = Lists.newArrayList(outputTable.column("x").values());
+        LOG.debug("Using coefficients {} for trend with order {}", coeffs, m_polynomialOrder);
+        Polynomial poly = new Polynomial(coeffs);
 
         // Calculate the value of the polynomial for all of the samples
         // and the requested number of steps ahead
@@ -134,15 +136,16 @@ public class TrendLine implements Filter {
     private static class Polynomial {
         private final List<Double> m_coeffs;
  
-        public Polynomial(Double[] coeffs) {
+        public Polynomial(List<Double> coeffs) {
             m_coeffs = Lists.newLinkedList();
             // R may return NaNs for some of the higher order coefficients, 
             // so we add all of the coefficients until a null or NaN is reached
-            for (int i = 0; i < coeffs.length; i++) {
-                if (coeffs[i] == null || Double.isNaN(coeffs[i])) {
+            for (int i = 0; i < coeffs.size(); i++) {
+                Double coeff = coeffs.get(i);
+                if (coeff == null || Double.isNaN(coeff)) {
                     break;
                 }
-                m_coeffs.add(coeffs[i]);
+                m_coeffs.add(coeff);
             }
         }
 
