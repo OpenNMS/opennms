@@ -1,6 +1,6 @@
 # Options
 inputFile <- 'stdin'
-inputColumn <- '${inputColumn}'
+inputColumn <- '${inputColumn?js_string}'
 firstIndex <- ${firstIndex?c}
 lastIndex <- ${lastIndex?c}
 polynomialOrder <- ${polynomialOrder?c}

@@ -1,6 +1,6 @@
 # Options
 inputFile <- 'stdin'
-columnToForecast <- '${columnToForecast}'
+columnToForecast <- '${columnToForecast?js_string}'
 numSamplesPerSeason <- ${numSamplesPerSeason?c}
 numForecasts <- ${numForecasts?c}
 confidenceLevel <- ${confidenceLevel?c}
