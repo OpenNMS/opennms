@@ -202,8 +202,12 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             int k = 0;
             for (Row<Measurement> row : results.getRows()) {
                 for (Measurement measurement : row.getElements()) {
-                    myColumns.putIfAbsent(measurement.getName(), new double[N]);
-                    myColumns.get(measurement.getName())[k] = measurement.getValue();
+                    double[] column = myColumns.get(measurement.getName());
+                    if (column == null) {
+                        column = new double[N];
+                        myColumns.put(measurement.getName(), column);
+                    }
+                    column[k] = measurement.getValue();
                     if (measurement.getAttributes() != null) {
                         myConstants.putAll(measurement.getAttributes());
                     }
