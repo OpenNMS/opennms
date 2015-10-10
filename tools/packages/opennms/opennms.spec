@@ -953,7 +953,7 @@ printf -- "- checking for old update files... "
 
 JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
+TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
 	echo "FOUND"
 	echo ""
