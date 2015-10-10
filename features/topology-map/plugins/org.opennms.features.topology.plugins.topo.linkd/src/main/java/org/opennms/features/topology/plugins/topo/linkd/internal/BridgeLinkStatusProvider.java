@@ -54,14 +54,14 @@ public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
 
         Multimap<String, EdgeAlarmStatusSummary> summaryMap = HashMultimap.create();
         for(BridgeMacTopologyLink link : m_multimapLinks.values()) {
-            String key = link.getNodeId() + ":" + link.getBridgePortIfIndex();
+            String key = link.getSrcNodeId() + ":" + link.getBridgePortIfIndex();
 
             if (!summaryMap.containsKey(key)){
-                summaryMap.put(key, new EdgeAlarmStatusSummary(link.getNodeId(), link.getBridgePort(), null));
+                summaryMap.put(key, new EdgeAlarmStatusSummary(link.getSrcNodeId(), link.getBridgePort(), null));
             }
 
-            if(link.getTargetNodeId() != null && link.getSourceIfIndex() != null){
-                summaryMap.put(link.getTargetNodeId() + ":" + link.getSourceIfIndex(), new EdgeAlarmStatusSummary(link.getNodeId(), link.getTargetNodeId(), null));
+            if(link.getTargetNodeId() != null ){
+                summaryMap.put(link.getTargetNodeId().toString(), new EdgeAlarmStatusSummary(link.getSrcNodeId(), link.getTargetNodeId(), null));
             }
         }
 
@@ -74,7 +74,7 @@ public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
 
                 if(m_multimapLinks.containsKey(cloudKey)){
                     for(BridgeMacTopologyLink link : m_multimapLinks.get(cloudKey)) {
-                        String indexKey = link.getTargetNodeId() + ":" + link.getSourceIfIndex();
+                        String indexKey = link.getTargetNodeId().toString();
                         summaries.addAll(summaryMap.get(indexKey));
                     }
                 }
@@ -100,8 +100,8 @@ public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
 
         Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
         for (BridgeMacTopologyLink macLink : bridgeMacLinks) {
-            String idKey = String.valueOf(macLink.getNodeId()) + "|" + String.valueOf(macLink.getBridgePort());
-            if (mappedRefs.containsKey(idKey) && macLink.getTargetNodeId() != null && macLink.getSourceIfIndex() != null) {
+            String idKey = String.valueOf(macLink.getSrcNodeId()) + "|" + String.valueOf(macLink.getBridgePort());
+            if (mappedRefs.containsKey(idKey) && macLink.getTargetNodeId() != null) {
                 multimap.put(idKey, macLink);
             }
 

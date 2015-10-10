@@ -31,40 +31,34 @@ package org.opennms.netmgt.model.topology;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
-public class CdpTopologyLink extends TopologyLink {
+public class IsisTopologyLink extends TopologyLink {
 
     private final Integer m_sourceId;
     private final Integer m_srcIfIndex;
-    private final String m_srcIfName;
     private final Integer m_targetId;
-    private final String m_targetIfName;
+    private final Integer m_targetIfIndex;
 
-    public CdpTopologyLink(Integer sourceId, Integer srcNodeId,
+    public IsisTopologyLink(Integer sourceId, Integer srcNodeId,
             String srcLabel, String srcSysoid, String srcLocation,
             NodeType srcNodeType,
-            Integer srcIfIndex, String srcIfName, Integer targetId,
+            Integer srcIfIndex, Integer targetId,
             Integer targetNodeId,
             String targetLabel, String targetSysoid, String targetLocation,
             NodeType targetNodeType,
-            String targetIfName) {
+            Integer targetIfIndex) {
         super(srcNodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_sourceId = sourceId;
         m_srcIfIndex = srcIfIndex;
-        m_srcIfName = srcIfName;
         m_targetId = targetId;
-        m_targetIfName = targetIfName;
+        m_targetIfIndex = targetIfIndex;
     }
 
     public Integer getSrcIfIndex() {
         return m_srcIfIndex;
     }
 
-    public String getSrcIfName() {
-        return m_srcIfName;
-    }
-
-    public String getTargetIfName() {
-        return m_targetIfName;
+    public Integer getTargetIfIndex() {
+        return m_targetIfIndex;
     }
 
     public Integer getTargetId() { return m_targetId; }

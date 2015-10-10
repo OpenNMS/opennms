@@ -46,7 +46,6 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -137,23 +136,34 @@ public class LinkdTopologyProvider extends AbstractLinkdTopologyProvider {
         for (DataLinkInterface link: m_dataLinkInterfaceDao.findAll()) {
             LOG.debug("loadtopology: parsing link: " + link.getDataLinkInterfaceId());
 
-            OnmsNode node = getNodeDao().get(link.getNode().getId());
+            OnmsNode node = link.getNode();
             LOG.debug("loadtopology: found source node: " + node.getLabel());
             String sourceId = node.getNodeId();
             Vertex source = getVertex(getVertexNamespace(), sourceId);
             if (source == null) {
-                LOG.debug("loadtopology: adding source node as vertex: " + node.getLabel());
-                source = getVertex(node);
+                LOG.debug("loadtopology: adding source node as vertex: "
+                        + node.getLabel());
+                source = getDefaultVertex(node.getId(),
+                                   node.getSysObjectId(),
+                                   node.getLabel(),
+                                     node.getSysLocation(),
+                                 node.getType());
                 addVertices(source);
             }
 
             OnmsNode parentNode = getNodeDao().get(link.getNodeParentId());
-            LOG.debug("loadtopology: found target node: " + parentNode.getLabel());
+            LOG.debug("loadtopology: found target node: "
+                    + parentNode.getLabel());
             String targetId = parentNode.getNodeId();
             Vertex target = getVertex(getVertexNamespace(), targetId);
             if (target == null) {
-                LOG.debug("loadtopology: adding target as vertex: " + parentNode.getLabel());
-                target = getVertex(parentNode);
+                LOG.debug("loadtopology: adding target as vertex: "
+                        + parentNode.getLabel());
+                target = getDefaultVertex(parentNode.getId(),
+                                   parentNode.getSysObjectId(),
+                                   parentNode.getLabel(),
+                                 parentNode.getSysLocation(),
+                                 parentNode.getType());
                 addVertices(target);
             }
             

@@ -54,6 +54,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 
 public class BridgeLinkStatusProviderTest {
@@ -215,21 +216,21 @@ public class BridgeLinkStatusProviderTest {
         515 |      1 |         48 |                48 |                  |      | 00163e1d0215 | 192.0.2.24   |            |              |           |           548
         514 |      1 |         48 |                48 |                  |      | 00163e69ab49 | 192.0.2.38   |            |              |           |           548
  */
-        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, 48, 48, null, null, "00e08155403b", "192.0.2.16", null, null, null, 548);
-        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, 48, 48, null, null, "00163e62e1c8", "192.0.2.40", null, null, null, 548);
-        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "198.51.100.1", null, null, null, 551);
-        BridgeMacTopologyLink link4 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "98.101.157.50", null, null, null, 549);
-        BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, 48, 48, null, null, "a8d0e5a0a490", "192.0.2.1", "192.0.2.1", 2, "mrmakay", 548);
+        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(519, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null,"00e08155403b", "192.0.2.16");
+        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(652, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null, "00163e62e1c8", "192.0.2.40");
+        BridgeMacTopologyLink link3 = new BridgeMacTopologyLink(521, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null, "a8d0e5a0a490", "198.51.100.1");
+        BridgeMacTopologyLink link4 = new BridgeMacTopologyLink(521, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null, "a8d0e5a0a490", "98.101.157.50");
+        BridgeMacTopologyLink link5 = new BridgeMacTopologyLink(521, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, 2, null, "mrmakay",null,null, NodeType.ACTIVE, "a8d0e5a0a490", "192.0.2.1");
 
-        BridgeMacTopologyLink link6 = new BridgeMacTopologyLink(522, 1, 48, 48, null, null, "000bdba886f4", "192.0.2.19", null, null, null, 548);
-        BridgeMacTopologyLink link7 = new BridgeMacTopologyLink(523, 1, 48, 48, null, null, "00163e7efe74", "192.0.2.24", null, null, null, 548);
-        BridgeMacTopologyLink link8 = new BridgeMacTopologyLink(524, 1, 48, 48, null, null, "a8d0e5a0a488", null, null, null, null, 548);
+        BridgeMacTopologyLink link6 = new BridgeMacTopologyLink(522, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null,"000bdba886f4", "192.0.2.19");
+        BridgeMacTopologyLink link7 = new BridgeMacTopologyLink(523, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null,"00163e7efe74", "192.0.2.24");
+        BridgeMacTopologyLink link8 = new BridgeMacTopologyLink(524, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, null, null, null, null,null,null,null,"a8d0e5a0a488", null);
 
         return Arrays.asList(link1, link2, link3, link4, link5, link6, link7, link8);
     }
 
     private List<OnmsAlarm> createAlarm() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     private List<OnmsAlarm> createDownAlarm(){

@@ -31,63 +31,78 @@ package org.opennms.netmgt.model.topology;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
-public class BridgeMacTopologyLink extends TopologyLink {
+public abstract class TopologyLink {
 
-    private final int m_id;
-    private final Integer m_bridgePort;
-    private final Integer m_bridgePortIfIndex;
-    private final String m_bridgePortIfName;
-    private final Integer m_vlan;
-    private final String m_macAddr;
-    private final String m_netaddress;
+    private final Integer m_srcNodeId;
+    private final String m_srcLabel;
+    private final String m_srcSysoid;
+    private final String m_srcLocation;
+    private final NodeType m_srcNodeType;
+    private final Integer m_targetNodeId;
+    private final String m_targetLabel;
+    private final String m_targetSysoid;
+    private final String m_targetLocation;
+    private final NodeType m_targetNodeType;
 
-    public BridgeMacTopologyLink(Integer id, 
+    public TopologyLink( 
             Integer nodeId, 
             String srcLabel, String srcSysoid, String srcLocation,
             NodeType srcNodeType,
-            Integer bridgePort, Integer bridgePortIfIndex,
-            String bridgePortIfName, 
-            Integer vlan, 
             Integer targetNodeId, 
             String targetLabel, String targetSysoid, String targetLocation,
-            NodeType targetNodeType,
-            String macAddr, String netaddress) {
-        super(nodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
-        m_id = id;
-        m_bridgePort = bridgePort;
-        m_bridgePortIfIndex = bridgePortIfIndex;
-        m_bridgePortIfName = bridgePortIfName;
-        m_vlan = vlan;
-        m_macAddr = macAddr;
-        m_netaddress = netaddress;
+            NodeType targetNodeType
+            ) {
+        m_srcNodeId = nodeId;
+        m_srcLabel = srcLabel;
+        m_srcSysoid = srcSysoid;
+        m_srcLocation = srcLocation;
+        m_srcNodeType = srcNodeType;
+        m_targetNodeId = targetNodeId;
+        m_targetLabel = targetLabel;
+        m_targetSysoid = targetSysoid;
+        m_targetLocation = targetLocation;
+        m_targetNodeType = targetNodeType;
     }
 
-    public int getId() {
-        return m_id;
+    public Integer getSrcNodeId() {
+        return m_srcNodeId;
     }
 
-    public Integer getBridgePort() {
-        return m_bridgePort;
+
+    public Integer getTargetNodeId() {
+        return m_targetNodeId;
     }
 
-    public Integer getBridgePortIfIndex() {
-        return m_bridgePortIfIndex;
+    public String getSrcLabel() {
+        return m_srcLabel;
     }
 
-    public String getBridgePortIfName() {
-        return m_bridgePortIfName;
+    public String getSrcSysoid() {
+        return m_srcSysoid;
     }
 
-    public Integer getVlan() {
-        return m_vlan;
+    public String getSrcLocation() {
+        return m_srcLocation;
     }
 
-    public String getMacAddr() {
-        return m_macAddr;
+    public NodeType getSrcNodeType() {
+        return m_srcNodeType;
     }
 
-    public String getNetaddress() {
-        return m_netaddress;
+    public String getTargetLabel() {
+        return m_targetLabel;
+    }
+
+    public String getTargetSysoid() {
+        return m_targetSysoid;
+    }
+
+    public String getTargetLocation() {
+        return m_targetLocation;
+    }
+
+    public NodeType getTargetNodeType() {
+        return m_targetNodeType;
     }
 
 }

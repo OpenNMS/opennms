@@ -79,6 +79,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
+import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -118,7 +119,7 @@ public class EnhancedLinkdTopologyProviderTest {
         EasyMock.expect(m_bridgeBridgeLinkDao.findAll()).andReturn(new ArrayList<BridgeBridgeLink>()).anyTimes();
         EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
         EasyMock.expect(m_cdpLinkDao.findLinksForTopology()).andReturn(new ArrayList<CdpTopologyLink>()).anyTimes();
-        EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<Object[]>()).anyTimes();
+        EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
         EasyMock.replay(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao);
 
         m_databasePopulator.populateDatabase();
@@ -141,14 +142,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7())));
-        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8())));
+        Assert.assertTrue("linkd:system:snmp:1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
+        Assert.assertTrue(LinkdTopologyProvider.SERVER_ICON_KEY.equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
 
     }
 
