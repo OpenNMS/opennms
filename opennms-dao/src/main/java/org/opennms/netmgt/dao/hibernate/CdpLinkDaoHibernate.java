@@ -120,7 +120,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                                 (String) objs[2], 
                                 (String) objs[3],
                                 (String) objs[4],
-                                NodeType.valueOf((String) objs[5]),
+                                NodeType.getNodeTypeFromChar((char)objs[5]),
                                 (Integer) objs[6], 
                                 (String) objs[7], 
                                 (Integer) objs[8], 
@@ -128,7 +128,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                                 (String) objs[10], 
                                 (String) objs[11],
                                 (String) objs[12],
-                                NodeType.valueOf((String) objs[13]),
+                                NodeType.getNodeTypeFromChar((char)objs[13]),
                                 (String) objs[14]));
             }
         }

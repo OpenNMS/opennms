@@ -96,7 +96,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                 "np.nodesyslocation as targetnodelocation, " +
                 "np.nodetype as targetnodetype, " +
                 "ntm.netaddress as target_ip, " +
-                "ntm.physaddress as target_mac, " +
+                "ntm.physaddress as target_mac " +
                 "from bridgemaclink as mlink " +
                 "left join ipnettomedia as ntm " +
                 "on mlink.macaddress = ntm.physaddress " +
@@ -119,7 +119,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                                     (String) objs[2], 
                                     (String) objs[3],
                                     (String) objs[4],
-                                    NodeType.valueOf((String) objs[5]),
+                                    NodeType.getNodeTypeFromChar((char)objs[5]),
                                     (Integer) objs[6], 
                                     (Integer) objs[7], 
                                     (String) objs[8], 
@@ -128,7 +128,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                                     (String) objs[11], 
                                     (String) objs[12],
                                     (String) objs[13],
-                                    NodeType.valueOf((String) objs[14]),
+                                    NodeType.getNodeTypeFromChar((char)objs[14]),
                                     (String) objs[15],
                                     (String) objs[16]
                                             )

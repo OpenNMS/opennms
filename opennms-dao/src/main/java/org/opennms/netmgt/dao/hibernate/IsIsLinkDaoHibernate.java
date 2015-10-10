@@ -131,14 +131,14 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 	                                (String) objs[3], 
 	                                (String) objs[4],
 	                                (String) objs[5],
-	                                NodeType.valueOf((String) objs[6]),
+	                                NodeType.getNodeTypeFromChar((char)objs[6]),	                                
 	                                (Integer) objs[7], 
 	                                (Integer) objs[8], 
 	                                (Integer) objs[9], 
 	                                (String) objs[10], 
 	                                (String) objs[11],
 	                                (String) objs[12],
-	                                NodeType.valueOf((String) objs[13]),
+	                                NodeType.getNodeTypeFromChar((char)objs[13]),
 	                                (Integer) objs[14]));
 	            }
 	        }
