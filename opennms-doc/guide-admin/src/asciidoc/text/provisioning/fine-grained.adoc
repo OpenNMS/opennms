@@ -1,0 +1,237 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Fine Grained Provisioning Using _provision.pl_
+
+We have created a Perl script to help your team with this provisioning.
+It is in the '/opt/opennms/bin/' directory when you install from our SNAPSHOT builds.
+The script has most all the operations you need for interfacing from WAVE and you should be able to use it or duplicate the code in WAVE.
+The options that are not available can be added to the script if you need them but everything is fully available in the REST interface.
+The script provides an easy interface to the REST API and should help a lot but making the examples easier to read and having code to inspect sometimes makes understanding the API much easier, as well.
+
+The script '/opt/opennms/bin/provision.pl', has many options but the first 3 optional parameters are described here:
+
+NOTE: You can use `--help` to the script to see all the available options.
+
+ --username (default: admin)
+ --password (default: admin)
+ --url (default: http://localhost:8980/opennms/rest)
+
+We stand-by to help with any questions they may have.
+Additionally, we should get the latest software installed so that they can start testing.
+It would be good to have installs from the nightly SNAPSHOT builds so that we can keep it easily and quickly updated if there are any changes we have to make for you.
+
+==== First, Create a new Provisioning Group
+
+Provisioning Groups are created with import requisitions.
+The script provides an easy access to the REST API using the _requisition_ option:
+
+ /opt/opennms/bin/provision.pl requisition customer1
+
+This command will create a new requisition (provisioning group) in the '/opt/opennms/etc/imports/pending/' directory.
+It will be an empty requisition (provisioning group).
+Empty meaning there will be the import definition only with no nodes.
+
+IMPORTANT: Notice that the group is in the `pending` directory.
+This allows you to iteratively create the group and then later actually import/provide the nodes in the group into OpenNMS.
+This hands all adds/changes/deletes at once.
+So, you could be making changes all day and then at night either have a schedule in OpenNMS that imports the group automatically or you can send a command through the REST service from WAVE to have the pending group imported/reimported.
+This is defined in the docs.
+
+[source, xml]
+----
+$ cat /opt/opennms/etc/imports/pending/customer1.xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:29:23.104-05:00"
+              xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+</model-import>
+----
+
+You can also get a list of all existing provisioning groups (import requisitions) with the `list` option of the `provision.pl` script:
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl list
+----
+
+==== Add a Node to an Existing Provisioning Group
+
+Okay, the script we provided helps one to managed provisioning group elements at a very fine grained level.
+This example shows you how tohandle adding a node and all the node elements with fine grained requests.
+Note, that you could create the resulting XML in WAVE and send the entire group as an XML document to the REST API as I've attempted to document in the docs. I will be including this example in a updated version of the docs, ASAP.
+
+===== Create the Node Element
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl node add customer1 1 node-a
+----
+
+This command creates a node element in the provisioning group (a.k.a requisition) _customer1_ called _node-a_ using the scripts _node_ option.
+Note it has no interfaces or services, yet.
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:29:23.104-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1"/>
+</model-import>
+----
+
+===== Add a Interface Element to that Node
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl interface add customer1 1 127.0.0.1
+----
+
+This command adds an interface element to the node element using the _interface_ option to the `provision.pl` command and it can now be seen in the pending requisition:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:31:21.029-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1">
+        <interface ip-addr="127.0.0.1"/>
+    </node>
+</model-import>
+----
+
+===== Add a Couple of Services to that Interface
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl service add customer1 1 127.0.0.1 ICMP
+/opt/opennms/bin/provision.pl service add customer1 1 127.0.0.1 SNMP
+----
+
+This adds the 2 services to the specified 127.0.0.1 interface and is now in the pending XML document.
+
+NOTE: These Services must already be defined in the foreign-source definition for this _group_.
+There is a default foreign source definition, btw.
+This is covered in the docs we provided.
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:32:14.885-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1">
+        <interface ip-addr="127.0.0.1">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+        </interface>
+    </node>
+</model-import>
+----
+
+===== Set the Primary SNMP Interface
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl interface set customer1 1 127.0.0.1 snmp-primary P
+----
+
+This sets the 127.0.0.1 interface to be the Primary SNMP interface:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2010-01-12T09:37:27.373-05:00"
+              foreign-source="customer1" date- stamp="2010-01-12T11:12:23.738-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1">
+        <interface snmp-primary="P" ip-addr="127.0.0.1">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+        </interface>
+    </node>
+</model-import>
+----
+
+===== Add a couple Node Categories
+
+ /opt/opennms/bin/provision.pl category add customer1 1 Routers
+ /opt/opennms/bin/provision.pl category add customer1 1 Production
+
+This adds the 2 categories to the node and is now in the pending XML document.
+
+NOTE: These categories are: a) case sensitive and b) do not have to already be defined in OpenNMS.
+They will be created on the fly during the import if they do not already exist.
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:33:57.740-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1">
+        <interface ip-addr="127.0.0.1">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+    </node>
+</model-import>
+----
+
+===== Setting Asset Fields on a Node
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl asset add customer1 1 serialnumber 9999
+----
+
+This will add value of `9999` to the asset field: _serialnumber_:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import foreign-source="customer1"
+              date-stamp="2010-01-12T09:35:48.343-05:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="node-a" foreign-id="1">
+        <interface ip-addr="127.0.0.1">
+            <monitored-service service-name="ICMP"/>
+            <monitored-service service-name="SNMP"/>
+        </interface>
+        <category name="Servers"/>
+        <category name="Production"/>
+        <asset value="9999" name="serialnumber"/>
+    </node>
+</model-import>
+----
+
+.Deploy the Import Requisition (Creating the Group)
+[source, bash]
+----
+/opt/opennms/bin/provision.pl requisition import customer1
+----
+
+This will cause OpenNMS Provisiond to import the pending requisition.
+The XML document will moved from the `/opt/` `opennms/imports/pending` directory to the `/opt/opennms/imports` directory.
+The philosophy is that the XML document in the `imports/` directory should be reflective of what is actually supposed to be in the DB.
+
+CAUTION: The behavior changed. Mixing ReST and UI is dangerous.
+
+.Deleting a Node from an Import Requisition (Provisioning Group)
+
+Very much the same as the add, accept, a single delete command and a re-import is required.
+What happens is that the audit phase is run by Provisiond (this is detailed in the docs we sent) and it will be determined that a node has been removed from the group (requisition) and the node will be deleted from the DB and all services will stop activities related to it.
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl node delete customer1 1 node-a
+/opt/opennms/bin/provision.pl requisition import customer1
+----
+
+This, also, will create a copy of the currently deployed requisition, remove the node-a node element, and place it in the pending directory, so it too must be deployed so that the node is removed from the provisioning group.
+
+[source, bash]
+----
+/opt/opennms/bin/provision.pl requisition import customer1
+----
+
+This completes the life cycle of managing a node element, iteratively, in a import requisition.

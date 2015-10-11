@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="interfaces")
+@JsonRootName("interfaces")
 public class RequisitionInterfaceCollection extends JaxbListWrapper<RequisitionInterface> {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class RequisitionInterfaceCollection extends JaxbListWrapper<RequisitionI
     }
 
     @XmlElement(name="interface")
+    @JsonProperty("interface")
     public List<RequisitionInterface> getObjects() {
         return super.getObjects();
     }

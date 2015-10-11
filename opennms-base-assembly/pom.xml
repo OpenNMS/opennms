@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>17.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -56,14 +56,21 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.assemblies</groupId>
-                  <artifactId>org.opennms.assemblies.jmx-config-generator-onejar</artifactId>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>jmxconfiggenerator</artifactId>
                   <type>jar</type>
-                  <classifier>signed-jar-with-dependencies</classifier>
+                  <classifier>onejar</classifier>
                   <destFileName>opennms_jmx_config_generator.jar</destFileName>
+                  <outputDirectory>${project.build.directory}/jmx</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-jasperstudio-extension</artifactId>
+                  <type>jar</type>
+                  <classifier>jar-with-dependencies</classifier>
+                  <outputDirectory>${project.build.directory}/jasperstudio-extension</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/jmx</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -75,7 +82,7 @@
             <descriptor>src/assembly/daemon.xml</descriptor>
             <descriptor>src/assembly/log4j2.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -99,12 +106,12 @@
           </execution>
         </executions>
         <configuration>
-          <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
+          <sourceDirectory>${project.build.outputDirectory}/etc/report-templates</sourceDirectory>
           <outputDirectory>${project.build.directory}/jasper</outputDirectory>
           <xmlValidation>true</xmlValidation>
           <forceCompile>false</forceCompile>
           <additionalProperties>
-            <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
+            <net.sf.jasperreports.query.executer.factory.measurement>org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory</net.sf.jasperreports.query.executer.factory.measurement>
           </additionalProperties>
         </configuration>
         <dependencies>
@@ -156,11 +163,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-ackd</artifactId>
     </dependency>
     <dependency>
@@ -170,6 +172,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-jms</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -282,6 +288,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-integration-otrs-31</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-remedy</artifactId>
     </dependency>
     <dependency>
@@ -330,6 +340,14 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.ticket-strategy</artifactId>
       <version>${project.version}</version>
@@ -360,6 +378,11 @@
       <artifactId>jira-troubleticketer</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>resource-cli</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!--
     <dependency>
@@ -436,10 +459,6 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
     </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
@@ -554,6 +573,16 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
@@ -564,6 +593,12 @@
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
@@ -574,24 +609,8 @@
       <artifactId>batik-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.tuckey</groupId>
-      <artifactId>urlrewritefilter</artifactId>
-    </dependency>
-    <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>poi</groupId>
-      <artifactId>poi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
     </dependency>
     <!-- dependencies for SMS monitors -->
     <!--
@@ -670,11 +689,21 @@
       <artifactId>jasper-extensions</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jasperstudio-extension</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- TODO: Is this the better place for the following dependency? -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

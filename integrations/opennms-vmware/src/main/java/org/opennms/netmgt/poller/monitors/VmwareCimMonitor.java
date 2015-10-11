@@ -41,7 +41,6 @@ package org.opennms.netmgt.poller.monitors;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.spring.BeanUtils;
@@ -133,6 +132,8 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                 return PollStatus.unknown();
             }
         }
+
+        boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
 
         OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
 
@@ -242,7 +243,11 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable(reason.toString());
                 }
             } else {
-                serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
+                if (ignoreStandBy && "standBy".equals(powerState)) {
+                    serviceStatus = PollStatus.up();
+                } else {
+                    serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
+                }
             }
 
             vmwareViJavaAccess.disconnect();

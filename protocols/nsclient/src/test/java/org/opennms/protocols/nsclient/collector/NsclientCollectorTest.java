@@ -45,10 +45,10 @@ import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.protocols.nsclient.AbstractNsclientTest;
 import org.opennms.protocols.nsclient.config.NSClientDataCollectionConfigFactory;
 import org.opennms.protocols.nsclient.config.NSClientPeerFactory;
@@ -81,7 +81,7 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         @Override
         public void visitAttribute(CollectionAttribute attribute) {
             count++;
-            Assert.assertEquals(10, Integer.parseInt(attribute.getNumericValue()));
+            Assert.assertEquals(10d, attribute.getNumericValue());
         }
     }
 

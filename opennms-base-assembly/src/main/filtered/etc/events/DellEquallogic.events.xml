@@ -1,0 +1,1264 @@
+<?xml version="1.0"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthTempSensorHighThreshold</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthTempSensorHighThreshold</event-label>
+        <descr>
+            &lt;p&gt;Sent when a high threshold has been exceeded for any of the
+            enclosure temp sensors. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureHighCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureHighWarningThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthTempSensorHighThreshold trap received
+            eqlMemberHealthDetailsTemperatureName=%parm[#1]%
+            eqlMemberHealthDetailsTemperatureValue=%parm[#2]%
+            eqlMemberHealthDetailsTemperatureCurrentState=%parm[#3]%
+            eqlMemberHealthDetailsTemperatureHighCriticalThreshold=%parm[#4]%
+            eqlMemberHealthDetailsTemperatureHighWarningThreshold=%parm[#5]%
+            eqlMemberHealthDetailsTemperatureNameID=%parm[#6]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthTempSensorLowThreshold</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthTempSensorLowThreshold</event-label>
+        <descr>
+            &lt;p&gt;Sent when a low threshold has been exceeded for any of the
+            enclosure temp sensors. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureLowCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureLowWarningThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsTemperatureNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthTempSensorLowThreshold trap received
+            eqlMemberHealthDetailsTemperatureName=%parm[#1]%
+            eqlMemberHealthDetailsTemperatureValue=%parm[#2]%
+            eqlMemberHealthDetailsTemperatureCurrentState=%parm[#3]%
+            eqlMemberHealthDetailsTemperatureLowCriticalThreshold=%parm[#4]%
+            eqlMemberHealthDetailsTemperatureLowWarningThreshold=%parm[#5]%
+            eqlMemberHealthDetailsTemperatureNameID=%parm[#6]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>3</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthFanSpeedHighThreshold</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthFanSpeedHighThreshold</event-label>
+        <descr>
+            &lt;p&gt;Sent when a high threshold has been exceeded for any of the
+            enclosure fan speed sensors. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanHighCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanHighWarningThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthFanSpeedHighThreshold trap received
+            eqlMemberHealthDetailsFanName=%parm[#1]%
+            eqlMemberHealthDetailsFanValue=%parm[#2]%
+            eqlMemberHealthDetailsFanCurrentState=%parm[#3]%
+            eqlMemberHealthDetailsFanHighCriticalThreshold=%parm[#4]%
+            eqlMemberHealthDetailsFanHighWarningThreshold=%parm[#5]%
+            eqlMemberHealthDetailsFanNameID=%parm[#6]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthFanSpeedLowThreshold</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthFanSpeedLowThreshold</event-label>
+        <descr>
+            &lt;p&gt;Sent when a low threshold has been exceeded for any of the
+            enclosure fan speed sensors. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanLowCriticalThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanLowWarningThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsFanNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthFanSpeedLowThreshold trap received
+            eqlMemberHealthDetailsFanName=%parm[#1]%
+            eqlMemberHealthDetailsFanValue=%parm[#2]%
+            eqlMemberHealthDetailsFanCurrentState=%parm[#3]%
+            eqlMemberHealthDetailsFanLowCriticalThreshold=%parm[#4]%
+            eqlMemberHealthDetailsFanLowWarningThreshold=%parm[#5]%
+            eqlMemberHealthDetailsFanNameID=%parm[#6]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+        <varbindsdecode>
+            <parmid>parm[#3]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthPowerSupplyFanFailure</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthPowerSupplyFanFailure</event-label>
+        <descr>
+            &lt;p&gt;Sent when a failure has been detected on any of the power
+            supply fan speed sensors. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            not-applicable(0)
+            fan-is-operational(1)
+            fan-not-operational(2)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthPowerSupplyFanFailure trap received
+            eqlMemberHealthDetailsPowerSupplyName=%parm[#1]%
+            eqlMemberHealthDetailsPowerSupplyFanStatus=%parm[#2]%
+            eqlMemberHealthDetailsPowerSupplyNameID=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="not-applicable"/>
+            <decode varbindvalue="1" varbinddecodedstring="fan-is-operational"/>
+            <decode varbindvalue="2" varbinddecodedstring="fan-not-operational"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthPowerSupplyFailure</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthPowerSupplyFailure</event-label>
+        <descr>
+            &lt;p&gt;Sent when a failure has been detected on any of the power
+            supplys in the PSA. The implementation of this trap should
+            not send more than one notification of this type for a sensor
+            in any 10 minute time span&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            on-and-operating(1)
+            no-ac-power(2)
+            failed-or-no-data(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthDetailsPowerSupplyNameID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthPowerSupplyFailure trap received
+            eqlMemberHealthDetailsPowerSupplyName=%parm[#1]%
+            eqlMemberHealthDetailsPowerSupplyCurrentState=%parm[#2]%
+            eqlMemberHealthDetailsPowerSupplyNameID=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#2]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="on-and-operating"/>
+            <decode varbindvalue="2" varbinddecodedstring="no-ac-power"/>
+            <decode varbindvalue="3" varbinddecodedstring="failed-or-no-data"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>7</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthRAIDSetDoubleFaulted</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthRAIDSetDoubleFaulted</event-label>
+        <descr>
+            &lt;p&gt;Sent when the raid set has been detected to have double faulted. When
+            this occurs, the array will not come up.
+            User intervention is required to correct the issue&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthRAIDSetDoubleFaulted trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>8</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthBothFanTraysRemoved</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthBothFanTraysRemoved</event-label>
+        <descr>
+            &lt;p&gt;Sent when both of the fan trays have been removed from the
+            chassis. This results in overheating&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthBothFanTraysRemoved trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>9</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthRAIDlostCache</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthRAIDlostCache</event-label>
+        <descr>
+            &lt;p&gt;Sent because the RAID driver is unable to recover the
+            battery-backed cache. The disk array will not initialize
+            without user intervention. See the Handling Lost Data section
+            in the Group Administration manual for more information.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthRAIDlostCache trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>10</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthFanTrayRemoved</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthFanTrayRemoved</event-label>
+        <descr>
+            &lt;p&gt;Sent when one of the fan trays have been removed from the
+            chassis. This results in overheating&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthFanTrayRemoved trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>11</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthRAIDSetLostBlkTableFull</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthRAIDSetLostBlkTableFull</event-label>
+        <descr>
+            &lt;p&gt;Sent when the RAID lost block table is full.
+            This usually is an indication of lost data.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthRAIDSetLostBlkTableFull trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>12</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthBatteryLessThan72Hours</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthBatteryLessThan72Hours</event-label>
+        <descr>
+            &lt;p&gt;Sent when the battery has insufficient charge to survive
+            a 72 hour power outage.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthBatteryLessThan72Hours trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>13</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthRaidOrphanCache</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthRaidOrphanCache</event-label>
+        <descr>
+            &lt;p&gt;Sent when the RAID driver finds data in the battery-backed cache with no matching disk array.
+            Initialization will not proceed without user intervention. Call EqualLogic Support for assistance.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthRaidOrphanCache trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>14</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthRaidMultipleRaidSets</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthRaidMultipleRaidSets</event-label>
+        <descr>
+            &lt;p&gt;Sent when multiple valid RAIDsets were found. The array cannot choose which one to initialize.
+            Remove all but one valid RAIDset and power-cycle the array.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthRaidMultipleRaidSets trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>15</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthNVRAMBatteryFailed</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthNVRAMBatteryFailed</event-label>
+        <descr>
+            &lt;p&gt;Sent when the NVRAM battery fails . The NVRAM can no longer be used.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthNVRAMBatteryFailed trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>16</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthhwComponentFailedCrit</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthhwComponentFailedCrit</event-label>
+        <descr>
+            &lt;p&gt;Sent when a critical hardware component has failed.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthhwComponentFailedCrit trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>17</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthincompatControlModule</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthincompatControlModule</event-label>
+        <descr>
+            &lt;p&gt;Sent when An incorrect control module has been inserted into the chassis.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthincompatControlModule trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>18</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthlowAmbientTemp</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthlowAmbientTemp</event-label>
+        <descr>
+            &lt;p&gt;Sent when one or more sensors is below its critical temperature range.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthlowAmbientTemp trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>19</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthopsPanelFailure</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthopsPanelFailure</event-label>
+        <descr>
+            &lt;p&gt;Sent when Ops Panel is missing or broken.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthopsPanelFailure trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>20</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthemmLinkFailure</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthemmLinkFailure</event-label>
+        <descr>
+            &lt;p&gt;Sent when enclosure management services are unavailable.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthemmLinkFailure trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>21</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthhighBatteryTemperature</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthhighBatteryTemperature</event-label>
+        <descr>
+            &lt;p&gt;Sent when the cache battery temperature exceeds upper limit; battery charger is disabled.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthhighBatteryTemperature trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>22</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthenclosureOpenPerm</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthenclosureOpenPerm</event-label>
+        <descr>
+            &lt;p&gt;Sent when the enclosure is open for a long time.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthenclosureOpenPerm trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>23</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthsumoChannelBothMissing</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthsumoChannelBothMissing</event-label>
+        <descr>
+            &lt;p&gt;Sent when both the Sumo Channel cards go missing.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthsumoChannelBothMissing trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>24</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthsumoEIPFailureCOndition</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthsumoEIPFailureCOndition</event-label>
+        <descr>
+            &lt;p&gt;Sent when EIP failed in Sumo.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthsumoEIPFailureCOndition trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.2.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>25</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLMEMBER-MIB/eqlMemberHealthsumoChannelBothFailed</uei>
+        <event-label>EQLMEMBER-MIB defined trap event: eqlMemberHealthsumoChannelBothFailed</event-label>
+        <descr>
+            &lt;p&gt;Sent when both the Sumo Channel cards go into failed state.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlMemberHealthStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            normal(1)
+            warning(2)
+            critical(3)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlMemberHealthsumoChannelBothFailed trap received
+            eqlMemberHealthStatus=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="0" varbinddecodedstring="unknown"/>
+            <decode varbindvalue="1" varbinddecodedstring="normal"/>
+            <decode varbindvalue="2" varbinddecodedstring="warning"/>
+            <decode varbindvalue="3" varbinddecodedstring="critical"/>
+        </varbindsdecode>
+    </event>
+    <!-- NOTE - This event is generated from EQLDISK-MIB! -->
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12740.3.2.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/Dell/EQLDISK-MIB/eqlDiskStatusChange</uei>
+        <event-label>EQLDISK-MIB defined trap event: eqlDiskStatusChange</event-label>
+        <descr>
+            &lt;p&gt;Sent when eqlDiskStatus changes from one state to another state&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlDiskStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            on-line(1)
+            spare(2)
+            failed(3)
+            off-line(4)
+            alt-sig(5)
+            too-small(6)
+            history-of-failures(7)
+            unsupported-version(8)
+            unhealthy(9)
+            replacement(10)
+            encrypted(11)
+            notApproved(12)
+            preempt-failed(13)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            eqlDiskSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            eqlDiskStatusChange trap received
+            eqlDiskStatus=%parm[#1]%
+            eqlDiskSlot=%parm[#2]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+        <varbindsdecode>
+            <parmid>parm[#1]</parmid>
+            <decode varbindvalue="1" varbinddecodedstring="on-line"/>
+            <decode varbindvalue="2" varbinddecodedstring="spare"/>
+            <decode varbindvalue="3" varbinddecodedstring="failed"/>
+            <decode varbindvalue="4" varbinddecodedstring="off-line"/>
+            <decode varbindvalue="5" varbinddecodedstring="alt-sig"/>
+            <decode varbindvalue="6" varbinddecodedstring="too-small"/>
+            <decode varbindvalue="7" varbinddecodedstring="history-of-failures"/>
+            <decode varbindvalue="8" varbinddecodedstring="unsupported-version"/>
+            <decode varbindvalue="9" varbinddecodedstring="unhealthy"/>
+            <decode varbindvalue="10" varbinddecodedstring="replacement"/>
+            <decode varbindvalue="11" varbinddecodedstring="encrypted"/>
+            <decode varbindvalue="12" varbinddecodedstring="notApproved"/>
+            <decode varbindvalue="13" varbinddecodedstring="preempt-failed"/>
+        </varbindsdecode>
+    </event>
+</events>

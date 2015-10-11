@@ -40,8 +40,12 @@ public class JdbcCollectionAttribute extends AbstractCollectionAttribute {
     }
     
     @Override
-    public String getNumericValue() {
-        return m_value;
+    public Double getNumericValue() {
+        try {
+            return Double.parseDouble(m_value);
+        } catch (NumberFormatException|NullPointerException e) {
+            return null;
+        }
     }
     
     @Override

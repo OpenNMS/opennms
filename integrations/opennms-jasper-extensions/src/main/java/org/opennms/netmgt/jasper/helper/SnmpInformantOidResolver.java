@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import java.util.StringTokenizer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.StringTokenizer;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
 
 /**
  * <p>SnmpInformantOidResolver class.</p>
@@ -41,10 +42,10 @@ import java.util.StringTokenizer;
  * @version $Id: $
  * @since 1.0-SNAPSHOT
  */
-public class SnmpInformantOidResolver extends JRDefaultScriptlet {
+public abstract class SnmpInformantOidResolver extends JRDefaultScriptlet {
 
     // Logging to reporting log
-    private final Logger logger = LoggerFactory.getLogger(SnmpInformantOidResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(SnmpInformantOidResolver.class);
 
     /**
      * Convert a name of specific device to a decimal ASCII string as
@@ -55,7 +56,7 @@ public class SnmpInformantOidResolver extends JRDefaultScriptlet {
      * @param string2convert String which as to be converted in ASCII integer OID
      * @return converted ASCII OID path
      */
-    public String stringToAsciiOid(String string2convert) {
+    public static String stringToAsciiOid(String string2convert) {
         StringBuilder stringBuilder = new StringBuilder();
         int length = 0;
 
@@ -78,7 +79,7 @@ public class SnmpInformantOidResolver extends JRDefaultScriptlet {
         return stringBuilder.toString();
     }
 
-    public String asciiOidToString(String string2convert) {
+    public static String asciiOidToString(String string2convert) {
         StringBuilder stringBuilder = new StringBuilder();
         StringTokenizer st = new StringTokenizer(string2convert, ".");
 

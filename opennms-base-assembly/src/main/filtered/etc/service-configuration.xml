@@ -108,14 +108,6 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=Capsd</name>
-    <class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
   <service>
     <name>OpenNMS:Name=Notifd</name>
     <class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
@@ -301,14 +293,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="false">
-    <name>OpenNMS:Name=Linkd</name>
-    <class-name>org.opennms.netmgt.linkd.jmx.Linkd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
     <name>OpenNMS:Name=Correlator</name>
     <class-name>org.opennms.netmgt.correlation.jmx.Correlator</class-name>
     <invoke at="start" pass="0" method="init"/>
@@ -333,34 +317,8 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="false">
-    <name>OpenNMS:Name=Xmlrpcd</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Xmlrpcd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=XmlrpcProvisioner</name>
-    <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
     <name>OpenNMS:Name=AsteriskGateway</name>
     <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <!--  AccessPointMonitor is now distributed separately. You will need to ensure
-        it is installed before you enable it here. -->
-  <service enabled="false">
-    <name>OpenNMS:Name=AccessPointMonitor</name>
-    <class-name>org.opennms.netmgt.accesspointmonitor.jmx.AccessPointMonitor</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>

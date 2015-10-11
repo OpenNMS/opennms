@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-        org.opennms.web.svclayer.ResourceService,
+	import="org.opennms.web.svclayer.api.ResourceService,
         org.opennms.web.servlet.XssRequestWrapper,
         org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils
@@ -160,6 +159,7 @@
       </div> <!-- panel-body -->
     </div> <!-- panel -->
 
+    <% if (org.opennms.core.utils.TimeSeries.getGraphEngine() == "png") { %>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Custom Resource<br/>Performance Reports</h3>
@@ -190,6 +190,7 @@
 	<div name="opennms-graphResourceList" id="resourceList2-ie" dataObject="customResources" targetUrl="graph/adhoc2.jsp"></div>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
+    <% } %>
   </div> <!-- column -->
 
   <div class="col-md-6">

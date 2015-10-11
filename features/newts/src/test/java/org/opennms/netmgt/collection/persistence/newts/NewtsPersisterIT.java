@@ -1,0 +1,126 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.collection.persistence.newts;
+
+import static org.junit.Assert.assertEquals;
+import java.nio.file.Paths;
+import java.util.Collections;
+
+import org.cassandraunit.JUnitNewtsCassandra;
+import org.cassandraunit.JUnitNewtsCassandraExecutionListener;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.newts.api.Context;
+import org.opennms.newts.api.Resource;
+import org.opennms.newts.api.Results;
+import org.opennms.newts.api.Results.Row;
+import org.opennms.newts.api.Sample;
+import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.persistence.cassandra.CassandraSampleRepository;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+
+import com.google.common.base.Optional;
+
+/**
+ * Used to verify that numeric attributes in CollectionSets are persisted
+ * in Cassandra as Samples when using the NewtsPersister.
+ *
+ * @author jwhite
+ */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    JUnitNewtsCassandraExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-newts.xml"
+})
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.opennms.newts.config.hostname=" + NewtsPersisterIT.CASSANDRA_HOST,
+        "org.opennms.newts.config.port=" + NewtsPersisterIT.CASSANDRA_PORT,
+        "org.opennms.newts.config.keyspace=" + NewtsPersisterIT.NEWTS_KEYSPACE,
+        "org.opennms.newts.config.max_batch_delay=0", // No delay
+        "org.opennms.timeseries.strategy=newts"
+})
+@JUnitNewtsCassandra(
+        host=NewtsPersisterIT.CASSANDRA_HOST,
+        port=NewtsPersisterIT.CASSANDRA_PORT,
+        keyspace=NewtsPersisterIT.NEWTS_KEYSPACE
+)
+public class NewtsPersisterIT {
+
+    protected static final String CASSANDRA_HOST = "localhost";
+    protected static final int CASSANDRA_PORT = 9043;
+    protected static final String NEWTS_KEYSPACE = "newts";
+
+    @Autowired
+    private NewtsPersisterFactory m_persisterFactory;
+
+    @Autowired
+    private CassandraSampleRepository m_sampleRepository;
+
+    @Test
+    public void canPersist() throws InterruptedException {
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repo = new RrdRepository();
+        // Only the last element of the path matters here
+        repo.setRrdBaseDir(Paths.get("a","path","that","ends","with","snmp").toFile());
+        Persister persister = m_persisterFactory.createPersister(params, repo);
+
+        // Build a collection set with a single sample
+        Timestamp now = Timestamp.now();
+        CollectionSet collectionSet = new CollectionSetBuilder()
+            .withSample(Paths.get("1"), "metrics", "metric", "GAUGE", 900)
+            .withTimestamp(now.asDate())
+            .build();
+
+        // Persist
+        collectionSet.visit(persister);
+
+        // Wait for the sample(s) to be flushed
+        Thread.sleep(5 * 1000);
+
+        // Fetch the (persisted) sample
+        Resource resource = new Resource("snmp:1:metrics");
+        Timestamp end = Timestamp.now();
+        Results<Sample> samples = m_sampleRepository.select(Context.DEFAULT_CONTEXT, resource, Optional.of(now), Optional.of(end));
+
+        assertEquals(1, samples.getRows().size());
+        Row<Sample> row = samples.getRows().iterator().next();
+        assertEquals(900, row.getElement("metric").getValue().doubleValue(), 0.00001);
+    }
+}

@@ -45,15 +45,18 @@ import org.springframework.util.Assert;
  */
 public class OnmsResource implements Comparable<OnmsResource> {
 
-    private String m_name;
-    private Set<OnmsAttribute> m_attributes;
+    private final String m_name;
+    private final Set<OnmsAttribute> m_attributes;
+    private final OnmsResourceType m_resourceType;
+    private final List<OnmsResource> m_resources;
+    private final ResourcePath m_path;
+
     private String m_label;
     private String m_link;
-    private OnmsResourceType m_resourceType;
     private OnmsEntity m_entity;
-    private List<OnmsResource> m_resources;
     private OnmsResource m_parent = null;
-    
+    private boolean m_attributesUpdatedWithResource = false;
+
     /**
      * <p>Constructor for OnmsResource.</p>
      *
@@ -63,8 +66,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
      * @param attributes a {@link java.util.Set} object.
      */
     public OnmsResource(String name, String label,
-            OnmsResourceType resourceType, Set<OnmsAttribute> attributes) {
-        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0));
+            OnmsResourceType resourceType, Set<OnmsAttribute> attributes, ResourcePath path) {
+        this(name, label, resourceType, attributes, new ArrayList<OnmsResource>(0), path);
     }
     
     /**
@@ -78,22 +81,20 @@ public class OnmsResource implements Comparable<OnmsResource> {
      */
     public OnmsResource(String name, String label,
             OnmsResourceType resourceType, Set<OnmsAttribute> attributes,
-            List<OnmsResource> resources) {
+            List<OnmsResource> resources, ResourcePath path) {
         Assert.notNull(name, "name argument must not be null");
         Assert.notNull(label, "label argument must not be null");
         Assert.notNull(resourceType, "resourceType argument must not be null");
         Assert.notNull(attributes, "attributes argument must not be null");
         Assert.notNull(resources, "resources argument must not be null");
-        
+        Assert.notNull(path, "path argument must not be null");
+
         m_name = name;
         m_label = label;
         m_resourceType = resourceType;
         m_attributes = attributes;
         m_resources = resources;
-        
-        for (OnmsAttribute attribute : m_attributes) {
-            attribute.setResource(this);
-        }
+        m_path = path;
     }
 
     /**
@@ -115,6 +116,15 @@ public class OnmsResource implements Comparable<OnmsResource> {
     }
 
     /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
+    public void setLabel(String label) {
+        m_label = label;
+    }
+
+    /**
      * <p>getResourceType</p>
      *
      * @return a {@link org.opennms.netmgt.model.OnmsResourceType} object.
@@ -129,9 +139,18 @@ public class OnmsResource implements Comparable<OnmsResource> {
      * @return a {@link java.util.Set} object.
      */
     public Set<OnmsAttribute> getAttributes() {
+        // Only update the attribute with the resource on the first get
+        // In some cases the attributes will be stored in a lazy set
+        // so we don't want to preemptively load it
+        if (!m_attributesUpdatedWithResource) {
+            for (OnmsAttribute attribute : m_attributes) {
+                attribute.setResource(this);
+            }
+            m_attributesUpdatedWithResource = true;
+        }
         return m_attributes;
     }
-    
+
     /**
      * <p>getChildResources</p>
      *
@@ -343,4 +362,8 @@ public class OnmsResource implements Comparable<OnmsResource> {
         m_entity = entity;
     }
 
+    public ResourcePath getPath() {
+        return m_path;
+    }
+    
 }

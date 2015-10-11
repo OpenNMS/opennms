@@ -37,6 +37,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.Collections;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -54,6 +55,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.config.jmx.JmxConfig;
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +80,8 @@ public class Jsr160DetectorTest implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+
+        this.m_detector.setJmxConfigDao(() -> new JmxConfig());
     }
 
     @BeforeClass

@@ -28,8 +28,10 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
-import org.opennms.features.jmxconfiggenerator.Starter;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
@@ -40,6 +42,7 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
 
+import javax.management.JMException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
@@ -91,14 +94,19 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
     @Override
 	public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
         try {
-            JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-            JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(config.isJmxmp(), config.getHost(), config.getPort());
+            final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
+            final JMXServiceURL jmxServiceURL = JmxHelper.createJmxServiceUrl(null, config.getHost(), config.getPort(), config.isJmxmp());
 
-            try (JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL)) {
-                final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), config.isRunWritableMBeans(), Starter.loadInternalDictionary());
+            try (JMXConnector connector = JmxHelper.createJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL)) {
+                final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(
+                        connector.getMBeanServerConnection(),
+                        "anyservice",
+                        !config.isSkipDefaultVM(),
+                        config.isSkipNonNumber(),
+                        JmxHelper.loadInternalDictionary());
                 applyFilters(generatedJmxConfigModel);
                 return generatedJmxConfigModel;
-            } catch (IOException e) {
+            } catch (IOException | MBeanServerQueryException | JMException e) {
                 throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
             }
         } catch (MalformedURLException e) {

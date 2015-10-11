@@ -267,8 +267,8 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
 	@XmlTransient
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName", nullable=false)
+    @ManyToOne
+    @JoinColumn(name="systemId", nullable=false)
     public OnmsDistPoller getDistPoller() {
         return this.m_distPoller;
     }
@@ -808,6 +808,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public String toString() {
         return new ToStringCreator(this)
             .append("alarmid", getId())
+            .append("distPoller", getDistPoller())
             .toString();
     }
 

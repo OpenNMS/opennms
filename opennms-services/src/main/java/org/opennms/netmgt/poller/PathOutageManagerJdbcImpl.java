@@ -42,6 +42,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.dao.api.PathOutageManager;
 
 /**
  * The source for all path outage business objects (nodes, critical path IPs,
@@ -54,15 +55,15 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
  */
 public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
-    private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT criticalpathip, criticalpathservicename FROM pathoutage ORDER BY criticalpathip, criticalpathservicename";
+    private static final String GET_CRITICAL_PATHS = "SELECT DISTINCT node.nodelabel, pathoutage.criticalpathip, pathoutage.criticalpathservicename FROM pathoutage, ipinterface, node WHERE pathoutage.nodeid = node.nodeid ORDER BY node.nodelabel, pathoutage.criticalpathip, pathoutage.criticalpathservicename";
 
     private static final String GET_CRITICAL_PATH_BY_NODEID = "SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
 
     private static final String GET_NODES_IN_PATH = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
 
-    private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
+    private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices, ipInterface WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = ? AND status ='A'";
 
-    private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL and nodeid=?";
+    private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages, ifServices, ipInterface WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = ? AND svcregainedeventid IS NULL";
 
     private static final String COUNT_NODES_IN_PATH = "SELECT count(DISTINCT pathoutage.nodeid) FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.criticalpathservicename=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D'";
 
@@ -72,17 +73,13 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
 
     private static final String GET_NODELABEL_BY_NODEID = "SELECT nodelabel FROM node WHERE nodeid=?";
 
-    private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages WHERE ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
+    private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages, ifServices, ipInterface WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
-    private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
+    private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifServices, ipInterface WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.ipaddr=? AND status='A' AND ifServices.serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
     private static final String GET_DEPENDENCY_NODES_BY_NODEID="select po.nodeid from pathoutage po left join ipinterface intf on po.criticalpathip=intf.ipaddr where intf.nodeid=?";
 
     private static final String GET_NODES_IN_PATHS = "SELECT DISTINCT pathoutage.nodeid FROM pathoutage, ipinterface WHERE pathoutage.criticalpathip=? AND pathoutage.nodeid=ipinterface.nodeid AND ipinterface.ismanaged!='D' ORDER BY nodeid";
-
-    
-    /** Constant <code>NO_CRITICAL_PATH="Not Configured"</code> */
-    public static final String NO_CRITICAL_PATH = "Not Configured";
 
     public static PathOutageManager getInstance() {
         return new PathOutageManagerJdbcImpl();
@@ -111,9 +108,10 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
             d.watch(rs);
 
             while (rs.next()) {
-                String[] path = new String[2];
+                String[] path = new String[3];
                 path[0] = rs.getString(1);
                 path[1] = rs.getString(2);
+                path[2] = rs.getString(3);
                 paths.add(path);
             }
             return paths;
@@ -133,46 +131,38 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
      */
     @Override
     public String getPrettyCriticalPath(int nodeID) throws SQLException {
-        final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class);
-        String result = NO_CRITICAL_PATH;
-
-        try {
-            Connection conn = DataSourceFactory.getInstance().getConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement(GET_CRITICAL_PATH_BY_NODEID);
-            d.watch(stmt);
-            stmt.setInt(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            while (rs.next()) {
-                result = (rs.getString(1) + " " + rs.getString(2));
-            }
-        } finally {
-            d.cleanUp();
+        String[] path = queryForCriticalPath(nodeID);
+        if (path[0] == null) {
+            return NO_CRITICAL_PATH;
+        } else {
+            return path[0] + " " + path[1];
         }
-
-        return result;
     }
 
-    @Override
-    public String[] getCriticalPath(int nodeId) {
+    private final String[] queryForCriticalPath(int nodeId) {
         final String[] cpath = new String[2];
         Querier querier = new Querier(DataSourceFactory.getInstance(), GET_CRITICAL_PATH_BY_NODEID) {
-    
+
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 cpath[0] = rs.getString(1);
                 cpath[1] = rs.getString(2);
             }
-    
+
         };
         querier.execute(Integer.valueOf(nodeId));
-    
-        if (cpath[0] == null || cpath[0].equals("")) {
+        return cpath;
+    }
+
+    @Override
+    public String[] getCriticalPath(int nodeId) {
+        final String[] cpath = queryForCriticalPath(nodeId);
+        if (cpath[0] == null || "".equals(cpath[0].trim())) {
+            // If no critical path was located in the table, then use the default critical path
             cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
             cpath[1] = "ICMP";
-        }
-        if (cpath[1] == null || cpath[1].equals("")) {
+        } else if (cpath[1] == null || "".equals(cpath[1].trim())) {
+            // If there was no service name in the table, then use the default of ICMP
             cpath[1] = "ICMP";
         }
         return cpath;
@@ -417,7 +407,7 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
     }
   
     @Override
-    public Set<Integer> getDependencyNodesByCriticalPath(String criticalpathip) throws SQLException {
+    public Set<Integer> getAllNodesDependentOnAnyServiceOnInterface(String criticalpathip) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 	    Set<Integer> pathNodes = new TreeSet<Integer>();
@@ -439,7 +429,7 @@ public class PathOutageManagerJdbcImpl implements PathOutageManager{
     }
     
     @Override
-	public Set<Integer> getDependencyNodesByNodeId(int nodeid) throws SQLException {
+	public Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeid) throws SQLException {
 	    final Connection conn = DataSourceFactory.getInstance().getConnection();
 	    final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
 

@@ -32,24 +32,23 @@ import java.io.File;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
-import org.opennms.netmgt.collection.persistence.rrd.OneToOnePersister;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -119,6 +118,10 @@ final class CollectableService implements ReadyRunnable {
     
     private final RrdRepository m_repository;
 
+    private final PersisterFactory m_persisterFactory;
+
+    private final ResourceStorageDao m_resourceStorageDao;
+
     /**
      * Constructs a new instance of a CollectableService object.
      *
@@ -130,13 +133,18 @@ final class CollectableService implements ReadyRunnable {
      * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
-    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) throws CollectionInitializationException {
+    protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec,
+            Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
+            PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
+
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
         m_ifaceDao = ifaceDao;
         m_transMgr = transMgr;
+        m_persisterFactory = persisterFactory;
+        m_resourceStorageDao = resourceStorageDao;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
@@ -150,7 +158,7 @@ final class CollectableService implements ReadyRunnable {
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository,  m_params);
+        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
     }
     
     /**
@@ -377,17 +385,9 @@ final class CollectableService implements ReadyRunnable {
         m_status = status;
     }
 
-        private static BasePersister createPersister(ServiceParameters params, RrdRepository repository) {
-            if (ResourceTypeUtils.isStoreByGroup()) {
-                return new GroupPersister(params, repository);
-            } else {
-                return new OneToOnePersister(params, repository);
-            }
-        }
-
-        /**
-         * Perform data collection.
-         */
+    /**
+     * Perform data collection.
+     */
 	private void doCollection() throws CollectionException {
 		LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
 		CollectionSet result = null;
@@ -396,13 +396,12 @@ final class CollectableService implements ReadyRunnable {
 		    if (result != null) {
                         Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         try {
-                            BasePersister persister = createPersister(m_params, m_repository);
-                            persister.setIgnorePersist(result.ignorePersist());
+                            CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
                             result.visit(persister);
                         } finally {
                             Collectd.instrumentation().endPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                         }
-                        
+
                         /*
                          * Do the thresholding; this could be made more generic (listeners being passed the collectionset), but frankly, why bother?
                          * The first person who actually needs to configure that sort of thing on the fly can code it up.

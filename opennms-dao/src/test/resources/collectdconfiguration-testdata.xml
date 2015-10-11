@@ -9,6 +9,7 @@
 		<specific>fe80:0000:0000:0000:ffff:eeee:dddd:cccc</specific>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-url>file:${install.etc.dir}/include</include-url>
+		<storeByIfAlias>true</storeByIfAlias>
 		
 		<service name="SNMP" interval="300000" user-defined="false" status="on">
 			<parameter key="collection" value="default"/>

@@ -80,11 +80,11 @@ public class MockMonitor implements ServiceMonitor {
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
-                LOG.info("Invalid Poll: {}{}", ipAddr, m_svcName);
+                LOG.info("Invalid Poll: {}/{}", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
                 return PollStatus.unknown();
             } else {
-                LOG.info("Poll: [{}{}{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
+                LOG.info("Poll: [{}/{}/{}]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
                 PollStatus pollStatus = svc.poll();
                 return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
             }

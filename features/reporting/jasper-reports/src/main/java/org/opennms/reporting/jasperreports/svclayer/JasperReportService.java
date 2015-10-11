@@ -117,17 +117,9 @@ public class JasperReportService implements ReportService {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<ReportParameters>() {
                 @Override public ReportParameters call() throws Exception {
                     final ReportParameters reportParameters = new ReportParameters();
+                    final JasperReport jasperReport = getJasperReport(reportId);
+                    final Map<String, Object> defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, new HashMap<>());
 
-                    JasperReport jasperReport = null;
-                    Map<String, Object> defaultValues = null;
-
-                    try {
-                        jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-                        defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, new HashMap<String, Object>());
-                    } catch (final JRException e) {
-                        LOG.error("unable to compile jasper report", e);
-                        throw new ReportException("unable to compile jasperReport", e);
-                    }
 
                     final JRParameter[] reportParms = jasperReport.getParameters();
 
@@ -227,7 +219,7 @@ public class JasperReportService implements ReportService {
                                 if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
                                     doubleParm.setValue((Double) defaultValues.get(reportParm.getName()));
                                 } else {
-                                    doubleParm.setValue(new Double(0));
+                                    doubleParm.setValue(Double.valueOf(0));
                                 }
                                 doubleParms.add(doubleParm);
                                 continue;
@@ -364,17 +356,7 @@ public class JasperReportService implements ReportService {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<String>() {
                 @Override public String call() throws Exception {
                     final String baseDir = System.getProperty("opennms.report.dir");
-                    JasperReport jasperReport = null;
-
-                    final DBUtils db = new DBUtils();
-
-                    try {
-                        jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-                    } catch (JRException e) {
-                        LOG.error("Unable to compile jasper report {}", reportId, e);
-                        throw new ReportException("Unable to compile jasperReport " + reportId, e);
-                    }
-
+                    final JasperReport jasperReport = getJasperReport(reportId);
                     final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
 
                     // Find sub reports and provide sub reports as parameter
@@ -385,6 +367,7 @@ public class JasperReportService implements ReportService {
 
                     try {
                         if ("jdbc".equalsIgnoreCase(m_globalReportRepository.getEngine(reportId))) {
+                            final DBUtils db = new DBUtils();
                             try {
                                 final Connection connection = DataSourceFactory.getInstance().getConnection();
                                 db.watch(connection);
@@ -421,7 +404,7 @@ public class JasperReportService implements ReportService {
      * @param mainReport   JasperReport a compiled main report
      * @return a sub report parameter map as {@link java.util.HashMap<String,Object>} object
      */
-    private Map<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) {
+    private Map<String, Object> buildSubreport(final String mainReportId, final JasperReport mainReport) throws ReportException {
         int idx = mainReportId.indexOf('_');
         String repositoryId = idx > -1 ? mainReportId.substring(0, idx) : "local";
         Map<String, Object> subreportMap = new HashMap<String, Object>();
@@ -436,11 +419,7 @@ public class JasperReportService implements ReportService {
 
         for (final Map.Entry<String,Object> entry : subreportMap.entrySet()) {
             final String reportId = repositoryId + "_" + entry.getKey();
-            try {
-                entry.setValue(JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId)));
-            } catch (final JRException e) {
-                LOG.debug("failed to compile report {}", reportId, e);
-            }
+            entry.setValue(getJasperReport(reportId));
         }
 
         for (final Map.Entry<String,Object> entry : subreportMap.entrySet()) {
@@ -457,15 +436,7 @@ public class JasperReportService implements ReportService {
         try {
             Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
                 @Override public Void call() throws Exception {
-                    JasperReport jasperReport = null;
-
-                    try {
-                        jasperReport = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
-                    } catch (final JRException e) {
-                        LOG.error("unable to compile jasper report", e);
-                        throw new ReportException("unable to compile jasperReport", e);
-                    }
-
+                    final JasperReport jasperReport = getJasperReport(reportId);
                     final Map<String, Object> jrReportParms = buildJRparameters(reportParms, jasperReport.getParameters());
                     jrReportParms.putAll(buildSubreport(reportId, jasperReport));
 
@@ -598,5 +569,21 @@ public class JasperReportService implements ReportService {
 
     public void setGlobalReportRepository(final GlobalReportRepository globalReportRepository) {
         m_globalReportRepository = globalReportRepository;
+    }
+
+    private JasperReport getJasperReport(String reportId) throws ReportException {
+        try {
+            JasperReport report = JasperCompileManager.compileReport(m_globalReportRepository.getTemplateStream(reportId));
+            for (Object eachKey : System.getProperties().keySet()) {
+                String eachStringKey = (String) eachKey;
+                if (eachStringKey.startsWith("net.sf.jasperreports")) {
+                    report.setProperty(eachStringKey, System.getProperty(eachStringKey));
+                }
+            }
+            return report;
+        } catch (final JRException e) {
+            LOG.error("unable to compile jasper report {}", e);
+            throw new ReportException("unable to compile jasperReport", e);
+        }
     }
 }

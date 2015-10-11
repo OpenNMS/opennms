@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.collection.persistence.rrd;
 
+import java.util.Collections;
+
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.rrd.RrdStrategy;
 
 
 /**
@@ -47,8 +51,8 @@ public class OneToOnePersister extends BasePersister {
      * @param params a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
-    public OneToOnePersister(ServiceParameters params,  RrdRepository repository) {
-        super(params, repository);
+    protected OneToOnePersister(ServiceParameters params,  RrdRepository repository, RrdStrategy<?, ?> rrdStrategy, ResourceStorageDao resourceStorageDao) {
+        super(params, repository, rrdStrategy, resourceStorageDao);
     }
 
     /** {@inheritDoc} */
@@ -56,7 +60,7 @@ public class OneToOnePersister extends BasePersister {
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
-            createBuilder(attribute.getResource(), attribute.getName(), attribute.getAttributeType());
+            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
             storeAttribute(attribute);
         }
     }
@@ -69,7 +73,5 @@ public class OneToOnePersister extends BasePersister {
         }
         popShouldPersist();
     }
-
-
 
 }

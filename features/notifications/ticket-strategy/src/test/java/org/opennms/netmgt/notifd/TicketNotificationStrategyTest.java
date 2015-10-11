@@ -30,12 +30,12 @@ package org.opennms.netmgt.notifd;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.notifd.TicketNotificationStrategy.AlarmType;
 import org.opennms.test.mock.EasyMockUtils;

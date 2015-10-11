@@ -46,14 +46,14 @@ import org.easymock.IAnswer;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.api.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
 
 public class DemandPollServiceTest extends TestCase {
@@ -147,10 +147,11 @@ public class DemandPollServiceTest extends TestCase {
 		}
 
                 @Override
-		public void save(DemandPoll entity) {
+		public Integer save(DemandPoll entity) {
 			if (entity.getId() == null) {
 				entity.setId(m_id);
 				m_demandPoll = entity;
+				return m_id;
 			} else {
 				throw new RuntimeException("Can't save an entity that already has an id");
 			}

@@ -1,5 +1,5 @@
 
-==== Topology
+===== Topology
 
 This _Dashlet_ shows a link:http://www.opennms.org/wiki/Topology_Maps[Topology Map].
 The _Topology Map_ can be configured with the following parameter.

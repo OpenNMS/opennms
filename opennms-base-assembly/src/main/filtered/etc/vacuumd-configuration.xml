@@ -450,10 +450,10 @@
         <!-- Remove expired locations specific status changes -->
         DELETE 
           FROM location_specific_status_changes
-         WHERE (locationmonitorid, ifserviceid, id) 
-        NOT IN (SELECT locationmonitorid, ifserviceid, max(id) 
+         WHERE (systemid, ifserviceid, id) 
+        NOT IN (SELECT systemid, ifserviceid, max(id) 
                   FROM location_specific_status_changes 
-              GROUP BY locationmonitorid, ifserviceid)
+              GROUP BY systemid, ifserviceid)
            AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>

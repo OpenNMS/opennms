@@ -43,7 +43,7 @@ import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 

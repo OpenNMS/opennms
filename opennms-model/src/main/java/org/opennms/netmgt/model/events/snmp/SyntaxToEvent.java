@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.model.events.snmp;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;

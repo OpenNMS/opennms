@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 
 import org.junit.Test;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -61,9 +60,7 @@ public class EventBuilderTest {
         
         EventBuilder builder = new EventBuilder("uei.opennms.org/test", "test", date);
         Event ifEvent = builder.getEvent();
-        assertEquals(date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
-        
-        
+        assertEquals(date, ifEvent.getTime());
     }
 
 }

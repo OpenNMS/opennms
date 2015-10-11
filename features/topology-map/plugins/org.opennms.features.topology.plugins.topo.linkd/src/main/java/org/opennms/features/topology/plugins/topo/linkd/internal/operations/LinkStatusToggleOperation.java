@@ -146,7 +146,7 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
         m_cdpLinkStatusProvider = cdpLinkStatusProvider;
     }
 
-    public void setEnlinkdService(ServiceReference enlinkdService) {
+    public void setEnlinkdService(ServiceReference<?> enlinkdService) {
         if(enlinkdService != null){
             m_enlinkdIsActive = true;
         }

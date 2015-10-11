@@ -38,7 +38,7 @@ import com.vaadin.data.util.BeanItem;
 public class ComponentTest {
 	@Test
 	public void testComponentBeanProperties() throws Exception {
-		Collection<?> ids = new BeanItem<AbstractVertex>(new AbstractVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
+		Collection<?> ids = new BeanItem<AbstractVertex>(new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
 		for (Object id : ids) {
 			System.out.println(id);
 		}

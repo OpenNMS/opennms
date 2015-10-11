@@ -51,6 +51,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
@@ -60,7 +61,7 @@ import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
@@ -166,7 +167,7 @@ public class WmiCollector implements ServiceCollector {
                             for (final Attrib attrib : wpm.getAttrib()) {
                                 final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
                                 final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
-                                resource.setAttributeValue(attribType, prop.getWmiValue().toString());
+                                resource.setAttributeValue(attribType, prop.getWmiValue());
                             }
                             collectionSet.getCollectionResources().add(resource);
                         }

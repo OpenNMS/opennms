@@ -31,13 +31,12 @@ package org.opennms.netmgt.alarmd.northbounder.http;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.SSLContext;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -46,22 +45,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.EmptyKeyRelaxedTrustSSLContext;
 import org.opennms.core.utils.HttpResponseRange;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
@@ -114,32 +102,27 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         int socketTimeout = 3000;
         Integer retryCount = Integer.valueOf(3);
         
-        HttpVersion httpVersion = determineHttpVersion(m_config.getHttpVersion());        
-        String policy = CookiePolicy.BROWSER_COMPATIBILITY;
-        
         URI uri = m_config.getURI();
+ 
+        final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                .setConnectionTimeout(connectionTimeout)
+                .setSocketTimeout(socketTimeout)
+                .setRetries(retryCount)
+                .useBrowserCompatibleCookies();
         
-        DefaultHttpClient client = new DefaultHttpClient(buildParams(httpVersion, connectionTimeout,
-                socketTimeout, policy, m_config.getVirtualHost()));
-        
-        client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
-        
+        if (m_config.getVirtualHost() != null && !m_config.getVirtualHost().trim().isEmpty()) {
+            clientWrapper.setVirtualHost(m_config.getVirtualHost());
+        }
+        if (m_config.getUserAgent() != null && !m_config.getUserAgent().trim().isEmpty()) {
+            clientWrapper.setUserAgent(m_config.getUserAgent());
+        }
+
         if ("https".equals(uri.getScheme())) {
-            final SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-            final Scheme https = registry.getScheme("https");
-
-            // Override the trust validation with a lenient implementation
-            SSLSocketFactory factory = null;
-            
             try {
-                factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM), SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            } catch (Throwable e) {
-                throw new NorthbounderException(e);
+                clientWrapper.useRelaxedSSL("https");
+            } catch (final GeneralSecurityException e) {
+                throw new NorthbounderException("Failed to configure HTTP northbounder for relaxed SSL.", e);
             }
-
-            final Scheme lenient = new Scheme(https.getName(), https.getDefaultPort(), factory);
-            // This will replace the existing "https" schema
-            registry.register(lenient);
         }
         
         HttpUriRequest method = null;
@@ -178,28 +161,27 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             //List<NameValuePair> getParms = null;
             method = new HttpGet(uri);
         }
-        
-        method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, m_config.getUserAgent());
+        HttpVersion httpVersion = determineHttpVersion(m_config.getHttpVersion());        
+        clientWrapper.setVersion(httpVersion);
 
         HttpResponse response = null;
         try {
-            response = client.execute(method);
-        } catch (ClientProtocolException e) {
-            throw new NorthbounderException(e);
-        } catch (IOException e) {
-            throw new NorthbounderException(e);
-        }
-        
-        if (response != null) {
+            response = clientWrapper.execute(method);
+
             int code = response.getStatusLine().getStatusCode();
             HttpResponseRange range = new HttpResponseRange("200-399");
             if (!range.contains(code)) {
                 LOG.debug("response code out of range for uri:{}.  Expected {} but received {}", uri, range, code);
                 throw new NorthbounderException("response code out of range for uri:" + uri + ".  Expected " + range + " but received " + code);
             }
+            LOG.debug("HTTP Northbounder received response: {}", response.getStatusLine().getReasonPhrase());
+        } catch (final ClientProtocolException e) {
+            throw new NorthbounderException(e);
+        } catch (final IOException e) {
+            throw new NorthbounderException(e);
+        } finally {
+            IOUtils.closeQuietly(clientWrapper);
         }
-        
-        LOG.debug(response != null ? response.getStatusLine().getReasonPhrase() : "Response was null");
     }
 
 
@@ -213,18 +195,6 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return httpVersion;
     }
 
-    private HttpParams buildParams(HttpVersion protocolVersion,
-            int connectionTimeout, int socketTimeout, String policy,
-            String vHost) {
-        HttpParams parms = new BasicHttpParams();
-        parms.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, protocolVersion);
-        parms.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, connectionTimeout);
-        parms.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, socketTimeout);
-        parms.setParameter(ClientPNames.COOKIE_POLICY, policy);
-        parms.setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(vHost, 8080));
-        return parms;
-    }
-    
     public HttpNorthbounderConfig getConfig() {
         return m_config;
     }

@@ -35,8 +35,9 @@
 			java.util.Set,
 			org.opennms.core.db.DataSourceFactory,
 			org.opennms.core.utils.DBUtils,
-			org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
-" %>
+			org.opennms.netmgt.dao.api.PathOutageManager,
+			org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"
+%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Path Outage Nodes" />
@@ -48,8 +49,9 @@
 <% 
       String critIp = request.getParameter("critIp");
       String critSvc = request.getParameter("critSvc");
-      String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(critIp, critSvc);
-      Set<Integer> nodeList = PathOutageManagerJdbcImpl.getInstance().getNodesInPath(critIp, critSvc);
+      PathOutageManager pathOutageManager = PathOutageManagerDaoImpl.getInstance();
+      String[] pthData = pathOutageManager.getCriticalPathData(critIp, critSvc);
+      Set<Integer> nodeList = pathOutageManager.getNodesInPath(critIp, critSvc);
 %>
   
 <div class="panel panel-default fix-subpixel">
@@ -76,20 +78,13 @@
           </tr>
           </thead>
 
-          <%
-          final Connection conn = DataSourceFactory.getInstance().getConnection();
-          final DBUtils d = new DBUtils(PathOutageManagerJdbcImpl.class, conn);
-          try {
-              for (Integer nodeid : nodeList) {
-                  String labelColor[] = PathOutageManagerJdbcImpl.getInstance().getLabelAndStatus(nodeid.toString(), conn); %>
-                  <tr>
-                  <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-                  <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
-                  </tr>
-              <% } %>
-          <% } finally {
-            d.cleanUp();
-          } %>
+          <% for (Integer nodeid : nodeList) {
+              String labelColor[] = PathOutageManagerDaoImpl.getInstance().getLabelAndStatus(nodeid.toString(), null); %>
+              <tr>
+              <td><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+              <td class="bright severity-<%= labelColor[1].toLowerCase() %>"><%= labelColor[2] %></td>
+              </tr>
+          <% } %>
     </table>
 </div>
 

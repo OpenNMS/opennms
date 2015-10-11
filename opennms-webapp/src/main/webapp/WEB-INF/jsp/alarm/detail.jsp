@@ -42,6 +42,7 @@
         org.opennms.netmgt.model.OnmsAcknowledgment,
         org.opennms.netmgt.model.OnmsAlarm,
         org.opennms.netmgt.model.OnmsSeverity,
+        org.opennms.netmgt.model.TroubleTicketState,
         org.opennms.web.api.Authentication,
         org.apache.commons.configuration.Configuration,
         org.apache.commons.configuration.ConfigurationException,
@@ -262,7 +263,7 @@
 				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
                 <div class="btn-group btn-group-sm">
-	            <form:input class="btn btn-default" type="submit" value="Save" />
+                <form:input class="btn btn-default" type="submit" value="Save" />
                 <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
                 </div>
 	         </form>
@@ -382,7 +383,7 @@
 <form class="form-inline" method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="${(!empty alarm.TTicketState) && (alarm.TTicketState != 'CREATE_FAILED')}" />
+    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
     <%-- Remedy Specific TroubleTicket - Start --%>
     <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
       <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
@@ -404,19 +405,19 @@
         <% }  %>
       </select>
     <% } %>
-    <%-- Remedy Specific TroubleTicket - Start --%>
+    <%-- Remedy Specific TroubleTicket - End --%>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="${(empty alarm.TTicketId)}"/>
+    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null) ? true : false %>"/>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="${(empty alarm.TTicketState) || ((alarm.TTicketState != 'OPEN') && (alarm.TTicketState != 'CLOSE_FAILED')) }" />
+    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
 </form>
 
 </div>

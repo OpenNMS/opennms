@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
-<!-- 2015-03-10T10:39:01 -->
+<!-- 2015-08-25T11:41:28 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="468f1459-7b6a-4d45-9e47-2b2d5ef91a96">
 	<property name="ireport.zoom" value="1.3310000000000004"/>
 	<property name="ireport.x" value="0"/>
@@ -83,9 +83,17 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{startDate}]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<parameterDescription><![CDATA[]]></parameterDescription>
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String">
+		<parameterDescription><![CDATA[The URL of the Measurements API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["http://localhost:8980/opennms/rest/measurements"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String">
+		<parameterDescription><![CDATA[The username to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String">
+		<parameterDescription><![CDATA[The password to use to authenticate against the Measurement API]]></parameterDescription>
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -150,8 +158,14 @@ ORDER BY
 					<subreportParameter name="ONMS_REPORT_DIR">
 						<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
-					<subreportParameter name="rrdDir">
-						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+					<subreportParameter name="MEASUREMENT_URL">
+						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="MEASUREMENT_USERNAME">
+						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_USERNAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="MEASUREMENT_PASSWORD">
+						<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="startDate">
 						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>

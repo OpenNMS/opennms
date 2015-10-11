@@ -16,6 +16,31 @@
     <severity>Indeterminate</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/internal/poller/outageCreated</uei>
+    <event-label>OpenNMS-defined node event: outageCreated</event-label>
+    <descr>
+      &lt;p&gt;A %service% outage was created on interface
+      %interface%.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      %service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/internal/poller/outageResolved</uei>
+    <event-label>OpenNMS-defined node event: outageResolved</event-label>
+    <descr>
+      &lt;p&gt;The %service% service outage on interface %interface% 
+      has been restored.&lt;/p&gt;
+    </descr>
+    <logmsg dest='donotpersist'>
+      The %service% outage on interface %interface% has been
+      resolved.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>  
+  <event>
     <uei>uei.opennms.org/internal/capsd/discPause</uei>
     <event-label>OpenNMS-defined internal event: capsd discPause</event-label>
     <descr>
@@ -287,22 +312,6 @@
     <logmsg dest="logndisplay">
                         Reschedule polling to services on a specified interface(%parm[ipaddr]%).                
                 </logmsg>
-    <severity>Normal</severity>
-  </event>
-  <event>
-    <uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
-    <event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
-    <descr>
-      &lt;p&gt;This event will be produced by capsd to carry the process status
-                        information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm[txNo]%, 
-                        source event uei, %parm[srcUei]%, message, %parm[message]%, and process
-                        status, %parm[status]%.&lt;/p&gt;
-    </descr>
-    <logmsg dest="logndisplay">
-      &lt;p&gt;A request has been made to xmlrpcd to report status for 
-      %parm[srcUei]%.&lt;/p&gt;
-    </logmsg>
     <severity>Normal</severity>
   </event>
   <event>

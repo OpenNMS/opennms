@@ -31,16 +31,16 @@ package org.opennms.netmgt.provision.persist;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.TransactionAwareEventForwarder;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
@@ -188,7 +188,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService, Initia
     /**
      * <p>setEventProxy</p>
      *
-     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @param proxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
      * @throws java.lang.Exception if any.
      */
     public void setEventProxy(final EventProxy proxy) throws Exception {

@@ -1,0 +1,18 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-oracle-java]]
+== Installing Oracle Java Environment
+
+Installing _Oracle Java 8_ requires external installation packages.
+These packages are provided from _Oracle_ or 3rd party maintainer for the _Debian_ and _Ubuntu-based_ _Linux Distributions_.
+The following tools should be installed to follow this installation manual:
+
+* download files and tools with `wget` and `curl`
+* extract archives with `tar`
+* text manipulation with `sed`
+* Editor, e.g. `vi`, `nano` or `joe`
+* internet access
+
+WARNING: By downloading the _Oracle Java 8 RPM_ installer you'll accept the license agreement from _Oracle_ which can be found on the link:https://www.java.com/en/download/faq/distribution.xml[Java distribution] web site.

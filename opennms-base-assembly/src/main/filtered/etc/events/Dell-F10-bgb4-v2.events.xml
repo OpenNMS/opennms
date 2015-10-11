@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6027.20.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>1</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/dell/force10/f10BgpM2Established</uei>
+        <event-label>FORCE10-BGP4-V2-MIB defined trap event: f10BgpM2Established</event-label>
+        <descr>&lt;p&gt;The BGP Established event is generated when
+            the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLocalAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            ipv4(1)
+            ipv6(2)
+            ipv4z(3)
+            ipv6z(4)
+            dns(16)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLocalAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerRemoteAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            ipv4(1)
+            ipv6(2)
+            ipv4z(3)
+            ipv6z(4)
+            dns(16)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLastErrorReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            idle(1)
+            connect(2)
+            active(3)
+            opensent(4)
+            openconfirm(5)
+            established(6)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            f10BgpM2Established trap received
+            f10BgpM2PeerLocalAddrType=%parm[#1]%
+            f10BgpM2PeerLocalAddr=%parm[#2]%
+            f10BgpM2PeerRemoteAddrType=%parm[#3]%
+            f10BgpM2PeerRemoteAddr=%parm[#4]%
+            f10BgpM2PeerLastErrorReceived=%parm[#5]%
+            f10BgpM2PeerState=%parm[#6]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6027.20.1.1</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>2</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/traps/dell/force10/f10BgpM2BackwardTransition</uei>
+        <event-label>FORCE10-BGP4-V2-MIB defined trap event: f10BgpM2BackwardTransition</event-label>
+        <descr>&lt;p&gt;The BGPBackwardTransition Event is generated
+            when the BGP FSM moves from a higher numbered
+            state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLocalAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            ipv4(1)
+            ipv6(2)
+            ipv4z(3)
+            ipv6z(4)
+            dns(16)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLocalAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerRemoteAddrType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            unknown(0)
+            ipv4(1)
+            ipv6(2)
+            ipv4z(3)
+            ipv6z(4)
+            dns(16)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLastErrorReceived&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerLastErrorReceivedText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            f10BgpM2PeerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+            idle(1)
+            connect(2)
+            active(3)
+            opensent(4)
+            openconfirm(5)
+            established(6)
+            &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            f10BgpM2BackwardTransition trap received
+            f10BgpM2PeerLocalAddrType=%parm[#1]%
+            f10BgpM2PeerLocalAddr=%parm[#2]%
+            f10BgpM2PeerRemoteAddrType=%parm[#3]%
+            f10BgpM2PeerRemoteAddr=%parm[#4]%
+            f10BgpM2PeerLastErrorReceived=%parm[#5]%
+            f10BgpM2PeerLastErrorReceivedText=%parm[#6]%
+            f10BgpM2PeerState=%parm[#7]%&lt;/p&gt;</logmsg>
+        <severity>Indeterminate</severity>
+    </event>
+</events>
