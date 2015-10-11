@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.xml.event;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="update-field")
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
-public class UpdateField {
+public class UpdateField implements Serializable {
     
     @XmlAttribute(name="field-name", required=true)
     private java.lang.String m_fieldName;
