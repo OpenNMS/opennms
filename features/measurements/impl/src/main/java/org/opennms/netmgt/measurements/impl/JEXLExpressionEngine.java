@@ -13,6 +13,8 @@ import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -23,6 +25,8 @@ import com.google.common.collect.Maps;
  * @author jwhite
  */
 public class JEXLExpressionEngine implements ExpressionEngine {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JEXLExpressionEngine.class);
 
     /**
      * Use a single instance of the JEXL engine, which is thread-safe.
@@ -81,9 +85,9 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         final Map<String, Object> jexlValues = Maps.newHashMap();
         final JexlContext context = new MapContext(jexlValues);
 
-        // Add constants (i.e. values from strings.properties)
-        // retrieved by the fetch operation
+        // Add constants (i.e. values from strings.properties) retrieved by the fetch operation
         jexlValues.putAll(results.getConstants());
+        LOG.debug("JEXL context constants: {}", jexlValues);
 
         // Add some additional constants for ease of use
         jexlValues.put("__inf", Double.POSITIVE_INFINITY);

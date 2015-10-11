@@ -26,36 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.measurements.filters.impl;
+package org.opennms.netmgt.measurements.api;
 
-import org.opennms.netmgt.measurements.api.FilterConfig;
-import org.opennms.netmgt.measurements.api.FilterParam;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Configuration options for the Chomp filter.
+ * General {@link org.opennms.netmgt.measurements.api.Filter} meta-data.
  *
  * @author jwhite
  */
-public class ChompConfig implements FilterConfig {
-
-    @FilterParam(name="cutoffDate", value="0", description="Timestamp in milliseconds. Any rows before this time will be removed.")
-    private double m_cutoffDate;
-
-    @FilterParam(name="stripNaNs", value="false", description="When set, leading and trailing rows containing NaNs will be removed")
-    private boolean m_stripNaNs;
-
-    protected ChompConfig() {}
-
-    public ChompConfig(double cutOffDate, boolean stripNaNs) {
-        m_cutoffDate = cutOffDate;
-        m_stripNaNs = stripNaNs;
-    }
-
-    public double getCutoffDate() {
-        return m_cutoffDate;
-    }
-
-    public boolean getStripNaNs() {
-        return m_stripNaNs;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface FilterInfo {
+    public String name();
+    public String description() default "";
+    public String backend() default "Java";
 }

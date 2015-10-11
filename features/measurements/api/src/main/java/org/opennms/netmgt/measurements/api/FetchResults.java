@@ -29,18 +29,13 @@
 package org.opennms.netmgt.measurements.api;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
-
-import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Used to store the results of a fetch.
@@ -69,37 +64,60 @@ public class FetchResults {
     }
 
     /**
-     * Horribly inefficient method only used when applying analytics operations to
-     * FetchResults.
-     * 
-     * @param values
-     * @param step
-     * @param constants
+     * Used when applying filters.
      */
-    public FetchResults(final RowSortedTable<Long, String, Double> values, final long step, final Map<String, Object> constants) {
-        Preconditions.checkNotNull(values, "values argument");
+    public FetchResults(final RowSortedTable<Long, String, Double> table, final long step, final Map<String, Object> constants) {
+        Preconditions.checkNotNull(table, "table argument");
         Preconditions.checkNotNull(constants, "constants argument");
-        m_timestamps = transform(values);
-        // Use a LinkedHashMap here to preserve ordering
-        m_columns = new LinkedHashMap<String, double[]>();
-        for (String column : values.columnKeySet()) {
-            if (Filter.TIMESTAMP_COLUMN_NAME.equals(column)) {
-                continue;
-            }
-            m_columns.put(column, ArrayUtils.toPrimitive(values.column(column).values().toArray(new Double[0])));
-        }
+
         m_step = step;
         m_constants = constants;
-    }
 
-    private long[] transform(RowSortedTable<Long, String, Double> values) {
-        Collection<Long> timestampCollection = Collections2.transform(values.column(Filter.TIMESTAMP_COLUMN_NAME).values(), new Function<Double, Long>() {
-            @Override
-            public Long apply(Double input) {
-                return input.longValue();
+        if (table.size() < 1) {
+            // No rows
+            m_timestamps = new long[0];
+            m_columns = Maps.newHashMapWithExpectedSize(0);
+            return;
+        }
+
+        Long firstIndex = null;
+        Long lastIndex = null;
+        Map<Long, Double> timestampsByIndex = table.column(Filter.TIMESTAMP_COLUMN_NAME);
+        for (Long index : timestampsByIndex.keySet()) {
+            if (firstIndex == null) {
+                firstIndex = index;
+            } else {
+                Preconditions.checkState(index == (lastIndex + 1), "filter timestamps must be contiguous");
             }
-        });
-        return ArrayUtils.toPrimitive(timestampCollection.toArray(new Long[0]));
+            lastIndex = index;
+        }
+
+        int numRows = (int)(lastIndex - firstIndex) + 1;
+        m_columns = Maps.newLinkedHashMap(); // preserve ordering
+        m_timestamps = new long[numRows];
+
+        for (int k = 0; k < numRows; k++) {
+            for (String columnName : table.columnKeySet()) {
+                Double value = table.get(Long.valueOf(k), columnName);
+
+                if (Filter.TIMESTAMP_COLUMN_NAME.equals(columnName)) {
+                    Preconditions.checkNotNull(value, "filter timestamps must be contiguous");
+                    m_timestamps[k] = value.longValue();
+                } else {
+                    double column[] = m_columns.get(columnName);
+                    if (column == null) {
+                        column = new double[numRows];
+                        m_columns.put(columnName, column);
+                    }
+
+                    if (value == null) {
+                        column[k] = Double.NaN;
+                    } else {
+                        column[k] = value;
+                    }
+                }
+            }
+        }
     }
 
     public long[] getTimestamps() {

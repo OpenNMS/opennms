@@ -31,7 +31,7 @@ package org.opennms.netmgt.measurements.filters.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
@@ -40,8 +40,9 @@ public class ChompTest extends AnalyticsFilterTest {
 
     @Test
     public void canCutoffRows() throws Exception {
-        FilterDefinition filterDef = new FilterDefinition("Chomp",
-                "cutoffDate", "5000");
+        FilterDef filterDef = new FilterDef("Chomp",
+                "cutoffDate", "5000",
+                "stripNaNs", "false");
 
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
         long k = 0;
@@ -71,7 +72,7 @@ public class ChompTest extends AnalyticsFilterTest {
 
     @Test
     public void canStripNaNs() throws Exception {
-        FilterDefinition filterDef = new FilterDefinition("Chomp",
+        FilterDef filterDef = new FilterDef("Chomp",
                 "stripNaNs", "true");
 
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
@@ -108,7 +109,7 @@ public class ChompTest extends AnalyticsFilterTest {
 
     @Test
     public void doesntFailOnEmtpyDs() throws Exception {
-        FilterDefinition filterDef = new FilterDefinition("Chomp");
+        FilterDef filterDef = new FilterDef("Chomp");
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
         getFilterEngine().filter(filterDef, table);
     }

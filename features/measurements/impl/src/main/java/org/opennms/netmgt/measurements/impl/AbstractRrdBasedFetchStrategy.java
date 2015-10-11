@@ -87,20 +87,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             }
 
             // Gather the values from strings.properties
-            for (final Map.Entry<String, String> propertyEntry : resource.getStringPropertyAttributes().entrySet()) {
-                final String propertyName = propertyEntry.getKey();
-
-                // Attempt to cast the value as a double, fall back to keeping it as a string
-                Object propertyValue;
-                try {
-                    propertyValue = Utils.toDouble(propertyEntry.getValue());
-                } catch (Throwable t) {
-                    propertyValue = propertyEntry.getValue();
-                }
-
-                constants.put(String.format("%s.%s", source.getLabel(), propertyName),
-                        propertyValue);
-            }
+            Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
 
             // Build the path to the archive
             final String rrdFile = System.getProperty("rrd.base.dir")

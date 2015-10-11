@@ -28,30 +28,14 @@
 
 package org.opennms.netmgt.measurements.filters.impl;
 
-import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
-
 /**
- * Instantiate a filter used to remove outliers
- * and interpolate missing values.
+ * Outlier filter.
  *
  * @author jwhite
  */
-public class OutlierFilterFactory extends AbstractFilterFactory<OutlierFilterConfig> {
-
-    public static final String FILTER_NAME = "OutlierFilter";
+public class OutlierFilterFactory extends AbstractFilterFactory<OutlierFilter> {
 
     public OutlierFilterFactory() {
-        super(OutlierFilterConfig.class);
-    }
-
-    @Override
-    public boolean supports(FilterDefinition filterDef) {
-        return FILTER_NAME.equalsIgnoreCase(filterDef.getName());
-    }
-
-    @Override
-    public Filter createFilter(OutlierFilterConfig config) {
-        return new OutlierFilter(config);
+        super(OutlierFilter.class);
     }
 }

@@ -34,15 +34,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to annotate the parameters names in a {@link FilterConfig} object.
+ * Used to annotate parameters on {@link org.opennms.netmgt.measurements.api.Filter}.
  *
  * @author jwhite
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface FilterParam {
-    public String name();
+    public String key();
     public String value() default "";
     public boolean required() default false;
-    public String description() default "";
+    public String displayName();
+    public String description();
 }

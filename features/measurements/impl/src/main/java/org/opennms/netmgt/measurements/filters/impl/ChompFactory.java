@@ -28,30 +28,14 @@
 
 package org.opennms.netmgt.measurements.filters.impl;
 
-import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
-
 /**
- * Instantiate a filter used to remove leading
- * or trailing rows from the data source.
+ * Chomp filter.
  *
  * @author jwhite
  */
-public class ChompFactory extends AbstractFilterFactory<ChompConfig> {
-
-    public static final String FILTER_NAME = "Chomp";
+public class ChompFactory extends AbstractFilterFactory<Chomp> {
 
     public ChompFactory() {
-        super(ChompConfig.class);
-    }
-
-    @Override
-    public boolean supports(FilterDefinition filterDef) {
-        return FILTER_NAME.equalsIgnoreCase(filterDef.getName());
-    }
-
-    @Override
-    public Filter createFilter(ChompConfig config) {
-        return new Chomp(config);
+        super(Chomp.class);
     }
 }

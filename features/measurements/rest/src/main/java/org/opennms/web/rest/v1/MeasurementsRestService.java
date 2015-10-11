@@ -53,7 +53,8 @@ import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
 import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
+import org.opennms.netmgt.measurements.model.FilterMetaData;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -100,6 +101,24 @@ public class MeasurementsRestService {
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
 
     private final FilterEngine filterEngine = new FilterEngine();
+
+    @GET
+    @Path("filters")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public List<FilterMetaData> getFilterMetadata() {
+        return filterEngine.getFilterMetaData();
+    }
+
+    @GET
+    @Path("filters/{name}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public FilterMetaData getFilterMetadata(@PathParam("name") final String name) {
+        FilterMetaData metaData = filterEngine.getFilterMetaData(name);
+        if (metaData == null) {
+            throw getException(Status.NOT_FOUND, "No filter with name '{}' was found.", name);
+        }
+        return metaData;
+    }
 
     /**
      * Retrieves the measurements for a single attribute.
@@ -167,7 +186,7 @@ public class MeasurementsRestService {
                         request.getSources()
                         );
         } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed");
+            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed: {}", e.getMessage());
         }
 
         // Return a 404 when null
@@ -179,7 +198,7 @@ public class MeasurementsRestService {
         try {
             expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
-            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression.");
+            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression: {}", e.getMessage());
         }
 
         // Apply the filters
@@ -188,7 +207,7 @@ public class MeasurementsRestService {
             try {
                 filterEngine.filter(request.getFilters(), table);
             } catch (Throwable t) {
-                throw getException(Status.BAD_REQUEST, t, "An error occurred while applying one or more filters: " + t.getMessage());
+                throw getException(Status.BAD_REQUEST, t, "An error occurred while applying one or more filters: {}", t.getMessage());
             }
             results = new FetchResults(table, results.getStep(), results.getConstants());
         }
@@ -241,7 +260,7 @@ public class MeasurementsRestService {
                 throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
             }
             if (labels.containsKey(source.getLabel())) {
-                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
+                throw getException(Status.BAD_REQUEST, "Query source label '{}' conflict: source with that label is already defined.", source.getLabel());
             } else {
                 labels.put(source.getLabel(), "source");
             }
@@ -253,14 +272,14 @@ public class MeasurementsRestService {
             }
             if (labels.containsKey(expression.getLabel())) {
                 final String type = labels.get(expression.getLabel());
-                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+                throw getException(Status.BAD_REQUEST, "Query expression label '{}' conflict: {} with that label is already defined.", expression.getLabel(), type);
             } else {
                 labels.put(expression.getLabel(), "expression");
             }
         }
-        List<FilterDefinition> filters = request.getFilters();
+        List<FilterDef> filters = request.getFilters();
         if (filters.size() > 0) {
-            for (FilterDefinition filter : filters) {
+            for (FilterDef filter : filters) {
                 if (filter.getName() == null) {
                     throw getException(Status.BAD_REQUEST, "Filter name must be set: {}", filter);
                 }

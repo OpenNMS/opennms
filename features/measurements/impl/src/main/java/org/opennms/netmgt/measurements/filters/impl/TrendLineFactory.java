@@ -28,30 +28,14 @@
 
 package org.opennms.netmgt.measurements.filters.impl;
 
-import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
-
 /**
- * Instantiate a filter used to calculate a trend
- * line (or curve) for the given column.
+ * Trend line filter.
  *
  * @author jwhite
  */
-public class TrendLineFactory extends AbstractFilterFactory<TrendLineConfig> {
-
-    public static final String FILTER_NAME = "TrendLine";
+public class TrendLineFactory extends AbstractFilterFactory<TrendLine> {
 
     public TrendLineFactory() {
-        super(TrendLineConfig.class);
-    }
-
-    @Override
-    public boolean supports(FilterDefinition filterDef) {
-        return FILTER_NAME.equalsIgnoreCase(filterDef.getName());
-    }
-
-    @Override
-    public Filter createFilter(TrendLineConfig config) {
-        return new TrendLine(config);
+        super(TrendLine.class);
     }
 }
