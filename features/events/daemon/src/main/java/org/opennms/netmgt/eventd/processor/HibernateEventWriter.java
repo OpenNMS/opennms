@@ -55,6 +55,7 @@ import org.opennms.netmgt.xml.event.Operaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.util.Assert;
 
 /**
@@ -79,7 +80,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class HibernateEventWriter implements EventWriter {
+public class HibernateEventWriter implements EventWriter {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateEventWriter.class);
     
     @Autowired
@@ -142,7 +143,11 @@ public final class HibernateEventWriter implements EventWriter {
 
         LOG.debug("HibernateEventWriter: processing {} nodeid: {} ipaddr: {} serviceid: {} time: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
-        insertEvent(eventHeader, event);
+        try {
+            insertEvent(eventHeader, event);
+        } catch (DeadlockLoserDataAccessException e) {
+            throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
+        }
     }
 
     /**

@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
  *
  * Operations done on an incoming event are handled by the List of injected
  * EventProcessors, in the order in which they are given in the list.  If any
- * of them throw an exception, futher processing of that event Log is stopped.
+ * of them throw an exception, further processing of that event Log is stopped.
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
